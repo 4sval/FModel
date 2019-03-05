@@ -1,8 +1,41 @@
 # FModel
 A Fortnite .PAK file explorer build in C#
 
-## HOW TO USE
 
-## FEATURES
+
+## GETTING STARTED
+### Prerequisites
+[.NET Framework 4.6.1](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net461)
+### How does it works
+**1.** Once you start the executable, a `FModel` subfolder will be created in your `Documents` folder as well as a `config.json` file and it'll automatically download the latest version of the modded Fortnite Asset Parser.
+
+**2.** Open the config file and fill `pathToFortnitePAKs` with the path to your Fortnite .PAK files
+```
+{
+  "pathToFortnitePAKs": "C:\\Program Files\\Epic Games\\Fortnite\\FortniteGame\\Content\\Paks"
+}
+```
+
+**3.** Restart the executable, select your .PAK file, enter the AES key and click **Load**
+  - It will parse all Assets contained in the selected .PAK file with their respective path
+  
+**4.** Navigate through the tree to find the Asset you want
+
+**5.** Clicking on **Extract** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
+  - Asset is an **__ID__**:
+    - Try to create an icon with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
+  - Asset is a **__Texture__**:
+    - Try to display the Asset as PNG
+  - Asset is a **__Sound__**:
+    - Try to convert the Asset to OGG and play the sound
+
+
+
+## DOCUMENTATION
+### What i'm using
+- [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - Modded Version With Output Control
+- [JSON Parser](https://app.quicktype.io/)
 
 ## TODO
+- [ ] Improve speed
+- [ ] Detect the pak file of an image if default isn't working
