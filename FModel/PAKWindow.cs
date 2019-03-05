@@ -8,6 +8,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -45,10 +46,16 @@ namespace FModel
             }
             AESKeyTextBox.Text = "0x" + File.ReadAllText("key.txt").ToUpper();
 
-            if (!Directory.Exists(docPath + "\\Generated Icons\\")) //Create Generated Icons Subfolder
-                Directory.CreateDirectory(docPath + "\\Generated Icons\\");
-            if (!Directory.Exists(docPath + "\\Extracted Sounds\\")) //Create Generated Icons Subfolder
-                Directory.CreateDirectory(docPath + "\\Extracted Sounds\\");
+            if (!File.Exists(docPath + "\\john-wick-parse-modded.exe"))
+            {
+                WebClient Client = new WebClient();
+                Client.DownloadFile("https://www53.zippyshare.com/d/m6LyNUXB/936989/john-wick-parse-modded.exe", docPath + "\\john-wick-parse-modded.exe");
+
+                AppendText("[FileNotFoundException] ", Color.Red);
+                AppendText("File ", Color.Black);
+                AppendText("john-wick-parse-modded.exe ", Color.SteelBlue);
+                AppendText("downloaded successfully", Color.Black, true);
+            }
 
             ExtractButton.Enabled = false;
             SaveImageButton.Enabled = false;
@@ -251,6 +258,11 @@ namespace FModel
         {
             ItemRichTextBox.Text = "";
             ItemIconPictureBox.Image = null;
+
+            if (!Directory.Exists(docPath + "\\Generated Icons\\")) //Create Generated Icons Subfolder
+                Directory.CreateDirectory(docPath + "\\Generated Icons\\");
+            if (!Directory.Exists(docPath + "\\Extracted Sounds\\")) //Create Generated Icons Subfolder
+                Directory.CreateDirectory(docPath + "\\Extracted Sounds\\");
 
             int fontLength = Properties.Resources.BurbankBigCondensed_Bold.Length;
             byte[] fontdata = Properties.Resources.BurbankBigCondensed_Bold;
