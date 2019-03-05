@@ -1,5 +1,9 @@
 # FModel
-A Fortnite .PAK file explorer build in C#
+[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases)
+[![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
+[![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
+
+**A Fortnite .PAK file explorer build in C#**
 
 
 
