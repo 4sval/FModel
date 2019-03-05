@@ -1,0 +1,14 @@
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\bin\Release\FModel.exe.config
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\bin\Release\FModel.exe
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\bin\Release\FModel.pdb
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\bin\Release\Newtonsoft.Json.dll
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\bin\Release\Newtonsoft.Json.pdb
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\bin\Release\Newtonsoft.Json.xml
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\obj\Release\FModel.PAKWindow.resources
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\obj\Release\FModel.Properties.Resources.resources
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\obj\Release\FModel.csproj.GenerateResource.cache
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\obj\Release\FModel.csproj.CoreCompileInputs.cache
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\obj\Release\FModel.csproj.CopyComplete
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\obj\Release\FModel.exe
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\obj\Release\FModel.pdb
+C:\Users\valen\Desktop\umodel\Tools\Main Tools\Home\FModel\FModel\obj\Release\FModel.csprojAssemblyReference.cache
