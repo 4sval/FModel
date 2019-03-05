@@ -3,7 +3,7 @@
 [![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
 
-**A Fortnite .PAK file explorer build in C#**
+**A Fortnite .PAK file explorer built in C#**
 
 
 
@@ -14,7 +14,7 @@
 **1.** Once you start the executable, a `FModel` subfolder will be created in your `Documents` folder as well as a `config.json` file and it'll automatically download the latest version of the modded Fortnite Asset Parser.
 
 **2.** Open the config file and fill `pathToFortnitePAKs` with the path to your Fortnite .PAK files
-```
+```json
 {
   "pathToFortnitePAKs": "C:\\Program Files\\Epic Games\\Fortnite\\FortniteGame\\Content\\Paks"
 }
