@@ -40,7 +40,7 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.SaveImageCheckBox = new System.Windows.Forms.CheckBox();
             this.SaveImageButton = new System.Windows.Forms.Button();
-            this.LoadImageCheckBox = new System.Windows.Forms.CheckBox();
+            this.LoadDataCheckBox = new System.Windows.Forms.CheckBox();
             this.ConsoleRichTextBox = new System.Windows.Forms.RichTextBox();
             this.ExtractButton = new System.Windows.Forms.Button();
             this.ItemRichTextBox = new System.Windows.Forms.RichTextBox();
@@ -130,7 +130,7 @@
             // 
             this.groupBox2.Controls.Add(this.SaveImageCheckBox);
             this.groupBox2.Controls.Add(this.SaveImageButton);
-            this.groupBox2.Controls.Add(this.LoadImageCheckBox);
+            this.groupBox2.Controls.Add(this.LoadDataCheckBox);
             this.groupBox2.Controls.Add(this.ConsoleRichTextBox);
             this.groupBox2.Controls.Add(this.ExtractButton);
             this.groupBox2.Controls.Add(this.ItemRichTextBox);
@@ -162,16 +162,16 @@
             this.SaveImageButton.UseVisualStyleBackColor = true;
             this.SaveImageButton.Click += new System.EventHandler(this.SaveImageButton_Click);
             // 
-            // LoadImageCheckBox
+            // LoadDataCheckBox
             // 
-            this.LoadImageCheckBox.AutoSize = true;
-            this.LoadImageCheckBox.Location = new System.Drawing.Point(703, 642);
-            this.LoadImageCheckBox.Name = "LoadImageCheckBox";
-            this.LoadImageCheckBox.Size = new System.Drawing.Size(101, 17);
-            this.LoadImageCheckBox.TabIndex = 7;
-            this.LoadImageCheckBox.Text = "Auto Load Data";
-            this.LoadImageCheckBox.UseVisualStyleBackColor = true;
-            this.LoadImageCheckBox.CheckedChanged += new System.EventHandler(this.LoadImageCheckBox_CheckedChanged);
+            this.LoadDataCheckBox.AutoSize = true;
+            this.LoadDataCheckBox.Location = new System.Drawing.Point(703, 642);
+            this.LoadDataCheckBox.Name = "LoadDataCheckBox";
+            this.LoadDataCheckBox.Size = new System.Drawing.Size(101, 17);
+            this.LoadDataCheckBox.TabIndex = 7;
+            this.LoadDataCheckBox.Text = "Auto Load Data";
+            this.LoadDataCheckBox.UseVisualStyleBackColor = true;
+            this.LoadDataCheckBox.CheckedChanged += new System.EventHandler(this.LoadImageCheckBox_CheckedChanged);
             // 
             // ConsoleRichTextBox
             // 
@@ -243,7 +243,7 @@
         private System.Windows.Forms.Button ExtractButton;
         private System.Windows.Forms.RichTextBox ItemRichTextBox;
         private System.Windows.Forms.RichTextBox ConsoleRichTextBox;
-        private System.Windows.Forms.CheckBox LoadImageCheckBox;
+        private System.Windows.Forms.CheckBox LoadDataCheckBox;
         private System.Windows.Forms.CheckBox SaveImageCheckBox;
         private System.Windows.Forms.Button SaveImageButton;
     }

@@ -21,6 +21,13 @@ namespace FModel
         private static string[] PAKFileAsTXT;
         private static string ItemName;
 
+        PrivateFontCollection pfc = new PrivateFontCollection();
+        StringFormat centeredString = new StringFormat();
+        StringFormat rightString = new StringFormat();
+        StringFormat centeredStringLine = new StringFormat();
+        private int fontLength;
+        private byte[] fontdata;
+
         public PAKWindow()
         {
             InitializeComponent();
@@ -60,6 +67,17 @@ namespace FModel
             ExtractButton.Enabled = false;
             SaveImageButton.Enabled = false;
             SaveImageCheckBox.Enabled = false;
+
+            fontLength = Properties.Resources.BurbankBigCondensed_Bold.Length;
+            fontdata = Properties.Resources.BurbankBigCondensed_Bold;
+            System.IntPtr weirdData = Marshal.AllocCoTaskMem(fontLength);
+            Marshal.Copy(fontdata, 0, weirdData, fontLength);
+            pfc.AddMemoryFont(weirdData, fontLength);
+
+            centeredString.Alignment = StringAlignment.Center;
+            rightString.Alignment = StringAlignment.Far;
+            centeredStringLine.LineAlignment = StringAlignment.Center;
+            centeredStringLine.Alignment = StringAlignment.Center;
         }
 
         private void CreatePath(TreeNodeCollection nodeList, string path)
@@ -97,21 +115,25 @@ namespace FModel
                 CreatePath(node.Nodes, path);
             }
         }
+        private void jwpmProcess(string args)
+        {
+            using (Process p = new Process())
+            {
+                p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
+                p.StartInfo.Arguments = args;
+                p.StartInfo.CreateNoWindow = false;
+                p.StartInfo.UseShellExecute = false;
+                p.Start();
+                p.WaitForExit();
+            }
+        }
         private void PAKsLoad_Click(object sender, EventArgs e)
         {
             PAKTreeView.Nodes.Clear();
             ItemsListBox.Items.Clear();
             File.WriteAllText("key.txt", AESKeyTextBox.Text.Substring(2));
 
-            using (Process myProcess = new Process())
-            {
-                myProcess.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                myProcess.StartInfo.Arguments = "filelist \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + docPath + "\"";
-                myProcess.StartInfo.CreateNoWindow = true;
-                myProcess.StartInfo.UseShellExecute = false;
-                myProcess.Start();
-                myProcess.WaitForExit();
-            }
+            jwpmProcess("filelist \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + docPath + "\""); //JWP FILELIST
 
             PAKFileAsTXT = File.ReadAllLines(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt");
             File.Delete(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt");
@@ -173,7 +195,7 @@ namespace FModel
                 }
                 beforeItems.Add(v.Replace(full, ""));
             }
-            afterItems = beforeItems.Distinct().ToList();
+            afterItems = beforeItems.Distinct().ToList(); //NO DUPLICATION + NO EXTENSION = EASY TO FIND WHAT WE WANT
             foreach (var b in afterItems)
             {
                 ItemsListBox.Items.Add(b);
@@ -187,7 +209,7 @@ namespace FModel
             {
                 ExtractButton.Enabled = true;
             }
-        }
+        } //NO EXTRACT IF NOTHING SELECTED
 
         public void AppendText(string text, Color color, bool addNewLine = false)
         {
@@ -199,10 +221,6 @@ namespace FModel
             ConsoleRichTextBox.ScrollToCaret();
             ConsoleRichTextBox.ResumeLayout();
         }
-        PrivateFontCollection pfc = new PrivateFontCollection();
-        StringFormat centeredString = new StringFormat();
-        StringFormat rightString = new StringFormat();
-        StringFormat centeredStringLine = new StringFormat();
 
         byte[] oggFind = { 0x4F, 0x67, 0x67, 0x53 };
         byte[] oggNoHeader = { 0x4F, 0x67, 0x67, 0x53 };
@@ -253,6 +271,117 @@ namespace FModel
             }
             return false;
         }
+        private void convertToOGG(string file, string item)
+        {
+            var isUBULKFound = new DirectoryInfo(System.IO.Path.GetDirectoryName(file)).GetFiles(Path.GetFileNameWithoutExtension(file) + "*.ubulk", SearchOption.AllDirectories).FirstOrDefault();
+            if (isUBULKFound == null)
+            {
+                // Handle the file not being found
+                AppendText("✔ ", Color.Green);
+                AppendText(item, Color.DarkRed);
+                AppendText(" has no ", Color.Black);
+                AppendText("UBULK file", Color.SteelBlue, true);
+
+                string oggPattern = "OggS";
+                if (File.ReadAllText(file).Contains(oggPattern))
+                {
+                    byte[] src = File.ReadAllBytes(file);
+                    TryFindAndReplace<byte>(src, oggFind, oggNoHeader, out oggOutNewArray);
+                    File.WriteAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp", oggOutNewArray);
+
+                    FileInfo fi = new FileInfo(Path.GetFileNameWithoutExtension(file) + ".temp");
+                    FileStream fs = fi.Open(FileMode.Open);
+                    long bytesToDelete = 4;
+                    fs.SetLength(Math.Max(0, fi.Length - bytesToDelete));
+                    fs.Close();
+
+                    byte[] srcFinal = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp");
+                    int i = srcFinal.Length - 7;
+                    while (srcFinal[i] == 0)
+                        --i;
+                    byte[] bar = new byte[i + 1];
+                    Array.Copy(srcFinal, bar, i + 1);
+                    AppendText("✔ ", Color.Green);
+                    AppendText("Empty bytes", Color.DarkRed);
+                    AppendText(" deleted successfully", Color.Black, true);
+
+                    File.WriteAllBytes(docPath + "\\Extracted Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg", bar);
+                    File.Delete(Path.GetFileNameWithoutExtension(file) + ".temp");
+                }
+                else
+                {
+                    AppendText("✗ ", Color.Red);
+                    AppendText("No Sound Pattern Found", Color.Black, true);
+                }
+            }
+            else
+            {
+                // The file variable has the *first* occurrence of that filename
+                AppendText("✔ ", Color.Green);
+                AppendText(item, Color.DarkRed);
+                AppendText(" extracted with an ", Color.Black);
+                AppendText("UBULK file", Color.SteelBlue, true);
+
+                string oggPattern = "OggS";
+                if (File.ReadAllText(file).Contains(oggPattern))
+                {
+                    byte[] src = File.ReadAllBytes(file);
+                    List<int> positions = SearchBytePattern(uexpToDelete, src);
+
+                    AppendText("UBULK Footer Index: ", Color.Black);
+                    AppendText(positions[0].ToString("X2"), Color.Green, true);
+                    AppendText("Source Last Index: ", Color.Black);
+                    AppendText(src.Length.ToString("X2"), Color.Green, true);
+
+                    TryFindAndReplace<byte>(src, oggFind, oggNoHeader, out oggOutNewArray);
+                    File.WriteAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp", oggOutNewArray);
+
+                    int lengthToDelete = src.Length - positions[0];
+
+                    FileInfo fi = new FileInfo(Path.GetFileNameWithoutExtension(file) + ".temp");
+                    FileStream fs = fi.Open(FileMode.Open);
+                    long bytesToDelete = lengthToDelete;
+                    fs.SetLength(Math.Max(0, fi.Length - bytesToDelete));
+                    fs.Close();
+
+                    byte[] src44 = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp");
+                    byte[] srcUBULK = File.ReadAllBytes(Path.GetDirectoryName(file) + "\\" + isUBULKFound.ToString());
+                    byte[] buffer = new byte[srcUBULK.Length];
+                    using (FileStream fs1 = new FileStream(Path.GetDirectoryName(file) + "\\" + isUBULKFound.ToString(), FileMode.Open, FileAccess.ReadWrite))
+                    {
+                        AppendText("✔ ", Color.Green);
+                        AppendText("Writing ", Color.Black);
+                        AppendText("UBULK Data", Color.DarkRed, true);
+
+                        fs1.Read(buffer, 0, buffer.Length);
+
+                        FileStream fs2 = new FileStream(Path.GetFileNameWithoutExtension(file) + ".temp", FileMode.Open, FileAccess.ReadWrite);
+                        fs2.Position = src44.Length;
+                        fs2.Write(buffer, 0, buffer.Length);
+                        fs2.Close();
+                        fs1.Close();
+                    }
+
+                    byte[] srcFinal = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp");
+                    int i = srcFinal.Length - 1;
+                    while (srcFinal[i] == 0)
+                        --i;
+                    byte[] bar = new byte[i + 1];
+                    Array.Copy(srcFinal, bar, i + 1);
+                    AppendText("✔ ", Color.Green);
+                    AppendText("Empty bytes", Color.DarkRed);
+                    AppendText(" deleted successfully", Color.Black, true);
+
+                    File.WriteAllBytes(docPath + "\\Extracted Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg", bar);
+                    File.Delete(Path.GetFileNameWithoutExtension(file) + ".temp");
+                }
+                else
+                {
+                    AppendText("✗ ", Color.Red);
+                    AppendText("No Sound Pattern Found", Color.Black, true);
+                }
+            }
+        }
 
         private void ExtractButton_Click(object sender, EventArgs e)
         {
@@ -264,59 +393,35 @@ namespace FModel
             if (!Directory.Exists(docPath + "\\Extracted Sounds\\")) //Create Generated Icons Subfolder
                 Directory.CreateDirectory(docPath + "\\Extracted Sounds\\");
 
-            int fontLength = Properties.Resources.BurbankBigCondensed_Bold.Length;
-            byte[] fontdata = Properties.Resources.BurbankBigCondensed_Bold;
-            System.IntPtr weirdData = Marshal.AllocCoTaskMem(fontLength);
-            Marshal.Copy(fontdata, 0, weirdData, fontLength);
-            pfc.AddMemoryFont(weirdData, fontLength);
-
-            centeredString.Alignment = StringAlignment.Center;
-            rightString.Alignment = StringAlignment.Far;
-            centeredStringLine.LineAlignment = StringAlignment.Center;
-            centeredStringLine.Alignment = StringAlignment.Center;
-
             foreach (var sItems in ItemsListBox.SelectedItems)
             {
-                using (Process myProcess = new Process())
+                var files = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + "*", SearchOption.AllDirectories).FirstOrDefault();
+                if (!File.Exists(files))
                 {
-                    myProcess.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                    myProcess.StartInfo.Arguments = "extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + sItems + "\" \"" + docPath + "\"";
-                    myProcess.StartInfo.CreateNoWindow = true;
-                    myProcess.StartInfo.UseShellExecute = false;
-                    myProcess.Start();
-                    myProcess.WaitForExit();
+                    jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + sItems + "\" \"" + docPath + "\"");
+                    files = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + "*", SearchOption.AllDirectories).FirstOrDefault();
                 }
-                string[] files = Directory.GetFiles(docPath, "*" + sItems + "*", SearchOption.AllDirectories);
-                AppendText("", Color.Black, true);
-                AppendText("✔ ", Color.Green);
-                AppendText(sItems.ToString(), Color.DarkRed);
-                AppendText(" successfully extracted to ", Color.Black);
-                AppendText(files[0].Substring(0, files[0].LastIndexOf('.')), Color.SteelBlue, true);
-
-                if (files[0].Contains(".uasset") || files[0].Contains(".uexp") || files[0].Contains(".ubulk"))
+                if (files != null)
                 {
+                    AppendText("", Color.Black, true);
                     AppendText("✔ ", Color.Green);
                     AppendText(sItems.ToString(), Color.DarkRed);
-                    AppendText(" is an ", Color.Black);
-                    AppendText("asset", Color.SteelBlue, true);
+                    AppendText(" successfully extracted to ", Color.Black);
+                    AppendText(files.Substring(0, files.LastIndexOf('.')), Color.SteelBlue, true);
 
-                    using (Process myProcess = new Process())
+                    if (files.Contains(".uasset") || files.Contains(".uexp") || files.Contains(".ubulk"))
                     {
-                        myProcess.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                        myProcess.StartInfo.Arguments = "serialize \"" + files[0].Substring(0, files[0].LastIndexOf('.')) + "\"";
-                        myProcess.StartInfo.CreateNoWindow = true;
-                        myProcess.StartInfo.UseShellExecute = false;
-                        myProcess.Start();
-                        myProcess.WaitForExit();
-                    }
-                    string[] filesJSON = Directory.GetFiles(docPath, "*" + sItems + "*.json*", SearchOption.AllDirectories);
+                        AppendText("✔ ", Color.Green);
+                        AppendText(sItems.ToString(), Color.DarkRed);
+                        AppendText(" is an ", Color.Black);
+                        AppendText("asset", Color.SteelBlue, true);
 
-                    try
-                    {
-                        if (filesJSON[0] != null) //AVOID SERIALIZED FILE DOESN'T EXIST
+                        jwpmProcess("serialize \"" + files.Substring(0, files.LastIndexOf('.')) + "\"");
+                        var filesJSON = Directory.GetFiles(docPath, "*" + sItems + "*.json*", SearchOption.AllDirectories).FirstOrDefault();
+                        if (filesJSON != null)
                         {
-                            var json = JToken.Parse(File.ReadAllText(filesJSON[0])).ToString();
-                            File.Delete(filesJSON[0]);
+                            var json = JToken.Parse(File.ReadAllText(filesJSON)).ToString();
+                            File.Delete(filesJSON);
                             AppendText("✔ ", Color.Green);
                             AppendText(sItems.ToString(), Color.DarkRed);
                             AppendText(" successfully serialized", Color.Black, true);
@@ -324,12 +429,12 @@ namespace FModel
 
                             var IDParser = ItemsIdParser.FromJson(json);
 
-                            if (LoadImageCheckBox.Checked == true)
+                            if (LoadDataCheckBox.Checked == true)
                             {
-                                AppendText("Auto loading image set to ", Color.Black);
+                                AppendText("Auto loading data set to ", Color.Black);
                                 AppendText("True", Color.Green, true);
 
-                                if (filesJSON[0].Contains("Athena\\Items\\Cosmetics"))
+                                if (filesJSON.Contains("Athena\\Items\\Cosmetics"))
                                 {
                                     AppendText("✔ ", Color.Green);
                                     AppendText(sItems.ToString(), Color.DarkRed);
@@ -408,44 +513,29 @@ namespace FModel
                                                 AppendText(textureFile, Color.DarkRed);
                                                 AppendText(" detected as a ", Color.Black);
                                                 AppendText("Texture2D file", Color.SteelBlue, true);
-                                                try
+
+                                                var filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + textureFile + "*.*", SearchOption.AllDirectories).FirstOrDefault();
+                                                if (!File.Exists(filesPath))
                                                 {
-                                                    Process p = new Process();
-                                                    p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                                                    p.StartInfo.Arguments = "extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"";
-                                                    p.StartInfo.CreateNoWindow = true;
-                                                    p.StartInfo.UseShellExecute = false;
-                                                    p.Start();
-                                                    p.WaitForExit();
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    Console.WriteLine(ex.Message);
+                                                    jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                    filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + textureFile + "*.*", SearchOption.AllDirectories).FirstOrDefault();
                                                 }
                                                 try
                                                 {
-                                                    string[] filesPath = Directory.GetFiles(docPath, "*" + textureFile + "*.*", SearchOption.AllDirectories);
-                                                    if (filesPath[0] != null)
+                                                    if (filesPath != null)
                                                     {
                                                         AppendText("✔ ", Color.Green);
                                                         AppendText(textureFile, Color.DarkRed);
                                                         AppendText(" successfully extracted to ", Color.Black);
-                                                        AppendText(filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')), Color.SteelBlue, true);
-                                                        try
+                                                        AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
+
+                                                        IMGPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                        if (!File.Exists(IMGPath))
                                                         {
-                                                            Process p = new Process();
-                                                            p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                                                            p.StartInfo.Arguments = "texture \"" + filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')) + "\"";
-                                                            p.StartInfo.CreateNoWindow = true;
-                                                            p.StartInfo.UseShellExecute = false;
-                                                            p.Start();
-                                                            p.WaitForExit();
+                                                            jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                            IMGPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
                                                         }
-                                                        catch (Exception ex)
-                                                        {
-                                                            Console.WriteLine(ex.Message);
-                                                        }
-                                                        IMGPath = filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')) + ".png";
+
                                                         AppendText("✔ ", Color.Green);
                                                         AppendText(textureFile, Color.DarkRed);
                                                         AppendText(" successfully converted to a PNG image with path ", Color.Black);
@@ -463,46 +553,30 @@ namespace FModel
                                             }
                                             if (data.HeroDefinition != null)
                                             {
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText("Extracting ", Color.Black);
-                                                AppendText(data.HeroDefinition, Color.DarkRed, true);
-                                                try
+                                                var filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + data.HeroDefinition + "*.*", SearchOption.AllDirectories).FirstOrDefault();
+                                                if (!File.Exists(filesPath))
                                                 {
-                                                    Process p = new Process();
-                                                    p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                                                    p.StartInfo.Arguments = "extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + data.HeroDefinition + "\" \"" + docPath + "\"";
-                                                    p.StartInfo.CreateNoWindow = true;
-                                                    p.StartInfo.UseShellExecute = false;
-                                                    p.Start();
-                                                    p.WaitForExit();
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    Console.WriteLine(ex.Message);
+                                                    AppendText("✔ ", Color.Green);
+                                                    AppendText("Extracting ", Color.Black);
+                                                    AppendText(data.HeroDefinition, Color.DarkRed, true);
+
+                                                    jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + data.HeroDefinition + "\" \"" + docPath + "\"");
+                                                    filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + data.HeroDefinition + "*.*", SearchOption.AllDirectories).FirstOrDefault();
                                                 }
                                                 try
                                                 {
-                                                    string[] filesPath = Directory.GetFiles(docPath, "*" + data.HeroDefinition + "*.*", SearchOption.AllDirectories);
-                                                    if (filesPath[0] != null)
+                                                    if (filesPath != null)
                                                     {
                                                         AppendText("✔ ", Color.Green);
                                                         AppendText(data.HeroDefinition, Color.DarkRed);
                                                         AppendText(" successfully extracted to ", Color.Black);
-                                                        AppendText(filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')), Color.SteelBlue, true);
+                                                        AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
                                                         try
                                                         {
-                                                            using (Process myProcess = new Process())
-                                                            {
-                                                                myProcess.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                                                                myProcess.StartInfo.Arguments = "serialize \"" + filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')) + "\"";
-                                                                myProcess.StartInfo.CreateNoWindow = true;
-                                                                myProcess.StartInfo.UseShellExecute = false;
-                                                                myProcess.Start();
-                                                                myProcess.WaitForExit();
-                                                            }
-                                                            string[] filesJSON2 = Directory.GetFiles(docPath, "*" + data.HeroDefinition + "*.json*", SearchOption.AllDirectories);
-                                                            var json2 = JToken.Parse(File.ReadAllText(filesJSON2[0])).ToString();
-                                                            File.Delete(filesJSON2[0]);
+                                                            jwpmProcess("serialize \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                            var filesJSON2 = Directory.GetFiles(docPath, "*" + data.HeroDefinition + "*.json*", SearchOption.AllDirectories).FirstOrDefault();
+                                                            var json2 = JToken.Parse(File.ReadAllText(filesJSON2)).ToString();
+                                                            File.Delete(filesJSON2);
                                                             AppendText("✔ ", Color.Green);
                                                             AppendText(data.HeroDefinition, Color.DarkRed);
                                                             AppendText(" successfully serialized", Color.Black, true);
@@ -517,44 +591,29 @@ namespace FModel
                                                                     AppendText(textureFile, Color.DarkRed);
                                                                     AppendText(" detected as a ", Color.Black);
                                                                     AppendText("Texture2D file", Color.SteelBlue, true);
-                                                                    try
+
+                                                                    var filesPath2 = Directory.GetFiles(docPath + "\\Extracted", "*" + textureFile + "*.*", SearchOption.AllDirectories).FirstOrDefault();
+                                                                    if (!File.Exists(filesPath2))
                                                                     {
-                                                                        Process p = new Process();
-                                                                        p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                                                                        p.StartInfo.Arguments = "extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"";
-                                                                        p.StartInfo.CreateNoWindow = true;
-                                                                        p.StartInfo.UseShellExecute = false;
-                                                                        p.Start();
-                                                                        p.WaitForExit();
-                                                                    }
-                                                                    catch (Exception ex)
-                                                                    {
-                                                                        Console.WriteLine(ex.Message);
+                                                                        jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                        filesPath2 = Directory.GetFiles(docPath + "\\Extracted", "*" + textureFile + "*.*", SearchOption.AllDirectories).FirstOrDefault();
                                                                     }
                                                                     try
                                                                     {
-                                                                        string[] filesPath2 = Directory.GetFiles(docPath, "*" + textureFile + "*.*", SearchOption.AllDirectories);
-                                                                        if (filesPath2[0] != null)
+                                                                        if (filesPath2 != null)
                                                                         {
                                                                             AppendText("✔ ", Color.Green);
                                                                             AppendText(textureFile, Color.DarkRed);
                                                                             AppendText(" successfully extracted to ", Color.Black);
-                                                                            AppendText(filesPath2[0].Substring(0, filesPath2[0].LastIndexOf('.')), Color.SteelBlue, true);
-                                                                            try
+                                                                            AppendText(filesPath2.Substring(0, filesPath2.LastIndexOf('.')), Color.SteelBlue, true);
+
+                                                                            IMGPath = filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + ".png";
+                                                                            if (!File.Exists(IMGPath))
                                                                             {
-                                                                                Process p = new Process();
-                                                                                p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                                                                                p.StartInfo.Arguments = "texture \"" + filesPath2[0].Substring(0, filesPath2[0].LastIndexOf('.')) + "\"";
-                                                                                p.StartInfo.CreateNoWindow = true;
-                                                                                p.StartInfo.UseShellExecute = false;
-                                                                                p.Start();
-                                                                                p.WaitForExit();
+                                                                                jwpmProcess("texture \"" + filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + "\"");
+                                                                                IMGPath = filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + ".png";
                                                                             }
-                                                                            catch (Exception ex)
-                                                                            {
-                                                                                Console.WriteLine(ex.Message);
-                                                                            }
-                                                                            IMGPath = filesPath2[0].Substring(0, filesPath2[0].LastIndexOf('.')) + ".png";
+                                                                            
                                                                             AppendText("✔ ", Color.Green);
                                                                             AppendText(textureFile, Color.DarkRed);
                                                                             AppendText(" successfully converted to a PNG image with path ", Color.Black);
@@ -682,44 +741,29 @@ namespace FModel
                                         AppendText("Texture2D file", Color.SteelBlue, true);
 
                                         string IMGPath = string.Empty;
-                                        try
+
+                                        var filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + "*.*", SearchOption.AllDirectories).FirstOrDefault();
+                                        if (!File.Exists(filesPath))
                                         {
-                                            Process p = new Process();
-                                            p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                                            p.StartInfo.Arguments = "extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + sItems + "\" \"" + docPath + "\"";
-                                            p.StartInfo.CreateNoWindow = true;
-                                            p.StartInfo.UseShellExecute = false;
-                                            p.Start();
-                                            p.WaitForExit();
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Console.WriteLine(ex.Message);
+                                            jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + sItems + "\" \"" + docPath + "\"");
+                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + "*.*", SearchOption.AllDirectories).FirstOrDefault();
                                         }
                                         try
                                         {
-                                            string[] filesPath = Directory.GetFiles(docPath, "*" + sItems + "*.*", SearchOption.AllDirectories);
-                                            if (filesPath[0] != null)
+                                            if (filesPath != null)
                                             {
                                                 AppendText("✔ ", Color.Green);
                                                 AppendText(sItems.ToString(), Color.DarkRed);
                                                 AppendText(" successfully extracted to ", Color.Black);
-                                                AppendText(filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')), Color.SteelBlue, true);
-                                                try
+                                                AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
+
+                                                IMGPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                if (!File.Exists(IMGPath))
                                                 {
-                                                    Process p = new Process();
-                                                    p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                                                    p.StartInfo.Arguments = "texture \"" + filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')) + "\"";
-                                                    p.StartInfo.CreateNoWindow = true;
-                                                    p.StartInfo.UseShellExecute = false;
-                                                    p.Start();
-                                                    p.WaitForExit();
+                                                    jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                    IMGPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
                                                 }
-                                                catch (Exception ex)
-                                                {
-                                                    Console.WriteLine(ex.Message);
-                                                }
-                                                IMGPath = filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')) + ".png";
+                                                
                                                 AppendText("✔ ", Color.Green);
                                                 AppendText(sItems.ToString(), Color.DarkRed);
                                                 AppendText(" successfully converted to a PNG image with path ", Color.Black);
@@ -734,6 +778,7 @@ namespace FModel
                                             AppendText(" in ", Color.Black);
                                             AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
                                         }
+
                                         if (File.Exists(IMGPath))
                                         {
                                             ItemIconPictureBox.Image = Image.FromFile(IMGPath);
@@ -742,6 +787,7 @@ namespace FModel
                                         {
                                             ItemIconPictureBox.Image = Properties.Resources.unknown512;
                                         }
+
                                         if (SaveImageCheckBox.Checked == true)
                                         {
                                             AppendText("Auto saving icon set to ", Color.Black);
@@ -764,248 +810,82 @@ namespace FModel
                                         AppendText(" detected as a ", Color.Black);
                                         AppendText("SoundWave file", Color.SteelBlue, true);
 
-                                        string MusicPath = string.Empty;
-                                        try
+                                        string MusicPath = Directory.GetFiles(docPath + "\\Extracted Sounds", "*" + sItems + "*.ogg*", SearchOption.AllDirectories).FirstOrDefault();
+                                        if (!File.Exists(MusicPath))
                                         {
-                                            Process p = new Process();
-                                            p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
-                                            p.StartInfo.Arguments = "extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + sItems + "\" \"" + docPath + "\"";
-                                            p.StartInfo.CreateNoWindow = true;
-                                            p.StartInfo.UseShellExecute = false;
-                                            p.Start();
-                                            p.WaitForExit();
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Console.WriteLine(ex.Message);
-                                        }
-                                        try
-                                        {
-                                            string[] filesPath = Directory.GetFiles(docPath, "*" + sItems + "*.uexp*", SearchOption.AllDirectories);
-                                            if (filesPath[0] != null)
+                                            var filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + "*.uexp*", SearchOption.AllDirectories).FirstOrDefault();
+                                            if (!File.Exists(filesPath))
                                             {
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText(sItems.ToString(), Color.DarkRed);
-                                                AppendText(" successfully extracted to ", Color.Black);
-                                                AppendText(filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')), Color.SteelBlue, true);
-                                                try
+                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + sItems + "\" \"" + docPath + "\"");
+                                                filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + "*.uexp*", SearchOption.AllDirectories).FirstOrDefault();
+                                            }
+                                            try
+                                            {
+                                                if (filesPath != null)
                                                 {
-                                                    var isUBULKFound = new DirectoryInfo(System.IO.Path.GetDirectoryName(filesPath[0])).GetFiles(Path.GetFileNameWithoutExtension(filesPath[0]) + "*.ubulk", SearchOption.AllDirectories).FirstOrDefault();
-                                                    if (isUBULKFound == null)
+                                                    AppendText("✔ ", Color.Green);
+                                                    AppendText(sItems.ToString(), Color.DarkRed);
+                                                    AppendText(" successfully extracted to ", Color.Black);
+                                                    AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
+                                                    try
                                                     {
-                                                        // Handle the file not being found
-                                                        AppendText("✔ ", Color.Green);
-                                                        AppendText(sItems.ToString(), Color.DarkRed);
-                                                        AppendText(" has no ", Color.Black);
-                                                        AppendText("UBULK file", Color.SteelBlue, true);
-
-                                                        string oggPattern = "OggS";
-                                                        if (File.ReadAllText(filesPath[0]).Contains(oggPattern))
-                                                        {
-                                                            try
-                                                            {
-                                                                byte[] src = File.ReadAllBytes(filesPath[0]);
-                                                                TryFindAndReplace<byte>(src, oggFind, oggNoHeader, out oggOutNewArray);
-                                                                File.WriteAllBytes(filesPath[0], oggOutNewArray);
-                                                            }
-                                                            catch (Exception ex)
-                                                            {
-                                                                Console.ForegroundColor = ConsoleColor.Red;
-                                                                Console.Write("[ERROR] ");
-                                                                Console.ForegroundColor = ConsoleColor.White;
-                                                                Console.WriteLine(ex.Message);
-                                                                //MessageBox.Show("Error: " + ex.Message);
-                                                            }
-                                                            try
-                                                            {
-                                                                FileInfo fi = new FileInfo(filesPath[0]);
-                                                                FileStream fs = fi.Open(FileMode.Open);
-                                                                long bytesToDelete = 4;
-                                                                fs.SetLength(Math.Max(0, fi.Length - bytesToDelete));
-                                                                fs.Close();
-                                                            }
-                                                            catch (Exception ex)
-                                                            {
-                                                                Console.ForegroundColor = ConsoleColor.Red;
-                                                                Console.Write("[ERROR] ");
-                                                                Console.ForegroundColor = ConsoleColor.White;
-                                                                Console.WriteLine(ex.Message);
-                                                                //MessageBox.Show("Error: " + ex.Message);
-                                                            }
-
-                                                            byte[] srcFinal = File.ReadAllBytes(filesPath[0]);
-                                                            int i = srcFinal.Length - 7;
-                                                            while (srcFinal[i] == 0)
-                                                                --i;
-                                                            byte[] bar = new byte[i + 1];
-                                                            Array.Copy(srcFinal, bar, i + 1);
-                                                            AppendText("✔ ", Color.Green);
-                                                            AppendText("Empty bytes", Color.DarkRed);
-                                                            AppendText(" deleted successfully", Color.Black, true);
-
-                                                            File.WriteAllBytes(docPath + "\\Extracted Sounds\\" + Path.GetFileNameWithoutExtension(filesPath[0]) + ".ogg", bar);
-                                                            File.Delete(filesPath[0]);
-                                                        }
-                                                        else
-                                                        {
-                                                            Console.WriteLine("");
-                                                            Console.ForegroundColor = ConsoleColor.Red;
-                                                            Console.Write("[ERROR] ");
-                                                            Console.ForegroundColor = ConsoleColor.White;
-                                                            Console.WriteLine("No Sound Pattern Found.");
-                                                        }
+                                                        convertToOGG(filesPath, sItems.ToString());
                                                     }
-                                                    else
+                                                    catch (Exception ex)
                                                     {
-                                                        // The file variable has the *first* occurrence of that filename
-                                                        AppendText("✔ ", Color.Green);
-                                                        AppendText(sItems.ToString(), Color.DarkRed);
-                                                        AppendText(" extracted with an ", Color.Black);
-                                                        AppendText("UBULK file", Color.SteelBlue, true);
-
-                                                        string oggPattern = "OggS";
-                                                        if (File.ReadAllText(filesPath[0]).Contains(oggPattern))
-                                                        {
-                                                            byte[] src = File.ReadAllBytes(filesPath[0]);
-                                                            List<int> positions = SearchBytePattern(uexpToDelete, src);
-
-                                                            AppendText("UBULK Footer Index: ", Color.Black);
-                                                            AppendText(positions[0].ToString("X2"), Color.Green, true);
-                                                            AppendText("Source Last Index: ", Color.Black);
-                                                            AppendText(src.Length.ToString("X2"), Color.Green, true);
-
-                                                            try
-                                                            {
-                                                                byte[] src2 = File.ReadAllBytes(filesPath[0]);
-                                                                TryFindAndReplace<byte>(src2, oggFind, oggNoHeader, out oggOutNewArray);
-                                                                File.WriteAllBytes(filesPath[0], oggOutNewArray);
-                                                            }
-                                                            catch (Exception ex)
-                                                            {
-                                                                Console.ForegroundColor = ConsoleColor.Red;
-                                                                Console.Write("[ERROR] ");
-                                                                Console.ForegroundColor = ConsoleColor.White;
-                                                                Console.WriteLine(ex.Message);
-                                                                //MessageBox.Show("Error: " + ex.Message);
-                                                            }
-                                                            try
-                                                            {
-                                                                int lengthToDelete = src.Length - positions[0];
-
-                                                                FileInfo fi = new FileInfo(filesPath[0]);
-                                                                FileStream fs = fi.Open(FileMode.Open);
-                                                                long bytesToDelete = lengthToDelete;
-                                                                fs.SetLength(Math.Max(0, fi.Length - bytesToDelete));
-                                                                fs.Close();
-                                                            }
-                                                            catch (Exception ex)
-                                                            {
-                                                                Console.ForegroundColor = ConsoleColor.Red;
-                                                                Console.Write("[ERROR] ");
-                                                                Console.ForegroundColor = ConsoleColor.White;
-                                                                Console.WriteLine(ex.Message);
-                                                                //MessageBox.Show("Error: " + ex.Message);
-                                                            }
-
-                                                            byte[] src44 = File.ReadAllBytes(filesPath[0]);
-                                                            byte[] srcUBULK = File.ReadAllBytes(System.IO.Path.GetDirectoryName(filesPath[0]) + "\\" + isUBULKFound.ToString());
-                                                            byte[] buffer = new byte[srcUBULK.Length];
-                                                            try
-                                                            {
-                                                                using (FileStream fs1 = new FileStream(System.IO.Path.GetDirectoryName(filesPath[0]) + "\\" + isUBULKFound.ToString(), FileMode.Open, FileAccess.ReadWrite))
-                                                                {
-                                                                    AppendText("✔ ", Color.Green);
-                                                                    AppendText("Writing ", Color.Black);
-                                                                    AppendText("UBULK Data", Color.DarkRed, true);
-
-                                                                    fs1.Read(buffer, 0, buffer.Length);
-
-                                                                    FileStream fs2 = new FileStream(filesPath[0], FileMode.Open, FileAccess.ReadWrite);
-                                                                    fs2.Position = src44.Length;
-                                                                    fs2.Write(buffer, 0, buffer.Length);
-                                                                    fs2.Close();
-                                                                    fs1.Close();
-                                                                }
-                                                            }
-                                                            catch (Exception ex)
-                                                            {
-                                                                Console.ForegroundColor = ConsoleColor.Red;
-                                                                Console.Write("[ERROR] ");
-                                                                Console.ForegroundColor = ConsoleColor.White;
-                                                                Console.WriteLine(ex.Message);
-                                                                //MessageBox.Show("Error: " + ex.Message);
-                                                            }
-                                                            byte[] srcFinal = File.ReadAllBytes(filesPath[0]);
-                                                            int i = srcFinal.Length - 1;
-                                                            while (srcFinal[i] == 0)
-                                                                --i;
-                                                            byte[] bar = new byte[i + 1];
-                                                            Array.Copy(srcFinal, bar, i + 1);
-                                                            AppendText("✔ ", Color.Green);
-                                                            AppendText("Empty bytes", Color.DarkRed);
-                                                            AppendText(" deleted successfully", Color.Black, true);
-
-                                                            File.WriteAllBytes(docPath + "\\Extracted Sounds\\" + Path.GetFileNameWithoutExtension(filesPath[0]) + ".ogg", bar);
-                                                            File.Delete(filesPath[0]);
-                                                        }
-                                                        else
-                                                        {
-                                                            Console.WriteLine("");
-                                                            Console.ForegroundColor = ConsoleColor.Red;
-                                                            Console.Write("[ERROR] ");
-                                                            Console.ForegroundColor = ConsoleColor.White;
-                                                            Console.WriteLine("No Sound Pattern Found.");
-                                                        }
+                                                        Console.WriteLine(ex.Message);
                                                     }
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    Console.WriteLine(ex.Message);
-                                                }
 
-                                                MusicPath = docPath + "\\Extracted Sounds\\" + Path.GetFileNameWithoutExtension(filesPath[0]) + ".ogg";
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText(sItems.ToString(), Color.DarkRed);
-                                                AppendText(" successfully converted to an OGG sound with path ", Color.Black);
-                                                AppendText(MusicPath, Color.SteelBlue, true);
-
-                                                OpenWithDefaultProgramAndNoFocus(MusicPath);
+                                                    MusicPath = docPath + "\\Extracted Sounds\\" + Path.GetFileNameWithoutExtension(filesPath) + ".ogg";
+                                                    AppendText("✔ ", Color.Green);
+                                                    AppendText(sItems.ToString(), Color.DarkRed);
+                                                    AppendText(" successfully converted to an OGG sound with path ", Color.Black);
+                                                    AppendText(MusicPath, Color.SteelBlue, true);
+                                                }
+                                            }
+                                            catch (IndexOutOfRangeException)
+                                            {
+                                                AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                AppendText("Can't extract ", Color.Black);
+                                                AppendText(sItems.ToString(), Color.SteelBlue);
+                                                AppendText(" in ", Color.Black);
+                                                AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
                                             }
                                         }
-                                        catch (IndexOutOfRangeException)
-                                        {
-                                            AppendText("[IndexOutOfRangeException] ", Color.Red);
-                                            AppendText("Can't extract ", Color.Black);
-                                            AppendText(sItems.ToString(), Color.SteelBlue);
-                                            AppendText(" in ", Color.Black);
-                                            AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
-                                        }
+                                        OpenWithDefaultProgramAndNoFocus(MusicPath);
                                     }
                                 }
                             }
                         }
+                        else
+                        {
+                            AppendText("✗ ", Color.Red);
+                            AppendText("No serialized file found", Color.Black, true);
+                        }
                     }
-                    catch (IndexOutOfRangeException)
+                    if (files.Contains(".ini"))
                     {
-                        AppendText("[IndexOutOfRangeException] ", Color.Red);
-                        AppendText("No serialized file found", Color.Black, true);
+                        ItemRichTextBox.Text = File.ReadAllText(files);
                     }
                 }
-                if (files[0].Contains(".ini"))
+                else
                 {
-                    ItemRichTextBox.Text = File.ReadAllText(files[0]);
+                    AppendText("✗ ", Color.Red);
+                    AppendText(" Error while extracting ", Color.Black);
+                    AppendText(sItems.ToString(), Color.SteelBlue, true);
                 }
             }
             AppendText("\nDone", Color.Green, true);
         }
+
         private void LoadImageCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (LoadImageCheckBox.Checked == true)
+            if (LoadDataCheckBox.Checked == true)
             {
                 SaveImageButton.Enabled = true;
                 SaveImageCheckBox.Enabled = true;
             }
-            if (LoadImageCheckBox.Checked == false)
+            if (LoadDataCheckBox.Checked == false)
             {
                 SaveImageButton.Enabled = false;
                 SaveImageCheckBox.Enabled = false;

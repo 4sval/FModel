@@ -1,5 +1,6 @@
 # FModel
 [![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases)
+![](https://img.shields.io/github/downloads/iAmAsval/FModel/0.1/total.svg?color=green&label=Downloads&logo=buzzfeed&logoColor=white)
 [![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
 
@@ -26,11 +27,11 @@
 **4.** Navigate through the tree to find the Asset you want
 
 **5.** Clicking on **Extract** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
-  - Asset is an **__ID__**:
+  - Asset is an **_ID_**:
     - Try to create an icon with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
-  - Asset is a **__Texture__**:
+  - Asset is a **_Texture_**:
     - Try to display the Asset as PNG
-  - Asset is a **__Sound__**:
+  - Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
 
 
@@ -39,8 +40,10 @@
 ### What i'm using
 - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - Modded Version With Output Control
 - [JSON Parser](https://app.quicktype.io/)
+- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 
 ## TODO
 - [ ] Improve speed
 - [ ] Detect the pak file of an image if default isn't working
 - [ ] Filter ItemsListBox
+- [ ] Readable code
