@@ -1,6 +1,6 @@
 # FModel
-[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases)
-![](https://img.shields.io/github/downloads/iAmAsval/FModel/0.1/total.svg?color=green&label=Downloads&logo=buzzfeed&logoColor=white)
+[![](https://img.shields.io/badge/Releases-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases)
+[![](https://img.shields.io/github/downloads/iAmAsval/FModel/0.11/total.svg?color=green&label=Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases/tag/0.11)
 [![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
 
