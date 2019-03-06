@@ -461,6 +461,132 @@ namespace FModel
                                                     AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
                                                 }
                                             }
+                                            if (data.HeroDefinition != null)
+                                            {
+                                                AppendText("✔ ", Color.Green);
+                                                AppendText("Extracting ", Color.Black);
+                                                AppendText(data.HeroDefinition, Color.DarkRed, true);
+                                                try
+                                                {
+                                                    Process p = new Process();
+                                                    p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
+                                                    p.StartInfo.Arguments = "extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + data.HeroDefinition + "\" \"" + docPath + "\"";
+                                                    p.StartInfo.CreateNoWindow = true;
+                                                    p.StartInfo.UseShellExecute = false;
+                                                    p.Start();
+                                                    p.WaitForExit();
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    Console.WriteLine(ex.Message);
+                                                }
+                                                try
+                                                {
+                                                    string[] filesPath = Directory.GetFiles(docPath, "*" + data.HeroDefinition + "*.*", SearchOption.AllDirectories);
+                                                    if (filesPath[0] != null)
+                                                    {
+                                                        AppendText("✔ ", Color.Green);
+                                                        AppendText(data.HeroDefinition, Color.DarkRed);
+                                                        AppendText(" successfully extracted to ", Color.Black);
+                                                        AppendText(filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')), Color.SteelBlue, true);
+                                                        try
+                                                        {
+                                                            using (Process myProcess = new Process())
+                                                            {
+                                                                myProcess.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
+                                                                myProcess.StartInfo.Arguments = "serialize \"" + filesPath[0].Substring(0, filesPath[0].LastIndexOf('.')) + "\"";
+                                                                myProcess.StartInfo.CreateNoWindow = true;
+                                                                myProcess.StartInfo.UseShellExecute = false;
+                                                                myProcess.Start();
+                                                                myProcess.WaitForExit();
+                                                            }
+                                                            string[] filesJSON2 = Directory.GetFiles(docPath, "*" + data.HeroDefinition + "*.json*", SearchOption.AllDirectories);
+                                                            var json2 = JToken.Parse(File.ReadAllText(filesJSON2[0])).ToString();
+                                                            File.Delete(filesJSON2[0]);
+                                                            AppendText("✔ ", Color.Green);
+                                                            AppendText(data.HeroDefinition, Color.DarkRed);
+                                                            AppendText(" successfully serialized", Color.Black, true);
+
+                                                            var IDParser2 = ItemsIdParser.FromJson(json2);
+                                                            foreach (var data2 in IDParser2)
+                                                            {
+                                                                if (data2.LargePreviewImage != null)
+                                                                {
+                                                                    string textureFile = Path.GetFileName(data2.LargePreviewImage.AssetPathName).Substring(Path.GetFileName(data2.LargePreviewImage.AssetPathName).LastIndexOf('.') + 1);
+                                                                    AppendText("✔ ", Color.Green);
+                                                                    AppendText(textureFile, Color.DarkRed);
+                                                                    AppendText(" detected as a ", Color.Black);
+                                                                    AppendText("Texture2D file", Color.SteelBlue, true);
+                                                                    try
+                                                                    {
+                                                                        Process p = new Process();
+                                                                        p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
+                                                                        p.StartInfo.Arguments = "extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"";
+                                                                        p.StartInfo.CreateNoWindow = true;
+                                                                        p.StartInfo.UseShellExecute = false;
+                                                                        p.Start();
+                                                                        p.WaitForExit();
+                                                                    }
+                                                                    catch (Exception ex)
+                                                                    {
+                                                                        Console.WriteLine(ex.Message);
+                                                                    }
+                                                                    try
+                                                                    {
+                                                                        string[] filesPath2 = Directory.GetFiles(docPath, "*" + textureFile + "*.*", SearchOption.AllDirectories);
+                                                                        if (filesPath2[0] != null)
+                                                                        {
+                                                                            AppendText("✔ ", Color.Green);
+                                                                            AppendText(textureFile, Color.DarkRed);
+                                                                            AppendText(" successfully extracted to ", Color.Black);
+                                                                            AppendText(filesPath2[0].Substring(0, filesPath2[0].LastIndexOf('.')), Color.SteelBlue, true);
+                                                                            try
+                                                                            {
+                                                                                Process p = new Process();
+                                                                                p.StartInfo.FileName = docPath + "/john-wick-parse-modded.exe";
+                                                                                p.StartInfo.Arguments = "texture \"" + filesPath2[0].Substring(0, filesPath2[0].LastIndexOf('.')) + "\"";
+                                                                                p.StartInfo.CreateNoWindow = true;
+                                                                                p.StartInfo.UseShellExecute = false;
+                                                                                p.Start();
+                                                                                p.WaitForExit();
+                                                                            }
+                                                                            catch (Exception ex)
+                                                                            {
+                                                                                Console.WriteLine(ex.Message);
+                                                                            }
+                                                                            IMGPath = filesPath2[0].Substring(0, filesPath2[0].LastIndexOf('.')) + ".png";
+                                                                            AppendText("✔ ", Color.Green);
+                                                                            AppendText(textureFile, Color.DarkRed);
+                                                                            AppendText(" successfully converted to a PNG image with path ", Color.Black);
+                                                                            AppendText(IMGPath, Color.SteelBlue, true);
+                                                                        }
+                                                                    }
+                                                                    catch (IndexOutOfRangeException)
+                                                                    {
+                                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                                        AppendText("Can't extract ", Color.Black);
+                                                                        AppendText(textureFile, Color.SteelBlue);
+                                                                        AppendText(" in ", Color.Black);
+                                                                        AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            Console.WriteLine(ex.Message);
+                                                        }
+                                                    }
+                                                }
+                                                catch (IndexOutOfRangeException)
+                                                {
+                                                    AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                    AppendText("Can't extract ", Color.Black);
+                                                    AppendText(data.HeroDefinition, Color.SteelBlue);
+                                                    AppendText(" in ", Color.Black);
+                                                    AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
+                                                }
+                                            }
 
                                             if (File.Exists(IMGPath))
                                             {

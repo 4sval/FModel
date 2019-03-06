@@ -23,6 +23,9 @@ namespace FModel
         [JsonProperty("CharacterParts")]
         public string[] CharacterParts { get; set; }
 
+        [JsonProperty("HeroDefinition")]
+        public string HeroDefinition { get; set; }
+
         [JsonProperty("Rarity")]
         public string Rarity { get; set; }
 

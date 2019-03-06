@@ -43,3 +43,4 @@
 ## TODO
 - [ ] Improve speed
 - [ ] Detect the pak file of an image if default isn't working
+- [ ] Filter ItemsListBox
