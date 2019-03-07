@@ -425,11 +425,11 @@ namespace FModel
 
             foreach (var sItems in ItemsListBox.SelectedItems)
             {
-                var files = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + "*", SearchOption.AllDirectories).FirstOrDefault();
+                var files = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                 if (!File.Exists(files))
                 {
                     jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + sItems + "\" \"" + docPath + "\"");
-                    files = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + "*", SearchOption.AllDirectories).FirstOrDefault();
+                    files = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                 }
                 if (files != null)
                 {
@@ -788,11 +788,11 @@ namespace FModel
 
                                         string IMGPath = string.Empty;
 
-                                        var filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + "*.*", SearchOption.AllDirectories).FirstOrDefault();
+                                        var filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                                         if (!File.Exists(filesPath))
                                         {
                                             jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + sItems + "\" \"" + docPath + "\"");
-                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + "*.*", SearchOption.AllDirectories).FirstOrDefault();
+                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", "*" + sItems + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                                         }
                                         try
                                         {
@@ -916,6 +916,7 @@ namespace FModel
                 }
                 else
                 {
+                    AppendText("", Color.Black, true);
                     AppendText("✗ ", Color.Red);
                     AppendText(" Error while extracting ", Color.Black);
                     AppendText(sItems.ToString(), Color.SteelBlue, true);
