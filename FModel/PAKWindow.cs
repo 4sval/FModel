@@ -234,6 +234,18 @@ namespace FModel
 
             ExtractButton.Enabled = ItemsListBox.SelectedIndex >= 0;
         }
+        private void ItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ItemsListBox.SelectedItem != null)
+            {
+                ExtractButton.Enabled = true;
+            }
+        } //NO EXTRACT IF NOTHING SELECTED
+
+        private static bool CaseInsensitiveContains(string text, string value, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
+        {
+            return text.IndexOf(value, stringComparison) >= 0;
+        } //FILTER INSENSITIVE
         private void FilterTextBox_TextChanged(object sender, EventArgs e)
         {
             ItemsListBox.BeginUpdate();
@@ -242,7 +254,7 @@ namespace FModel
             {
                 foreach (string str in afterItems)
                 {
-                    if (str.Contains(FilterTextBox.Text))
+                    if (CaseInsensitiveContains(str, FilterTextBox.Text))
                     {
                         ItemsListBox.Items.Add(str);
                     }
@@ -256,14 +268,7 @@ namespace FModel
                 }
             }
             ItemsListBox.EndUpdate();
-        }
-        private void ItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (ItemsListBox.SelectedItem != null)
-            {
-                ExtractButton.Enabled = true;
-            }
-        } //NO EXTRACT IF NOTHING SELECTED
+        } //FILTER METHOD
 
         public void AppendText(string text, Color color, bool addNewLine = false)
         {
