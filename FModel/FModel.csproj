@@ -96,6 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FNTools_Logo.ico" />
+    <None Include="Resources\T512.png" />
+    <None Include="Resources\M512.png" />
+    <None Include="Resources\I512.png" />
     <None Include="Resources\BurbankBigCondensed-Bold.otf" />
     <None Include="Resources\unknown512.png" />
     <None Include="Resources\U512.png" />
