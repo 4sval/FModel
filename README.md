@@ -29,7 +29,7 @@
 
 **5.** Clicking on **Extract** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
   - Asset is an **_ID_**:
-    - Try to create an icon with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
+    - Try to create an [Icon](https://i.imgur.com/CkiU3p5.png) with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
   - Asset is a **_Texture_**:
     - Try to display the Asset as PNG
   - Asset is a **_Sound_**:
@@ -46,5 +46,7 @@
 ## TODO
 - [ ] Improve speed
 - [ ] Detect the pak file of an image if default isn't working
-- [ ] Filter ItemsListBox
+- [x] Filter for the items ListBox
+- [ ] Support for meshes
+- [ ] Support for animations
 - [ ] Readable code

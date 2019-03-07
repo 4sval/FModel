@@ -189,10 +189,11 @@ namespace FModel
                 }
             }
         }
+        private static List<string> afterItems;
         private void PAKTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             List<string> beforeItems = new List<string>();
-            List<string> afterItems = new List<string>();
+            afterItems = new List<string>();
 
             ItemsListBox.Items.Clear();
 
@@ -232,6 +233,29 @@ namespace FModel
             }
 
             ExtractButton.Enabled = ItemsListBox.SelectedIndex >= 0;
+        }
+        private void FilterTextBox_TextChanged(object sender, EventArgs e)
+        {
+            ItemsListBox.BeginUpdate();
+            ItemsListBox.Items.Clear();
+            if (!string.IsNullOrEmpty(FilterTextBox.Text))
+            {
+                foreach (string str in afterItems)
+                {
+                    if (str.Contains(FilterTextBox.Text))
+                    {
+                        ItemsListBox.Items.Add(str);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var b in afterItems)
+                {
+                    ItemsListBox.Items.Add(b);
+                }
+            }
+            ItemsListBox.EndUpdate();
         }
         private void ItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -622,7 +646,7 @@ namespace FModel
                                                         {
                                                             jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                         }
-                                                        else if (data.SmallPreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/"))
+                                                        else if (data.SmallPreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || data.SmallPreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
                                                         {
                                                             jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                         }

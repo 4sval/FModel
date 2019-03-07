@@ -44,6 +44,8 @@
             this.ConsoleRichTextBox = new System.Windows.Forms.RichTextBox();
             this.ExtractButton = new System.Windows.Forms.Button();
             this.ItemRichTextBox = new System.Windows.Forms.RichTextBox();
+            this.FilterLabel = new System.Windows.Forms.Label();
+            this.FilterTextBox = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -75,7 +77,7 @@
             // AESKeyLabel
             // 
             this.AESKeyLabel.AutoSize = true;
-            this.AESKeyLabel.Location = new System.Drawing.Point(6, 50);
+            this.AESKeyLabel.Location = new System.Drawing.Point(6, 51);
             this.AESKeyLabel.Name = "AESKeyLabel";
             this.AESKeyLabel.Size = new System.Drawing.Size(52, 13);
             this.AESKeyLabel.TabIndex = 2;
@@ -137,14 +139,14 @@
             this.groupBox2.Controls.Add(this.ItemIconPictureBox);
             this.groupBox2.Location = new System.Drawing.Point(426, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(928, 667);
+            this.groupBox2.Size = new System.Drawing.Size(928, 693);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             // 
             // SaveImageCheckBox
             // 
             this.SaveImageCheckBox.AutoSize = true;
-            this.SaveImageCheckBox.Location = new System.Drawing.Point(703, 613);
+            this.SaveImageCheckBox.Location = new System.Drawing.Point(703, 639);
             this.SaveImageCheckBox.Name = "SaveImageCheckBox";
             this.SaveImageCheckBox.Size = new System.Drawing.Size(108, 17);
             this.SaveImageCheckBox.TabIndex = 9;
@@ -154,7 +156,7 @@
             // 
             // SaveImageButton
             // 
-            this.SaveImageButton.Location = new System.Drawing.Point(816, 609);
+            this.SaveImageButton.Location = new System.Drawing.Point(816, 635);
             this.SaveImageButton.Name = "SaveImageButton";
             this.SaveImageButton.Size = new System.Drawing.Size(106, 23);
             this.SaveImageButton.TabIndex = 8;
@@ -165,7 +167,7 @@
             // LoadDataCheckBox
             // 
             this.LoadDataCheckBox.AutoSize = true;
-            this.LoadDataCheckBox.Location = new System.Drawing.Point(703, 642);
+            this.LoadDataCheckBox.Location = new System.Drawing.Point(703, 668);
             this.LoadDataCheckBox.Name = "LoadDataCheckBox";
             this.LoadDataCheckBox.Size = new System.Drawing.Size(101, 17);
             this.LoadDataCheckBox.TabIndex = 7;
@@ -179,13 +181,13 @@
             this.ConsoleRichTextBox.Location = new System.Drawing.Point(6, 374);
             this.ConsoleRichTextBox.Name = "ConsoleRichTextBox";
             this.ConsoleRichTextBox.ReadOnly = true;
-            this.ConsoleRichTextBox.Size = new System.Drawing.Size(922, 153);
+            this.ConsoleRichTextBox.Size = new System.Drawing.Size(922, 229);
             this.ConsoleRichTextBox.TabIndex = 6;
             this.ConsoleRichTextBox.Text = "";
             // 
             // ExtractButton
             // 
-            this.ExtractButton.Location = new System.Drawing.Point(816, 638);
+            this.ExtractButton.Location = new System.Drawing.Point(816, 664);
             this.ExtractButton.Name = "ExtractButton";
             this.ExtractButton.Size = new System.Drawing.Size(106, 23);
             this.ExtractButton.TabIndex = 5;
@@ -204,13 +206,32 @@
             this.ItemRichTextBox.TabIndex = 4;
             this.ItemRichTextBox.Text = "";
             // 
+            // FilterLabel
+            // 
+            this.FilterLabel.AutoSize = true;
+            this.FilterLabel.Location = new System.Drawing.Point(18, 688);
+            this.FilterLabel.Name = "FilterLabel";
+            this.FilterLabel.Size = new System.Drawing.Size(32, 13);
+            this.FilterLabel.TabIndex = 6;
+            this.FilterLabel.Text = "Filter:";
+            // 
+            // FilterTextBox
+            // 
+            this.FilterTextBox.Location = new System.Drawing.Point(56, 685);
+            this.FilterTextBox.Name = "FilterTextBox";
+            this.FilterTextBox.Size = new System.Drawing.Size(364, 20);
+            this.FilterTextBox.TabIndex = 5;
+            this.FilterTextBox.TextChanged += new System.EventHandler(this.FilterTextBox_TextChanged);
+            // 
             // PAKWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1366, 691);
+            this.ClientSize = new System.Drawing.Size(1366, 712);
+            this.Controls.Add(this.FilterLabel);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.PAKTreeView);
+            this.Controls.Add(this.FilterTextBox);
             this.Controls.Add(this.ItemsListBox);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -226,6 +247,7 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -246,6 +268,8 @@
         private System.Windows.Forms.CheckBox LoadDataCheckBox;
         private System.Windows.Forms.CheckBox SaveImageCheckBox;
         private System.Windows.Forms.Button SaveImageButton;
+        private System.Windows.Forms.Label FilterLabel;
+        private System.Windows.Forms.TextBox FilterTextBox;
     }
 }
 
