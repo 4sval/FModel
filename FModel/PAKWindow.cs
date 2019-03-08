@@ -20,6 +20,7 @@ namespace FModel
         private static string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "\\FModel";
         private static string[] PAKFileAsTXT;
         private static string ItemName;
+        private static List<string> afterItems;
 
         PrivateFontCollection pfc = new PrivateFontCollection();
         StringFormat centeredString = new StringFormat();
@@ -189,13 +190,13 @@ namespace FModel
                 }
             }
         }
-        private static List<string> afterItems;
         private void PAKTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             List<string> beforeItems = new List<string>();
             afterItems = new List<string>();
 
             ItemsListBox.Items.Clear();
+            FilterTextBox.Text = string.Empty;
 
             var all = TreeHelpers.GetAncestors(e.Node, x => x.Parent).ToList();
             all.Reverse();
@@ -210,8 +211,6 @@ namespace FModel
             {
                 return;
             }
-
-            ItemsListBox.Items.Clear();
 
             foreach (var i in dirfiles)
             {
@@ -1012,6 +1011,21 @@ namespace FModel
                             AppendText("✗ ", Color.Red);
                             AppendText("No serialized file found", Color.Black, true);
                         }
+                    }
+                    if (files.Contains(".ufont"))
+                    {
+                        Console.WriteLine(files);
+                        AppendText("✔ ", Color.Green);
+                        AppendText(sItems.ToString(), Color.DarkRed);
+                        AppendText(" is a ", Color.Black);
+                        AppendText("font", Color.SteelBlue, true);
+
+                        File.Move(files, Path.ChangeExtension(files, ".otf"));
+
+                        AppendText("✔ ", Color.Green);
+                        AppendText(sItems.ToString(), Color.DarkRed);
+                        AppendText(" successfully converter to a ", Color.Black);
+                        AppendText("font", Color.SteelBlue, true);
                     }
                     if (files.Contains(".ini"))
                     {
