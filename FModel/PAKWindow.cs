@@ -102,7 +102,7 @@ namespace FModel
             if (!File.Exists(docPath + "\\john-wick-parse-modded.exe"))
             {
                 WebClient Client = new WebClient();
-                Client.DownloadFile("https://www53.zippyshare.com/d/m6LyNUXB/936989/john-wick-parse-modded.exe", docPath + "\\john-wick-parse-modded.exe");
+                Client.DownloadFile("https://dl.dropbox.com/s/9y5rv3hycin3w8r/john-wick-parse-modded.exe?dl=0", docPath + "\\john-wick-parse-modded.exe");
 
                 AppendText("[FileNotFoundException] ", Color.Red);
                 AppendText("File ", Color.Black);
@@ -818,7 +818,7 @@ namespace FModel
                     } //NAME
                     try
                     {
-                        g.DrawString(data.Description, new Font("Arial", 10), new SolidBrush(Color.White), new Point(522 / 2, 465), centeredStringLine);
+                        g.DrawString(data.Description, new Font("Arial", 11), new SolidBrush(Color.White), new Point(522 / 2, 465), centeredStringLine);
                     }
                     catch (NullReferenceException)
                     {
@@ -829,7 +829,7 @@ namespace FModel
                     } //DESCRIPTION
                     try
                     {
-                        g.DrawString(data.ShortDescription, new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 498));
+                        g.DrawString(data.ShortDescription, new Font(pfc.Families[0], 15), new SolidBrush(Color.White), new Point(5, 498));
                     }
                     catch (NullReferenceException)
                     {
@@ -840,7 +840,7 @@ namespace FModel
                     } //TYPE
                     try
                     {
-                        g.DrawString(data.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(data.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 498), rightString);
+                        g.DrawString(data.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(data.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(pfc.Families[0], 15), new SolidBrush(Color.White), new Point(522 - 5, 498), rightString);
                     }
                     catch (NullReferenceException)
                     {
@@ -878,6 +878,8 @@ namespace FModel
             ItemRichTextBox.Text = "";
             ItemIconPictureBox.Image = null;
 
+            if (!Directory.Exists(docPath + "\\Extracted\\")) //Create Extracted Subfolder
+                Directory.CreateDirectory(docPath + "\\Extracted\\");
             if (!Directory.Exists(docPath + "\\Generated Icons\\")) //Create Generated Icons Subfolder
                 Directory.CreateDirectory(docPath + "\\Generated Icons\\");
             if (!Directory.Exists(docPath + "\\Extracted Sounds\\")) //Create Generated Icons Subfolder
