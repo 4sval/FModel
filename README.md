@@ -34,6 +34,8 @@
     - Try to display the Asset as PNG
   - Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
+  - Asset is a **_Font_**:
+    - Try to convert the Asset to OTF
 
 
 
