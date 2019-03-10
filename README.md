@@ -47,6 +47,7 @@
 
 ## TODO
 - [ ] Improve speed
+- [x] Multithreading (kinda weird atm i agree)
 - [x] Filter for the items ListBox
 - [ ] Support for meshes
 - [ ] Support for animations
