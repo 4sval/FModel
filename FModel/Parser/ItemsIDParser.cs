@@ -26,6 +26,9 @@ namespace FModel
         [JsonProperty("HeroDefinition")]
         public string HeroDefinition { get; set; }
 
+        [JsonProperty("WeaponDefinition")]
+        public string WeaponDefinition { get; set; }
+
         [JsonProperty("Rarity")]
         public string Rarity { get; set; }
 

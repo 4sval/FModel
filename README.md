@@ -47,7 +47,6 @@
 
 ## TODO
 - [ ] Improve speed
-- [ ] Detect the pak file of an image if default isn't working
 - [x] Filter for the items ListBox
 - [ ] Support for meshes
 - [ ] Support for animations
