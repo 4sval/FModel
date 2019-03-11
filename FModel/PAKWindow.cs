@@ -22,6 +22,7 @@ namespace FModel
         private static string[] PAKFileAsTXT;
         private static string ItemName;
         private static List<string> afterItems;
+        public static string[] SelectedArray;
 
         PrivateFontCollection pfc = new PrivateFontCollection();
         StringFormat centeredString = new StringFormat();
@@ -273,7 +274,7 @@ namespace FModel
         }
         private void ItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ItemsListBox.SelectedItem != null)
+            if (ItemsListBox.SelectedItem != null && SelectedArray == null)
             {
                 ExtractButton.Enabled = true;
             }
@@ -558,44 +559,50 @@ namespace FModel
             if (!Directory.Exists(docPath + "\\Extracted Sounds\\")) //Create Generated Icons Subfolder
                 Directory.CreateDirectory(docPath + "\\Extracted Sounds\\");
 
-            for (int i = 0; i < ItemsListBox.SelectedItems.Count; i++)
+            SelectedArray = new string[ItemsListBox.SelectedItems.Count];
+            for (int i = 0; i < ItemsListBox.SelectedItems.Count; i++) //ADD SELECTED ITEM TO ARRAY
             {
-                string currentItem = ItemsListBox.SelectedItems[i].ToString();
-                ExtractButton.Enabled = false;
+                SelectedArray[i] = ItemsListBox.SelectedItems[i].ToString();
+            }
 
-                var files = Directory.GetFiles(docPath + "\\Extracted", ItemsListBox.SelectedItems[i] + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+            ExtractButton.Enabled = false;
+            for (int i = 0; i < SelectedArray.Length; i++)
+            {
+                string currentItem = SelectedArray[i].ToString();
+
+                var files = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                 if (!File.Exists(files))
                 {
                     await Task.Run(() => {
                         jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
                     });
-                    files = Directory.GetFiles(docPath + "\\Extracted", ItemsListBox.SelectedItems[i] + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                    files = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                 }
                 if (files != null)
                 {
                     AppendText("", Color.Black, true);
                     AppendText("✔ ", Color.Green);
-                    AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.DarkRed);
+                    AppendText(currentItem, Color.DarkRed);
                     AppendText(" successfully extracted to ", Color.Black);
                     AppendText(files.Substring(0, files.LastIndexOf('.')), Color.SteelBlue, true);
 
                     if (files.Contains(".uasset") || files.Contains(".uexp") || files.Contains(".ubulk"))
                     {
                         AppendText("✔ ", Color.Green);
-                        AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.DarkRed);
+                        AppendText(currentItem, Color.DarkRed);
                         AppendText(" is an ", Color.Black);
                         AppendText("asset", Color.SteelBlue, true);
 
                         await Task.Run(() => {
                             jwpmProcess("serialize \"" + files.Substring(0, files.LastIndexOf('.')) + "\"");
                         });
-                        var filesJSON = Directory.GetFiles(docPath, ItemsListBox.SelectedItems[i] + ".json", SearchOption.AllDirectories).FirstOrDefault();
+                        var filesJSON = Directory.GetFiles(docPath, currentItem + ".json", SearchOption.AllDirectories).FirstOrDefault();
                         if (filesJSON != null)
                         {
                             var json = JToken.Parse(File.ReadAllText(filesJSON)).ToString();
                             File.Delete(filesJSON);
                             AppendText("✔ ", Color.Green);
-                            AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.DarkRed);
+                            AppendText(currentItem, Color.DarkRed);
                             AppendText(" successfully serialized", Color.Black, true);
                             ItemRichTextBox.Text = json;
 
@@ -609,7 +616,7 @@ namespace FModel
                                 if (filesJSON.Contains("Athena\\Items\\Cosmetics")) //ASSET IS AN ID => CREATE ICON
                                 {
                                     AppendText("✔ ", Color.Green);
-                                    AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.DarkRed);
+                                    AppendText(currentItem, Color.DarkRed);
                                     AppendText(" is an ", Color.Black);
                                     AppendText("ID file", Color.SteelBlue, true);
                                     AppendText("Parsing...", Color.Black, true);
@@ -1079,29 +1086,29 @@ namespace FModel
                                     if (IDParser[ii].ExportType == "Texture2D")
                                     {
                                         AppendText("Parsing...", Color.Black, true);
-                                        ItemName = ItemsListBox.SelectedItems[i].ToString();
+                                        ItemName = currentItem;
 
                                         AppendText("✔ ", Color.Green);
-                                        AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.DarkRed);
+                                        AppendText(currentItem, Color.DarkRed);
                                         AppendText(" detected as a ", Color.Black);
                                         AppendText("Texture2D file", Color.SteelBlue, true);
 
                                         string IMGPath = string.Empty;
 
-                                        var filesPath = Directory.GetFiles(docPath + "\\Extracted", ItemsListBox.SelectedItems[i] + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                        var filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                                         if (!File.Exists(filesPath))
                                         {
                                             await Task.Run(() => {
                                                 jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
                                             });
-                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", ItemsListBox.SelectedItems[i] + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                                         }
                                         try
                                         {
                                             if (filesPath != null)
                                             {
                                                 AppendText("✔ ", Color.Green);
-                                                AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.DarkRed);
+                                                AppendText(currentItem, Color.DarkRed);
                                                 AppendText(" successfully extracted to ", Color.Black);
                                                 AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
 
@@ -1115,7 +1122,7 @@ namespace FModel
                                                 }
 
                                                 AppendText("✔ ", Color.Green);
-                                                AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.DarkRed);
+                                                AppendText(currentItem, Color.DarkRed);
                                                 AppendText(" successfully converted to a PNG image with path ", Color.Black);
                                                 AppendText(IMGPath, Color.SteelBlue, true);
                                             }
@@ -1124,7 +1131,7 @@ namespace FModel
                                         {
                                             AppendText("[IndexOutOfRangeException] ", Color.Red);
                                             AppendText("Can't extract ", Color.Black);
-                                            AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.SteelBlue);
+                                            AppendText(currentItem, Color.SteelBlue);
                                             AppendText(" in ", Color.Black);
                                             AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
                                         }
@@ -1153,30 +1160,30 @@ namespace FModel
                                     if (IDParser[ii].ExportType == "SoundWave")
                                     {
                                         AppendText("Parsing...", Color.Black, true);
-                                        ItemName = ItemsListBox.SelectedItems[i].ToString();
+                                        ItemName = currentItem;
 
                                         AppendText("✔ ", Color.Green);
-                                        AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.DarkRed);
+                                        AppendText(currentItem, Color.DarkRed);
                                         AppendText(" detected as a ", Color.Black);
                                         AppendText("SoundWave file", Color.SteelBlue, true);
 
-                                        string MusicPath = Directory.GetFiles(docPath + "\\Extracted Sounds", ItemsListBox.SelectedItems[i] + ".ogg", SearchOption.AllDirectories).FirstOrDefault();
+                                        string MusicPath = Directory.GetFiles(docPath + "\\Extracted Sounds", currentItem + ".ogg", SearchOption.AllDirectories).FirstOrDefault();
                                         if (!File.Exists(MusicPath))
                                         {
-                                            var filesPath = Directory.GetFiles(docPath + "\\Extracted", ItemsListBox.SelectedItems[i] + ".uexp", SearchOption.AllDirectories).FirstOrDefault();
+                                            var filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".uexp", SearchOption.AllDirectories).FirstOrDefault();
                                             if (!File.Exists(filesPath))
                                             {
                                                 await Task.Run(() => {
                                                     jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
                                                 });
-                                                filesPath = Directory.GetFiles(docPath + "\\Extracted", ItemsListBox.SelectedItems[i] + ".uexp", SearchOption.AllDirectories).FirstOrDefault();
+                                                filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".uexp", SearchOption.AllDirectories).FirstOrDefault();
                                             }
                                             try
                                             {
                                                 if (filesPath != null)
                                                 {
                                                     AppendText("✔ ", Color.Green);
-                                                    AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.DarkRed);
+                                                    AppendText(currentItem, Color.DarkRed);
                                                     AppendText(" successfully extracted to ", Color.Black);
                                                     AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
                                                     try
@@ -1190,7 +1197,7 @@ namespace FModel
 
                                                     MusicPath = docPath + "\\Extracted Sounds\\" + Path.GetFileNameWithoutExtension(filesPath) + ".ogg";
                                                     AppendText("✔ ", Color.Green);
-                                                    AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.DarkRed);
+                                                    AppendText(currentItem, Color.DarkRed);
                                                     AppendText(" successfully converted to an OGG sound with path ", Color.Black);
                                                     AppendText(MusicPath, Color.SteelBlue, true);
                                                 }
@@ -1199,7 +1206,7 @@ namespace FModel
                                             {
                                                 AppendText("[IndexOutOfRangeException] ", Color.Red);
                                                 AppendText("Can't extract ", Color.Black);
-                                                AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.SteelBlue);
+                                                AppendText(currentItem, Color.SteelBlue);
                                                 AppendText(" in ", Color.Black);
                                                 AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
                                             }
@@ -1217,7 +1224,7 @@ namespace FModel
                     }
                     if (files.Contains(".ufont")) //ASSET IS A FONT => CONVERT TO FONT
                     {
-                        convertToOTF(files, ItemsListBox.SelectedItems[i].ToString());
+                        convertToOTF(files, currentItem);
                     }
                     if (files.Contains(".ini"))
                     {
@@ -1229,7 +1236,7 @@ namespace FModel
                     AppendText("", Color.Black, true);
                     AppendText("✗ ", Color.Red);
                     AppendText(" Error while extracting ", Color.Black);
-                    AppendText(ItemsListBox.SelectedItems[i].ToString(), Color.SteelBlue, true);
+                    AppendText(currentItem, Color.SteelBlue, true);
                 }
             }
             ExtractButton.Enabled = true;
