@@ -47,7 +47,8 @@
 
 ## TODO
 - [ ] Improve speed
-- [x] Multithreading (kinda weird atm i agree)
+- [x] Multithreading
 - [x] Filter for the items ListBox
+- [ ] Stop button while extracting
 - [ ] Support for meshes
 - [ ] Support for animations

@@ -128,6 +128,10 @@ namespace FModel
             centeredStringLine.LineAlignment = StringAlignment.Center;
             centeredStringLine.Alignment = StringAlignment.Center;
         } //EVERYTHING TO SET WHEN APP IS STARTING
+        private void PAKWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Environment.Exit(Environment.ExitCode);
+        } //STOP EVERYTHING WHEN FORM IS CLOSING
 
         private void CreatePath(TreeNodeCollection nodeList, string path)
         {
@@ -566,6 +570,7 @@ namespace FModel
             }
 
             ExtractButton.Enabled = false;
+            SaveImageButton.Enabled = false;
             for (int i = 0; i < SelectedArray.Length; i++)
             {
                 string currentItem = SelectedArray[i].ToString();
@@ -1240,6 +1245,7 @@ namespace FModel
                 }
             }
             ExtractButton.Enabled = true;
+            SaveImageButton.Enabled = true;
 
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
