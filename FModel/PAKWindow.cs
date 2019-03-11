@@ -102,6 +102,16 @@ namespace FModel
             }
             AESKeyTextBox.Text = "0x" + File.ReadAllText("key.txt").ToUpper();
 
+            string url = "https://pastebin.com/raw/0fbB05hc";
+            long fileSize = 0;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                fileSize = Convert.ToInt64(reader.ReadToEnd());
+            }
+
             if (!File.Exists(docPath + "\\john-wick-parse-modded.exe"))
             {
                 WebClient Client = new WebClient();
@@ -111,6 +121,17 @@ namespace FModel
                 AppendText("File ", Color.Black);
                 AppendText("john-wick-parse-modded.exe ", Color.SteelBlue);
                 AppendText("downloaded successfully", Color.Black, true);
+            }
+
+            FileInfo info = new FileInfo(docPath + "\\john-wick-parse-modded.exe");
+            if (info.Length != fileSize)
+            {
+                WebClient Client = new WebClient();
+                Client.DownloadFile("https://dl.dropbox.com/s/9y5rv3hycin3w8r/john-wick-parse-modded.exe?dl=0", docPath + "\\john-wick-parse-modded.exe");
+
+                AppendText("[FileNeedUpdateException] ", Color.Red);
+                AppendText("john-wick-parse-modded.exe ", Color.SteelBlue);
+                AppendText("updated successfully", Color.Black, true);
             }
 
             ExtractButton.Enabled = false;
