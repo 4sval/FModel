@@ -1267,6 +1267,7 @@ namespace FModel
             }
             ExtractButton.Enabled = true;
             SaveImageButton.Enabled = true;
+            SelectedArray = null;
 
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
