@@ -29,7 +29,7 @@
 
 **5.** Clicking on **Extract Asset** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
   - Asset is an **_ID_**:
-    - Try to create an [Icon](https://i.imgur.com/CkiU3p5.png) with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
+    - Try to create an [Icon](https://i.imgur.com/PStlmUV.png) with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
   - Asset is a **_Texture_**:
     - Try to display the Asset as PNG
   - Asset is a **_Sound_**:
@@ -44,11 +44,15 @@
 - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - Modded Version With Output Control
 - [JSON Parser](https://app.quicktype.io/)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+### Why FModel
+This project is mainly based on what [UModel](https://github.com/gildor2/UModel) can do, in a personalized way, in case UModel doesn't work, as a temporary rescue solution.
+I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionnaly.
 
 ## TODO
 - [ ] Improve speed
 - [x] Multithreading
 - [x] Filter for the items ListBox
+- [ ] More options
 - [ ] Stop button while extracting
 - [ ] Support for meshes
 - [ ] Support for animations

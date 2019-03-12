@@ -31,6 +31,9 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PAKWindow));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.LoadButton = new FModel.SplitButton();
+            this.LoadContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AESKeyLabel = new System.Windows.Forms.Label();
             this.AESKeyTextBox = new System.Windows.Forms.TextBox();
             this.PAKsComboBox = new System.Windows.Forms.ComboBox();
@@ -45,19 +48,19 @@
             this.ExtractAsset = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.LoadDataTS = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveImageTS = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.ConsoleRichTextBox = new System.Windows.Forms.RichTextBox();
             this.ItemRichTextBox = new System.Windows.Forms.RichTextBox();
             this.FilterLabel = new System.Windows.Forms.Label();
             this.FilterTextBox = new System.Windows.Forms.TextBox();
-            this.LoadButton = new FModel.SplitButton();
-            this.LoadContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mergeGeneratedImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
+            this.LoadContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.ImageContext.SuspendLayout();
             this.ExtractAsset.SuspendLayout();
-            this.LoadContext.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -72,6 +75,34 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "PAK";
+            // 
+            // LoadButton
+            // 
+            this.LoadButton.Location = new System.Drawing.Point(296, 18);
+            this.LoadButton.Menu = this.LoadContext;
+            this.LoadButton.Name = "LoadButton";
+            this.LoadButton.Size = new System.Drawing.Size(106, 23);
+            this.LoadButton.TabIndex = 12;
+            this.LoadButton.Text = "         Load";
+            this.LoadButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LoadButton.UseVisualStyleBackColor = true;
+            this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
+            // 
+            // LoadContext
+            // 
+            this.LoadContext.ImageScalingSize = new System.Drawing.Size(18, 18);
+            this.LoadContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsToolStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.LoadContext.Name = "LoadContext";
+            this.LoadContext.Size = new System.Drawing.Size(117, 48);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // AESKeyLabel
             // 
@@ -158,13 +189,13 @@
             this.ImageContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OpenImageTS});
             this.ImageContext.Name = "ImageContext";
-            this.ImageContext.Size = new System.Drawing.Size(155, 28);
+            this.ImageContext.Size = new System.Drawing.Size(140, 26);
             // 
             // OpenImageTS
             // 
             this.OpenImageTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.OpenImageTS.Name = "OpenImageTS";
-            this.OpenImageTS.Size = new System.Drawing.Size(154, 24);
+            this.OpenImageTS.Size = new System.Drawing.Size(139, 22);
             this.OpenImageTS.Text = "Open Image";
             this.OpenImageTS.Click += new System.EventHandler(this.OpenImageTS_Click);
             // 
@@ -185,9 +216,11 @@
             this.ExtractAsset.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.ExtractAsset.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.LoadDataTS,
-            this.SaveImageTS});
+            this.SaveImageTS,
+            this.toolStripSeparator1,
+            this.mergeGeneratedImagesToolStripMenuItem});
             this.ExtractAsset.Name = "ExtractAsset";
-            this.ExtractAsset.Size = new System.Drawing.Size(252, 52);
+            this.ExtractAsset.Size = new System.Drawing.Size(223, 98);
             // 
             // LoadDataTS
             // 
@@ -197,7 +230,7 @@
             this.LoadDataTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.LoadDataTS.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.LoadDataTS.Name = "LoadDataTS";
-            this.LoadDataTS.Size = new System.Drawing.Size(251, 24);
+            this.LoadDataTS.Size = new System.Drawing.Size(222, 22);
             this.LoadDataTS.Text = "Load Data After Serialization";
             // 
             // SaveImageTS
@@ -205,8 +238,13 @@
             this.SaveImageTS.CheckOnClick = true;
             this.SaveImageTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.SaveImageTS.Name = "SaveImageTS";
-            this.SaveImageTS.Size = new System.Drawing.Size(251, 24);
+            this.SaveImageTS.Size = new System.Drawing.Size(222, 22);
             this.SaveImageTS.Text = "Save Generated Image";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(219, 6);
             // 
             // ConsoleRichTextBox
             // 
@@ -246,32 +284,19 @@
             this.FilterTextBox.TabIndex = 5;
             this.FilterTextBox.TextChanged += new System.EventHandler(this.FilterTextBox_TextChanged);
             // 
-            // LoadButton
-            // 
-            this.LoadButton.Location = new System.Drawing.Point(296, 18);
-            this.LoadButton.Menu = this.LoadContext;
-            this.LoadButton.Name = "LoadButton";
-            this.LoadButton.Size = new System.Drawing.Size(106, 23);
-            this.LoadButton.TabIndex = 12;
-            this.LoadButton.Text = "         Load";
-            this.LoadButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.LoadButton.UseVisualStyleBackColor = true;
-            this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
-            // 
-            // LoadContext
-            // 
-            this.LoadContext.ImageScalingSize = new System.Drawing.Size(18, 18);
-            this.LoadContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mergeGeneratedImagesToolStripMenuItem});
-            this.LoadContext.Name = "LoadContext";
-            this.LoadContext.Size = new System.Drawing.Size(235, 28);
-            // 
             // mergeGeneratedImagesToolStripMenuItem
             // 
             this.mergeGeneratedImagesToolStripMenuItem.Name = "mergeGeneratedImagesToolStripMenuItem";
-            this.mergeGeneratedImagesToolStripMenuItem.Size = new System.Drawing.Size(234, 24);
+            this.mergeGeneratedImagesToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
             this.mergeGeneratedImagesToolStripMenuItem.Text = "Merge Generated Images";
             this.mergeGeneratedImagesToolStripMenuItem.Click += new System.EventHandler(this.mergeGeneratedImagesToolStripMenuItem_Click);
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.optionsToolStripMenuItem.Text = "Options";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // PAKWindow
             // 
@@ -294,11 +319,11 @@
             this.Load += new System.EventHandler(this.PAKWindow_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.LoadContext.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.ImageContext.ResumeLayout(false);
             this.ExtractAsset.ResumeLayout(false);
-            this.LoadContext.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -327,6 +352,9 @@
         private System.Windows.Forms.ToolStripMenuItem SaveImageTS;
         private SplitButton LoadButton;
         private System.Windows.Forms.ContextMenuStrip LoadContext;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mergeGeneratedImagesToolStripMenuItem;
     }
 }

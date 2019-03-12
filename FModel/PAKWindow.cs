@@ -20,7 +20,7 @@ namespace FModel
     public partial class PAKWindow : Form
     {
         public static ConfigFile conf;
-        private static string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "\\FModel";
+        public static string docPath;
         private static string[] PAKFileAsTXT;
         private static string ItemName;
         private static List<string> afterItems;
@@ -75,6 +75,19 @@ namespace FModel
         {
             Console.ForegroundColor = ConsoleColor.White; //DEFAULT CONSOLE COLOR
             conf = new ConfigFile(); //CREATE CONFIG FILE
+
+            Properties.Settings.Default.ExtractAndSerialize = true; //SERIALIZE BY DEFAULT
+
+            docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "\\FModel";
+            if (string.IsNullOrEmpty(Properties.Settings.Default.ExtractOutput))
+            {
+                Properties.Settings.Default.ExtractOutput = docPath;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                docPath = Properties.Settings.Default.ExtractOutput;
+            }
 
             if (!Directory.Exists(Config.conf.pathToFortnitePAKs))
             {
@@ -621,9 +634,12 @@ namespace FModel
                         AppendText(" is an ", Color.Black);
                         AppendText("asset", Color.SteelBlue, true);
 
-                        await Task.Run(() => {
-                            jwpmProcess("serialize \"" + files.Substring(0, files.LastIndexOf('.')) + "\"");
-                        });
+                        if (Properties.Settings.Default.ExtractAndSerialize == true)
+                        {
+                            await Task.Run(() => {
+                                jwpmProcess("serialize \"" + files.Substring(0, files.LastIndexOf('.')) + "\"");
+                            });
+                        }
                         var filesJSON = Directory.GetFiles(docPath, currentItem + ".json", SearchOption.AllDirectories).FirstOrDefault();
                         if (filesJSON != null)
                         {
@@ -1056,7 +1072,7 @@ namespace FModel
                                             } //NAME
                                             try
                                             {
-                                                g.DrawString(IDParser[iii].Description, new Font("Arial", 9), new SolidBrush(Color.White), new Point(522 / 2, 465), centeredStringLine);
+                                                g.DrawString(IDParser[iii].Description, new Font("Arial", 10), new SolidBrush(Color.White), new Point(522 / 2, 465), centeredStringLine);
                                             }
                                             catch (NullReferenceException)
                                             {
@@ -1067,7 +1083,7 @@ namespace FModel
                                             } //DESCRIPTION
                                             try
                                             {
-                                                g.DrawString(IDParser[iii].ShortDescription, new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 498));
+                                                g.DrawString(IDParser[iii].ShortDescription, new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
                                             }
                                             catch (NullReferenceException)
                                             {
@@ -1078,7 +1094,7 @@ namespace FModel
                                             } //TYPE
                                             try
                                             {
-                                                g.DrawString(IDParser[iii].GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(IDParser[iii].GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 498), rightString);
+                                                g.DrawString(IDParser[iii].GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(IDParser[iii].GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), rightString);
                                             }
                                             catch (NullReferenceException)
                                             {
@@ -1304,7 +1320,7 @@ namespace FModel
             pb.SizeMode = PictureBoxSizeMode.Zoom;
 
             newForm.Size = ItemIconPictureBox.Image.Size;
-            newForm.Icon = Properties.Resources.FNTools_Logo;
+            newForm.Icon = Properties.Resources.FNTools_Logo_Icon;
             newForm.Text = currentItem;
             newForm.StartPosition = FormStartPosition.CenterScreen;
             newForm.Controls.Add(pb);
@@ -1369,11 +1385,37 @@ namespace FModel
 
                 newForm.WindowState = FormWindowState.Maximized;
                 newForm.Size = bmp.Size;
-                newForm.Icon = Properties.Resources.FNTools_Logo;
+                newForm.Icon = Properties.Resources.FNTools_Logo_Icon;
                 newForm.Text = docPath + "\\Merger.png";
                 newForm.StartPosition = FormStartPosition.CenterScreen;
                 newForm.Controls.Add(pb);
                 newForm.Show();
+            }
+        }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if ((Application.OpenForms["OptionsWindow"] as OptionsWindow) != null)
+            {
+                Application.OpenForms["OptionsWindow"].Focus();
+            }
+            else
+            {
+                var optionForm = new OptionsWindow();
+                optionForm.Show();
+            }
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if ((Application.OpenForms["HelpWindow"] as HelpWindow) != null)
+            {
+                Application.OpenForms["HelpWindow"].Focus();
+            }
+            else
+            {
+                var helpForm = new HelpWindow();
+                helpForm.Show();
             }
         }
     }

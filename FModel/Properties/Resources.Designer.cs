@@ -101,11 +101,21 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Icon FNTools_Logo {
+        internal static System.Drawing.Bitmap FNTools_Logo {
             get {
                 object obj = ResourceManager.GetObject("FNTools_Logo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        internal static System.Drawing.Icon FNTools_Logo_Icon {
+            get {
+                object obj = ResourceManager.GetObject("FNTools_Logo_Icon", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

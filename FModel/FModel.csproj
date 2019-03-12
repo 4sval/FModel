@@ -92,6 +92,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
+    <Compile Include="Help.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Help.Designer.cs">
+      <DependentUpon>Help.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Options.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Options.Designer.cs">
+      <DependentUpon>Options.cs</DependentUpon>
+    </Compile>
     <Compile Include="PAKWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,6 +116,12 @@
     <Compile Include="Button\SplitButtonControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="Help.resx">
+      <DependentUpon>Help.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Options.resx">
+      <DependentUpon>Options.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PAKWindow.resx">
       <DependentUpon>PAKWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -133,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FNTools_Logo.ico" />
+    <None Include="Resources\FNTools_Logo.png" />
     <None Include="Resources\BurbankBigCondensed-Bold.otf" />
     <None Include="Resources\T512.png" />
     <None Include="Resources\M512.png" />
