@@ -13,21 +13,15 @@
 ### Prerequisites
 [.NET Framework 4.6.1](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net461)
 ### How does it works
-**1.** Once you start the executable, a `FModel` subfolder will be created in your `Documents` folder as well as a `config.json` file and it'll automatically download the latest version of the modded Fortnite Asset Parser.
+**1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder and it'll automatically download the latest version of the modded Fortnite Asset Parser in this subfolder.
+![](https://i.imgur.com/oaceS8K.gif)
 
-**2.** Open the config file and fill `pathToFortnitePAKs` with the path to your Fortnite .PAK files
-```json
-{
-  "pathToFortnitePAKs": "C:\\Program Files\\Epic Games\\Fortnite\\FortniteGame\\Content\\Paks"
-}
-```
-
-**3.** Restart the executable, select your .PAK file, enter the AES key and click **Load**
+**2.** Restart the executable, select your .PAK file, enter the AES key and click **Load**
   - It will parse all Assets contained in the selected .PAK file with their respective path
   
-**4.** Navigate through the tree to find the Asset you want
+**3.** Navigate through the tree to find the Asset you want
 
-**5.** Clicking on **Extract Asset** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
+**4.** Clicking on **Extract Asset** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
   - Asset is an **_ID_**:
     - Try to create an [Icon](https://i.imgur.com/PStlmUV.png) with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
   - Asset is a **_Texture_**:
@@ -52,7 +46,7 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
 - [ ] Improve speed
 - [x] Multithreading
 - [x] Filter for the items ListBox
-- [ ] More options
+- [ ] More settings
 - [ ] Stop button while extracting
 - [ ] Support for meshes
 - [ ] Support for animations

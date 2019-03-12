@@ -19,7 +19,6 @@ namespace FModel
 {
     public partial class PAKWindow : Form
     {
-        public static ConfigFile conf;
         public static string docPath;
         private static string[] PAKFileAsTXT;
         private static string ItemName;
@@ -73,9 +72,6 @@ namespace FModel
 
         private void PAKWindow_Load(object sender, EventArgs e)
         {
-            Console.ForegroundColor = ConsoleColor.White; //DEFAULT CONSOLE COLOR
-            conf = new ConfigFile(); //CREATE CONFIG FILE
-
             Properties.Settings.Default.ExtractAndSerialize = true; //SERIALIZE BY DEFAULT
 
             docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "\\FModel";
@@ -89,17 +85,18 @@ namespace FModel
                 docPath = Properties.Settings.Default.ExtractOutput;
             }
 
-            if (!Directory.Exists(Config.conf.pathToFortnitePAKs))
+            if (!Directory.Exists(Properties.Settings.Default.FortnitePAKs))
             {
                 AppendText("[PathNotFoundException] ", Color.Red);
-                AppendText(" Please go to ", Color.Black);
-                AppendText(docPath, Color.SteelBlue);
-                AppendText(" and enter your Fortnite .PAK files path in ", Color.Black);
-                AppendText("config.json", Color.SteelBlue, true);
+                AppendText(" Please go to the ", Color.Black);
+                AppendText("Load button drop down menu ", Color.SteelBlue);
+                AppendText(", ", Color.Black);
+                AppendText("click on Options ", Color.SteelBlue);
+                AppendText("and enter your Fortnite .PAK files path", Color.Black, true);
             }
             else
             {
-                IEnumerable<string> yourPAKs = Directory.GetFiles(Config.conf.pathToFortnitePAKs).Where(x => x.EndsWith(".pak"));
+                IEnumerable<string> yourPAKs = Directory.GetFiles(Properties.Settings.Default.FortnitePAKs).Where(x => x.EndsWith(".pak"));
                 for (int i = 0; i < yourPAKs.Count(); i++)
                 {
                     PAKsComboBox.Items.Add(Path.GetFileName(yourPAKs.ElementAt(i)));
@@ -232,10 +229,10 @@ namespace FModel
             currentPAK = PAKsComboBox.SelectedItem.ToString();
             LoadButton.Enabled = false;
             await Task.Run(() => {
-                jwpmProcess("filelist \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + docPath + "\"");
+                jwpmProcess("filelist \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + docPath + "\"");
             });
             LoadButton.Enabled = true;
-            currentGUID = readPAKGuid(Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem);
+            currentGUID = readPAKGuid(Properties.Settings.Default.FortnitePAKs + "\\" + PAKsComboBox.SelectedItem);
 
             if (!File.Exists(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt"))
             {
@@ -615,7 +612,7 @@ namespace FModel
                 if (!File.Exists(files))
                 {
                     await Task.Run(() => {
-                        jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
+                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
                     });
                     files = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                 }
@@ -688,7 +685,7 @@ namespace FModel
                                                     AppendText(IDParser[iii].HeroDefinition, Color.DarkRed, true);
 
                                                     await Task.Run(() => {
-                                                        jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + IDParser[iii].HeroDefinition + "\" \"" + docPath + "\"");
+                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + IDParser[iii].HeroDefinition + "\" \"" + docPath + "\"");
                                                     });
                                                     filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].HeroDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                 }
@@ -729,14 +726,14 @@ namespace FModel
                                                                         if (currentGUID != "0-0-0-0")
                                                                         {
                                                                             await Task.Run(() => {
-                                                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                                             });
                                                                             filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                                         }
                                                                         else
                                                                         {
                                                                             await Task.Run(() => {
-                                                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                                             });
                                                                             filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                                         }
@@ -801,7 +798,7 @@ namespace FModel
                                                     AppendText(IDParser[iii].WeaponDefinition, Color.DarkRed, true);
 
                                                     await Task.Run(() => {
-                                                        jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + IDParser[iii].WeaponDefinition + "\" \"" + docPath + "\"");
+                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + IDParser[iii].WeaponDefinition + "\" \"" + docPath + "\"");
                                                     });
                                                     filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].WeaponDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                 }
@@ -842,14 +839,14 @@ namespace FModel
                                                                         if (currentGUID != "0-0-0-0")
                                                                         {
                                                                             await Task.Run(() => {
-                                                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                                             });
                                                                             filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                                         }
                                                                         else
                                                                         {
                                                                             await Task.Run(() => {
-                                                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                                             });
                                                                             filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                                         }
@@ -918,7 +915,7 @@ namespace FModel
                                                     if (currentGUID != "0-0-0-0") //DYNAMIC PAK
                                                     {
                                                         await Task.Run(() => {
-                                                            jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                         });
                                                         filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                     }
@@ -927,15 +924,15 @@ namespace FModel
                                                         await Task.Run(() => {
                                                             if (IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/2dAssets/"))
                                                             {
-                                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                             }
                                                             else if (IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
                                                             {
-                                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                             }
                                                             else
                                                             {
-                                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                             }
                                                         });
                                                         filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -988,7 +985,7 @@ namespace FModel
                                                     if (currentGUID != "0-0-0-0")
                                                     {
                                                         await Task.Run(() => {
-                                                            jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                         });
                                                         filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                     }
@@ -997,15 +994,15 @@ namespace FModel
                                                         await Task.Run(() => {
                                                             if (IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/2dAssets/"))
                                                             {
-                                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                             }
                                                             else if (IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
                                                             {
-                                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                             }
                                                             else
                                                             {
-                                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                             }
                                                         });
                                                         filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -1144,7 +1141,7 @@ namespace FModel
                                         if (!File.Exists(filesPath))
                                         {
                                             await Task.Run(() => {
-                                                jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
+                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
                                             });
                                             filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                                         }
@@ -1219,7 +1216,7 @@ namespace FModel
                                             if (!File.Exists(filesPath))
                                             {
                                                 await Task.Run(() => {
-                                                    jwpmProcess("extract \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
+                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
                                                 });
                                                 filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".uexp", SearchOption.AllDirectories).FirstOrDefault();
                                             }
@@ -1329,67 +1326,74 @@ namespace FModel
 
         private void mergeGeneratedImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog theDialog = new OpenFileDialog();
-            theDialog.Multiselect = true;
-            theDialog.InitialDirectory = docPath + "\\Generated Icons\\";
-            theDialog.Title = "Choose your images";
-            theDialog.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*";
-
-            if (theDialog.ShowDialog() == DialogResult.OK)
+            if (string.IsNullOrEmpty(Properties.Settings.Default.mergerFileName))
             {
-                List<Image> selectedImages = new List<Image>();
-                foreach (var files in theDialog.FileNames)
+                MessageBox.Show("Please, set a name to your file before trying to merge images\n\nSteps:\n\t- Load button drop down menu\n\t- Options", "FModel Merger File Name Missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                OpenFileDialog theDialog = new OpenFileDialog();
+                theDialog.Multiselect = true;
+                theDialog.InitialDirectory = docPath + "\\Generated Icons\\";
+                theDialog.Title = "Choose your images";
+                theDialog.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*";
+
+                if (theDialog.ShowDialog() == DialogResult.OK)
                 {
-                    selectedImages.Add(Image.FromFile(files));
-                }
-
-                var numperrow = 7;
-                var w = 530 * numperrow;
-                int h = int.Parse(Math.Ceiling(double.Parse(selectedImages.Count.ToString()) / numperrow).ToString()) * 530;
-                Bitmap bmp = new Bitmap(w - 8, h - 8);
-
-                if (selectedImages.Count * 530 < 530 * numperrow)
-                {
-                    w = selectedImages.Count * 530;
-                }
-
-                var num = 1;
-                var cur_w = 0;
-                var cur_h = 0;
-
-                for (int i = 0; i < selectedImages.Count; i++)
-                {
-                    using (Graphics g = Graphics.FromImage(bmp))
+                    List<Image> selectedImages = new List<Image>();
+                    foreach (var files in theDialog.FileNames)
                     {
-                        g.DrawImage(selectedImages[i], new PointF(cur_w, cur_h));
-                        if (num % numperrow == 0)
+                        selectedImages.Add(Image.FromFile(files));
+                    }
+
+                    var numperrow = 7;
+                    var w = 530 * numperrow;
+                    int h = int.Parse(Math.Ceiling(double.Parse(selectedImages.Count.ToString()) / numperrow).ToString()) * 530;
+                    Bitmap bmp = new Bitmap(w - 8, h - 8);
+
+                    if (selectedImages.Count * 530 < 530 * numperrow)
+                    {
+                        w = selectedImages.Count * 530;
+                    }
+
+                    var num = 1;
+                    var cur_w = 0;
+                    var cur_h = 0;
+
+                    for (int i = 0; i < selectedImages.Count; i++)
+                    {
+                        using (Graphics g = Graphics.FromImage(bmp))
                         {
-                            cur_w = 0;
-                            cur_h += 530;
-                            num += 1;
-                        }
-                        else
-                        {
-                            cur_w += 530;
-                            num += 1;
+                            g.DrawImage(selectedImages[i], new PointF(cur_w, cur_h));
+                            if (num % numperrow == 0)
+                            {
+                                cur_w = 0;
+                                cur_h += 530;
+                                num += 1;
+                            }
+                            else
+                            {
+                                cur_w += 530;
+                                num += 1;
+                            }
                         }
                     }
+                    bmp.Save(docPath + "\\" + Properties.Settings.Default.mergerFileName + ".png", ImageFormat.Png);
+                    var newForm = new Form();
+
+                    PictureBox pb = new PictureBox();
+                    pb.Dock = DockStyle.Fill;
+                    pb.Image = bmp;
+                    pb.SizeMode = PictureBoxSizeMode.Zoom;
+
+                    newForm.WindowState = FormWindowState.Maximized;
+                    newForm.Size = bmp.Size;
+                    newForm.Icon = Properties.Resources.FNTools_Logo_Icon;
+                    newForm.Text = docPath + "\\" + Properties.Settings.Default.mergerFileName + ".png";
+                    newForm.StartPosition = FormStartPosition.CenterScreen;
+                    newForm.Controls.Add(pb);
+                    newForm.Show();
                 }
-                bmp.Save(docPath + "\\Merger.png");
-                var newForm = new Form();
-
-                PictureBox pb = new PictureBox();
-                pb.Dock = DockStyle.Fill;
-                pb.Image = bmp;
-                pb.SizeMode = PictureBoxSizeMode.Zoom;
-
-                newForm.WindowState = FormWindowState.Maximized;
-                newForm.Size = bmp.Size;
-                newForm.Icon = Properties.Resources.FNTools_Logo_Icon;
-                newForm.Text = docPath + "\\Merger.png";
-                newForm.StartPosition = FormStartPosition.CenterScreen;
-                newForm.Controls.Add(pb);
-                newForm.Show();
             }
         }
 
