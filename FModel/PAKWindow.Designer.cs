@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PAKWindow));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.PAKsLoad = new System.Windows.Forms.Button();
@@ -38,17 +39,22 @@
             this.PAKTreeView = new System.Windows.Forms.TreeView();
             this.ItemIconPictureBox = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.SaveImageCheckBox = new System.Windows.Forms.CheckBox();
-            this.SaveImageButton = new System.Windows.Forms.Button();
-            this.LoadDataCheckBox = new System.Windows.Forms.CheckBox();
+            this.SaveImageButton = new FModel.SplitButton();
+            this.ImageContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.OpenImageTS = new System.Windows.Forms.ToolStripMenuItem();
+            this.ExtractAssetButton = new FModel.SplitButton();
+            this.ExtractAsset = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.LoadDataTS = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveImageTS = new System.Windows.Forms.ToolStripMenuItem();
             this.ConsoleRichTextBox = new System.Windows.Forms.RichTextBox();
-            this.ExtractButton = new System.Windows.Forms.Button();
             this.ItemRichTextBox = new System.Windows.Forms.RichTextBox();
             this.FilterLabel = new System.Windows.Forms.Label();
             this.FilterTextBox = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).BeginInit();
             this.groupBox2.SuspendLayout();
+            this.ImageContext.SuspendLayout();
+            this.ExtractAsset.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -130,11 +136,9 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.SaveImageCheckBox);
             this.groupBox2.Controls.Add(this.SaveImageButton);
-            this.groupBox2.Controls.Add(this.LoadDataCheckBox);
+            this.groupBox2.Controls.Add(this.ExtractAssetButton);
             this.groupBox2.Controls.Add(this.ConsoleRichTextBox);
-            this.groupBox2.Controls.Add(this.ExtractButton);
             this.groupBox2.Controls.Add(this.ItemRichTextBox);
             this.groupBox2.Controls.Add(this.ItemIconPictureBox);
             this.groupBox2.Location = new System.Drawing.Point(426, 12);
@@ -143,37 +147,71 @@
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             // 
-            // SaveImageCheckBox
-            // 
-            this.SaveImageCheckBox.AutoSize = true;
-            this.SaveImageCheckBox.Location = new System.Drawing.Point(703, 639);
-            this.SaveImageCheckBox.Name = "SaveImageCheckBox";
-            this.SaveImageCheckBox.Size = new System.Drawing.Size(108, 17);
-            this.SaveImageCheckBox.TabIndex = 9;
-            this.SaveImageCheckBox.Text = "Auto Save Image";
-            this.SaveImageCheckBox.UseVisualStyleBackColor = true;
-            this.SaveImageCheckBox.CheckedChanged += new System.EventHandler(this.SaveImageCheckBox_CheckedChanged);
-            // 
             // SaveImageButton
             // 
-            this.SaveImageButton.Location = new System.Drawing.Point(816, 635);
+            this.SaveImageButton.Location = new System.Drawing.Point(810, 635);
+            this.SaveImageButton.Menu = this.ImageContext;
             this.SaveImageButton.Name = "SaveImageButton";
-            this.SaveImageButton.Size = new System.Drawing.Size(106, 23);
-            this.SaveImageButton.TabIndex = 8;
-            this.SaveImageButton.Text = "Save Image";
+            this.SaveImageButton.Size = new System.Drawing.Size(112, 23);
+            this.SaveImageButton.TabIndex = 11;
+            this.SaveImageButton.Text = "    Save Image";
+            this.SaveImageButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.SaveImageButton.UseVisualStyleBackColor = true;
             this.SaveImageButton.Click += new System.EventHandler(this.SaveImageButton_Click);
             // 
-            // LoadDataCheckBox
+            // ImageContext
             // 
-            this.LoadDataCheckBox.AutoSize = true;
-            this.LoadDataCheckBox.Location = new System.Drawing.Point(703, 668);
-            this.LoadDataCheckBox.Name = "LoadDataCheckBox";
-            this.LoadDataCheckBox.Size = new System.Drawing.Size(101, 17);
-            this.LoadDataCheckBox.TabIndex = 7;
-            this.LoadDataCheckBox.Text = "Auto Load Data";
-            this.LoadDataCheckBox.UseVisualStyleBackColor = true;
-            this.LoadDataCheckBox.CheckedChanged += new System.EventHandler(this.LoadImageCheckBox_CheckedChanged);
+            this.ImageContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.OpenImageTS});
+            this.ImageContext.Name = "ImageContext";
+            this.ImageContext.Size = new System.Drawing.Size(140, 26);
+            // 
+            // OpenImageTS
+            // 
+            this.OpenImageTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.OpenImageTS.Name = "OpenImageTS";
+            this.OpenImageTS.Size = new System.Drawing.Size(139, 22);
+            this.OpenImageTS.Text = "Open Image";
+            this.OpenImageTS.Click += new System.EventHandler(this.OpenImageTS_Click);
+            // 
+            // ExtractAssetButton
+            // 
+            this.ExtractAssetButton.Location = new System.Drawing.Point(810, 664);
+            this.ExtractAssetButton.Menu = this.ExtractAsset;
+            this.ExtractAssetButton.Name = "ExtractAssetButton";
+            this.ExtractAssetButton.Size = new System.Drawing.Size(112, 23);
+            this.ExtractAssetButton.TabIndex = 10;
+            this.ExtractAssetButton.Text = "   Extract Asset";
+            this.ExtractAssetButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ExtractAssetButton.UseVisualStyleBackColor = true;
+            this.ExtractAssetButton.Click += new System.EventHandler(this.ExtractAssetButton_Click);
+            // 
+            // ExtractAsset
+            // 
+            this.ExtractAsset.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.LoadDataTS,
+            this.SaveImageTS});
+            this.ExtractAsset.Name = "ExtractAsset";
+            this.ExtractAsset.Size = new System.Drawing.Size(223, 48);
+            // 
+            // LoadDataTS
+            // 
+            this.LoadDataTS.Checked = true;
+            this.LoadDataTS.CheckOnClick = true;
+            this.LoadDataTS.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.LoadDataTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.LoadDataTS.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LoadDataTS.Name = "LoadDataTS";
+            this.LoadDataTS.Size = new System.Drawing.Size(222, 22);
+            this.LoadDataTS.Text = "Load Data After Serialization";
+            // 
+            // SaveImageTS
+            // 
+            this.SaveImageTS.CheckOnClick = true;
+            this.SaveImageTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.SaveImageTS.Name = "SaveImageTS";
+            this.SaveImageTS.Size = new System.Drawing.Size(222, 22);
+            this.SaveImageTS.Text = "Save Generated Image";
             // 
             // ConsoleRichTextBox
             // 
@@ -184,16 +222,6 @@
             this.ConsoleRichTextBox.Size = new System.Drawing.Size(922, 229);
             this.ConsoleRichTextBox.TabIndex = 6;
             this.ConsoleRichTextBox.Text = "";
-            // 
-            // ExtractButton
-            // 
-            this.ExtractButton.Location = new System.Drawing.Point(816, 664);
-            this.ExtractButton.Name = "ExtractButton";
-            this.ExtractButton.Size = new System.Drawing.Size(106, 23);
-            this.ExtractButton.TabIndex = 5;
-            this.ExtractButton.Text = "Extract";
-            this.ExtractButton.UseVisualStyleBackColor = true;
-            this.ExtractButton.Click += new System.EventHandler(this.ExtractButton_Click);
             // 
             // ItemRichTextBox
             // 
@@ -246,7 +274,8 @@
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).EndInit();
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.ImageContext.ResumeLayout(false);
+            this.ExtractAsset.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -263,14 +292,17 @@
         private System.Windows.Forms.TreeView PAKTreeView;
         private System.Windows.Forms.PictureBox ItemIconPictureBox;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button ExtractButton;
         private System.Windows.Forms.RichTextBox ItemRichTextBox;
         private System.Windows.Forms.RichTextBox ConsoleRichTextBox;
-        private System.Windows.Forms.CheckBox LoadDataCheckBox;
-        private System.Windows.Forms.CheckBox SaveImageCheckBox;
-        private System.Windows.Forms.Button SaveImageButton;
         private System.Windows.Forms.Label FilterLabel;
         private System.Windows.Forms.TextBox FilterTextBox;
+        private SplitButton ExtractAssetButton;
+        private System.Windows.Forms.ContextMenuStrip ExtractAsset;
+        private System.Windows.Forms.ToolStripMenuItem LoadDataTS;
+        private System.Windows.Forms.ContextMenuStrip ImageContext;
+        private System.Windows.Forms.ToolStripMenuItem OpenImageTS;
+        private SplitButton SaveImageButton;
+        private System.Windows.Forms.ToolStripMenuItem SaveImageTS;
     }
 }
 

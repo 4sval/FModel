@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
@@ -134,9 +136,8 @@ namespace FModel
                 AppendText("updated successfully", Color.Black, true);
             }
 
-            ExtractButton.Enabled = false;
+            ExtractAssetButton.Enabled = false;
             SaveImageButton.Enabled = false;
-            SaveImageCheckBox.Enabled = false;
 
             fontLength = Properties.Resources.BurbankBigCondensed_Bold.Length;
             fontdata = Properties.Resources.BurbankBigCondensed_Bold;
@@ -295,13 +296,13 @@ namespace FModel
                 ItemsListBox.Items.Add(afterItems[i]);
             }
 
-            ExtractButton.Enabled = ItemsListBox.SelectedIndex >= 0;
+            ExtractAssetButton.Enabled = ItemsListBox.SelectedIndex >= 0;
         }
         private void ItemsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ItemsListBox.SelectedItem != null && SelectedArray == null)
             {
-                ExtractButton.Enabled = true;
+                ExtractAssetButton.Enabled = true;
             }
         } //NO EXTRACT BUTTON IF NOTHING SELECTED
 
@@ -569,7 +570,25 @@ namespace FModel
             }
         }
 
-        private async void ExtractButton_Click(object sender, EventArgs e)
+        private void SaveImageButton_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveTheDialog = new SaveFileDialog();
+            saveTheDialog.Title = "Save Icon";
+            saveTheDialog.Filter = "PNG Files (*.png)|*.png";
+            saveTheDialog.InitialDirectory = docPath + "\\Generated Icons\\";
+            saveTheDialog.FileName = ItemName;
+            if (saveTheDialog.ShowDialog() == DialogResult.OK)
+            {
+                ItemIconPictureBox.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
+                AppendText("✔ ", Color.Green);
+                AppendText(ItemName, Color.DarkRed);
+                AppendText(" successfully saved to ", Color.Black);
+                AppendText(saveTheDialog.FileName, Color.SteelBlue, true);
+            }
+        }
+
+        public static string currentItem;
+        private async void ExtractAssetButton_Click(object sender, EventArgs e)
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -590,11 +609,11 @@ namespace FModel
                 SelectedArray[i] = ItemsListBox.SelectedItems[i].ToString();
             }
 
-            ExtractButton.Enabled = false;
+            ExtractAssetButton.Enabled = false;
             SaveImageButton.Enabled = false;
             for (int i = 0; i < SelectedArray.Length; i++)
             {
-                string currentItem = SelectedArray[i].ToString();
+                currentItem = SelectedArray[i].ToString();
 
                 var files = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                 if (!File.Exists(files))
@@ -634,7 +653,7 @@ namespace FModel
 
                             var IDParser = ItemsIdParser.FromJson(json);
 
-                            if (LoadDataCheckBox.Checked == true)
+                            if (((ToolStripMenuItem)ExtractAsset.Items[0]).Checked == true)
                             {
                                 AppendText("Auto loading data set to ", Color.Black);
                                 AppendText("True", Color.Green, true);
@@ -654,6 +673,7 @@ namespace FModel
                                             ItemName = IDParser[iii].DisplayName;
                                             Bitmap bmp = new Bitmap(522, 522);
                                             Graphics g = Graphics.FromImage(bmp);
+                                            g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 
                                             getItemRarity(IDParser[iii], g);
 
@@ -1093,7 +1113,7 @@ namespace FModel
                                             } //COSMETIC SOURCE
 
                                             ItemIconPictureBox.Image = bmp;
-                                            if (SaveImageCheckBox.Checked == true)
+                                            if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
                                             {
                                                 AppendText("Auto saving icon set to ", Color.Black);
                                                 AppendText("True", Color.Green, true);
@@ -1171,7 +1191,7 @@ namespace FModel
                                             ItemIconPictureBox.Image = Properties.Resources.unknown512;
                                         }
 
-                                        if (SaveImageCheckBox.Checked == true)
+                                        if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
                                         {
                                             AppendText("Auto saving icon set to ", Color.Black);
                                             AppendText("True", Color.Green, true);
@@ -1265,7 +1285,7 @@ namespace FModel
                     AppendText(currentItem, Color.SteelBlue, true);
                 }
             }
-            ExtractButton.Enabled = true;
+            ExtractAssetButton.Enabled = true;
             SaveImageButton.Enabled = true;
             SelectedArray = null;
 
@@ -1275,45 +1295,79 @@ namespace FModel
             AppendText("\nDone\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tTime elapsed: " + elapsedTime, Color.Green, true);
         }
 
-        private void LoadImageCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void OpenImageTS_Click(object sender, EventArgs e)
         {
-            if (LoadDataCheckBox.Checked == true)
-            {
-                SaveImageButton.Enabled = true;
-                SaveImageCheckBox.Enabled = true;
-            }
-            if (LoadDataCheckBox.Checked == false)
-            {
-                SaveImageButton.Enabled = false;
-                SaveImageCheckBox.Enabled = false;
-            }
+            var newForm = new Form();
+
+            PictureBox pb = new PictureBox();
+            pb.Dock = DockStyle.Fill;
+            pb.Image = ItemIconPictureBox.Image;
+            pb.SizeMode = PictureBoxSizeMode.Zoom;
+
+            newForm.Size = ItemIconPictureBox.Image.Size;
+            newForm.Icon = FModel.Properties.Resources.FNTools_Logo;
+            newForm.Text = currentItem;
+            newForm.StartPosition = FormStartPosition.CenterScreen;
+            newForm.Controls.Add(pb);
+            newForm.Show();
         }
-        private void SaveImageCheckBox_CheckedChanged(object sender, EventArgs e)
+    }
+
+    public class SplitButton : Button
+    {
+        [DefaultValue(null), Browsable(true),
+        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public ContextMenuStrip Menu { get; set; }
+
+        [DefaultValue(20), Browsable(true),
+        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public int SplitWidth { get; set; }
+
+        public SplitButton()
         {
-            if (SaveImageCheckBox.Checked == true)
+            SplitWidth = 20;
+        }
+
+        protected override void OnMouseDown(MouseEventArgs mevent)
+        {
+            var splitRect = new Rectangle(this.Width - this.SplitWidth, 0, this.SplitWidth, this.Height);
+
+            // Figure out if the button click was on the button itself or the menu split
+            if (Menu != null &&
+                mevent.Button == MouseButtons.Left &&
+                splitRect.Contains(mevent.Location))
             {
-                SaveImageButton.Enabled = false;
+                Menu.Show(this, 0, this.Height);    // Shows menu under button
+                                                    //Menu.Show(this, mevent.Location); // Shows menu at click location
             }
-            if (SaveImageCheckBox.Checked == false)
+            else
             {
-                SaveImageButton.Enabled = true;
+                base.OnMouseDown(mevent);
             }
         }
 
-        private void SaveImageButton_Click(object sender, EventArgs e)
+        protected override void OnPaint(PaintEventArgs pevent)
         {
-            SaveFileDialog saveTheDialog = new SaveFileDialog();
-            saveTheDialog.Title = "Save Icon";
-            saveTheDialog.Filter = "PNG Files (*.png)|*.png";
-            saveTheDialog.InitialDirectory = docPath + "\\Generated Icons\\";
-            saveTheDialog.FileName = ItemName;
-            if (saveTheDialog.ShowDialog() == DialogResult.OK)
+            base.OnPaint(pevent);
+
+            if (this.Menu != null && this.SplitWidth > 0)
             {
-                ItemIconPictureBox.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
-                AppendText("✔ ", Color.Green);
-                AppendText(ItemName, Color.DarkRed);
-                AppendText(" successfully saved to ", Color.Black);
-                AppendText(saveTheDialog.FileName, Color.SteelBlue, true);
+                // Draw the arrow glyph on the right side of the button
+                int arrowX = ClientRectangle.Width - 14;
+                int arrowY = ClientRectangle.Height / 2 - 1;
+
+                var arrowBrush = Enabled ? SystemBrushes.ControlText : SystemBrushes.ButtonShadow;
+                var arrows = new[] { new Point(arrowX, arrowY), new Point(arrowX + 7, arrowY), new Point(arrowX + 3, arrowY + 4) };
+                pevent.Graphics.FillPolygon(arrowBrush, arrows);
+
+                // Draw a dashed separator on the left of the arrow
+                int lineX = ClientRectangle.Width - this.SplitWidth;
+                int lineYFrom = arrowY - 4;
+                int lineYTo = arrowY + 8;
+                using (var separatorPen = new Pen(Brushes.DarkGray) { DashStyle = DashStyle.Dot })
+                {
+                    pevent.Graphics.DrawLine(separatorPen, lineX, lineYFrom, lineX, lineYTo);
+                }
             }
         }
     }

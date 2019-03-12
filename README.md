@@ -27,7 +27,7 @@
   
 **4.** Navigate through the tree to find the Asset you want
 
-**5.** Clicking on **Extract** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
+**5.** Clicking on **Extract Asset** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
   - Asset is an **_ID_**:
     - Try to create an [Icon](https://i.imgur.com/CkiU3p5.png) with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
   - Asset is a **_Texture_**:
