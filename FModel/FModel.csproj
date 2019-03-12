@@ -101,6 +101,9 @@
     <Compile Include="Parser\ItemsIDParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Button\SplitButtonControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="PAKWindow.resx">
       <DependentUpon>PAKWindow.cs</DependentUpon>
     </EmbeddedResource>

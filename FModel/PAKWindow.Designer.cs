@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PAKWindow));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.PAKsLoad = new System.Windows.Forms.Button();
             this.AESKeyLabel = new System.Windows.Forms.Label();
             this.AESKeyTextBox = new System.Windows.Forms.TextBox();
             this.PAKsComboBox = new System.Windows.Forms.ComboBox();
@@ -50,16 +49,20 @@
             this.ItemRichTextBox = new System.Windows.Forms.RichTextBox();
             this.FilterLabel = new System.Windows.Forms.Label();
             this.FilterTextBox = new System.Windows.Forms.TextBox();
+            this.LoadButton = new FModel.SplitButton();
+            this.LoadContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mergeGeneratedImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.ImageContext.SuspendLayout();
             this.ExtractAsset.SuspendLayout();
+            this.LoadContext.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.PAKsLoad);
+            this.groupBox1.Controls.Add(this.LoadButton);
             this.groupBox1.Controls.Add(this.AESKeyLabel);
             this.groupBox1.Controls.Add(this.AESKeyTextBox);
             this.groupBox1.Controls.Add(this.PAKsComboBox);
@@ -69,16 +72,6 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "PAK";
-            // 
-            // PAKsLoad
-            // 
-            this.PAKsLoad.Location = new System.Drawing.Point(296, 18);
-            this.PAKsLoad.Name = "PAKsLoad";
-            this.PAKsLoad.Size = new System.Drawing.Size(106, 23);
-            this.PAKsLoad.TabIndex = 3;
-            this.PAKsLoad.Text = "Load";
-            this.PAKsLoad.UseVisualStyleBackColor = true;
-            this.PAKsLoad.Click += new System.EventHandler(this.PAKsLoad_Click);
             // 
             // AESKeyLabel
             // 
@@ -161,16 +154,17 @@
             // 
             // ImageContext
             // 
+            this.ImageContext.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.ImageContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OpenImageTS});
             this.ImageContext.Name = "ImageContext";
-            this.ImageContext.Size = new System.Drawing.Size(140, 26);
+            this.ImageContext.Size = new System.Drawing.Size(155, 28);
             // 
             // OpenImageTS
             // 
             this.OpenImageTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.OpenImageTS.Name = "OpenImageTS";
-            this.OpenImageTS.Size = new System.Drawing.Size(139, 22);
+            this.OpenImageTS.Size = new System.Drawing.Size(154, 24);
             this.OpenImageTS.Text = "Open Image";
             this.OpenImageTS.Click += new System.EventHandler(this.OpenImageTS_Click);
             // 
@@ -188,11 +182,12 @@
             // 
             // ExtractAsset
             // 
+            this.ExtractAsset.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.ExtractAsset.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.LoadDataTS,
             this.SaveImageTS});
             this.ExtractAsset.Name = "ExtractAsset";
-            this.ExtractAsset.Size = new System.Drawing.Size(223, 48);
+            this.ExtractAsset.Size = new System.Drawing.Size(252, 52);
             // 
             // LoadDataTS
             // 
@@ -202,7 +197,7 @@
             this.LoadDataTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.LoadDataTS.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.LoadDataTS.Name = "LoadDataTS";
-            this.LoadDataTS.Size = new System.Drawing.Size(222, 22);
+            this.LoadDataTS.Size = new System.Drawing.Size(251, 24);
             this.LoadDataTS.Text = "Load Data After Serialization";
             // 
             // SaveImageTS
@@ -210,7 +205,7 @@
             this.SaveImageTS.CheckOnClick = true;
             this.SaveImageTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.SaveImageTS.Name = "SaveImageTS";
-            this.SaveImageTS.Size = new System.Drawing.Size(222, 22);
+            this.SaveImageTS.Size = new System.Drawing.Size(251, 24);
             this.SaveImageTS.Text = "Save Generated Image";
             // 
             // ConsoleRichTextBox
@@ -251,6 +246,33 @@
             this.FilterTextBox.TabIndex = 5;
             this.FilterTextBox.TextChanged += new System.EventHandler(this.FilterTextBox_TextChanged);
             // 
+            // LoadButton
+            // 
+            this.LoadButton.Location = new System.Drawing.Point(296, 18);
+            this.LoadButton.Menu = this.LoadContext;
+            this.LoadButton.Name = "LoadButton";
+            this.LoadButton.Size = new System.Drawing.Size(106, 23);
+            this.LoadButton.TabIndex = 12;
+            this.LoadButton.Text = "         Load";
+            this.LoadButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LoadButton.UseVisualStyleBackColor = true;
+            this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
+            // 
+            // LoadContext
+            // 
+            this.LoadContext.ImageScalingSize = new System.Drawing.Size(18, 18);
+            this.LoadContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mergeGeneratedImagesToolStripMenuItem});
+            this.LoadContext.Name = "LoadContext";
+            this.LoadContext.Size = new System.Drawing.Size(235, 28);
+            // 
+            // mergeGeneratedImagesToolStripMenuItem
+            // 
+            this.mergeGeneratedImagesToolStripMenuItem.Name = "mergeGeneratedImagesToolStripMenuItem";
+            this.mergeGeneratedImagesToolStripMenuItem.Size = new System.Drawing.Size(234, 24);
+            this.mergeGeneratedImagesToolStripMenuItem.Text = "Merge Generated Images";
+            this.mergeGeneratedImagesToolStripMenuItem.Click += new System.EventHandler(this.mergeGeneratedImagesToolStripMenuItem_Click);
+            // 
             // PAKWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -276,6 +298,7 @@
             this.groupBox2.ResumeLayout(false);
             this.ImageContext.ResumeLayout(false);
             this.ExtractAsset.ResumeLayout(false);
+            this.LoadContext.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -284,7 +307,6 @@
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button PAKsLoad;
         private System.Windows.Forms.Label AESKeyLabel;
         private System.Windows.Forms.TextBox AESKeyTextBox;
         private System.Windows.Forms.ComboBox PAKsComboBox;
@@ -303,6 +325,9 @@
         private System.Windows.Forms.ToolStripMenuItem OpenImageTS;
         private SplitButton SaveImageButton;
         private System.Windows.Forms.ToolStripMenuItem SaveImageTS;
+        private SplitButton LoadButton;
+        private System.Windows.Forms.ContextMenuStrip LoadContext;
+        private System.Windows.Forms.ToolStripMenuItem mergeGeneratedImagesToolStripMenuItem;
     }
 }
 

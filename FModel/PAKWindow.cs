@@ -210,18 +210,18 @@ namespace FModel
 
         private static string currentPAK;
         private static string currentGUID;
-        private async void PAKsLoad_Click(object sender, EventArgs e)
+        private async void LoadButton_Click(object sender, EventArgs e)
         {
             PAKTreeView.Nodes.Clear();
             ItemsListBox.Items.Clear();
             File.WriteAllText("key.txt", AESKeyTextBox.Text.Substring(2));
 
             currentPAK = PAKsComboBox.SelectedItem.ToString();
-            PAKsLoad.Enabled = false;
+            LoadButton.Enabled = false;
             await Task.Run(() => {
                 jwpmProcess("filelist \"" + Config.conf.pathToFortnitePAKs + "\\" + currentPAK + "\" \"" + docPath + "\"");
             });
-            PAKsLoad.Enabled = true;
+            LoadButton.Enabled = true;
             currentGUID = readPAKGuid(Config.conf.pathToFortnitePAKs + "\\" + PAKsComboBox.SelectedItem);
 
             if (!File.Exists(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt"))
@@ -461,10 +461,6 @@ namespace FModel
                     byte[] buffer = new byte[srcUBULK.Length];
                     using (FileStream fs1 = new FileStream(Path.GetDirectoryName(file) + "\\" + isUBULKFound.ToString(), FileMode.Open, FileAccess.ReadWrite))
                     {
-                        AppendText("✔ ", Color.Green);
-                        AppendText("Writing ", Color.Black);
-                        AppendText("UBULK Data", Color.DarkRed, true);
-
                         fs1.Read(buffer, 0, buffer.Length);
 
                         FileStream fs2 = new FileStream(Path.GetFileNameWithoutExtension(file) + ".temp", FileMode.Open, FileAccess.ReadWrite);
@@ -472,6 +468,10 @@ namespace FModel
                         fs2.Write(buffer, 0, buffer.Length);
                         fs2.Close();
                         fs1.Close();
+
+                        AppendText("✔ ", Color.Green);
+                        AppendText("Writing ", Color.Black);
+                        AppendText("UBULK Data", Color.DarkRed, true);
                     }
 
                     byte[] srcFinal = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp");
@@ -570,23 +570,6 @@ namespace FModel
             }
         }
 
-        private void SaveImageButton_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog saveTheDialog = new SaveFileDialog();
-            saveTheDialog.Title = "Save Icon";
-            saveTheDialog.Filter = "PNG Files (*.png)|*.png";
-            saveTheDialog.InitialDirectory = docPath + "\\Generated Icons\\";
-            saveTheDialog.FileName = ItemName;
-            if (saveTheDialog.ShowDialog() == DialogResult.OK)
-            {
-                ItemIconPictureBox.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
-                AppendText("✔ ", Color.Green);
-                AppendText(ItemName, Color.DarkRed);
-                AppendText(" successfully saved to ", Color.Black);
-                AppendText(saveTheDialog.FileName, Color.SteelBlue, true);
-            }
-        }
-
         public static string currentItem;
         private async void ExtractAssetButton_Click(object sender, EventArgs e)
         {
@@ -673,7 +656,7 @@ namespace FModel
                                             ItemName = IDParser[iii].DisplayName;
                                             Bitmap bmp = new Bitmap(522, 522);
                                             Graphics g = Graphics.FromImage(bmp);
-                                            g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                                            g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
                                             getItemRarity(IDParser[iii], g);
 
@@ -1062,7 +1045,7 @@ namespace FModel
 
                                             try
                                             {
-                                                g.DrawString(ItemName, new Font(pfc.Families[0], 40), new SolidBrush(Color.White), new Point(522 / 2, 390), centeredString);
+                                                g.DrawString(ItemName, new Font(pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), centeredString);
                                             }
                                             catch (NullReferenceException)
                                             {
@@ -1073,7 +1056,7 @@ namespace FModel
                                             } //NAME
                                             try
                                             {
-                                                g.DrawString(IDParser[iii].Description, new Font("Arial", 11), new SolidBrush(Color.White), new Point(522 / 2, 465), centeredStringLine);
+                                                g.DrawString(IDParser[iii].Description, new Font("Arial", 9), new SolidBrush(Color.White), new Point(522 / 2, 465), centeredStringLine);
                                             }
                                             catch (NullReferenceException)
                                             {
@@ -1084,7 +1067,7 @@ namespace FModel
                                             } //DESCRIPTION
                                             try
                                             {
-                                                g.DrawString(IDParser[iii].ShortDescription, new Font(pfc.Families[0], 15), new SolidBrush(Color.White), new Point(5, 498));
+                                                g.DrawString(IDParser[iii].ShortDescription, new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 498));
                                             }
                                             catch (NullReferenceException)
                                             {
@@ -1095,7 +1078,7 @@ namespace FModel
                                             } //TYPE
                                             try
                                             {
-                                                g.DrawString(IDParser[iii].GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(IDParser[iii].GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(pfc.Families[0], 15), new SolidBrush(Color.White), new Point(522 - 5, 498), rightString);
+                                                g.DrawString(IDParser[iii].GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(IDParser[iii].GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 498), rightString);
                                             }
                                             catch (NullReferenceException)
                                             {
@@ -1295,6 +1278,22 @@ namespace FModel
             AppendText("\nDone\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tTime elapsed: " + elapsedTime, Color.Green, true);
         }
 
+        private void SaveImageButton_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveTheDialog = new SaveFileDialog();
+            saveTheDialog.Title = "Save Icon";
+            saveTheDialog.Filter = "PNG Files (*.png)|*.png";
+            saveTheDialog.InitialDirectory = docPath + "\\Generated Icons\\";
+            saveTheDialog.FileName = ItemName;
+            if (saveTheDialog.ShowDialog() == DialogResult.OK)
+            {
+                ItemIconPictureBox.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
+                AppendText("✔ ", Color.Green);
+                AppendText(ItemName, Color.DarkRed);
+                AppendText(" successfully saved to ", Color.Black);
+                AppendText(saveTheDialog.FileName, Color.SteelBlue, true);
+            }
+        }
         private void OpenImageTS_Click(object sender, EventArgs e)
         {
             var newForm = new Form();
@@ -1305,69 +1304,76 @@ namespace FModel
             pb.SizeMode = PictureBoxSizeMode.Zoom;
 
             newForm.Size = ItemIconPictureBox.Image.Size;
-            newForm.Icon = FModel.Properties.Resources.FNTools_Logo;
+            newForm.Icon = Properties.Resources.FNTools_Logo;
             newForm.Text = currentItem;
             newForm.StartPosition = FormStartPosition.CenterScreen;
             newForm.Controls.Add(pb);
             newForm.Show();
         }
-    }
 
-    public class SplitButton : Button
-    {
-        [DefaultValue(null), Browsable(true),
-        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-        public ContextMenuStrip Menu { get; set; }
-
-        [DefaultValue(20), Browsable(true),
-        DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-        public int SplitWidth { get; set; }
-
-        public SplitButton()
+        private void mergeGeneratedImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SplitWidth = 20;
-        }
+            OpenFileDialog theDialog = new OpenFileDialog();
+            theDialog.Multiselect = true;
+            theDialog.InitialDirectory = docPath + "\\Generated Icons\\";
+            theDialog.Title = "Choose your images";
+            theDialog.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*";
 
-        protected override void OnMouseDown(MouseEventArgs mevent)
-        {
-            var splitRect = new Rectangle(this.Width - this.SplitWidth, 0, this.SplitWidth, this.Height);
-
-            // Figure out if the button click was on the button itself or the menu split
-            if (Menu != null &&
-                mevent.Button == MouseButtons.Left &&
-                splitRect.Contains(mevent.Location))
+            if (theDialog.ShowDialog() == DialogResult.OK)
             {
-                Menu.Show(this, 0, this.Height);    // Shows menu under button
-                                                    //Menu.Show(this, mevent.Location); // Shows menu at click location
-            }
-            else
-            {
-                base.OnMouseDown(mevent);
-            }
-        }
-
-        protected override void OnPaint(PaintEventArgs pevent)
-        {
-            base.OnPaint(pevent);
-
-            if (this.Menu != null && this.SplitWidth > 0)
-            {
-                // Draw the arrow glyph on the right side of the button
-                int arrowX = ClientRectangle.Width - 14;
-                int arrowY = ClientRectangle.Height / 2 - 1;
-
-                var arrowBrush = Enabled ? SystemBrushes.ControlText : SystemBrushes.ButtonShadow;
-                var arrows = new[] { new Point(arrowX, arrowY), new Point(arrowX + 7, arrowY), new Point(arrowX + 3, arrowY + 4) };
-                pevent.Graphics.FillPolygon(arrowBrush, arrows);
-
-                // Draw a dashed separator on the left of the arrow
-                int lineX = ClientRectangle.Width - this.SplitWidth;
-                int lineYFrom = arrowY - 4;
-                int lineYTo = arrowY + 8;
-                using (var separatorPen = new Pen(Brushes.DarkGray) { DashStyle = DashStyle.Dot })
+                List<Image> selectedImages = new List<Image>();
+                foreach (var files in theDialog.FileNames)
                 {
-                    pevent.Graphics.DrawLine(separatorPen, lineX, lineYFrom, lineX, lineYTo);
+                    selectedImages.Add(Image.FromFile(files));
                 }
+
+                var numperrow = 7;
+                var w = 530 * numperrow;
+                int h = int.Parse(Math.Ceiling(double.Parse(selectedImages.Count.ToString()) / numperrow).ToString()) * 530;
+                Bitmap bmp = new Bitmap(w - 8, h - 8);
+
+                if (selectedImages.Count * 530 < 530 * numperrow)
+                {
+                    w = selectedImages.Count * 530;
+                }
+
+                var num = 1;
+                var cur_w = 0;
+                var cur_h = 0;
+
+                for (int i = 0; i < selectedImages.Count; i++)
+                {
+                    using (Graphics g = Graphics.FromImage(bmp))
+                    {
+                        g.DrawImage(selectedImages[i], new PointF(cur_w, cur_h));
+                        if (num % numperrow == 0)
+                        {
+                            cur_w = 0;
+                            cur_h += 530;
+                            num += 1;
+                        }
+                        else
+                        {
+                            cur_w += 530;
+                            num += 1;
+                        }
+                    }
+                }
+                bmp.Save(docPath + "\\Merger.png");
+                var newForm = new Form();
+
+                PictureBox pb = new PictureBox();
+                pb.Dock = DockStyle.Fill;
+                pb.Image = bmp;
+                pb.SizeMode = PictureBoxSizeMode.Zoom;
+
+                newForm.WindowState = FormWindowState.Maximized;
+                newForm.Size = bmp.Size;
+                newForm.Icon = Properties.Resources.FNTools_Logo;
+                newForm.Text = docPath + "\\Merger.png";
+                newForm.StartPosition = FormStartPosition.CenterScreen;
+                newForm.Controls.Add(pb);
+                newForm.Show();
             }
         }
     }
