@@ -32,6 +32,13 @@ namespace FModel
         private int fontLength;
         private byte[] fontdata;
 
+        [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
+        private static extern int SetWindowTheme(IntPtr hwnd, string pszSubAppName, string pszSubIdList);
+        public static void SetTreeViewTheme(IntPtr treeHandle)
+        {
+            SetWindowTheme(treeHandle, "explorer", null);
+        }
+
         public PAKWindow()
         {
             InitializeComponent();
@@ -72,6 +79,7 @@ namespace FModel
 
         private void PAKWindow_Load(object sender, EventArgs e)
         {
+            SetTreeViewTheme(PAKTreeView.Handle);
             Properties.Settings.Default.ExtractAndSerialize = true; //SERIALIZE BY DEFAULT
 
             docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "\\FModel";
@@ -159,6 +167,17 @@ namespace FModel
             rightString.Alignment = StringAlignment.Far;
             centeredStringLine.LineAlignment = StringAlignment.Center;
             centeredStringLine.Alignment = StringAlignment.Center;
+
+            // Configure the JSON lexer styles
+            scintilla1.Styles[ScintillaNET.Style.Json.Default].ForeColor = Color.Silver;
+            scintilla1.Styles[ScintillaNET.Style.Json.BlockComment].ForeColor = Color.FromArgb(0, 128, 0);
+            scintilla1.Styles[ScintillaNET.Style.Json.LineComment].ForeColor = Color.FromArgb(0, 128, 0);
+            scintilla1.Styles[ScintillaNET.Style.Json.Number].ForeColor = Color.Green;
+            scintilla1.Styles[ScintillaNET.Style.Json.PropertyName].ForeColor = Color.SteelBlue; ;
+            scintilla1.Styles[ScintillaNET.Style.Json.String].ForeColor = Color.OrangeRed;
+            scintilla1.Styles[ScintillaNET.Style.Json.StringEol].BackColor = Color.OrangeRed;
+            scintilla1.Styles[ScintillaNET.Style.Json.Operator].ForeColor = Color.Black;
+            scintilla1.Lexer = ScintillaNET.Lexer.Json;
         } //EVERYTHING TO SET WHEN APP IS STARTING
         private void PAKWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -192,7 +211,7 @@ namespace FModel
             }
             if (node == null)
             {
-                node = new TreeNode(folder);
+                node = new TreeNode(folder) { ImageIndex=0 };
                 nodeList.Add(node);
             }
             if (path != "")
@@ -586,7 +605,7 @@ namespace FModel
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            ItemRichTextBox.Text = "";
+            scintilla1.Text = "";
             ItemIconPictureBox.Image = null;
 
             if (!Directory.Exists(docPath + "\\Extracted\\")) //Create Extracted Subfolder
@@ -645,7 +664,7 @@ namespace FModel
                             AppendText("✔ ", Color.Green);
                             AppendText(currentItem, Color.DarkRed);
                             AppendText(" successfully serialized", Color.Black, true);
-                            ItemRichTextBox.Text = json;
+                            scintilla1.Text = json;
 
                             var IDParser = ItemsIdParser.FromJson(json);
 
@@ -1270,7 +1289,7 @@ namespace FModel
                     }
                     if (files.Contains(".ini"))
                     {
-                        ItemRichTextBox.Text = File.ReadAllText(files);
+                        scintilla1.Text = File.ReadAllText(files);
                     }
                 }
                 else
