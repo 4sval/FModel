@@ -24,6 +24,7 @@ namespace FModel
             textBox1.Text = Properties.Settings.Default.ExtractOutput;
             textBox2.Text = Properties.Settings.Default.FortnitePAKs;
             textBox3.Text = Properties.Settings.Default.mergerFileName;
+            imgsPerRow.Value = Properties.Settings.Default.mergerImagesRow;
 
             PAKBefore = Properties.Settings.Default.FortnitePAKs;
             OutputBefore = Properties.Settings.Default.ExtractOutput;
@@ -42,6 +43,7 @@ namespace FModel
             Properties.Settings.Default.ExtractOutput = textBox1.Text;
             Properties.Settings.Default.FortnitePAKs = textBox2.Text;
             Properties.Settings.Default.mergerFileName = textBox3.Text;
+            Properties.Settings.Default.mergerImagesRow = Decimal.ToInt32(imgsPerRow.Value);
 
             if (!Directory.Exists(Properties.Settings.Default.ExtractOutput))
                 Directory.CreateDirectory(Properties.Settings.Default.ExtractOutput);

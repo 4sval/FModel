@@ -41,9 +41,12 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.imgsPerRow = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imgsPerRow)).BeginInit();
             this.SuspendLayout();
             // 
             // optionsOKButton
@@ -113,11 +116,13 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.imgsPerRow);
+            this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.textBox3);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Location = new System.Drawing.Point(12, 144);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(270, 46);
+            this.groupBox1.Size = new System.Drawing.Size(414, 46);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Merger";
@@ -162,6 +167,30 @@
             this.label3.TabIndex = 3;
             this.label3.Text = "Input:";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(270, 22);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(88, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Images Per Row:";
+            // 
+            // imgsPerRow
+            // 
+            this.imgsPerRow.Location = new System.Drawing.Point(364, 19);
+            this.imgsPerRow.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.imgsPerRow.Name = "imgsPerRow";
+            this.imgsPerRow.ReadOnly = true;
+            this.imgsPerRow.Size = new System.Drawing.Size(44, 20);
+            this.imgsPerRow.TabIndex = 12;
+            this.imgsPerRow.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.imgsPerRow.ThousandsSeparator = true;
+            // 
             // OptionsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -184,6 +213,7 @@
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imgsPerRow)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -201,5 +231,7 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.NumericUpDown imgsPerRow;
     }
 }

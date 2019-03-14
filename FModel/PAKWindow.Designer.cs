@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PAKWindow));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.LoadButton = new FModel.SplitButton();
             this.LoadContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,8 +43,11 @@
             this.TreeViewImageList = new System.Windows.Forms.ImageList(this.components);
             this.ItemIconPictureBox = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.scintilla1 = new ScintillaNET.Scintilla();
+            this.SaveImageButton = new FModel.SplitButton();
             this.ImageContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.OpenImageTS = new System.Windows.Forms.ToolStripMenuItem();
+            this.ExtractAssetButton = new FModel.SplitButton();
             this.ExtractAsset = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.LoadDataTS = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveImageTS = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,10 +56,6 @@
             this.ConsoleRichTextBox = new System.Windows.Forms.RichTextBox();
             this.FilterLabel = new System.Windows.Forms.Label();
             this.FilterTextBox = new System.Windows.Forms.TextBox();
-            this.scintilla1 = new ScintillaNET.Scintilla();
-            this.SaveImageButton = new FModel.SplitButton();
-            this.ExtractAssetButton = new FModel.SplitButton();
-            this.LoadButton = new FModel.SplitButton();
             this.groupBox1.SuspendLayout();
             this.LoadContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).BeginInit();
@@ -76,6 +76,18 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "PAK";
+            // 
+            // LoadButton
+            // 
+            this.LoadButton.Location = new System.Drawing.Point(296, 18);
+            this.LoadButton.Menu = this.LoadContext;
+            this.LoadButton.Name = "LoadButton";
+            this.LoadButton.Size = new System.Drawing.Size(106, 23);
+            this.LoadButton.TabIndex = 12;
+            this.LoadButton.Text = "         Load";
+            this.LoadButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LoadButton.UseVisualStyleBackColor = true;
+            this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
             // LoadContext
             // 
@@ -178,6 +190,28 @@
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             // 
+            // scintilla1
+            // 
+            this.scintilla1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.scintilla1.IndentationGuides = ScintillaNET.IndentView.Real;
+            this.scintilla1.Location = new System.Drawing.Point(6, 18);
+            this.scintilla1.Name = "scintilla1";
+            this.scintilla1.ScrollWidth = 539;
+            this.scintilla1.Size = new System.Drawing.Size(560, 350);
+            this.scintilla1.TabIndex = 12;
+            // 
+            // SaveImageButton
+            // 
+            this.SaveImageButton.Location = new System.Drawing.Point(810, 635);
+            this.SaveImageButton.Menu = this.ImageContext;
+            this.SaveImageButton.Name = "SaveImageButton";
+            this.SaveImageButton.Size = new System.Drawing.Size(112, 23);
+            this.SaveImageButton.TabIndex = 11;
+            this.SaveImageButton.Text = "    Save Image";
+            this.SaveImageButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.SaveImageButton.UseVisualStyleBackColor = true;
+            this.SaveImageButton.Click += new System.EventHandler(this.SaveImageButton_Click);
+            // 
             // ImageContext
             // 
             this.ImageContext.ImageScalingSize = new System.Drawing.Size(18, 18);
@@ -193,6 +227,18 @@
             this.OpenImageTS.Size = new System.Drawing.Size(139, 22);
             this.OpenImageTS.Text = "Open Image";
             this.OpenImageTS.Click += new System.EventHandler(this.OpenImageTS_Click);
+            // 
+            // ExtractAssetButton
+            // 
+            this.ExtractAssetButton.Location = new System.Drawing.Point(810, 664);
+            this.ExtractAssetButton.Menu = this.ExtractAsset;
+            this.ExtractAssetButton.Name = "ExtractAssetButton";
+            this.ExtractAssetButton.Size = new System.Drawing.Size(112, 23);
+            this.ExtractAssetButton.TabIndex = 10;
+            this.ExtractAssetButton.Text = "   Extract Asset";
+            this.ExtractAssetButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ExtractAssetButton.UseVisualStyleBackColor = true;
+            this.ExtractAssetButton.Click += new System.EventHandler(this.ExtractAssetButton_Click);
             // 
             // ExtractAsset
             // 
@@ -262,52 +308,6 @@
             this.FilterTextBox.Size = new System.Drawing.Size(364, 20);
             this.FilterTextBox.TabIndex = 5;
             this.FilterTextBox.TextChanged += new System.EventHandler(this.FilterTextBox_TextChanged);
-            // 
-            // scintilla1
-            // 
-            this.scintilla1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.scintilla1.IndentationGuides = ScintillaNET.IndentView.Real;
-            this.scintilla1.Location = new System.Drawing.Point(6, 18);
-            this.scintilla1.Name = "scintilla1";
-            this.scintilla1.ScrollWidth = 539;
-            this.scintilla1.Size = new System.Drawing.Size(560, 350);
-            this.scintilla1.TabIndex = 12;
-            // 
-            // SaveImageButton
-            // 
-            this.SaveImageButton.Location = new System.Drawing.Point(810, 635);
-            this.SaveImageButton.Menu = this.ImageContext;
-            this.SaveImageButton.Name = "SaveImageButton";
-            this.SaveImageButton.Size = new System.Drawing.Size(112, 23);
-            this.SaveImageButton.TabIndex = 11;
-            this.SaveImageButton.Text = "    Save Image";
-            this.SaveImageButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.SaveImageButton.UseVisualStyleBackColor = true;
-            this.SaveImageButton.Click += new System.EventHandler(this.SaveImageButton_Click);
-            // 
-            // ExtractAssetButton
-            // 
-            this.ExtractAssetButton.Location = new System.Drawing.Point(810, 664);
-            this.ExtractAssetButton.Menu = this.ExtractAsset;
-            this.ExtractAssetButton.Name = "ExtractAssetButton";
-            this.ExtractAssetButton.Size = new System.Drawing.Size(112, 23);
-            this.ExtractAssetButton.TabIndex = 10;
-            this.ExtractAssetButton.Text = "   Extract Asset";
-            this.ExtractAssetButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ExtractAssetButton.UseVisualStyleBackColor = true;
-            this.ExtractAssetButton.Click += new System.EventHandler(this.ExtractAssetButton_Click);
-            // 
-            // LoadButton
-            // 
-            this.LoadButton.Location = new System.Drawing.Point(296, 18);
-            this.LoadButton.Menu = this.LoadContext;
-            this.LoadButton.Name = "LoadButton";
-            this.LoadButton.Size = new System.Drawing.Size(106, 23);
-            this.LoadButton.TabIndex = 12;
-            this.LoadButton.Text = "         Load";
-            this.LoadButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.LoadButton.UseVisualStyleBackColor = true;
-            this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
             // PAKWindow
             // 

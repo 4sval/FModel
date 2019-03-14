@@ -39,6 +39,14 @@ namespace FModel
             SetWindowTheme(treeHandle, "explorer", null);
         }
 
+        [DllImport("wininet.dll")]
+        private extern static bool InternetGetConnectedState(out int description, int reservedValue);
+        public static bool IsInternetAvailable()
+        {
+            int description;
+            return InternetGetConnectedState(out description, 0);
+        }
+
         public PAKWindow()
         {
             InitializeComponent();
@@ -79,6 +87,8 @@ namespace FModel
 
         private void PAKWindow_Load(object sender, EventArgs e)
         {
+            bool connection = IsInternetAvailable();
+
             SetTreeViewTheme(PAKTreeView.Handle);
             Properties.Settings.Default.ExtractAndSerialize = true; //SERIALIZE BY DEFAULT
 
@@ -122,36 +132,56 @@ namespace FModel
             }
             AESKeyTextBox.Text = "0x" + File.ReadAllText("key.txt").ToUpper();
 
-            string url = "https://pastebin.com/raw/0fbB05hc";
-            long fileSize = 0;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                fileSize = Convert.ToInt64(reader.ReadToEnd());
-            }
-
-            if (!File.Exists(docPath + "\\john-wick-parse-modded.exe"))
+            FileInfo info;
+            if (!File.Exists(docPath + "\\john-wick-parse-modded.exe") && connection == true)
             {
                 WebClient Client = new WebClient();
                 Client.DownloadFile("https://dl.dropbox.com/s/9y5rv3hycin3w8r/john-wick-parse-modded.exe?dl=0", docPath + "\\john-wick-parse-modded.exe");
+                info = new FileInfo(docPath + "\\john-wick-parse-modded.exe");
 
                 AppendText("[FileNotFoundException] ", Color.Red);
                 AppendText("File ", Color.Black);
                 AppendText("john-wick-parse-modded.exe ", Color.SteelBlue);
                 AppendText("downloaded successfully", Color.Black, true);
             }
-
-            FileInfo info = new FileInfo(docPath + "\\john-wick-parse-modded.exe");
-            if (info.Length != fileSize)
+            else if (!File.Exists(docPath + "\\john-wick-parse-modded.exe") && connection == false)
             {
-                WebClient Client = new WebClient();
-                Client.DownloadFile("https://dl.dropbox.com/s/9y5rv3hycin3w8r/john-wick-parse-modded.exe?dl=0", docPath + "\\john-wick-parse-modded.exe");
+                AppendText("Can't download ", Color.Black);
+                AppendText("john-wick-parse-modded.exe", Color.SteelBlue);
+                AppendText(", no internet connection", Color.Black, true);
+            }
 
-                AppendText("[FileNeedUpdateException] ", Color.Red);
-                AppendText("john-wick-parse-modded.exe ", Color.SteelBlue);
-                AppendText("updated successfully", Color.Black, true);
+            if (File.Exists(docPath + "\\john-wick-parse-modded.exe"))
+            {
+                info = new FileInfo(docPath + "\\john-wick-parse-modded.exe");
+
+                string url = "https://pastebin.com/raw/0fbB05hc";
+                long fileSize = 0;
+                if (connection == true)
+                {
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    using (Stream stream = response.GetResponseStream())
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        fileSize = Convert.ToInt64(reader.ReadToEnd());
+                    }
+                    if (info.Length != fileSize)
+                    {
+                        WebClient Client = new WebClient();
+                        Client.DownloadFile("https://dl.dropbox.com/s/9y5rv3hycin3w8r/john-wick-parse-modded.exe?dl=0", docPath + "\\john-wick-parse-modded.exe");
+
+                        AppendText("[FileNeedUpdateException] ", Color.Red);
+                        AppendText("john-wick-parse-modded.exe ", Color.SteelBlue);
+                        AppendText("updated successfully", Color.Black, true);
+                    }
+                }
+                else
+                {
+                    AppendText("Can't check if ", Color.Black);
+                    AppendText("john-wick-parse-modded.exe ", Color.SteelBlue);
+                    AppendText("needs to be updated", Color.Black, true);
+                }
             }
 
             ExtractAssetButton.Enabled = false;
@@ -211,7 +241,7 @@ namespace FModel
             }
             if (node == null)
             {
-                node = new TreeNode(folder) { ImageIndex=0 };
+                node = new TreeNode(folder);
                 nodeList.Add(node);
             }
             if (path != "")
@@ -241,33 +271,42 @@ namespace FModel
         private static string currentGUID;
         private async void LoadButton_Click(object sender, EventArgs e)
         {
-            PAKTreeView.Nodes.Clear();
-            ItemsListBox.Items.Clear();
-            File.WriteAllText("key.txt", AESKeyTextBox.Text.Substring(2));
-
-            currentPAK = PAKsComboBox.SelectedItem.ToString();
-            LoadButton.Enabled = false;
-            await Task.Run(() => {
-                jwpmProcess("filelist \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + docPath + "\"");
-            });
-            LoadButton.Enabled = true;
-            currentGUID = readPAKGuid(Properties.Settings.Default.FortnitePAKs + "\\" + PAKsComboBox.SelectedItem);
-
-            if (!File.Exists(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt"))
+            if (PAKsComboBox.SelectedItem == null)
             {
-                AppendText("✗ ", Color.Red);
-                AppendText(" Can't read ", Color.Black);
-                AppendText(PAKsComboBox.SelectedItem.ToString(), Color.SteelBlue);
-                AppendText(" with this key", Color.Black, true);
+                AppendText("Please, select one of your ", Color.Black);
+                AppendText("Fortnite .PAK files ", Color.SteelBlue);
+                AppendText("to load.", Color.Black, true);
             }
             else
             {
-                PAKFileAsTXT = File.ReadAllLines(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt");
-                File.Delete(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt");
+                PAKTreeView.Nodes.Clear();
+                ItemsListBox.Items.Clear();
+                File.WriteAllText("key.txt", AESKeyTextBox.Text.Substring(2));
 
-                for (int i = 0; i < PAKFileAsTXT.Length; i++)
+                currentPAK = PAKsComboBox.SelectedItem.ToString();
+                LoadButton.Enabled = false;
+                await Task.Run(() => {
+                    jwpmProcess("filelist \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + docPath + "\"");
+                });
+                LoadButton.Enabled = true;
+                currentGUID = readPAKGuid(Properties.Settings.Default.FortnitePAKs + "\\" + PAKsComboBox.SelectedItem);
+
+                if (!File.Exists(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt"))
                 {
-                    CreatePath(PAKTreeView.Nodes, PAKFileAsTXT[i].Replace(PAKFileAsTXT[i].Split('/').Last(), ""));
+                    AppendText("✗ ", Color.Red);
+                    AppendText(" Can't read ", Color.Black);
+                    AppendText(PAKsComboBox.SelectedItem.ToString(), Color.SteelBlue);
+                    AppendText(" with this key", Color.Black, true);
+                }
+                else
+                {
+                    PAKFileAsTXT = File.ReadAllLines(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt");
+                    File.Delete(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt");
+
+                    for (int i = 0; i < PAKFileAsTXT.Length; i++)
+                    {
+                        CreatePath(PAKTreeView.Nodes, PAKFileAsTXT[i].Replace(PAKFileAsTXT[i].Split('/').Last(), ""));
+                    }
                 }
             }
         }
@@ -1365,7 +1404,12 @@ namespace FModel
                         selectedImages.Add(Image.FromFile(files));
                     }
 
-                    var numperrow = 7;
+                    if (Properties.Settings.Default.mergerImagesRow == 0)
+                    {
+                        Properties.Settings.Default.mergerImagesRow = 7;
+                        Properties.Settings.Default.Save();
+                    }
+                    int numperrow = Properties.Settings.Default.mergerImagesRow;
                     var w = 530 * numperrow;
                     int h = int.Parse(Math.Ceiling(double.Parse(selectedImages.Count.ToString()) / numperrow).ToString()) * 530;
                     Bitmap bmp = new Bitmap(w - 8, h - 8);

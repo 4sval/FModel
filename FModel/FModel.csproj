@@ -115,7 +115,7 @@
     <Compile Include="Parser\ItemsIDParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Button\SplitButtonControl.cs">
+    <Compile Include="Custom\SplitButtonControl.cs">
       <SubType>Component</SubType>
     </Compile>
     <EmbeddedResource Include="Help.resx">
@@ -153,7 +153,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FNTools_Logo.ico" />
-    <None Include="Resources\folder.png" />
     <None Include="Resources\FNTools_Logo.png" />
     <None Include="Resources\BurbankBigCondensed-Bold.otf" />
     <None Include="Resources\T512.png" />
