@@ -20,6 +20,9 @@ namespace FModel
         [JsonProperty("export_type")]
         public string ExportType { get; set; }
 
+        [JsonProperty("cosmetic_item")]
+        public string cosmetic_item { get; set; }
+
         [JsonProperty("CharacterParts")]
         public string[] CharacterParts { get; set; }
 

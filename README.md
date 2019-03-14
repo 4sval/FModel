@@ -37,6 +37,7 @@
 ### What i'm using
 - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - Modded Version With Output Control
 - [JSON Parser](https://app.quicktype.io/)
+- [ScintillaNET](https://www.nuget.org/packages/jacobslusser.ScintillaNET)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 ### Why FModel
 This project is mainly based on what [UModel](https://github.com/gildor2/UModel) can do, in a personalized way, in case UModel doesn't work, as a temporary rescue solution.
