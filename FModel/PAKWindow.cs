@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -692,478 +693,484 @@ namespace FModel
 
                         if (Properties.Settings.Default.ExtractAndSerialize == true)
                         {
-                            await Task.Run(() => {
+                            await Task.Run(() =>
+                            {
                                 jwpmProcess("serialize \"" + files.Substring(0, files.LastIndexOf('.')) + "\"");
                             });
                         }
-                        var filesJSON = Directory.GetFiles(docPath, currentItem + ".json", SearchOption.AllDirectories).FirstOrDefault();
-                        if (filesJSON != null)
+                        try
                         {
-                            var json = JToken.Parse(File.ReadAllText(filesJSON)).ToString();
-                            File.Delete(filesJSON);
-                            AppendText("✔ ", Color.Green);
-                            AppendText(currentItem, Color.DarkRed);
-                            AppendText(" successfully serialized", Color.Black, true);
-                            scintilla1.Text = json;
-
-                            var IDParser = ItemsIdParser.FromJson(json);
-
-                            if (((ToolStripMenuItem)ExtractAsset.Items[0]).Checked == true)
+                            var filesJSON = Directory.GetFiles(docPath, currentItem + ".json", SearchOption.AllDirectories).FirstOrDefault();
+                            if (filesJSON != null)
                             {
-                                AppendText("Auto loading data set to ", Color.Black);
-                                AppendText("True", Color.Green, true);
+                                var json = JToken.Parse(File.ReadAllText(filesJSON)).ToString();
+                                File.Delete(filesJSON);
+                                AppendText("✔ ", Color.Green);
+                                AppendText(currentItem, Color.DarkRed);
+                                AppendText(" successfully serialized", Color.Black, true);
+                                scintilla1.Text = json;
 
-                                if (filesJSON.Contains("Athena\\Items\\Cosmetics") || filesJSON.Contains("Athena\\Items\\CosmeticVariantTokens") || filesJSON.Contains("Athena\\Items\\Weapons")) //ASSET IS AN ID => CREATE ICON
+                                var IDParser = ItemsIdParser.FromJson(json);
+
+                                if (((ToolStripMenuItem)ExtractAsset.Items[0]).Checked == true)
                                 {
-                                    AppendText("Parsing...", Color.Black, true);
-                                    for (int iii = 0; iii < IDParser.Length; iii++)
+                                    AppendText("Auto loading data set to ", Color.Black);
+                                    AppendText("True", Color.Green, true);
+
+                                    if (filesJSON.Contains("Athena\\Items\\Cosmetics") || filesJSON.Contains("Athena\\Items\\CosmeticVariantTokens") || filesJSON.Contains("Athena\\Items\\Weapons")) //ASSET IS AN ID => CREATE ICON
                                     {
-                                        if (IDParser[iii].ExportType.Contains("Item") && IDParser[iii].ExportType.Contains("Definition"))
+                                        AppendText("Parsing...", Color.Black, true);
+                                        for (int iii = 0; iii < IDParser.Length; iii++)
                                         {
-                                            AppendText("✔ ", Color.Green);
-                                            AppendText(currentItem, Color.DarkRed);
-                                            AppendText(" is an ", Color.Black);
-                                            AppendText("ID file", Color.SteelBlue, true);
-
-                                            ItemName = IDParser[iii].DisplayName;
-                                            Bitmap bmp = new Bitmap(522, 522);
-                                            Graphics g = Graphics.FromImage(bmp);
-                                            g.TextRenderingHint = TextRenderingHint.AntiAlias;
-
-                                            getItemRarity(IDParser[iii], g);
-
-                                            string itemIconPath = string.Empty;
-
-                                            if (IDParser[iii].HeroDefinition != null)
+                                            if (IDParser[iii].ExportType.Contains("Item") && IDParser[iii].ExportType.Contains("Definition"))
                                             {
-                                                var filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].HeroDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                if (!File.Exists(filesPath))
-                                                {
-                                                    AppendText("✔ ", Color.Green);
-                                                    AppendText("Extracting ", Color.Black);
-                                                    AppendText(IDParser[iii].HeroDefinition, Color.DarkRed, true);
+                                                AppendText("✔ ", Color.Green);
+                                                AppendText(currentItem, Color.DarkRed);
+                                                AppendText(" is an ", Color.Black);
+                                                AppendText("ID file", Color.SteelBlue, true);
 
-                                                    await Task.Run(() => {
-                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + IDParser[iii].HeroDefinition + "\" \"" + docPath + "\"");
-                                                    });
-                                                    filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].HeroDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                }
-                                                try
+                                                ItemName = IDParser[iii].DisplayName;
+                                                Bitmap bmp = new Bitmap(522, 522);
+                                                Graphics g = Graphics.FromImage(bmp);
+                                                g.TextRenderingHint = TextRenderingHint.AntiAlias;
+
+                                                getItemRarity(IDParser[iii], g);
+
+                                                string itemIconPath = string.Empty;
+
+                                                if (IDParser[iii].HeroDefinition != null)
                                                 {
-                                                    if (filesPath != null)
+                                                    var filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].HeroDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                    if (!File.Exists(filesPath))
                                                     {
                                                         AppendText("✔ ", Color.Green);
-                                                        AppendText(IDParser[iii].HeroDefinition, Color.DarkRed);
-                                                        AppendText(" successfully extracted to ", Color.Black);
-                                                        AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
-                                                        try
+                                                        AppendText("Extracting ", Color.Black);
+                                                        AppendText(IDParser[iii].HeroDefinition, Color.DarkRed, true);
+
+                                                        await Task.Run(() =>
                                                         {
-                                                            await Task.Run(() => {
-                                                                jwpmProcess("serialize \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
-                                                            });
-                                                            var filesJSON2 = Directory.GetFiles(docPath, IDParser[iii].HeroDefinition + ".json", SearchOption.AllDirectories).FirstOrDefault();
-                                                            var json2 = JToken.Parse(File.ReadAllText(filesJSON2)).ToString();
-                                                            File.Delete(filesJSON2);
+                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + IDParser[iii].HeroDefinition + "\" \"" + docPath + "\"");
+                                                        });
+                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].HeroDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                    }
+                                                    try
+                                                    {
+                                                        if (filesPath != null)
+                                                        {
                                                             AppendText("✔ ", Color.Green);
                                                             AppendText(IDParser[iii].HeroDefinition, Color.DarkRed);
-                                                            AppendText(" successfully serialized", Color.Black, true);
-
-                                                            var IDParser2 = ItemsIdParser.FromJson(json2);
-                                                            for (int i1 = 0; i1 < IDParser2.Length; i1++)
+                                                            AppendText(" successfully extracted to ", Color.Black);
+                                                            AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
+                                                            try
                                                             {
-                                                                if (IDParser2[i1].LargePreviewImage != null)
+                                                                await Task.Run(() =>
                                                                 {
-                                                                    string textureFile = Path.GetFileName(IDParser2[i1].LargePreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser2[i1].LargePreviewImage.AssetPathName).LastIndexOf('.'));
-                                                                    AppendText("✔ ", Color.Green);
-                                                                    AppendText(textureFile, Color.DarkRed);
-                                                                    AppendText(" detected as a ", Color.Black);
-                                                                    AppendText("Texture2D file", Color.SteelBlue, true);
+                                                                    jwpmProcess("serialize \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                                });
+                                                                var filesJSON2 = Directory.GetFiles(docPath, IDParser[iii].HeroDefinition + ".json", SearchOption.AllDirectories).FirstOrDefault();
+                                                                var json2 = JToken.Parse(File.ReadAllText(filesJSON2)).ToString();
+                                                                File.Delete(filesJSON2);
+                                                                AppendText("✔ ", Color.Green);
+                                                                AppendText(IDParser[iii].HeroDefinition, Color.DarkRed);
+                                                                AppendText(" successfully serialized", Color.Black, true);
 
-                                                                    var filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                                    if (!File.Exists(filesPath2))
+                                                                var IDParser2 = ItemsIdParser.FromJson(json2);
+                                                                for (int i1 = 0; i1 < IDParser2.Length; i1++)
+                                                                {
+                                                                    if (IDParser2[i1].LargePreviewImage != null)
                                                                     {
-                                                                        if (currentGUID != "0-0-0-0")
-                                                                        {
-                                                                            await Task.Run(() => {
-                                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                                            });
-                                                                            filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            await Task.Run(() => {
-                                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                                            });
-                                                                            filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                                        }
-                                                                    }
-                                                                    try
-                                                                    {
-                                                                        if (filesPath2 != null)
-                                                                        {
-                                                                            AppendText("✔ ", Color.Green);
-                                                                            AppendText(textureFile, Color.DarkRed);
-                                                                            AppendText(" successfully extracted to ", Color.Black);
-                                                                            AppendText(filesPath2.Substring(0, filesPath2.LastIndexOf('.')), Color.SteelBlue, true);
+                                                                        string textureFile = Path.GetFileName(IDParser2[i1].LargePreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser2[i1].LargePreviewImage.AssetPathName).LastIndexOf('.'));
+                                                                        AppendText("✔ ", Color.Green);
+                                                                        AppendText(textureFile, Color.DarkRed);
+                                                                        AppendText(" detected as a ", Color.Black);
+                                                                        AppendText("Texture2D file", Color.SteelBlue, true);
 
-                                                                            itemIconPath = filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + ".png";
-                                                                            if (!File.Exists(itemIconPath))
+                                                                        var filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                                        if (!File.Exists(filesPath2))
+                                                                        {
+                                                                            if (currentGUID != "0-0-0-0")
                                                                             {
-                                                                                await Task.Run(() => {
-                                                                                    jwpmProcess("texture \"" + filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + "\"");
+                                                                                await Task.Run(() =>
+                                                                                {
+                                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                                                 });
-                                                                                itemIconPath = filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + ".png";
+                                                                                filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                                             }
-
-                                                                            AppendText("✔ ", Color.Green);
-                                                                            AppendText(textureFile, Color.DarkRed);
-                                                                            AppendText(" successfully converted to a PNG image with path ", Color.Black);
-                                                                            AppendText(itemIconPath, Color.SteelBlue, true);
+                                                                            else
+                                                                            {
+                                                                                await Task.Run(() =>
+                                                                                {
+                                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                                });
+                                                                                filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                                            }
                                                                         }
-                                                                    }
-                                                                    catch (IndexOutOfRangeException)
-                                                                    {
-                                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
-                                                                        AppendText("Can't extract ", Color.Black);
-                                                                        AppendText(textureFile, Color.SteelBlue);
-                                                                        AppendText(" in ", Color.Black);
-                                                                        AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                                        try
+                                                                        {
+                                                                            if (filesPath2 != null)
+                                                                            {
+                                                                                AppendText("✔ ", Color.Green);
+                                                                                AppendText(textureFile, Color.DarkRed);
+                                                                                AppendText(" successfully extracted to ", Color.Black);
+                                                                                AppendText(filesPath2.Substring(0, filesPath2.LastIndexOf('.')), Color.SteelBlue, true);
+
+                                                                                itemIconPath = filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + ".png";
+                                                                                if (!File.Exists(itemIconPath))
+                                                                                {
+                                                                                    await Task.Run(() =>
+                                                                                    {
+                                                                                        jwpmProcess("texture \"" + filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + "\"");
+                                                                                    });
+                                                                                    itemIconPath = filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + ".png";
+                                                                                }
+
+                                                                                AppendText("✔ ", Color.Green);
+                                                                                AppendText(textureFile, Color.DarkRed);
+                                                                                AppendText(" successfully converted to a PNG image with path ", Color.Black);
+                                                                                AppendText(itemIconPath, Color.SteelBlue, true);
+                                                                            }
+                                                                        }
+                                                                        catch (IndexOutOfRangeException)
+                                                                        {
+                                                                            AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                                            AppendText("Can't extract ", Color.Black);
+                                                                            AppendText(textureFile, Color.SteelBlue);
+                                                                            AppendText(" in ", Color.Black);
+                                                                            AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                                        }
                                                                     }
                                                                 }
                                                             }
-                                                        }
-                                                        catch (Exception ex)
-                                                        {
-                                                            Console.WriteLine(ex.Message);
+                                                            catch (Exception ex)
+                                                            {
+                                                                Console.WriteLine(ex.Message);
+                                                            }
                                                         }
                                                     }
+                                                    catch (IndexOutOfRangeException)
+                                                    {
+                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                        AppendText("Can't extract ", Color.Black);
+                                                        AppendText(IDParser[iii].HeroDefinition, Color.SteelBlue);
+                                                        AppendText(" in ", Color.Black);
+                                                        AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
+                                                    }
                                                 }
-                                                catch (IndexOutOfRangeException)
+                                                else if (IDParser[iii].WeaponDefinition != null)
                                                 {
-                                                    AppendText("[IndexOutOfRangeException] ", Color.Red);
-                                                    AppendText("Can't extract ", Color.Black);
-                                                    AppendText(IDParser[iii].HeroDefinition, Color.SteelBlue);
-                                                    AppendText(" in ", Color.Black);
-                                                    AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
-                                                }
-                                            }
-                                            else if (IDParser[iii].WeaponDefinition != null)
-                                            {
-                                                var filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].WeaponDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                if (!File.Exists(filesPath))
-                                                {
-                                                    AppendText("✔ ", Color.Green);
-                                                    AppendText("Extracting ", Color.Black);
-                                                    AppendText(IDParser[iii].WeaponDefinition, Color.DarkRed, true);
-
-                                                    await Task.Run(() => {
-                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + IDParser[iii].WeaponDefinition + "\" \"" + docPath + "\"");
-                                                    });
-                                                    filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].WeaponDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                }
-                                                try
-                                                {
-                                                    if (filesPath != null)
+                                                    var filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].WeaponDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                    if (!File.Exists(filesPath))
                                                     {
                                                         AppendText("✔ ", Color.Green);
-                                                        AppendText(IDParser[iii].WeaponDefinition, Color.DarkRed);
-                                                        AppendText(" successfully extracted to ", Color.Black);
-                                                        AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
-                                                        try
+                                                        AppendText("Extracting ", Color.Black);
+                                                        AppendText(IDParser[iii].WeaponDefinition, Color.DarkRed, true);
+
+                                                        await Task.Run(() =>
                                                         {
-                                                            await Task.Run(() => {
-                                                                jwpmProcess("serialize \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
-                                                            });
-                                                            var filesJSON2 = Directory.GetFiles(docPath, IDParser[iii].WeaponDefinition + ".json", SearchOption.AllDirectories).FirstOrDefault();
-                                                            var json2 = JToken.Parse(File.ReadAllText(filesJSON2)).ToString();
-                                                            File.Delete(filesJSON2);
+                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + IDParser[iii].WeaponDefinition + "\" \"" + docPath + "\"");
+                                                        });
+                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].WeaponDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                    }
+                                                    try
+                                                    {
+                                                        if (filesPath != null)
+                                                        {
                                                             AppendText("✔ ", Color.Green);
                                                             AppendText(IDParser[iii].WeaponDefinition, Color.DarkRed);
-                                                            AppendText(" successfully serialized", Color.Black, true);
-
-                                                            var IDParser2 = ItemsIdParser.FromJson(json2);
-                                                            for (int i2 = 0; i2 < IDParser2.Length; i2++)
+                                                            AppendText(" successfully extracted to ", Color.Black);
+                                                            AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
+                                                            try
                                                             {
-                                                                if (IDParser2[i2].LargePreviewImage != null)
+                                                                await Task.Run(() =>
                                                                 {
-                                                                    string textureFile = Path.GetFileName(IDParser2[i2].LargePreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser2[i2].LargePreviewImage.AssetPathName).LastIndexOf('.'));
-                                                                    AppendText("✔ ", Color.Green);
-                                                                    AppendText(textureFile, Color.DarkRed);
-                                                                    AppendText(" detected as a ", Color.Black);
-                                                                    AppendText("Texture2D file", Color.SteelBlue, true);
+                                                                    jwpmProcess("serialize \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                                });
+                                                                var filesJSON2 = Directory.GetFiles(docPath, IDParser[iii].WeaponDefinition + ".json", SearchOption.AllDirectories).FirstOrDefault();
+                                                                var json2 = JToken.Parse(File.ReadAllText(filesJSON2)).ToString();
+                                                                File.Delete(filesJSON2);
+                                                                AppendText("✔ ", Color.Green);
+                                                                AppendText(IDParser[iii].WeaponDefinition, Color.DarkRed);
+                                                                AppendText(" successfully serialized", Color.Black, true);
 
-                                                                    var filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                                    if (!File.Exists(filesPath2))
+                                                                var IDParser2 = ItemsIdParser.FromJson(json2);
+                                                                for (int i2 = 0; i2 < IDParser2.Length; i2++)
+                                                                {
+                                                                    if (IDParser2[i2].LargePreviewImage != null)
                                                                     {
-                                                                        if (currentGUID != "0-0-0-0")
-                                                                        {
-                                                                            await Task.Run(() => {
-                                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                                            });
-                                                                            filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            await Task.Run(() => {
-                                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                                            });
-                                                                            filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                                        }
-                                                                    }
-                                                                    try
-                                                                    {
-                                                                        if (filesPath2 != null)
-                                                                        {
-                                                                            AppendText("✔ ", Color.Green);
-                                                                            AppendText(textureFile, Color.DarkRed);
-                                                                            AppendText(" successfully extracted to ", Color.Black);
-                                                                            AppendText(filesPath2.Substring(0, filesPath2.LastIndexOf('.')), Color.SteelBlue, true);
+                                                                        string textureFile = Path.GetFileName(IDParser2[i2].LargePreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser2[i2].LargePreviewImage.AssetPathName).LastIndexOf('.'));
+                                                                        AppendText("✔ ", Color.Green);
+                                                                        AppendText(textureFile, Color.DarkRed);
+                                                                        AppendText(" detected as a ", Color.Black);
+                                                                        AppendText("Texture2D file", Color.SteelBlue, true);
 
-                                                                            itemIconPath = filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + ".png";
-                                                                            if (!File.Exists(itemIconPath))
+                                                                        var filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                                        if (!File.Exists(filesPath2))
+                                                                        {
+                                                                            if (currentGUID != "0-0-0-0")
                                                                             {
-                                                                                await Task.Run(() => {
-                                                                                    jwpmProcess("texture \"" + filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + "\"");
+                                                                                await Task.Run(() =>
+                                                                                {
+                                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
                                                                                 });
-                                                                                itemIconPath = filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + ".png";
+                                                                                filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                                             }
-
-                                                                            AppendText("✔ ", Color.Green);
-                                                                            AppendText(textureFile, Color.DarkRed);
-                                                                            AppendText(" successfully converted to a PNG image with path ", Color.Black);
-                                                                            AppendText(itemIconPath, Color.SteelBlue, true);
+                                                                            else
+                                                                            {
+                                                                                await Task.Run(() =>
+                                                                                {
+                                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                                });
+                                                                                filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                                            }
                                                                         }
-                                                                    }
-                                                                    catch (IndexOutOfRangeException)
-                                                                    {
-                                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
-                                                                        AppendText("Can't extract ", Color.Black);
-                                                                        AppendText(textureFile, Color.SteelBlue);
-                                                                        AppendText(" in ", Color.Black);
-                                                                        AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                                        try
+                                                                        {
+                                                                            if (filesPath2 != null)
+                                                                            {
+                                                                                AppendText("✔ ", Color.Green);
+                                                                                AppendText(textureFile, Color.DarkRed);
+                                                                                AppendText(" successfully extracted to ", Color.Black);
+                                                                                AppendText(filesPath2.Substring(0, filesPath2.LastIndexOf('.')), Color.SteelBlue, true);
+
+                                                                                itemIconPath = filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + ".png";
+                                                                                if (!File.Exists(itemIconPath))
+                                                                                {
+                                                                                    await Task.Run(() =>
+                                                                                    {
+                                                                                        jwpmProcess("texture \"" + filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + "\"");
+                                                                                    });
+                                                                                    itemIconPath = filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + ".png";
+                                                                                }
+
+                                                                                AppendText("✔ ", Color.Green);
+                                                                                AppendText(textureFile, Color.DarkRed);
+                                                                                AppendText(" successfully converted to a PNG image with path ", Color.Black);
+                                                                                AppendText(itemIconPath, Color.SteelBlue, true);
+                                                                            }
+                                                                        }
+                                                                        catch (IndexOutOfRangeException)
+                                                                        {
+                                                                            AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                                            AppendText("Can't extract ", Color.Black);
+                                                                            AppendText(textureFile, Color.SteelBlue);
+                                                                            AppendText(" in ", Color.Black);
+                                                                            AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                                        }
                                                                     }
                                                                 }
                                                             }
-                                                        }
-                                                        catch (Exception ex)
-                                                        {
-                                                            Console.WriteLine(ex.Message);
-                                                        }
-                                                    }
-                                                }
-                                                catch (IndexOutOfRangeException)
-                                                {
-                                                    AppendText("[IndexOutOfRangeException] ", Color.Red);
-                                                    AppendText("Can't extract ", Color.Black);
-                                                    AppendText(IDParser[iii].WeaponDefinition, Color.SteelBlue);
-                                                    AppendText(" in ", Color.Black);
-                                                    AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
-                                                }
-                                            }
-                                            else if (IDParser[iii].LargePreviewImage != null)
-                                            {
-                                                string textureFile = Path.GetFileName(IDParser[iii].LargePreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser[iii].LargePreviewImage.AssetPathName).LastIndexOf('.'));
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText(textureFile, Color.DarkRed);
-                                                AppendText(" detected as a ", Color.Black);
-                                                AppendText("Texture2D file", Color.SteelBlue, true);
-
-                                                var filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                if (!File.Exists(filesPath))
-                                                {
-                                                    if (currentGUID != "0-0-0-0") //DYNAMIC PAK
-                                                    {
-                                                        await Task.Run(() => {
-                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                        });
-                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                    }
-                                                    else //NORMAL PAK
-                                                    {
-                                                        await Task.Run(() => {
-                                                            if (IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/2dAssets/"))
+                                                            catch (Exception ex)
                                                             {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                Console.WriteLine(ex.Message);
                                                             }
-                                                            else if (IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
+                                                        }
+                                                    }
+                                                    catch (IndexOutOfRangeException)
+                                                    {
+                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                        AppendText("Can't extract ", Color.Black);
+                                                        AppendText(IDParser[iii].WeaponDefinition, Color.SteelBlue);
+                                                        AppendText(" in ", Color.Black);
+                                                        AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
+                                                    }
+                                                }
+                                                else if (IDParser[iii].LargePreviewImage != null)
+                                                {
+                                                    string textureFile = Path.GetFileName(IDParser[iii].LargePreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser[iii].LargePreviewImage.AssetPathName).LastIndexOf('.'));
+                                                    AppendText("✔ ", Color.Green);
+                                                    AppendText(textureFile, Color.DarkRed);
+                                                    AppendText(" detected as a ", Color.Black);
+                                                    AppendText("Texture2D file", Color.SteelBlue, true);
+
+                                                    var filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                    if (!File.Exists(filesPath))
+                                                    {
+                                                        if (currentGUID != "0-0-0-0") //DYNAMIC PAK
+                                                        {
+                                                            await Task.Run(() =>
                                                             {
                                                                 jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                            }
-                                                            else
-                                                            {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                            }
-                                                        });
-                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                    }
-                                                }
-                                                try
-                                                {
-                                                    if (filesPath != null)
-                                                    {
-                                                        AppendText("✔ ", Color.Green);
-                                                        AppendText(textureFile, Color.DarkRed);
-                                                        AppendText(" successfully extracted to ", Color.Black);
-                                                        AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
-
-                                                        itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
-                                                        if (!File.Exists(itemIconPath))
-                                                        {
-                                                            await Task.Run(() => {
-                                                                jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
                                                             });
-                                                            itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                         }
-
-                                                        AppendText("✔ ", Color.Green);
-                                                        AppendText(textureFile, Color.DarkRed);
-                                                        AppendText(" successfully converted to a PNG image with path ", Color.Black);
-                                                        AppendText(itemIconPath, Color.SteelBlue, true);
-                                                    }
-                                                }
-                                                catch (IndexOutOfRangeException)
-                                                {
-                                                    AppendText("[IndexOutOfRangeException] ", Color.Red);
-                                                    AppendText("Can't extract ", Color.Black);
-                                                    AppendText(textureFile, Color.SteelBlue);
-                                                    AppendText(" in ", Color.Black);
-                                                    AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
-                                                }
-                                            }
-                                            else if (IDParser[iii].SmallPreviewImage != null)
-                                            {
-                                                string textureFile = Path.GetFileName(IDParser[iii].SmallPreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser[iii].SmallPreviewImage.AssetPathName).LastIndexOf('.'));
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText(textureFile, Color.DarkRed);
-                                                AppendText(" detected as a ", Color.Black);
-                                                AppendText("Texture2D file", Color.SteelBlue, true);
-
-                                                var filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                if (!File.Exists(filesPath))
-                                                {
-                                                    if (currentGUID != "0-0-0-0")
-                                                    {
-                                                        await Task.Run(() => {
-                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                        });
-                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                    }
-                                                    else
-                                                    {
-                                                        await Task.Run(() => {
-                                                            if (IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/2dAssets/"))
+                                                        else //NORMAL PAK
+                                                        {
+                                                            await Task.Run(() =>
                                                             {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                if (IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/2dAssets/"))
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                                else if (IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                                else
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                            });
+                                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                        }
+                                                    }
+                                                    try
+                                                    {
+                                                        if (filesPath != null)
+                                                        {
+                                                            AppendText("✔ ", Color.Green);
+                                                            AppendText(textureFile, Color.DarkRed);
+                                                            AppendText(" successfully extracted to ", Color.Black);
+                                                            AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
+
+                                                            itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                            if (!File.Exists(itemIconPath))
+                                                            {
+                                                                await Task.Run(() =>
+                                                                {
+                                                                    jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                                });
+                                                                itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
                                                             }
-                                                            else if (IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
+
+                                                            AppendText("✔ ", Color.Green);
+                                                            AppendText(textureFile, Color.DarkRed);
+                                                            AppendText(" successfully converted to a PNG image with path ", Color.Black);
+                                                            AppendText(itemIconPath, Color.SteelBlue, true);
+                                                        }
+                                                    }
+                                                    catch (IndexOutOfRangeException)
+                                                    {
+                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                        AppendText("Can't extract ", Color.Black);
+                                                        AppendText(textureFile, Color.SteelBlue);
+                                                        AppendText(" in ", Color.Black);
+                                                        AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                    }
+                                                }
+                                                else if (IDParser[iii].SmallPreviewImage != null)
+                                                {
+                                                    string textureFile = Path.GetFileName(IDParser[iii].SmallPreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser[iii].SmallPreviewImage.AssetPathName).LastIndexOf('.'));
+                                                    AppendText("✔ ", Color.Green);
+                                                    AppendText(textureFile, Color.DarkRed);
+                                                    AppendText(" detected as a ", Color.Black);
+                                                    AppendText("Texture2D file", Color.SteelBlue, true);
+
+                                                    var filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                    if (!File.Exists(filesPath))
+                                                    {
+                                                        if (currentGUID != "0-0-0-0")
+                                                        {
+                                                            await Task.Run(() =>
                                                             {
                                                                 jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                            }
-                                                            else
-                                                            {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                            }
-                                                        });
-                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                    }
-                                                }
-                                                try
-                                                {
-                                                    if (filesPath != null)
-                                                    {
-                                                        AppendText("✔ ", Color.Green);
-                                                        AppendText(textureFile, Color.DarkRed);
-                                                        AppendText(" successfully extracted to ", Color.Black);
-                                                        AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
-
-                                                        itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
-                                                        if (!File.Exists(itemIconPath))
-                                                        {
-                                                            await Task.Run(() => {
-                                                                jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
                                                             });
-                                                            itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
                                                         }
+                                                        else
+                                                        {
+                                                            await Task.Run(() =>
+                                                            {
+                                                                if (IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/2dAssets/"))
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                                else if (IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                                else
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                            });
+                                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                        }
+                                                    }
+                                                    try
+                                                    {
+                                                        if (filesPath != null)
+                                                        {
+                                                            AppendText("✔ ", Color.Green);
+                                                            AppendText(textureFile, Color.DarkRed);
+                                                            AppendText(" successfully extracted to ", Color.Black);
+                                                            AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
 
-                                                        AppendText("✔ ", Color.Green);
-                                                        AppendText(textureFile, Color.DarkRed);
-                                                        AppendText(" successfully converted to a PNG image with path ", Color.Black);
-                                                        AppendText(itemIconPath, Color.SteelBlue, true);
+                                                            itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                            if (!File.Exists(itemIconPath))
+                                                            {
+                                                                await Task.Run(() =>
+                                                                {
+                                                                    jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                                });
+                                                                itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                            }
+
+                                                            AppendText("✔ ", Color.Green);
+                                                            AppendText(textureFile, Color.DarkRed);
+                                                            AppendText(" successfully converted to a PNG image with path ", Color.Black);
+                                                            AppendText(itemIconPath, Color.SteelBlue, true);
+                                                        }
+                                                    }
+                                                    catch (IndexOutOfRangeException)
+                                                    {
+                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                        AppendText("Can't extract ", Color.Black);
+                                                        AppendText(textureFile, Color.SteelBlue);
+                                                        AppendText(" in ", Color.Black);
+                                                        AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
                                                     }
                                                 }
-                                                catch (IndexOutOfRangeException)
+
+                                                if (File.Exists(itemIconPath))
                                                 {
-                                                    AppendText("[IndexOutOfRangeException] ", Color.Red);
-                                                    AppendText("Can't extract ", Color.Black);
-                                                    AppendText(textureFile, Color.SteelBlue);
-                                                    AppendText(" in ", Color.Black);
-                                                    AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                    Image ItemIcon = Image.FromFile(itemIconPath);
+                                                    g.DrawImage(ItemIcon, new Point(5, 5));
                                                 }
-                                            }
+                                                else
+                                                {
+                                                    Image ItemIcon = Properties.Resources.unknown512;
+                                                    g.DrawImage(ItemIcon, new Point(0, 0));
+                                                }
 
-                                            if (File.Exists(itemIconPath))
-                                            {
-                                                Image ItemIcon = Image.FromFile(itemIconPath);
-                                                g.DrawImage(ItemIcon, new Point(5, 5));
-                                            }
-                                            else
-                                            {
-                                                Image ItemIcon = Properties.Resources.unknown512;
-                                                g.DrawImage(ItemIcon, new Point(0, 0));
-                                            }
+                                                Image bg512 = Properties.Resources.BG512;
+                                                g.DrawImage(bg512, new Point(5, 383));
 
-                                            Image bg512 = Properties.Resources.BG512;
-                                            g.DrawImage(bg512, new Point(5, 383));
-
-                                            try
-                                            {
-                                                g.DrawString(ItemName, new Font(pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), centeredString);
-                                            }
-                                            catch (NullReferenceException)
-                                            {
-                                                AppendText("[NullReferenceException] ", Color.Red);
-                                                AppendText("No ", Color.Black);
-                                                AppendText("DisplayName ", Color.SteelBlue);
-                                                AppendText("found", Color.Black, true);
-                                            } //NAME
-                                            try
-                                            {
-                                                g.DrawString(IDParser[iii].Description, new Font("Arial", 10), new SolidBrush(Color.White), new Point(522 / 2, 465), centeredStringLine);
-                                            }
-                                            catch (NullReferenceException)
-                                            {
-                                                AppendText("[NullReferenceException] ", Color.Red);
-                                                AppendText("No ", Color.Black);
-                                                AppendText("Description ", Color.SteelBlue);
-                                                AppendText("found", Color.Black, true);
-                                            } //DESCRIPTION
-                                            try
-                                            {
-                                                g.DrawString(IDParser[iii].ShortDescription, new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
-                                            }
-                                            catch (NullReferenceException)
-                                            {
-                                                AppendText("[NullReferenceException] ", Color.Red);
-                                                AppendText("No ", Color.Black);
-                                                AppendText("ShortDescription ", Color.SteelBlue);
-                                                AppendText("found", Color.Black, true);
-                                            } //TYPE
-                                            try
-                                            {
-                                                g.DrawString(IDParser[iii].GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(IDParser[iii].GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), rightString);
-                                            }
-                                            catch (NullReferenceException)
-                                            {
-                                                AppendText("[NullReferenceException] ", Color.Red);
-                                                AppendText("No ", Color.Black);
-                                                AppendText("GameplayTags ", Color.SteelBlue);
-                                                AppendText("found", Color.Black, true);
-                                            }
-                                            catch (IndexOutOfRangeException)
-                                            {
                                                 try
                                                 {
-                                                    g.DrawString(IDParser[iii].GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(IDParser[iii].GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Weapon.Ranged."))].Substring(14), new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), rightString);
+                                                    g.DrawString(ItemName, new Font(pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), centeredString);
+                                                }
+                                                catch (NullReferenceException)
+                                                {
+                                                    AppendText("[NullReferenceException] ", Color.Red);
+                                                    AppendText("No ", Color.Black);
+                                                    AppendText("DisplayName ", Color.SteelBlue);
+                                                    AppendText("found", Color.Black, true);
+                                                } //NAME
+                                                try
+                                                {
+                                                    g.DrawString(IDParser[iii].Description, new Font("Arial", 10), new SolidBrush(Color.White), new Point(522 / 2, 465), centeredStringLine);
+                                                }
+                                                catch (NullReferenceException)
+                                                {
+                                                    AppendText("[NullReferenceException] ", Color.Red);
+                                                    AppendText("No ", Color.Black);
+                                                    AppendText("Description ", Color.SteelBlue);
+                                                    AppendText("found", Color.Black, true);
+                                                } //DESCRIPTION
+                                                try
+                                                {
+                                                    g.DrawString(IDParser[iii].ShortDescription, new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                                                }
+                                                catch (NullReferenceException)
+                                                {
+                                                    AppendText("[NullReferenceException] ", Color.Red);
+                                                    AppendText("No ", Color.Black);
+                                                    AppendText("ShortDescription ", Color.SteelBlue);
+                                                    AppendText("found", Color.Black, true);
+                                                } //TYPE
+                                                try
+                                                {
+                                                    g.DrawString(IDParser[iii].GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(IDParser[iii].GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), rightString);
                                                 }
                                                 catch (NullReferenceException)
                                                 {
@@ -1174,357 +1181,302 @@ namespace FModel
                                                 }
                                                 catch (IndexOutOfRangeException)
                                                 {
-                                                    AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                    try
+                                                    {
+                                                        g.DrawString(IDParser[iii].GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(IDParser[iii].GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Weapon.Ranged."))].Substring(14), new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), rightString);
+                                                    }
+                                                    catch (NullReferenceException)
+                                                    {
+                                                        AppendText("[NullReferenceException] ", Color.Red);
+                                                        AppendText("No ", Color.Black);
+                                                        AppendText("GameplayTags ", Color.SteelBlue);
+                                                        AppendText("found", Color.Black, true);
+                                                    }
+                                                    catch (IndexOutOfRangeException)
+                                                    {
+                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                        AppendText("No ", Color.Black);
+                                                        AppendText("GameplayTags ", Color.SteelBlue);
+                                                        AppendText("as ", Color.Black);
+                                                        AppendText("Cosmetics.Source ", Color.SteelBlue);
+                                                        AppendText("or ", Color.Black);
+                                                        AppendText("Weapon.Ranged ", Color.SteelBlue);
+                                                        AppendText("found", Color.Black, true);
+                                                    }
+                                                } //COSMETIC SOURCE
+
+                                                ItemIconPictureBox.Image = bmp;
+                                                if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
+                                                {
+                                                    AppendText("Auto saving icons set to ", Color.Black);
+                                                    AppendText("True", Color.Green, true);
+                                                    ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + ItemName + ".png", ImageFormat.Png);
+
+                                                    AppendText("✔ ", Color.Green);
+                                                    AppendText(ItemName, Color.DarkRed);
+                                                    AppendText(" successfully saved to ", Color.Black);
+                                                    AppendText(docPath + "\\Generated Icons\\" + ItemName + ".png", Color.SteelBlue, true);
+                                                }
+                                            }
+                                            if (IDParser[iii].ExportType == "FortVariantTokenType")
+                                            {
+                                                AppendText("✔ ", Color.Green);
+                                                AppendText(currentItem, Color.DarkRed);
+                                                AppendText(" is an ", Color.Black);
+                                                AppendText("Cosmetic Variant file", Color.SteelBlue, true);
+
+                                                ItemName = IDParser[iii].DisplayName;
+                                                Bitmap bmp = new Bitmap(522, 522);
+                                                Graphics g = Graphics.FromImage(bmp);
+                                                g.TextRenderingHint = TextRenderingHint.AntiAlias;
+
+                                                getItemRarity(IDParser[iii], g);
+
+                                                string itemIconPath = string.Empty;
+
+                                                if (IDParser[iii].LargePreviewImage != null)
+                                                {
+                                                    string textureFile = Path.GetFileName(IDParser[iii].LargePreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser[iii].LargePreviewImage.AssetPathName).LastIndexOf('.'));
+                                                    AppendText("✔ ", Color.Green);
+                                                    AppendText(textureFile, Color.DarkRed);
+                                                    AppendText(" detected as a ", Color.Black);
+                                                    AppendText("Texture2D file", Color.SteelBlue, true);
+
+                                                    var filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                    if (!File.Exists(filesPath))
+                                                    {
+                                                        if (currentGUID != "0-0-0-0") //DYNAMIC PAK
+                                                        {
+                                                            await Task.Run(() =>
+                                                            {
+                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                            });
+                                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                        }
+                                                        else //NORMAL PAK
+                                                        {
+                                                            await Task.Run(() =>
+                                                            {
+                                                                if (IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/2dAssets/"))
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                                else if (IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                                else
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                            });
+                                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                        }
+                                                    }
+                                                    try
+                                                    {
+                                                        if (filesPath != null)
+                                                        {
+                                                            AppendText("✔ ", Color.Green);
+                                                            AppendText(textureFile, Color.DarkRed);
+                                                            AppendText(" successfully extracted to ", Color.Black);
+                                                            AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
+
+                                                            itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                            if (!File.Exists(itemIconPath))
+                                                            {
+                                                                await Task.Run(() =>
+                                                                {
+                                                                    jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                                });
+                                                                itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                            }
+
+                                                            AppendText("✔ ", Color.Green);
+                                                            AppendText(textureFile, Color.DarkRed);
+                                                            AppendText(" successfully converted to a PNG image with path ", Color.Black);
+                                                            AppendText(itemIconPath, Color.SteelBlue, true);
+                                                        }
+                                                    }
+                                                    catch (IndexOutOfRangeException)
+                                                    {
+                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                        AppendText("Can't extract ", Color.Black);
+                                                        AppendText(textureFile, Color.SteelBlue);
+                                                        AppendText(" in ", Color.Black);
+                                                        AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                    }
+                                                }
+                                                else if (IDParser[iii].SmallPreviewImage != null)
+                                                {
+                                                    string textureFile = Path.GetFileName(IDParser[iii].SmallPreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser[iii].SmallPreviewImage.AssetPathName).LastIndexOf('.'));
+                                                    AppendText("✔ ", Color.Green);
+                                                    AppendText(textureFile, Color.DarkRed);
+                                                    AppendText(" detected as a ", Color.Black);
+                                                    AppendText("Texture2D file", Color.SteelBlue, true);
+
+                                                    var filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                    if (!File.Exists(filesPath))
+                                                    {
+                                                        if (currentGUID != "0-0-0-0")
+                                                        {
+                                                            await Task.Run(() =>
+                                                            {
+                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                            });
+                                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                        }
+                                                        else
+                                                        {
+                                                            await Task.Run(() =>
+                                                            {
+                                                                if (IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/2dAssets/"))
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                                else if (IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                                else
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                }
+                                                            });
+                                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                        }
+                                                    }
+                                                    try
+                                                    {
+                                                        if (filesPath != null)
+                                                        {
+                                                            AppendText("✔ ", Color.Green);
+                                                            AppendText(textureFile, Color.DarkRed);
+                                                            AppendText(" successfully extracted to ", Color.Black);
+                                                            AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
+
+                                                            itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                            if (!File.Exists(itemIconPath))
+                                                            {
+                                                                await Task.Run(() =>
+                                                                {
+                                                                    jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                                });
+                                                                itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                            }
+
+                                                            AppendText("✔ ", Color.Green);
+                                                            AppendText(textureFile, Color.DarkRed);
+                                                            AppendText(" successfully converted to a PNG image with path ", Color.Black);
+                                                            AppendText(itemIconPath, Color.SteelBlue, true);
+                                                        }
+                                                    }
+                                                    catch (IndexOutOfRangeException)
+                                                    {
+                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                        AppendText("Can't extract ", Color.Black);
+                                                        AppendText(textureFile, Color.SteelBlue);
+                                                        AppendText(" in ", Color.Black);
+                                                        AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                    }
+                                                }
+
+                                                if (File.Exists(itemIconPath))
+                                                {
+                                                    Image ItemIcon = Image.FromFile(itemIconPath);
+                                                    g.DrawImage(ItemIcon, new Point(5, 5));
+                                                }
+                                                else
+                                                {
+                                                    Image ItemIcon = Properties.Resources.unknown512;
+                                                    g.DrawImage(ItemIcon, new Point(0, 0));
+                                                }
+
+                                                Image bg512 = Properties.Resources.BG512;
+                                                g.DrawImage(bg512, new Point(5, 383));
+
+                                                try
+                                                {
+                                                    g.DrawString(ItemName, new Font(pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), centeredString);
+                                                }
+                                                catch (NullReferenceException)
+                                                {
+                                                    AppendText("[NullReferenceException] ", Color.Red);
                                                     AppendText("No ", Color.Black);
-                                                    AppendText("GameplayTags ", Color.SteelBlue);
-                                                    AppendText("as ", Color.Black);
-                                                    AppendText("Cosmetics.Source ", Color.SteelBlue);
-                                                    AppendText("or ", Color.Black);
-                                                    AppendText("Weapon.Ranged ", Color.SteelBlue);
+                                                    AppendText("DisplayName ", Color.SteelBlue);
                                                     AppendText("found", Color.Black, true);
-                                                }
-                                            } //COSMETIC SOURCE
-
-                                            ItemIconPictureBox.Image = bmp;
-                                            if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
-                                            {
-                                                AppendText("Auto saving icons set to ", Color.Black);
-                                                AppendText("True", Color.Green, true);
-                                                ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + ItemName + ".png", ImageFormat.Png);
-
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText(ItemName, Color.DarkRed);
-                                                AppendText(" successfully saved to ", Color.Black);
-                                                AppendText(docPath + "\\Generated Icons\\" + ItemName + ".png", Color.SteelBlue, true);
-                                            }
-                                        }
-                                        if (IDParser[iii].ExportType == "FortVariantTokenType")
-                                        {
-                                            AppendText("✔ ", Color.Green);
-                                            AppendText(currentItem, Color.DarkRed);
-                                            AppendText(" is an ", Color.Black);
-                                            AppendText("Cosmetic Variant file", Color.SteelBlue, true);
-
-                                            ItemName = IDParser[iii].DisplayName;
-                                            Bitmap bmp = new Bitmap(522, 522);
-                                            Graphics g = Graphics.FromImage(bmp);
-                                            g.TextRenderingHint = TextRenderingHint.AntiAlias;
-
-                                            getItemRarity(IDParser[iii], g);
-
-                                            string itemIconPath = string.Empty;
-
-                                            if (IDParser[iii].LargePreviewImage != null)
-                                            {
-                                                string textureFile = Path.GetFileName(IDParser[iii].LargePreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser[iii].LargePreviewImage.AssetPathName).LastIndexOf('.'));
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText(textureFile, Color.DarkRed);
-                                                AppendText(" detected as a ", Color.Black);
-                                                AppendText("Texture2D file", Color.SteelBlue, true);
-
-                                                var filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                if (!File.Exists(filesPath))
-                                                {
-                                                    if (currentGUID != "0-0-0-0") //DYNAMIC PAK
-                                                    {
-                                                        await Task.Run(() => {
-                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                        });
-                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                    }
-                                                    else //NORMAL PAK
-                                                    {
-                                                        await Task.Run(() => {
-                                                            if (IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/2dAssets/"))
-                                                            {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                            }
-                                                            else if (IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || IDParser[iii].LargePreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
-                                                            {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                            }
-                                                            else
-                                                            {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                            }
-                                                        });
-                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                    }
-                                                }
+                                                } //NAME
                                                 try
                                                 {
-                                                    if (filesPath != null)
-                                                    {
-                                                        AppendText("✔ ", Color.Green);
-                                                        AppendText(textureFile, Color.DarkRed);
-                                                        AppendText(" successfully extracted to ", Color.Black);
-                                                        AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
-
-                                                        itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
-                                                        if (!File.Exists(itemIconPath))
-                                                        {
-                                                            await Task.Run(() => {
-                                                                jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
-                                                            });
-                                                            itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
-                                                        }
-
-                                                        AppendText("✔ ", Color.Green);
-                                                        AppendText(textureFile, Color.DarkRed);
-                                                        AppendText(" successfully converted to a PNG image with path ", Color.Black);
-                                                        AppendText(itemIconPath, Color.SteelBlue, true);
-                                                    }
+                                                    g.DrawString(IDParser[iii].Description, new Font("Arial", 10), new SolidBrush(Color.White), new Point(522 / 2, 465), centeredStringLine);
                                                 }
-                                                catch (IndexOutOfRangeException)
+                                                catch (NullReferenceException)
                                                 {
-                                                    AppendText("[IndexOutOfRangeException] ", Color.Red);
-                                                    AppendText("Can't extract ", Color.Black);
-                                                    AppendText(textureFile, Color.SteelBlue);
-                                                    AppendText(" in ", Color.Black);
-                                                    AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
-                                                }
-                                            }
-                                            else if (IDParser[iii].SmallPreviewImage != null)
-                                            {
-                                                string textureFile = Path.GetFileName(IDParser[iii].SmallPreviewImage.AssetPathName).Substring(0, Path.GetFileName(IDParser[iii].SmallPreviewImage.AssetPathName).LastIndexOf('.'));
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText(textureFile, Color.DarkRed);
-                                                AppendText(" detected as a ", Color.Black);
-                                                AppendText("Texture2D file", Color.SteelBlue, true);
-
-                                                var filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                if (!File.Exists(filesPath))
-                                                {
-                                                    if (currentGUID != "0-0-0-0")
-                                                    {
-                                                        await Task.Run(() => {
-                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                        });
-                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                    }
-                                                    else
-                                                    {
-                                                        await Task.Run(() => {
-                                                            if (IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/2dAssets/"))
-                                                            {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                            }
-                                                            else if (IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/Athena/TestAssets/") || IDParser[iii].SmallPreviewImage.AssetPathName.Contains("/Game/Athena/Prototype/"))
-                                                            {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                            }
-                                                            else
-                                                            {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile + "\" \"" + docPath + "\"");
-                                                            }
-                                                        });
-                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
-                                                    }
-                                                }
+                                                    AppendText("[NullReferenceException] ", Color.Red);
+                                                    AppendText("No ", Color.Black);
+                                                    AppendText("Description ", Color.SteelBlue);
+                                                    AppendText("found", Color.Black, true);
+                                                } //DESCRIPTION
                                                 try
                                                 {
-                                                    if (filesPath != null)
-                                                    {
-                                                        AppendText("✔ ", Color.Green);
-                                                        AppendText(textureFile, Color.DarkRed);
-                                                        AppendText(" successfully extracted to ", Color.Black);
-                                                        AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
-
-                                                        itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
-                                                        if (!File.Exists(itemIconPath))
-                                                        {
-                                                            await Task.Run(() => {
-                                                                jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
-                                                            });
-                                                            itemIconPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
-                                                        }
-
-                                                        AppendText("✔ ", Color.Green);
-                                                        AppendText(textureFile, Color.DarkRed);
-                                                        AppendText(" successfully converted to a PNG image with path ", Color.Black);
-                                                        AppendText(itemIconPath, Color.SteelBlue, true);
-                                                    }
+                                                    g.DrawString(IDParser[iii].ShortDescription, new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
                                                 }
-                                                catch (IndexOutOfRangeException)
+                                                catch (NullReferenceException)
                                                 {
-                                                    AppendText("[IndexOutOfRangeException] ", Color.Red);
-                                                    AppendText("Can't extract ", Color.Black);
-                                                    AppendText(textureFile, Color.SteelBlue);
-                                                    AppendText(" in ", Color.Black);
-                                                    AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                    AppendText("[NullReferenceException] ", Color.Red);
+                                                    AppendText("No ", Color.Black);
+                                                    AppendText("ShortDescription ", Color.SteelBlue);
+                                                    AppendText("found", Color.Black, true);
+                                                } //TYPE
+                                                try
+                                                {
+                                                    g.DrawString(IDParser[iii].cosmetic_item, new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), rightString);
                                                 }
-                                            }
+                                                catch (NullReferenceException)
+                                                {
+                                                    AppendText("[NullReferenceException] ", Color.Red);
+                                                    AppendText("No ", Color.Black);
+                                                    AppendText("Cosmetic Item ", Color.SteelBlue);
+                                                    AppendText("found", Color.Black, true);
+                                                } //COSMETIC ITEM
 
-                                            if (File.Exists(itemIconPath))
-                                            {
-                                                Image ItemIcon = Image.FromFile(itemIconPath);
-                                                g.DrawImage(ItemIcon, new Point(5, 5));
-                                            }
-                                            else
-                                            {
-                                                Image ItemIcon = Properties.Resources.unknown512;
-                                                g.DrawImage(ItemIcon, new Point(0, 0));
-                                            }
+                                                ItemIconPictureBox.Image = bmp;
+                                                if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
+                                                {
+                                                    AppendText("Auto saving icons set to ", Color.Black);
+                                                    AppendText("True", Color.Green, true);
+                                                    ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + ItemName + ".png", ImageFormat.Png);
 
-                                            Image bg512 = Properties.Resources.BG512;
-                                            g.DrawImage(bg512, new Point(5, 383));
-
-                                            try
-                                            {
-                                                g.DrawString(ItemName, new Font(pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), centeredString);
-                                            }
-                                            catch (NullReferenceException)
-                                            {
-                                                AppendText("[NullReferenceException] ", Color.Red);
-                                                AppendText("No ", Color.Black);
-                                                AppendText("DisplayName ", Color.SteelBlue);
-                                                AppendText("found", Color.Black, true);
-                                            } //NAME
-                                            try
-                                            {
-                                                g.DrawString(IDParser[iii].Description, new Font("Arial", 10), new SolidBrush(Color.White), new Point(522 / 2, 465), centeredStringLine);
-                                            }
-                                            catch (NullReferenceException)
-                                            {
-                                                AppendText("[NullReferenceException] ", Color.Red);
-                                                AppendText("No ", Color.Black);
-                                                AppendText("Description ", Color.SteelBlue);
-                                                AppendText("found", Color.Black, true);
-                                            } //DESCRIPTION
-                                            try
-                                            {
-                                                g.DrawString(IDParser[iii].ShortDescription, new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
-                                            }
-                                            catch (NullReferenceException)
-                                            {
-                                                AppendText("[NullReferenceException] ", Color.Red);
-                                                AppendText("No ", Color.Black);
-                                                AppendText("ShortDescription ", Color.SteelBlue);
-                                                AppendText("found", Color.Black, true);
-                                            } //TYPE
-                                            try
-                                            {
-                                                g.DrawString(IDParser[iii].cosmetic_item, new Font(pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), rightString);
-                                            }
-                                            catch (NullReferenceException)
-                                            {
-                                                AppendText("[NullReferenceException] ", Color.Red);
-                                                AppendText("No ", Color.Black);
-                                                AppendText("Cosmetic Item ", Color.SteelBlue);
-                                                AppendText("found", Color.Black, true);
-                                            } //COSMETIC ITEM
-
-                                            ItemIconPictureBox.Image = bmp;
-                                            if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
-                                            {
-                                                AppendText("Auto saving icons set to ", Color.Black);
-                                                AppendText("True", Color.Green, true);
-                                                ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + ItemName + ".png", ImageFormat.Png);
-
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText(ItemName, Color.DarkRed);
-                                                AppendText(" successfully saved to ", Color.Black);
-                                                AppendText(docPath + "\\Generated Icons\\" + ItemName + ".png", Color.SteelBlue, true);
+                                                    AppendText("✔ ", Color.Green);
+                                                    AppendText(ItemName, Color.DarkRed);
+                                                    AppendText(" successfully saved to ", Color.Black);
+                                                    AppendText(docPath + "\\Generated Icons\\" + ItemName + ".png", Color.SteelBlue, true);
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                for (int ii = 0; ii < IDParser.Length; ii++)
-                                {
-                                    if (IDParser[ii].ExportType == "Texture2D")
+                                    for (int ii = 0; ii < IDParser.Length; ii++)
                                     {
-                                        AppendText("Parsing...", Color.Black, true);
-                                        ItemName = currentItem;
-
-                                        AppendText("✔ ", Color.Green);
-                                        AppendText(currentItem, Color.DarkRed);
-                                        AppendText(" detected as a ", Color.Black);
-                                        AppendText("Texture2D file", Color.SteelBlue, true);
-
-                                        string IMGPath = string.Empty;
-
-                                        var filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
-                                        if (!File.Exists(filesPath))
+                                        if (IDParser[ii].ExportType == "Texture2D")
                                         {
-                                            await Task.Run(() => {
-                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
-                                            });
-                                            filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
-                                        }
-                                        try
-                                        {
-                                            if (filesPath != null)
-                                            {
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText(currentItem, Color.DarkRed);
-                                                AppendText(" successfully extracted to ", Color.Black);
-                                                AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
-
-                                                IMGPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
-                                                if (!File.Exists(IMGPath))
-                                                {
-                                                    await Task.Run(() => {
-                                                        jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
-                                                    });
-                                                    IMGPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
-                                                }
-
-                                                AppendText("✔ ", Color.Green);
-                                                AppendText(currentItem, Color.DarkRed);
-                                                AppendText(" successfully converted to a PNG image with path ", Color.Black);
-                                                AppendText(IMGPath, Color.SteelBlue, true);
-                                            }
-                                        }
-                                        catch (IndexOutOfRangeException)
-                                        {
-                                            AppendText("[IndexOutOfRangeException] ", Color.Red);
-                                            AppendText("Can't extract ", Color.Black);
-                                            AppendText(currentItem, Color.SteelBlue);
-                                            AppendText(" in ", Color.Black);
-                                            AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
-                                        }
-
-                                        if (File.Exists(IMGPath))
-                                        {
-                                            ItemIconPictureBox.Image = Image.FromFile(IMGPath);
-                                        }
-                                        else
-                                        {
-                                            ItemIconPictureBox.Image = Properties.Resources.unknown512;
-                                        }
-
-                                        if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
-                                        {
-                                            AppendText("Auto saving images set to ", Color.Black);
-                                            AppendText("True", Color.Green, true);
-                                            ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + ItemName + ".png", ImageFormat.Png);
+                                            AppendText("Parsing...", Color.Black, true);
+                                            ItemName = currentItem;
 
                                             AppendText("✔ ", Color.Green);
-                                            AppendText(ItemName, Color.DarkRed);
-                                            AppendText(" successfully saved to ", Color.Black);
-                                            AppendText(docPath + "\\Generated Icons\\" + ItemName + ".png", Color.SteelBlue, true);
-                                        }
-                                    } //ASSET IS A TEXTURE => LOAD TEXTURE
-                                    if (IDParser[ii].ExportType == "SoundWave")
-                                    {
-                                        AppendText("Parsing...", Color.Black, true);
-                                        ItemName = currentItem;
+                                            AppendText(currentItem, Color.DarkRed);
+                                            AppendText(" detected as a ", Color.Black);
+                                            AppendText("Texture2D file", Color.SteelBlue, true);
 
-                                        AppendText("✔ ", Color.Green);
-                                        AppendText(currentItem, Color.DarkRed);
-                                        AppendText(" detected as a ", Color.Black);
-                                        AppendText("SoundWave file", Color.SteelBlue, true);
+                                            string IMGPath = string.Empty;
 
-                                        string MusicPath = Directory.GetFiles(docPath + "\\Extracted Sounds", currentItem + ".ogg", SearchOption.AllDirectories).FirstOrDefault();
-                                        if (!File.Exists(MusicPath))
-                                        {
-                                            var filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".uexp", SearchOption.AllDirectories).FirstOrDefault();
+                                            var filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                                             if (!File.Exists(filesPath))
                                             {
-                                                await Task.Run(() => {
+                                                await Task.Run(() =>
+                                                {
                                                     jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
                                                 });
-                                                filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".uexp", SearchOption.AllDirectories).FirstOrDefault();
+                                                filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                                             }
                                             try
                                             {
@@ -1534,20 +1486,21 @@ namespace FModel
                                                     AppendText(currentItem, Color.DarkRed);
                                                     AppendText(" successfully extracted to ", Color.Black);
                                                     AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
-                                                    try
+
+                                                    IMGPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
+                                                    if (!File.Exists(IMGPath))
                                                     {
-                                                        convertToOGG(filesPath, currentItem);
-                                                    }
-                                                    catch (Exception ex)
-                                                    {
-                                                        Console.WriteLine(ex.Message);
+                                                        await Task.Run(() =>
+                                                        {
+                                                            jwpmProcess("texture \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                        });
+                                                        IMGPath = filesPath.Substring(0, filesPath.LastIndexOf('.')) + ".png";
                                                     }
 
-                                                    MusicPath = docPath + "\\Extracted Sounds\\" + Path.GetFileNameWithoutExtension(filesPath) + ".ogg";
                                                     AppendText("✔ ", Color.Green);
                                                     AppendText(currentItem, Color.DarkRed);
-                                                    AppendText(" successfully converted to an OGG sound with path ", Color.Black);
-                                                    AppendText(MusicPath, Color.SteelBlue, true);
+                                                    AppendText(" successfully converted to a PNG image with path ", Color.Black);
+                                                    AppendText(IMGPath, Color.SteelBlue, true);
                                                 }
                                             }
                                             catch (IndexOutOfRangeException)
@@ -1558,16 +1511,99 @@ namespace FModel
                                                 AppendText(" in ", Color.Black);
                                                 AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
                                             }
-                                        }
-                                        OpenWithDefaultProgramAndNoFocus(MusicPath);
-                                    } //ASSET IS A SOUND => CONVERT AND LOAD SOUND
+
+                                            if (File.Exists(IMGPath))
+                                            {
+                                                ItemIconPictureBox.Image = Image.FromFile(IMGPath);
+                                            }
+                                            else
+                                            {
+                                                ItemIconPictureBox.Image = Properties.Resources.unknown512;
+                                            }
+
+                                            if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
+                                            {
+                                                AppendText("Auto saving images set to ", Color.Black);
+                                                AppendText("True", Color.Green, true);
+                                                ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + ItemName + ".png", ImageFormat.Png);
+
+                                                AppendText("✔ ", Color.Green);
+                                                AppendText(ItemName, Color.DarkRed);
+                                                AppendText(" successfully saved to ", Color.Black);
+                                                AppendText(docPath + "\\Generated Icons\\" + ItemName + ".png", Color.SteelBlue, true);
+                                            }
+                                        } //ASSET IS A TEXTURE => LOAD TEXTURE
+                                        if (IDParser[ii].ExportType == "SoundWave")
+                                        {
+                                            AppendText("Parsing...", Color.Black, true);
+                                            ItemName = currentItem;
+
+                                            AppendText("✔ ", Color.Green);
+                                            AppendText(currentItem, Color.DarkRed);
+                                            AppendText(" detected as a ", Color.Black);
+                                            AppendText("SoundWave file", Color.SteelBlue, true);
+
+                                            string MusicPath = Directory.GetFiles(docPath + "\\Extracted Sounds", currentItem + ".ogg", SearchOption.AllDirectories).FirstOrDefault();
+                                            if (!File.Exists(MusicPath))
+                                            {
+                                                var filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".uexp", SearchOption.AllDirectories).FirstOrDefault();
+                                                if (!File.Exists(filesPath))
+                                                {
+                                                    await Task.Run(() =>
+                                                    {
+                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + currentItem + "\" \"" + docPath + "\"");
+                                                    });
+                                                    filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".uexp", SearchOption.AllDirectories).FirstOrDefault();
+                                                }
+                                                try
+                                                {
+                                                    if (filesPath != null)
+                                                    {
+                                                        AppendText("✔ ", Color.Green);
+                                                        AppendText(currentItem, Color.DarkRed);
+                                                        AppendText(" successfully extracted to ", Color.Black);
+                                                        AppendText(filesPath.Substring(0, filesPath.LastIndexOf('.')), Color.SteelBlue, true);
+                                                        try
+                                                        {
+                                                            convertToOGG(filesPath, currentItem);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            Console.WriteLine(ex.Message);
+                                                        }
+
+                                                        MusicPath = docPath + "\\Extracted Sounds\\" + Path.GetFileNameWithoutExtension(filesPath) + ".ogg";
+                                                        AppendText("✔ ", Color.Green);
+                                                        AppendText(currentItem, Color.DarkRed);
+                                                        AppendText(" successfully converted to an OGG sound with path ", Color.Black);
+                                                        AppendText(MusicPath, Color.SteelBlue, true);
+                                                    }
+                                                }
+                                                catch (IndexOutOfRangeException)
+                                                {
+                                                    AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                    AppendText("Can't extract ", Color.Black);
+                                                    AppendText(currentItem, Color.SteelBlue);
+                                                    AppendText(" in ", Color.Black);
+                                                    AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
+                                                }
+                                            }
+                                            OpenWithDefaultProgramAndNoFocus(MusicPath);
+                                        } //ASSET IS A SOUND => CONVERT AND LOAD SOUND
+                                    }
                                 }
                             }
+                            else
+                            {
+                                AppendText("✗ ", Color.Red);
+                                AppendText("No serialized file found", Color.Black, true);
+                            }
                         }
-                        else
+                        catch (JsonSerializationException)
                         {
+                            AppendText("", Color.Black, true);
                             AppendText("✗ ", Color.Red);
-                            AppendText("No serialized file found", Color.Black, true);
+                            AppendText("Error, json file too large to be fully displayed", Color.Black, true);
                         }
                     }
                     if (files.Contains(".ufont")) //ASSET IS A FONT => CONVERT TO FONT
@@ -1583,7 +1619,7 @@ namespace FModel
                 {
                     AppendText("", Color.Black, true);
                     AppendText("✗ ", Color.Red);
-                    AppendText(" Error while extracting ", Color.Black);
+                    AppendText("Error while extracting ", Color.Black);
                     AppendText(currentItem, Color.SteelBlue, true);
                 }
             }
@@ -1615,19 +1651,22 @@ namespace FModel
         }
         private void OpenImageTS_Click(object sender, EventArgs e)
         {
-            var newForm = new Form();
+            if (ItemIconPictureBox.Image != null)
+            {
+                var newForm = new Form();
 
-            PictureBox pb = new PictureBox();
-            pb.Dock = DockStyle.Fill;
-            pb.Image = ItemIconPictureBox.Image;
-            pb.SizeMode = PictureBoxSizeMode.Zoom;
+                PictureBox pb = new PictureBox();
+                pb.Dock = DockStyle.Fill;
+                pb.Image = ItemIconPictureBox.Image;
+                pb.SizeMode = PictureBoxSizeMode.Zoom;
 
-            newForm.Size = ItemIconPictureBox.Image.Size;
-            newForm.Icon = Properties.Resources.FNTools_Logo_Icon;
-            newForm.Text = currentItem;
-            newForm.StartPosition = FormStartPosition.CenterScreen;
-            newForm.Controls.Add(pb);
-            newForm.Show();
+                newForm.Size = ItemIconPictureBox.Image.Size;
+                newForm.Icon = Properties.Resources.FNTools_Logo_Icon;
+                newForm.Text = currentItem;
+                newForm.StartPosition = FormStartPosition.CenterScreen;
+                newForm.Controls.Add(pb);
+                newForm.Show();
+            }
         }
 
         private void mergeGeneratedImagesToolStripMenuItem_Click(object sender, EventArgs e)
