@@ -55,10 +55,11 @@ namespace FModel
         /*****************************
          USEFUL STUFF FOR THIS PROJECT
          *****************************/
-        private void AppendText(string text, Color color, bool addNewLine = false)
+        private void AppendText(string text, Color color, bool addNewLine = false, HorizontalAlignment align = HorizontalAlignment.Left)
         {
             ConsoleRichTextBox.SuspendLayout();
             ConsoleRichTextBox.SelectionColor = color;
+            ConsoleRichTextBox.SelectionAlignment = align;
             ConsoleRichTextBox.AppendText(addNewLine
                 ? $"{text}{Environment.NewLine}"
                 : text);
@@ -714,10 +715,9 @@ namespace FModel
 
                                 if (filesJSON.Contains("Athena\\Items\\Cosmetics") || filesJSON.Contains("Athena\\Items\\CosmeticVariantTokens") || filesJSON.Contains("Athena\\Items\\Weapons")) //ASSET IS AN ID => CREATE ICON
                                 {
+                                    AppendText("Parsing...", Color.Black, true);
                                     for (int iii = 0; iii < IDParser.Length; iii++)
                                     {
-                                        AppendText("Parsing...", Color.Black, true);
-
                                         if (IDParser[iii].ExportType.Contains("Item") && IDParser[iii].ExportType.Contains("Definition"))
                                         {
                                             AppendText("✔ ", Color.Green);
@@ -1594,7 +1594,7 @@ namespace FModel
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
             string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-            AppendText("\nDone\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tTime elapsed: " + elapsedTime, Color.Green, true);
+            AppendText("\nTime elapsed: " + elapsedTime, Color.Green, true, HorizontalAlignment.Right);
         }
 
         private void SaveImageButton_Click(object sender, EventArgs e)
@@ -1659,13 +1659,13 @@ namespace FModel
                     }
                     int numperrow = Properties.Settings.Default.mergerImagesRow;
                     var w = 530 * numperrow;
-                    int h = int.Parse(Math.Ceiling(double.Parse(selectedImages.Count.ToString()) / numperrow).ToString()) * 530;
-                    Bitmap bmp = new Bitmap(w - 8, h - 8);
-
                     if (selectedImages.Count * 530 < 530 * numperrow)
                     {
                         w = selectedImages.Count * 530;
                     }
+
+                    int h = int.Parse(Math.Ceiling(double.Parse(selectedImages.Count.ToString()) / numperrow).ToString()) * 530;
+                    Bitmap bmp = new Bitmap(w - 8, h - 8);
 
                     var num = 1;
                     var cur_w = 0;
@@ -1718,19 +1718,6 @@ namespace FModel
             {
                 var optionForm = new OptionsWindow();
                 optionForm.Show();
-            }
-        }
-
-        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if ((Application.OpenForms["HelpWindow"] as HelpWindow) != null)
-            {
-                Application.OpenForms["HelpWindow"].Focus();
-            }
-            else
-            {
-                var helpForm = new HelpWindow();
-                helpForm.Show();
             }
         }
     }

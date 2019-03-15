@@ -34,7 +34,6 @@
             this.LoadButton = new FModel.SplitButton();
             this.LoadContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AESKeyLabel = new System.Windows.Forms.Label();
             this.AESKeyTextBox = new System.Windows.Forms.TextBox();
             this.PAKsComboBox = new System.Windows.Forms.ComboBox();
@@ -93,10 +92,9 @@
             // 
             this.LoadContext.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.LoadContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem,
-            this.helpToolStripMenuItem});
+            this.optionsToolStripMenuItem});
             this.LoadContext.Name = "LoadContext";
-            this.LoadContext.Size = new System.Drawing.Size(128, 52);
+            this.LoadContext.Size = new System.Drawing.Size(128, 28);
             // 
             // optionsToolStripMenuItem
             // 
@@ -104,13 +102,6 @@
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(127, 24);
             this.optionsToolStripMenuItem.Text = "Options";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(127, 24);
-            this.helpToolStripMenuItem.Text = "Help";
-            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // AESKeyLabel
             // 
@@ -249,7 +240,7 @@
             this.toolStripSeparator1,
             this.mergeGeneratedImagesToolStripMenuItem});
             this.ExtractAsset.Name = "ExtractAsset";
-            this.ExtractAsset.Size = new System.Drawing.Size(252, 107);
+            this.ExtractAsset.Size = new System.Drawing.Size(252, 82);
             // 
             // LoadDataTS
             // 
@@ -363,7 +354,6 @@
         private SplitButton LoadButton;
         private System.Windows.Forms.ContextMenuStrip LoadContext;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mergeGeneratedImagesToolStripMenuItem;
         private System.Windows.Forms.ImageList TreeViewImageList;
