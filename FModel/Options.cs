@@ -25,6 +25,10 @@ namespace FModel
             textBox2.Text = Properties.Settings.Default.FortnitePAKs;
             textBox3.Text = Properties.Settings.Default.mergerFileName;
             imgsPerRow.Value = Properties.Settings.Default.mergerImagesRow;
+            checkBox2.Checked = Properties.Settings.Default.createIconForCosmetics;
+            checkBox5.Checked = Properties.Settings.Default.createIconForVariants;
+            checkBox3.Checked = Properties.Settings.Default.createIconForConsumablesWeapons;
+            checkBox4.Checked = Properties.Settings.Default.createIconForTraps;
 
             PAKBefore = Properties.Settings.Default.FortnitePAKs;
             OutputBefore = Properties.Settings.Default.ExtractOutput;
@@ -40,6 +44,40 @@ namespace FModel
             {
                 Properties.Settings.Default.ExtractAndSerialize = false;
             }
+            if (checkBox2.Checked == true)
+            {
+                Properties.Settings.Default.createIconForCosmetics = true;
+            }
+            if (checkBox2.Checked == false)
+            {
+                Properties.Settings.Default.createIconForCosmetics = false;
+            }
+            if (checkBox5.Checked == true)
+            {
+                Properties.Settings.Default.createIconForVariants = true;
+            }
+            if (checkBox5.Checked == false)
+            {
+                Properties.Settings.Default.createIconForVariants = false;
+            }
+            if (checkBox3.Checked == true)
+            {
+                Properties.Settings.Default.createIconForConsumablesWeapons = true;
+            }
+            if (checkBox3.Checked == false)
+            {
+                Properties.Settings.Default.createIconForConsumablesWeapons = false;
+            }
+            if (checkBox4.Checked == true)
+            {
+                Properties.Settings.Default.createIconForTraps = true;
+            }
+            if (checkBox4.Checked == false)
+            {
+                Properties.Settings.Default.createIconForTraps = false;
+            }
+
+
             Properties.Settings.Default.ExtractOutput = textBox1.Text;
             Properties.Settings.Default.FortnitePAKs = textBox2.Text;
             Properties.Settings.Default.mergerFileName = textBox3.Text;

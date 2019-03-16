@@ -81,5 +81,49 @@ namespace FModel.Properties {
                 this["mergerImagesRow"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public bool createIconForCosmetics {
+            get {
+                return ((bool)(this["createIconForCosmetics"]));
+            }
+            set {
+                this["createIconForCosmetics"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public bool createIconForConsumablesWeapons {
+            get {
+                return ((bool)(this["createIconForConsumablesWeapons"]));
+            }
+            set {
+                this["createIconForConsumablesWeapons"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public bool createIconForTraps {
+            get {
+                return ((bool)(this["createIconForTraps"]));
+            }
+            set {
+                this["createIconForTraps"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public bool createIconForVariants {
+            get {
+                return ((bool)(this["createIconForVariants"]));
+            }
+            set {
+                this["createIconForVariants"] = value;
+            }
+        }
     }
 }
