@@ -14,7 +14,7 @@
 [.NET Framework 4.6.1](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net461)
 ### How does it works
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder and it'll automatically download the latest version of the modded Fortnite Asset Parser in this subfolder.
-![](https://i.imgur.com/oaceS8K.gif)
+![](https://i.imgur.com/sO6G6Vy.gif)
 
 **2.** Restart the executable, select your .PAK file, enter the AES key and click **Load**
   - It will parse all Assets contained in the selected .PAK file with their respective path
@@ -28,6 +28,8 @@
     - Try to display the Asset as PNG
   - Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
+  - Asset is a **_Bundle Of Challenges_**:
+    - Will display all challenges' description & count needed to complete them
   - Asset is a **_Font_**:
     - Try to convert the Asset to OTF
 
@@ -45,8 +47,9 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
 
 ## TODO
 - [ ] Improve speed
-- [x] Multithreading
+- [x] Multithreading - Need improvements
 - [x] Filter for the items ListBox
+- [x] Quest viewer or something
 - [ ] More settings
 - [ ] Stop button while extracting
 - [ ] Support for meshes

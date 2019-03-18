@@ -6,7 +6,7 @@
 //
 //    var itemsIdParser = ItemsIdParser.FromJson(jsonString);
 
-namespace FModel
+namespace FModel.Items
 {
     using System;
     using System.Collections.Generic;
@@ -71,12 +71,12 @@ namespace FModel
 
     public partial class ItemsIdParser
     {
-        public static ItemsIdParser[] FromJson(string json) => JsonConvert.DeserializeObject<ItemsIdParser[]>(json, FModel.Converter.Settings);
+        public static ItemsIdParser[] FromJson(string json) => JsonConvert.DeserializeObject<ItemsIdParser[]>(json, FModel.Items.Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this ItemsIdParser[] self) => JsonConvert.SerializeObject(self, FModel.Converter.Settings);
+        public static string ToJson(this ItemsIdParser[] self) => JsonConvert.SerializeObject(self, FModel.Items.Converter.Settings);
     }
 
     internal static class Converter

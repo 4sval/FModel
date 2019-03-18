@@ -94,12 +94,12 @@
             this.LoadContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.optionsToolStripMenuItem});
             this.LoadContext.Name = "LoadContext";
-            this.LoadContext.Size = new System.Drawing.Size(128, 28);
+            this.LoadContext.Size = new System.Drawing.Size(117, 26);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(127, 24);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.optionsToolStripMenuItem.Text = "Options";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
@@ -209,13 +209,13 @@
             this.ImageContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OpenImageTS});
             this.ImageContext.Name = "ImageContext";
-            this.ImageContext.Size = new System.Drawing.Size(155, 28);
+            this.ImageContext.Size = new System.Drawing.Size(140, 26);
             // 
             // OpenImageTS
             // 
             this.OpenImageTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.OpenImageTS.Name = "OpenImageTS";
-            this.OpenImageTS.Size = new System.Drawing.Size(154, 24);
+            this.OpenImageTS.Size = new System.Drawing.Size(139, 22);
             this.OpenImageTS.Text = "Open Image";
             this.OpenImageTS.Click += new System.EventHandler(this.OpenImageTS_Click);
             // 
@@ -240,7 +240,7 @@
             this.toolStripSeparator1,
             this.mergeGeneratedImagesToolStripMenuItem});
             this.ExtractAsset.Name = "ExtractAsset";
-            this.ExtractAsset.Size = new System.Drawing.Size(252, 82);
+            this.ExtractAsset.Size = new System.Drawing.Size(223, 76);
             // 
             // LoadDataTS
             // 
@@ -250,7 +250,7 @@
             this.LoadDataTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.LoadDataTS.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.LoadDataTS.Name = "LoadDataTS";
-            this.LoadDataTS.Size = new System.Drawing.Size(251, 24);
+            this.LoadDataTS.Size = new System.Drawing.Size(222, 22);
             this.LoadDataTS.Text = "Load Data After Serialization";
             // 
             // SaveImageTS
@@ -258,18 +258,18 @@
             this.SaveImageTS.CheckOnClick = true;
             this.SaveImageTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.SaveImageTS.Name = "SaveImageTS";
-            this.SaveImageTS.Size = new System.Drawing.Size(251, 24);
+            this.SaveImageTS.Size = new System.Drawing.Size(222, 22);
             this.SaveImageTS.Text = "Auto Save Generated Image";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(248, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(219, 6);
             // 
             // mergeGeneratedImagesToolStripMenuItem
             // 
             this.mergeGeneratedImagesToolStripMenuItem.Name = "mergeGeneratedImagesToolStripMenuItem";
-            this.mergeGeneratedImagesToolStripMenuItem.Size = new System.Drawing.Size(251, 24);
+            this.mergeGeneratedImagesToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
             this.mergeGeneratedImagesToolStripMenuItem.Text = "Merge Generated Images";
             this.mergeGeneratedImagesToolStripMenuItem.Click += new System.EventHandler(this.mergeGeneratedImagesToolStripMenuItem_Click);
             // 
@@ -279,7 +279,7 @@
             this.ConsoleRichTextBox.Location = new System.Drawing.Point(6, 374);
             this.ConsoleRichTextBox.Name = "ConsoleRichTextBox";
             this.ConsoleRichTextBox.ReadOnly = true;
-            this.ConsoleRichTextBox.Size = new System.Drawing.Size(922, 229);
+            this.ConsoleRichTextBox.Size = new System.Drawing.Size(922, 255);
             this.ConsoleRichTextBox.TabIndex = 6;
             this.ConsoleRichTextBox.Text = "";
             // 

@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using FModel.Items;
+using FModel.Challenges;
+using FModel.Quest;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -15,6 +18,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace FModel
 {
@@ -25,6 +29,8 @@ namespace FModel
         private static string ItemName;
         private static List<string> afterItems;
         public static string[] SelectedArray;
+        public static string[] challengesArray;
+        public static Dictionary<string, long> questStageDict;
 
         PrivateFontCollection pfc = new PrivateFontCollection();
         StringFormat centeredString = new StringFormat();
@@ -644,6 +650,63 @@ namespace FModel
             }
         }
 
+        private void loopStageQuest(string qAssetType, string qAssetName)
+        {
+            if (qAssetType == "Quest")
+            {
+                var filesPath = Directory.GetFiles(docPath + "\\Extracted", qAssetName + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                if (!File.Exists(filesPath))
+                {
+                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + qAssetName + "\" \"" + docPath + "\"");
+                    filesPath = Directory.GetFiles(docPath + "\\Extracted", qAssetName + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                }
+                try
+                {
+                    if (filesPath != null)
+                    {
+                        jwpmProcess("serialize \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                        var filesJSON3 = Directory.GetFiles(docPath, qAssetName + ".json", SearchOption.AllDirectories).FirstOrDefault();
+                        if (filesJSON3 != null)
+                        {
+                            var json3 = JToken.Parse(File.ReadAllText(filesJSON3)).ToString();
+                            File.Delete(filesJSON3);
+
+                            var questParser2 = QuestParser.FromJson(json3);
+                            for (int p2 = 0; p2 < questParser2.Length; p2++)
+                            {
+                                for (int pp = 0; pp < questParser2[p2].Objectives.Length; pp++)
+                                {
+                                    if (!questStageDict.ContainsKey(questParser2[p2].Objectives[pp].Description)) //AVOID DUPLICATA, THANKS EPIC...
+                                    {
+                                        questStageDict.Add(questParser2[p2].Objectives[pp].Description, questParser2[p2].Objectives[pp].Count);
+                                        AppendText(questParser2[p2].Objectives[pp].Description, Color.SteelBlue);
+                                        AppendText("\t\tCount: " + questParser2[p2].Objectives[pp].Count, Color.DarkRed, true);
+                                    }
+                                    for (int ppp = 0; ppp < questParser2[p2].Rewards.Length; ppp++)
+                                    {
+                                        loopStageQuest(questParser2[p2].Rewards[ppp].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser2[p2].Rewards[ppp].ItemPrimaryAssetId.PrimaryAssetName);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            AppendText("✗ ", Color.Red);
+                            AppendText("No serialized file found", Color.Black, true);
+                        }
+                    }
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    AppendText("[IndexOutOfRangeException] ", Color.Red);
+                    AppendText("Can't extract ", Color.Black);
+                    AppendText(qAssetName, Color.SteelBlue);
+                    AppendText(" in ", Color.Black);
+                    AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
+                }
+            }
+        }
+
         public static string currentItem;
         private async void ExtractAssetButton_Click(object sender, EventArgs e)
         {
@@ -652,6 +715,7 @@ namespace FModel
 
             scintilla1.Text = "";
             ItemIconPictureBox.Image = null;
+            questStageDict = new Dictionary<string, long>();
 
             if (!Directory.Exists(docPath + "\\Extracted\\")) //Create Extracted Subfolder
                 Directory.CreateDirectory(docPath + "\\Extracted\\");
@@ -1911,6 +1975,83 @@ namespace FModel
                                     }
                                     for (int ii = 0; ii < IDParser.Length; ii++)
                                     {
+                                        if (IDParser[ii].ExportType == "FortChallengeBundleItemDefinition")
+                                        {
+                                            var ChallengeParser = ChallengeBundleIdParser.FromJson(json);
+                                            AppendText("Parsing...Please wait while extracting all challenges\n", Color.Black, true);
+
+                                            for (int iii = 0; iii < ChallengeParser.Length; iii++)
+                                            {
+                                                challengesArray = new string[ChallengeParser[iii].QuestInfos.Length];
+                                                for (int y = 0; y < ChallengeParser[iii].QuestInfos.Length; y++)
+                                                {
+                                                    string cName = Path.GetFileName(ChallengeParser[iii].QuestInfos[y].QuestDefinition.AssetPathName);
+                                                    challengesArray[y] = cName.Substring(cName.LastIndexOf('.') + 1);
+                                                }
+
+                                                for (int w = 0; w < challengesArray.Length; w++)
+                                                {
+                                                    var filesPath = Directory.GetFiles(docPath + "\\Extracted", challengesArray[w] + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                                    if (!File.Exists(filesPath))
+                                                    {
+                                                        await Task.Run(() =>
+                                                        {
+                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + challengesArray[w] + "\" \"" + docPath + "\"");
+                                                        });
+                                                        filesPath = Directory.GetFiles(docPath + "\\Extracted", challengesArray[w] + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                                    }
+                                                    try
+                                                    {
+                                                        if (filesPath != null)
+                                                        {
+                                                            await Task.Run(() =>
+                                                            {
+                                                                jwpmProcess("serialize \"" + filesPath.Substring(0, filesPath.LastIndexOf('.')) + "\"");
+                                                            });
+                                                            var filesJSON2 = Directory.GetFiles(docPath, challengesArray[w] + ".json", SearchOption.AllDirectories).FirstOrDefault();
+                                                            if (filesJSON2 != null)
+                                                            {
+                                                                var json2 = JToken.Parse(File.ReadAllText(filesJSON2)).ToString();
+                                                                File.Delete(filesJSON2);
+
+                                                                var questParser = QuestParser.FromJson(json2);
+                                                                for (int p = 0; p < questParser.Length; p++)
+                                                                {
+                                                                    string oldQuest = null;
+                                                                    for (int pp = 0; pp < questParser[p].Objectives.Length; pp++)
+                                                                    {
+                                                                        string newQuest = questParser[p].Objectives[pp].Description;
+                                                                        if (newQuest != oldQuest)
+                                                                        {
+                                                                            AppendText(questParser[p].Objectives[pp].Description, Color.SteelBlue);
+                                                                            AppendText("\t\tCount: " + questParser[p].Objectives[pp].Count, Color.DarkRed, true);
+                                                                            oldQuest = questParser[p].Objectives[pp].Description;
+                                                                        }
+                                                                        for (int ppp = 0; ppp < questParser[p].Rewards.Length; ppp++)
+                                                                        {
+                                                                            loopStageQuest(questParser[p].Rewards[ppp].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser[p].Rewards[ppp].ItemPrimaryAssetId.PrimaryAssetName);
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                AppendText("✗ ", Color.Red);
+                                                                AppendText("No serialized file found", Color.Black, true);
+                                                            }
+                                                        }
+                                                    }
+                                                    catch (IndexOutOfRangeException)
+                                                    {
+                                                        AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                        AppendText("Can't extract ", Color.Black);
+                                                        AppendText(challengesArray[w], Color.SteelBlue);
+                                                        AppendText(" in ", Color.Black);
+                                                        AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
+                                                    }
+                                                }
+                                            }
+                                        } //ASSET IS A CHALLENGE => 
                                         if (IDParser[ii].ExportType == "Texture2D")
                                         {
                                             AppendText("Parsing...", Color.Black, true);
