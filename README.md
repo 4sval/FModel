@@ -1,6 +1,6 @@
 # FModel
 [![](https://img.shields.io/badge/Releases-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases)
-[![](https://img.shields.io/github/downloads/iAmAsval/FModel/1.1/total.svg?color=green&label=Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases/tag/1.1)
+[![](https://img.shields.io/github/downloads/iAmAsval/FModel/1.2/total.svg?color=green&label=Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases/tag/1.2)
 [![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
 [![](https://img.shields.io/badge/Discord-Need%20Help%3F-7289da.svg?logo=discord)](https://discord.gg/JmWvXKb)
@@ -29,7 +29,7 @@
   - Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
   - Asset is a **_Bundle Of Challenges_**:
-    - Will display all challenges' description & count needed to complete them
+    - Will display all challenges' description & amount needed to complete them
   - Asset is a **_Font_**:
     - Try to convert the Asset to OTF
 
