@@ -44,11 +44,12 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox5 = new System.Windows.Forms.CheckBox();
+            this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.checkBox6 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imgsPerRow)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -200,6 +201,7 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.checkBox6);
             this.groupBox4.Controls.Add(this.checkBox5);
             this.groupBox4.Controls.Add(this.checkBox4);
             this.groupBox4.Controls.Add(this.checkBox3);
@@ -212,54 +214,64 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Icon Creation";
             // 
-            // label6
+            // checkBox5
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 20);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(112, 13);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Supported Subfolders:";
-            // 
-            // checkBox2
-            // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(124, 19);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(74, 17);
-            this.checkBox2.TabIndex = 1;
-            this.checkBox2.Text = "Cosmetics";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            // 
-            // checkBox3
-            // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(329, 19);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(147, 17);
-            this.checkBox3.TabIndex = 2;
-            this.checkBox3.Text = "Consumables && Weapons";
-            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox5.AutoSize = true;
+            this.checkBox5.Location = new System.Drawing.Point(189, 19);
+            this.checkBox5.Name = "checkBox5";
+            this.checkBox5.Size = new System.Drawing.Size(64, 17);
+            this.checkBox5.TabIndex = 4;
+            this.checkBox5.Text = "Variants";
+            this.checkBox5.UseVisualStyleBackColor = true;
             // 
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(501, 19);
+            this.checkBox4.Location = new System.Drawing.Point(415, 19);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(53, 17);
             this.checkBox4.TabIndex = 3;
             this.checkBox4.Text = "Traps";
             this.checkBox4.UseVisualStyleBackColor = true;
             // 
-            // checkBox5
+            // checkBox3
             // 
-            this.checkBox5.AutoSize = true;
-            this.checkBox5.Location = new System.Drawing.Point(230, 19);
-            this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(64, 17);
-            this.checkBox5.TabIndex = 4;
-            this.checkBox5.Text = "Variants";
-            this.checkBox5.UseVisualStyleBackColor = true;
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(261, 19);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(147, 17);
+            this.checkBox3.TabIndex = 2;
+            this.checkBox3.Text = "Consumables && Weapons";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(108, 19);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(74, 17);
+            this.checkBox2.TabIndex = 1;
+            this.checkBox2.Text = "Cosmetics";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 20);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(96, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Supported Folders:";
+            // 
+            // checkBox6
+            // 
+            this.checkBox6.AutoSize = true;
+            this.checkBox6.Location = new System.Drawing.Point(476, 19);
+            this.checkBox6.Name = "checkBox6";
+            this.checkBox6.Size = new System.Drawing.Size(78, 17);
+            this.checkBox6.TabIndex = 14;
+            this.checkBox6.Text = "Challenges";
+            this.checkBox6.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 
@@ -312,5 +324,6 @@
         private System.Windows.Forms.CheckBox checkBox3;
         private System.Windows.Forms.CheckBox checkBox4;
         private System.Windows.Forms.CheckBox checkBox5;
+        private System.Windows.Forms.CheckBox checkBox6;
     }
 }

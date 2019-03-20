@@ -29,6 +29,7 @@ namespace FModel
             checkBox5.Checked = Properties.Settings.Default.createIconForVariants;
             checkBox3.Checked = Properties.Settings.Default.createIconForConsumablesWeapons;
             checkBox4.Checked = Properties.Settings.Default.createIconForTraps;
+            checkBox6.Checked = Properties.Settings.Default.createIconForChallenges;
 
             PAKBefore = Properties.Settings.Default.FortnitePAKs;
             OutputBefore = Properties.Settings.Default.ExtractOutput;
@@ -75,6 +76,14 @@ namespace FModel
             if (checkBox4.Checked == false)
             {
                 Properties.Settings.Default.createIconForTraps = false;
+            }
+            if (checkBox6.Checked == true)
+            {
+                Properties.Settings.Default.createIconForChallenges = true;
+            }
+            if (checkBox6.Checked == false)
+            {
+                Properties.Settings.Default.createIconForChallenges = false;
             }
 
 

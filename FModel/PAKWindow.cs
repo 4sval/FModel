@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace FModel
 {
@@ -31,6 +32,7 @@ namespace FModel
         public static string[] SelectedArray;
         public static string[] challengesArray;
         public static Dictionary<string, long> questStageDict;
+        public static Dictionary<string, long> questDictFinal;
 
         PrivateFontCollection pfc = new PrivateFontCollection();
         StringFormat centeredString = new StringFormat();
@@ -38,6 +40,8 @@ namespace FModel
         StringFormat centeredStringLine = new StringFormat();
         private int fontLength;
         private byte[] fontdata;
+        private int fontLength2;
+        private byte[] fontdata2;
 
         [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
         private static extern int SetWindowTheme(IntPtr hwnd, string pszSubAppName, string pszSubIdList);
@@ -103,6 +107,7 @@ namespace FModel
             Properties.Settings.Default.createIconForVariants = true;
             Properties.Settings.Default.createIconForConsumablesWeapons = true;
             Properties.Settings.Default.createIconForTraps = true;
+            Properties.Settings.Default.createIconForChallenges = true;
 
             docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "\\FModel";
             if (string.IsNullOrEmpty(Properties.Settings.Default.ExtractOutput))
@@ -204,6 +209,12 @@ namespace FModel
             System.IntPtr weirdData = Marshal.AllocCoTaskMem(fontLength);
             Marshal.Copy(fontdata, 0, weirdData, fontLength);
             pfc.AddMemoryFont(weirdData, fontLength);
+
+            fontLength2 = Properties.Resources.BurbankBigCondensed_Black.Length;
+            fontdata2 = Properties.Resources.BurbankBigCondensed_Black;
+            System.IntPtr weirdData2 = Marshal.AllocCoTaskMem(fontLength2);
+            Marshal.Copy(fontdata2, 0, weirdData2, fontLength2);
+            pfc.AddMemoryFont(weirdData2, fontLength2);
 
             centeredString.Alignment = StringAlignment.Center;
             rightString.Alignment = StringAlignment.Far;
@@ -679,6 +690,8 @@ namespace FModel
                                     if (!questStageDict.ContainsKey(questParser2[p2].Objectives[pp].Description)) //AVOID DUPLICATA, THANKS EPIC...
                                     {
                                         questStageDict.Add(questParser2[p2].Objectives[pp].Description, questParser2[p2].Objectives[pp].Count);
+                                        questDictFinal.Add(questParser2[p2].Objectives[pp].Description, questParser2[p2].Objectives[pp].Count);
+
                                         AppendText(questParser2[p2].Objectives[pp].Description, Color.SteelBlue);
                                         AppendText("\t\tCount: " + questParser2[p2].Objectives[pp].Count, Color.DarkRed, true);
                                     }
@@ -716,6 +729,7 @@ namespace FModel
             scintilla1.Text = "";
             ItemIconPictureBox.Image = null;
             questStageDict = new Dictionary<string, long>();
+            questDictFinal = new Dictionary<string, long>();
 
             if (!Directory.Exists(docPath + "\\Extracted\\")) //Create Extracted Subfolder
                 Directory.CreateDirectory(docPath + "\\Extracted\\");
@@ -1982,6 +1996,7 @@ namespace FModel
 
                                             for (int iii = 0; iii < ChallengeParser.Length; iii++)
                                             {
+                                                ItemName = ChallengeParser[iii].DisplayName.ToUpper();
                                                 challengesArray = new string[ChallengeParser[iii].QuestInfos.Length];
                                                 for (int y = 0; y < ChallengeParser[iii].QuestInfos.Length; y++)
                                                 {
@@ -2023,13 +2038,25 @@ namespace FModel
                                                                         string newQuest = questParser[p].Objectives[pp].Description;
                                                                         if (newQuest != oldQuest)
                                                                         {
+                                                                            if (!questDictFinal.ContainsKey(questParser[p].Objectives[pp].Description))
+                                                                            {
+                                                                                questDictFinal.Add(questParser[p].Objectives[pp].Description, questParser[p].Objectives[pp].Count);
+                                                                            }
                                                                             AppendText(questParser[p].Objectives[pp].Description, Color.SteelBlue);
                                                                             AppendText("\t\tCount: " + questParser[p].Objectives[pp].Count, Color.DarkRed, true);
+
                                                                             oldQuest = questParser[p].Objectives[pp].Description;
                                                                         }
-                                                                        for (int ppp = 0; ppp < questParser[p].Rewards.Length; ppp++)
+                                                                        try
                                                                         {
-                                                                            loopStageQuest(questParser[p].Rewards[ppp].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser[p].Rewards[ppp].ItemPrimaryAssetId.PrimaryAssetName);
+                                                                            for (int ppp = 0; ppp < questParser[p].Rewards.Length; ppp++)
+                                                                            {
+                                                                                loopStageQuest(questParser[p].Rewards[ppp].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser[p].Rewards[ppp].ItemPrimaryAssetId.PrimaryAssetName);
+                                                                            }
+                                                                        }
+                                                                        catch (Exception ex)
+                                                                        {
+                                                                            Console.WriteLine(ex.Message);
                                                                         }
                                                                     }
                                                                 }
@@ -2050,6 +2077,63 @@ namespace FModel
                                                         AppendText(PAKsComboBox.SelectedItem.ToString(), Color.DarkRed, true);
                                                     }
                                                 }
+                                            }
+
+                                            if (Properties.Settings.Default.createIconForChallenges == true)
+                                            {
+                                                Bitmap bmp = new Bitmap(Properties.Resources.Quest);
+                                                Graphics g = Graphics.FromImage(bmp);
+                                                g.TextRenderingHint = TextRenderingHint.AntiAlias;
+                                                int iamY = 400;
+                                                foreach (var d in questDictFinal)
+                                                {
+                                                    iamY += 100;
+                                                    g.DrawString(d.Key, new Font(pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
+                                                    g.DrawString("/" + d.Value, new Font(pfc.Families[1], 50), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(2410, iamY), rightString);
+                                                    g.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, iamY - 10, 2410, iamY - 10);
+                                                }
+                                                try
+                                                {
+                                                    string seasonFolder = filesJSON.Substring(filesJSON.Substring(0, filesJSON.LastIndexOf("\\")).LastIndexOf("\\") + 1).ToUpper();
+                                                    g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\")), new Font(pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(340, 40));
+                                                }
+                                                catch (NullReferenceException)
+                                                {
+                                                    AppendText("[NullReferenceException] ", Color.Red);
+                                                    AppendText("No ", Color.Black);
+                                                    AppendText("Season ", Color.SteelBlue);
+                                                    AppendText("found", Color.Black, true);
+                                                } //LAST SUBFOLDER
+                                                try
+                                                {
+                                                    g.DrawString(ItemName, new Font(pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+                                                }
+                                                catch (NullReferenceException)
+                                                {
+                                                    AppendText("[NullReferenceException] ", Color.Red);
+                                                    AppendText("No ", Color.Black);
+                                                    AppendText("DisplayName ", Color.SteelBlue);
+                                                    AppendText("found", Color.Black, true);
+                                                } //NAME
+                                                using (Bitmap bmp2 = bmp)
+                                                {
+                                                    var newImg = bmp2.Clone(
+                                                        new Rectangle { X = 0, Y = 0, Width = bmp.Width, Height = iamY + 280 },
+                                                        bmp2.PixelFormat);
+                                                    ItemIconPictureBox.Image = newImg;
+                                                } //CUT
+                                            }
+
+                                            if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
+                                            {
+                                                AppendText("Auto saving icons set to ", Color.Black);
+                                                AppendText("True", Color.Green, true);
+                                                ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + ItemName + ".png", ImageFormat.Png);
+
+                                                AppendText("✔ ", Color.Green);
+                                                AppendText(ItemName, Color.DarkRed);
+                                                AppendText(" successfully saved to ", Color.Black);
+                                                AppendText(docPath + "\\Generated Icons\\" + ItemName + ".png", Color.SteelBlue, true);
                                             }
                                         } //ASSET IS A CHALLENGE => 
                                         if (IDParser[ii].ExportType == "Texture2D")
@@ -2230,18 +2314,21 @@ namespace FModel
 
         private void SaveImageButton_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveTheDialog = new SaveFileDialog();
-            saveTheDialog.Title = "Save Icon";
-            saveTheDialog.Filter = "PNG Files (*.png)|*.png";
-            saveTheDialog.InitialDirectory = docPath + "\\Generated Icons\\";
-            saveTheDialog.FileName = ItemName;
-            if (saveTheDialog.ShowDialog() == DialogResult.OK)
+            if (ItemIconPictureBox.Image != null)
             {
-                ItemIconPictureBox.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
-                AppendText("✔ ", Color.Green);
-                AppendText(ItemName, Color.DarkRed);
-                AppendText(" successfully saved to ", Color.Black);
-                AppendText(saveTheDialog.FileName, Color.SteelBlue, true);
+                SaveFileDialog saveTheDialog = new SaveFileDialog();
+                saveTheDialog.Title = "Save Icon";
+                saveTheDialog.Filter = "PNG Files (*.png)|*.png";
+                saveTheDialog.InitialDirectory = docPath + "\\Generated Icons\\";
+                saveTheDialog.FileName = ItemName;
+                if (saveTheDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ItemIconPictureBox.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
+                    AppendText("✔ ", Color.Green);
+                    AppendText(ItemName, Color.DarkRed);
+                    AppendText(" successfully saved to ", Color.Black);
+                    AppendText(saveTheDialog.FileName, Color.SteelBlue, true);
+                }
             }
         }
         private void OpenImageTS_Click(object sender, EventArgs e)

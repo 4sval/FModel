@@ -73,6 +73,16 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
+        internal static byte[] BurbankBigCondensed_Black {
+            get {
+                object obj = ResourceManager.GetObject("BurbankBigCondensed_Black", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Byte[].
+        /// </summary>
         internal static byte[] BurbankBigCondensed_Bold {
             get {
                 object obj = ResourceManager.GetObject("BurbankBigCondensed_Bold", resourceCulture);
@@ -146,6 +156,16 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap M512 {
             get {
                 object obj = ResourceManager.GetObject("M512", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Quest {
+            get {
+                object obj = ResourceManager.GetObject("Quest", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

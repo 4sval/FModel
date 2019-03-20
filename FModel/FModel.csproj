@@ -146,6 +146,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FNTools_Logo.ico" />
+    <None Include="Resources\Quest.png" />
+    <None Include="Resources\BurbankBigCondensed-Black.otf" />
     <None Include="Resources\FNTools_Logo.png" />
     <None Include="Resources\BurbankBigCondensed-Bold.otf" />
     <None Include="Resources\T512.png" />

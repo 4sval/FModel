@@ -29,7 +29,7 @@
   - Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
   - Asset is a **_Bundle Of Challenges_**:
-    - Will display all challenges' description & amount needed to complete them
+    - Try to create an [Icon](https://i.imgur.com/s18aMEe.png) with all challenges' description & amount needed to complete them
   - Asset is a **_Font_**:
     - Try to convert the Asset to OTF
 
