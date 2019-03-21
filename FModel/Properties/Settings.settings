@@ -17,17 +17,17 @@
     <Setting Name="mergerImagesRow" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="createIconForCosmetics" GenerateDefaultValueInCode="false" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)" />
+    <Setting Name="createIconForCosmetics" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="createIconForConsumablesWeapons" GenerateDefaultValueInCode="false" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)" />
+    <Setting Name="createIconForConsumablesWeapons" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="createIconForTraps" GenerateDefaultValueInCode="false" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)" />
+    <Setting Name="createIconForTraps" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="createIconForVariants" GenerateDefaultValueInCode="false" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)" />
+    <Setting Name="createIconForVariants" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="createIconForChallenges" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

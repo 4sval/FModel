@@ -103,11 +103,6 @@ namespace FModel
 
             SetTreeViewTheme(PAKTreeView.Handle);
             Properties.Settings.Default.ExtractAndSerialize = true; //SERIALIZE BY DEFAULT
-            Properties.Settings.Default.createIconForCosmetics = true;
-            Properties.Settings.Default.createIconForVariants = true;
-            Properties.Settings.Default.createIconForConsumablesWeapons = true;
-            Properties.Settings.Default.createIconForTraps = true;
-            Properties.Settings.Default.createIconForChallenges = true;
 
             docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "\\FModel";
             if (string.IsNullOrEmpty(Properties.Settings.Default.ExtractOutput))
@@ -2085,12 +2080,17 @@ namespace FModel
                                                 Graphics g = Graphics.FromImage(bmp);
                                                 g.TextRenderingHint = TextRenderingHint.AntiAlias;
                                                 int iamY = 400;
+                                                int justSkip = 0;
                                                 foreach (var d in questDictFinal)
                                                 {
+                                                    justSkip += 1;
                                                     iamY += 100;
                                                     g.DrawString(d.Key, new Font(pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
                                                     g.DrawString("/" + d.Value, new Font(pfc.Families[1], 50), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(2410, iamY), rightString);
-                                                    g.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, iamY - 10, 2410, iamY - 10);
+                                                    if (justSkip != 1)
+                                                    {
+                                                        g.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, iamY - 10, 2410, iamY - 10);
+                                                    }
                                                 }
                                                 try
                                                 {

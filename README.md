@@ -1,6 +1,5 @@
 # FModel
-[![](https://img.shields.io/badge/Releases-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases)
-[![](https://img.shields.io/github/downloads/iAmAsval/FModel/1.2/total.svg?color=green&label=Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases/tag/1.2)
+[![](https://img.shields.io/github/downloads/iAmAsval/FModel/total.svg?color=green&label=Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases/tag/1.2)
 [![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
 [![](https://img.shields.io/badge/Discord-Need%20Help%3F-7289da.svg?logo=discord)](https://discord.gg/JmWvXKb)
@@ -12,6 +11,8 @@
 ## GETTING STARTED
 ### Prerequisites
 [.NET Framework 4.6.1](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net461)
+### Download
+[![](https://img.shields.io/badge/Releases-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases)
 ### How does it works
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder and it'll automatically download the latest version of the modded Fortnite Asset Parser in this subfolder.
 ![](https://i.imgur.com/sO6G6Vy.gif)
@@ -23,13 +24,13 @@
 
 **4.** Clicking on **Extract Asset** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
   - Asset is an **_ID_**:
-    - Try to create an [Icon](https://i.imgur.com/PStlmUV.png) with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
+    - Try to create an [Icon](https://i.imgur.com/R0OhRpw.png) with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
   - Asset is a **_Texture_**:
     - Try to display the Asset as PNG
   - Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
   - Asset is a **_Bundle Of Challenges_**:
-    - Try to create an [Icon](https://i.imgur.com/s18aMEe.png) with all challenges' description & amount needed to complete them
+    - Try to create an [Icon](https://i.imgur.com/6AjoVVm.png) with all challenges' description & amount needed to complete them
   - Asset is a **_Font_**:
     - Try to convert the Asset to OTF
 

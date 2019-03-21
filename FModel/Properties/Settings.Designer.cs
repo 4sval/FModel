@@ -84,6 +84,7 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool createIconForCosmetics {
             get {
                 return ((bool)(this["createIconForCosmetics"]));
@@ -95,6 +96,7 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool createIconForConsumablesWeapons {
             get {
                 return ((bool)(this["createIconForConsumablesWeapons"]));
@@ -106,6 +108,7 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool createIconForTraps {
             get {
                 return ((bool)(this["createIconForTraps"]));
@@ -117,6 +120,7 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool createIconForVariants {
             get {
                 return ((bool)(this["createIconForVariants"]));
