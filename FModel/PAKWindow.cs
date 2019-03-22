@@ -2353,79 +2353,86 @@ namespace FModel
 
         private void mergeGeneratedImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(Properties.Settings.Default.mergerFileName))
+            try
             {
-                MessageBox.Show("Please, set a name to your file before trying to merge images\n\nSteps:\n\t- Load button drop down menu\n\t- Options", "FModel Merger File Name Missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                OpenFileDialog theDialog = new OpenFileDialog();
-                theDialog.Multiselect = true;
-                theDialog.InitialDirectory = docPath + "\\Generated Icons\\";
-                theDialog.Title = "Choose your images";
-                theDialog.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*";
-
-                if (theDialog.ShowDialog() == DialogResult.OK)
+                if (string.IsNullOrEmpty(Properties.Settings.Default.mergerFileName))
                 {
-                    List<Image> selectedImages = new List<Image>();
-                    foreach (var files in theDialog.FileNames)
-                    {
-                        selectedImages.Add(Image.FromFile(files));
-                    }
+                    MessageBox.Show("Please, set a name to your file before trying to merge images\n\nSteps:\n\t- Load button drop down menu\n\t- Options", "FModel Merger File Name Missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    OpenFileDialog theDialog = new OpenFileDialog();
+                    theDialog.Multiselect = true;
+                    theDialog.InitialDirectory = docPath + "\\Generated Icons\\";
+                    theDialog.Title = "Choose your images";
+                    theDialog.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*";
 
-                    if (Properties.Settings.Default.mergerImagesRow == 0)
+                    if (theDialog.ShowDialog() == DialogResult.OK)
                     {
-                        Properties.Settings.Default.mergerImagesRow = 7;
-                        Properties.Settings.Default.Save();
-                    }
-                    int numperrow = Properties.Settings.Default.mergerImagesRow;
-                    var w = 530 * numperrow;
-                    if (selectedImages.Count * 530 < 530 * numperrow)
-                    {
-                        w = selectedImages.Count * 530;
-                    }
-
-                    int h = int.Parse(Math.Ceiling(double.Parse(selectedImages.Count.ToString()) / numperrow).ToString()) * 530;
-                    Bitmap bmp = new Bitmap(w - 8, h - 8);
-
-                    var num = 1;
-                    var cur_w = 0;
-                    var cur_h = 0;
-
-                    for (int i = 0; i < selectedImages.Count; i++)
-                    {
-                        using (Graphics g = Graphics.FromImage(bmp))
+                        List<Image> selectedImages = new List<Image>();
+                        foreach (var files in theDialog.FileNames)
                         {
-                            g.DrawImage(selectedImages[i], new PointF(cur_w, cur_h));
-                            if (num % numperrow == 0)
+                            selectedImages.Add(Image.FromFile(files));
+                        }
+
+                        if (Properties.Settings.Default.mergerImagesRow == 0)
+                        {
+                            Properties.Settings.Default.mergerImagesRow = 7;
+                            Properties.Settings.Default.Save();
+                        }
+                        int numperrow = Properties.Settings.Default.mergerImagesRow;
+                        var w = 530 * numperrow;
+                        if (selectedImages.Count * 530 < 530 * numperrow)
+                        {
+                            w = selectedImages.Count * 530;
+                        }
+
+                        int h = int.Parse(Math.Ceiling(double.Parse(selectedImages.Count.ToString()) / numperrow).ToString()) * 530;
+                        Bitmap bmp = new Bitmap(w - 8, h - 8);
+
+                        var num = 1;
+                        var cur_w = 0;
+                        var cur_h = 0;
+
+                        for (int i = 0; i < selectedImages.Count; i++)
+                        {
+                            using (Graphics g = Graphics.FromImage(bmp))
                             {
-                                cur_w = 0;
-                                cur_h += 530;
-                                num += 1;
-                            }
-                            else
-                            {
-                                cur_w += 530;
-                                num += 1;
+                                g.DrawImage(selectedImages[i], new PointF(cur_w, cur_h));
+                                if (num % numperrow == 0)
+                                {
+                                    cur_w = 0;
+                                    cur_h += 530;
+                                    num += 1;
+                                }
+                                else
+                                {
+                                    cur_w += 530;
+                                    num += 1;
+                                }
                             }
                         }
+                        bmp.Save(docPath + "\\" + Properties.Settings.Default.mergerFileName + ".png", ImageFormat.Png);
+                        var newForm = new Form();
+
+                        PictureBox pb = new PictureBox();
+                        pb.Dock = DockStyle.Fill;
+                        pb.Image = bmp;
+                        pb.SizeMode = PictureBoxSizeMode.Zoom;
+
+                        newForm.WindowState = FormWindowState.Maximized;
+                        newForm.Size = bmp.Size;
+                        newForm.Icon = Properties.Resources.FNTools_Logo_Icon;
+                        newForm.Text = docPath + "\\" + Properties.Settings.Default.mergerFileName + ".png";
+                        newForm.StartPosition = FormStartPosition.CenterScreen;
+                        newForm.Controls.Add(pb);
+                        newForm.Show();
                     }
-                    bmp.Save(docPath + "\\" + Properties.Settings.Default.mergerFileName + ".png", ImageFormat.Png);
-                    var newForm = new Form();
-
-                    PictureBox pb = new PictureBox();
-                    pb.Dock = DockStyle.Fill;
-                    pb.Image = bmp;
-                    pb.SizeMode = PictureBoxSizeMode.Zoom;
-
-                    newForm.WindowState = FormWindowState.Maximized;
-                    newForm.Size = bmp.Size;
-                    newForm.Icon = Properties.Resources.FNTools_Logo_Icon;
-                    newForm.Text = docPath + "\\" + Properties.Settings.Default.mergerFileName + ".png";
-                    newForm.StartPosition = FormStartPosition.CenterScreen;
-                    newForm.Controls.Add(pb);
-                    newForm.Show();
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
             }
         }
 
