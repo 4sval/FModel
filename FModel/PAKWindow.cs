@@ -1517,14 +1517,28 @@ namespace FModel
                                                 ItemIconPictureBox.Image = bmp;
                                                 if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
                                                 {
+                                                    string nameToSave;
+                                                    if (Properties.Settings.Default.IconName == null || Properties.Settings.Default.IconName == "Selected Item Name (i.e. CID_001_Athena_Commando_F_Default)")
+                                                    {
+                                                        nameToSave = currentItem;
+                                                    }
+                                                    else if (Properties.Settings.Default.IconName == "displayName (i.e. Recruit)")
+                                                    {
+                                                        nameToSave = ItemName;
+                                                    }
+                                                    else
+                                                    {
+                                                        nameToSave = currentItem;
+                                                    }
+
                                                     AppendText("Auto saving icons set to ", Color.Black);
                                                     AppendText("True", Color.Green, true);
-                                                    ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + currentItem + ".png", ImageFormat.Png);
+                                                    ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + nameToSave + ".png", ImageFormat.Png);
 
                                                     AppendText("✔ ", Color.Green);
-                                                    AppendText(currentItem, Color.DarkRed);
+                                                    AppendText(nameToSave, Color.DarkRed);
                                                     AppendText(" successfully saved to ", Color.Black);
-                                                    AppendText(docPath + "\\Generated Icons\\" + currentItem + ".png", Color.SteelBlue, true);
+                                                    AppendText(docPath + "\\Generated Icons\\" + nameToSave + ".png", Color.SteelBlue, true);
                                                 }
                                             } //Cosmetics
                                             if (Properties.Settings.Default.createIconForConsumablesWeapons == true && (IDParser[iii].ExportType.Contains("FortWeaponRangedItemDefinition") || IDParser[iii].ExportType.Contains("FortWeaponMeleeItemDefinition")))
@@ -1785,14 +1799,28 @@ namespace FModel
                                                 ItemIconPictureBox.Image = bmp;
                                                 if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
                                                 {
+                                                    string nameToSave;
+                                                    if (Properties.Settings.Default.IconName == null || Properties.Settings.Default.IconName == "Selected Item Name (i.e. CID_001_Athena_Commando_F_Default)")
+                                                    {
+                                                        nameToSave = currentItem;
+                                                    }
+                                                    else if (Properties.Settings.Default.IconName == "displayName (i.e. Recruit)")
+                                                    {
+                                                        nameToSave = ItemName;
+                                                    }
+                                                    else
+                                                    {
+                                                        nameToSave = currentItem;
+                                                    }
+
                                                     AppendText("Auto saving icons set to ", Color.Black);
                                                     AppendText("True", Color.Green, true);
-                                                    ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + currentItem + ".png", ImageFormat.Png);
+                                                    ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + nameToSave + ".png", ImageFormat.Png);
 
                                                     AppendText("✔ ", Color.Green);
-                                                    AppendText(currentItem, Color.DarkRed);
+                                                    AppendText(nameToSave, Color.DarkRed);
                                                     AppendText(" successfully saved to ", Color.Black);
-                                                    AppendText(docPath + "\\Generated Icons\\" + currentItem + ".png", Color.SteelBlue, true);
+                                                    AppendText(docPath + "\\Generated Icons\\" + nameToSave + ".png", Color.SteelBlue, true);
                                                 }
                                             } //Consumables & Weapons
                                             if (Properties.Settings.Default.createIconForTraps == true && (IDParser[iii].ExportType.Contains("FortTrapItemDefinition") || IDParser[iii].ExportType.Contains("FortContextTrapItemDefinition")))
@@ -2017,14 +2045,28 @@ namespace FModel
                                                 ItemIconPictureBox.Image = bmp;
                                                 if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
                                                 {
+                                                    string nameToSave;
+                                                    if (Properties.Settings.Default.IconName == null || Properties.Settings.Default.IconName == "Selected Item Name (i.e. CID_001_Athena_Commando_F_Default)")
+                                                    {
+                                                        nameToSave = currentItem;
+                                                    }
+                                                    else if (Properties.Settings.Default.IconName == "displayName (i.e. Recruit)")
+                                                    {
+                                                        nameToSave = ItemName;
+                                                    }
+                                                    else
+                                                    {
+                                                        nameToSave = currentItem;
+                                                    }
+
                                                     AppendText("Auto saving icons set to ", Color.Black);
                                                     AppendText("True", Color.Green, true);
-                                                    ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + currentItem + ".png", ImageFormat.Png);
+                                                    ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + nameToSave + ".png", ImageFormat.Png);
 
                                                     AppendText("✔ ", Color.Green);
-                                                    AppendText(currentItem, Color.DarkRed);
+                                                    AppendText(nameToSave, Color.DarkRed);
                                                     AppendText(" successfully saved to ", Color.Black);
-                                                    AppendText(docPath + "\\Generated Icons\\" + currentItem + ".png", Color.SteelBlue, true);
+                                                    AppendText(docPath + "\\Generated Icons\\" + nameToSave + ".png", Color.SteelBlue, true);
                                                 }
                                             } //Traps
                                             if (Properties.Settings.Default.createIconForVariants == true && (IDParser[iii].ExportType == "FortVariantTokenType"))
@@ -2271,14 +2313,28 @@ namespace FModel
                                                 ItemIconPictureBox.Image = bmp;
                                                 if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
                                                 {
+                                                    string nameToSave;
+                                                    if (Properties.Settings.Default.IconName == null || Properties.Settings.Default.IconName == "Selected Item Name (i.e. CID_001_Athena_Commando_F_Default)")
+                                                    {
+                                                        nameToSave = currentItem;
+                                                    }
+                                                    else if (Properties.Settings.Default.IconName == "displayName (i.e. Recruit)")
+                                                    {
+                                                        nameToSave = ItemName;
+                                                    }
+                                                    else
+                                                    {
+                                                        nameToSave = currentItem;
+                                                    }
+
                                                     AppendText("Auto saving icons set to ", Color.Black);
                                                     AppendText("True", Color.Green, true);
-                                                    ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + currentItem + ".png", ImageFormat.Png);
+                                                    ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + nameToSave + ".png", ImageFormat.Png);
 
                                                     AppendText("✔ ", Color.Green);
-                                                    AppendText(currentItem, Color.DarkRed);
+                                                    AppendText(nameToSave, Color.DarkRed);
                                                     AppendText(" successfully saved to ", Color.Black);
-                                                    AppendText(docPath + "\\Generated Icons\\" + currentItem + ".png", Color.SteelBlue, true);
+                                                    AppendText(docPath + "\\Generated Icons\\" + nameToSave + ".png", Color.SteelBlue, true);
                                                 }
                                             } //CosmeticVariantTokens
                                         }
@@ -2436,14 +2492,28 @@ namespace FModel
 
                                             if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
                                             {
+                                                string nameToSave;
+                                                if (Properties.Settings.Default.IconName == null || Properties.Settings.Default.IconName == "Selected Item Name (i.e. CID_001_Athena_Commando_F_Default)")
+                                                {
+                                                    nameToSave = currentItem;
+                                                }
+                                                else if (Properties.Settings.Default.IconName == "displayName (i.e. Recruit)")
+                                                {
+                                                    nameToSave = ItemName;
+                                                }
+                                                else
+                                                {
+                                                    nameToSave = currentItem;
+                                                }
+
                                                 AppendText("Auto saving icons set to ", Color.Black);
                                                 AppendText("True", Color.Green, true);
-                                                ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + currentItem + ".png", ImageFormat.Png);
+                                                ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + nameToSave + ".png", ImageFormat.Png);
 
                                                 AppendText("✔ ", Color.Green);
-                                                AppendText(currentItem, Color.DarkRed);
+                                                AppendText(nameToSave, Color.DarkRed);
                                                 AppendText(" successfully saved to ", Color.Black);
-                                                AppendText(docPath + "\\Generated Icons\\" + currentItem + ".png", Color.SteelBlue, true);
+                                                AppendText(docPath + "\\Generated Icons\\" + nameToSave + ".png", Color.SteelBlue, true);
                                             }
                                         } //ASSET IS A CHALLENGE => 
                                         if (IDParser[ii].ExportType == "Texture2D")
@@ -2521,14 +2591,28 @@ namespace FModel
 
                                             if (((ToolStripMenuItem)ExtractAsset.Items[1]).Checked == true)
                                             {
+                                                string nameToSave;
+                                                if (Properties.Settings.Default.IconName == null || Properties.Settings.Default.IconName == "Selected Item Name (i.e. CID_001_Athena_Commando_F_Default)")
+                                                {
+                                                    nameToSave = currentItem;
+                                                }
+                                                else if (Properties.Settings.Default.IconName == "displayName (i.e. Recruit)")
+                                                {
+                                                    nameToSave = ItemName;
+                                                }
+                                                else
+                                                {
+                                                    nameToSave = currentItem;
+                                                }
+
                                                 AppendText("Auto saving images set to ", Color.Black);
                                                 AppendText("True", Color.Green, true);
-                                                ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + currentItem + ".png", ImageFormat.Png);
+                                                ItemIconPictureBox.Image.Save(docPath + "\\Generated Icons\\" + nameToSave + ".png", ImageFormat.Png);
 
                                                 AppendText("✔ ", Color.Green);
-                                                AppendText(currentItem, Color.DarkRed);
+                                                AppendText(nameToSave, Color.DarkRed);
                                                 AppendText(" successfully saved to ", Color.Black);
-                                                AppendText(docPath + "\\Generated Icons\\" + currentItem + ".png", Color.SteelBlue, true);
+                                                AppendText(docPath + "\\Generated Icons\\" + nameToSave + ".png", Color.SteelBlue, true);
                                             }
                                         } //ASSET IS A TEXTURE => LOAD TEXTURE
                                         if (IDParser[ii].ExportType == "SoundWave")
@@ -2644,16 +2728,30 @@ namespace FModel
         {
             if (ItemIconPictureBox.Image != null)
             {
+                string nameToSave;
+                if (Properties.Settings.Default.IconName == null || Properties.Settings.Default.IconName == "Selected Item Name (i.e. CID_001_Athena_Commando_F_Default)")
+                {
+                    nameToSave = currentItem;
+                }
+                else if (Properties.Settings.Default.IconName == "displayName (i.e. Recruit)")
+                {
+                    nameToSave = ItemName;
+                }
+                else
+                {
+                    nameToSave = currentItem;
+                }
+
                 SaveFileDialog saveTheDialog = new SaveFileDialog();
                 saveTheDialog.Title = "Save Icon";
                 saveTheDialog.Filter = "PNG Files (*.png)|*.png";
                 saveTheDialog.InitialDirectory = docPath + "\\Generated Icons\\";
-                saveTheDialog.FileName = currentItem;
+                saveTheDialog.FileName = nameToSave;
                 if (saveTheDialog.ShowDialog() == DialogResult.OK)
                 {
                     ItemIconPictureBox.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
                     AppendText("✔ ", Color.Green);
-                    AppendText(currentItem, Color.DarkRed);
+                    AppendText(nameToSave, Color.DarkRed);
                     AppendText(" successfully saved to ", Color.Black);
                     AppendText(saveTheDialog.FileName, Color.SteelBlue, true);
                 }

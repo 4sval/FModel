@@ -141,5 +141,17 @@ namespace FModel.Properties {
                 this["createIconForChallenges"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string IconName {
+            get {
+                return ((string)(this["IconName"]));
+            }
+            set {
+                this["IconName"] = value;
+            }
+        }
     }
 }

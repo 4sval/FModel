@@ -30,6 +30,7 @@ namespace FModel
             checkBox3.Checked = Properties.Settings.Default.createIconForConsumablesWeapons;
             checkBox4.Checked = Properties.Settings.Default.createIconForTraps;
             checkBox6.Checked = Properties.Settings.Default.createIconForChallenges;
+            comboBox1.SelectedItem = Properties.Settings.Default.IconName;
 
             PAKBefore = Properties.Settings.Default.FortnitePAKs;
             OutputBefore = Properties.Settings.Default.ExtractOutput;
@@ -85,7 +86,14 @@ namespace FModel
             {
                 Properties.Settings.Default.createIconForChallenges = false;
             }
-
+            if (comboBox1.SelectedItem == null)
+            {
+                Properties.Settings.Default.IconName = "Selected Item Name (i.e. CID_001_Athena_Commando_F_Default)";
+            }
+            else
+            {
+                Properties.Settings.Default.IconName = comboBox1.SelectedItem.ToString();
+            }
 
             Properties.Settings.Default.ExtractOutput = textBox1.Text;
             Properties.Settings.Default.FortnitePAKs = textBox2.Text;

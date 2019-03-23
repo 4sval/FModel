@@ -1,5 +1,5 @@
 # FModel
-[![](https://img.shields.io/github/downloads/iAmAsval/FModel/total.svg?color=green&label=Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases/tag/1.2)
+[![](https://img.shields.io/github/downloads/iAmAsval/FModel/total.svg?color=green&label=Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases)
 [![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
 [![](https://img.shields.io/badge/Discord-Need%20Help%3F-7289da.svg?logo=discord)](https://discord.gg/JmWvXKb)
@@ -12,7 +12,7 @@
 ### Prerequisites
 [.NET Framework 4.6.1](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net461)
 ### Download
-[![](https://img.shields.io/badge/Releases-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases)
+[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/1.3)
 ### How does it works
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder and it'll automatically download the latest version of the modded Fortnite Asset Parser in this subfolder.
 ![](https://i.imgur.com/sO6G6Vy.gif)
@@ -47,14 +47,14 @@ This project is mainly based on what [UModel](https://github.com/gildor2/UModel)
 I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionnaly.
 
 ## TODO
-- [ ] Improve speed
+- [x] Improve speed
 - [x] Multithreading - Need improvements
 - [x] Filter for the items ListBox
 - [x] Quest viewer or something
-- [ ] Load all paks
+- [x] Load all paks
 - [ ] Load only difference between 2 paks version
 - [ ] Custom watermark option on icons
-- [ ] Choose between extracted filename or displayName for icons file name
+- [x] Choose between extracted filename or displayName for icons file name
 - [ ] Stop button while extracting
 - [ ] Support for meshes
 - [ ] Support for animations
