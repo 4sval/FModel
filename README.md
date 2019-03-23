@@ -51,7 +51,10 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
 - [x] Multithreading - Need improvements
 - [x] Filter for the items ListBox
 - [x] Quest viewer or something
-- [ ] More settings
+- [ ] Load all paks
+- [ ] Load only difference between 2 paks version
+- [ ] Custom watermark option on icons
+- [ ] Choose between extracted filename or displayName for icons file name
 - [ ] Stop button while extracting
 - [ ] Support for meshes
 - [ ] Support for animations

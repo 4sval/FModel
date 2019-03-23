@@ -55,6 +55,8 @@
             this.ConsoleRichTextBox = new System.Windows.Forms.RichTextBox();
             this.FilterLabel = new System.Windows.Forms.Label();
             this.FilterTextBox = new System.Windows.Forms.TextBox();
+            this.loadAllPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.groupBox1.SuspendLayout();
             this.LoadContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).BeginInit();
@@ -92,14 +94,16 @@
             // 
             this.LoadContext.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.LoadContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadAllPAKsToolStripMenuItem,
+            this.toolStripSeparator2,
             this.optionsToolStripMenuItem});
             this.LoadContext.Name = "LoadContext";
-            this.LoadContext.Size = new System.Drawing.Size(117, 26);
+            this.LoadContext.Size = new System.Drawing.Size(181, 76);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.optionsToolStripMenuItem.Text = "Options";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
@@ -300,6 +304,18 @@
             this.FilterTextBox.TabIndex = 5;
             this.FilterTextBox.TextChanged += new System.EventHandler(this.FilterTextBox_TextChanged);
             // 
+            // loadAllPAKsToolStripMenuItem
+            // 
+            this.loadAllPAKsToolStripMenuItem.Name = "loadAllPAKsToolStripMenuItem";
+            this.loadAllPAKsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadAllPAKsToolStripMenuItem.Text = "Load Them All";
+            this.loadAllPAKsToolStripMenuItem.Click += new System.EventHandler(this.loadAllPAKsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(148, 6);
+            // 
             // PAKWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -358,6 +374,8 @@
         private System.Windows.Forms.ToolStripMenuItem mergeGeneratedImagesToolStripMenuItem;
         private System.Windows.Forms.ImageList TreeViewImageList;
         private ScintillaNET.Scintilla scintilla1;
+        private System.Windows.Forms.ToolStripMenuItem loadAllPAKsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 
