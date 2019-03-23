@@ -36,7 +36,9 @@
 
 ### Load Difference Between 2 Fortnite Version
 **1.** Create a backup of your PAK files before the update
+
 **2.** Enable PAKs Diff
+
 **3.** Click `Load Difference`
 ![](https://i.imgur.com/5zFOXbY.gif)
 
