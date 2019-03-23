@@ -33,6 +33,8 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.LoadButton = new FModel.SplitButton();
             this.LoadContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.loadAllPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AESKeyLabel = new System.Windows.Forms.Label();
             this.AESKeyTextBox = new System.Windows.Forms.TextBox();
@@ -55,8 +57,8 @@
             this.ConsoleRichTextBox = new System.Windows.Forms.RichTextBox();
             this.FilterLabel = new System.Windows.Forms.Label();
             this.FilterTextBox = new System.Windows.Forms.TextBox();
-            this.loadAllPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.backupCurrentPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.enablePAKsDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.LoadContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).BeginInit();
@@ -95,15 +97,31 @@
             this.LoadContext.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.LoadContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadAllPAKsToolStripMenuItem,
-            this.toolStripSeparator2,
+            this.backupCurrentPAKsToolStripMenuItem,
+            this.enablePAKsDiffToolStripMenuItem,
+            this.toolStripSeparator3,
             this.optionsToolStripMenuItem});
             this.LoadContext.Name = "LoadContext";
-            this.LoadContext.Size = new System.Drawing.Size(181, 76);
+            this.LoadContext.Size = new System.Drawing.Size(186, 120);
+            // 
+            // loadAllPAKsToolStripMenuItem
+            // 
+            this.loadAllPAKsToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.loadAllPAKsToolStripMenuItem.Name = "loadAllPAKsToolStripMenuItem";
+            this.loadAllPAKsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.loadAllPAKsToolStripMenuItem.Text = "Load All PAKs";
+            this.loadAllPAKsToolStripMenuItem.Click += new System.EventHandler(this.loadAllPAKsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(182, 6);
             // 
             // optionsToolStripMenuItem
             // 
+            this.optionsToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.optionsToolStripMenuItem.Text = "Options";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
@@ -304,17 +322,22 @@
             this.FilterTextBox.TabIndex = 5;
             this.FilterTextBox.TextChanged += new System.EventHandler(this.FilterTextBox_TextChanged);
             // 
-            // loadAllPAKsToolStripMenuItem
+            // backupCurrentPAKsToolStripMenuItem
             // 
-            this.loadAllPAKsToolStripMenuItem.Name = "loadAllPAKsToolStripMenuItem";
-            this.loadAllPAKsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.loadAllPAKsToolStripMenuItem.Text = "Load Them All";
-            this.loadAllPAKsToolStripMenuItem.Click += new System.EventHandler(this.loadAllPAKsToolStripMenuItem_Click);
+            this.backupCurrentPAKsToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.backupCurrentPAKsToolStripMenuItem.Name = "backupCurrentPAKsToolStripMenuItem";
+            this.backupCurrentPAKsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.backupCurrentPAKsToolStripMenuItem.Text = "Backup Current PAKs";
+            this.backupCurrentPAKsToolStripMenuItem.Click += new System.EventHandler(this.backupCurrentPAKsToolStripMenuItem_Click);
             // 
-            // toolStripSeparator2
+            // enablePAKsDiffToolStripMenuItem
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(148, 6);
+            this.enablePAKsDiffToolStripMenuItem.CheckOnClick = true;
+            this.enablePAKsDiffToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.enablePAKsDiffToolStripMenuItem.Name = "enablePAKsDiffToolStripMenuItem";
+            this.enablePAKsDiffToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.enablePAKsDiffToolStripMenuItem.Text = "Enable PAKs Diff";
+            this.enablePAKsDiffToolStripMenuItem.CheckedChanged += new System.EventHandler(this.enablePAKsDiffToolStripMenuItem_CheckedChanged);
             // 
             // PAKWindow
             // 
@@ -375,7 +398,9 @@
         private System.Windows.Forms.ImageList TreeViewImageList;
         private ScintillaNET.Scintilla scintilla1;
         private System.Windows.Forms.ToolStripMenuItem loadAllPAKsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem backupCurrentPAKsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem enablePAKsDiffToolStripMenuItem;
     }
 }
 

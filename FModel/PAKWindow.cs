@@ -121,6 +121,9 @@ namespace FModel
 
             if (!Directory.Exists(Properties.Settings.Default.FortnitePAKs))
             {
+                loadAllPAKsToolStripMenuItem.Enabled = false;
+                backupCurrentPAKsToolStripMenuItem.Enabled = false;
+
                 AppendText("[PathNotFoundException] ", Color.Red);
                 AppendText(" Please go to the ", Color.Black);
                 AppendText("Load button drop down menu ", Color.SteelBlue);
@@ -337,6 +340,368 @@ namespace FModel
         }
         private async void loadAllPAKsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (enablePAKsDiffToolStripMenuItem.Checked == false)
+            {
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                isAllPAKs = true;
+                AllPAKsDict = new Dictionary<string, string>();
+                PAKTreeView.Nodes.Clear();
+                ItemsListBox.Items.Clear();
+                File.WriteAllText("key.txt", AESKeyTextBox.Text.Substring(2));
+
+                LoadButton.Enabled = false;
+                for (int i = 0; i < AllPAKs.Count(); i++)
+                {
+                    currentPAK = AllPAKs[i];
+                    currentGUID = readPAKGuid(Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK);
+                    if (currentGUID == "0-0-0-0")
+                    {
+                        AppendText("✔ ", Color.Green);
+                        AppendText("Loading ", Color.Black);
+                        AppendText(currentPAK, Color.DarkRed, true);
+                        await Task.Run(() => {
+                            jwpmProcess("filelist \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + docPath + "\"");
+                        });
+                        if (!File.Exists(docPath + "\\" + currentPAK + ".txt"))
+                        {
+                            AppendText("✗ ", Color.Red);
+                            AppendText(" Can't read ", Color.Black);
+                            AppendText(currentPAK, Color.SteelBlue);
+                            AppendText(" with this key", Color.Black, true);
+                        }
+                        else
+                        {
+                            if (!File.Exists(docPath + "\\FortnitePAKs_Temp.txt"))
+                            {
+                                File.Create(docPath + "\\FortnitePAKs_Temp.txt").Dispose();
+                            }
+
+                            string[] arr = File.ReadAllLines(docPath + "\\" + currentPAK + ".txt");
+                            for (int ii = 0; ii < arr.Length; ii++)
+                            {
+                                string filename = arr[ii].Substring(arr[ii].LastIndexOf("/") + 1);
+                                if (filename.Contains(".uasset") || filename.Contains(".uexp") || filename.Contains(".ubulk"))
+                                {
+                                    if (!AllPAKsDict.ContainsKey(filename.Substring(0, filename.LastIndexOf("."))))
+                                    {
+                                        AllPAKsDict.Add(filename.Substring(0, filename.LastIndexOf(".")), currentPAK);
+                                    }
+                                }
+                                else
+                                {
+                                    if (!AllPAKsDict.ContainsKey(filename))
+                                    {
+                                        AllPAKsDict.Add(filename, currentPAK);
+                                    }
+                                }
+                            }
+                            File.AppendAllText(docPath + "\\FortnitePAKs_Temp.txt", File.ReadAllText(docPath + "\\" + currentPAK + ".txt"));
+                            File.Delete(docPath + "\\" + currentPAK + ".txt");
+                        }
+                    }
+                }
+                if (File.Exists(docPath + "\\FortnitePAKs_Temp.txt"))
+                {
+                    string[] arr = File.ReadAllLines(docPath + "\\FortnitePAKs_Temp.txt");
+                    File.Delete(docPath + "\\FortnitePAKs_Temp.txt");
+                    AppendText("Fixing paths... Please wait ", Color.Black, true);
+                    await Task.Run(() => {
+                        for (int i = 0; i < arr.Length; i++)
+                        {
+                            if (arr[i].StartsWith("Athena") ||
+                                    arr[i].StartsWith("Balance") ||
+                                    arr[i].StartsWith("Characters") ||
+                                    arr[i].StartsWith("Banners") ||
+                                    arr[i].StartsWith("Building") ||
+                                    arr[i].StartsWith("Blueprints") ||
+                                    arr[i].StartsWith("ArtTools") ||
+                                    arr[i].StartsWith("Catalog") ||
+                                    arr[i].StartsWith("Animation") ||
+                                    arr[i].StartsWith("Effects") ||
+                                    arr[i].StartsWith("Environments") ||
+                                    arr[i].StartsWith("Characters") ||
+                                    arr[i].StartsWith("CharClasses") ||
+                                    arr[i].StartsWith("ContentCreationTools") ||
+                                    arr[i].StartsWith("DeathPenalty") ||
+                                    arr[i].StartsWith("CollectionBook") ||
+                                    arr[i].StartsWith("CommandConsole") ||
+                                    arr[i].StartsWith("Creative") ||
+                                    arr[i].StartsWith("DeployableBases") ||
+                                    arr[i].StartsWith("GameplayCueNotifies") ||
+                                    arr[i].StartsWith("Items") ||
+                                    arr[i].StartsWith("Missions") ||
+                                    arr[i].StartsWith("GameplayEffectTemplates") ||
+                                    arr[i].StartsWith("Heroes") ||
+                                    arr[i].StartsWith("GameplayCurves") ||
+                                    arr[i].StartsWith("Packages") ||
+                                    arr[i].StartsWith("FortressPhysicalMaterials") ||
+                                    arr[i].StartsWith("Expeditions") ||
+                                    arr[i].StartsWith("Gamepad") ||
+                                    arr[i].StartsWith("Gadgets") ||
+                                    arr[i].StartsWith("Macros") ||
+                                    arr[i].StartsWith("Maps") ||
+                                    arr[i].StartsWith("Frontend") ||
+                                    arr[i].StartsWith("Playgrounds") ||
+                                    arr[i].StartsWith("Playsets") ||
+                                    arr[i].StartsWith("Movies") ||
+                                    arr[i].StartsWith("L10N") ||
+                                    arr[i].StartsWith("ImpostorBaker") ||
+                                    arr[i].StartsWith("Marketing") ||
+                                    arr[i].StartsWith("Marketing_Screenshots") ||
+                                    arr[i].StartsWith("Sounds") ||
+                                    arr[i].StartsWith("UI") ||
+                                    arr[i].StartsWith("Quests") ||
+                                    arr[i].StartsWith("VisualThreatManager") ||
+                                    arr[i].StartsWith("Weapons") ||
+                                    arr[i].StartsWith("WaterAndWind") ||
+                                    arr[i].StartsWith("Tools") ||
+                                    arr[i].StartsWith("Vehicles") ||
+                                    arr[i].StartsWith("PvP") ||
+                                    arr[i].StartsWith("Spectating") ||
+                                    arr[i].StartsWith("TheOutpost") ||
+                                    arr[i].StartsWith("TimeOfDay") ||
+                                    arr[i].StartsWith("Research") ||
+                                    arr[i].StartsWith("Relics") ||
+                                    arr[i].StartsWith("Slate") ||
+                                    arr[i].StartsWith("TheKeep") ||
+                                    arr[i].StartsWith("FrontEnd") ||
+                                    arr[i].StartsWith("AIDirector") ||
+                                    arr[i].StartsWith("AI") ||
+                                    arr[i].StartsWith("Abilities") ||
+                                    arr[i].StartsWith("Accessories") ||
+                                    arr[i].StartsWith("WorldTiles") ||
+                                    arr[i].StartsWith("Widgets"))
+                            {
+                                arr[i] = "FortniteGame/Content/" + arr[i];
+                            }
+                            if (arr[i].StartsWith("Content") || arr[i].StartsWith("Plugins"))
+                            {
+                                arr[i] = "FortniteGame/" + arr[i];
+                            }
+                            if (arr[i].StartsWith("Female") || arr[i].StartsWith("Male"))
+                            {
+                                arr[i] = "FortniteGame/Content/Characters/Player/" + arr[i];
+                            }
+                            if (arr[i].StartsWith("Male_Avg_Base") || arr[i].StartsWith("Medium") || arr[i].StartsWith("LegacyAssets") || arr[i].StartsWith("Large"))
+                            {
+                                arr[i] = "FortniteGame/Content/Characters/Player/Male/" + arr[i];
+                            }
+                            if (arr[i].StartsWith("Props") || arr[i].StartsWith("Sets") || arr[i].StartsWith("Prototype"))
+                            {
+                                arr[i] = "FortniteGame/Content/Environments/" + arr[i];
+                            }
+                        }
+                    });
+                    File.WriteAllLines(docPath + "\\FortnitePAKs.txt", arr);
+                    PAKFileAsTXT = File.ReadAllLines(docPath + "\\FortnitePAKs.txt");
+                    File.Delete(docPath + "\\FortnitePAKs.txt");
+
+                    for (int ii = 0; ii < PAKFileAsTXT.Length; ii++)
+                    {
+                        CreatePath(PAKTreeView.Nodes, PAKFileAsTXT[ii].Replace(PAKFileAsTXT[ii].Split('/').Last(), ""));
+                    }
+                }
+                LoadButton.Enabled = true;
+
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                AppendText("\nTime elapsed: " + elapsedTime, Color.Green, true, HorizontalAlignment.Right);
+            }
+            if (enablePAKsDiffToolStripMenuItem.Checked == true)
+            {
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                isAllPAKs = true;
+                AllPAKsDict = new Dictionary<string, string>();
+                PAKTreeView.Nodes.Clear();
+                ItemsListBox.Items.Clear();
+                File.WriteAllText("key.txt", AESKeyTextBox.Text.Substring(2));
+
+                LoadButton.Enabled = false;
+                for (int i = 0; i < AllPAKs.Count(); i++)
+                {
+                    currentPAK = AllPAKs[i];
+                    currentGUID = readPAKGuid(Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK);
+                    if (currentGUID == "0-0-0-0")
+                    {
+                        AppendText("✔ ", Color.Green);
+                        AppendText("Loading ", Color.Black);
+                        AppendText(currentPAK, Color.DarkRed, true);
+                        await Task.Run(() => {
+                            jwpmProcess("filelist \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + docPath + "\"");
+                        });
+                        if (!File.Exists(docPath + "\\" + currentPAK + ".txt"))
+                        {
+                            AppendText("✗ ", Color.Red);
+                            AppendText(" Can't read ", Color.Black);
+                            AppendText(currentPAK, Color.SteelBlue);
+                            AppendText(" with this key", Color.Black, true);
+                        }
+                        else
+                        {
+                            if (!File.Exists(docPath + "\\FortnitePAKs_Temp.txt"))
+                            {
+                                File.Create(docPath + "\\FortnitePAKs_Temp.txt").Dispose();
+                            }
+
+                            string[] arr = File.ReadAllLines(docPath + "\\" + currentPAK + ".txt");
+                            for (int ii = 0; ii < arr.Length; ii++)
+                            {
+                                string filename = arr[ii].Substring(arr[ii].LastIndexOf("/") + 1);
+                                if (filename.Contains(".uasset") || filename.Contains(".uexp") || filename.Contains(".ubulk"))
+                                {
+                                    if (!AllPAKsDict.ContainsKey(filename.Substring(0, filename.LastIndexOf("."))))
+                                    {
+                                        AllPAKsDict.Add(filename.Substring(0, filename.LastIndexOf(".")), currentPAK);
+                                    }
+                                }
+                                else
+                                {
+                                    if (!AllPAKsDict.ContainsKey(filename))
+                                    {
+                                        AllPAKsDict.Add(filename, currentPAK);
+                                    }
+                                }
+                            }
+                            File.AppendAllText(docPath + "\\FortnitePAKs_Temp.txt", File.ReadAllText(docPath + "\\" + currentPAK + ".txt"));
+                            File.Delete(docPath + "\\" + currentPAK + ".txt");
+                        }
+                    }
+                }
+                if (File.Exists(docPath + "\\FortnitePAKs_Temp.txt"))
+                {
+                    string[] arr = File.ReadAllLines(docPath + "\\FortnitePAKs_Temp.txt");
+                    File.Delete(docPath + "\\FortnitePAKs_Temp.txt");
+                    AppendText("Fixing paths... Please wait ", Color.Black, true);
+                    await Task.Run(() => {
+                        for (int i = 0; i < arr.Length; i++)
+                        {
+                            if (arr[i].StartsWith("Athena") ||
+                                    arr[i].StartsWith("Balance") ||
+                                    arr[i].StartsWith("Characters") ||
+                                    arr[i].StartsWith("Banners") ||
+                                    arr[i].StartsWith("Building") ||
+                                    arr[i].StartsWith("Blueprints") ||
+                                    arr[i].StartsWith("ArtTools") ||
+                                    arr[i].StartsWith("Catalog") ||
+                                    arr[i].StartsWith("Animation") ||
+                                    arr[i].StartsWith("Effects") ||
+                                    arr[i].StartsWith("Environments") ||
+                                    arr[i].StartsWith("Characters") ||
+                                    arr[i].StartsWith("CharClasses") ||
+                                    arr[i].StartsWith("ContentCreationTools") ||
+                                    arr[i].StartsWith("DeathPenalty") ||
+                                    arr[i].StartsWith("CollectionBook") ||
+                                    arr[i].StartsWith("CommandConsole") ||
+                                    arr[i].StartsWith("Creative") ||
+                                    arr[i].StartsWith("DeployableBases") ||
+                                    arr[i].StartsWith("GameplayCueNotifies") ||
+                                    arr[i].StartsWith("Items") ||
+                                    arr[i].StartsWith("Missions") ||
+                                    arr[i].StartsWith("GameplayEffectTemplates") ||
+                                    arr[i].StartsWith("Heroes") ||
+                                    arr[i].StartsWith("GameplayCurves") ||
+                                    arr[i].StartsWith("Packages") ||
+                                    arr[i].StartsWith("FortressPhysicalMaterials") ||
+                                    arr[i].StartsWith("Expeditions") ||
+                                    arr[i].StartsWith("Gamepad") ||
+                                    arr[i].StartsWith("Gadgets") ||
+                                    arr[i].StartsWith("Macros") ||
+                                    arr[i].StartsWith("Maps") ||
+                                    arr[i].StartsWith("Frontend") ||
+                                    arr[i].StartsWith("Playgrounds") ||
+                                    arr[i].StartsWith("Playsets") ||
+                                    arr[i].StartsWith("Movies") ||
+                                    arr[i].StartsWith("L10N") ||
+                                    arr[i].StartsWith("ImpostorBaker") ||
+                                    arr[i].StartsWith("Marketing") ||
+                                    arr[i].StartsWith("Marketing_Screenshots") ||
+                                    arr[i].StartsWith("Sounds") ||
+                                    arr[i].StartsWith("UI") ||
+                                    arr[i].StartsWith("Quests") ||
+                                    arr[i].StartsWith("VisualThreatManager") ||
+                                    arr[i].StartsWith("Weapons") ||
+                                    arr[i].StartsWith("WaterAndWind") ||
+                                    arr[i].StartsWith("Tools") ||
+                                    arr[i].StartsWith("Vehicles") ||
+                                    arr[i].StartsWith("PvP") ||
+                                    arr[i].StartsWith("Spectating") ||
+                                    arr[i].StartsWith("TheOutpost") ||
+                                    arr[i].StartsWith("TimeOfDay") ||
+                                    arr[i].StartsWith("Research") ||
+                                    arr[i].StartsWith("Relics") ||
+                                    arr[i].StartsWith("Slate") ||
+                                    arr[i].StartsWith("TheKeep") ||
+                                    arr[i].StartsWith("FrontEnd") ||
+                                    arr[i].StartsWith("AIDirector") ||
+                                    arr[i].StartsWith("AI") ||
+                                    arr[i].StartsWith("Abilities") ||
+                                    arr[i].StartsWith("Accessories") ||
+                                    arr[i].StartsWith("WorldTiles") ||
+                                    arr[i].StartsWith("Widgets"))
+                            {
+                                arr[i] = "FortniteGame/Content/" + arr[i];
+                            }
+                            if (arr[i].StartsWith("Content") || arr[i].StartsWith("Plugins"))
+                            {
+                                arr[i] = "FortniteGame/" + arr[i];
+                            }
+                            if (arr[i].StartsWith("Female") || arr[i].StartsWith("Male"))
+                            {
+                                arr[i] = "FortniteGame/Content/Characters/Player/" + arr[i];
+                            }
+                            if (arr[i].StartsWith("Male_Avg_Base") || arr[i].StartsWith("Medium") || arr[i].StartsWith("LegacyAssets") || arr[i].StartsWith("Large"))
+                            {
+                                arr[i] = "FortniteGame/Content/Characters/Player/Male/" + arr[i];
+                            }
+                            if (arr[i].StartsWith("Props") || arr[i].StartsWith("Sets") || arr[i].StartsWith("Prototype"))
+                            {
+                                arr[i] = "FortniteGame/Content/Environments/" + arr[i];
+                            }
+                        }
+                    });
+                    File.WriteAllLines(docPath + "\\FortnitePAKs.txt", arr);
+                    String[] linesB = File.ReadAllLines(docPath + "\\FortnitePAKs.txt");
+                    File.Delete(docPath + "\\FortnitePAKs.txt");
+
+                    OpenFileDialog theDialog = new OpenFileDialog();
+                    theDialog.Title = "Choose your Backup PAK File";
+                    theDialog.InitialDirectory = docPath;
+                    theDialog.Multiselect = false;
+                    theDialog.Filter = "TXT Files (*.txt)|*.txt|All Files (*.*)|*.*";
+
+                    if (theDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        String[] linesA = File.ReadAllLines(theDialog.FileName);
+                        IEnumerable<String> onlyB = linesB.Except(linesA);
+
+                        AppendText("Comparing files...", Color.Black, true);
+                        File.WriteAllLines(docPath + "\\Result.txt", onlyB);
+                    }
+
+                    PAKFileAsTXT = File.ReadAllLines(docPath + "\\Result.txt");
+                    File.Delete(docPath + "\\FortnitePAKs.txt");
+                    File.Delete(docPath + "\\Result.txt");
+
+                    for (int ii = 0; ii < PAKFileAsTXT.Length; ii++)
+                    {
+                        CreatePath(PAKTreeView.Nodes, PAKFileAsTXT[ii].Replace(PAKFileAsTXT[ii].Split('/').Last(), ""));
+                    }
+                }
+                LoadButton.Enabled = true;
+
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                AppendText("\nTime elapsed: " + elapsedTime, Color.Green, true, HorizontalAlignment.Right);
+            }
+        }
+        private async void backupCurrentPAKsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
@@ -489,14 +854,11 @@ namespace FModel
                         }
                     }
                 });
-                File.WriteAllLines(docPath + "\\FortnitePAKs.txt", arr);
-                PAKFileAsTXT = File.ReadAllLines(docPath + "\\FortnitePAKs.txt");
-                File.Delete(docPath + "\\FortnitePAKs.txt");
-
-                for (int ii = 0; ii < PAKFileAsTXT.Length; ii++)
-                {
-                    CreatePath(PAKTreeView.Nodes, PAKFileAsTXT[ii].Replace(PAKFileAsTXT[ii].Split('/').Last(), ""));
-                }
+                string filename = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
+                File.WriteAllLines(docPath + filename, arr);
+                AppendText("✔ ", Color.Green);
+                AppendText("Backup successfully created with path ", Color.Black);
+                AppendText(docPath + filename, Color.DarkRed, true);
             }
             LoadButton.Enabled = true;
 
@@ -504,6 +866,13 @@ namespace FModel
             TimeSpan ts = stopWatch.Elapsed;
             string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
             AppendText("\nTime elapsed: " + elapsedTime, Color.Green, true, HorizontalAlignment.Right);
+        }
+        private void enablePAKsDiffToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (enablePAKsDiffToolStripMenuItem.Checked == true)
+                loadAllPAKsToolStripMenuItem.Text = "Load Difference";
+            if (enablePAKsDiffToolStripMenuItem.Checked == false)
+                loadAllPAKsToolStripMenuItem.Text = "Load All PAKs";
         }
 
         public static IEnumerable<TItem> GetAncestors<TItem>(TItem item, Func<TItem, TItem> getParentFunc)
@@ -846,7 +1215,17 @@ namespace FModel
                     }
                     if (isAllPAKs == true)
                     {
-                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[qAssetName] + "\" \"" + qAssetName + "\" \"" + docPath + "\"");
+                        try
+                        {
+                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[qAssetName] + "\" \"" + qAssetName + "\" \"" + docPath + "\"");
+                        }
+                        catch (KeyNotFoundException ex)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write("[ERROR] ");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.Write(ex.Message);
+                        }
                     }
                     filesPath = Directory.GetFiles(docPath + "\\Extracted", qAssetName + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
                 }
@@ -941,7 +1320,17 @@ namespace FModel
                     if (isAllPAKs == true)
                     {
                         await Task.Run(() => {
-                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[currentItem] + "\" \"" + currentItem + "\" \"" + docPath + "\"");
+                            try
+                            {
+                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[currentItem] + "\" \"" + currentItem + "\" \"" + docPath + "\"");
+                            }
+                            catch (KeyNotFoundException ex)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("[ERROR] ");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.Write(ex.Message);
+                            }
                         });
                     }
                     files = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
@@ -1028,7 +1417,17 @@ namespace FModel
                                                         if (isAllPAKs == true)
                                                         {
                                                             await Task.Run(() => {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[IDParser[iii].HeroDefinition] + "\" \"" + IDParser[iii].HeroDefinition + "\" \"" + docPath + "\"");
+                                                                try
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[IDParser[iii].HeroDefinition] + "\" \"" + IDParser[iii].HeroDefinition + "\" \"" + docPath + "\"");
+                                                                }
+                                                                catch (KeyNotFoundException ex)
+                                                                {
+                                                                    Console.ForegroundColor = ConsoleColor.Red;
+                                                                    Console.Write("[ERROR] ");
+                                                                    Console.ForegroundColor = ConsoleColor.White;
+                                                                    Console.Write(ex.Message);
+                                                                }
                                                             });
                                                         }
                                                         filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].HeroDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -1088,7 +1487,17 @@ namespace FModel
                                                                                 if (isAllPAKs == true)
                                                                                 {
                                                                                     await Task.Run(() => {
-                                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                                        try
+                                                                                        {
+                                                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                                        }
+                                                                                        catch (KeyNotFoundException ex)
+                                                                                        {
+                                                                                            Console.ForegroundColor = ConsoleColor.Red;
+                                                                                            Console.Write("[ERROR] ");
+                                                                                            Console.ForegroundColor = ConsoleColor.White;
+                                                                                            Console.Write(ex.Message);
+                                                                                        }
                                                                                     });
                                                                                 }
                                                                                 filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -1164,7 +1573,17 @@ namespace FModel
                                                         if (isAllPAKs == true)
                                                         {
                                                             await Task.Run(() => {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[IDParser[iii].WeaponDefinition] + "\" \"" + IDParser[iii].WeaponDefinition + "\" \"" + docPath + "\"");
+                                                                try
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[IDParser[iii].WeaponDefinition] + "\" \"" + IDParser[iii].WeaponDefinition + "\" \"" + docPath + "\"");
+                                                                }
+                                                                catch (KeyNotFoundException ex)
+                                                                {
+                                                                    Console.ForegroundColor = ConsoleColor.Red;
+                                                                    Console.Write("[ERROR] ");
+                                                                    Console.ForegroundColor = ConsoleColor.White;
+                                                                    Console.Write(ex.Message);
+                                                                }
                                                             });
                                                         }
                                                         filesPath = Directory.GetFiles(docPath + "\\Extracted", IDParser[iii].WeaponDefinition + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -1224,7 +1643,17 @@ namespace FModel
                                                                                 if (isAllPAKs == true)
                                                                                 {
                                                                                     await Task.Run(() => {
-                                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                                        try
+                                                                                        {
+                                                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                                        }
+                                                                                        catch (KeyNotFoundException ex)
+                                                                                        {
+                                                                                            Console.ForegroundColor = ConsoleColor.Red;
+                                                                                            Console.Write("[ERROR] ");
+                                                                                            Console.ForegroundColor = ConsoleColor.White;
+                                                                                            Console.Write(ex.Message);
+                                                                                        }
                                                                                     });
                                                                                 }
                                                                                 filesPath2 = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -1323,7 +1752,17 @@ namespace FModel
                                                             if (isAllPAKs == true)
                                                             {
                                                                 await Task.Run(() => {
-                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    try
+                                                                    {
+                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    }
+                                                                    catch (KeyNotFoundException ex)
+                                                                    {
+                                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                                        Console.Write("[ERROR] ");
+                                                                        Console.ForegroundColor = ConsoleColor.White;
+                                                                        Console.Write(ex.Message);
+                                                                    }
                                                                 });
                                                             }
                                                             filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -1405,7 +1844,17 @@ namespace FModel
                                                             if (isAllPAKs == true)
                                                             {
                                                                 await Task.Run(() => {
-                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    try
+                                                                    {
+                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    }
+                                                                    catch (KeyNotFoundException ex)
+                                                                    {
+                                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                                        Console.Write("[ERROR] ");
+                                                                        Console.ForegroundColor = ConsoleColor.White;
+                                                                        Console.Write(ex.Message);
+                                                                    }
                                                                 });
                                                             }
                                                             filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -1600,7 +2049,17 @@ namespace FModel
                                                             if (isAllPAKs == true)
                                                             {
                                                                 await Task.Run(() => {
-                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    try
+                                                                    {
+                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    }
+                                                                    catch (KeyNotFoundException ex)
+                                                                    {
+                                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                                        Console.Write("[ERROR] ");
+                                                                        Console.ForegroundColor = ConsoleColor.White;
+                                                                        Console.Write(ex.Message);
+                                                                    }
                                                                 });
                                                             }
                                                             filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -1682,7 +2141,17 @@ namespace FModel
                                                             if (isAllPAKs == true)
                                                             {
                                                                 await Task.Run(() => {
-                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    try
+                                                                    {
+                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    }
+                                                                    catch (KeyNotFoundException ex)
+                                                                    {
+                                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                                        Console.Write("[ERROR] ");
+                                                                        Console.ForegroundColor = ConsoleColor.White;
+                                                                        Console.Write(ex.Message);
+                                                                    }
                                                                 });
                                                             }
                                                             filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -1882,7 +2351,17 @@ namespace FModel
                                                             if (isAllPAKs == true)
                                                             {
                                                                 await Task.Run(() => {
-                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    try
+                                                                    {
+                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    }
+                                                                    catch (KeyNotFoundException ex)
+                                                                    {
+                                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                                        Console.Write("[ERROR] ");
+                                                                        Console.ForegroundColor = ConsoleColor.White;
+                                                                        Console.Write(ex.Message);
+                                                                    }
                                                                 });
                                                             }
                                                             filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -1964,7 +2443,17 @@ namespace FModel
                                                             if (isAllPAKs == true)
                                                             {
                                                                 await Task.Run(() => {
-                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    try
+                                                                    {
+                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    }
+                                                                    catch (KeyNotFoundException ex)
+                                                                    {
+                                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                                        Console.Write("[ERROR] ");
+                                                                        Console.ForegroundColor = ConsoleColor.White;
+                                                                        Console.Write(ex.Message);
+                                                                    }
                                                                 });
                                                             }
                                                             filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -2128,7 +2617,17 @@ namespace FModel
                                                             if (isAllPAKs == true)
                                                             {
                                                                 await Task.Run(() => {
-                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    try
+                                                                    {
+                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    }
+                                                                    catch (KeyNotFoundException ex)
+                                                                    {
+                                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                                        Console.Write("[ERROR] ");
+                                                                        Console.ForegroundColor = ConsoleColor.White;
+                                                                        Console.Write(ex.Message);
+                                                                    }
                                                                 });
                                                             }
                                                             filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -2210,7 +2709,17 @@ namespace FModel
                                                             if (isAllPAKs == true)
                                                             {
                                                                 await Task.Run(() => {
-                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    try
+                                                                    {
+                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile] + "\" \"" + textureFile + "\" \"" + docPath + "\"");
+                                                                    }
+                                                                    catch (KeyNotFoundException ex)
+                                                                    {
+                                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                                        Console.Write("[ERROR] ");
+                                                                        Console.ForegroundColor = ConsoleColor.White;
+                                                                        Console.Write(ex.Message);
+                                                                    }
                                                                 });
                                                             }
                                                             filesPath = Directory.GetFiles(docPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).FirstOrDefault();
@@ -2371,7 +2880,17 @@ namespace FModel
                                                         if (isAllPAKs == true)
                                                         {
                                                             await Task.Run(() => {
-                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[challengesArray[w]] + "\" \"" + challengesArray[w] + "\" \"" + docPath + "\"");
+                                                                try
+                                                                {
+                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[challengesArray[w]] + "\" \"" + challengesArray[w] + "\" \"" + docPath + "\"");
+                                                                }
+                                                                catch (KeyNotFoundException ex)
+                                                                {
+                                                                    Console.ForegroundColor = ConsoleColor.Red;
+                                                                    Console.Write("[ERROR] ");
+                                                                    Console.ForegroundColor = ConsoleColor.White;
+                                                                    Console.Write(ex.Message);
+                                                                }
                                                             });
                                                         }
                                                         filesPath = Directory.GetFiles(docPath + "\\Extracted", challengesArray[w] + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
@@ -2515,7 +3034,7 @@ namespace FModel
                                                 AppendText(" successfully saved to ", Color.Black);
                                                 AppendText(docPath + "\\Generated Icons\\" + nameToSave + ".png", Color.SteelBlue, true);
                                             }
-                                        } //ASSET IS A CHALLENGE => 
+                                        } //ASSET IS A CHALLENGE => DISPLAY + ICON
                                         if (IDParser[ii].ExportType == "Texture2D")
                                         {
                                             AppendText("Parsing...", Color.Black, true);
@@ -2541,7 +3060,17 @@ namespace FModel
                                                 if (isAllPAKs == true)
                                                 {
                                                     await Task.Run(() => {
-                                                        jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[currentItem] + "\" \"" + currentItem + "\" \"" + docPath + "\"");
+                                                        try
+                                                        {
+                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[currentItem] + "\" \"" + currentItem + "\" \"" + docPath + "\"");
+                                                        }
+                                                        catch (KeyNotFoundException ex)
+                                                        {
+                                                            Console.ForegroundColor = ConsoleColor.Red;
+                                                            Console.Write("[ERROR] ");
+                                                            Console.ForegroundColor = ConsoleColor.White;
+                                                            Console.Write(ex.Message);
+                                                        }
                                                     });
                                                 }
                                                 filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
@@ -2641,7 +3170,17 @@ namespace FModel
                                                     if (isAllPAKs == true)
                                                     {
                                                         await Task.Run(() => {
-                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[currentItem] + "\" \"" + currentItem + "\" \"" + docPath + "\"");
+                                                            try
+                                                            {
+                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[currentItem] + "\" \"" + currentItem + "\" \"" + docPath + "\"");
+                                                            }
+                                                            catch (KeyNotFoundException ex)
+                                                            {
+                                                                Console.ForegroundColor = ConsoleColor.Red;
+                                                                Console.Write("[ERROR] ");
+                                                                Console.ForegroundColor = ConsoleColor.White;
+                                                                Console.Write(ex.Message);
+                                                            }
                                                         });
                                                     }
                                                     filesPath = Directory.GetFiles(docPath + "\\Extracted", currentItem + ".uexp", SearchOption.AllDirectories).FirstOrDefault();

@@ -34,9 +34,24 @@
   - Asset is a **_Font_**:
     - Try to convert the Asset to OTF
 
+### Load Difference Between 2 Fortnite Version
+**1.** Create a backup of your PAK files before the update
+**2.** Enable PAKs Diff
+**3.** Click `Load Difference`
+![](https://i.imgur.com/5zFOXbY.gif)
+
 
 
 ## DOCUMENTATION
+### Features
+1. Extract
+2. Serialize
+3. Filter
+4. Icon Creation
+5. Save Icon
+6. Icons Merger
+7. Backup current PAK files
+8. Load only difference between current PAK files and backup file
 ### What i'm using
 - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - Modded Version With Output Control
 - [JSON Parser](https://app.quicktype.io/)
@@ -52,7 +67,8 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
 - [x] Filter for the items ListBox
 - [x] Quest viewer or something
 - [x] Load all paks
-- [ ] Load only difference between 2 paks version
+- [ ] Shop loader ?
+- [x] Load only difference between 2 paks version
 - [ ] Custom watermark option on icons
 - [x] Choose between extracted filename or displayName for icons file name
 - [ ] Stop button while extracting
