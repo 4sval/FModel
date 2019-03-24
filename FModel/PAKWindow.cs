@@ -101,9 +101,11 @@ namespace FModel
             fileopener.Start();
         }
 
+        string BackupFilename = string.Empty;
         private void PAKWindow_Load(object sender, EventArgs e)
         {
             bool connection = IsInternetAvailable();
+            BackupFilename = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
 
             SetTreeViewTheme(PAKTreeView.Handle);
             Properties.Settings.Default.ExtractAndSerialize = true; //SERIALIZE BY DEFAULT
@@ -206,7 +208,7 @@ namespace FModel
             }
 
             ExtractAssetButton.Enabled = false;
-            SaveImageButton.Enabled = false;
+            OpenImageButton.Enabled = false;
 
             fontLength = Properties.Resources.BurbankBigCondensed_Bold.Length;
             fontdata = Properties.Resources.BurbankBigCondensed_Bold;
@@ -321,7 +323,7 @@ namespace FModel
 
                 if (!File.Exists(docPath + "\\" + PAKsComboBox.SelectedItem + ".txt"))
                 {
-                    AppendText("✗ ", Color.Red);
+                    AppendText("✗", Color.Red);
                     AppendText(" Can't read ", Color.Black);
                     AppendText(PAKsComboBox.SelectedItem.ToString(), Color.SteelBlue);
                     AppendText(" with this key", Color.Black, true);
@@ -366,7 +368,7 @@ namespace FModel
                         });
                         if (!File.Exists(docPath + "\\" + currentPAK + ".txt"))
                         {
-                            AppendText("✗ ", Color.Red);
+                            AppendText("✗", Color.Red);
                             AppendText(" Can't read ", Color.Black);
                             AppendText(currentPAK, Color.SteelBlue);
                             AppendText(" with this key", Color.Black, true);
@@ -410,6 +412,19 @@ namespace FModel
                                     }
                                 }
                             }
+                            if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk0_s2-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/Characters/Player/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk0_s3-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/Characters/Player/Male/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk0_s5-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/Environments/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk0_s8-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk5-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.Black, true);
+
                             File.AppendAllLines(docPath + "\\FortnitePAKs.txt", arr);
                             File.Delete(docPath + "\\" + currentPAK + ".txt");
                         }
@@ -459,7 +474,7 @@ namespace FModel
                         });
                         if (!File.Exists(docPath + "\\" + currentPAK + ".txt"))
                         {
-                            AppendText("✗ ", Color.Red);
+                            AppendText("✗", Color.Red);
                             AppendText(" Can't read ", Color.Black);
                             AppendText(currentPAK, Color.SteelBlue);
                             AppendText(" with this key", Color.Black, true);
@@ -503,6 +518,19 @@ namespace FModel
                                     }
                                 }
                             }
+                            if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk0_s2-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/Characters/Player/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk0_s3-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/Characters/Player/Male/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk0_s5-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/Environments/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk0_s8-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk5-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.Black, true);
+
                             File.AppendAllLines(docPath + "\\FortnitePAKs.txt", arr);
                             File.Delete(docPath + "\\" + currentPAK + ".txt");
                         }
@@ -571,140 +599,55 @@ namespace FModel
                     });
                     if (!File.Exists(docPath + "\\" + currentPAK + ".txt"))
                     {
-                        AppendText("✗ ", Color.Red);
+                        AppendText("✗", Color.Red);
                         AppendText(" Can't read ", Color.Black);
                         AppendText(currentPAK, Color.SteelBlue);
                         AppendText(" with this key", Color.Black, true);
                     }
                     else
                     {
-                        if (!File.Exists(docPath + "\\FortnitePAKs_Temp.txt"))
+                        if (!File.Exists(docPath + BackupFilename))
                         {
-                            File.Create(docPath + "\\FortnitePAKs_Temp.txt").Dispose();
+                            File.Create(docPath + BackupFilename).Dispose();
                         }
 
                         string[] arr = File.ReadAllLines(docPath + "\\" + currentPAK + ".txt");
                         for (int ii = 0; ii < arr.Length; ii++)
                         {
-                            string filename = arr[ii].Substring(arr[ii].LastIndexOf("/") + 1);
-                            if (filename.Contains(".uasset") || filename.Contains(".uexp") || filename.Contains(".ubulk"))
-                            {
-                                if (!AllPAKsDict.ContainsKey(filename.Substring(0, filename.LastIndexOf("."))))
-                                {
-                                    AllPAKsDict.Add(filename.Substring(0, filename.LastIndexOf(".")), currentPAK);
-                                }
-                            }
-                            else
-                            {
-                                if (!AllPAKsDict.ContainsKey(filename))
-                                {
-                                    AllPAKsDict.Add(filename, currentPAK);
-                                }
-                            }
+                            if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
+                                arr[ii] = "FortniteGame/Content/" + arr[ii];
+                            if (currentPAK == "pakchunk0_s2-WindowsClient.pak")
+                                arr[ii] = "FortniteGame/Content/Characters/Player/" + arr[ii];
+                            if (currentPAK == "pakchunk0_s3-WindowsClient.pak")
+                                arr[ii] = "FortniteGame/Content/Characters/Player/Male/" + arr[ii];
+                            if (currentPAK == "pakchunk0_s5-WindowsClient.pak")
+                                arr[ii] = "FortniteGame/Content/Environments/" + arr[ii];
+                            if (currentPAK == "pakchunk0_s8-WindowsClient.pak")
+                                arr[ii] = "FortniteGame/" + arr[ii];
+                            if (currentPAK == "pakchunk5-WindowsClient.pak")
+                                arr[ii] = "FortniteGame/Content/L10N/fr/" + arr[ii];
                         }
-                        File.AppendAllText(docPath + "\\FortnitePAKs_Temp.txt", File.ReadAllText(docPath + "\\" + currentPAK + ".txt"));
+                        if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
+                            AppendText("mount point: \"/FortniteGame/Content/\"", Color.Black, true);
+                        if (currentPAK == "pakchunk0_s2-WindowsClient.pak")
+                            AppendText("mount point: \"/FortniteGame/Content/Characters/Player/\"", Color.Black, true);
+                        if (currentPAK == "pakchunk0_s3-WindowsClient.pak")
+                            AppendText("mount point: \"/FortniteGame/Content/Characters/Player/Male/\"", Color.Black, true);
+                        if (currentPAK == "pakchunk0_s5-WindowsClient.pak")
+                            AppendText("mount point: \"/FortniteGame/Content/Environments/\"", Color.Black, true);
+                        if (currentPAK == "pakchunk0_s8-WindowsClient.pak")
+                            AppendText("mount point: \"/FortniteGame/\"", Color.Black, true);
+                        if (currentPAK == "pakchunk5-WindowsClient.pak")
+                            AppendText("mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.Black, true);
+
+                        File.AppendAllLines(docPath + BackupFilename, arr);
                         File.Delete(docPath + "\\" + currentPAK + ".txt");
                     }
                 }
             }
-            if (File.Exists(docPath + "\\FortnitePAKs_Temp.txt"))
-            {
-                string[] arr = File.ReadAllLines(docPath + "\\FortnitePAKs_Temp.txt");
-                File.Delete(docPath + "\\FortnitePAKs_Temp.txt");
-                AppendText("Fixing paths... Please wait ", Color.Black, true);
-                await Task.Run(() => {
-                    for (int i = 0; i < arr.Length; i++)
-                    {
-                        if (arr[i].StartsWith("Athena") ||
-                                arr[i].StartsWith("Balance") ||
-                                arr[i].StartsWith("Characters") ||
-                                arr[i].StartsWith("Banners") ||
-                                arr[i].StartsWith("Building") ||
-                                arr[i].StartsWith("Blueprints") ||
-                                arr[i].StartsWith("ArtTools") ||
-                                arr[i].StartsWith("Catalog") ||
-                                arr[i].StartsWith("Animation") ||
-                                arr[i].StartsWith("Effects") ||
-                                arr[i].StartsWith("Environments") ||
-                                arr[i].StartsWith("Characters") ||
-                                arr[i].StartsWith("CharClasses") ||
-                                arr[i].StartsWith("ContentCreationTools") ||
-                                arr[i].StartsWith("DeathPenalty") ||
-                                arr[i].StartsWith("CollectionBook") ||
-                                arr[i].StartsWith("CommandConsole") ||
-                                arr[i].StartsWith("Creative") ||
-                                arr[i].StartsWith("DeployableBases") ||
-                                arr[i].StartsWith("GameplayCueNotifies") ||
-                                arr[i].StartsWith("Items") ||
-                                arr[i].StartsWith("Missions") ||
-                                arr[i].StartsWith("GameplayEffectTemplates") ||
-                                arr[i].StartsWith("Heroes") ||
-                                arr[i].StartsWith("GameplayCurves") ||
-                                arr[i].StartsWith("Packages") ||
-                                arr[i].StartsWith("FortressPhysicalMaterials") ||
-                                arr[i].StartsWith("Expeditions") ||
-                                arr[i].StartsWith("Gamepad") ||
-                                arr[i].StartsWith("Gadgets") ||
-                                arr[i].StartsWith("Macros") ||
-                                arr[i].StartsWith("Maps") ||
-                                arr[i].StartsWith("Frontend") ||
-                                arr[i].StartsWith("Playgrounds") ||
-                                arr[i].StartsWith("Playsets") ||
-                                arr[i].StartsWith("Movies") ||
-                                arr[i].StartsWith("L10N") ||
-                                arr[i].StartsWith("ImpostorBaker") ||
-                                arr[i].StartsWith("Marketing") ||
-                                arr[i].StartsWith("Marketing_Screenshots") ||
-                                arr[i].StartsWith("Sounds") ||
-                                arr[i].StartsWith("UI") ||
-                                arr[i].StartsWith("Quests") ||
-                                arr[i].StartsWith("VisualThreatManager") ||
-                                arr[i].StartsWith("Weapons") ||
-                                arr[i].StartsWith("WaterAndWind") ||
-                                arr[i].StartsWith("Tools") ||
-                                arr[i].StartsWith("Vehicles") ||
-                                arr[i].StartsWith("PvP") ||
-                                arr[i].StartsWith("Spectating") ||
-                                arr[i].StartsWith("TheOutpost") ||
-                                arr[i].StartsWith("TimeOfDay") ||
-                                arr[i].StartsWith("Research") ||
-                                arr[i].StartsWith("Relics") ||
-                                arr[i].StartsWith("Slate") ||
-                                arr[i].StartsWith("TheKeep") ||
-                                arr[i].StartsWith("FrontEnd") ||
-                                arr[i].StartsWith("AIDirector") ||
-                                arr[i].StartsWith("AI") ||
-                                arr[i].StartsWith("Abilities") ||
-                                arr[i].StartsWith("Accessories") ||
-                                arr[i].StartsWith("WorldTiles") ||
-                                arr[i].StartsWith("Widgets"))
-                        {
-                            arr[i] = "FortniteGame/Content/" + arr[i];
-                        }
-                        if (arr[i].StartsWith("Content") || arr[i].StartsWith("Plugins"))
-                        {
-                            arr[i] = "FortniteGame/" + arr[i];
-                        }
-                        if (arr[i].StartsWith("Female") || arr[i].StartsWith("Male"))
-                        {
-                            arr[i] = "FortniteGame/Content/Characters/Player/" + arr[i];
-                        }
-                        if (arr[i].StartsWith("Male_Avg_Base") || arr[i].StartsWith("Medium") || arr[i].StartsWith("LegacyAssets") || arr[i].StartsWith("Large"))
-                        {
-                            arr[i] = "FortniteGame/Content/Characters/Player/Male/" + arr[i];
-                        }
-                        if (arr[i].StartsWith("Props") || arr[i].StartsWith("Sets") || arr[i].StartsWith("Prototype"))
-                        {
-                            arr[i] = "FortniteGame/Content/Environments/" + arr[i];
-                        }
-                    }
-                });
-                string filename = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
-                File.WriteAllLines(docPath + filename, arr);
-                AppendText("✔ ", Color.Green);
-                AppendText("Backup successfully created with path ", Color.Black);
-                AppendText(docPath + filename, Color.DarkRed, true);
-            }
+            AppendText("✔ ", Color.Green);
+            AppendText("Backup successfully created with path ", Color.Black);
+            AppendText(docPath + BackupFilename, Color.DarkRed, true);
             LoadButton.Enabled = true;
 
             stopWatch.Stop();
@@ -1148,7 +1091,7 @@ namespace FModel
             }
 
             ExtractAssetButton.Enabled = false;
-            SaveImageButton.Enabled = false;
+            OpenImageButton.Enabled = false;
             for (int i = 0; i < SelectedArray.Length; i++)
             {
                 currentItem = SelectedArray[i].ToString();
@@ -3099,7 +3042,7 @@ namespace FModel
                 }
             }
             ExtractAssetButton.Enabled = true;
-            SaveImageButton.Enabled = true;
+            OpenImageButton.Enabled = true;
             SelectedArray = null;
 
             stopWatch.Stop();
@@ -3108,7 +3051,26 @@ namespace FModel
             AppendText("\nTime elapsed: " + elapsedTime, Color.Green, true, HorizontalAlignment.Right);
         }
 
-        private void SaveImageButton_Click(object sender, EventArgs e)
+        private void OpenImageButton_Click(object sender, EventArgs e)
+        {
+            if (ItemIconPictureBox.Image != null)
+            {
+                var newForm = new Form();
+
+                PictureBox pb = new PictureBox();
+                pb.Dock = DockStyle.Fill;
+                pb.Image = ItemIconPictureBox.Image;
+                pb.SizeMode = PictureBoxSizeMode.Zoom;
+
+                newForm.Size = ItemIconPictureBox.Image.Size;
+                newForm.Icon = Properties.Resources.FNTools_Logo_Icon;
+                newForm.Text = currentItem;
+                newForm.StartPosition = FormStartPosition.CenterScreen;
+                newForm.Controls.Add(pb);
+                newForm.Show();
+            }
+        }
+        private void ImageSaveTS_Click(object sender, EventArgs e)
         {
             if (ItemIconPictureBox.Image != null)
             {
@@ -3139,25 +3101,6 @@ namespace FModel
                     AppendText(" successfully saved to ", Color.Black);
                     AppendText(saveTheDialog.FileName, Color.SteelBlue, true);
                 }
-            }
-        }
-        private void OpenImageTS_Click(object sender, EventArgs e)
-        {
-            if (ItemIconPictureBox.Image != null)
-            {
-                var newForm = new Form();
-
-                PictureBox pb = new PictureBox();
-                pb.Dock = DockStyle.Fill;
-                pb.Image = ItemIconPictureBox.Image;
-                pb.SizeMode = PictureBoxSizeMode.Zoom;
-
-                newForm.Size = ItemIconPictureBox.Image.Size;
-                newForm.Icon = Properties.Resources.FNTools_Logo_Icon;
-                newForm.Text = currentItem;
-                newForm.StartPosition = FormStartPosition.CenterScreen;
-                newForm.Controls.Add(pb);
-                newForm.Show();
             }
         }
 

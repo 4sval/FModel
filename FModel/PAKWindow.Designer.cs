@@ -34,6 +34,8 @@
             this.LoadButton = new FModel.SplitButton();
             this.LoadContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.loadAllPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.backupCurrentPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.enablePAKsDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AESKeyLabel = new System.Windows.Forms.Label();
@@ -45,9 +47,9 @@
             this.ItemIconPictureBox = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.scintilla1 = new ScintillaNET.Scintilla();
-            this.SaveImageButton = new FModel.SplitButton();
+            this.OpenImageButton = new FModel.SplitButton();
             this.ImageContext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.OpenImageTS = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImageSaveTS = new System.Windows.Forms.ToolStripMenuItem();
             this.ExtractAssetButton = new FModel.SplitButton();
             this.ExtractAsset = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.LoadDataTS = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,8 +59,6 @@
             this.ConsoleRichTextBox = new System.Windows.Forms.RichTextBox();
             this.FilterLabel = new System.Windows.Forms.Label();
             this.FilterTextBox = new System.Windows.Forms.TextBox();
-            this.backupCurrentPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.enablePAKsDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.LoadContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).BeginInit();
@@ -102,7 +102,7 @@
             this.toolStripSeparator3,
             this.optionsToolStripMenuItem});
             this.LoadContext.Name = "LoadContext";
-            this.LoadContext.Size = new System.Drawing.Size(186, 120);
+            this.LoadContext.Size = new System.Drawing.Size(186, 98);
             // 
             // loadAllPAKsToolStripMenuItem
             // 
@@ -111,6 +111,23 @@
             this.loadAllPAKsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.loadAllPAKsToolStripMenuItem.Text = "Load All PAKs";
             this.loadAllPAKsToolStripMenuItem.Click += new System.EventHandler(this.loadAllPAKsToolStripMenuItem_Click);
+            // 
+            // backupCurrentPAKsToolStripMenuItem
+            // 
+            this.backupCurrentPAKsToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.backupCurrentPAKsToolStripMenuItem.Name = "backupCurrentPAKsToolStripMenuItem";
+            this.backupCurrentPAKsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.backupCurrentPAKsToolStripMenuItem.Text = "Backup Current PAKs";
+            this.backupCurrentPAKsToolStripMenuItem.Click += new System.EventHandler(this.backupCurrentPAKsToolStripMenuItem_Click);
+            // 
+            // enablePAKsDiffToolStripMenuItem
+            // 
+            this.enablePAKsDiffToolStripMenuItem.CheckOnClick = true;
+            this.enablePAKsDiffToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.enablePAKsDiffToolStripMenuItem.Name = "enablePAKsDiffToolStripMenuItem";
+            this.enablePAKsDiffToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.enablePAKsDiffToolStripMenuItem.Text = "Enable PAKs Diff";
+            this.enablePAKsDiffToolStripMenuItem.CheckedChanged += new System.EventHandler(this.enablePAKsDiffToolStripMenuItem_CheckedChanged);
             // 
             // toolStripSeparator3
             // 
@@ -193,7 +210,7 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.scintilla1);
-            this.groupBox2.Controls.Add(this.SaveImageButton);
+            this.groupBox2.Controls.Add(this.OpenImageButton);
             this.groupBox2.Controls.Add(this.ExtractAssetButton);
             this.groupBox2.Controls.Add(this.ConsoleRichTextBox);
             this.groupBox2.Controls.Add(this.ItemIconPictureBox);
@@ -213,33 +230,33 @@
             this.scintilla1.Size = new System.Drawing.Size(560, 350);
             this.scintilla1.TabIndex = 12;
             // 
-            // SaveImageButton
+            // OpenImageButton
             // 
-            this.SaveImageButton.Location = new System.Drawing.Point(810, 635);
-            this.SaveImageButton.Menu = this.ImageContext;
-            this.SaveImageButton.Name = "SaveImageButton";
-            this.SaveImageButton.Size = new System.Drawing.Size(112, 23);
-            this.SaveImageButton.TabIndex = 11;
-            this.SaveImageButton.Text = "    Save Image";
-            this.SaveImageButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.SaveImageButton.UseVisualStyleBackColor = true;
-            this.SaveImageButton.Click += new System.EventHandler(this.SaveImageButton_Click);
+            this.OpenImageButton.Location = new System.Drawing.Point(810, 635);
+            this.OpenImageButton.Menu = this.ImageContext;
+            this.OpenImageButton.Name = "OpenImageButton";
+            this.OpenImageButton.Size = new System.Drawing.Size(112, 23);
+            this.OpenImageButton.TabIndex = 11;
+            this.OpenImageButton.Text = "    Open Image";
+            this.OpenImageButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.OpenImageButton.UseVisualStyleBackColor = true;
+            this.OpenImageButton.Click += new System.EventHandler(this.OpenImageButton_Click);
             // 
             // ImageContext
             // 
             this.ImageContext.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.ImageContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.OpenImageTS});
+            this.ImageSaveTS});
             this.ImageContext.Name = "ImageContext";
-            this.ImageContext.Size = new System.Drawing.Size(140, 26);
+            this.ImageContext.Size = new System.Drawing.Size(181, 48);
             // 
-            // OpenImageTS
+            // ImageSaveTS
             // 
-            this.OpenImageTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.OpenImageTS.Name = "OpenImageTS";
-            this.OpenImageTS.Size = new System.Drawing.Size(139, 22);
-            this.OpenImageTS.Text = "Open Image";
-            this.OpenImageTS.Click += new System.EventHandler(this.OpenImageTS_Click);
+            this.ImageSaveTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ImageSaveTS.Name = "ImageSaveTS";
+            this.ImageSaveTS.Size = new System.Drawing.Size(180, 22);
+            this.ImageSaveTS.Text = "Save Image";
+            this.ImageSaveTS.Click += new System.EventHandler(this.ImageSaveTS_Click);
             // 
             // ExtractAssetButton
             // 
@@ -322,23 +339,6 @@
             this.FilterTextBox.TabIndex = 5;
             this.FilterTextBox.TextChanged += new System.EventHandler(this.FilterTextBox_TextChanged);
             // 
-            // backupCurrentPAKsToolStripMenuItem
-            // 
-            this.backupCurrentPAKsToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.backupCurrentPAKsToolStripMenuItem.Name = "backupCurrentPAKsToolStripMenuItem";
-            this.backupCurrentPAKsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.backupCurrentPAKsToolStripMenuItem.Text = "Backup Current PAKs";
-            this.backupCurrentPAKsToolStripMenuItem.Click += new System.EventHandler(this.backupCurrentPAKsToolStripMenuItem_Click);
-            // 
-            // enablePAKsDiffToolStripMenuItem
-            // 
-            this.enablePAKsDiffToolStripMenuItem.CheckOnClick = true;
-            this.enablePAKsDiffToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.enablePAKsDiffToolStripMenuItem.Name = "enablePAKsDiffToolStripMenuItem";
-            this.enablePAKsDiffToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.enablePAKsDiffToolStripMenuItem.Text = "Enable PAKs Diff";
-            this.enablePAKsDiffToolStripMenuItem.CheckedChanged += new System.EventHandler(this.enablePAKsDiffToolStripMenuItem_CheckedChanged);
-            // 
             // PAKWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -387,8 +387,8 @@
         private System.Windows.Forms.ContextMenuStrip ExtractAsset;
         private System.Windows.Forms.ToolStripMenuItem LoadDataTS;
         private System.Windows.Forms.ContextMenuStrip ImageContext;
-        private System.Windows.Forms.ToolStripMenuItem OpenImageTS;
-        private SplitButton SaveImageButton;
+        private System.Windows.Forms.ToolStripMenuItem ImageSaveTS;
+        private SplitButton OpenImageButton;
         private System.Windows.Forms.ToolStripMenuItem SaveImageTS;
         private SplitButton LoadButton;
         private System.Windows.Forms.ContextMenuStrip LoadContext;
