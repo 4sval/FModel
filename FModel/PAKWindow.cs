@@ -5,11 +5,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
@@ -18,9 +16,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Threading;
-using System.Text.RegularExpressions;
-using System.Text;
+using System.Drawing.Drawing2D;
 
 namespace FModel
 {
@@ -99,6 +95,64 @@ namespace FModel
             fileopener.StartInfo.FileName = "explorer";
             fileopener.StartInfo.Arguments = "\"" + path + "\"";
             fileopener.Start();
+        }
+        public static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+        public Image SetImageOpacity(Image image, float opacity)
+        {
+            try
+            {
+                //create a Bitmap the size of the image provided  
+                Bitmap bmp = new Bitmap(image.Width, image.Height);
+
+                //create a graphics object from the image  
+                using (Graphics gfx = Graphics.FromImage(bmp))
+                {
+
+                    //create a color matrix object  
+                    ColorMatrix matrix = new ColorMatrix();
+
+                    //set the opacity  
+                    matrix.Matrix33 = opacity;
+
+                    //create image attributes  
+                    ImageAttributes attributes = new ImageAttributes();
+
+                    //set the color(opacity) of the image  
+                    attributes.SetColorMatrix(matrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
+                    //now draw the image  
+                    gfx.DrawImage(image, new Rectangle(0, 0, bmp.Width, bmp.Height), 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, attributes);
+                }
+                return bmp;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
         }
 
         string BackupFilename = string.Empty;
@@ -236,6 +290,15 @@ namespace FModel
             scintilla1.Styles[ScintillaNET.Style.Json.String].ForeColor = Color.OrangeRed;
             scintilla1.Styles[ScintillaNET.Style.Json.StringEol].BackColor = Color.OrangeRed;
             scintilla1.Styles[ScintillaNET.Style.Json.Operator].ForeColor = Color.Black;
+            scintilla1.Styles[ScintillaNET.Style.LineNumber].ForeColor = Color.DarkGray;
+            var nums = scintilla1.Margins[1];
+            nums.Width = 30;
+            nums.Type = ScintillaNET.MarginType.Number;
+            nums.Sensitive = true;
+            nums.Mask = 0;
+
+            scintilla1.ClearCmdKey(Keys.Control | Keys.F);
+            scintilla1.ClearCmdKey(Keys.Control | Keys.Z);
             scintilla1.Lexer = ScintillaNET.Lexer.Json;
         } //EVERYTHING TO SET WHEN APP IS STARTING
         private void PAKWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -1742,6 +1805,13 @@ namespace FModel
                                                     g.DrawImage(ItemIcon, new Point(0, 0));
                                                 }
 
+                                                if (Properties.Settings.Default.isWatermark == true && !string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                                                {
+                                                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                                                    var opacityImage = SetImageOpacity(watermark, (float)Properties.Settings.Default.wOpacity / 100);
+                                                    g.DrawImage(ResizeImage(opacityImage, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize), (522 - Properties.Settings.Default.wSize) / 2, (522 - Properties.Settings.Default.wSize) / 2, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize);
+                                                }
+
                                                 Image bg512 = Properties.Resources.BG512;
                                                 g.DrawImage(bg512, new Point(5, 383));
 
@@ -2037,6 +2107,13 @@ namespace FModel
                                                 {
                                                     Image ItemIcon = Properties.Resources.unknown512;
                                                     g.DrawImage(ItemIcon, new Point(0, 0));
+                                                }
+
+                                                if (Properties.Settings.Default.isWatermark == true && !string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                                                {
+                                                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                                                    var opacityImage = SetImageOpacity(watermark, (float)Properties.Settings.Default.wOpacity / 100);
+                                                    g.DrawImage(ResizeImage(opacityImage, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize), (522 - Properties.Settings.Default.wSize) / 2, (522 - Properties.Settings.Default.wSize) / 2, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize);
                                                 }
 
                                                 Image bg512 = Properties.Resources.BG512;
@@ -2341,6 +2418,13 @@ namespace FModel
                                                     g.DrawImage(ItemIcon, new Point(0, 0));
                                                 }
 
+                                                if (Properties.Settings.Default.isWatermark == true && !string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                                                {
+                                                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                                                    var opacityImage = SetImageOpacity(watermark, (float)Properties.Settings.Default.wOpacity / 100);
+                                                    g.DrawImage(ResizeImage(opacityImage, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize), (522 - Properties.Settings.Default.wSize) / 2, (522 - Properties.Settings.Default.wSize) / 2, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize);
+                                                }
+
                                                 Image bg512 = Properties.Resources.BG512;
                                                 g.DrawImage(bg512, new Point(5, 383));
 
@@ -2605,6 +2689,13 @@ namespace FModel
                                                 {
                                                     Image ItemIcon = Properties.Resources.unknown512;
                                                     g.DrawImage(ItemIcon, new Point(0, 0));
+                                                }
+
+                                                if (Properties.Settings.Default.isWatermark == true && !string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                                                {
+                                                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                                                    var opacityImage = SetImageOpacity(watermark, (float)Properties.Settings.Default.wOpacity / 100);
+                                                    g.DrawImage(ResizeImage(opacityImage, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize), (522 - Properties.Settings.Default.wSize) / 2, (522 - Properties.Settings.Default.wSize) / 2, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize);
                                                 }
 
                                                 Image bg512 = Properties.Resources.BG512;

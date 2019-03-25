@@ -118,41 +118,20 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="E512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\E512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="R512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\R512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="BurbankBigCondensed_Bold" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\BurbankBigCondensed-Bold.otf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="FNTools_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\FNTools_Logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="C512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\C512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="unknown512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\unknown512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="M512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\M512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Quest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Quest.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="BG512" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BG512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="I512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\I512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="U512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\U512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="T512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="L512" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\L512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="R512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\R512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="C512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\C512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="FNTools_Logo_Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\FNTools_Logo.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -160,7 +139,31 @@
   <data name="BurbankBigCondensed_Black" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BurbankBigCondensed-Black.otf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Quest" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Quest.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="FNTools_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FNTools_Logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="I512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\I512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="M512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\M512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="unknown512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\unknown512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BurbankBigCondensed_Bold" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BurbankBigCondensed-Bold.otf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="E512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\E512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="U512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\U512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wTemplate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

@@ -84,7 +84,7 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool createIconForCosmetics {
             get {
                 return ((bool)(this["createIconForCosmetics"]));
@@ -96,7 +96,7 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool createIconForConsumablesWeapons {
             get {
                 return ((bool)(this["createIconForConsumablesWeapons"]));
@@ -108,7 +108,7 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool createIconForTraps {
             get {
                 return ((bool)(this["createIconForTraps"]));
@@ -120,7 +120,7 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool createIconForVariants {
             get {
                 return ((bool)(this["createIconForVariants"]));
@@ -132,7 +132,7 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool createIconForChallenges {
             get {
                 return ((bool)(this["createIconForChallenges"]));
@@ -151,6 +151,54 @@ namespace FModel.Properties {
             }
             set {
                 this["IconName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int wSize {
+            get {
+                return ((int)(this["wSize"]));
+            }
+            set {
+                this["wSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int wOpacity {
+            get {
+                return ((int)(this["wOpacity"]));
+            }
+            set {
+                this["wOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string wFilename {
+            get {
+                return ((string)(this["wFilename"]));
+            }
+            set {
+                this["wFilename"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isWatermark {
+            get {
+                return ((bool)(this["isWatermark"]));
+            }
+            set {
+                this["isWatermark"] = value;
             }
         }
     }
