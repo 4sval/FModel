@@ -395,6 +395,14 @@ namespace FModel
                                     arr[ii] = "FortniteGame/" + arr[ii];
                                 if (currentPAK == "pakchunk5-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/L10N/fr/" + arr[ii];
+                                if (currentPAK == "pakchunk2-WindowsClient.pak")
+                                    arr[ii] = "FortniteGame/Content/L10N/de/" + arr[ii];
+                                if (currentPAK == "pakchunk7-WindowsClient.pak")
+                                    arr[ii] = "FortniteGame/Content/L10N/pl/" + arr[ii];
+                                if (currentPAK == "pakchunk8-WindowsClient.pak")
+                                    arr[ii] = "FortniteGame/Content/L10N/ru/" + arr[ii];
+                                if (currentPAK == "pakchunk9-WindowsClient.pak")
+                                    arr[ii] = "FortniteGame/Content/L10N/zh-CN/" + arr[ii];
 
                                 string filename = arr[ii].Substring(arr[ii].LastIndexOf("/") + 1);
                                 if (filename.Contains(".uasset") || filename.Contains(".uexp") || filename.Contains(".ubulk"))
@@ -424,6 +432,14 @@ namespace FModel
                                 AppendText("mount point: \"/FortniteGame/\"", Color.Black, true);
                             if (currentPAK == "pakchunk5-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk2-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/L10N/de/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk7-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/L10N/pl/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk8-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/L10N/ru/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk9-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/L10N/zh-CN/\"", Color.Black, true);
 
                             File.AppendAllLines(docPath + "\\FortnitePAKs.txt", arr);
                             File.Delete(docPath + "\\" + currentPAK + ".txt");
@@ -501,6 +517,14 @@ namespace FModel
                                     arr[ii] = "FortniteGame/" + arr[ii];
                                 if (currentPAK == "pakchunk5-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/L10N/fr/" + arr[ii];
+                                if (currentPAK == "pakchunk2-WindowsClient.pak")
+                                    arr[ii] = "FortniteGame/Content/L10N/de/" + arr[ii];
+                                if (currentPAK == "pakchunk7-WindowsClient.pak")
+                                    arr[ii] = "FortniteGame/Content/L10N/pl/" + arr[ii];
+                                if (currentPAK == "pakchunk8-WindowsClient.pak")
+                                    arr[ii] = "FortniteGame/Content/L10N/ru/" + arr[ii];
+                                if (currentPAK == "pakchunk9-WindowsClient.pak")
+                                    arr[ii] = "FortniteGame/Content/L10N/zh-CN/" + arr[ii];
 
                                 string filename = arr[ii].Substring(arr[ii].LastIndexOf("/") + 1);
                                 if (filename.Contains(".uasset") || filename.Contains(".uexp") || filename.Contains(".ubulk"))
@@ -530,6 +554,14 @@ namespace FModel
                                 AppendText("mount point: \"/FortniteGame/\"", Color.Black, true);
                             if (currentPAK == "pakchunk5-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk2-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/L10N/de/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk7-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/L10N/pl/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk8-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/L10N/ru/\"", Color.Black, true);
+                            if (currentPAK == "pakchunk9-WindowsClient.pak")
+                                AppendText("mount point: \"/FortniteGame/Content/L10N/zh-CN/\"", Color.Black, true);
 
                             File.AppendAllLines(docPath + "\\FortnitePAKs.txt", arr);
                             File.Delete(docPath + "\\" + currentPAK + ".txt");
@@ -626,6 +658,14 @@ namespace FModel
                                 arr[ii] = "FortniteGame/" + arr[ii];
                             if (currentPAK == "pakchunk5-WindowsClient.pak")
                                 arr[ii] = "FortniteGame/Content/L10N/fr/" + arr[ii];
+                            if (currentPAK == "pakchunk2-WindowsClient.pak")
+                                arr[ii] = "FortniteGame/Content/L10N/de/" + arr[ii];
+                            if (currentPAK == "pakchunk7-WindowsClient.pak")
+                                arr[ii] = "FortniteGame/Content/L10N/pl/" + arr[ii];
+                            if (currentPAK == "pakchunk8-WindowsClient.pak")
+                                arr[ii] = "FortniteGame/Content/L10N/ru/" + arr[ii];
+                            if (currentPAK == "pakchunk9-WindowsClient.pak")
+                                arr[ii] = "FortniteGame/Content/L10N/zh-CN/" + arr[ii];
                         }
                         if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
                             AppendText("mount point: \"/FortniteGame/Content/\"", Color.Black, true);
@@ -639,6 +679,14 @@ namespace FModel
                             AppendText("mount point: \"/FortniteGame/\"", Color.Black, true);
                         if (currentPAK == "pakchunk5-WindowsClient.pak")
                             AppendText("mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.Black, true);
+                        if (currentPAK == "pakchunk2-WindowsClient.pak")
+                            AppendText("mount point: \"/FortniteGame/Content/L10N/de/\"", Color.Black, true);
+                        if (currentPAK == "pakchunk7-WindowsClient.pak")
+                            AppendText("mount point: \"/FortniteGame/Content/L10N/pl/\"", Color.Black, true);
+                        if (currentPAK == "pakchunk8-WindowsClient.pak")
+                            AppendText("mount point: \"/FortniteGame/Content/L10N/ru/\"", Color.Black, true);
+                        if (currentPAK == "pakchunk9-WindowsClient.pak")
+                            AppendText("mount point: \"/FortniteGame/Content/L10N/zh-CN/\"", Color.Black, true);
 
                         File.AppendAllLines(docPath + BackupFilename, arr);
                         File.Delete(docPath + "\\" + currentPAK + ".txt");
