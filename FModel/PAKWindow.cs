@@ -165,6 +165,9 @@ namespace FModel
             Properties.Settings.Default.ExtractAndSerialize = true; //SERIALIZE BY DEFAULT
 
             docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "\\FModel";
+            if (!Directory.Exists(docPath))
+                Directory.CreateDirectory(docPath);
+
             if (string.IsNullOrEmpty(Properties.Settings.Default.ExtractOutput))
             {
                 Properties.Settings.Default.ExtractOutput = docPath;
