@@ -36,7 +36,7 @@
             this.loadAllPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backupCurrentPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enablePAKsDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AESKeyLabel = new System.Windows.Forms.Label();
             this.AESKeyTextBox = new System.Windows.Forms.TextBox();
@@ -99,10 +99,10 @@
             this.loadAllPAKsToolStripMenuItem,
             this.backupCurrentPAKsToolStripMenuItem,
             this.enablePAKsDiffToolStripMenuItem,
-            this.toolStripSeparator3,
+            this.toolStripSeparator2,
             this.optionsToolStripMenuItem});
             this.LoadContext.Name = "LoadContext";
-            this.LoadContext.Size = new System.Drawing.Size(186, 98);
+            this.LoadContext.Size = new System.Drawing.Size(186, 120);
             // 
             // loadAllPAKsToolStripMenuItem
             // 
@@ -129,10 +129,10 @@
             this.enablePAKsDiffToolStripMenuItem.Text = "Enable PAKs Diff";
             this.enablePAKsDiffToolStripMenuItem.CheckedChanged += new System.EventHandler(this.enablePAKsDiffToolStripMenuItem_CheckedChanged);
             // 
-            // toolStripSeparator3
+            // toolStripSeparator2
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(182, 6);
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(182, 6);
             // 
             // optionsToolStripMenuItem
             // 
@@ -248,13 +248,13 @@
             this.ImageContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ImageSaveTS});
             this.ImageContext.Name = "ImageContext";
-            this.ImageContext.Size = new System.Drawing.Size(181, 48);
+            this.ImageContext.Size = new System.Drawing.Size(135, 26);
             // 
             // ImageSaveTS
             // 
             this.ImageSaveTS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ImageSaveTS.Name = "ImageSaveTS";
-            this.ImageSaveTS.Size = new System.Drawing.Size(180, 22);
+            this.ImageSaveTS.Size = new System.Drawing.Size(134, 22);
             this.ImageSaveTS.Text = "Save Image";
             this.ImageSaveTS.Click += new System.EventHandler(this.ImageSaveTS_Click);
             // 
@@ -398,9 +398,9 @@
         private System.Windows.Forms.ImageList TreeViewImageList;
         private ScintillaNET.Scintilla scintilla1;
         private System.Windows.Forms.ToolStripMenuItem loadAllPAKsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem backupCurrentPAKsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem enablePAKsDiffToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 

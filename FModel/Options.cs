@@ -94,10 +94,6 @@ namespace FModel
             checkBox6.Checked = Properties.Settings.Default.createIconForChallenges;
             checkBox7.Checked = Properties.Settings.Default.isWatermark;
             comboBox1.SelectedItem = Properties.Settings.Default.IconName;
-            if (Properties.Settings.Default.wSize == 0)
-            {
-                Properties.Settings.Default.wSize = 1;
-            }
             trackBar2.Value = Properties.Settings.Default.wSize;
             trackBar1.Value = Properties.Settings.Default.wOpacity;
 
