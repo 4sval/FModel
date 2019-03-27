@@ -108,6 +108,7 @@
       <DependentUpon>PAKWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Parser\ChallengeBundleIdParser.cs" />
+    <Compile Include="Parser\FeaturedParser.cs" />
     <Compile Include="Parser\ItemsIDParser.cs" />
     <Compile Include="Parser\QuestParser.cs" />
     <Compile Include="Program.cs" />
@@ -147,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FNTools_Logo.ico" />
+    <None Include="Resources\wTemplateF.png" />
     <None Include="Resources\wTemplate.png" />
     <None Include="Resources\Quest.png" />
     <None Include="Resources\BurbankBigCondensed-Black.otf" />

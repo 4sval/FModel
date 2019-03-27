@@ -201,5 +201,17 @@ namespace FModel.Properties {
                 this["isWatermark"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool loadFeaturedImage {
+            get {
+                return ((bool)(this["loadFeaturedImage"]));
+            }
+            set {
+                this["loadFeaturedImage"] = value;
+            }
+        }
     }
 }

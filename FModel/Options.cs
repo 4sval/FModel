@@ -96,23 +96,43 @@ namespace FModel
             comboBox1.SelectedItem = Properties.Settings.Default.IconName;
             trackBar2.Value = Properties.Settings.Default.wSize;
             trackBar1.Value = Properties.Settings.Default.wOpacity;
+            checkBox8.Checked = Properties.Settings.Default.loadFeaturedImage;
 
             button1.Enabled = Properties.Settings.Default.isWatermark;
             trackBar1.Enabled = Properties.Settings.Default.isWatermark;
             trackBar2.Enabled = Properties.Settings.Default.isWatermark;
 
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+            if (Properties.Settings.Default.loadFeaturedImage == false)
             {
-                filenameLabel.Text = "File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                {
+                    filenameLabel.Text = "File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
 
-                Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
-                Graphics g = Graphics.FromImage(bmp);
-                    
-                Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
-                var opacityImage = SetImageOpacity(watermark, (float)Properties.Settings.Default.wOpacity / 100);
-                g.DrawImage(ResizeImage(opacityImage, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize), (522 - Properties.Settings.Default.wSize) / 2, (522 - Properties.Settings.Default.wSize) / 2, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize);
+                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                    Graphics g = Graphics.FromImage(bmp);
 
-                wPictureBox.Image = bmp;
+                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                    var opacityImage = SetImageOpacity(watermark, (float)Properties.Settings.Default.wOpacity / 100);
+                    g.DrawImage(ResizeImage(opacityImage, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize), (522 - Properties.Settings.Default.wSize) / 2, (522 - Properties.Settings.Default.wSize) / 2, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize);
+
+                    wPictureBox.Image = bmp;
+                }
+            }
+            if (Properties.Settings.Default.loadFeaturedImage == true)
+            {
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                {
+                    filenameLabel.Text = "File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
+
+                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                    Graphics g = Graphics.FromImage(bmp);
+
+                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                    var opacityImage = SetImageOpacity(watermark, (float)Properties.Settings.Default.wOpacity / 100);
+                    g.DrawImage(ResizeImage(opacityImage, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize), (522 - Properties.Settings.Default.wSize) / 2, (522 - Properties.Settings.Default.wSize) / 2, Properties.Settings.Default.wSize, Properties.Settings.Default.wSize);
+
+                    wPictureBox.Image = bmp;
+                }
             }
 
             PAKBefore = Properties.Settings.Default.FortnitePAKs;
@@ -177,6 +197,14 @@ namespace FModel
             {
                 Properties.Settings.Default.isWatermark = false;
             }
+            if (checkBox8.Checked == true)
+            {
+                Properties.Settings.Default.loadFeaturedImage = true;
+            }
+            if (checkBox8.Checked == false)
+            {
+                Properties.Settings.Default.loadFeaturedImage = false;
+            }
             if (comboBox1.SelectedItem == null)
             {
                 Properties.Settings.Default.IconName = "Selected Item Name (i.e. CID_001_Athena_Commando_F_Default)";
@@ -225,48 +253,102 @@ namespace FModel
                 Properties.Settings.Default.Save();
                 filenameLabel.Text = "File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
 
-                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                if (checkBox8.Checked == false)
                 {
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
-                    Graphics g = Graphics.FromImage(bmp);
+                    if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                    {
+                        Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                        Graphics g = Graphics.FromImage(bmp);
 
-                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
-                    g.DrawImage(ResizeImage(watermark, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                        Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                        var opacityImage = SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                        g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
 
-                    wPictureBox.Image = bmp;
+                        wPictureBox.Image = bmp;
+                    }
+                }
+                if (checkBox8.Checked == true)
+                {
+                    if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                    {
+                        Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                        Graphics g = Graphics.FromImage(bmp);
+
+                        Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                        var opacityImage = SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                        g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+
+                        wPictureBox.Image = bmp;
+                    }
                 }
             }
         }
 
         private void trackBar2_ValueChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+            if (checkBox8.Checked == false)
             {
-                Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
-                Graphics g = Graphics.FromImage(bmp);
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                {
+                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                    Graphics g = Graphics.FromImage(bmp);
 
-                Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
-                var opacityImage = SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                    var opacityImage = SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
 
-                wPictureBox.Image = bmp;
-                wPictureBox.Refresh();
+                    wPictureBox.Image = bmp;
+                    wPictureBox.Refresh();
+                }
+            }
+            if (checkBox8.Checked == true)
+            {
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                {
+                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                    Graphics g = Graphics.FromImage(bmp);
+
+                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                    var opacityImage = SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+
+                    wPictureBox.Image = bmp;
+                    wPictureBox.Refresh();
+                }
             }
         }
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+            if (checkBox8.Checked == false)
             {
-                Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
-                Graphics g = Graphics.FromImage(bmp);
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                {
+                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                    Graphics g = Graphics.FromImage(bmp);
 
-                Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
-                var opacityImage = SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                    var opacityImage = SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
 
-                wPictureBox.Image = bmp;
-                wPictureBox.Refresh();
+                    wPictureBox.Image = bmp;
+                    wPictureBox.Refresh();
+                }
+            }
+            if (checkBox8.Checked == true)
+            {
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                {
+                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                    Graphics g = Graphics.FromImage(bmp);
+
+                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                    var opacityImage = SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+
+                    wPictureBox.Image = bmp;
+                    wPictureBox.Refresh();
+                }
             }
         }
 
@@ -283,6 +365,34 @@ namespace FModel
                 button1.Enabled = true;
                 trackBar1.Enabled = true;
                 trackBar2.Enabled = true;
+            }
+        }
+
+        private void checkBox8_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox8.Checked == false)
+            {
+                Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                Graphics g = Graphics.FromImage(bmp);
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                {
+                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                    var opacityImage = SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                }
+                wPictureBox.Image = bmp;
+            }
+            if (checkBox8.Checked == true)
+            {
+                Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                Graphics g = Graphics.FromImage(bmp);
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                {
+                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                    var opacityImage = SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                }
+                wPictureBox.Image = bmp;
             }
         }
     }

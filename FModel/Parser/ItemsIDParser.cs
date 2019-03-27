@@ -52,6 +52,9 @@ namespace FModel.Items
 
         [JsonProperty("LargePreviewImage")]
         public PreviewImage LargePreviewImage { get; set; }
+
+        [JsonProperty("DisplayAssetPath")]
+        public DisplayAssetPath DisplayAssetPath { get; set; }
     }
 
     public partial class GameplayTags
@@ -61,6 +64,15 @@ namespace FModel.Items
     }
 
     public partial class PreviewImage
+    {
+        [JsonProperty("asset_path_name")]
+        public string AssetPathName { get; set; }
+
+        [JsonProperty("sub_path_string")]
+        public string SubPathString { get; set; }
+    }
+
+    public partial class DisplayAssetPath
     {
         [JsonProperty("asset_path_name")]
         public string AssetPathName { get; set; }
