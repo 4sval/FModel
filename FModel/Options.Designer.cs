@@ -244,9 +244,9 @@
             this.checkBox8.AutoSize = true;
             this.checkBox8.Location = new System.Drawing.Point(6, 79);
             this.checkBox8.Name = "checkBox8";
-            this.checkBox8.Size = new System.Drawing.Size(177, 17);
+            this.checkBox8.Size = new System.Drawing.Size(233, 17);
             this.checkBox8.TabIndex = 26;
-            this.checkBox8.Text = "Use Featured Image If Available";
+            this.checkBox8.Text = "Use Characters\' Featured Image If Available";
             this.checkBox8.UseVisualStyleBackColor = true;
             this.checkBox8.CheckedChanged += new System.EventHandler(this.checkBox8_CheckedChanged);
             // 

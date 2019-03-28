@@ -70,6 +70,7 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
 - [x] Quest viewer or something
 - [x] Load all paks
 - [ ] Shop loader ?
+- [ ] Update mode (auto extraction and icon creation of every useful thing)
 - [x] Load only difference between 2 paks version
 - [x] Custom watermark option on icons
 - [x] Choose between extracted filename or displayName for icons file name

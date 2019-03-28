@@ -2,6 +2,7 @@
 using FModel.Parser.Featured;
 using FModel.Challenges;
 using FModel.Quest;
+using FModel.RenderMat;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -166,9 +167,6 @@ namespace FModel
             Properties.Settings.Default.ExtractAndSerialize = true; //SERIALIZE BY DEFAULT
 
             docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "\\FModel";
-            if (!Directory.Exists(docPath))
-                Directory.CreateDirectory(docPath);
-
             if (string.IsNullOrEmpty(Properties.Settings.Default.ExtractOutput))
             {
                 Properties.Settings.Default.ExtractOutput = docPath;
@@ -178,6 +176,9 @@ namespace FModel
             {
                 docPath = Properties.Settings.Default.ExtractOutput;
             }
+
+            if (!Directory.Exists(docPath))
+                Directory.CreateDirectory(docPath);
 
             if (!Directory.Exists(Properties.Settings.Default.FortnitePAKs))
             {
@@ -1915,7 +1916,117 @@ namespace FModel
                                                                             }
                                                                             try
                                                                             {
-                                                                                if (filesPath2 != null)
+                                                                                if (filesPath2 != null && filesPath2.Contains("MI_UI_FeaturedRenderSwitch_"))
+                                                                                {
+                                                                                    AppendText("✔ ", Color.Green);
+                                                                                    AppendText(textureFile, Color.DarkRed);
+                                                                                    AppendText(" successfully extracted to ", Color.Black);
+                                                                                    AppendText(filesPath2.Substring(0, filesPath2.LastIndexOf('.')), Color.SteelBlue, true);
+                                                                                    try
+                                                                                    {
+                                                                                        await Task.Run(() =>
+                                                                                        {
+                                                                                            jwpmProcess("serialize \"" + filesPath2.Substring(0, filesPath2.LastIndexOf('.')) + "\"");
+                                                                                        });
+                                                                                        var filesJSON3 = Directory.GetFiles(docPath, textureFile + ".json", SearchOption.AllDirectories).FirstOrDefault();
+                                                                                        var json3 = JToken.Parse(File.ReadAllText(filesJSON3)).ToString();
+                                                                                        File.Delete(filesJSON3);
+                                                                                        AppendText("✔ ", Color.Green);
+                                                                                        AppendText(textureFile, Color.DarkRed);
+                                                                                        AppendText(" successfully serialized", Color.Black, true);
+
+                                                                                        var RenderParser = RenderSwitchMaterial.FromJson(json3);
+                                                                                        for (int i2 = 0; i2 < RenderParser.Length; i2++)
+                                                                                        {
+                                                                                            if (RenderParser[i2].TextureParameterValues.FirstOrDefault().ParameterValue != null)
+                                                                                            {
+                                                                                                string textureFile2 = RenderParser[i2].TextureParameterValues.FirstOrDefault().ParameterValue;
+                                                                                                AppendText("✔ ", Color.Green);
+                                                                                                AppendText(textureFile2, Color.DarkRed);
+                                                                                                AppendText(" detected as a ", Color.Black);
+                                                                                                AppendText("Texture2D file", Color.SteelBlue, true);
+
+                                                                                                var filesPath3 = Directory.GetFiles(docPath + "\\Extracted", textureFile2 + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                                                                if (!File.Exists(filesPath3))
+                                                                                                {
+                                                                                                    if (currentGUID != "0-0-0-0")
+                                                                                                    {
+                                                                                                        await Task.Run(() =>
+                                                                                                        {
+                                                                                                            jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + currentPAK + "\" \"" + textureFile2 + "\" \"" + docPath + "\"");
+                                                                                                        });
+                                                                                                        filesPath3 = Directory.GetFiles(docPath + "\\Extracted", textureFile2 + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        if (isAllPAKs == false)
+                                                                                                        {
+                                                                                                            await Task.Run(() =>
+                                                                                                            {
+                                                                                                                jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\pakchunk0_s7-WindowsClient.pak" + "\" \"" + textureFile2 + "\" \"" + docPath + "\"");
+                                                                                                            });
+                                                                                                        }
+                                                                                                        if (isAllPAKs == true)
+                                                                                                        {
+                                                                                                            await Task.Run(() => {
+                                                                                                                try
+                                                                                                                {
+                                                                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.FortnitePAKs + "\\" + AllPAKsDict[textureFile2] + "\" \"" + textureFile2 + "\" \"" + docPath + "\"");
+                                                                                                                }
+                                                                                                                catch (KeyNotFoundException ex)
+                                                                                                                {
+                                                                                                                    Console.ForegroundColor = ConsoleColor.Red;
+                                                                                                                    Console.Write("[ERROR] ");
+                                                                                                                    Console.ForegroundColor = ConsoleColor.White;
+                                                                                                                    Console.Write(ex.Message);
+                                                                                                                }
+                                                                                                            });
+                                                                                                        }
+                                                                                                        filesPath3 = Directory.GetFiles(docPath + "\\Extracted", textureFile2 + ".*", SearchOption.AllDirectories).FirstOrDefault();
+                                                                                                    }
+                                                                                                }
+                                                                                                try
+                                                                                                {
+                                                                                                    if (filesPath3 != null)
+                                                                                                    {
+                                                                                                        AppendText("✔ ", Color.Green);
+                                                                                                        AppendText(textureFile2, Color.DarkRed);
+                                                                                                        AppendText(" successfully extracted to ", Color.Black);
+                                                                                                        AppendText(filesPath3.Substring(0, filesPath3.LastIndexOf('.')), Color.SteelBlue, true);
+
+                                                                                                        itemIconPath = filesPath3.Substring(0, filesPath3.LastIndexOf('.')) + ".png";
+                                                                                                        if (!File.Exists(itemIconPath))
+                                                                                                        {
+                                                                                                            await Task.Run(() =>
+                                                                                                            {
+                                                                                                                jwpmProcess("texture \"" + filesPath3.Substring(0, filesPath3.LastIndexOf('.')) + "\"");
+                                                                                                            });
+                                                                                                            itemIconPath = filesPath3.Substring(0, filesPath3.LastIndexOf('.')) + ".png";
+                                                                                                        }
+
+                                                                                                        AppendText("✔ ", Color.Green);
+                                                                                                        AppendText(textureFile2, Color.DarkRed);
+                                                                                                        AppendText(" successfully converted to a PNG image with path ", Color.Black);
+                                                                                                        AppendText(itemIconPath, Color.SteelBlue, true);
+                                                                                                    }
+                                                                                                }
+                                                                                                catch (IndexOutOfRangeException)
+                                                                                                {
+                                                                                                    AppendText("[IndexOutOfRangeException] ", Color.Red);
+                                                                                                    AppendText("Can't extract ", Color.Black);
+                                                                                                    AppendText(textureFile2, Color.SteelBlue);
+                                                                                                    AppendText(" in ", Color.Black);
+                                                                                                    AppendText("pakchunk0_s7-WindowsClient.pak", Color.DarkRed, true);
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                    catch (Exception ex)
+                                                                                    {
+                                                                                        Console.WriteLine(ex.Message);
+                                                                                    }
+                                                                                }
+                                                                                else if (filesPath2 != null && !filesPath2.Contains("MI_UI_FeaturedRenderSwitch_"))
                                                                                 {
                                                                                     AppendText("✔ ", Color.Green);
                                                                                     AppendText(textureFile, Color.DarkRed);
