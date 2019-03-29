@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PAKWindow));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.LoadButton = new FModel.SplitButton();
             this.LoadContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.loadAllPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backupCurrentPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,10 +46,8 @@
             this.ItemIconPictureBox = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.scintilla1 = new ScintillaNET.Scintilla();
-            this.OpenImageButton = new FModel.SplitButton();
             this.ImageContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ImageSaveTS = new System.Windows.Forms.ToolStripMenuItem();
-            this.ExtractAssetButton = new FModel.SplitButton();
             this.ExtractAsset = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.LoadDataTS = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveImageTS = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,6 +56,11 @@
             this.ConsoleRichTextBox = new System.Windows.Forms.RichTextBox();
             this.FilterLabel = new System.Windows.Forms.Label();
             this.FilterTextBox = new System.Windows.Forms.TextBox();
+            this.updateModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.OpenImageButton = new FModel.SplitButton();
+            this.ExtractAssetButton = new FModel.SplitButton();
+            this.LoadButton = new FModel.SplitButton();
             this.groupBox1.SuspendLayout();
             this.LoadContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemIconPictureBox)).BeginInit();
@@ -80,29 +82,19 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "PAK";
             // 
-            // LoadButton
-            // 
-            this.LoadButton.Location = new System.Drawing.Point(296, 18);
-            this.LoadButton.Menu = this.LoadContext;
-            this.LoadButton.Name = "LoadButton";
-            this.LoadButton.Size = new System.Drawing.Size(106, 23);
-            this.LoadButton.TabIndex = 12;
-            this.LoadButton.Text = "         Load";
-            this.LoadButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.LoadButton.UseVisualStyleBackColor = true;
-            this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
-            // 
             // LoadContext
             // 
             this.LoadContext.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.LoadContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadAllPAKsToolStripMenuItem,
+            this.toolStripSeparator2,
             this.backupCurrentPAKsToolStripMenuItem,
             this.enablePAKsDiffToolStripMenuItem,
-            this.toolStripSeparator2,
+            this.updateModeToolStripMenuItem,
+            this.toolStripSeparator3,
             this.optionsToolStripMenuItem});
             this.LoadContext.Name = "LoadContext";
-            this.LoadContext.Size = new System.Drawing.Size(186, 120);
+            this.LoadContext.Size = new System.Drawing.Size(186, 148);
             // 
             // loadAllPAKsToolStripMenuItem
             // 
@@ -230,18 +222,6 @@
             this.scintilla1.Size = new System.Drawing.Size(560, 350);
             this.scintilla1.TabIndex = 12;
             // 
-            // OpenImageButton
-            // 
-            this.OpenImageButton.Location = new System.Drawing.Point(810, 635);
-            this.OpenImageButton.Menu = this.ImageContext;
-            this.OpenImageButton.Name = "OpenImageButton";
-            this.OpenImageButton.Size = new System.Drawing.Size(112, 23);
-            this.OpenImageButton.TabIndex = 11;
-            this.OpenImageButton.Text = "    Open Image";
-            this.OpenImageButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.OpenImageButton.UseVisualStyleBackColor = true;
-            this.OpenImageButton.Click += new System.EventHandler(this.OpenImageButton_Click);
-            // 
             // ImageContext
             // 
             this.ImageContext.ImageScalingSize = new System.Drawing.Size(18, 18);
@@ -257,18 +237,6 @@
             this.ImageSaveTS.Size = new System.Drawing.Size(134, 22);
             this.ImageSaveTS.Text = "Save Image";
             this.ImageSaveTS.Click += new System.EventHandler(this.ImageSaveTS_Click);
-            // 
-            // ExtractAssetButton
-            // 
-            this.ExtractAssetButton.Location = new System.Drawing.Point(810, 664);
-            this.ExtractAssetButton.Menu = this.ExtractAsset;
-            this.ExtractAssetButton.Name = "ExtractAssetButton";
-            this.ExtractAssetButton.Size = new System.Drawing.Size(112, 23);
-            this.ExtractAssetButton.TabIndex = 10;
-            this.ExtractAssetButton.Text = "   Extract Asset";
-            this.ExtractAssetButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ExtractAssetButton.UseVisualStyleBackColor = true;
-            this.ExtractAssetButton.Click += new System.EventHandler(this.ExtractAssetButton_Click);
             // 
             // ExtractAsset
             // 
@@ -339,6 +307,55 @@
             this.FilterTextBox.TabIndex = 5;
             this.FilterTextBox.TextChanged += new System.EventHandler(this.FilterTextBox_TextChanged);
             // 
+            // updateModeToolStripMenuItem
+            // 
+            this.updateModeToolStripMenuItem.CheckOnClick = true;
+            this.updateModeToolStripMenuItem.Enabled = false;
+            this.updateModeToolStripMenuItem.Name = "updateModeToolStripMenuItem";
+            this.updateModeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.updateModeToolStripMenuItem.Text = "Update Mode";
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(182, 6);
+            // 
+            // OpenImageButton
+            // 
+            this.OpenImageButton.Location = new System.Drawing.Point(810, 635);
+            this.OpenImageButton.Menu = this.ImageContext;
+            this.OpenImageButton.Name = "OpenImageButton";
+            this.OpenImageButton.Size = new System.Drawing.Size(112, 23);
+            this.OpenImageButton.TabIndex = 11;
+            this.OpenImageButton.Text = "    Open Image";
+            this.OpenImageButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.OpenImageButton.UseVisualStyleBackColor = true;
+            this.OpenImageButton.Click += new System.EventHandler(this.OpenImageButton_Click);
+            // 
+            // ExtractAssetButton
+            // 
+            this.ExtractAssetButton.Location = new System.Drawing.Point(810, 664);
+            this.ExtractAssetButton.Menu = this.ExtractAsset;
+            this.ExtractAssetButton.Name = "ExtractAssetButton";
+            this.ExtractAssetButton.Size = new System.Drawing.Size(112, 23);
+            this.ExtractAssetButton.TabIndex = 10;
+            this.ExtractAssetButton.Text = "   Extract Asset";
+            this.ExtractAssetButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ExtractAssetButton.UseVisualStyleBackColor = true;
+            this.ExtractAssetButton.Click += new System.EventHandler(this.ExtractAssetButton_Click);
+            // 
+            // LoadButton
+            // 
+            this.LoadButton.Location = new System.Drawing.Point(296, 18);
+            this.LoadButton.Menu = this.LoadContext;
+            this.LoadButton.Name = "LoadButton";
+            this.LoadButton.Size = new System.Drawing.Size(106, 23);
+            this.LoadButton.TabIndex = 12;
+            this.LoadButton.Text = "         Load";
+            this.LoadButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LoadButton.UseVisualStyleBackColor = true;
+            this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
+            // 
             // PAKWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -401,6 +418,8 @@
         private System.Windows.Forms.ToolStripMenuItem backupCurrentPAKsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem enablePAKsDiffToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem updateModeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 
