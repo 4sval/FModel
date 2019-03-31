@@ -47,8 +47,9 @@
 
 **2.** Choose your Assets to extract
 
-**3.** Click `Load Difference`
-![](https://i.imgur.com/ZKwHttN.gif)
+**3.** Click `Load And Extract Difference`
+
+[Demonstration](https://streamable.com/9lb42)
 
 
 
