@@ -117,6 +117,12 @@
     <Compile Include="Custom\SplitButtonControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UpdateModeOption.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UpdateModeOption.Designer.cs">
+      <DependentUpon>UpdateModeOption.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Options.resx">
       <DependentUpon>Options.cs</DependentUpon>
     </EmbeddedResource>
@@ -133,6 +139,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UpdateModeOption.resx">
+      <DependentUpon>UpdateModeOption.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

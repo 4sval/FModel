@@ -12,10 +12,10 @@
 ### Prerequisites
 [.NET Framework 4.6.1](https://dotnet.microsoft.com/download/dotnet-framework-runtime/net461)
 ### Download
-[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/1.4)
+[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/1.5)
 ### How does it works
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder and it'll automatically download the latest version of the modded Fortnite Asset Parser in this subfolder.
-![](https://i.imgur.com/ZaXeWEs.gif)
+![](https://i.imgur.com/sAmjOMS.gif)
 
 **2.** Restart the executable, select your .PAK file, enter the AES key and click **Load**
   - It will parse all Assets contained in the selected .PAK file with their respective path
@@ -40,7 +40,15 @@
 **2.** Enable PAKs Diff
 
 **3.** Click `Load Difference`
-![](https://i.imgur.com/CaLgok5.gif)
+![](https://i.imgur.com/ZmUAm78.gif)
+
+### Update Mode
+**1.** Enable Update Mode
+
+**2.** Choose your Assets to extract
+
+**3.** Click `Load Difference`
+![](https://i.imgur.com/ZKwHttN.gif)
 
 
 
@@ -53,7 +61,8 @@
 5. Save Icon
 6. Icons Merger
 7. Backup current PAK files
-8. Load only difference between current PAK files and backup file
+8. Load difference between current PAK files and backup file
+9. Load and extract Assets automatically between current PAK files and backup file
 ### What i'm using
 - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - Modded Version With Output Control
 - [JSON Parser](https://app.quicktype.io/)
@@ -64,16 +73,17 @@ This project is mainly based on what [UModel](https://github.com/gildor2/UModel)
 I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionnaly.
 
 ## TODO
+- [ ] Clean code
+- [x] Update mode (auto extraction and icon creation of every useful thing)
+- [ ] Shop loader ?
+- [ ] Stop button while extracting
+- [ ] Support for meshes
+- [ ] Support for animations
 - [x] Improve speed
 - [x] Multithreading - Need improvements
 - [x] Filter for the items ListBox
 - [x] Quest viewer or something
 - [x] Load all paks
-- [ ] Shop loader ?
-- [ ] Update mode (auto extraction and icon creation of every useful thing)
 - [x] Load only difference between 2 paks version
 - [x] Custom watermark option on icons
 - [x] Choose between extracted filename or displayName for icons file name
-- [ ] Stop button while extracting
-- [ ] Support for meshes
-- [ ] Support for animations

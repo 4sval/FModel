@@ -213,5 +213,221 @@ namespace FModel.Properties {
                 this["loadFeaturedImage"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UMCosmetics {
+            get {
+                return ((bool)(this["UMCosmetics"]));
+            }
+            set {
+                this["UMCosmetics"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UMVariants {
+            get {
+                return ((bool)(this["UMVariants"]));
+            }
+            set {
+                this["UMVariants"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UMConsumablesWeapons {
+            get {
+                return ((bool)(this["UMConsumablesWeapons"]));
+            }
+            set {
+                this["UMConsumablesWeapons"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UMTraps {
+            get {
+                return ((bool)(this["UMTraps"]));
+            }
+            set {
+                this["UMTraps"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UMChallenges {
+            get {
+                return ((bool)(this["UMChallenges"]));
+            }
+            set {
+                this["UMChallenges"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int UMSize {
+            get {
+                return ((int)(this["UMSize"]));
+            }
+            set {
+                this["UMSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int UMOpacity {
+            get {
+                return ((int)(this["UMOpacity"]));
+            }
+            set {
+                this["UMOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UMWatermark {
+            get {
+                return ((bool)(this["UMWatermark"]));
+            }
+            set {
+                this["UMWatermark"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UMFeatured {
+            get {
+                return ((bool)(this["UMFeatured"]));
+            }
+            set {
+                this["UMFeatured"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UMTCosmeticsVariants {
+            get {
+                return ((bool)(this["UMTCosmeticsVariants"]));
+            }
+            set {
+                this["UMTCosmeticsVariants"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UMTLoading {
+            get {
+                return ((bool)(this["UMTLoading"]));
+            }
+            set {
+                this["UMTLoading"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UMTWeapons {
+            get {
+                return ((bool)(this["UMTWeapons"]));
+            }
+            set {
+                this["UMTWeapons"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UMTBanners {
+            get {
+                return ((bool)(this["UMTBanners"]));
+            }
+            set {
+                this["UMTBanners"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UMTFeaturedIMGs {
+            get {
+                return ((bool)(this["UMTFeaturedIMGs"]));
+            }
+            set {
+                this["UMTFeaturedIMGs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UMTAthena {
+            get {
+                return ((bool)(this["UMTAthena"]));
+            }
+            set {
+                this["UMTAthena"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UMTDevices {
+            get {
+                return ((bool)(this["UMTDevices"]));
+            }
+            set {
+                this["UMTDevices"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UMTVehicles {
+            get {
+                return ((bool)(this["UMTVehicles"]));
+            }
+            set {
+                this["UMTVehicles"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UMFilename {
+            get {
+                return ((string)(this["UMFilename"]));
+            }
+            set {
+                this["UMFilename"] = value;
+            }
+        }
     }
 }
