@@ -722,9 +722,27 @@ namespace FModel
                     {
                         String[] linesA = File.ReadAllLines(theDialog.FileName);
                         IEnumerable<String> onlyB = linesB.Except(linesA);
+                        IEnumerable<String> removed = linesA.Except(linesB);
 
                         AppendText("Comparing files...", Color.Black, true);
                         File.WriteAllLines(docPath + "\\Result.txt", onlyB);
+                        File.WriteAllLines(docPath + "\\Removed.txt", removed);
+                    }
+
+                    var removedTXT = File.ReadAllLines(docPath + "\\Removed.txt");
+                    File.Delete(docPath + "\\Removed.txt");
+                    List<string> removedItems = new List<string>();
+                    for (int i = 0; i < removedTXT.Length; i++)
+                    {
+                        if (removedTXT[i].Contains("FortniteGame/Content/Athena/Items/Cosmetics/"))
+                            removedItems.Add(removedTXT[i].Substring(0, removedTXT[i].LastIndexOf(".")));
+                    }
+                    if (removedItems.Count != 0)
+                    {
+                        AppendText("Items Removed/Renamed:", Color.Red, true);
+                        removedItems = removedItems.Distinct().ToList();
+                        for (int ii = 0; ii < removedItems.Count; ii++)
+                            AppendText("    - " + removedItems[ii], Color.Black, true);
                     }
 
                     PAKFileAsTXT = File.ReadAllLines(docPath + "\\Result.txt");
@@ -868,9 +886,27 @@ namespace FModel
                     {
                         String[] linesA = File.ReadAllLines(theDialog.FileName);
                         IEnumerable<String> onlyB = linesB.Except(linesA);
+                        IEnumerable<String> removed = linesA.Except(linesB);
 
                         AppendText("Comparing files...", Color.Black, true);
                         File.WriteAllLines(docPath + "\\Result.txt", onlyB);
+                        File.WriteAllLines(docPath + "\\Removed.txt", removed);
+                    }
+
+                    var removedTXT = File.ReadAllLines(docPath + "\\Removed.txt");
+                    File.Delete(docPath + "\\Removed.txt");
+                    List<string> removedItems = new List<string>();
+                    for (int i = 0; i < removedTXT.Length; i++)
+                    {
+                        if (removedTXT[i].Contains("FortniteGame/Content/Athena/Items/Cosmetics/"))
+                            removedItems.Add(removedTXT[i].Substring(0, removedTXT[i].LastIndexOf(".")));
+                    }
+                    if (removedItems.Count != 0)
+                    {
+                        AppendText("Items Removed/Renamed:", Color.Red, true);
+                        removedItems = removedItems.Distinct().ToList();
+                        for (int ii = 0; ii < removedItems.Count; ii++)
+                            AppendText("    - " + removedItems[ii], Color.Black, true);
                     }
 
                     PAKFileAsTXT = File.ReadAllLines(docPath + "\\Result.txt");
