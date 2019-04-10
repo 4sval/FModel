@@ -521,16 +521,12 @@ namespace FModel
                             string[] arr = File.ReadAllLines(docPath + "\\" + currentPAK + ".txt");
                             for (int ii = 0; ii < arr.Length; ii++)
                             {
-                                if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
+                                if (currentPAK == "pakchunk10_s1-WindowsClient.pak" || currentPAK == "pakchunk10_s4-WindowsClient.pak" || currentPAK == "pakchunk10_s5-WindowsClient.pak" || currentPAK == "pakchunk10_s6-WindowsClient.pak" || currentPAK == "pakchunk10_s7-WindowsClient.pak" || currentPAK == "pakchunk10_s8-WindowsClient.pak" || currentPAK == "pakchunk11-WindowsClient.pak" || currentPAK == "pakchunk11_s1-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s2-WindowsClient.pak")
+                                if (currentPAK == "pakchunk10_s2-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/Characters/Player/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s3-WindowsClient.pak")
+                                if (currentPAK == "pakchunk10_s3-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/Characters/Player/Male/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s5-WindowsClient.pak")
-                                    arr[ii] = "FortniteGame/Content/Environments/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s8-WindowsClient.pak")
-                                    arr[ii] = "FortniteGame/" + arr[ii];
                                 if (currentPAK == "pakchunk5-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/L10N/fr/" + arr[ii];
                                 if (currentPAK == "pakchunk2-WindowsClient.pak")
@@ -558,16 +554,12 @@ namespace FModel
                                     }
                                 }
                             }
-                            if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
+                            if (currentPAK == "pakchunk10_s1-WindowsClient.pak" || currentPAK == "pakchunk10_s4-WindowsClient.pak" || currentPAK == "pakchunk10_s5-WindowsClient.pak" || currentPAK == "pakchunk10_s6-WindowsClient.pak" || currentPAK == "pakchunk10_s7-WindowsClient.pak" || currentPAK == "pakchunk10_s8-WindowsClient.pak" || currentPAK == "pakchunk11-WindowsClient.pak" || currentPAK == "pakchunk11_s1-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s2-WindowsClient.pak")
+                            if (currentPAK == "pakchunk10_s2-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/Characters/Player/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s3-WindowsClient.pak")
+                            if (currentPAK == "pakchunk10_s3-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/Characters/Player/Male/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s5-WindowsClient.pak")
-                                AppendText("mount point: \"/FortniteGame/Content/Environments/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s8-WindowsClient.pak")
-                                AppendText("mount point: \"/FortniteGame/\"", Color.Black, true);
                             if (currentPAK == "pakchunk5-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.Black, true);
                             if (currentPAK == "pakchunk2-WindowsClient.pak")
@@ -643,16 +635,12 @@ namespace FModel
                             string[] arr = File.ReadAllLines(docPath + "\\" + currentPAK + ".txt");
                             for (int ii = 0; ii < arr.Length; ii++)
                             {
-                                if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
+                                if (currentPAK == "pakchunk10_s1-WindowsClient.pak" || currentPAK == "pakchunk10_s4-WindowsClient.pak" || currentPAK == "pakchunk10_s5-WindowsClient.pak" || currentPAK == "pakchunk10_s6-WindowsClient.pak" || currentPAK == "pakchunk10_s7-WindowsClient.pak" || currentPAK == "pakchunk10_s8-WindowsClient.pak" || currentPAK == "pakchunk11-WindowsClient.pak" || currentPAK == "pakchunk11_s1-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s2-WindowsClient.pak")
+                                if (currentPAK == "pakchunk10_s2-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/Characters/Player/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s3-WindowsClient.pak")
+                                if (currentPAK == "pakchunk10_s3-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/Characters/Player/Male/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s5-WindowsClient.pak")
-                                    arr[ii] = "FortniteGame/Content/Environments/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s8-WindowsClient.pak")
-                                    arr[ii] = "FortniteGame/" + arr[ii];
                                 if (currentPAK == "pakchunk5-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/L10N/fr/" + arr[ii];
                                 if (currentPAK == "pakchunk2-WindowsClient.pak")
@@ -680,16 +668,12 @@ namespace FModel
                                     }
                                 }
                             }
-                            if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
+                            if (currentPAK == "pakchunk10_s1-WindowsClient.pak" || currentPAK == "pakchunk10_s4-WindowsClient.pak" || currentPAK == "pakchunk10_s5-WindowsClient.pak" || currentPAK == "pakchunk10_s6-WindowsClient.pak" || currentPAK == "pakchunk10_s7-WindowsClient.pak" || currentPAK == "pakchunk10_s8-WindowsClient.pak" || currentPAK == "pakchunk11-WindowsClient.pak" || currentPAK == "pakchunk11_s1-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s2-WindowsClient.pak")
+                            if (currentPAK == "pakchunk10_s2-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/Characters/Player/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s3-WindowsClient.pak")
+                            if (currentPAK == "pakchunk10_s3-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/Characters/Player/Male/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s5-WindowsClient.pak")
-                                AppendText("mount point: \"/FortniteGame/Content/Environments/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s8-WindowsClient.pak")
-                                AppendText("mount point: \"/FortniteGame/\"", Color.Black, true);
                             if (currentPAK == "pakchunk5-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.Black, true);
                             if (currentPAK == "pakchunk2-WindowsClient.pak")
@@ -807,16 +791,12 @@ namespace FModel
                             string[] arr = File.ReadAllLines(docPath + "\\" + currentPAK + ".txt");
                             for (int ii = 0; ii < arr.Length; ii++)
                             {
-                                if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
+                                if (currentPAK == "pakchunk10_s1-WindowsClient.pak" || currentPAK == "pakchunk10_s4-WindowsClient.pak" || currentPAK == "pakchunk10_s5-WindowsClient.pak" || currentPAK == "pakchunk10_s6-WindowsClient.pak" || currentPAK == "pakchunk10_s7-WindowsClient.pak" || currentPAK == "pakchunk10_s8-WindowsClient.pak" || currentPAK == "pakchunk11-WindowsClient.pak" || currentPAK == "pakchunk11_s1-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s2-WindowsClient.pak")
+                                if (currentPAK == "pakchunk10_s2-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/Characters/Player/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s3-WindowsClient.pak")
+                                if (currentPAK == "pakchunk10_s3-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/Characters/Player/Male/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s5-WindowsClient.pak")
-                                    arr[ii] = "FortniteGame/Content/Environments/" + arr[ii];
-                                if (currentPAK == "pakchunk0_s8-WindowsClient.pak")
-                                    arr[ii] = "FortniteGame/" + arr[ii];
                                 if (currentPAK == "pakchunk5-WindowsClient.pak")
                                     arr[ii] = "FortniteGame/Content/L10N/fr/" + arr[ii];
                                 if (currentPAK == "pakchunk2-WindowsClient.pak")
@@ -844,16 +824,12 @@ namespace FModel
                                     }
                                 }
                             }
-                            if (currentPAK == "pakchunk0_s1-WindowsClient.pak" || currentPAK == "pakchunk0_s4-WindowsClient.pak" || currentPAK == "pakchunk0_s6-WindowsClient.pak" || currentPAK == "pakchunk0_s7-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak" || currentPAK == "pakchunk1_s1-WindowsClient.pak")
+                            if (currentPAK == "pakchunk10_s1-WindowsClient.pak" || currentPAK == "pakchunk10_s4-WindowsClient.pak" || currentPAK == "pakchunk10_s5-WindowsClient.pak" || currentPAK == "pakchunk10_s6-WindowsClient.pak" || currentPAK == "pakchunk10_s7-WindowsClient.pak" || currentPAK == "pakchunk10_s8-WindowsClient.pak" || currentPAK == "pakchunk11-WindowsClient.pak" || currentPAK == "pakchunk11_s1-WindowsClient.pak" || currentPAK == "pakchunk1-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s2-WindowsClient.pak")
+                            if (currentPAK == "pakchunk10_s2-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/Characters/Player/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s3-WindowsClient.pak")
+                            if (currentPAK == "pakchunk10_s3-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/Characters/Player/Male/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s5-WindowsClient.pak")
-                                AppendText("mount point: \"/FortniteGame/Content/Environments/\"", Color.Black, true);
-                            if (currentPAK == "pakchunk0_s8-WindowsClient.pak")
-                                AppendText("mount point: \"/FortniteGame/\"", Color.Black, true);
                             if (currentPAK == "pakchunk5-WindowsClient.pak")
                                 AppendText("mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.Black, true);
                             if (currentPAK == "pakchunk2-WindowsClient.pak")
