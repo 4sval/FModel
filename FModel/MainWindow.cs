@@ -75,6 +75,7 @@ namespace FModel
         {
             InitializeComponent();
 
+            treeView1.Sort();
             //REMOVE SPACE CAUSED BY SIZING GRIP
             statusStrip1.Padding = new Padding(statusStrip1.Padding.Left, statusStrip1.Padding.Top, statusStrip1.Padding.Left, statusStrip1.Padding.Bottom);
 
@@ -1215,22 +1216,29 @@ namespace FModel
             updateConsole("Parsing " + currentUsedItem + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
             for (int i = 0; i < ItemID.Length; i++)
             {
-                if (Properties.Settings.Default.createIconForCosmetics == true && (ItemID[i].ExportType.Contains("Athena") && ItemID[i].ExportType.Contains("Item") && ItemID[i].ExportType.Contains("Definition")))
-                    createItemIcon(ItemID[i], true);
-                else if (Properties.Settings.Default.createIconForConsumablesWeapons == true && (ItemID[i].ExportType.Contains("FortWeaponRangedItemDefinition") || ItemID[i].ExportType.Contains("FortWeaponMeleeItemDefinition")))
-                    createItemIcon(ItemID[i], false, true);
-                else if(Properties.Settings.Default.createIconForTraps == true && (ItemID[i].ExportType.Contains("FortTrapItemDefinition") || ItemID[i].ExportType.Contains("FortContextTrapItemDefinition")))
-                    createItemIcon(ItemID[i]);
-                else if(Properties.Settings.Default.createIconForVariants == true && (ItemID[i].ExportType == "FortVariantTokenType"))
-                    createItemIcon(ItemID[i], false, false, true);
-                else if(ItemID[i].ExportType == "FortChallengeBundleItemDefinition")
-                    createChallengesIcon(ItemID[i], theParsedJSON, questJSON);
-                else if(ItemID[i].ExportType == "Texture2D")
-                    convertTexture2D();
-                else if(ItemID[i].ExportType == "SoundWave")
-                    convertSoundWave();
-                else
-                    updateConsole(currentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
+                try
+                {
+                    if (Properties.Settings.Default.createIconForCosmetics == true && (ItemID[i].ExportType.Contains("Athena") && ItemID[i].ExportType.Contains("Item") && ItemID[i].ExportType.Contains("Definition")))
+                        createItemIcon(ItemID[i], true);
+                    else if (Properties.Settings.Default.createIconForConsumablesWeapons == true && (ItemID[i].ExportType.Contains("FortWeaponRangedItemDefinition") || ItemID[i].ExportType.Contains("FortWeaponMeleeItemDefinition")))
+                        createItemIcon(ItemID[i], false, true);
+                    else if (Properties.Settings.Default.createIconForTraps == true && (ItemID[i].ExportType.Contains("FortTrapItemDefinition") || ItemID[i].ExportType.Contains("FortContextTrapItemDefinition")))
+                        createItemIcon(ItemID[i]);
+                    else if (Properties.Settings.Default.createIconForVariants == true && (ItemID[i].ExportType == "FortVariantTokenType"))
+                        createItemIcon(ItemID[i], false, false, true);
+                    else if (ItemID[i].ExportType == "FortChallengeBundleItemDefinition")
+                        createChallengesIcon(ItemID[i], theParsedJSON, questJSON);
+                    else if (ItemID[i].ExportType == "Texture2D")
+                        convertTexture2D();
+                    else if (ItemID[i].ExportType == "SoundWave")
+                        convertSoundWave();
+                    else
+                        updateConsole(currentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
         private void createItemIcon(Parser.Items.ItemsIDParser theItem, bool athIteDef = false, bool consAndWeap = false, bool variant = false)
@@ -2067,6 +2075,8 @@ namespace FModel
                         AppendText("DisplayName ", Color.SteelBlue);
                         AppendText("found", Color.Black, true);
                     } //NAME
+                    g.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, iamY + 240, bmp.Width, 40));
+                    g.DrawString(theItem.DisplayName + " Generated using FModel & JohnWickParser - " + DateTime.Now, new Font(pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width / 2, iamY + 250), centeredString);
                     using (Bitmap bmp2 = bmp)
                     {
                         var newImg = bmp2.Clone(
