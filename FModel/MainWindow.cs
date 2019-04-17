@@ -238,7 +238,7 @@ namespace FModel
             if (!File.Exists(DefaultOutputPath + "\\john-wick-parse_custom.exe") && connection == true)
             {
                 WebClient Client = new WebClient();
-                Client.DownloadFile("https://dl.dropbox.com/s/rkjug9zyy8rhksp/john-wick-parse_custom.exe?dl=0", DefaultOutputPath + "\\john-wick-parse_custom.exe");
+                Client.DownloadFile("https://dl.dropbox.com/s/af5n0wr3wyb5n1u/john-wick-parse_custom.exe?dl=0", DefaultOutputPath + "\\john-wick-parse_custom.exe");
                 parserInfo = new FileInfo(DefaultOutputPath + "\\john-wick-parse_custom.exe");
 
                 updateConsole("john-wick-parse_custom.exe downloaded successfully", Color.FromArgb(255, 66, 244, 66), "Success");
@@ -266,7 +266,7 @@ namespace FModel
                     if (parserInfo.Length != fileSize)
                     {
                         WebClient Client = new WebClient();
-                        Client.DownloadFile("https://dl.dropbox.com/s/rkjug9zyy8rhksp/john-wick-parse_custom.exe?dl=0", DefaultOutputPath + "\\john-wick-parse_custom.exe");
+                        Client.DownloadFile("https://dl.dropbox.com/s/af5n0wr3wyb5n1u/john-wick-parse_custom.exe?dl=0", DefaultOutputPath + "\\john-wick-parse_custom.exe");
 
                         updateConsole("john-wick-parse_custom.exe updated successfully", Color.FromArgb(255, 66, 244, 66), "Success");
                     }

@@ -25,13 +25,13 @@
 
 **4.** Clicking on **Extract** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
   - Asset is an **_ID_**:
-    - Try to create an [Icon]() with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
+    - Try to create an [Icon](https://i.imgur.com/VoxEi7T.png) with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
   - Asset is a **_Texture_**:
     - Try to display the Asset as PNG
   - Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
   - Asset is a **_Bundle Of Challenges_**:
-    - Try to create an [Icon]() with all **Challenges' Description**, **Count** and the **Reward**
+    - Try to create an [Icon](https://i.imgur.com/J3Ah28b.png) with all **Challenges' Description**, **Count** and the **Reward**
   - Asset is a **_Font_**:
     - Try to convert the Asset to OTF
 
