@@ -16,6 +16,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ScintillaNET_FindReplaceDialog;
+using System.Security.Principal;
+using System.Security.AccessControl;
 
 namespace FModel
 {
@@ -181,6 +183,21 @@ namespace FModel
             if (!Directory.Exists(DefaultOutputPath + "\\Sounds\\"))
                 Directory.CreateDirectory(DefaultOutputPath + "\\Sounds\\");
         }
+        public static void SetFolderPermission(string folderPath)
+        {
+            var directoryInfo = new DirectoryInfo(folderPath);
+            var directorySecurity = directoryInfo.GetAccessControl();
+            var currentUserIdentity = WindowsIdentity.GetCurrent();
+            var fileSystemRule = new FileSystemAccessRule(currentUserIdentity.Name,
+                                                          FileSystemRights.Read,
+                                                          InheritanceFlags.ObjectInherit |
+                                                          InheritanceFlags.ContainerInherit,
+                                                          PropagationFlags.None,
+                                                          AccessControlType.Allow);
+
+            directorySecurity.AddAccessRule(fileSystemRule);
+            directoryInfo.SetAccessControl(directorySecurity);
+        }
         #endregion
 
         #region LOAD & LEAVE
@@ -344,6 +361,7 @@ namespace FModel
                 setScintillaStyle();
                 setFont();
                 setOutput();
+                SetFolderPermission(DefaultOutputPath);
                 createDir();
                 keyCheck();
                 johnWickCheck();
