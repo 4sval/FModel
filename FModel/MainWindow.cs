@@ -1212,11 +1212,11 @@ namespace FModel
         }
         private void navigateThroughJSON(string theParsedJSON, string questJSON = null)
         {
-            var ItemID = Parser.Items.ItemsIDParser.FromJson(theParsedJSON);
-            updateConsole("Parsing " + currentUsedItem + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
-            for (int i = 0; i < ItemID.Length; i++)
+            try
             {
-                try
+                var ItemID = Parser.Items.ItemsIDParser.FromJson(theParsedJSON);
+                updateConsole("Parsing " + currentUsedItem + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
+                for (int i = 0; i < ItemID.Length; i++)
                 {
                     if (Properties.Settings.Default.createIconForCosmetics == true && (ItemID[i].ExportType.Contains("Athena") && ItemID[i].ExportType.Contains("Item") && ItemID[i].ExportType.Contains("Definition")))
                         createItemIcon(ItemID[i], true);
@@ -1235,10 +1235,10 @@ namespace FModel
                     else
                         updateConsole(currentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                 }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
         private void createItemIcon(Parser.Items.ItemsIDParser theItem, bool athIteDef = false, bool consAndWeap = false, bool variant = false)
@@ -2044,13 +2044,17 @@ namespace FModel
                         catch (KeyNotFoundException)
                         {
                             AppendText("Can't extract ", Color.Black);
-                            AppendText(SelectedChallengesArray[i2], Color.SteelBlue);
+                            AppendText(SelectedChallengesArray[i2], Color.SteelBlue, true);
                         }
                     }
                 }
 
                 if (Properties.Settings.Default.createIconForChallenges == true)
                 {
+                    #region WATERMARK
+                    g.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, iamY + 240, bmp.Width, 40));
+                    g.DrawString(theItem.DisplayName + " Generated using FModel & JohnWickParse - " + DateTime.Now, new Font(pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width / 2, iamY + 250), centeredString);
+                    #endregion
                     #region DRAW TEXT
                     try
                     {
@@ -2075,8 +2079,6 @@ namespace FModel
                         AppendText("DisplayName ", Color.SteelBlue);
                         AppendText("found", Color.Black, true);
                     } //NAME
-                    g.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, iamY + 240, bmp.Width, 40));
-                    g.DrawString(theItem.DisplayName + " Generated using FModel & JohnWickParser - " + DateTime.Now, new Font(pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width / 2, iamY + 250), centeredString);
                     using (Bitmap bmp2 = bmp)
                     {
                         var newImg = bmp2.Clone(

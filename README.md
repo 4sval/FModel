@@ -36,7 +36,7 @@
     - Try to convert the Asset to OTF
 
 ### Difference Mode
-**1.** Create a backup of your .PAK files before the update
+**1.** Create a backup of your .PAK files before the update (**Load** -> **Backup PAKs**)
 
 **2.** Enable Difference Mode
 
