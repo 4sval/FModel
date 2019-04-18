@@ -1107,6 +1107,46 @@ namespace FModel
 
             listBox1.EndUpdate();
         }
+        private void filterTree()
+        {
+            if (FilterTextBox.Text == "") return;
+            if (FilterTextBox.Text.Length <= 2) return;
+
+            for (int i = 0; i < treeView1.Nodes.Count; i++)
+            {
+                loopNode(treeView1.Nodes[i]);
+            }
+        }
+        private void loopNode(TreeNode theNodes)
+        {
+            if (theNodes.Text.IndexOf(FilterTextBox.Text) >= 0)
+            {
+                theNodes.ForeColor = Color.Blue;
+                Invoke(new Action(() =>
+                {
+                    theNodes.Expand();
+                    ExpandParentNodes(theNodes);
+                }));
+            }
+            else
+                theNodes.ForeColor = Color.Black;
+
+            for (int i = 0; i < theNodes.Nodes.Count; i++)
+            {
+                loopNode(theNodes.Nodes[i]);
+            }
+        }
+        private void ExpandParentNodes(TreeNode node)
+        {
+            TreeNode parent = node.Parent;
+            if (parent != null)
+            {
+                parent.Expand();
+                parent = parent.Parent;
+            }
+            else
+                parent.Collapse();
+        }
 
         //EVENTS
         private async void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -1909,13 +1949,88 @@ namespace FModel
             {
                 Bitmap bmp = new Bitmap(Properties.Resources.Quest);
                 Graphics g = Graphics.FromImage(bmp);
-                int iamY = 400;
+                g.TextRenderingHint = TextRenderingHint.AntiAlias;
+                int iamY = 275;
                 int justSkip = 0;
                 yAfterLoop = 0;
+                bool v2 = false;
 
                 var BundleParser = Parser.Challenges.ChallengeBundleIdParser.FromJson(theParsedJSON);
                 for (int i = 0; i < BundleParser.Length; i++)
                 {
+                    #region DRAW BUNDLE ICON
+                    try
+                    {
+                        if (Properties.Settings.Default.createIconForChallenges == true)
+                        {
+                            if (BundleParser[i].DisplayStyle.DisplayImage != null)
+                            {
+                                v2 = true;
+                                #region COLORS + IMAGE
+                                int sOpacity = unchecked((int)BundleParser[i].DisplayStyle.AccentColor.A);
+                                int sRed = (int)(BundleParser[i].DisplayStyle.AccentColor.R * 255);
+                                int sGreen = (int)(BundleParser[i].DisplayStyle.AccentColor.G * 255);
+                                int sBlue = (int)(BundleParser[i].DisplayStyle.AccentColor.B * 255);
+
+                                int seasonRed = (int)Convert.ToInt32(sRed / 1.5);
+                                int seasonGreen = (int)Convert.ToInt32(sGreen / 1.5);
+                                int seasonBlue = (int)Convert.ToInt32(sBlue / 1.5);
+
+                                g.FillRectangle(new SolidBrush(Color.FromArgb(sOpacity * 255, sRed, sGreen, sBlue)), new Rectangle(0, 0, bmp.Width, 271));
+                                g.FillRectangle(new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Rectangle(0, 271, bmp.Width, bmp.Height - 271));
+
+                                try
+                                {
+                                    string seasonFolder = questJSON.Substring(questJSON.Substring(0, questJSON.LastIndexOf("\\")).LastIndexOf("\\") + 1).ToUpper();
+                                    g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\")), new Font(pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Point(340, 40));
+                                }
+                                catch (NullReferenceException)
+                                {
+                                    AppendText("[NullReferenceException] ", Color.Red);
+                                    AppendText("No ", Color.Black);
+                                    AppendText("Season ", Color.SteelBlue);
+                                    AppendText("found", Color.Black, true);
+                                } //LAST SUBFOLDER
+                                try
+                                {
+                                    g.DrawString(theItem.DisplayName.ToUpper(), new Font(pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+                                }
+                                catch (NullReferenceException)
+                                {
+                                    AppendText("[NullReferenceException] ", Color.Red);
+                                    AppendText("No ", Color.Black);
+                                    AppendText("DisplayName ", Color.SteelBlue);
+                                    AppendText("found", Color.Black, true);
+                                } //NAME
+
+                                string pngPATH = string.Empty;
+                                string textureFile = Path.GetFileName(BundleParser[i].DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(BundleParser[i].DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
+
+                                if (currentUsedPAKGUID != null && currentUsedPAKGUID != "0-0-0-0")
+                                    jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + currentUsedPAK + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
+                                else
+                                    jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + AllPAKsDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
+                                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+
+                                if (textureFilePath != null)
+                                {
+                                    jwpmProcess("texture \"" + textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + "\"");
+                                    pngPATH = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                    updateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
+
+                                    Image challengeIcon = Image.FromFile(pngPATH);
+                                    g.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0)); //327
+                                }
+                                #endregion
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    #endregion
+
                     SelectedChallengesArray = new string[BundleParser[i].QuestInfos.Length];
                     for (int i2 = 0; i2 < BundleParser[i].QuestInfos.Length; i2++)
                     {
@@ -1970,7 +2085,7 @@ namespace FModel
                                                             justSkip += 1;
                                                             iamY += 140;
                                                             g.DrawString(questParser[ii].Objectives[ii2].Description, new Font(pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
-                                                            g.DrawString("/" + questParser[ii].Objectives[ii2].Count.ToString(), new Font(pfc.Families[1], 50), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(2410, iamY + 22), rightString);
+                                                            g.DrawString("/" + questParser[ii].Objectives[ii2].Count.ToString(), new Font(pfc.Families[1], 50), new SolidBrush(Color.FromArgb(200, 255, 255, 255)), new Point(2410, iamY + 22), rightString);
                                                             if (justSkip != 1)
                                                             {
                                                                 g.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, iamY - 10, 2410, iamY - 10);
@@ -2073,30 +2188,35 @@ namespace FModel
                     g.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, iamY + 240, bmp.Width, 40));
                     g.DrawString(theItem.DisplayName + " Generated using FModel & JohnWickParse - " + DateTime.Now, new Font(pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width / 2, iamY + 250), centeredString);
                     #endregion
-                    #region DRAW TEXT
-                    try
+                    if (v2 == false)
                     {
-                        string seasonFolder = questJSON.Substring(questJSON.Substring(0, questJSON.LastIndexOf("\\")).LastIndexOf("\\") + 1).ToUpper();
-                        g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\")), new Font(pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(340, 40));
+                        #region DRAW TEXT
+                        try
+                        {
+                            string seasonFolder = questJSON.Substring(questJSON.Substring(0, questJSON.LastIndexOf("\\")).LastIndexOf("\\") + 1).ToUpper();
+                            g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\")), new Font(pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(340, 40));
+                        }
+                        catch (NullReferenceException)
+                        {
+                            AppendText("[NullReferenceException] ", Color.Red);
+                            AppendText("No ", Color.Black);
+                            AppendText("Season ", Color.SteelBlue);
+                            AppendText("found", Color.Black, true);
+                        } //LAST SUBFOLDER
+                        try
+                        {
+                            g.DrawString(theItem.DisplayName.ToUpper(), new Font(pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+                        }
+                        catch (NullReferenceException)
+                        {
+                            AppendText("[NullReferenceException] ", Color.Red);
+                            AppendText("No ", Color.Black);
+                            AppendText("DisplayName ", Color.SteelBlue);
+                            AppendText("found", Color.Black, true);
+                        } //NAME
+                        #endregion
                     }
-                    catch (NullReferenceException)
-                    {
-                        AppendText("[NullReferenceException] ", Color.Red);
-                        AppendText("No ", Color.Black);
-                        AppendText("Season ", Color.SteelBlue);
-                        AppendText("found", Color.Black, true);
-                    } //LAST SUBFOLDER
-                    try
-                    {
-                        g.DrawString(theItem.DisplayName.ToUpper(), new Font(pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
-                    }
-                    catch (NullReferenceException)
-                    {
-                        AppendText("[NullReferenceException] ", Color.Red);
-                        AppendText("No ", Color.Black);
-                        AppendText("DisplayName ", Color.SteelBlue);
-                        AppendText("found", Color.Black, true);
-                    } //NAME
+                    #region CUT IMAGE
                     using (Bitmap bmp2 = bmp)
                     {
                         var newImg = bmp2.Clone(
@@ -2171,7 +2291,7 @@ namespace FModel
                                                         lineLoop += 1;
                                                         yeayLoop += 140;
                                                         toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Description, new Font(pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, yeayLoop));
-                                                        toDrawOnLoop.DrawString("/" + questParser[i].Objectives[ii].Count.ToString(), new Font(pfc.Families[1], 50), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(2410, yeayLoop + 22), rightString);
+                                                        toDrawOnLoop.DrawString("/" + questParser[i].Objectives[ii].Count.ToString(), new Font(pfc.Families[1], 50), new SolidBrush(Color.FromArgb(200, 255, 255, 255)), new Point(2410, yeayLoop + 22), rightString);
                                                         if (lineLoop != 1)
                                                         {
                                                             toDrawOnLoop.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, yeayLoop - 10, 2410, yeayLoop - 10);

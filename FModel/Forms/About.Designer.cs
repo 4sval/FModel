@@ -51,7 +51,7 @@
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(152, 89);
+            this.linkLabel1.Location = new System.Drawing.Point(137, 89);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(69, 13);
             this.linkLabel1.TabIndex = 1;
@@ -62,7 +62,7 @@
             // linkLabel2
             // 
             this.linkLabel2.AutoSize = true;
-            this.linkLabel2.Location = new System.Drawing.Point(384, 89);
+            this.linkLabel2.Location = new System.Drawing.Point(398, 91);
             this.linkLabel2.Name = "linkLabel2";
             this.linkLabel2.Size = new System.Drawing.Size(42, 13);
             this.linkLabel2.TabIndex = 2;
@@ -72,7 +72,7 @@
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(108, 48);
+            this.label1.Location = new System.Drawing.Point(108, 47);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(360, 17);
             this.label1.TabIndex = 3;
@@ -91,23 +91,23 @@
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(108, 64);
+            this.label3.Location = new System.Drawing.Point(108, 54);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(360, 17);
+            this.label3.Size = new System.Drawing.Size(360, 45);
             this.label3.TabIndex = 5;
-            this.label3.Text = "If you found the repository useful, feel free to give it a star";
+            this.label3.Text = "If you find this project useful, feel free to give it a star on GitHub\r\n⊂(◉‿◉)つ";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // About
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(467, 116);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(467, 115);
             this.Controls.Add(this.linkLabel2);
             this.Controls.Add(this.linkLabel1);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.pictureBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
