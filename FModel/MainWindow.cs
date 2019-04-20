@@ -571,6 +571,9 @@ namespace FModel
 
                             File.AppendAllLines(DefaultOutputPath + "\\FortnitePAKs.txt", currentUsedPAKLines);
                             File.Delete(DefaultOutputPath + "\\" + arCurrentUsedPAK + ".txt");
+
+                            currentUsedPAK = null;
+                            currentUsedPAKGUID = null;
                         }
                     }
                 }
