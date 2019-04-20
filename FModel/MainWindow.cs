@@ -27,7 +27,7 @@ namespace FModel
         FindReplace MyFindReplace;
         Stopwatch stopWatch;
         private static string[] PAKsArray;
-        private static string[] PAKasTXT;
+        public static string[] PAKasTXT;
         private static Dictionary<string, string> AllPAKsDictionary;
         private static Dictionary<string, long> questStageDict;
         private static Dictionary<string, string> diffToExtract;

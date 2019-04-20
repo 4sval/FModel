@@ -211,7 +211,7 @@
             // saveImageToolStripMenuItem
             // 
             this.saveImageToolStripMenuItem.Name = "saveImageToolStripMenuItem";
-            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveImageToolStripMenuItem.Text = "Save Image";
             this.saveImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
             // 
@@ -219,18 +219,18 @@
             // 
             this.autoSaveImagesToolStripMenuItem.CheckOnClick = true;
             this.autoSaveImagesToolStripMenuItem.Name = "autoSaveImagesToolStripMenuItem";
-            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.autoSaveImagesToolStripMenuItem.Text = "Auto Save Images";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
             // 
             // mergeImagesToolStripMenuItem
             // 
             this.mergeImagesToolStripMenuItem.Name = "mergeImagesToolStripMenuItem";
-            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.mergeImagesToolStripMenuItem.Text = "Merge Images";
             this.mergeImagesToolStripMenuItem.Click += new System.EventHandler(this.mergeImagesToolStripMenuItem_Click);
             // 
