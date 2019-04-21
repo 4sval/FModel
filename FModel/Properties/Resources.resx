@@ -181,4 +181,19 @@
   <data name="Quest" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Quest.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="T_Icon_Adaptive_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T-Icon-Adaptive-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_Icon_Animated_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T-Icon-Animated-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_Icon_Traversal_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T-Icon-Traversal-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_Icon_Variant_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T-Icon-Variant-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_Icon_Quests_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T-Icon-Quests-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

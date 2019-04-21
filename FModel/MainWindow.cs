@@ -1472,6 +1472,38 @@ namespace FModel
                     AppendText("found", Color.Black, true);
                 } //COSMETIC ITEM
             }
+            try
+            {
+                if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Animated"))
+                {
+                    Image animatedLogo = Properties.Resources.T_Icon_Animated_64;
+                    g.DrawImage(Forms.Settings.ResizeImage(animatedLogo, 32, 32), new Point(6, -2));
+                }
+                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasUpgradeQuests"))
+                {
+                    Image questLogo = Properties.Resources.T_Icon_Quests_64;
+                    g.DrawImage(Forms.Settings.ResizeImage(questLogo, 32, 40), new Point(6, 6));
+                }
+                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasVariants"))
+                {
+                    Image variantsLogo = Properties.Resources.T_Icon_Variant_64;
+                    g.DrawImage(Forms.Settings.ResizeImage(variantsLogo, 32, 32), new Point(6, 6));
+                }
+                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Reactive"))
+                {
+                    Image reactiveLogo = Properties.Resources.T_Icon_Adaptive_64;
+                    g.DrawImage(Forms.Settings.ResizeImage(reactiveLogo, 32, 32), new Point(6, 6));
+                }
+                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Traversal"))
+                {
+                    Image traversalLogo = Properties.Resources.T_Icon_Traversal_64;
+                    g.DrawImage(Forms.Settings.ResizeImage(traversalLogo, 32, 32), new Point(6, 3));
+                }
+            }
+            catch (Exception)
+            {
+
+            } //COSMETIC USER FACING FLAGS
             #endregion
 
             pictureBox1.Image = bmp;

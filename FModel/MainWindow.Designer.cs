@@ -95,15 +95,15 @@
             this.toolStripStatusLabel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.toolStripStatusLabel1.Margin = new System.Windows.Forms.Padding(1, 3, 50, 2);
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(65, 17);
-            this.toolStripStatusLabel1.Text = "FModel 2.0";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(74, 17);
+            this.toolStripStatusLabel1.Text = "FModel 2.0.1";
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.toolStripStatusLabel2.Margin = new System.Windows.Forms.Padding(0, 3, 50, 2);
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(976, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(936, 17);
             this.toolStripStatusLabel2.Spring = true;
             // 
             // toolStripStatusLabel3
@@ -211,7 +211,7 @@
             // saveImageToolStripMenuItem
             // 
             this.saveImageToolStripMenuItem.Name = "saveImageToolStripMenuItem";
-            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.saveImageToolStripMenuItem.Text = "Save Image";
             this.saveImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
             // 
@@ -219,18 +219,18 @@
             // 
             this.autoSaveImagesToolStripMenuItem.CheckOnClick = true;
             this.autoSaveImagesToolStripMenuItem.Name = "autoSaveImagesToolStripMenuItem";
-            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.autoSaveImagesToolStripMenuItem.Text = "Auto Save Images";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(165, 6);
             // 
             // mergeImagesToolStripMenuItem
             // 
             this.mergeImagesToolStripMenuItem.Name = "mergeImagesToolStripMenuItem";
-            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.mergeImagesToolStripMenuItem.Text = "Merge Images";
             this.mergeImagesToolStripMenuItem.Click += new System.EventHandler(this.mergeImagesToolStripMenuItem_Click);
             // 

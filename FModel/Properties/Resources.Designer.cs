@@ -223,6 +223,56 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap T_Icon_Adaptive_64 {
+            get {
+                object obj = ResourceManager.GetObject("T_Icon_Adaptive_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap T_Icon_Animated_64 {
+            get {
+                object obj = ResourceManager.GetObject("T_Icon_Animated_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap T_Icon_Quests_64 {
+            get {
+                object obj = ResourceManager.GetObject("T_Icon_Quests_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap T_Icon_Traversal_64 {
+            get {
+                object obj = ResourceManager.GetObject("T_Icon_Traversal_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap T_Icon_Variant_64 {
+            get {
+                object obj = ResourceManager.GetObject("T_Icon_Variant_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap T512 {
             get {
                 object obj = ResourceManager.GetObject("T512", resourceCulture);

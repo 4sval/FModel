@@ -134,6 +134,11 @@
   <ItemGroup>
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
+    <None Include="Resources\T-Icon-Quests-64.png" />
+    <None Include="Resources\T-Icon-Variant-64.png" />
+    <None Include="Resources\T-Icon-Traversal-64.png" />
+    <None Include="Resources\T-Icon-Animated-64.png" />
+    <None Include="Resources\T-Icon-Adaptive-64.png" />
     <None Include="Resources\Quest.png" />
     <None Include="Resources\FModel_Logo.png" />
     <None Include="Resources\wTemplateF.png" />
