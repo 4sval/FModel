@@ -1482,7 +1482,7 @@ namespace FModel
                 else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasUpgradeQuests") && theItem.ExportType != "AthenaPetCarrierItemDefinition")
                 {
                     Image questLogo = Properties.Resources.T_Icon_Quests_64;
-                    g.DrawImage(Forms.Settings.ResizeImage(questLogo, 32, 40), new Point(6, 4));
+                    g.DrawImage(Forms.Settings.ResizeImage(questLogo, 32, 32), new Point(6, 6));
                 }
                 else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasUpgradeQuests") && theItem.ExportType == "AthenaPetCarrierItemDefinition")
                 {
