@@ -243,6 +243,16 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap T_Icon_Pets_64 {
+            get {
+                object obj = ResourceManager.GetObject("T_Icon_Pets_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap T_Icon_Quests_64 {
             get {
                 object obj = ResourceManager.GetObject("T_Icon_Quests_64", resourceCulture);
