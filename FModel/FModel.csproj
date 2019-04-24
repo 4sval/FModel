@@ -69,6 +69,12 @@
     <Compile Include="Forms\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\SearchFiles.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SearchFiles.Designer.cs">
+      <DependentUpon>SearchFiles.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -97,6 +103,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\About.resx">
       <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SearchFiles.resx">
+      <DependentUpon>SearchFiles.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
@@ -134,8 +143,8 @@
   <ItemGroup>
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
-    <None Include="Resources\T-Icon-Quests-64.png" />
     <None Include="Resources\T-Icon-Pets-64.png" />
+    <None Include="Resources\T-Icon-Quests-64.png" />
     <None Include="Resources\T-Icon-Variant-64.png" />
     <None Include="Resources\T-Icon-Traversal-64.png" />
     <None Include="Resources\T-Icon-Animated-64.png" />
