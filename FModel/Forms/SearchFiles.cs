@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FModel.Custom;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +15,7 @@ namespace FModel.Forms
 {
     public partial class SearchFiles : Form
     {
+        TypeAssistant assistant;
         List<FileInfo> myInfos = new List<FileInfo>();
         List<FileInfoFilter> myFilteredInfos;
         private static string fileName;
@@ -25,6 +27,9 @@ namespace FModel.Forms
         public SearchFiles()
         {
             InitializeComponent();
+
+            assistant = new TypeAssistant();
+            assistant.Idled += assistant_Idled;
         }
 
         private async void SearchFiles_Load(object sender, EventArgs e)
@@ -255,12 +260,17 @@ namespace FModel.Forms
 
             listView1.EndUpdate();
         }
-        private async void textBox1_TextChanged(object sender, EventArgs e)
+        void assistant_Idled(object sender, EventArgs e)
         {
-            await Task.Run(() =>
+            this.Invoke(
+            new MethodInvoker(() =>
             {
                 filterListView();
-            });
+            }));
+        }
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            assistant.TextChanged();
         }
 
         private void button1_Click(object sender, EventArgs e)
