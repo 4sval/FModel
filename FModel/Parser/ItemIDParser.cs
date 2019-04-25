@@ -30,6 +30,9 @@ namespace FModel.Parser.Items
         [JsonProperty("Rarity")]
         public string Rarity { get; set; }
 
+        [JsonProperty("Series")]
+        public string Series { get; set; }
+
         [JsonProperty("DisplayName")]
         public string DisplayName { get; set; }
 

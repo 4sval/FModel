@@ -199,4 +199,7 @@
   <data name="T_Icon_Pets_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-Icon-Pets-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Marvel512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Marvel512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

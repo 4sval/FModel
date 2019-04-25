@@ -183,6 +183,16 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Marvel512 {
+            get {
+                object obj = ResourceManager.GetObject("Marvel512", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap properties_16xLG {
             get {
                 object obj = ResourceManager.GetObject("properties_16xLG", resourceCulture);

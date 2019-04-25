@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using ScintillaNET_FindReplaceDialog;
 using System.Security.Principal;
 using System.Security.AccessControl;
+using System.Drawing.Drawing2D;
 
 namespace FModel
 {
@@ -1374,7 +1375,10 @@ namespace FModel
             Graphics g = Graphics.FromImage(bmp);
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
-            getItemRarity(theItem, g);
+            if (theItem.Series != null)
+                getSeriesRarity(theItem, g);
+            else
+                getItemRarity(theItem, g);
 
             itemIconPath = string.Empty;
             if (Properties.Settings.Default.loadFeaturedImage == false)
@@ -1585,6 +1589,14 @@ namespace FModel
                 }));
                 AppendText(currentUsedItem, Color.DarkRed);
                 AppendText(" successfully saved", Color.Black, true);
+            }
+        }
+        private void getSeriesRarity(Parser.Items.ItemsIDParser theItem, Graphics toDrawOn)
+        {
+            if (theItem.Series == "MarvelSeries")
+            {
+                Image RarityBG = Properties.Resources.Marvel512;
+                toDrawOn.DrawImage(RarityBG, new Point(0, 0));
             }
         }
         private void getItemRarity(Parser.Items.ItemsIDParser theItem, Graphics toDrawOn)
@@ -1832,107 +1844,112 @@ namespace FModel
             {
                 currentUsedItem = catName.Substring(catName.LastIndexOf('.') + 1);
 
-                if (currentUsedPAKGUID != null && currentUsedPAKGUID != "0-0-0-0")
-                    jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + currentUsedPAK + "\" \"" + catName.Substring(catName.LastIndexOf('.') + 1) + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
+                if (currentUsedItem == "DA_Featured_Glider_ID_141_AshtonBoardwalk")
+                    getItemIcon(theItem, false);
                 else
-                    jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + AllPAKsDictionary[catName.Substring(catName.LastIndexOf('.') + 1)] + "\" \"" + catName.Substring(catName.LastIndexOf('.') + 1) + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
-                string CatalogFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", catName.Substring(catName.LastIndexOf('.') + 1) + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
-
-                if (CatalogFilePath != null)
                 {
-                    wasFeatured = true;
-                    updateConsole(catName.Substring(catName.LastIndexOf('.') + 1) + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
-                    if (CatalogFilePath.Contains(".uasset") || CatalogFilePath.Contains(".uexp") || CatalogFilePath.Contains(".ubulk"))
+                    if (currentUsedPAKGUID != null && currentUsedPAKGUID != "0-0-0-0")
+                        jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + currentUsedPAK + "\" \"" + catName.Substring(catName.LastIndexOf('.') + 1) + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
+                    else
+                        jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + AllPAKsDictionary[catName.Substring(catName.LastIndexOf('.') + 1)] + "\" \"" + catName.Substring(catName.LastIndexOf('.') + 1) + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
+                    string CatalogFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", catName.Substring(catName.LastIndexOf('.') + 1) + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+
+                    if (CatalogFilePath != null)
                     {
-                        jwpmProcess("serialize \"" + CatalogFilePath.Substring(0, CatalogFilePath.LastIndexOf('.')) + "\"");
-                        try
+                        wasFeatured = true;
+                        updateConsole(catName.Substring(catName.LastIndexOf('.') + 1) + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
+                        if (CatalogFilePath.Contains(".uasset") || CatalogFilePath.Contains(".uexp") || CatalogFilePath.Contains(".ubulk"))
                         {
-                            string jsonExtractedFilePath = Directory.GetFiles(DefaultOutputPath, catName.Substring(catName.LastIndexOf('.') + 1) + ".json", SearchOption.AllDirectories).FirstOrDefault();
-                            if (jsonExtractedFilePath != null)
+                            jwpmProcess("serialize \"" + CatalogFilePath.Substring(0, CatalogFilePath.LastIndexOf('.')) + "\"");
+                            try
                             {
-                                updateConsole(catName.Substring(catName.LastIndexOf('.') + 1) + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-                                string parsedJson = JToken.Parse(File.ReadAllText(jsonExtractedFilePath)).ToString();
-                                File.Delete(jsonExtractedFilePath);
-                                var FeaturedID = Parser.Featured.FeaturedParser.FromJson(parsedJson);
-                                updateConsole("Parsing " + catName.Substring(catName.LastIndexOf('.') + 1) + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                                for (int i = 0; i < FeaturedID.Length; i++)
+                                string jsonExtractedFilePath = Directory.GetFiles(DefaultOutputPath, catName.Substring(catName.LastIndexOf('.') + 1) + ".json", SearchOption.AllDirectories).FirstOrDefault();
+                                if (jsonExtractedFilePath != null)
                                 {
-                                    if (FeaturedID[i].DetailsImage != null)
+                                    updateConsole(catName.Substring(catName.LastIndexOf('.') + 1) + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
+                                    string parsedJson = JToken.Parse(File.ReadAllText(jsonExtractedFilePath)).ToString();
+                                    File.Delete(jsonExtractedFilePath);
+                                    var FeaturedID = Parser.Featured.FeaturedParser.FromJson(parsedJson);
+                                    updateConsole("Parsing " + catName.Substring(catName.LastIndexOf('.') + 1) + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
+                                    for (int i = 0; i < FeaturedID.Length; i++)
                                     {
-                                        string textureFile = FeaturedID[i].DetailsImage.ResourceObject;
-
-                                        if (currentUsedPAKGUID != null && currentUsedPAKGUID != "0-0-0-0")
-                                            jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + currentUsedPAK + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
-                                        else
-                                            jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + AllPAKsDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
-                                        string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
-
-                                        if (textureFilePath != null && textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
+                                        if (FeaturedID[i].DetailsImage != null)
                                         {
-                                            updateConsole(textureFile + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
-                                            if (textureFilePath.Contains(".uasset") || textureFilePath.Contains(".uexp") || textureFilePath.Contains(".ubulk"))
+                                            string textureFile = FeaturedID[i].DetailsImage.ResourceObject;
+
+                                            if (currentUsedPAKGUID != null && currentUsedPAKGUID != "0-0-0-0")
+                                                jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + currentUsedPAK + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
+                                            else
+                                                jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + AllPAKsDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
+                                            string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+
+                                            if (textureFilePath != null && textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
                                             {
-                                                jwpmProcess("serialize \"" + textureFilePath.Substring(0, textureFilePath.LastIndexOf('.')) + "\"");
-                                                try
+                                                updateConsole(textureFile + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
+                                                if (textureFilePath.Contains(".uasset") || textureFilePath.Contains(".uexp") || textureFilePath.Contains(".ubulk"))
                                                 {
-                                                    string jsonRSMExtractedFilePath = Directory.GetFiles(DefaultOutputPath, textureFile + ".json", SearchOption.AllDirectories).FirstOrDefault();
-                                                    if (jsonRSMExtractedFilePath != null)
+                                                    jwpmProcess("serialize \"" + textureFilePath.Substring(0, textureFilePath.LastIndexOf('.')) + "\"");
+                                                    try
                                                     {
-                                                        updateConsole(textureFile + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-                                                        string parsedRSMJson = JToken.Parse(File.ReadAllText(jsonRSMExtractedFilePath)).ToString();
-                                                        File.Delete(jsonRSMExtractedFilePath);
-                                                        var RSMID = Parser.RenderMat.RenderSwitchMaterial.FromJson(parsedRSMJson);
-                                                        updateConsole("Parsing " + textureFile + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                                                        for (int ii = 0; ii < RSMID.Length; ii++)
+                                                        string jsonRSMExtractedFilePath = Directory.GetFiles(DefaultOutputPath, textureFile + ".json", SearchOption.AllDirectories).FirstOrDefault();
+                                                        if (jsonRSMExtractedFilePath != null)
                                                         {
-                                                            if (RSMID[ii].TextureParameterValues.FirstOrDefault().ParameterValue != null)
+                                                            updateConsole(textureFile + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
+                                                            string parsedRSMJson = JToken.Parse(File.ReadAllText(jsonRSMExtractedFilePath)).ToString();
+                                                            File.Delete(jsonRSMExtractedFilePath);
+                                                            var RSMID = Parser.RenderMat.RenderSwitchMaterial.FromJson(parsedRSMJson);
+                                                            updateConsole("Parsing " + textureFile + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
+                                                            for (int ii = 0; ii < RSMID.Length; ii++)
                                                             {
-                                                                string textureFile2 = RSMID[ii].TextureParameterValues.FirstOrDefault().ParameterValue;
-
-                                                                if (currentUsedPAKGUID != null && currentUsedPAKGUID != "0-0-0-0")
-                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + currentUsedPAK + "\" \"" + textureFile2 + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
-                                                                else
-                                                                    jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + AllPAKsDictionary[textureFile2] + "\" \"" + textureFile2 + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
-                                                                string textureFilePath2 = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile2 + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
-
-                                                                if (textureFilePath2 != null)
+                                                                if (RSMID[ii].TextureParameterValues.FirstOrDefault().ParameterValue != null)
                                                                 {
-                                                                    jwpmProcess("texture \"" + textureFilePath2.Substring(0, textureFilePath2.LastIndexOf('\\')) + "\\" + textureFile2 + "\"");
-                                                                    itemIconPath = textureFilePath2.Substring(0, textureFilePath2.LastIndexOf('\\')) + "\\" + textureFile2 + ".png";
-                                                                    updateConsole(textureFile2 + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
+                                                                    string textureFile2 = RSMID[ii].TextureParameterValues.FirstOrDefault().ParameterValue;
+
+                                                                    if (currentUsedPAKGUID != null && currentUsedPAKGUID != "0-0-0-0")
+                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + currentUsedPAK + "\" \"" + textureFile2 + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
+                                                                    else
+                                                                        jwpmProcess("extract \"" + Properties.Settings.Default.PAKsPath + "\\" + AllPAKsDictionary[textureFile2] + "\" \"" + textureFile2 + "\" \"" + DefaultOutputPath + "\" " + Properties.Settings.Default.AESKey);
+                                                                    string textureFilePath2 = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile2 + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+
+                                                                    if (textureFilePath2 != null)
+                                                                    {
+                                                                        jwpmProcess("texture \"" + textureFilePath2.Substring(0, textureFilePath2.LastIndexOf('\\')) + "\\" + textureFile2 + "\"");
+                                                                        itemIconPath = textureFilePath2.Substring(0, textureFilePath2.LastIndexOf('\\')) + "\\" + textureFile2 + ".png";
+                                                                        updateConsole(textureFile2 + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
+                                                                    }
+                                                                    else
+                                                                        updateConsole("Error while extracting " + textureFile2, Color.FromArgb(255, 244, 66, 66), "Error");
                                                                 }
-                                                                else
-                                                                    updateConsole("Error while extracting " + textureFile2, Color.FromArgb(255, 244, 66, 66), "Error");
                                                             }
                                                         }
                                                     }
-                                                }
-                                                catch (JsonSerializationException)
-                                                {
-                                                    updateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                                                    catch (JsonSerializationException)
+                                                    {
+                                                        updateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                                                    }
                                                 }
                                             }
+                                            else if (textureFilePath != null && !textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
+                                            {
+                                                jwpmProcess("texture \"" + textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + "\"");
+                                                itemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                updateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
+                                            }
+                                            else
+                                                updateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
                                         }
-                                        else if (textureFilePath != null && !textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
-                                        {
-                                            jwpmProcess("texture \"" + textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + "\"");
-                                            itemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
-                                            updateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                        }
-                                        else
-                                            updateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
                                     }
                                 }
                             }
-                        }
-                        catch (JsonSerializationException)
-                        {
-                            updateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                            catch (JsonSerializationException)
+                            {
+                                updateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                            }
                         }
                     }
+                    else
+                        updateConsole("Error while extracting " + catName.Substring(catName.LastIndexOf('.') + 1), Color.FromArgb(255, 244, 66, 66), "Error");
                 }
-                else
-                    updateConsole("Error while extracting " + catName.Substring(catName.LastIndexOf('.') + 1), Color.FromArgb(255, 244, 66, 66), "Error");
             }
             if (manualSearch == true)
             {
