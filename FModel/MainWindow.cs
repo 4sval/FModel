@@ -500,7 +500,7 @@ namespace FModel
         //METHODS
         private string readPAKGuid(string pakPath)
         {
-            using (BinaryReader reader = new BinaryReader(File.Open(pakPath, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(pakPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
             {
                 reader.BaseStream.Seek(reader.BaseStream.Length - 61 - 160, SeekOrigin.Begin);
                 uint g1 = reader.ReadUInt32();
@@ -877,6 +877,7 @@ namespace FModel
             if (Properties.Settings.Default.UMConsumablesWeapons == true)
             {
                 searchResults.Add("Athena/Items/Consumables/");
+                searchResults.Add("Athena/Items/Gameplay/");
                 searchResults.Add("Athena/Items/Weapons/");
             }
             if (Properties.Settings.Default.UMTraps == true)

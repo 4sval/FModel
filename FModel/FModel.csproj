@@ -144,6 +144,8 @@
   <ItemGroup>
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
+    <None Include="Resources\BurbankBigCondensed-Black.ttf" />
+    <None Include="Resources\BurbankBigCondensed-Bold.ttf" />
     <None Include="Resources\Marvel512.png" />
     <None Include="Resources\T-Icon-Pets-64.png" />
     <None Include="Resources\T-Icon-Quests-64.png" />
@@ -165,8 +167,6 @@
     <None Include="Resources\E512.png" />
     <None Include="Resources\C512.png" />
     <None Include="Resources\BG512.png" />
-    <None Include="Resources\BurbankBigCondensed-Black.otf" />
-    <None Include="Resources\BurbankBigCondensed-Bold.otf" />
     <None Include="Resources\properties_16xLG.png" />
     <None Include="Resources\StatusAnnotations_Information_16xLG_color.png" />
     <None Include="Resources\folder_Closed_16xLG.png" />
