@@ -2500,7 +2500,152 @@ namespace FModel
                                         string oldCount = string.Empty;
                                         for (int ii = 0; ii < questParser[i].Objectives.Length; ii++)
                                         {
-                                            if (!questStageDict.ContainsKey(questParser[i].Objectives[ii].Description))
+                                            if (currentUsedItem == "QuestBundle_S8_ExtraCredit")
+                                            {
+                                                string newQuest = questParser[i].Objectives[ii].Description;
+                                                string newCount = questParser[i].Objectives[ii].Count.ToString();
+
+                                                if (newQuest != oldQuest && newCount != oldCount)
+                                                {
+                                                    if (Properties.Settings.Default.createIconForChallenges == true)
+                                                    {
+                                                        LinearGradientBrush linGrBrush = new LinearGradientBrush(
+                                                            new Point(108, yeayLoop + 86),
+                                                            new Point(608, yeayLoop + 86),
+                                                            Color.FromArgb(10, 255, 255, 255),
+                                                            Color.FromArgb(75, 255, 255, 255));
+
+                                                        toDrawOnLoop.TextRenderingHint = TextRenderingHint.AntiAlias;
+                                                        lineLoop += 1;
+                                                        yeayLoop += 140;
+                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Description, new Font(pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, yeayLoop));
+                                                        Image slider = Properties.Resources.Challenges_Slider;
+                                                        toDrawOnLoop.DrawImage(slider, new Point(108, yeayLoop + 86));
+                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Count.ToString(), new Font(pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, yeayLoop + 87));
+                                                        if (lineLoop != 1)
+                                                        {
+                                                            toDrawOnLoop.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, yeayLoop - 10, 2410, yeayLoop - 10);
+                                                        }
+                                                    }
+                                                    AppendText(questParser[i].Objectives[ii].Description, Color.SteelBlue);
+                                                    AppendText("\t\tCount: " + questParser[i].Objectives[ii].Count, Color.DarkRed);
+                                                    if (questParser[i].Rewards != null)
+                                                    {
+                                                        AppendText("\t\tCount: " + questParser[i].Objectives[ii].Count, Color.DarkRed);
+                                                        try
+                                                        {
+                                                            if (Properties.Settings.Default.createIconForChallenges == true)
+                                                            {
+                                                                string itemToExtract = questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest").Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token").FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName;
+                                                                if (string.Equals(itemToExtract, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase))
+                                                                {
+                                                                    #region DRAW ICON
+                                                                    Image RewardIcon = Properties.Resources.T_FNBR_BattlePoints_L;
+                                                                    toDrawOnLoop.DrawImage(Forms.Settings.ResizeImage(RewardIcon, 75, 75), new Point(2325, yeayLoop + 22));
+
+                                                                    GraphicsPath p = new GraphicsPath();
+                                                                    p.AddString(
+                                                                        questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
+                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
+                                                                .FirstOrDefault().Quantity.ToString(),
+                                                                        pfc.Families[1],
+                                                                        (int)FontStyle.Regular,
+                                                                        60,
+                                                                        new Point(2322, yeayLoop + 25), rightString);
+                                                                    toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
+
+                                                                    toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
+                                                                    #endregion
+                                                                }
+                                                                else if (string.Equals(itemToExtract, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase))
+                                                                {
+                                                                    #region DRAW ICON
+                                                                    Image RewardIcon = Properties.Resources.T_FNBR_SeasonalXP_L;
+                                                                    toDrawOnLoop.DrawImage(Forms.Settings.ResizeImage(RewardIcon, 75, 75), new Point(2325, yeayLoop + 22));
+
+                                                                    GraphicsPath p = new GraphicsPath();
+                                                                    p.AddString(
+                                                                        questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
+                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
+                                                                .FirstOrDefault().Quantity.ToString(),
+                                                                        pfc.Families[1],
+                                                                        (int)FontStyle.Regular,
+                                                                        60,
+                                                                        new Point(2322, yeayLoop + 25), rightString);
+                                                                    toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
+
+                                                                    toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
+                                                                    #endregion
+                                                                }
+                                                                else if (string.Equals(itemToExtract, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase))
+                                                                {
+                                                                    #region DRAW ICON
+                                                                    Image RewardIcon = Properties.Resources.T_Items_MTX_L;
+                                                                    toDrawOnLoop.DrawImage(Forms.Settings.ResizeImage(RewardIcon, 75, 75), new Point(2325, yeayLoop + 22));
+
+                                                                    GraphicsPath p = new GraphicsPath();
+                                                                    p.AddString(
+                                                                        questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
+                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
+                                                                .FirstOrDefault().Quantity.ToString(),
+                                                                        pfc.Families[1],
+                                                                        (int)FontStyle.Regular,
+                                                                        60,
+                                                                        new Point(2322, yeayLoop + 25), rightString);
+                                                                    toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
+
+                                                                    toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
+                                                                    #endregion
+                                                                }
+                                                                else
+                                                                    drawRewardIcon(itemToExtract, toDrawOnLoop, yeayLoop);
+                                                            }
+
+                                                            AppendText("\t\t" + questParser[i].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
+                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
+                                                                .FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetType.Name + ":"
+                                                                + questParser[i].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
+                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
+                                                                .FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName + ":"
+                                                                + questParser[i].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
+                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
+                                                                .FirstOrDefault().Quantity.ToString(), Color.DarkGreen, true);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            if (questParser[i].HiddenRewards != null)
+                                                            {
+                                                                if (Properties.Settings.Default.createIconForChallenges == true)
+                                                                {
+                                                                    var partsofbruhreally = questParser[i].HiddenRewards.FirstOrDefault().TemplateId.Split(':');
+                                                                    if (partsofbruhreally[0] != "HomebaseBannerIcon")
+                                                                        drawRewardIcon(partsofbruhreally[1], toDrawOnLoop, yeayLoop);
+                                                                }
+
+                                                                AppendText("\t\t" + questParser[i].HiddenRewards.FirstOrDefault().TemplateId + ":"
+                                                                    + questParser[i].HiddenRewards.FirstOrDefault().Quantity.ToString(), Color.DarkGreen, true);
+                                                            }
+                                                            else
+                                                            {
+                                                                Console.WriteLine(ex.Message);
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        AppendText("\t\tCount: " + questParser[i].Objectives[ii].Count, Color.DarkRed, true);
+                                                    }
+
+                                                    oldQuest = questParser[i].Objectives[ii].Description;
+                                                    oldCount = questParser[i].Objectives[ii].Count.ToString();
+                                                }
+                                                for (int iii = 0; iii < questParser[i].Rewards.Length; iii++)
+                                                {
+                                                    loopStageQuest(questParser[i].Rewards[iii].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser[i].Rewards[iii].ItemPrimaryAssetId.PrimaryAssetName, toDrawOnLoop, yeayLoop, lineLoop);
+                                                    yeayLoop = yAfterLoop;
+                                                }
+                                            }
+                                            else if (!questStageDict.ContainsKey(questParser[i].Objectives[ii].Description))
                                             {
                                                 string newQuest = questParser[i].Objectives[ii].Description;
                                                 string newCount = questParser[i].Objectives[ii].Count.ToString();
