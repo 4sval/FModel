@@ -110,7 +110,6 @@ namespace FModel.Forms
 
                 await Task.Run(() =>
                 {
-                    Console.WriteLine(MainWindow.PAKasTXT[0]);
                     ShowItemsVirtual(myInfos);
                 });
             }

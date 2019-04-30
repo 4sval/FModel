@@ -19,7 +19,7 @@ namespace FModel.Properties {
     // à l'aide d'un outil, tel que ResGen ou Visual Studio.
     // Pour ajouter ou supprimer un membre, modifiez votre fichier .ResX, puis réexécutez ResGen
     // avec l'option /str ou régénérez votre projet VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -96,6 +96,16 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap C512 {
             get {
                 object obj = ResourceManager.GetObject("C512", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Challenges_Slider {
+            get {
+                object obj = ResourceManager.GetObject("Challenges_Slider", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -233,6 +243,26 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap T_FNBR_BattlePoints_L {
+            get {
+                object obj = ResourceManager.GetObject("T_FNBR_BattlePoints_L", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap T_FNBR_SeasonalXP_L {
+            get {
+                object obj = ResourceManager.GetObject("T_FNBR_SeasonalXP_L", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap T_Icon_Adaptive_64 {
             get {
                 object obj = ResourceManager.GetObject("T_Icon_Adaptive_64", resourceCulture);
@@ -286,6 +316,16 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap T_Icon_Variant_64 {
             get {
                 object obj = ResourceManager.GetObject("T_Icon_Variant_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap T_Items_MTX_L {
+            get {
+                object obj = ResourceManager.GetObject("T_Items_MTX_L", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

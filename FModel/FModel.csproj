@@ -144,6 +144,10 @@
   <ItemGroup>
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
+    <None Include="Resources\Challenges_Slider.png" />
+    <None Include="Resources\T-Items-MTX-L.png" />
+    <None Include="Resources\T-FNBR-SeasonalXP-L.png" />
+    <None Include="Resources\T-FNBR-BattlePoints-L.png" />
     <None Include="Resources\BurbankBigCondensed-Black.ttf" />
     <None Include="Resources\BurbankBigCondensed-Bold.ttf" />
     <None Include="Resources\Marvel512.png" />

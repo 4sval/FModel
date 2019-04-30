@@ -12,7 +12,7 @@
 ### Prerequisites
 [.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471)
 ### Download
-[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/2.1)
+[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/2.1.1)
 ### How does it works
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder and it'll automatically download the latest version of the custom [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) in this subfolder.
 
@@ -31,7 +31,7 @@
   - Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
   - Asset is a **_Bundle Of Challenges_**:
-    - Try to create an [Icon](https://i.imgur.com/yvHjata.png) with all **Challenges' Description**, **Count** and the **Reward**
+    - Try to create an [Icon](https://i.imgur.com/1Uzrlb0.png) with all **Challenges' Description**, **Count** and the **Reward**
   - Asset is a **_Font_**:
     - Try to convert the Asset to OTF
 
@@ -81,7 +81,6 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
 
 ## TODO
 - [ ] Auto update
-- [ ] FModel status message
 - [ ] Support for meshes
 - [ ] Support for animations
 - [ ] Display support for .locres files
