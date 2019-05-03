@@ -15,6 +15,8 @@ namespace FModel.Forms
         public About()
         {
             InitializeComponent();
+
+            label2.Text += " " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
