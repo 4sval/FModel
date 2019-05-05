@@ -59,7 +59,7 @@
 ### Important
 If you find this repository useful, feel free to give it a :star: thank you :kissing_heart:
 
-If somehow FModel crash because of permissions (on an administrator account for example) please either disable Windows Defender or add and exception for FModel.exe
+If somehow FModel crash because of permissions, please either disable Windows Defender or add and exception for FModel.exe
 ### Features
 1. Extract
 2. Serialize (CTRL+F/G/I support)
