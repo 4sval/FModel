@@ -60,6 +60,8 @@
 If you find this repository useful, feel free to give it a :star: thank you :kissing_heart:
 
 If somehow FModel crash because of permissions, please either disable Windows Defender or add and exception for FModel.exe
+
+If issues occur when compiling the source code, make sure that the software is being built for x64.
 ### Features
 1. Extract
 2. Serialize (CTRL+F/G/I support)
