@@ -144,11 +144,11 @@
     </Compile>
     <Compile Include="Parser\Banners\BannersParser.cs" />
     <Compile Include="Parser\Challenges\ChallengeBundleIdParser.cs" />
-    <Compile Include="Parser\Challenges\QuestParser.cs" />
-    <Compile Include="Parser\FeaturedParser.cs" />
-    <Compile Include="Parser\ItemIDParser.cs" />
+    <Compile Include="Parser\Featured\FeaturedParser.cs" />
+    <Compile Include="Parser\Items\ItemIDParser.cs" />
     <Compile Include="Parser\Meshes\MeshesParser.cs" />
-    <Compile Include="Parser\RenderSwitchMaterial.cs" />
+    <Compile Include="Parser\Quests\QuestParser.cs" />
+    <Compile Include="Parser\RenderMat\RenderSwitchMaterial.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\About.resx">

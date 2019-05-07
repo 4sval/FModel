@@ -6,15 +6,12 @@
 //
 //    var bannersParser = BannersParser.FromJson(jsonString);
 
+using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace FModel.Parser.Banners
 {
-    using System;
-    using System.Collections.Generic;
-
-    using System.Globalization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
     public partial class BannersParser
     {
         [JsonProperty("export_type")]
@@ -39,7 +36,7 @@ namespace FModel.Parser.Banners
         public bool BFullUsageRights { get; set; }
     }
 
-    public partial class Image
+    public class Image
     {
         [JsonProperty("asset_path_name")]
         public string AssetPathName { get; set; }
@@ -50,12 +47,12 @@ namespace FModel.Parser.Banners
 
     public partial class BannersParser
     {
-        public static BannersParser FromJson(string json) => JsonConvert.DeserializeObject<BannersParser>(json, FModel.Parser.Banners.Converter.Settings);
+        public static BannersParser FromJson(string json) => JsonConvert.DeserializeObject<BannersParser>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this BannersParser self) => JsonConvert.SerializeObject(self, FModel.Parser.Banners.Converter.Settings);
+        public static string ToJson(this BannersParser self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter
@@ -67,7 +64,7 @@ namespace FModel.Parser.Banners
             Converters =
             {
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
+            }
         };
     }
 }

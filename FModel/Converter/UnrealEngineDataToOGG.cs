@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FModel.Converter
 {
-    class UnrealEngineDataToOGG
+    class UnrealEngineDataToOgg
     {
         static byte[] oggFind = { 0x4F, 0x67, 0x67, 0x53 };
         static byte[] oggNoHeader = { 0x4F, 0x67, 0x67, 0x53 };
         static byte[] uexpToDelete = { 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00 };
-        static byte[] oggOutNewArray = null;
+        static byte[] _oggOutNewArray;
         public static List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
         {
             List<int> positions = new List<int>();
@@ -26,7 +23,7 @@ namespace FModel.Converter
                 {
                     byte[] match = new byte[patternLength];
                     Array.Copy(bytes, i, match, 0, patternLength);
-                    if (match.SequenceEqual<byte>(pattern))
+                    if (match.SequenceEqual(pattern))
                     {
                         positions.Add(i);
                         i += patternLength - 1;
@@ -51,7 +48,7 @@ namespace FModel.Converter
             for (var start = 0; start < source.Length - pattern.Length + 1; start += 1)
             {
                 var segment = new ArraySegment<T>(source, start, pattern.Length);
-                if (Enumerable.SequenceEqual(segment, pattern))
+                if (segment.SequenceEqual(pattern))
                 {
                     newArray = replacement.Concat(source.Skip(start + pattern.Length)).ToArray();
                     return true;
@@ -59,17 +56,17 @@ namespace FModel.Converter
             }
             return false;
         }
-        public static string convertToOGG(string file)
+        public static string ConvertToOgg(string file)
         {
-            var isUBULKFound = new DirectoryInfo(System.IO.Path.GetDirectoryName(file)).GetFiles(Path.GetFileNameWithoutExtension(file) + "*.ubulk", SearchOption.AllDirectories).FirstOrDefault();
-            if (isUBULKFound == null)
+            var isUbulkFound = new DirectoryInfo(Path.GetDirectoryName(file) ?? throw new InvalidOperationException()).GetFiles(Path.GetFileNameWithoutExtension(file) + "*.ubulk", SearchOption.AllDirectories).FirstOrDefault();
+            if (isUbulkFound == null)
             {
                 string oggPattern = "OggS";
                 if (File.ReadAllText(file).Contains(oggPattern))
                 {
                     byte[] src = File.ReadAllBytes(file);
-                    TryFindAndReplace<byte>(src, oggFind, oggNoHeader, out oggOutNewArray);
-                    File.WriteAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp", oggOutNewArray);
+                    TryFindAndReplace(src, oggFind, oggNoHeader, out _oggOutNewArray);
+                    File.WriteAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp", _oggOutNewArray);
 
                     FileInfo fi = new FileInfo(Path.GetFileNameWithoutExtension(file) + ".temp");
                     FileStream fs = fi.Open(FileMode.Open);
@@ -96,8 +93,8 @@ namespace FModel.Converter
                     byte[] src = File.ReadAllBytes(file);
                     List<int> positions = SearchBytePattern(uexpToDelete, src);
 
-                    TryFindAndReplace<byte>(src, oggFind, oggNoHeader, out oggOutNewArray);
-                    File.WriteAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp", oggOutNewArray);
+                    TryFindAndReplace(src, oggFind, oggNoHeader, out _oggOutNewArray);
+                    File.WriteAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp", _oggOutNewArray);
 
                     int lengthToDelete = src.Length - positions[0];
 
@@ -108,9 +105,9 @@ namespace FModel.Converter
                     fs.Close();
 
                     byte[] src44 = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp");
-                    byte[] srcUBULK = File.ReadAllBytes(Path.GetDirectoryName(file) + "\\" + isUBULKFound.ToString());
-                    byte[] buffer = new byte[srcUBULK.Length];
-                    using (FileStream fs1 = new FileStream(Path.GetDirectoryName(file) + "\\" + isUBULKFound.ToString(), FileMode.Open, FileAccess.ReadWrite))
+                    byte[] srcUbulk = File.ReadAllBytes(Path.GetDirectoryName(file) + "\\" + isUbulkFound);
+                    byte[] buffer = new byte[srcUbulk.Length];
+                    using (FileStream fs1 = new FileStream(Path.GetDirectoryName(file) + "\\" + isUbulkFound, FileMode.Open, FileAccess.ReadWrite))
                     {
                         fs1.Read(buffer, 0, buffer.Length);
 

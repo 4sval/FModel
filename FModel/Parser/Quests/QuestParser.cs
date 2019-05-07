@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
-namespace FModel.Parser.Quest
+namespace FModel.Parser.Quests
 {
-    using System.Globalization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
     public partial class QuestParser
     {
         [JsonProperty("export_type")]
@@ -55,13 +49,13 @@ namespace FModel.Parser.Quest
         public LargePreviewImage LargePreviewImage { get; set; }
     }
 
-    public partial class GameplayTags
+    public class GameplayTags
     {
         [JsonProperty("gameplay_tags")]
         public string[] GameplayTagsGameplayTags { get; set; }
     }
 
-    public partial class LargePreviewImage
+    public class LargePreviewImage
     {
         [JsonProperty("asset_path_name")]
         public string AssetPathName { get; set; }
@@ -70,7 +64,7 @@ namespace FModel.Parser.Quest
         public string SubPathString { get; set; }
     }
 
-    public partial class Objective
+    public class Objective
     {
         [JsonProperty("BackendName")]
         public string BackendName { get; set; }
@@ -142,7 +136,7 @@ namespace FModel.Parser.Quest
         public LargePreviewImage ScriptedAction { get; set; }
     }
 
-    public partial class ObjectiveStatHandle
+    public class ObjectiveStatHandle
     {
         [JsonProperty("DataTable")]
         public string DataTable { get; set; }
@@ -151,7 +145,7 @@ namespace FModel.Parser.Quest
         public string RowName { get; set; }
     }
 
-    public partial class Reward
+    public class Reward
     {
         [JsonProperty("ItemPrimaryAssetId")]
         public ItemPrimaryAssetId ItemPrimaryAssetId { get; set; }
@@ -160,7 +154,7 @@ namespace FModel.Parser.Quest
         public long Quantity { get; set; }
     }
 
-    public partial class HiddenRewards
+    public class HiddenRewards
     {
         [JsonProperty("TemplateId")]
         public string TemplateId { get; set; }
@@ -169,7 +163,7 @@ namespace FModel.Parser.Quest
         public long Quantity { get; set; }
     }
 
-    public partial class ItemPrimaryAssetId
+    public class ItemPrimaryAssetId
     {
         [JsonProperty("PrimaryAssetType")]
         public PrimaryAssetType PrimaryAssetType { get; set; }
@@ -178,7 +172,7 @@ namespace FModel.Parser.Quest
         public string PrimaryAssetName { get; set; }
     }
 
-    public partial class PrimaryAssetType
+    public class PrimaryAssetType
     {
         [JsonProperty("Name")]
         public string Name { get; set; }
@@ -186,12 +180,12 @@ namespace FModel.Parser.Quest
 
     public partial class QuestParser
     {
-        public static QuestParser[] FromJson(string json) => JsonConvert.DeserializeObject<QuestParser[]>(json, FModel.Parser.Quest.Converter.Settings);
+        public static QuestParser[] FromJson(string json) => JsonConvert.DeserializeObject<QuestParser[]>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this QuestParser[] self) => JsonConvert.SerializeObject(self, FModel.Parser.Quest.Converter.Settings);
+        public static string ToJson(this QuestParser[] self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter
@@ -203,7 +197,7 @@ namespace FModel.Parser.Quest
             Converters =
             {
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
+            }
         };
     }
 }

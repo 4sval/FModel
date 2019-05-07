@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace FModel.Parser.Challenges
 {
-    using System.Globalization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
     public partial class ChallengeBundleIdParser
     {
         [JsonProperty("export_type")]
@@ -34,7 +28,7 @@ namespace FModel.Parser.Challenges
         public LargePreviewImage LargePreviewImage { get; set; }
     }
 
-    public partial class BundleCompletionReward
+    public class BundleCompletionReward
     {
         [JsonProperty("CompletionCount")]
         public long CompletionCount { get; set; }
@@ -43,7 +37,7 @@ namespace FModel.Parser.Challenges
         public Reward[] Rewards { get; set; }
     }
 
-    public partial class Reward
+    public class Reward
     {
         [JsonProperty("ItemDefinition")]
         public LargePreviewImage ItemDefinition { get; set; }
@@ -64,7 +58,7 @@ namespace FModel.Parser.Challenges
         public string RewardType { get; set; }
     }
 
-    public partial class LargePreviewImage
+    public class LargePreviewImage
     {
         [JsonProperty("asset_path_name")]
         public string AssetPathName { get; set; }
@@ -73,7 +67,7 @@ namespace FModel.Parser.Challenges
         public string SubPathString { get; set; }
     }
 
-    public partial class RewardGiftBox
+    public class RewardGiftBox
     {
         [JsonProperty("GiftBoxToUse")]
         public LargePreviewImage GiftBoxToUse { get; set; }
@@ -82,7 +76,7 @@ namespace FModel.Parser.Challenges
         public object[] GiftBoxFormatData { get; set; }
     }
 
-    public partial class DisplayStyle
+    public class DisplayStyle
     {
         [JsonProperty("PrimaryColor")]
         public ColorChallenge PrimaryColor { get; set; }
@@ -97,7 +91,7 @@ namespace FModel.Parser.Challenges
         public LargePreviewImage DisplayImage { get; set; }
     }
 
-    public partial class ColorChallenge
+    public class ColorChallenge
     {
         [JsonProperty("r")]
         public double R { get; set; }
@@ -112,7 +106,7 @@ namespace FModel.Parser.Challenges
         public long A { get; set; }
     }
 
-    public partial class QuestInfo
+    public class QuestInfo
     {
         [JsonProperty("QuestDefinition")]
         public LargePreviewImage QuestDefinition { get; set; }
@@ -129,12 +123,12 @@ namespace FModel.Parser.Challenges
 
     public partial class ChallengeBundleIdParser
     {
-        public static ChallengeBundleIdParser[] FromJson(string json) => JsonConvert.DeserializeObject<ChallengeBundleIdParser[]>(json, FModel.Parser.Challenges.Converter.Settings);
+        public static ChallengeBundleIdParser[] FromJson(string json) => JsonConvert.DeserializeObject<ChallengeBundleIdParser[]>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this ChallengeBundleIdParser[] self) => JsonConvert.SerializeObject(self, FModel.Parser.Challenges.Converter.Settings);
+        public static string ToJson(this ChallengeBundleIdParser[] self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter
@@ -146,7 +140,7 @@ namespace FModel.Parser.Challenges
             Converters =
             {
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
+            }
         };
     }
 }

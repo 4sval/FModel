@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace FModel.Parser.Items
 {
-    using System.Globalization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
-    public partial class ItemsIDParser
+    public partial class ItemsIdParser
     {
         [JsonProperty("export_type")]
         public string ExportType { get; set; }
 
         [JsonProperty("cosmetic_item")]
-        public string cosmetic_item { get; set; }
+        public string CosmeticItem { get; set; }
 
         [JsonProperty("CharacterParts")]
         public string[] CharacterParts { get; set; }
@@ -55,13 +49,13 @@ namespace FModel.Parser.Items
         public DisplayAssetPath DisplayAssetPath { get; set; }
     }
 
-    public partial class GameplayTags
+    public class GameplayTags
     {
         [JsonProperty("gameplay_tags")]
         public string[] GameplayTagsGameplayTags { get; set; }
     }
 
-    public partial class PreviewImage
+    public class PreviewImage
     {
         [JsonProperty("asset_path_name")]
         public string AssetPathName { get; set; }
@@ -70,7 +64,7 @@ namespace FModel.Parser.Items
         public string SubPathString { get; set; }
     }
 
-    public partial class DisplayAssetPath
+    public class DisplayAssetPath
     {
         [JsonProperty("asset_path_name")]
         public string AssetPathName { get; set; }
@@ -79,14 +73,14 @@ namespace FModel.Parser.Items
         public string SubPathString { get; set; }
     }
 
-    public partial class ItemsIDParser
+    public partial class ItemsIdParser
     {
-        public static ItemsIDParser[] FromJson(string json) => JsonConvert.DeserializeObject<ItemsIDParser[]>(json, FModel.Parser.Items.Converter.Settings);
+        public static ItemsIdParser[] FromJson(string json) => JsonConvert.DeserializeObject<ItemsIdParser[]>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this ItemsIDParser[] self) => JsonConvert.SerializeObject(self, FModel.Parser.Items.Converter.Settings);
+        public static string ToJson(this ItemsIdParser[] self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter
@@ -98,7 +92,7 @@ namespace FModel.Parser.Items
             Converters =
             {
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
+            }
         };
     }
 }
