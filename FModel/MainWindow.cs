@@ -1341,32 +1341,35 @@ namespace FModel
         }
         private void JsonParseFile()
         {
-            try
+            if (MyAsset.GetSerialized() != null)
             {
-                if (MyAsset.GetSerialized() != null)
-                {
-                    UpdateConsole(CurrentUsedItem + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
+                UpdateConsole(CurrentUsedItem + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
 
-                    string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
-                    Invoke(new Action(() =>
+                Invoke(new Action(() =>
+                {
+                    try
                     {
-                        scintilla1.Text = parsedJson;
-                    }));
-                    NavigateThroughJson(parsedJson, ExtractedFilePath);
-                }
-                else
-                    UpdateConsole("No serialized file found", Color.FromArgb(255, 244, 66, 66), "Error");
+                        scintilla1.Text = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                    }
+                    catch (JsonReaderException)
+                    {
+                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText(".JSON file can't be displayed", Color.Black, true);
+                    }
+                }));
+
+                NavigateThroughJson(MyAsset, ExtractedFilePath);
             }
-            catch (JsonSerializationException)
-            {
-                UpdateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
-            }
+            else
+                UpdateConsole("No serialized file found", Color.FromArgb(255, 244, 66, 66), "Error");
         }
-        private void NavigateThroughJson(string theParsedJson, string questJson = null)
+        private void NavigateThroughJson(PakAsset theAsset, string questJson = null)
         {
             try
             {
-                var itemId = ItemsIdParser.FromJson(theParsedJson);
+                string parsedJson = JToken.Parse(theAsset.GetSerialized()).ToString();
+                var itemId = ItemsIdParser.FromJson(parsedJson);
+
                 UpdateConsole("Parsing " + CurrentUsedItem + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                 for (int i = 0; i < itemId.Length; i++)
                 {
@@ -1379,7 +1382,7 @@ namespace FModel
                     else if (Settings.Default.createIconForVariants && (itemId[i].ExportType == "FortVariantTokenType"))
                         CreateItemIcon(itemId[i], false, false, true);
                     else if (itemId[i].ExportType == "FortChallengeBundleItemDefinition")
-                        CreateChallengesIcon(itemId[i], theParsedJson, questJson);
+                        CreateChallengesIcon(itemId[i], parsedJson, questJson);
                     else if (itemId[i].ExportType == "Texture2D")
                         ConvertTexture2D();
                     else if (itemId[i].ExportType == "SoundWave")
@@ -1419,12 +1422,20 @@ namespace FModel
             #region DRAW ICON
             if (File.Exists(ItemIconPath))
             {
-                Image itemIcon = Image.FromFile(ItemIconPath);
+                Image itemIcon;
+                using (var bmpTemp = new Bitmap(ItemIconPath))
+                {
+                    itemIcon = new Bitmap(bmpTemp);
+                }
                 g.DrawImage(Forms.Settings.ResizeImage(itemIcon, 512, 512), new Point(5, 5));
             }
             else
             {
-                Image itemIcon = Resources.unknown512;
+                Image itemIcon;
+                using (var bmpTemp = new Bitmap(ItemIconPath))
+                {
+                    itemIcon = new Bitmap(bmpTemp);
+                }
                 g.DrawImage(itemIcon, new Point(0, 0));
             }
             #endregion
@@ -1599,9 +1610,8 @@ namespace FModel
                     g.DrawImage(Forms.Settings.ResizeImage(traversalLogo, 32, 32), new Point(6, 3));
                 }
             }
-            catch (Exception ex)
+            catch (IndexOutOfRangeException)
             {
-                Console.WriteLine(ex.Message);
             } //COSMETIC USER FACING FLAGS
             #endregion
 
@@ -1749,7 +1759,8 @@ namespace FModel
                         }
                         catch (JsonSerializationException)
                         {
-                            UpdateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                            AppendText(CurrentUsedItem + " ", Color.Red);
+                            AppendText(".JSON file can't be displayed", Color.Black, true);
                         }
                     }
                 }
@@ -1817,7 +1828,8 @@ namespace FModel
                         }
                         catch (JsonSerializationException)
                         {
-                            UpdateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                            AppendText(CurrentUsedItem + " ", Color.Red);
+                            AppendText(".JSON file can't be displayed", Color.Black, true);
                         }
                     }
                 }
@@ -1934,7 +1946,8 @@ namespace FModel
                             }
                             catch (JsonSerializationException)
                             {
-                                UpdateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                                AppendText(CurrentUsedItem + " ", Color.Red);
+                                AppendText(".JSON file can't be displayed", Color.Black, true);
                             }
                         }
                     }
@@ -1945,7 +1958,12 @@ namespace FModel
             if (manualSearch)
             {
                 //Thanks EPIC
-                if (catName == "DA_Featured_Glider_ID_015_Brite" || catName == "DA_Featured_Glider_ID_016_Tactical" || catName == "DA_Featured_Glider_ID_017_Assassin")
+                if (catName == "DA_Featured_Glider_ID_015_Brite" || 
+                    catName == "DA_Featured_Glider_ID_016_Tactical" || 
+                    catName == "DA_Featured_Glider_ID_017_Assassin" || 
+                    catName == "DA_Featured_Pickaxe_ID_027_Scavenger" || 
+                    catName == "DA_Featured_Pickaxe_ID_028_Space" || 
+                    catName == "DA_Featured_Pickaxe_ID_029_Assassin")
                     GetItemIcon(theItem);
                 else if (AllpaksDictionary.ContainsKey(catName))
                 {
@@ -2030,7 +2048,8 @@ namespace FModel
                             }
                             catch (JsonSerializationException)
                             {
-                                UpdateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                                AppendText(CurrentUsedItem + " ", Color.Red);
+                                AppendText(".JSON file can't be displayed", Color.Black, true);
                             }
                         }
                     }
@@ -2084,7 +2103,8 @@ namespace FModel
                 }
                 catch (JsonSerializationException)
                 {
-                    UpdateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText(".JSON file can't be displayed", Color.Black, true);
                 }
             }
             return toReturn;
@@ -2185,7 +2205,11 @@ namespace FModel
                                     pngPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
                                     UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
 
-                                    Image challengeIcon = Image.FromFile(pngPath);
+                                    Image challengeIcon;
+                                    using (var bmpTemp = new Bitmap(pngPath))
+                                    {
+                                        challengeIcon = new Bitmap(bmpTemp);
+                                    }
                                     g.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0)); //327
                                 }
                                 #endregion
@@ -2392,7 +2416,8 @@ namespace FModel
                                     }
                                     catch (JsonSerializationException)
                                     {
-                                        UpdateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                                        AppendText(CurrentUsedItem + " ", Color.Red);
+                                        AppendText(".JSON file can't be displayed", Color.Black, true);
                                     }
                                 }
                             }
@@ -2878,7 +2903,8 @@ namespace FModel
                             }
                             catch (JsonSerializationException)
                             {
-                                UpdateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                                AppendText(CurrentUsedItem + " ", Color.Red);
+                                AppendText(".JSON file can't be displayed", Color.Black, true);
                             }
                         }
                     }
@@ -2924,7 +2950,11 @@ namespace FModel
 
                                         if (File.Exists(ItemIconPath))
                                         {
-                                            Image itemIcon = Image.FromFile(ItemIconPath);
+                                            Image itemIcon;
+                                            using (var bmpTemp = new Bitmap(ItemIconPath))
+                                            {
+                                                itemIcon = new Bitmap(bmpTemp);
+                                            }
                                             toDrawOn.DrawImage(Forms.Settings.ResizeImage(itemIcon, 110, 110), new Point(2300, y + 6));
                                         }
                                         else
@@ -2939,7 +2969,8 @@ namespace FModel
                             }
                             catch (JsonSerializationException)
                             {
-                                UpdateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                                AppendText(CurrentUsedItem + " ", Color.Red);
+                                AppendText(".JSON file can't be displayed", Color.Black, true);
                             }
                         }
                     }
@@ -3023,7 +3054,11 @@ namespace FModel
 
                                 if (File.Exists(ItemIconPath))
                                 {
-                                    Image itemIcon = Image.FromFile(ItemIconPath);
+                                    Image itemIcon;
+                                    using (var bmpTemp = new Bitmap(ItemIconPath))
+                                    {
+                                        itemIcon = new Bitmap(bmpTemp);
+                                    }
                                     toDrawOn.DrawImage(Forms.Settings.ResizeImage(itemIcon, 110, 110), new Point(2300, y + 6));
                                 }
                                 else
@@ -3038,7 +3073,8 @@ namespace FModel
                     }
                     catch (JsonSerializationException)
                     {
-                        UpdateConsole(".JSON file too large to be fully displayed", Color.FromArgb(255, 244, 66, 66), "Error");
+                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText(".JSON file can't be displayed", Color.Black, true);
                     }
                 }
             }
