@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace FModel.Parser.Featured
 {
-    using System.Globalization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
     public partial class FeaturedParser
     {
         [JsonProperty("export_type")]
@@ -28,7 +22,7 @@ namespace FModel.Parser.Featured
         public Background Background { get; set; }
     }
 
-    public partial class Background
+    public class Background
     {
         [JsonProperty("r")]
         public double R { get; set; }
@@ -43,7 +37,7 @@ namespace FModel.Parser.Featured
         public long A { get; set; }
     }
 
-    public partial class ImageLol
+    public class ImageLol
     {
         [JsonProperty("ImageSize")]
         public ImageSize ImageSize { get; set; }
@@ -52,7 +46,7 @@ namespace FModel.Parser.Featured
         public string ResourceObject { get; set; }
     }
 
-    public partial class ImageSize
+    public class ImageSize
     {
         [JsonProperty("x")]
         public long X { get; set; }
@@ -61,7 +55,7 @@ namespace FModel.Parser.Featured
         public long Y { get; set; }
     }
 
-    public partial class Gradient
+    public class Gradient
     {
         [JsonProperty("Start")]
         public Background Start { get; set; }
@@ -72,12 +66,12 @@ namespace FModel.Parser.Featured
 
     public partial class FeaturedParser
     {
-        public static FeaturedParser[] FromJson(string json) => JsonConvert.DeserializeObject<FeaturedParser[]>(json, FModel.Parser.Featured.Converter.Settings);
+        public static FeaturedParser[] FromJson(string json) => JsonConvert.DeserializeObject<FeaturedParser[]>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this FeaturedParser[] self) => JsonConvert.SerializeObject(self, FModel.Parser.Featured.Converter.Settings);
+        public static string ToJson(this FeaturedParser[] self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter
@@ -89,7 +83,7 @@ namespace FModel.Parser.Featured
             Converters =
             {
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
+            }
         };
     }
 }

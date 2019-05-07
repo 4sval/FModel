@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using FModel.Properties;
 
 namespace FModel.Forms
 {
     public partial class Settings : Form
     {
-        private static string PAKsPathBefore;
-        private static string OutputPathBefore;
+        private static string _paKsPathBefore;
+        private static string _outputPathBefore;
 
         public static Bitmap ResizeImage(Image image, int width, int height)
         {
@@ -109,9 +104,9 @@ namespace FModel.Forms
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                 {
-                    filenameLabel.Text = "File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
+                    filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
 
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                    Bitmap bmp = new Bitmap(Resources.wTemplate);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -121,13 +116,13 @@ namespace FModel.Forms
                     wPictureBox.Image = bmp;
                 }
             }
-            if (Properties.Settings.Default.loadFeaturedImage == true)
+            if (Properties.Settings.Default.loadFeaturedImage)
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                 {
-                    filenameLabel.Text = "File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
+                    filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
 
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                    Bitmap bmp = new Bitmap(Resources.wTemplateF);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -138,48 +133,48 @@ namespace FModel.Forms
                 }
             }
 
-            PAKsPathBefore = Properties.Settings.Default.PAKsPath;
-            OutputPathBefore = Properties.Settings.Default.ExtractOutput;
+            _paKsPathBefore = Properties.Settings.Default.PAKsPath;
+            _outputPathBefore = Properties.Settings.Default.ExtractOutput;
         }
 
         private void OKButton_Click(object sender, EventArgs e)
         {
             //INPUT
             Properties.Settings.Default.PAKsPath = textBox2.Text; //SET
-            string PAKsPathAfter = Properties.Settings.Default.PAKsPath;
-            if (PAKsPathBefore != PAKsPathAfter)
+            string paKsPathAfter = Properties.Settings.Default.PAKsPath;
+            if (_paKsPathBefore != paKsPathAfter)
             {
-                MessageBox.Show("Please, restart FModel to apply your new input path", "Fortnite .PAK Path Changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(@"Please, restart FModel to apply your new input path", @"Fortnite .PAK Path Changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             //OUTPUT
             Properties.Settings.Default.ExtractOutput = textBox1.Text; //SET
             if (!Directory.Exists(Properties.Settings.Default.ExtractOutput))
                 Directory.CreateDirectory(Properties.Settings.Default.ExtractOutput);
-            string OutputPathAfter = Properties.Settings.Default.ExtractOutput;
-            if (OutputPathBefore != OutputPathAfter)
+            string outputPathAfter = Properties.Settings.Default.ExtractOutput;
+            if (_outputPathBefore != outputPathAfter)
             {
-                MessageBox.Show("Please, restart FModel to apply your new output path", "FModel Output Path Changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(@"Please, restart FModel to apply your new output path", @"FModel Output Path Changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             //ICON CREATION
-            if (checkBox2.Checked == true)
+            if (checkBox2.Checked)
                 Properties.Settings.Default.createIconForCosmetics = true;
             if (checkBox2.Checked == false)
                 Properties.Settings.Default.createIconForCosmetics = false;
-            if (checkBox5.Checked == true)
+            if (checkBox5.Checked)
                 Properties.Settings.Default.createIconForVariants = true;
             if (checkBox5.Checked == false)
                 Properties.Settings.Default.createIconForVariants = false;
-            if (checkBox3.Checked == true)
+            if (checkBox3.Checked)
                 Properties.Settings.Default.createIconForConsumablesWeapons = true;
             if (checkBox3.Checked == false)
                 Properties.Settings.Default.createIconForConsumablesWeapons = false;
-            if (checkBox4.Checked == true)
+            if (checkBox4.Checked)
                 Properties.Settings.Default.createIconForTraps = true;
             if (checkBox4.Checked == false)
                 Properties.Settings.Default.createIconForTraps = false;
-            if (checkBox6.Checked == true)
+            if (checkBox6.Checked)
                 Properties.Settings.Default.createIconForChallenges = true;
             if (checkBox6.Checked == false)
                 Properties.Settings.Default.createIconForChallenges = false;
@@ -189,7 +184,7 @@ namespace FModel.Forms
             Properties.Settings.Default.mergerImagesRow = Decimal.ToInt32(imgsPerRow.Value);
 
             //WATERMARK
-            if (checkBox7.Checked == true)
+            if (checkBox7.Checked)
                 Properties.Settings.Default.isWatermark = true; 
             if (checkBox7.Checked == false)
                 Properties.Settings.Default.isWatermark = false;
@@ -197,7 +192,7 @@ namespace FModel.Forms
             Properties.Settings.Default.wOpacity = trackBar1.Value;
 
             //FEATURED
-            if (checkBox8.Checked == true)
+            if (checkBox8.Checked)
                 Properties.Settings.Default.loadFeaturedImage = true;
             if (checkBox8.Checked == false)
                 Properties.Settings.Default.loadFeaturedImage = false;
@@ -210,21 +205,21 @@ namespace FModel.Forms
         private void button1_Click(object sender, EventArgs e)
         {
             OpenFileDialog theDialog = new OpenFileDialog();
-            theDialog.Title = "Choose your watermark";
+            theDialog.Title = @"Choose your watermark";
             theDialog.Multiselect = false;
-            theDialog.Filter = "PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|DDS Files (*.dds)|*.dds|All Files (*.*)|*.*";
+            theDialog.Filter = @"PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|DDS Files (*.dds)|*.dds|All Files (*.*)|*.*";
 
             if (theDialog.ShowDialog() == DialogResult.OK)
             {
                 Properties.Settings.Default.wFilename = theDialog.FileName;
                 Properties.Settings.Default.Save();
-                filenameLabel.Text = "File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
+                filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
 
                 if (checkBox8.Checked == false)
                 {
                     if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                     {
-                        Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                        Bitmap bmp = new Bitmap(Resources.wTemplate);
                         Graphics g = Graphics.FromImage(bmp);
 
                         Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -234,11 +229,11 @@ namespace FModel.Forms
                         wPictureBox.Image = bmp;
                     }
                 }
-                if (checkBox8.Checked == true)
+                if (checkBox8.Checked)
                 {
                     if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                     {
-                        Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                        Bitmap bmp = new Bitmap(Resources.wTemplateF);
                         Graphics g = Graphics.FromImage(bmp);
 
                         Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -259,7 +254,7 @@ namespace FModel.Forms
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                 {
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                    Bitmap bmp = new Bitmap(Resources.wTemplate);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -270,11 +265,11 @@ namespace FModel.Forms
                     wPictureBox.Refresh();
                 }
             }
-            if (checkBox8.Checked == true)
+            if (checkBox8.Checked)
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                 {
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                    Bitmap bmp = new Bitmap(Resources.wTemplateF);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -292,7 +287,7 @@ namespace FModel.Forms
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                 {
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                    Bitmap bmp = new Bitmap(Resources.wTemplate);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -303,11 +298,11 @@ namespace FModel.Forms
                     wPictureBox.Refresh();
                 }
             }
-            if (checkBox8.Checked == true)
+            if (checkBox8.Checked)
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                 {
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                    Bitmap bmp = new Bitmap(Resources.wTemplateF);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -329,7 +324,7 @@ namespace FModel.Forms
                 trackBar1.Enabled = false;
                 trackBar2.Enabled = false;
             }
-            if (checkBox7.Checked == true)
+            if (checkBox7.Checked)
             {
                 button1.Enabled = true;
                 trackBar1.Enabled = true;
@@ -341,7 +336,7 @@ namespace FModel.Forms
         {
             if (checkBox8.Checked == false)
             {
-                Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                Bitmap bmp = new Bitmap(Resources.wTemplate);
                 Graphics g = Graphics.FromImage(bmp);
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                 {
@@ -351,9 +346,9 @@ namespace FModel.Forms
                 }
                 wPictureBox.Image = bmp;
             }
-            if (checkBox8.Checked == true)
+            if (checkBox8.Checked)
             {
-                Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                Bitmap bmp = new Bitmap(Resources.wTemplateF);
                 Graphics g = Graphics.FromImage(bmp);
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                 {

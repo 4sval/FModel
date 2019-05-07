@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace FModel.Parser.RenderMat
 {
-    using System.Globalization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
     public partial class RenderSwitchMaterial
     {
         [JsonProperty("export_type")]
@@ -28,7 +22,7 @@ namespace FModel.Parser.RenderMat
         public BasePropertyOverrides BasePropertyOverrides { get; set; }
     }
 
-    public partial class BasePropertyOverrides
+    public class BasePropertyOverrides
     {
         [JsonProperty("BlendMode")]
         public string BlendMode { get; set; }
@@ -40,7 +34,7 @@ namespace FModel.Parser.RenderMat
         public double OpacityMaskClipValue { get; set; }
     }
 
-    public partial class ScalarParameterValue
+    public class ScalarParameterValue
     {
         [JsonProperty("ParameterInfo")]
         public ParameterInfo ParameterInfo { get; set; }
@@ -52,7 +46,7 @@ namespace FModel.Parser.RenderMat
         public string ExpressionGuid { get; set; }
     }
 
-    public partial class ParameterInfo
+    public class ParameterInfo
     {
         [JsonProperty("Name")]
         public string Name { get; set; }
@@ -64,7 +58,7 @@ namespace FModel.Parser.RenderMat
         public long Index { get; set; }
     }
 
-    public partial class TextureParameterValue
+    public class TextureParameterValue
     {
         [JsonProperty("ParameterInfo")]
         public ParameterInfo ParameterInfo { get; set; }
@@ -78,12 +72,12 @@ namespace FModel.Parser.RenderMat
 
     public partial class RenderSwitchMaterial
     {
-        public static RenderSwitchMaterial[] FromJson(string json) => JsonConvert.DeserializeObject<RenderSwitchMaterial[]>(json, FModel.Parser.RenderMat.Converter.Settings);
+        public static RenderSwitchMaterial[] FromJson(string json) => JsonConvert.DeserializeObject<RenderSwitchMaterial[]>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this RenderSwitchMaterial[] self) => JsonConvert.SerializeObject(self, FModel.Parser.RenderMat.Converter.Settings);
+        public static string ToJson(this RenderSwitchMaterial[] self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter
@@ -95,7 +89,7 @@ namespace FModel.Parser.RenderMat
             Converters =
             {
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
+            }
         };
     }
 }

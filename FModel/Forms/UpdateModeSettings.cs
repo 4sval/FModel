@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using FModel.Properties;
 
 namespace FModel.Forms
 {
@@ -30,9 +25,9 @@ namespace FModel.Forms
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {
-                    filenameLabel.Text = "File Name: " + Path.GetFileName(Properties.Settings.Default.UMFilename);
+                    filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.UMFilename);
 
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                    Bitmap bmp = new Bitmap(Resources.wTemplate);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -42,13 +37,13 @@ namespace FModel.Forms
                     wPictureBox.Image = bmp;
                 }
             }
-            if (Properties.Settings.Default.UMFeatured == true)
+            if (Properties.Settings.Default.UMFeatured)
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {
-                    filenameLabel.Text = "File Name: " + Path.GetFileName(Properties.Settings.Default.UMFilename);
+                    filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.UMFilename);
 
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                    Bitmap bmp = new Bitmap(Resources.wTemplateF);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -80,63 +75,63 @@ namespace FModel.Forms
 
         private void optionsOKButton_Click(object sender, EventArgs e)
         {
-            if (checkBox2.Checked == true)
+            if (checkBox2.Checked)
                 Properties.Settings.Default.UMCosmetics = true;
             if (checkBox2.Checked == false)
                 Properties.Settings.Default.UMCosmetics = false;
-            if (checkBox5.Checked == true)
+            if (checkBox5.Checked)
                 Properties.Settings.Default.UMVariants = true;
             if (checkBox5.Checked == false)
                 Properties.Settings.Default.UMVariants = false;
-            if (checkBox3.Checked == true)
+            if (checkBox3.Checked)
                 Properties.Settings.Default.UMConsumablesWeapons = true;
             if (checkBox3.Checked == false)
                 Properties.Settings.Default.UMConsumablesWeapons = false;
-            if (checkBox4.Checked == true)
+            if (checkBox4.Checked)
                 Properties.Settings.Default.UMTraps = true;
             if (checkBox4.Checked == false)
                 Properties.Settings.Default.UMTraps = false;
-            if (checkBox6.Checked == true)
+            if (checkBox6.Checked)
                 Properties.Settings.Default.UMChallenges = true;
             if (checkBox6.Checked == false)
                 Properties.Settings.Default.UMChallenges = false;
-            if (checkBox8.Checked == true)
+            if (checkBox8.Checked)
                 Properties.Settings.Default.UMFeatured = true;
             if (checkBox8.Checked == false)
                 Properties.Settings.Default.UMFeatured = false;
-            if (checkBox7.Checked == true)
+            if (checkBox7.Checked)
                 Properties.Settings.Default.UMWatermark = true;
             if (checkBox7.Checked == false)
                 Properties.Settings.Default.UMWatermark = false;
-            if (checkBox9.Checked == true)
+            if (checkBox9.Checked)
                 Properties.Settings.Default.UMTCosmeticsVariants = true;
             if (checkBox9.Checked == false)
                 Properties.Settings.Default.UMTCosmeticsVariants = false;
-            if (checkBox14.Checked == true)
+            if (checkBox14.Checked)
                 Properties.Settings.Default.UMTLoading = true;
             if (checkBox14.Checked == false)
                 Properties.Settings.Default.UMTLoading = false;
-            if (checkBox1.Checked == true)
+            if (checkBox1.Checked)
                 Properties.Settings.Default.UMTWeapons = true;
             if (checkBox1.Checked == false)
                 Properties.Settings.Default.UMTWeapons = false;
-            if (checkBox10.Checked == true)
+            if (checkBox10.Checked)
                 Properties.Settings.Default.UMTBanners = true;
             if (checkBox10.Checked == false)
                 Properties.Settings.Default.UMTBanners = false;
-            if (checkBox11.Checked == true)
+            if (checkBox11.Checked)
                 Properties.Settings.Default.UMTFeaturedIMGs = true;
             if (checkBox11.Checked == false)
                 Properties.Settings.Default.UMTFeaturedIMGs = false;
-            if (checkBox12.Checked == true)
+            if (checkBox12.Checked)
                 Properties.Settings.Default.UMTAthena = true;
             if (checkBox12.Checked == false)
                 Properties.Settings.Default.UMTAthena = false;
-            if (checkBox13.Checked == true)
+            if (checkBox13.Checked)
                 Properties.Settings.Default.UMTDevices = true;
             if (checkBox13.Checked == false)
                 Properties.Settings.Default.UMTDevices = false;
-            if (checkBox15.Checked == true)
+            if (checkBox15.Checked)
                 Properties.Settings.Default.UMTVehicles = true;
             if (checkBox15.Checked == false)
                 Properties.Settings.Default.UMTVehicles = false;
@@ -152,21 +147,21 @@ namespace FModel.Forms
         private void button1_Click(object sender, EventArgs e)
         {
             OpenFileDialog theDialog = new OpenFileDialog();
-            theDialog.Title = "Choose your watermark";
+            theDialog.Title = @"Choose your watermark";
             theDialog.Multiselect = false;
-            theDialog.Filter = "PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|DDS Files (*.dds)|*.dds|All Files (*.*)|*.*";
+            theDialog.Filter = @"PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|DDS Files (*.dds)|*.dds|All Files (*.*)|*.*";
 
             if (theDialog.ShowDialog() == DialogResult.OK)
             {
                 Properties.Settings.Default.UMFilename = theDialog.FileName;
                 Properties.Settings.Default.Save();
-                filenameLabel.Text = "File Name: " + Path.GetFileName(Properties.Settings.Default.UMFilename);
+                filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.UMFilename);
 
                 if (checkBox8.Checked == false)
                 {
                     if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                     {
-                        Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                        Bitmap bmp = new Bitmap(Resources.wTemplate);
                         Graphics g = Graphics.FromImage(bmp);
 
                         Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -176,11 +171,11 @@ namespace FModel.Forms
                         wPictureBox.Image = bmp;
                     }
                 }
-                if (checkBox8.Checked == true)
+                if (checkBox8.Checked)
                 {
                     if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                     {
-                        Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                        Bitmap bmp = new Bitmap(Resources.wTemplateF);
                         Graphics g = Graphics.FromImage(bmp);
 
                         Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -201,7 +196,7 @@ namespace FModel.Forms
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                    Bitmap bmp = new Bitmap(Resources.wTemplate);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -212,11 +207,11 @@ namespace FModel.Forms
                     wPictureBox.Refresh();
                 }
             }
-            if (checkBox8.Checked == true)
+            if (checkBox8.Checked)
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                    Bitmap bmp = new Bitmap(Resources.wTemplateF);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -234,7 +229,7 @@ namespace FModel.Forms
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                    Bitmap bmp = new Bitmap(Resources.wTemplate);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -245,11 +240,11 @@ namespace FModel.Forms
                     wPictureBox.Refresh();
                 }
             }
-            if (checkBox8.Checked == true)
+            if (checkBox8.Checked)
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {
-                    Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                    Bitmap bmp = new Bitmap(Resources.wTemplateF);
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -271,7 +266,7 @@ namespace FModel.Forms
                 trackBar1.Enabled = false;
                 trackBar2.Enabled = false;
             }
-            if (checkBox7.Checked == true)
+            if (checkBox7.Checked)
             {
                 button1.Enabled = true;
                 trackBar1.Enabled = true;
@@ -283,7 +278,7 @@ namespace FModel.Forms
         {
             if (checkBox8.Checked == false)
             {
-                Bitmap bmp = new Bitmap(Properties.Resources.wTemplate);
+                Bitmap bmp = new Bitmap(Resources.wTemplate);
                 Graphics g = Graphics.FromImage(bmp);
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {
@@ -293,9 +288,9 @@ namespace FModel.Forms
                 }
                 wPictureBox.Image = bmp;
             }
-            if (checkBox8.Checked == true)
+            if (checkBox8.Checked)
             {
-                Bitmap bmp = new Bitmap(Properties.Resources.wTemplateF);
+                Bitmap bmp = new Bitmap(Resources.wTemplateF);
                 Graphics g = Graphics.FromImage(bmp);
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {

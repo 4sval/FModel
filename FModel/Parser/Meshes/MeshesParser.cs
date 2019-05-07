@@ -6,15 +6,13 @@
 //
 //    var meshesParser = MeshesParser.FromJson(jsonString);
 
+using System;
+using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace FModel.Parser.Meshes
 {
-    using System;
-    using System.Collections.Generic;
-
-    using System.Globalization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
     public partial class MeshesParser
     {
         [JsonProperty("super_object")]
@@ -33,7 +31,7 @@ namespace FModel.Parser.Meshes
         public LodModel[] LodModels { get; set; }
     }
 
-    public partial class ImportedBounds
+    public class ImportedBounds
     {
         [JsonProperty("origin")]
         public BoxExtend Origin { get; set; }
@@ -45,7 +43,7 @@ namespace FModel.Parser.Meshes
         public double SphereRadius { get; set; }
     }
 
-    public partial class BoxExtend
+    public class BoxExtend
     {
         [JsonProperty("x")]
         public double X { get; set; }
@@ -60,7 +58,7 @@ namespace FModel.Parser.Meshes
         public double? W { get; set; }
     }
 
-    public partial class LodModel
+    public class LodModel
     {
         [JsonProperty("sections")]
         public Section[] Sections { get; set; }
@@ -87,13 +85,13 @@ namespace FModel.Parser.Meshes
         public object ColourVertexBuffer { get; set; }
     }
 
-    public partial class Indices
+    public class Indices
     {
         [JsonProperty("Indices16")]
         public long[] Indices16 { get; set; }
     }
 
-    public partial class PositionVertexBuffer
+    public class PositionVertexBuffer
     {
         [JsonProperty("verts")]
         public BoxExtend[] Verts { get; set; }
@@ -105,7 +103,7 @@ namespace FModel.Parser.Meshes
         public long NumVerts { get; set; }
     }
 
-    public partial class Section
+    public class Section
     {
         [JsonProperty("material_index")]
         public long MaterialIndex { get; set; }
@@ -138,7 +136,7 @@ namespace FModel.Parser.Meshes
         public bool Disabled { get; set; }
     }
 
-    public partial class ClothingData
+    public class ClothingData
     {
         [JsonProperty("asset_guid")]
         public string AssetGuid { get; set; }
@@ -147,7 +145,7 @@ namespace FModel.Parser.Meshes
         public long AssetLodIndex { get; set; }
     }
 
-    public partial class SkinWeightVertexBuffer
+    public class SkinWeightVertexBuffer
     {
         [JsonProperty("weights")]
         public Weight[] Weights { get; set; }
@@ -156,7 +154,7 @@ namespace FModel.Parser.Meshes
         public long NumVertices { get; set; }
     }
 
-    public partial class Weight
+    public class Weight
     {
         [JsonProperty("bone_index")]
         public long[] BoneIndex { get; set; }
@@ -165,7 +163,7 @@ namespace FModel.Parser.Meshes
         public long[] BoneWeight { get; set; }
     }
 
-    public partial class StaticMeshVertexBuffer
+    public class StaticMeshVertexBuffer
     {
         [JsonProperty("num_tex_coords")]
         public long NumTexCoords { get; set; }
@@ -180,13 +178,13 @@ namespace FModel.Parser.Meshes
         public Uvs Uvs { get; set; }
     }
 
-    public partial class Tangents
+    public class Tangents
     {
         [JsonProperty("Low")]
         public TangentsLow[] Low { get; set; }
     }
 
-    public partial class TangentsLow
+    public class TangentsLow
     {
         [JsonProperty("normal")]
         public BoxExtend Normal { get; set; }
@@ -195,19 +193,19 @@ namespace FModel.Parser.Meshes
         public BoxExtend Tangent { get; set; }
     }
 
-    public partial class Uvs
+    public class Uvs
     {
         [JsonProperty("Low")]
         public UvsLow[] Low { get; set; }
     }
 
-    public partial class UvsLow
+    public class UvsLow
     {
         [JsonProperty("value")]
         public Value Value { get; set; }
     }
 
-    public partial class Value
+    public class Value
     {
         [JsonProperty("x")]
         public long X { get; set; }
@@ -216,7 +214,7 @@ namespace FModel.Parser.Meshes
         public long Y { get; set; }
     }
 
-    public partial class Material
+    public class Material
     {
         [JsonProperty("material_interface")]
         public string MaterialInterface { get; set; }
@@ -228,7 +226,7 @@ namespace FModel.Parser.Meshes
         public UvChannelData UvChannelData { get; set; }
     }
 
-    public partial class UvChannelData
+    public class UvChannelData
     {
         [JsonProperty("initialised")]
         public bool Initialised { get; set; }
@@ -240,7 +238,7 @@ namespace FModel.Parser.Meshes
         public double[] LocalUvDensities { get; set; }
     }
 
-    public partial class RefSkeleton
+    public class RefSkeleton
     {
         [JsonProperty("ref_bone_info")]
         public RefBoneInfo[] RefBoneInfo { get; set; }
@@ -252,7 +250,7 @@ namespace FModel.Parser.Meshes
         public NameToIndex[][] NameToIndex { get; set; }
     }
 
-    public partial class RefBoneInfo
+    public class RefBoneInfo
     {
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -261,7 +259,7 @@ namespace FModel.Parser.Meshes
         public long ParentIndex { get; set; }
     }
 
-    public partial class RefBonePose
+    public class RefBonePose
     {
         [JsonProperty("rotation")]
         public BoxExtend Rotation { get; set; }
@@ -273,7 +271,7 @@ namespace FModel.Parser.Meshes
         public BoxExtend Scale3D { get; set; }
     }
 
-    public partial class SuperObject
+    public class SuperObject
     {
         [JsonProperty("export_type")]
         public string ExportType { get; set; }
@@ -294,7 +292,7 @@ namespace FModel.Parser.Meshes
         public SamplingInfo SamplingInfo { get; set; }
     }
 
-    public partial class LodInfo
+    public class LodInfo
     {
         [JsonProperty("ScreenSize")]
         public MinLod ScreenSize { get; set; }
@@ -341,7 +339,7 @@ namespace FModel.Parser.Meshes
         public bool BSupportUniformlyDistributedSampling { get; set; }
     }
 
-    public partial class ReductionSettings
+    public class ReductionSettings
     {
         [JsonProperty("TerminationCriterion")]
         public string TerminationCriterion { get; set; }
@@ -404,7 +402,7 @@ namespace FModel.Parser.Meshes
         public long BaseLod { get; set; }
     }
 
-    public partial class MinLod
+    public class MinLod
     {
         [JsonProperty("cooked")]
         public bool Cooked { get; set; }
@@ -413,19 +411,19 @@ namespace FModel.Parser.Meshes
         public double Value { get; set; }
     }
 
-    public partial class SamplingInfo
+    public class SamplingInfo
     {
         [JsonProperty("BuiltData")]
         public BuiltData BuiltData { get; set; }
     }
 
-    public partial class BuiltData
+    public class BuiltData
     {
         [JsonProperty("WholeMeshBuiltData")]
         public WholeMeshBuiltDatum[] WholeMeshBuiltData { get; set; }
     }
 
-    public partial class WholeMeshBuiltDatum
+    public class WholeMeshBuiltDatum
     {
         [JsonProperty("prob")]
         public object[] Prob { get; set; }
@@ -437,23 +435,23 @@ namespace FModel.Parser.Meshes
         public long TotalWeight { get; set; }
     }
 
-    public partial struct NameToIndex
+    public struct NameToIndex
     {
         public long? Integer;
         public string String;
 
-        public static implicit operator NameToIndex(long Integer) => new NameToIndex { Integer = Integer };
+        public static implicit operator NameToIndex(long integer) => new NameToIndex { Integer = integer };
         public static implicit operator NameToIndex(string String) => new NameToIndex { String = String };
     }
 
     public partial class MeshesParser
     {
-        public static MeshesParser[] FromJson(string json) => JsonConvert.DeserializeObject<MeshesParser[]>(json, FModel.Parser.Meshes.Converter.Settings);
+        public static MeshesParser[] FromJson(string json) => JsonConvert.DeserializeObject<MeshesParser[]>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this MeshesParser[] self) => JsonConvert.SerializeObject(self, FModel.Parser.Meshes.Converter.Settings);
+        public static string ToJson(this MeshesParser[] self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter
@@ -466,7 +464,7 @@ namespace FModel.Parser.Meshes
             {
                 NameToIndexConverter.Singleton,
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
+            }
         };
     }
 
@@ -533,7 +531,6 @@ namespace FModel.Parser.Meshes
             }
             var value = (long)untypedValue;
             serializer.Serialize(writer, value.ToString());
-            return;
         }
 
         public static readonly ParseStringConverter Singleton = new ParseStringConverter();

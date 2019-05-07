@@ -1,13 +1,6 @@
-﻿using FModel.Custom;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -17,12 +10,12 @@ namespace FModel.Forms
     {
         TypeAssistant assistant;
         List<FileInfo> myInfos = new List<FileInfo>();
-        List<FileInfoFilter> myFilteredInfos;
-        private static string fileName;
-        private static Dictionary<string, string> myInfosDict;
-        private static Dictionary<string, string> myFilteredInfosDict;
-        public static string sfPath;
-        public static bool isClosed;
+        List<FileInfoFilter> _myFilteredInfos;
+        private static string _fileName;
+        private static Dictionary<string, string> _myInfosDict;
+        private static Dictionary<string, string> _myFilteredInfosDict;
+        public static string SfPath;
+        public static bool IsClosed;
 
         public SearchFiles()
         {
@@ -34,40 +27,40 @@ namespace FModel.Forms
 
         private async void SearchFiles_Load(object sender, EventArgs e)
         {
-            isClosed = false;
-            myInfosDict = new Dictionary<string, string>();
+            IsClosed = false;
+            _myInfosDict = new Dictionary<string, string>();
 
-            if (MainWindow.PAKasTXT != null)
+            if (MainWindow.pakAsTxt != null)
             {
-                if (MainWindow.currentUsedPAKGUID != null && MainWindow.currentUsedPAKGUID != "0-0-0-0")
+                if (MainWindow.CurrentUsedPakGuid != null && MainWindow.CurrentUsedPakGuid != "0-0-0-0")
                 {
-                    for (int i = 0; i < MainWindow.PAKasTXT.Length; i++)
+                    for (int i = 0; i < MainWindow.pakAsTxt.Length; i++)
                     {
-                        if (MainWindow.PAKasTXT[i].Contains(".uasset") || MainWindow.PAKasTXT[i].Contains(".uexp") || MainWindow.PAKasTXT[i].Contains(".ubulk"))
+                        if (MainWindow.pakAsTxt[i].Contains(".uasset") || MainWindow.pakAsTxt[i].Contains(".uexp") || MainWindow.pakAsTxt[i].Contains(".ubulk"))
                         {
-                            if (!myInfosDict.ContainsKey(MainWindow.PAKasTXT[i].Substring(0, MainWindow.PAKasTXT[i].LastIndexOf("."))))
+                            if (!_myInfosDict.ContainsKey(MainWindow.pakAsTxt[i].Substring(0, MainWindow.pakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal))))
                             {
-                                myInfosDict.Add(MainWindow.PAKasTXT[i].Substring(0, MainWindow.PAKasTXT[i].LastIndexOf(".")), MainWindow.currentUsedPAK);
+                                _myInfosDict.Add(MainWindow.pakAsTxt[i].Substring(0, MainWindow.pakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), MainWindow.CurrentUsedPak);
 
-                                fileName = MainWindow.PAKasTXT[i].Substring(0, MainWindow.PAKasTXT[i].LastIndexOf("."));
+                                _fileName = MainWindow.pakAsTxt[i].Substring(0, MainWindow.pakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal));
                                 myInfos.Add(new FileInfo
                                 {
-                                    FileName = fileName,
-                                    PAKFile = MainWindow.currentUsedPAK,
+                                    FileName = _fileName,
+                                    PakFile = MainWindow.CurrentUsedPak,
                                 });
                             }
                         }
                         else
                         {
-                            if (!myInfosDict.ContainsKey(MainWindow.PAKasTXT[i]))
+                            if (!_myInfosDict.ContainsKey(MainWindow.pakAsTxt[i]))
                             {
-                                myInfosDict.Add(MainWindow.PAKasTXT[i], MainWindow.currentUsedPAK);
+                                _myInfosDict.Add(MainWindow.pakAsTxt[i], MainWindow.CurrentUsedPak);
 
-                                fileName = MainWindow.PAKasTXT[i];
+                                _fileName = MainWindow.pakAsTxt[i];
                                 myInfos.Add(new FileInfo
                                 {
-                                    FileName = fileName,
-                                    PAKFile = MainWindow.currentUsedPAK,
+                                    FileName = _fileName,
+                                    PakFile = MainWindow.CurrentUsedPak,
                                 });
                             }
                         }
@@ -75,33 +68,33 @@ namespace FModel.Forms
                 }
                 else
                 {
-                    for (int i = 0; i < MainWindow.PAKasTXT.Length; i++)
+                    for (int i = 0; i < MainWindow.pakAsTxt.Length; i++)
                     {
-                        if (MainWindow.PAKasTXT[i].Contains(".uasset") || MainWindow.PAKasTXT[i].Contains(".uexp") || MainWindow.PAKasTXT[i].Contains(".ubulk"))
+                        if (MainWindow.pakAsTxt[i].Contains(".uasset") || MainWindow.pakAsTxt[i].Contains(".uexp") || MainWindow.pakAsTxt[i].Contains(".ubulk"))
                         {
-                            if (!myInfosDict.ContainsKey(MainWindow.PAKasTXT[i].Substring(0, MainWindow.PAKasTXT[i].LastIndexOf("."))))
+                            if (!_myInfosDict.ContainsKey(MainWindow.pakAsTxt[i].Substring(0, MainWindow.pakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal))))
                             {
-                                myInfosDict.Add(MainWindow.PAKasTXT[i].Substring(0, MainWindow.PAKasTXT[i].LastIndexOf(".")), MainWindow.AllPAKsDictionary[Path.GetFileNameWithoutExtension(MainWindow.PAKasTXT[i])]);
+                                _myInfosDict.Add(MainWindow.pakAsTxt[i].Substring(0, MainWindow.pakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), MainWindow.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.pakAsTxt[i])]);
 
-                                fileName = MainWindow.PAKasTXT[i].Substring(0, MainWindow.PAKasTXT[i].LastIndexOf("."));
+                                _fileName = MainWindow.pakAsTxt[i].Substring(0, MainWindow.pakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal));
                                 myInfos.Add(new FileInfo
                                 {
-                                    FileName = fileName,
-                                    PAKFile = MainWindow.AllPAKsDictionary[Path.GetFileNameWithoutExtension(MainWindow.PAKasTXT[i])],
+                                    FileName = _fileName,
+                                    PakFile = MainWindow.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.pakAsTxt[i])],
                                 });
                             }
                         }
                         else
                         {
-                            if (!myInfosDict.ContainsKey(MainWindow.PAKasTXT[i]))
+                            if (!_myInfosDict.ContainsKey(MainWindow.pakAsTxt[i]))
                             {
-                                myInfosDict.Add(MainWindow.PAKasTXT[i], MainWindow.AllPAKsDictionary[Path.GetFileName(MainWindow.PAKasTXT[i])]);
+                                _myInfosDict.Add(MainWindow.pakAsTxt[i], MainWindow.AllpaksDictionary[Path.GetFileName(MainWindow.pakAsTxt[i])]);
 
-                                fileName = MainWindow.PAKasTXT[i];
+                                _fileName = MainWindow.pakAsTxt[i];
                                 myInfos.Add(new FileInfo
                                 {
-                                    FileName = fileName,
-                                    PAKFile = MainWindow.AllPAKsDictionary[Path.GetFileName(MainWindow.PAKasTXT[i])],
+                                    FileName = _fileName,
+                                    PakFile = MainWindow.AllpaksDictionary[Path.GetFileName(MainWindow.pakAsTxt[i])],
                                 });
                             }
                         }
@@ -117,19 +110,19 @@ namespace FModel.Forms
 
         private void listView1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            if (myFilteredInfos == null || myFilteredInfos.Count == 0)
+            if (_myFilteredInfos == null || _myFilteredInfos.Count == 0)
             {
                 var acc = myInfos[e.ItemIndex];
                 e.Item = new ListViewItem(
-                    new string[]
-                    { acc.FileName, acc.PAKFile });
+                    new[]
+                    { acc.FileName, acc.PakFile });
             }
             else
             {
-                var acc2 = myFilteredInfos[e.ItemIndex];
+                var acc2 = _myFilteredInfos[e.ItemIndex];
                 e.Item = new ListViewItem(
-                    new string[]
-                    { acc2.FileName, acc2.PAKFile });
+                    new[]
+                    { acc2.FileName, acc2.PakFile });
             }
         }
         private void ShowItemsVirtual(List<FileInfo> infos)
@@ -147,23 +140,23 @@ namespace FModel.Forms
             }));
         }
 
-        private void filterListView()
+        private void FilterListView()
         {
             if (listView1.InvokeRequired)
             {
-                listView1.Invoke(new Action(filterListView));
+                listView1.Invoke(new Action(FilterListView));
                 return;
             }
 
-            myFilteredInfos = new List<FileInfoFilter>();
-            myFilteredInfosDict = new Dictionary<string, string>();
+            _myFilteredInfos = new List<FileInfoFilter>();
+            _myFilteredInfosDict = new Dictionary<string, string>();
             listView1.BeginUpdate();
             listView1.VirtualListSize = 0;
             listView1.Invalidate();
 
-            if (MainWindow.PAKasTXT != null)
+            if (MainWindow.pakAsTxt != null)
             {
-                if (MainWindow.currentUsedPAKGUID != null && MainWindow.currentUsedPAKGUID != "0-0-0-0")
+                if (MainWindow.CurrentUsedPakGuid != null && MainWindow.CurrentUsedPakGuid != "0-0-0-0")
                 {
                     if (!string.IsNullOrEmpty(textBox1.Text) && textBox1.Text.Length > 2)
                     {
@@ -173,34 +166,34 @@ namespace FModel.Forms
                             {
                                 if (myInfos[i].FileName.Contains(".uasset") || myInfos[i].FileName.Contains(".uexp") || myInfos[i].FileName.Contains(".ubulk"))
                                 {
-                                    if (!myFilteredInfosDict.ContainsKey(myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf("."))))
+                                    if (!_myFilteredInfosDict.ContainsKey(myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal))))
                                     {
-                                        myFilteredInfosDict.Add(myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf(".")), MainWindow.currentUsedPAK);
+                                        _myFilteredInfosDict.Add(myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), MainWindow.CurrentUsedPak);
 
-                                        fileName = myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf("."));
-                                        myFilteredInfos.Add(new FileInfoFilter
+                                        _fileName = myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal));
+                                        _myFilteredInfos.Add(new FileInfoFilter
                                         {
-                                            FileName = fileName,
-                                            PAKFile = MainWindow.currentUsedPAK,
+                                            FileName = _fileName,
+                                            PakFile = MainWindow.CurrentUsedPak,
                                         });
                                     }
                                 }
                                 else
                                 {
-                                    if (!myFilteredInfosDict.ContainsKey(myInfos[i].FileName))
+                                    if (!_myFilteredInfosDict.ContainsKey(myInfos[i].FileName))
                                     {
-                                        myFilteredInfosDict.Add(myInfos[i].FileName, MainWindow.currentUsedPAK);
+                                        _myFilteredInfosDict.Add(myInfos[i].FileName, MainWindow.CurrentUsedPak);
 
-                                        fileName = myInfos[i].FileName;
-                                        myFilteredInfos.Add(new FileInfoFilter
+                                        _fileName = myInfos[i].FileName;
+                                        _myFilteredInfos.Add(new FileInfoFilter
                                         {
-                                            FileName = fileName,
-                                            PAKFile = MainWindow.currentUsedPAK,
+                                            FileName = _fileName,
+                                            PakFile = MainWindow.CurrentUsedPak,
                                         });
                                     }
                                 }
 
-                                ShowItemsVirtualFiltered(myFilteredInfos);
+                                ShowItemsVirtualFiltered(_myFilteredInfos);
                             }
                         }
                     }
@@ -219,34 +212,34 @@ namespace FModel.Forms
                             {
                                 if (myInfos[i].FileName.Contains(".uasset") || myInfos[i].FileName.Contains(".uexp") || myInfos[i].FileName.Contains(".ubulk"))
                                 {
-                                    if (!myFilteredInfosDict.ContainsKey(myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf("."))))
+                                    if (!_myFilteredInfosDict.ContainsKey(myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal))))
                                     {
-                                        myFilteredInfosDict.Add(myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf(".")), MainWindow.AllPAKsDictionary[Path.GetFileNameWithoutExtension(myInfos[i].FileName)]);
+                                        _myFilteredInfosDict.Add(myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), MainWindow.AllpaksDictionary[Path.GetFileNameWithoutExtension(myInfos[i].FileName)]);
 
-                                        fileName = myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf("."));
-                                        myFilteredInfos.Add(new FileInfoFilter
+                                        _fileName = myInfos[i].FileName.Substring(0, myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal));
+                                        _myFilteredInfos.Add(new FileInfoFilter
                                         {
-                                            FileName = fileName,
-                                            PAKFile = MainWindow.AllPAKsDictionary[Path.GetFileNameWithoutExtension(myInfos[i].FileName)],
+                                            FileName = _fileName,
+                                            PakFile = MainWindow.AllpaksDictionary[Path.GetFileNameWithoutExtension(myInfos[i].FileName)],
                                         });
                                     }
                                 }
                                 else
                                 {
-                                    if (!myFilteredInfosDict.ContainsKey(myInfos[i].FileName))
+                                    if (!_myFilteredInfosDict.ContainsKey(myInfos[i].FileName))
                                     {
-                                        myFilteredInfosDict.Add(myInfos[i].FileName, MainWindow.AllPAKsDictionary[Path.GetFileName(myInfos[i].FileName)]);
+                                        _myFilteredInfosDict.Add(myInfos[i].FileName, MainWindow.AllpaksDictionary[Path.GetFileName(myInfos[i].FileName)]);
 
-                                        fileName = myInfos[i].FileName;
-                                        myFilteredInfos.Add(new FileInfoFilter
+                                        _fileName = myInfos[i].FileName;
+                                        _myFilteredInfos.Add(new FileInfoFilter
                                         {
-                                            FileName = fileName,
-                                            PAKFile = MainWindow.AllPAKsDictionary[Path.GetFileName(myInfos[i].FileName)],
+                                            FileName = _fileName,
+                                            PakFile = MainWindow.AllpaksDictionary[Path.GetFileName(myInfos[i].FileName)],
                                         });
                                     }
                                 }
 
-                                ShowItemsVirtualFiltered(myFilteredInfos);
+                                ShowItemsVirtualFiltered(_myFilteredInfos);
                             }
                         }
                     }
@@ -261,10 +254,10 @@ namespace FModel.Forms
         }
         void assistant_Idled(object sender, EventArgs e)
         {
-            this.Invoke(
+            Invoke(
             new MethodInvoker(() =>
             {
-                filterListView();
+                FilterListView();
             }));
         }
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -275,15 +268,15 @@ namespace FModel.Forms
         private void button1_Click(object sender, EventArgs e)
         {
             ListView.SelectedIndexCollection col = listView1.SelectedIndices;
-            sfPath = listView1.Items[col[0]].Text;
+            SfPath = listView1.Items[col[0]].Text;
 
-            isClosed = true;
+            IsClosed = true;
             Close();
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listView1.SelectedIndices != null)
+            if (true)
             {
                 button1.Enabled = true;
             }
@@ -297,7 +290,7 @@ namespace FModel.Forms
             get;
             set;
         }
-        public string PAKFile
+        public string PakFile
         {
             get;
             set;
@@ -310,7 +303,7 @@ namespace FModel.Forms
             get;
             set;
         }
-        public string PAKFile
+        public string PakFile
         {
             get;
             set;

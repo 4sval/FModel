@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace FModel.Custom
+namespace FModel
 {
     public class TypeAssistant
     {
         public event EventHandler Idled = delegate { };
         public int WaitingMilliSeconds { get; set; }
-        System.Threading.Timer waitingTimer;
+        Timer waitingTimer;
 
         public TypeAssistant(int waitingMilliSeconds = 600)
         {
@@ -23,7 +19,7 @@ namespace FModel.Custom
         }
         public void TextChanged()
         {
-            waitingTimer.Change(WaitingMilliSeconds, System.Threading.Timeout.Infinite);
+            waitingTimer.Change(WaitingMilliSeconds, Timeout.Infinite);
         }
     }
 }
