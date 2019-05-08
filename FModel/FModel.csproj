@@ -111,6 +111,7 @@
   <ItemGroup>
     <Compile Include="Converter\UnrealEngineDataToOGG.cs" />
     <Compile Include="Custom\JsonExtensions.cs" />
+    <Compile Include="Custom\Prompt.cs" />
     <Compile Include="Custom\TypeAssistant.cs" />
     <Compile Include="Forms\About.cs">
       <SubType>Form</SubType>

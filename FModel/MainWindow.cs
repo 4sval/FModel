@@ -48,6 +48,7 @@ namespace FModel
         private static Dictionary<string, long> _questStageDict;
         private static Dictionary<string, string> _diffToExtract;
         private static string _backupFileName;
+        private static string _backupDynamicKeys;
         private static List<string> _itemsToDisplay;
         public static string DefaultOutputPath;
         public static string CurrentUsedPak;
@@ -816,12 +817,25 @@ namespace FModel
         }
         private void CreateBackupList(string[] allYourPaKs)
         {
+            bool connection = IsInternetAvailable();
+            string url = "https://pastebin.com/raw/bbnhmjWN";
+            if (connection)
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream ?? throw new InvalidOperationException()))
+                {
+                    _backupDynamicKeys = reader.ReadToEnd();
+                }
+            }
+
             for (int i = 0; i < allYourPaKs.Length; i++)
             {
                 string arCurrentUsedPak = allYourPaKs[i]; //SET CURRENT PAK
                 string arCurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak); //SET CURRENT PAK GUID
 
-                if (arCurrentUsedPakGuid == "0-0-0-0") //NO DYNAMIC PAK IN DICTIONARY
+                if (arCurrentUsedPakGuid == "0-0-0-0") //NO DYNAMIC PAK
                 {
                     JwpmProcess("filelist \"" + Settings.Default.PAKsPath + "\\" + arCurrentUsedPak + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
                     if (File.Exists(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt"))
@@ -868,6 +882,59 @@ namespace FModel
 
                         File.AppendAllLines(DefaultOutputPath + "\\Backup" + _backupFileName, currentUsedPakLines);
                         File.Delete(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                    }
+                }
+                else
+                {
+                    foreach (var myString in _backupDynamicKeys.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        var parts = myString.Split(':');
+                        if (parts[0] == arCurrentUsedPak && parts[1].StartsWith("0x"))
+                        {
+                            JwpmProcess("filelist \"" + Settings.Default.PAKsPath + "\\" + arCurrentUsedPak + "\" \"" + DefaultOutputPath + "\" " + parts[1].Substring(2));
+                            if (File.Exists(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt"))
+                            {
+                                if (!File.Exists(DefaultOutputPath + "\\Backup" + _backupFileName))
+                                    File.Create(DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
+
+                                string[] currentUsedPakLines = File.ReadAllLines(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                                for (int ii = 0; ii < currentUsedPakLines.Length; ii++)
+                                {
+                                    currentUsedPakLines[ii] = "FortniteGame/" + currentUsedPakLines[ii];
+                                }
+                                UpdateConsole(arCurrentUsedPak, Color.FromArgb(255, 244, 132, 66), "Waiting");
+
+                                File.AppendAllLines(DefaultOutputPath + "\\Backup" + _backupFileName, currentUsedPakLines);
+                                File.Delete(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                            }
+                        }
+                        else if (parts[0] == arCurrentUsedPak && parts[1] == "undefined")
+                        {
+                            AppendText("No key found for ", Color.Black);
+                            AppendText(arCurrentUsedPak, Color.DarkRed, true);
+
+                            //TODO: BETTER VERSION KTHX
+                            /*string promptValue = Prompt.ShowDialog("AES Key:", arCurrentUsedPak);
+                            if (!string.IsNullOrEmpty(promptValue))
+                            {
+                                JwpmProcess("filelist \"" + Settings.Default.PAKsPath + "\\" + arCurrentUsedPak + "\" \"" + DefaultOutputPath + "\" " + promptValue.Substring(2));
+                                if (File.Exists(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt"))
+                                {
+                                    if (!File.Exists(DefaultOutputPath + "\\Backup" + _backupFileName))
+                                        File.Create(DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
+
+                                    string[] currentUsedPakLines = File.ReadAllLines(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                                    for (int ii = 0; ii < currentUsedPakLines.Length; ii++)
+                                    {
+                                        currentUsedPakLines[ii] = "FortniteGame/" + currentUsedPakLines[ii];
+                                    }
+                                    UpdateConsole(".PAK mount point: \"/FortniteGame/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
+
+                                    File.AppendAllLines(DefaultOutputPath + "\\Backup" + _backupFileName, currentUsedPakLines);
+                                    File.Delete(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                                }
+                            }*/
+                        }
                     }
                 }
             }
