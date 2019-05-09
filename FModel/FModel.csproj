@@ -125,6 +125,12 @@
     <Compile Include="Forms\SearchFiles.Designer.cs">
       <DependentUpon>SearchFiles.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\IconGeneratorAssets.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\IconGeneratorAssets.Designer.cs">
+      <DependentUpon>IconGeneratorAssets.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -157,6 +163,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SearchFiles.resx">
       <DependentUpon>SearchFiles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IconGeneratorAssets.resx">
+      <DependentUpon>IconGeneratorAssets.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
