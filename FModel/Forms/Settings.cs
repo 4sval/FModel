@@ -79,13 +79,6 @@ namespace FModel.Forms
             textBox2.Text = Properties.Settings.Default.PAKsPath;
             textBox1.Text = Properties.Settings.Default.ExtractOutput;
 
-            //ICON CREATION
-            checkBox2.Checked = Properties.Settings.Default.createIconForCosmetics;
-            checkBox5.Checked = Properties.Settings.Default.createIconForVariants;
-            checkBox3.Checked = Properties.Settings.Default.createIconForConsumablesWeapons;
-            checkBox4.Checked = Properties.Settings.Default.createIconForTraps;
-            checkBox6.Checked = Properties.Settings.Default.createIconForChallenges;
-
             //MERGER
             textBox3.Text = Properties.Settings.Default.mergerFileName;
             imgsPerRow.Value = Properties.Settings.Default.mergerImagesRow;
@@ -156,28 +149,6 @@ namespace FModel.Forms
             {
                 MessageBox.Show(@"Please, restart FModel to apply your new output path", @"FModel Output Path Changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-            //ICON CREATION
-            if (checkBox2.Checked)
-                Properties.Settings.Default.createIconForCosmetics = true;
-            if (checkBox2.Checked == false)
-                Properties.Settings.Default.createIconForCosmetics = false;
-            if (checkBox5.Checked)
-                Properties.Settings.Default.createIconForVariants = true;
-            if (checkBox5.Checked == false)
-                Properties.Settings.Default.createIconForVariants = false;
-            if (checkBox3.Checked)
-                Properties.Settings.Default.createIconForConsumablesWeapons = true;
-            if (checkBox3.Checked == false)
-                Properties.Settings.Default.createIconForConsumablesWeapons = false;
-            if (checkBox4.Checked)
-                Properties.Settings.Default.createIconForTraps = true;
-            if (checkBox4.Checked == false)
-                Properties.Settings.Default.createIconForTraps = false;
-            if (checkBox6.Checked)
-                Properties.Settings.Default.createIconForChallenges = true;
-            if (checkBox6.Checked == false)
-                Properties.Settings.Default.createIconForChallenges = false;
 
             //MERGER
             Properties.Settings.Default.mergerFileName = textBox3.Text;
@@ -357,6 +328,19 @@ namespace FModel.Forms
                     g.DrawImage(ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
                 }
                 wPictureBox.Image = bmp;
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var assetsForm = new Forms.IconGeneratorAssets();
+            if (Application.OpenForms[assetsForm.Name] == null)
+            {
+                assetsForm.Show();
+            }
+            else
+            {
+                Application.OpenForms[assetsForm.Name].Focus();
             }
         }
     }
