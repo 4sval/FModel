@@ -565,6 +565,8 @@ namespace FModel
                                 currentUsedPakLines[ii] = "FortniteGame/Content/" + currentUsedPakLines[ii];
                             if (arCurrentUsedPak == "pakchunk10_s2-WindowsClient.pak")
                                 currentUsedPakLines[ii] = "FortniteGame/Content/Characters/Player/" + currentUsedPakLines[ii];
+                            if (arCurrentUsedPak == "pakchunk1_s1-WindowsClient.pak")
+                                currentUsedPakLines[ii] = "FortniteGame/Content/Weapons/" + currentUsedPakLines[ii];
                             if (arCurrentUsedPak == "pakchunk10_s3-WindowsClient.pak")
                                 currentUsedPakLines[ii] = "FortniteGame/Content/Characters/Player/Male/" + currentUsedPakLines[ii];
                             if (arCurrentUsedPak == "pakchunk5-WindowsClient.pak")
@@ -600,6 +602,8 @@ namespace FModel
                                 UpdateConsole(".PAK mount point: \"/FortniteGame/Content/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
                             if (arCurrentUsedPak == "pakchunk10_s2-WindowsClient.pak")
                                 UpdateConsole(".PAK mount point: \"/FortniteGame/Content/Characters/Player/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
+                            if (arCurrentUsedPak == "pakchunk1_s1-WindowsClient.pak")
+                                UpdateConsole(".PAK mount point: \"FortniteGame/Content/Weapons/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
                             if (arCurrentUsedPak == "pakchunk10_s3-WindowsClient.pak")
                                 UpdateConsole(".PAK mount point: \"/FortniteGame/Content/Characters/Player/Male/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
                             if (arCurrentUsedPak == "pakchunk5-WindowsClient.pak")
@@ -850,6 +854,8 @@ namespace FModel
                                 currentUsedPakLines[ii] = "FortniteGame/Content/" + currentUsedPakLines[ii];
                             if (arCurrentUsedPak == "pakchunk10_s2-WindowsClient.pak")
                                 currentUsedPakLines[ii] = "FortniteGame/Content/Characters/Player/" + currentUsedPakLines[ii];
+                            if (arCurrentUsedPak == "pakchunk1_s1-WindowsClient.pak")
+                                currentUsedPakLines[ii] = "FortniteGame/Content/Weapons/" + currentUsedPakLines[ii];
                             if (arCurrentUsedPak == "pakchunk10_s3-WindowsClient.pak")
                                 currentUsedPakLines[ii] = "FortniteGame/Content/Characters/Player/Male/" + currentUsedPakLines[ii];
                             if (arCurrentUsedPak == "pakchunk5-WindowsClient.pak")
@@ -867,6 +873,8 @@ namespace FModel
                             UpdateConsole(".PAK mount point: \"/FortniteGame/Content/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
                         if (arCurrentUsedPak == "pakchunk10_s2-WindowsClient.pak")
                             UpdateConsole(".PAK mount point: \"/FortniteGame/Content/Characters/Player/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
+                        if (arCurrentUsedPak == "pakchunk1_s1-WindowsClient.pak")
+                            UpdateConsole(".PAK mount point: \"FortniteGame/Content/Weapons/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
                         if (arCurrentUsedPak == "pakchunk10_s3-WindowsClient.pak")
                             UpdateConsole(".PAK mount point: \"/FortniteGame/Content/Characters/Player/Male/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
                         if (arCurrentUsedPak == "pakchunk5-WindowsClient.pak")
@@ -1528,77 +1536,44 @@ namespace FModel
             #region DRAW TEXT
             try
             {
-                g.DrawString(theItem.DisplayName, new Font(_pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), _centeredString);
-            }
-            catch (NullReferenceException)
-            {
-                AppendText(CurrentUsedItem + " ", Color.Red);
-                AppendText("No ", Color.Black);
-                AppendText("DisplayName ", Color.SteelBlue);
-                AppendText("found", Color.Black, true);
-            } //NAME
-            try
-            {
-                g.DrawString(theItem.Description, new Font("Arial", 10), new SolidBrush(Color.White), new Point(522 / 2, 465), _centeredStringLine);
-            }
-            catch (NullReferenceException)
-            {
-                AppendText(CurrentUsedItem + " ", Color.Red);
-                AppendText("No ", Color.Black);
-                AppendText("Description ", Color.SteelBlue);
-                AppendText("found", Color.Black, true);
-            } //DESCRIPTION
-            if (athIteDef)
-            {
                 try
                 {
-                    g.DrawString(theItem.ShortDescription, new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                    g.DrawString(theItem.DisplayName, new Font(_pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), _centeredString);
                 }
                 catch (NullReferenceException)
                 {
                     AppendText(CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
-                    AppendText("ShortDescription ", Color.SteelBlue);
+                    AppendText("DisplayName ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
-                } //TYPE
+                } //NAME
                 try
                 {
-                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
+                    g.DrawString(theItem.Description, new Font("Arial", 10), new SolidBrush(Color.White), new Point(522 / 2, 465), _centeredStringLine);
                 }
                 catch (NullReferenceException)
                 {
                     AppendText(CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
-                    AppendText("GameplayTags ", Color.SteelBlue);
+                    AppendText("Description ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("GameplayTags ", Color.SteelBlue);
-                    AppendText("as ", Color.Black);
-                    AppendText("Cosmetics.Source ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //COSMETIC SOURCE
-            }
-            if (consAndWeap)
-                try
-                {
-                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Athena.ItemAction."))].Substring(18), new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("GameplayTags ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                }
-                catch (IndexOutOfRangeException)
+                } //DESCRIPTION
+                if (athIteDef)
                 {
                     try
                     {
-                        g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Weapon."))].Substring(7), new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
+                        g.DrawString(theItem.ShortDescription, new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                    }
+                    catch (NullReferenceException)
+                    {
+                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText("No ", Color.Black);
+                        AppendText("ShortDescription ", Color.SteelBlue);
+                        AppendText("found", Color.Black, true);
+                    } //TYPE
+                    try
+                    {
+                        g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
                     }
                     catch (NullReferenceException)
                     {
@@ -1613,73 +1588,113 @@ namespace FModel
                         AppendText("No ", Color.Black);
                         AppendText("GameplayTags ", Color.SteelBlue);
                         AppendText("as ", Color.Black);
-                        AppendText("Athena.ItemAction ", Color.SteelBlue);
-                        AppendText("or ", Color.Black);
-                        AppendText("Weapon ", Color.SteelBlue);
+                        AppendText("Cosmetics.Source ", Color.SteelBlue);
+                        AppendText("found", Color.Black, true);
+                    } //COSMETIC SOURCE
+                }
+                if (consAndWeap)
+                    try
+                    {
+                        g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Athena.ItemAction."))].Substring(18), new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
+                    }
+                    catch (NullReferenceException)
+                    {
+                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText("No ", Color.Black);
+                        AppendText("GameplayTags ", Color.SteelBlue);
                         AppendText("found", Color.Black, true);
                     }
-                } //ACTION
-            if (variant)
-            {
+                    catch (IndexOutOfRangeException)
+                    {
+                        try
+                        {
+                            g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Weapon."))].Substring(7), new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
+                        }
+                        catch (NullReferenceException)
+                        {
+                            AppendText(CurrentUsedItem + " ", Color.Red);
+                            AppendText("No ", Color.Black);
+                            AppendText("GameplayTags ", Color.SteelBlue);
+                            AppendText("found", Color.Black, true);
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            AppendText(CurrentUsedItem + " ", Color.Red);
+                            AppendText("No ", Color.Black);
+                            AppendText("GameplayTags ", Color.SteelBlue);
+                            AppendText("as ", Color.Black);
+                            AppendText("Athena.ItemAction ", Color.SteelBlue);
+                            AppendText("or ", Color.Black);
+                            AppendText("Weapon ", Color.SteelBlue);
+                            AppendText("found", Color.Black, true);
+                        }
+                    } //ACTION
+                if (variant)
+                {
+                    try
+                    {
+                        g.DrawString(theItem.ShortDescription, new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                    }
+                    catch (NullReferenceException)
+                    {
+                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText("No ", Color.Black);
+                        AppendText("ShortDescription ", Color.SteelBlue);
+                        AppendText("found", Color.Black, true);
+                    } //TYPE
+                    try
+                    {
+                        g.DrawString(theItem.CosmeticItem, new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
+                    }
+                    catch (NullReferenceException)
+                    {
+                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText("No ", Color.Black);
+                        AppendText("Cosmetic Item ", Color.SteelBlue);
+                        AppendText("found", Color.Black, true);
+                    } //COSMETIC ITEM
+                }
                 try
                 {
-                    g.DrawString(theItem.ShortDescription, new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                    if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Animated"))
+                    {
+                        Image animatedLogo = Resources.T_Icon_Animated_64;
+                        g.DrawImage(Forms.Settings.ResizeImage(animatedLogo, 32, 32), new Point(6, -2));
+                    }
+                    else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasUpgradeQuests") && theItem.ExportType != "AthenaPetCarrierItemDefinition")
+                    {
+                        Image questLogo = Resources.T_Icon_Quests_64;
+                        g.DrawImage(Forms.Settings.ResizeImage(questLogo, 32, 32), new Point(6, 6));
+                    }
+                    else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasUpgradeQuests") && theItem.ExportType == "AthenaPetCarrierItemDefinition")
+                    {
+                        Image petLogo = Resources.T_Icon_Pets_64;
+                        g.DrawImage(Forms.Settings.ResizeImage(petLogo, 32, 32), new Point(6, 6));
+                    }
+                    else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasVariants"))
+                    {
+                        Image variantsLogo = Resources.T_Icon_Variant_64;
+                        g.DrawImage(Forms.Settings.ResizeImage(variantsLogo, 32, 32), new Point(6, 6));
+                    }
+                    else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Reactive"))
+                    {
+                        Image reactiveLogo = Resources.T_Icon_Adaptive_64;
+                        g.DrawImage(Forms.Settings.ResizeImage(reactiveLogo, 32, 32), new Point(7, 7));
+                    }
+                    else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Traversal"))
+                    {
+                        Image traversalLogo = Resources.T_Icon_Traversal_64;
+                        g.DrawImage(Forms.Settings.ResizeImage(traversalLogo, 32, 32), new Point(6, 3));
+                    }
                 }
-                catch (NullReferenceException)
+                catch (IndexOutOfRangeException)
                 {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("ShortDescription ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //TYPE
-                try
-                {
-                    g.DrawString(theItem.CosmeticItem, new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("Cosmetic Item ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //COSMETIC ITEM
+                } //COSMETIC USER FACING FLAGS
             }
-            try
+            catch (Exception ex)
             {
-                if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Animated"))
-                {
-                    Image animatedLogo = Resources.T_Icon_Animated_64;
-                    g.DrawImage(Forms.Settings.ResizeImage(animatedLogo, 32, 32), new Point(6, -2));
-                }
-                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasUpgradeQuests") && theItem.ExportType != "AthenaPetCarrierItemDefinition")
-                {
-                    Image questLogo = Resources.T_Icon_Quests_64;
-                    g.DrawImage(Forms.Settings.ResizeImage(questLogo, 32, 32), new Point(6, 6));
-                }
-                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasUpgradeQuests") && theItem.ExportType == "AthenaPetCarrierItemDefinition")
-                {
-                    Image petLogo = Resources.T_Icon_Pets_64;
-                    g.DrawImage(Forms.Settings.ResizeImage(petLogo, 32, 32), new Point(6, 6));
-                }
-                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasVariants"))
-                {
-                    Image variantsLogo = Resources.T_Icon_Variant_64;
-                    g.DrawImage(Forms.Settings.ResizeImage(variantsLogo, 32, 32), new Point(6, 6));
-                }
-                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Reactive"))
-                {
-                    Image reactiveLogo = Resources.T_Icon_Adaptive_64;
-                    g.DrawImage(Forms.Settings.ResizeImage(reactiveLogo, 32, 32), new Point(7, 7));
-                }
-                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Traversal"))
-                {
-                    Image traversalLogo = Resources.T_Icon_Traversal_64;
-                    g.DrawImage(Forms.Settings.ResizeImage(traversalLogo, 32, 32), new Point(6, 3));
-                }
+                Console.WriteLine(ex.Message);
             }
-            catch (IndexOutOfRangeException)
-            {
-            } //COSMETIC USER FACING FLAGS
             #endregion
 
             pictureBox1.Image = bmp;
@@ -1704,37 +1719,32 @@ namespace FModel
         }
         private void GetItemRarity(ItemsIdParser theItem, Graphics toDrawOn)
         {
-            if (theItem.Rarity == "EFortRarity::Legendary")
-            {
-                Image rarityBg = Resources.I512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            if (theItem.Rarity == "EFortRarity::Masterwork")
+            if (theItem.Rarity == "EFortRarity::Transcendent")
             {
                 Image rarityBg = Resources.T512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Elegant")
+            if (theItem.Rarity == "EFortRarity::Mythic")
             {
                 Image rarityBg = Resources.M512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Fine")
+            if (theItem.Rarity == "EFortRarity::Legendary")
             {
                 Image rarityBg = Resources.L512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Quality")
+            if (theItem.Rarity == "EFortRarity::Epic")
             {
                 Image rarityBg = Resources.E512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Sturdy")
+            if (theItem.Rarity == "EFortRarity::Rare")
             {
                 Image rarityBg = Resources.R512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Handmade")
+            if (theItem.Rarity == "EFortRarity::Common")
             {
                 Image rarityBg = Resources.C512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
