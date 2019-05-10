@@ -42,6 +42,7 @@ namespace FModel
         FindReplace _myFindReplace;
         public Stopwatch StopWatch;
         public PakAsset MyAsset;
+        public PakExtractor MyExtractor;
         private static string[] _paksArray;
         public static string[] pakAsTxt;
         public static Dictionary<string, string> AllpaksDictionary;
@@ -553,34 +554,25 @@ namespace FModel
 
                 if (arCurrentUsedPakGuid == "0-0-0-0") //NO DYNAMIC PAK IN DICTIONARY
                 {
-                    JwpmProcess("filelist \"" + Settings.Default.PAKsPath + "\\" + arCurrentUsedPak + "\" \"" + DefaultOutputPath + "\" " +  Settings.Default.AESKey);
-                    if (File.Exists(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt"))
+                    try
+                    {
+                        MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, Settings.Default.AESKey);
+                    }
+                    catch (Exception)
+                    {
+                        break;
+                    }
+
+                    if (MyExtractor.GetFileList() != null)
                     {
                         if (loadAllPaKs)
                             if (!File.Exists(DefaultOutputPath + "\\FortnitePAKs.txt"))
                                 File.Create(DefaultOutputPath + "\\FortnitePAKs.txt").Dispose();
 
-                        string[] currentUsedPakLines = File.ReadAllLines(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                        string[] currentUsedPakLines = MyExtractor.GetFileList().ToArray();
                         for (int ii = 0; ii < currentUsedPakLines.Length; ii++)
                         {
-                            if (arCurrentUsedPak == "pakchunk10_s1-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s4-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s5-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s6-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s7-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s8-WindowsClient.pak" || arCurrentUsedPak == "pakchunk11-WindowsClient.pak" || arCurrentUsedPak == "pakchunk11_s1-WindowsClient.pak" || arCurrentUsedPak == "pakchunk1-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk10_s2-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/Characters/Player/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk1_s1-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/Weapons/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk10_s3-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/Characters/Player/Male/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk5-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/L10N/fr/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk2-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/L10N/de/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk7-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/L10N/pl/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk8-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/L10N/ru/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk9-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/L10N/zh-CN/" + currentUsedPakLines[ii];
+                            currentUsedPakLines[ii] = MyExtractor.GetMountPoint().Substring(6) + currentUsedPakLines[ii];
 
                             string currentUsedPakFileName = currentUsedPakLines[ii].Substring(currentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
                             if (currentUsedPakFileName.Contains(".uasset") || currentUsedPakFileName.Contains(".uexp") || currentUsedPakFileName.Contains(".ubulk"))
@@ -600,27 +592,9 @@ namespace FModel
                         }
                         if (loadAllPaKs)
                         {
-                            if (arCurrentUsedPak == "pakchunk10_s1-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s4-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s5-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s6-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s7-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s8-WindowsClient.pak" || arCurrentUsedPak == "pakchunk11-WindowsClient.pak" || arCurrentUsedPak == "pakchunk11_s1-WindowsClient.pak" || arCurrentUsedPak == "pakchunk1-WindowsClient.pak")
-                                UpdateConsole(".PAK mount point: \"/FortniteGame/Content/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                            if (arCurrentUsedPak == "pakchunk10_s2-WindowsClient.pak")
-                                UpdateConsole(".PAK mount point: \"/FortniteGame/Content/Characters/Player/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                            if (arCurrentUsedPak == "pakchunk1_s1-WindowsClient.pak")
-                                UpdateConsole(".PAK mount point: \"FortniteGame/Content/Weapons/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                            if (arCurrentUsedPak == "pakchunk10_s3-WindowsClient.pak")
-                                UpdateConsole(".PAK mount point: \"/FortniteGame/Content/Characters/Player/Male/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                            if (arCurrentUsedPak == "pakchunk5-WindowsClient.pak")
-                                UpdateConsole(".PAK mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                            if (arCurrentUsedPak == "pakchunk2-WindowsClient.pak")
-                                UpdateConsole(".PAK mount point: \"/FortniteGame/Content/L10N/de/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                            if (arCurrentUsedPak == "pakchunk7-WindowsClient.pak")
-                                UpdateConsole(".PAK mount point: \"/FortniteGame/Content/L10N/pl/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                            if (arCurrentUsedPak == "pakchunk8-WindowsClient.pak")
-                                UpdateConsole(".PAK mount point: \"/FortniteGame/Content/L10N/ru/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                            if (arCurrentUsedPak == "pakchunk9-WindowsClient.pak")
-                                UpdateConsole(".PAK mount point: \"/FortniteGame/Content/L10N/zh-CN/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
+                            UpdateConsole(".PAK mount point: " + MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
 
                             File.AppendAllLines(DefaultOutputPath + "\\FortnitePAKs.txt", currentUsedPakLines);
-                            File.Delete(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
 
                             CurrentUsedPak = null;
                             CurrentUsedPakGuid = null;
@@ -632,13 +606,23 @@ namespace FModel
                     CurrentUsedPak = theSinglePak.ClickedItem.Text;
                     CurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + CurrentUsedPak);
 
-                    if (arCurrentUsedPak != theSinglePak.ClickedItem.Text) //DELETE EVERYTHING EXCEPT SELECTED PAK
-                        File.Delete(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                    if (arCurrentUsedPak == theSinglePak.ClickedItem.Text && MyExtractor.GetFileList() != null)
+                        pakAsTxt = MyExtractor.GetFileList().ToArray();
                 }
             }
             if (theSinglePak != null && ReadPakGuid(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text) != "0-0-0-0") //LOADING DYNAMIC PAK
             {
-                JwpmProcess("filelist \"" + Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                try
+                {
+                    MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text, Settings.Default.AESKey);
+
+                    if (MyExtractor.GetFileList() != null)
+                        pakAsTxt = MyExtractor.GetFileList().ToArray();
+                }
+                catch (Exception)
+                {
+                    UpdateConsole("Can't read " + theSinglePak.ClickedItem.Text + " with this key", Color.FromArgb(255, 244, 66, 66), "Error");
+                }
             }
             UpdateConsole("Building tree, please wait...", Color.FromArgb(255, 244, 132, 66), "Loading");
         }
@@ -742,15 +726,8 @@ namespace FModel
                 //ADD TO DICTIONNARY
                 RegisterPaKsinDict(_paksArray, selectedPak);
 
-                if (!File.Exists(DefaultOutputPath + "\\" + selectedPak.ClickedItem.Text + ".txt"))
+                if (pakAsTxt != null)
                 {
-                    UpdateConsole("Can't read " + selectedPak.ClickedItem.Text + " with this key", Color.FromArgb(255, 244, 66, 66), "Error");
-                }
-                else
-                {
-                    pakAsTxt = File.ReadAllLines(DefaultOutputPath + "\\" + selectedPak.ClickedItem.Text + ".txt");
-                    File.Delete(DefaultOutputPath + "\\" + selectedPak.ClickedItem.Text + ".txt");
-
                     Invoke(new Action(() =>
                     {
                         treeView1.BeginUpdate();
@@ -762,6 +739,8 @@ namespace FModel
                     }));
                     UpdateConsole(Settings.Default.PAKsPath + "\\" + selectedPak.ClickedItem.Text, Color.FromArgb(255, 66, 244, 66), "Success");
                 }
+                else
+                    UpdateConsole("Can't read " + selectedPak.ClickedItem.Text + " with this key", Color.FromArgb(255, 244, 66, 66), "Error");
             }
             if (loadAllPaKs)
             {
@@ -846,55 +825,28 @@ namespace FModel
 
                 if (arCurrentUsedPakGuid == "0-0-0-0") //NO DYNAMIC PAK
                 {
-                    JwpmProcess("filelist \"" + Settings.Default.PAKsPath + "\\" + arCurrentUsedPak + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                    if (File.Exists(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt"))
+                    try
+                    {
+                        MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, Settings.Default.AESKey);
+                    }
+                    catch (Exception)
+                    {
+                        break;
+                    }
+
+                    if (MyExtractor.GetFileList() != null)
                     {
                         if (!File.Exists(DefaultOutputPath + "\\Backup" + _backupFileName))
                             File.Create(DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
 
-                        string[] currentUsedPakLines = File.ReadAllLines(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                        string[] currentUsedPakLines = MyExtractor.GetFileList().ToArray();
                         for (int ii = 0; ii < currentUsedPakLines.Length; ii++)
                         {
-                            if (arCurrentUsedPak == "pakchunk10_s1-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s4-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s5-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s6-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s7-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s8-WindowsClient.pak" || arCurrentUsedPak == "pakchunk11-WindowsClient.pak" || arCurrentUsedPak == "pakchunk11_s1-WindowsClient.pak" || arCurrentUsedPak == "pakchunk1-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk10_s2-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/Characters/Player/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk1_s1-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/Weapons/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk10_s3-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/Characters/Player/Male/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk5-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/L10N/fr/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk2-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/L10N/de/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk7-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/L10N/pl/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk8-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/L10N/ru/" + currentUsedPakLines[ii];
-                            if (arCurrentUsedPak == "pakchunk9-WindowsClient.pak")
-                                currentUsedPakLines[ii] = "FortniteGame/Content/L10N/zh-CN/" + currentUsedPakLines[ii];
+                            currentUsedPakLines[ii] = MyExtractor.GetMountPoint().Substring(6) + currentUsedPakLines[ii];
                         }
-                        if (arCurrentUsedPak == "pakchunk10_s1-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s4-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s5-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s6-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s7-WindowsClient.pak" || arCurrentUsedPak == "pakchunk10_s8-WindowsClient.pak" || arCurrentUsedPak == "pakchunk11-WindowsClient.pak" || arCurrentUsedPak == "pakchunk11_s1-WindowsClient.pak" || arCurrentUsedPak == "pakchunk1-WindowsClient.pak")
-                            UpdateConsole(".PAK mount point: \"/FortniteGame/Content/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                        if (arCurrentUsedPak == "pakchunk10_s2-WindowsClient.pak")
-                            UpdateConsole(".PAK mount point: \"/FortniteGame/Content/Characters/Player/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                        if (arCurrentUsedPak == "pakchunk1_s1-WindowsClient.pak")
-                            UpdateConsole(".PAK mount point: \"FortniteGame/Content/Weapons/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                        if (arCurrentUsedPak == "pakchunk10_s3-WindowsClient.pak")
-                            UpdateConsole(".PAK mount point: \"/FortniteGame/Content/Characters/Player/Male/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                        if (arCurrentUsedPak == "pakchunk5-WindowsClient.pak")
-                            UpdateConsole(".PAK mount point: \"/FortniteGame/Content/L10N/fr/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                        if (arCurrentUsedPak == "pakchunk2-WindowsClient.pak")
-                            UpdateConsole(".PAK mount point: \"/FortniteGame/Content/L10N/de/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                        if (arCurrentUsedPak == "pakchunk7-WindowsClient.pak")
-                            UpdateConsole(".PAK mount point: \"/FortniteGame/Content/L10N/pl/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                        if (arCurrentUsedPak == "pakchunk8-WindowsClient.pak")
-                            UpdateConsole(".PAK mount point: \"/FortniteGame/Content/L10N/ru/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                        if (arCurrentUsedPak == "pakchunk9-WindowsClient.pak")
-                            UpdateConsole(".PAK mount point: \"/FortniteGame/Content/L10N/zh-CN/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
+                        UpdateConsole(".PAK mount point: " + MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
 
                         File.AppendAllLines(DefaultOutputPath + "\\Backup" + _backupFileName, currentUsedPakLines);
-                        File.Delete(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
                     }
                 }
                 else
@@ -904,21 +856,28 @@ namespace FModel
                         var parts = myString.Split(':');
                         if (parts[0] == arCurrentUsedPak && parts[1].StartsWith("0x"))
                         {
-                            JwpmProcess("filelist \"" + Settings.Default.PAKsPath + "\\" + arCurrentUsedPak + "\" \"" + DefaultOutputPath + "\" " + parts[1].Substring(2));
-                            if (File.Exists(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt"))
+                            try
+                            {
+                                MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, parts[1].Substring(2));
+                            }
+                            catch (Exception)
+                            {
+                                continue;
+                            }
+
+                            if (MyExtractor.GetFileList() != null)
                             {
                                 if (!File.Exists(DefaultOutputPath + "\\Backup" + _backupFileName))
                                     File.Create(DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
 
-                                string[] currentUsedPakLines = File.ReadAllLines(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                                string[] currentUsedPakLines = MyExtractor.GetFileList().ToArray();
                                 for (int ii = 0; ii < currentUsedPakLines.Length; ii++)
                                 {
-                                    currentUsedPakLines[ii] = "FortniteGame/" + currentUsedPakLines[ii];
+                                    currentUsedPakLines[ii] = MyExtractor.GetMountPoint().Substring(6) + currentUsedPakLines[ii];
                                 }
                                 UpdateConsole(arCurrentUsedPak, Color.FromArgb(255, 244, 132, 66), "Waiting");
 
                                 File.AppendAllLines(DefaultOutputPath + "\\Backup" + _backupFileName, currentUsedPakLines);
-                                File.Delete(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
                             }
                         }
                         else if (parts[0] == arCurrentUsedPak && parts[1] == "undefined")
@@ -2516,124 +2475,127 @@ namespace FModel
                         {
                             for (int i2 = 0; i2 < bundleParser[i].BundleCompletionRewards.Length; i2++)
                             {
-                                string itemReward = bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().ItemDefinition.AssetPathName.Substring(bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().ItemDefinition.AssetPathName.LastIndexOf(".", StringComparison.Ordinal) + 1);
-                                string compCount = bundleParser[i].BundleCompletionRewards[i2].CompletionCount.ToString();
-
-                                if (itemReward != "AthenaBattlePass_WeeklyChallenge_Token" && itemReward != "AthenaBattlePass_WeeklyBundle_Token")
+                                for (int i3 = 0; i3 < bundleParser[i].BundleCompletionRewards[i2].Rewards.Length; i3++)
                                 {
-                                    justSkip += 1;
-                                    iamY += 140;
+                                    string itemReward = Path.GetFileName(bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].ItemDefinition.AssetPathName.Substring(0, bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].ItemDefinition.AssetPathName.LastIndexOf(".", StringComparison.Ordinal)));
+                                    string compCount = bundleParser[i].BundleCompletionRewards[i2].CompletionCount.ToString();
 
-                                    if (itemReward.Contains("Fortbyte_WeeklyChallengesComplete_"))
+                                    if (itemReward != "AthenaBattlePass_WeeklyChallenge_Token" && itemReward != "AthenaBattlePass_WeeklyBundle_Token")
                                     {
-                                        #region DRAW ICON
-                                        string textureFile = "T_UI_PuzzleIcon_64";
+                                        justSkip += 1;
+                                        iamY += 140;
 
-                                        if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                            JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                        else
-                                            JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                        string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
-
-                                        if (textureFilePath != null)
+                                        if (itemReward.Contains("Fortbyte_WeeklyChallengesComplete_"))
                                         {
-                                            MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                            MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                            ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
-                                            UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                        }
-                                        else
-                                            UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                            #region DRAW ICON
+                                            string textureFile = "T_UI_PuzzleIcon_64";
 
-                                        if (File.Exists(ItemIconPath))
-                                        {
-                                            Image itemIcon;
-                                            using (var bmpTemp = new Bitmap(ItemIconPath))
+                                            if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
+                                                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                            else
+                                                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                            string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+
+                                            if (textureFilePath != null)
                                             {
-                                                itemIcon = new Bitmap(bmpTemp);
+                                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
+                                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
+                                                ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                             }
-                                            g.DrawImage(Forms.Settings.ResizeImage(itemIcon, 110, 110), new Point(2300, iamY + 6));
-                                        }
-                                        else
-                                        {
-                                            Image itemIcon = Resources.unknown512;
-                                            g.DrawImage(Forms.Settings.ResizeImage(itemIcon, 110, 110), new Point(2300, iamY + 6));
-                                        }
-                                        #endregion
+                                            else
+                                                UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
 
-                                        if (compCount == "-1")
-                                            g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(_pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
-                                        else
-                                            g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(_pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
-                                    }
-                                    else
-                                    {
-                                        if (bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().ItemDefinition.AssetPathName == "None")
-                                        {
-                                            var partsofbruhreally = bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().TemplateId.Split(':');
-                                            DrawRewardBanner(partsofbruhreally[1], g, iamY);
-                                        }
-                                        else if (string.Equals(itemReward, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase))
-                                        {
-                                            #region DRAW ICON
-                                            Image rewardIcon = Resources.T_FNBR_BattlePoints_L;
-                                            g.DrawImage(Forms.Settings.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
-
-                                            GraphicsPath p = new GraphicsPath();
-                                            p.AddString(
-                                                bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().Quantity.ToString(),
-                                                _pfc.Families[1],
-                                                (int)FontStyle.Regular,
-                                                60,
-                                                new Point(2322, iamY + 25), _rightString);
-                                            g.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
-
-                                            g.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
+                                            if (File.Exists(ItemIconPath))
+                                            {
+                                                Image itemIcon;
+                                                using (var bmpTemp = new Bitmap(ItemIconPath))
+                                                {
+                                                    itemIcon = new Bitmap(bmpTemp);
+                                                }
+                                                g.DrawImage(Forms.Settings.ResizeImage(itemIcon, 110, 110), new Point(2300, iamY + 6));
+                                            }
+                                            else
+                                            {
+                                                Image itemIcon = Resources.unknown512;
+                                                g.DrawImage(Forms.Settings.ResizeImage(itemIcon, 110, 110), new Point(2300, iamY + 6));
+                                            }
                                             #endregion
-                                        }
-                                        else if (string.Equals(itemReward, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase))
-                                        {
-                                            #region DRAW ICON
-                                            Image rewardIcon = Resources.T_FNBR_SeasonalXP_L;
-                                            g.DrawImage(Forms.Settings.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
 
-                                            GraphicsPath p = new GraphicsPath();
-                                            p.AddString(
-                                                bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().Quantity.ToString(),
-                                                _pfc.Families[1],
-                                                (int)FontStyle.Regular,
-                                                60,
-                                                new Point(2322, iamY + 25), _rightString);
-                                            g.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
-
-                                            g.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
-                                            #endregion
-                                        }
-                                        else if (string.Equals(itemReward, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase))
-                                        {
-                                            #region DRAW ICON
-                                            Image rewardIcon = Resources.T_Items_MTX_L;
-                                            g.DrawImage(Forms.Settings.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
-
-                                            GraphicsPath p = new GraphicsPath();
-                                            p.AddString(
-                                                bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().Quantity.ToString(),
-                                                _pfc.Families[1],
-                                                (int)FontStyle.Regular,
-                                                60,
-                                                new Point(2322, iamY + 25), _rightString);
-                                            g.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
-
-                                            g.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
-                                            #endregion
+                                            if (compCount == "-1")
+                                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(_pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
+                                            else
+                                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(_pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
                                         }
                                         else
-                                            DrawRewardIcon(itemReward, g, iamY);
+                                        {
+                                            if (bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].ItemDefinition.AssetPathName == "None")
+                                            {
+                                                var partsofbruhreally = bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].TemplateId.Split(':');
+                                                DrawRewardBanner(partsofbruhreally[1], g, iamY);
+                                            }
+                                            else if (string.Equals(itemReward, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase))
+                                            {
+                                                #region DRAW ICON
+                                                Image rewardIcon = Resources.T_FNBR_BattlePoints_L;
+                                                g.DrawImage(Forms.Settings.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
 
-                                        if (compCount == "-1")
-                                            g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(_pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
-                                        else
-                                            g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(_pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
+                                                GraphicsPath p = new GraphicsPath();
+                                                p.AddString(
+                                                    bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].Quantity.ToString(),
+                                                    _pfc.Families[1],
+                                                    (int)FontStyle.Regular,
+                                                    60,
+                                                    new Point(2322, iamY + 25), _rightString);
+                                                g.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
+
+                                                g.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
+                                                #endregion
+                                            }
+                                            else if (string.Equals(itemReward, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase))
+                                            {
+                                                #region DRAW ICON
+                                                Image rewardIcon = Resources.T_FNBR_SeasonalXP_L;
+                                                g.DrawImage(Forms.Settings.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
+
+                                                GraphicsPath p = new GraphicsPath();
+                                                p.AddString(
+                                                    bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].Quantity.ToString(),
+                                                    _pfc.Families[1],
+                                                    (int)FontStyle.Regular,
+                                                    60,
+                                                    new Point(2322, iamY + 25), _rightString);
+                                                g.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
+
+                                                g.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
+                                                #endregion
+                                            }
+                                            else if (string.Equals(itemReward, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase))
+                                            {
+                                                #region DRAW ICON
+                                                Image rewardIcon = Resources.T_Items_MTX_L;
+                                                g.DrawImage(Forms.Settings.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
+
+                                                GraphicsPath p = new GraphicsPath();
+                                                p.AddString(
+                                                    bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].Quantity.ToString(),
+                                                    _pfc.Families[1],
+                                                    (int)FontStyle.Regular,
+                                                    60,
+                                                    new Point(2322, iamY + 25), _rightString);
+                                                g.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
+
+                                                g.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
+                                                #endregion
+                                            }
+                                            else
+                                                DrawRewardIcon(itemReward, g, iamY);
+
+                                            if (compCount == "-1")
+                                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(_pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
+                                            else
+                                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(_pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
+                                        }
                                     }
                                 }
                             }
