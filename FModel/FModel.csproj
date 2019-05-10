@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{8FABCD3A-9D55-4B54-B237-B259D815DEB8}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>FModel</RootNamespace>
     <AssemblyName>FModel</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>

@@ -12,7 +12,7 @@
 ### Prerequisites
 [.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471)
 ### Download
-[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/2.2.1)
+[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/2.2.2)
 ### How does it works
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder and it'll automatically download the latest version of the custom [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) in this subfolder.
 
