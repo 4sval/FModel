@@ -37,7 +37,7 @@
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OKButton.Location = new System.Drawing.Point(274, 401);
+            this.OKButton.Location = new System.Drawing.Point(222, 300);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(97, 21);
             this.OKButton.TabIndex = 15;
@@ -47,24 +47,24 @@
             // 
             // checkedAssets
             // 
+            this.checkedAssets.CheckOnClick = true;
             this.checkedAssets.FormattingEnabled = true;
             this.checkedAssets.Items.AddRange(new object[] {
             "Challenges",
             "Consumables & Weapons",
             "Cosmetics",
             "Traps",
-            "Variants"
-            });
+            "Variants"});
             this.checkedAssets.Location = new System.Drawing.Point(12, 12);
             this.checkedAssets.Name = "checkedAssets";
-            this.checkedAssets.Size = new System.Drawing.Size(359, 364);
+            this.checkedAssets.Size = new System.Drawing.Size(307, 274);
             this.checkedAssets.TabIndex = 16;
             // 
             // IconGeneratorAssets
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(383, 434);
+            this.ClientSize = new System.Drawing.Size(331, 333);
             this.Controls.Add(this.checkedAssets);
             this.Controls.Add(this.OKButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;

@@ -37,6 +37,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.OKButton = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.checkBox8 = new System.Windows.Forms.CheckBox();
             this.checkBox7 = new System.Windows.Forms.CheckBox();
             this.filenameLabel = new System.Windows.Forms.Label();
@@ -51,7 +52,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -122,7 +122,7 @@
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OKButton.Location = new System.Drawing.Point(475, 401);
+            this.OKButton.Location = new System.Drawing.Point(475, 379);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(97, 21);
             this.OKButton.TabIndex = 15;
@@ -149,10 +149,20 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Icon Creation";
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(6, 19);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(377, 22);
+            this.button2.TabIndex = 27;
+            this.button2.Text = "Manage Assets";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // checkBox8
             // 
             this.checkBox8.AutoSize = true;
-            this.checkBox8.Location = new System.Drawing.Point(6, 20);
+            this.checkBox8.Location = new System.Drawing.Point(6, 52);
             this.checkBox8.Name = "checkBox8";
             this.checkBox8.Size = new System.Drawing.Size(177, 17);
             this.checkBox8.TabIndex = 26;
@@ -163,7 +173,7 @@
             // checkBox7
             // 
             this.checkBox7.AutoSize = true;
-            this.checkBox7.Location = new System.Drawing.Point(6, 59);
+            this.checkBox7.Location = new System.Drawing.Point(6, 91);
             this.checkBox7.Name = "checkBox7";
             this.checkBox7.Size = new System.Drawing.Size(15, 14);
             this.checkBox7.TabIndex = 25;
@@ -173,7 +183,7 @@
             // filenameLabel
             // 
             this.filenameLabel.AutoSize = true;
-            this.filenameLabel.Location = new System.Drawing.Point(115, 60);
+            this.filenameLabel.Location = new System.Drawing.Point(115, 92);
             this.filenameLabel.Name = "filenameLabel";
             this.filenameLabel.Size = new System.Drawing.Size(60, 13);
             this.filenameLabel.TabIndex = 24;
@@ -181,7 +191,7 @@
             // 
             // trackBar1
             // 
-            this.trackBar1.Location = new System.Drawing.Point(58, 112);
+            this.trackBar1.Location = new System.Drawing.Point(58, 144);
             this.trackBar1.Maximum = 100;
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(325, 45);
@@ -192,7 +202,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(22, 83);
+            this.label9.Location = new System.Drawing.Point(22, 115);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(30, 13);
             this.label9.TabIndex = 23;
@@ -200,7 +210,7 @@
             // 
             // trackBar2
             // 
-            this.trackBar2.Location = new System.Drawing.Point(58, 83);
+            this.trackBar2.Location = new System.Drawing.Point(58, 115);
             this.trackBar2.Maximum = 1000;
             this.trackBar2.Minimum = 1;
             this.trackBar2.Name = "trackBar2";
@@ -214,7 +224,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 115);
+            this.label8.Location = new System.Drawing.Point(6, 147);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(46, 13);
             this.label8.TabIndex = 21;
@@ -222,7 +232,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(27, 53);
+            this.button1.Location = new System.Drawing.Point(27, 85);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(82, 24);
             this.button1.TabIndex = 19;
@@ -293,21 +303,11 @@
             this.label4.TabIndex = 9;
             this.label4.Text = "File Name:";
             // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(6, 160);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(116, 24);
-            this.button2.TabIndex = 27;
-            this.button2.Text = "Manage Assets";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 434);
+            this.ClientSize = new System.Drawing.Size(584, 412);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.OKButton);
