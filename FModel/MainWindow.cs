@@ -680,6 +680,10 @@ namespace FModel
                 if (theDialog.ShowDialog() == DialogResult.OK)
                 {
                     String[] linesA = File.ReadAllLines(theDialog.FileName);
+                    for (int i = 0; i < linesA.Length; i++)
+                        if (!linesA[i].StartsWith("../"))
+                            linesA[i] = "../" + linesA[i];
+
                     IEnumerable<String> onlyB = pakAsTxt.Except(linesA);
                     IEnumerable<String> removed = linesA.Except(pakAsTxt);
 
@@ -1517,7 +1521,7 @@ namespace FModel
             } //NAME
             try
             {
-                g.DrawString(theItem.Description, new Font("Arial", 10), new SolidBrush(Color.White), new Point(522 / 2, 465), _centeredStringLine);
+                g.DrawString(theItem.Description, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), _centeredStringLine);
             }
             catch (NullReferenceException)
             {
@@ -1707,7 +1711,7 @@ namespace FModel
                 Image rarityBg = Resources.R512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Common")
+            if (theItem.Rarity == "EFortRarity::Common" || SpecialMode == "ammo") // Force common rarity if ammo, as ammo is always common in FN
             {
                 Image rarityBg = Resources.C512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
@@ -1715,13 +1719,6 @@ namespace FModel
             if (theItem.Rarity == null)
             {
                 Image rarityBg = Resources.U512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-
-            // Force common rarity if ammo, as ammo is always common in FN
-            if (SpecialMode == "ammo")
-            {
-                Image rarityBg = Resources.C512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
         }

@@ -81,6 +81,11 @@ If issues occur when compiling the source code, make sure that the software is b
 ### Why FModel
 This project is mainly based on what [UModel](https://github.com/gildor2/UModel) can do, in a personalized way, in case UModel doesn't work, as a temporary rescue solution.
 I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionnaly.
+### Contributors
+| <a href="https://github.com/AyeTSG" target="_blank">**AyeTSG**</a> | <a href="https://github.com/ItsFireMonkey" target="_blank">**FireMonkey**</a> |
+| :---: |:---:|
+| [![AyeTSG](https://avatars1.githubusercontent.com/u/49595354?s=200&v=4)](https://github.com/AyeTSG)    | [![FireMonkey](https://avatars2.githubusercontent.com/u/38590471?s=200&v=4)](https://github.com/ItsFireMonkey) |
+| <a href="https://twitter.com/AyeTSG" target="_blank">`https://twitter.com/AyeTSG`</a> | <a href="https://twitter.com/FireMonkeyFN" target="_blank">`https://twitter.com/FireMonkeyFN`</a> |
 
 ## TODO
 - [ ] Support for meshes
