@@ -430,5 +430,17 @@ namespace FModel.Properties {
                 this["UpdateSettings"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool createIconForAmmo {
+            get {
+                return ((bool)(this["createIconForAmmo"]));
+            }
+            set {
+                this["createIconForAmmo"] = value;
+            }
+        }
     }
 }
