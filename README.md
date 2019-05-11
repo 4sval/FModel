@@ -16,9 +16,9 @@
 ### How does it works
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder and it'll automatically download the latest version of the custom [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) in this subfolder.
 
-![](https://i.imgur.com/NQWSBc2.gif)
+![](https://i.imgur.com/so1iz1B.gif)
 
-**2.** Restart the executable, enter the AES key, click **Load** and select your .PAK file
+**2.** Restart the executable, enter the AES Key, click **Load** and select your .PAK file
   - It will parse all Assets contained in the selected .PAK file with their respective path
   
 **3.** Navigate through the tree to find the Asset you want
@@ -57,20 +57,20 @@
 
 ## DOCUMENTATION
 ### Important
-If you find this repository useful, feel free to give it a :star: thank you :kissing_heart:
-
-If somehow FModel crash because of permissions, please either disable Windows Defender or add and exception for FModel.exe
-
 If issues occur when compiling the source code, make sure that the software is being built for x64.
+
+If somehow FModel crash because of permissions, please either disable Windows Defender or add and exception for FModel.exe.
+Also if you find this project useful, feel free to give it a :star: thank you :kissing_heart:
 ### Features
 1. Extract
 2. Serialize (CTRL+F/G/I support)
-3. Filter
+3. Filter & Search
 4. Create Cosmetics Icon
-5. Merge Icons
-6. Backup current .PAK files
-7. Load difference between current .PAK files and backup file
-8. Load, Extract and Save Assets automatically between current .PAK files and backup file
+5. Create Challenges Icon
+6. Merge Icons
+7. Backup current .PAK files
+8. Load difference between current .PAK files and backup file
+9. Load, Extract and Save Assets automatically between current .PAK files and backup file
 ### What i'm using
 - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - Custom Version With Output Control And No `key.txt`
 - [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
@@ -78,19 +78,19 @@ If issues occur when compiling the source code, make sure that the software is b
 - [ScintillaNET](https://www.nuget.org/packages/jacobslusser.ScintillaNET)
 - [Find & Replace for ScintillaNET](https://www.nuget.org/packages/snt.ScintillaNet.FindReplaceDialog/)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+### Contributors
+| <a href="https://github.com/SirWaddles" target="_blank">**Waddlesworth**</a> | <a href="https://github.com/AyeTSG" target="_blank">**AyeTSG**</a> | <a href="https://github.com/ItsFireMonkey" target="_blank">**FireMonkey**</a> |
+| :---: | :---: | :---: |
+| [![Waddlesworth](https://avatars1.githubusercontent.com/u/769399?s=200&v=4)](https://github.com/SirWaddles) | [![AyeTSG](https://avatars1.githubusercontent.com/u/49595354?s=200&v=4)](https://github.com/AyeTSG) | [![FireMonkey](https://avatars2.githubusercontent.com/u/38590471?s=200&v=4)](https://github.com/ItsFireMonkey) |
+| <a href="https://github.com/SirWaddles" target="_blank">`https://github.com/SirWaddles`</a> | <a href="https://twitter.com/AyeTSG" target="_blank">`https://twitter.com/AyeTSG`</a> | <a href="https://twitter.com/FireMonkeyFN" target="_blank">`https://twitter.com/FireMonkeyFN`</a> |
 ### Why FModel
 This project is mainly based on what [UModel](https://github.com/gildor2/UModel) can do, in a personalized way, in case UModel doesn't work, as a temporary rescue solution.
 I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionnaly.
-### Contributors
-| <a href="https://github.com/AyeTSG" target="_blank">**AyeTSG**</a> | <a href="https://github.com/ItsFireMonkey" target="_blank">**FireMonkey**</a> |
-| :---: |:---:|
-| [![AyeTSG](https://avatars1.githubusercontent.com/u/49595354?s=200&v=4)](https://github.com/AyeTSG)    | [![FireMonkey](https://avatars2.githubusercontent.com/u/38590471?s=200&v=4)](https://github.com/ItsFireMonkey) |
-| <a href="https://twitter.com/AyeTSG" target="_blank">`https://twitter.com/AyeTSG`</a> | <a href="https://twitter.com/FireMonkeyFN" target="_blank">`https://twitter.com/FireMonkeyFN`</a> |
 
 ## TODO
-- [ ] Support for meshes
-- [ ] Support for animations
-- [ ] Display support for .locres files
+- [ ] STW Icons
+- [ ] Get new file content
+- [ ] Display support for .locres files + compare
 - [x] Code refactoring
 - [x] Multithreading
 - [x] Stop button

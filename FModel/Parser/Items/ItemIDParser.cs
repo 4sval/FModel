@@ -47,6 +47,9 @@ namespace FModel.Parser.Items
 
         [JsonProperty("DisplayAssetPath")]
         public DisplayAssetPath DisplayAssetPath { get; set; }
+
+        [JsonProperty("AmmoData")]
+        public AmmoData AmmoData { get; set; }
     }
 
     public class GameplayTags
@@ -65,6 +68,15 @@ namespace FModel.Parser.Items
     }
 
     public class DisplayAssetPath
+    {
+        [JsonProperty("asset_path_name")]
+        public string AssetPathName { get; set; }
+
+        [JsonProperty("sub_path_string")]
+        public string SubPathString { get; set; }
+    }
+
+    public partial class AmmoData
     {
         [JsonProperty("asset_path_name")]
         public string AssetPathName { get; set; }

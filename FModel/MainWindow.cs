@@ -1480,11 +1480,7 @@ namespace FModel
             }
             else
             {
-                Image itemIcon;
-                using (var bmpTemp = new Bitmap(ItemIconPath))
-                {
-                    itemIcon = new Bitmap(bmpTemp);
-                }
+                Image itemIcon = Resources.unknown512;
                 g.DrawImage(itemIcon, new Point(0, 0));
             }
             #endregion
@@ -1565,6 +1561,7 @@ namespace FModel
                 } //COSMETIC SOURCE
             }
             if (consAndWeap)
+            {
                 try
                 {
                     g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Athena.ItemAction."))].Substring(18), new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
@@ -1601,6 +1598,11 @@ namespace FModel
                         AppendText("found", Color.Black, true);
                     }
                 } //ACTION
+                if (theItem.AmmoData != null && theItem.AmmoData.AssetPathName.Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
+                {
+                    getAmmoData(theItem.AmmoData.AssetPathName, g);
+                }
+            }
             if (variant)
             {
                 try
@@ -2153,6 +2155,59 @@ namespace FModel
             }
             return toReturn;
         }
+        private void getAmmoData(string ammoFile, Graphics toDrawOn)
+        {
+            if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
+                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+            else
+                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[ammoFile.Substring(ammoFile.LastIndexOf('.') + 1)] + "\" \"" + ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+            string ammoFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+
+            if (ammoFilePath != null)
+            {
+                UpdateConsole(ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
+                if (ammoFilePath.Contains(".uasset") || ammoFilePath.Contains(".uexp") || ammoFilePath.Contains(".ubulk"))
+                {
+                    MyAsset = new PakAsset(ammoFilePath.Substring(0, ammoFilePath.LastIndexOf('.')));
+                    try
+                    {
+                        if (MyAsset.GetSerialized() != null)
+                        {
+                            UpdateConsole(ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
+                            string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                            var ammoId = ItemsIdParser.FromJson(parsedJson);
+                            UpdateConsole("Parsing " + ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
+                            for (int i = 0; i < ammoId.Length; i++)
+                            {
+                                SearchLargeSmallIcon(ammoId[i]);
+
+                                if (File.Exists(ItemIconPath))
+                                {
+                                    Image itemIcon;
+                                    using (var bmpTemp = new Bitmap(ItemIconPath))
+                                    {
+                                        itemIcon = new Bitmap(bmpTemp);
+                                    }
+                                    toDrawOn.DrawImage(Forms.Settings.ResizeImage(itemIcon, 64, 64), new Point(6, 6));
+                                }
+                                else
+                                {
+                                    Image itemIcon = Resources.unknown512;
+                                    toDrawOn.DrawImage(Forms.Settings.ResizeImage(itemIcon, 64, 64), new Point(6, 6));
+                                }
+                            }
+                        }
+                    }
+                    catch (JsonSerializationException)
+                    {
+                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText(".JSON file can't be displayed", Color.Black, true);
+                    }
+                }
+            }
+            else
+                UpdateConsole("Error while extracting " + ammoFile.Substring(ammoFile.LastIndexOf('.') + 1), Color.FromArgb(255, 244, 66, 66), "Error");
+        }
 
         //TODO: SIMPLIFY
         private void CreateChallengesIcon(ItemsIdParser theItem, string theParsedJson, string questJson = null)
@@ -2171,111 +2226,27 @@ namespace FModel
                     int justSkip = 0;
                     YAfterLoop = 0;
                     bool v2 = false;
-                    int sRed;
-                    int sGreen;
-                    int sBlue;
 
                     var bundleParser = ChallengeBundleIdParser.FromJson(theParsedJson);
                     for (int i = 0; i < bundleParser.Length; i++)
                     {
-                        #region DRAW BUNDLE ICON
-                        try
-                        {
-                            if (Settings.Default.createIconForChallenges)
-                            {
-                                if (bundleParser[i].DisplayStyle.DisplayImage != null)
-                                {
-                                    v2 = true;
-                                    string seasonFolder = questJson.Substring(questJson.Substring(0, questJson.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
-                                    #region COLORS + IMAGE
-                                    if (seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)) != "LTM")
-                                    {
-                                        sRed = (int)(bundleParser[i].DisplayStyle.SecondaryColor.R * 255);
-                                        sGreen = (int)(bundleParser[i].DisplayStyle.SecondaryColor.G * 255);
-                                        sBlue = (int)(bundleParser[i].DisplayStyle.SecondaryColor.B * 255);
-                                    }
-                                    else
-                                    {
-                                        sRed = (int)(bundleParser[i].DisplayStyle.AccentColor.R * 255);
-                                        sGreen = (int)(bundleParser[i].DisplayStyle.AccentColor.G * 255);
-                                        sBlue = (int)(bundleParser[i].DisplayStyle.AccentColor.B * 255);
-                                    }
-
-                                    int seasonRed = Convert.ToInt32(sRed / 1.5);
-                                    int seasonGreen = Convert.ToInt32(sGreen / 1.5);
-                                    int seasonBlue = Convert.ToInt32(sBlue / 1.5);
-
-                                    g.FillRectangle(new SolidBrush(Color.FromArgb(255, sRed, sGreen, sBlue)), new Rectangle(0, 0, bmp.Width, 271));
-                                    g.FillRectangle(new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Rectangle(0, 271, bmp.Width, bmp.Height - 271));
-
-                                    try
-                                    {
-                                        g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(_pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Point(340, 40));
-                                    }
-                                    catch (NullReferenceException)
-                                    {
-                                        AppendText("[NullReferenceException] ", Color.Red);
-                                        AppendText("No ", Color.Black);
-                                        AppendText("Season ", Color.SteelBlue);
-                                        AppendText("found", Color.Black, true);
-                                    } //LAST SUBFOLDER
-                                    try
-                                    {
-                                        g.DrawString(theItem.DisplayName.ToUpper(), new Font(_pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
-                                    }
-                                    catch (NullReferenceException)
-                                    {
-                                        AppendText("[NullReferenceException] ", Color.Red);
-                                        AppendText("No ", Color.Black);
-                                        AppendText("DisplayName ", Color.SteelBlue);
-                                        AppendText("found", Color.Black, true);
-                                    } //NAME
-
-                                    string pngPath;
-                                    string textureFile = Path.GetFileName(bundleParser[i].DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(bundleParser[i].DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
-
-                                    if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                        JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                    else
-                                        JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                    string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
-
-                                    if (textureFilePath != null && textureFile == "M_UI_ChallengeTile_PCB")
-                                    {
-                                        pngPath = GetRenderSwitchMaterialTexture(textureFile, textureFilePath);
-
-                                        Image challengeIcon = Image.FromFile(pngPath);
-                                        g.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0)); //327
-                                    }
-                                    else if (textureFilePath != null)
-                                    {
-                                        MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                        MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                        pngPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
-                                        UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-
-                                        Image challengeIcon;
-                                        using (var bmpTemp = new Bitmap(pngPath))
-                                        {
-                                            challengeIcon = new Bitmap(bmpTemp);
-                                        }
-                                        g.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0)); //327
-                                    }
-                                    #endregion
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-                        #endregion
-
                         SelectedChallengesArray = new string[bundleParser[i].QuestInfos.Length];
                         for (int i2 = 0; i2 < bundleParser[i].QuestInfos.Length; i2++)
                         {
                             string cName = Path.GetFileName(bundleParser[i].QuestInfos[i2].QuestDefinition.AssetPathName);
                             SelectedChallengesArray[i2] = cName.Substring(0, cName.LastIndexOf('.'));
+                        }
+
+                        try
+                        {
+                            if (Settings.Default.createIconForChallenges && bundleParser[i].DisplayStyle.DisplayImage != null)
+                            {
+                                drawV2(bundleParser[i], theItem, questJson, g, bmp);
+                                v2 = true;
+                            }
+                        }
+                        catch (Exception)
+                        {
                         }
 
                         for (int i2 = 0; i2 < SelectedChallengesArray.Length; i2++)
@@ -2675,6 +2646,88 @@ namespace FModel
 
                     AppendText("", Color.Black, true);
                 }
+            }
+        }
+        private void drawV2(ChallengeBundleIdParser myBundle, ItemsIdParser theItem, string questJson, Graphics toDrawOn, Bitmap myBitmap)
+        {
+            int sRed;
+            int sGreen;
+            int sBlue;
+
+            string seasonFolder = questJson.Substring(questJson.Substring(0, questJson.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
+
+            if (seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)) != "LTM")
+            {
+                sRed = (int)(myBundle.DisplayStyle.SecondaryColor.R * 255);
+                sGreen = (int)(myBundle.DisplayStyle.SecondaryColor.G * 255);
+                sBlue = (int)(myBundle.DisplayStyle.SecondaryColor.B * 255);
+            }
+            else
+            {
+                sRed = (int)(myBundle.DisplayStyle.AccentColor.R * 255);
+                sGreen = (int)(myBundle.DisplayStyle.AccentColor.G * 255);
+                sBlue = (int)(myBundle.DisplayStyle.AccentColor.B * 255);
+            }
+
+            int seasonRed = Convert.ToInt32(sRed / 1.5);
+            int seasonGreen = Convert.ToInt32(sGreen / 1.5);
+            int seasonBlue = Convert.ToInt32(sBlue / 1.5);
+
+            toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(255, sRed, sGreen, sBlue)), new Rectangle(0, 0, myBitmap.Width, 271));
+            toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Rectangle(0, 271, myBitmap.Width, myBitmap.Height - 271));
+
+            try
+            {
+                toDrawOn.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(_pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Point(340, 40));
+            }
+            catch (NullReferenceException)
+            {
+                AppendText("[NullReferenceException] ", Color.Red);
+                AppendText("No ", Color.Black);
+                AppendText("Season ", Color.SteelBlue);
+                AppendText("found", Color.Black, true);
+            } //LAST SUBFOLDER
+            try
+            {
+                toDrawOn.DrawString(theItem.DisplayName.ToUpper(), new Font(_pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+            }
+            catch (NullReferenceException)
+            {
+                AppendText("[NullReferenceException] ", Color.Red);
+                AppendText("No ", Color.Black);
+                AppendText("DisplayName ", Color.SteelBlue);
+                AppendText("found", Color.Black, true);
+            } //NAME
+
+            string pngPath;
+            string textureFile = Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
+
+            if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
+                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+            else
+                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+            string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+
+            if (textureFilePath != null && textureFile == "M_UI_ChallengeTile_PCB")
+            {
+                pngPath = GetRenderSwitchMaterialTexture(textureFile, textureFilePath);
+
+                Image challengeIcon = Image.FromFile(pngPath);
+                toDrawOn.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0));
+            }
+            else if (textureFilePath != null)
+            {
+                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
+                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
+                pngPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
+
+                Image challengeIcon;
+                using (var bmpTemp = new Bitmap(pngPath))
+                {
+                    challengeIcon = new Bitmap(bmpTemp);
+                }
+                toDrawOn.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0));
             }
         }
         private void LoopStageQuest(string qAssetType, string qAssetName, Graphics toDrawOn, int yeay, int line)
