@@ -20,6 +20,7 @@ namespace FModel.Forms
             checkedAssets.SetItemChecked(2, Properties.Settings.Default.createIconForCosmetics);
             checkedAssets.SetItemChecked(3, Properties.Settings.Default.createIconForTraps);
             checkedAssets.SetItemChecked(4, Properties.Settings.Default.createIconForVariants);
+            checkedAssets.SetItemChecked(5, Properties.Settings.Default.createIconForAmmo);
         }
 
         private void OKButton_Click(object sender, EventArgs e)
@@ -30,6 +31,7 @@ namespace FModel.Forms
             Properties.Settings.Default.createIconForCosmetics = checkedAssets.GetItemChecked(2);
             Properties.Settings.Default.createIconForTraps = checkedAssets.GetItemChecked(3);
             Properties.Settings.Default.createIconForVariants = checkedAssets.GetItemChecked(4);
+            Properties.Settings.Default.createIconForAmmo = checkedAssets.GetItemChecked(5);
 
             Properties.Settings.Default.Save(); //SAVE
             Close();

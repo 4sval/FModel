@@ -54,7 +54,8 @@
             "Consumables & Weapons",
             "Cosmetics",
             "Traps",
-            "Variants"});
+            "Variants",
+            "Ammo"});
             this.checkedAssets.Location = new System.Drawing.Point(12, 12);
             this.checkedAssets.Name = "checkedAssets";
             this.checkedAssets.Size = new System.Drawing.Size(307, 274);

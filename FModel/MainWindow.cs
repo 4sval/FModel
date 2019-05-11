@@ -1461,6 +1461,8 @@ namespace FModel
                         CreateItemIcon(itemId[i]);
                     else if (Settings.Default.createIconForVariants && (itemId[i].ExportType == "FortVariantTokenType"))
                         CreateItemIcon(itemId[i], false, false, true);
+                    else if (Settings.Default.createIconForAmmo && (itemId[i].ExportType == "FortAmmoItemDefinition"))
+                        CreateItemIcon(itemId[i], false, false, false, "ammo");
                     else if (itemId[i].ExportType == "FortChallengeBundleItemDefinition")
                         CreateChallengesIcon(itemId[i], parsedJson, questJson);
                     else if (itemId[i].ExportType == "Texture2D")
@@ -1476,7 +1478,7 @@ namespace FModel
                 Console.WriteLine(ex.Message);
             }
         }
-        private void CreateItemIcon(ItemsIdParser theItem, bool athIteDef = false, bool consAndWeap = false, bool variant = false)
+        private void CreateItemIcon(ItemsIdParser theItem, bool athIteDef = false, bool consAndWeap = false, bool variant = false, string SpecialMode = null)
         {
             UpdateConsole(CurrentUsedItem + " is a Cosmetic ID", Color.FromArgb(255, 66, 244, 66), "Success");
 
@@ -1487,7 +1489,11 @@ namespace FModel
             if (theItem.Series != null)
                 GetSeriesRarity(theItem, g);
             else
-                GetItemRarity(theItem, g);
+                // Special ammo force-rarity check
+                if (SpecialMode == "ammo")
+                    GetItemRarity(theItem, g, "ammo");
+                else
+                    GetItemRarity(theItem, g);
 
             ItemIconPath = string.Empty;
             if (Settings.Default.loadFeaturedImage == false)
@@ -1715,7 +1721,7 @@ namespace FModel
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
         }
-        private void GetItemRarity(ItemsIdParser theItem, Graphics toDrawOn)
+        private void GetItemRarity(ItemsIdParser theItem, Graphics toDrawOn, string SpecialMode = null)
         {
             if (theItem.Rarity == "EFortRarity::Transcendent")
             {
@@ -1750,6 +1756,13 @@ namespace FModel
             if (theItem.Rarity == null)
             {
                 Image rarityBg = Resources.U512;
+                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
+            }
+
+            // Force common rarity if ammo, as ammo is always common in FN
+            if (SpecialMode == "ammo")
+            {
+                Image rarityBg = Resources.C512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
         }
