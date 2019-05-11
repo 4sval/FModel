@@ -204,6 +204,7 @@
     <Content Include="csharp_wick.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="CurrentCommit.txt" />
     <Content Include="DLLs\csharp-wick.dll" />
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
@@ -247,4 +248,7 @@
       </EmbeddedResource>
     </ItemGroup>
   </Target>
+  <PropertyGroup>
+    <PreBuildEvent>git rev-parse --short HEAD &gt; "$(ProjectDir)\CurrentCommit.txt"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
