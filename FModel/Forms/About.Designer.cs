@@ -38,6 +38,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.commitHash = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -85,7 +86,7 @@
             // label2
             // 
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(108, 12);
+            this.label2.Location = new System.Drawing.Point(108, 8);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(360, 39);
             this.label2.TabIndex = 4;
@@ -137,11 +138,24 @@
             this.label6.Text = "• FireMonkey";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // commitHash
+            // 
+            this.commitHash.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.commitHash.AutoSize = true;
+            this.commitHash.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.commitHash.Location = new System.Drawing.Point(406, 124);
+            this.commitHash.Name = "commitHash";
+            this.commitHash.Size = new System.Drawing.Size(49, 13);
+            this.commitHash.TabIndex = 9;
+            this.commitHash.Text = "1234567";
+            this.commitHash.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // About
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(467, 145);
+            this.Controls.Add(this.commitHash);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -175,5 +189,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label commitHash;
     }
 }
