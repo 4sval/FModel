@@ -21,6 +21,8 @@ namespace FModel.Forms
             checkedAssets.SetItemChecked(3, Properties.Settings.Default.createIconForTraps);
             checkedAssets.SetItemChecked(4, Properties.Settings.Default.createIconForVariants);
             checkedAssets.SetItemChecked(5, Properties.Settings.Default.createIconForAmmo);
+            checkedAssets.SetItemChecked(6, Properties.Settings.Default.createIconForSTWHeroes);
+            checkedAssets.SetItemChecked(7, Properties.Settings.Default.createIconForSTWDefenders);
         }
 
         private void OKButton_Click(object sender, EventArgs e)
@@ -32,6 +34,8 @@ namespace FModel.Forms
             Properties.Settings.Default.createIconForTraps = checkedAssets.GetItemChecked(3);
             Properties.Settings.Default.createIconForVariants = checkedAssets.GetItemChecked(4);
             Properties.Settings.Default.createIconForAmmo = checkedAssets.GetItemChecked(5);
+            Properties.Settings.Default.createIconForSTWHeroes = checkedAssets.GetItemChecked(6);
+            Properties.Settings.Default.createIconForSTWDefenders = checkedAssets.GetItemChecked(7);
 
             Properties.Settings.Default.Save(); //SAVE
             Close();

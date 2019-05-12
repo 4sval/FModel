@@ -50,6 +50,9 @@ namespace FModel.Parser.Items
 
         [JsonProperty("AmmoData")]
         public AmmoData AmmoData { get; set; }
+
+        [JsonProperty("AttributeInitKey")]
+        public AttributeInitKey AttributeInitKey { get; set; }
     }
 
     public class GameplayTags
@@ -83,6 +86,15 @@ namespace FModel.Parser.Items
 
         [JsonProperty("sub_path_string")]
         public string SubPathString { get; set; }
+    }
+
+    public partial class AttributeInitKey
+    {
+        [JsonProperty("AttributeInitCategory")]
+        public string AttributeInitCategory { get; set; }
+
+        [JsonProperty("AttributeInitSubCategory")]
+        public string AttributeInitSubCategory { get; set; }
     }
 
     public partial class ItemsIdParser

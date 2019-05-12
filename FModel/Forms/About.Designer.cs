@@ -40,6 +40,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.commitHash = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -120,7 +121,7 @@
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(56, 124);
+            this.label5.Location = new System.Drawing.Point(127, 124);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(46, 12);
             this.label5.TabIndex = 7;
@@ -132,7 +133,7 @@
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(108, 124);
+            this.label6.Location = new System.Drawing.Point(178, 124);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(61, 12);
             this.label6.TabIndex = 8;
@@ -163,11 +164,24 @@
             this.label7.Text = "Commit:";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // label8
+            // 
+            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(53, 124);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(71, 12);
+            this.label8.TabIndex = 11;
+            this.label8.Text = "• Waddlesworth";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // About
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(467, 145);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.commitHash);
             this.Controls.Add(this.label6);
@@ -205,5 +219,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label commitHash;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
     }
 }

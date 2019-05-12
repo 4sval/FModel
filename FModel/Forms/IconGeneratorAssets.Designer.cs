@@ -55,7 +55,9 @@
             "Cosmetics",
             "Traps",
             "Variants",
-            "Ammo"});
+            "Ammo",
+            "STW Heroes",
+            "STW Defenders"});
             this.checkedAssets.Location = new System.Drawing.Point(12, 12);
             this.checkedAssets.Name = "checkedAssets";
             this.checkedAssets.Size = new System.Drawing.Size(307, 274);

@@ -672,7 +672,7 @@ namespace FModel
             //ASK DIFFERENCE FILE AND COMPARE
             OpenFileDialog theDialog = new OpenFileDialog();
             theDialog.Title = @"Choose your Backup PAK File";
-            theDialog.InitialDirectory = DefaultOutputPath;
+            theDialog.InitialDirectory = DefaultOutputPath + "\\Backup";
             theDialog.Multiselect = false;
             theDialog.Filter = @"TXT Files (*.txt)|*.txt|All Files (*.*)|*.*";
             Invoke(new Action(() =>
@@ -1418,14 +1418,18 @@ namespace FModel
                 {
                     if (Settings.Default.createIconForCosmetics && (itemId[i].ExportType.Contains("Athena") && itemId[i].ExportType.Contains("Item") && itemId[i].ExportType.Contains("Definition")))
                         CreateItemIcon(itemId[i], true);
-                    else if (Settings.Default.createIconForConsumablesWeapons && (itemId[i].ExportType.Contains("FortWeaponRangedItemDefinition") || itemId[i].ExportType.Contains("FortWeaponMeleeItemDefinition")))
+                    else if (Settings.Default.createIconForConsumablesWeapons && (itemId[i].ExportType == "FortWeaponRangedItemDefinition" || itemId[i].ExportType == "FortWeaponMeleeItemDefinition"))
                         CreateItemIcon(itemId[i], false, true);
-                    else if (Settings.Default.createIconForTraps && (itemId[i].ExportType.Contains("FortTrapItemDefinition") || itemId[i].ExportType.Contains("FortContextTrapItemDefinition")))
+                    else if (Settings.Default.createIconForTraps && (itemId[i].ExportType == "FortTrapItemDefinition" || itemId[i].ExportType == "FortContextTrapItemDefinition"))
                         CreateItemIcon(itemId[i]);
                     else if (Settings.Default.createIconForVariants && (itemId[i].ExportType == "FortVariantTokenType"))
                         CreateItemIcon(itemId[i], false, false, true);
                     else if (Settings.Default.createIconForAmmo && (itemId[i].ExportType == "FortAmmoItemDefinition"))
                         CreateItemIcon(itemId[i], false, false, false, "ammo");
+                    else if (Settings.Default.createIconForSTWHeroes && (itemId[i].ExportType == "FortHeroType" && (questJson.Contains("ItemDefinition") || questJson.Contains("TestDefsSkydive") || questJson.Contains("GameplayPrototypes")))) //Contains x not to trigger HID from BR
+                        CreateItemIcon(itemId[i], false, false, false, "stwHeroes");
+                    else if (Settings.Default.createIconForSTWDefenders && (itemId[i].ExportType == "FortDefenderItemDefinition"))
+                        CreateItemIcon(itemId[i], false, false, false, "stwDefenders");
                     else if (itemId[i].ExportType == "FortChallengeBundleItemDefinition")
                         CreateChallengesIcon(itemId[i], parsedJson, questJson);
                     else if (itemId[i].ExportType == "Texture2D")
@@ -1664,6 +1668,43 @@ namespace FModel
             catch (Exception)
             {
             } //COSMETIC USER FACING FLAGS
+            if (SpecialMode == "stwHeroes")
+            {
+                try
+                {
+                    g.DrawString(theItem.AttributeInitKey.AttributeInitCategory, new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
+                }
+                catch (NullReferenceException)
+                {
+                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText("No ", Color.Black);
+                    AppendText("AttributeInitCategory ", Color.SteelBlue);
+                    AppendText("found", Color.Black, true);
+                } //CHARACTER TYPE
+            }
+            if (SpecialMode == "stwDefenders")
+            {
+                try
+                {
+                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("NPC.CharacterType.Survivor.Defender."))].Substring(36), new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), _rightString);
+                }
+                catch (NullReferenceException)
+                {
+                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText("No ", Color.Black);
+                    AppendText("GameplayTags ", Color.SteelBlue);
+                    AppendText("found", Color.Black, true);
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText("No ", Color.Black);
+                    AppendText("GameplayTags ", Color.SteelBlue);
+                    AppendText("as ", Color.Black);
+                    AppendText("NPC.CharacterType.Survivor.Defender ", Color.SteelBlue);
+                    AppendText("found", Color.Black, true);
+                } //CHARACTER TYPE
+            }
             #endregion
 
             pictureBox1.Image = bmp;
