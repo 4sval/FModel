@@ -1,5 +1,5 @@
 # FModel
-[![](https://img.shields.io/github/downloads/iAmAsval/FModel/total.svg?color=green&label=Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases)
+[![](https://img.shields.io/github/downloads/iAmAsval/FModel/total.svg?color=green&label=Total%20Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases)
 [![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
 [![](https://img.shields.io/badge/Discord-Need%20Help%3F-7289da.svg?logo=discord)](https://discord.gg/JmWvXKb)
@@ -12,7 +12,7 @@
 ### Prerequisites
 [.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471)
 ### Download
-[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/2.2.2)
+[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/2.3)
 ### How does it works
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder and it'll automatically download the latest version of the custom [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) in this subfolder.
 
@@ -88,7 +88,6 @@ This project is mainly based on what [UModel](https://github.com/gildor2/UModel)
 I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionnaly.
 
 ## TODO
-- [ ] STW Icons
 - [ ] Get new file content
 - [ ] Display support for .locres files + compare
 - [x] Code refactoring
@@ -96,6 +95,7 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
 - [x] Stop button
 - [x] Auto update
 - [x] CTRL F, CTRL G, CTRL I for jsonTextBox
+- [x] STW Icons
 - [x] Update Mode
 - [x] Search through PAKs
 - [x] Improve speed

@@ -1734,32 +1734,32 @@ namespace FModel
                 Image rarityBg = Resources.T512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Mythic")
+            else if (theItem.Rarity == "EFortRarity::Mythic")
             {
                 Image rarityBg = Resources.M512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Legendary")
+            else if (theItem.Rarity == "EFortRarity::Legendary")
             {
                 Image rarityBg = Resources.L512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Epic" || theItem.Rarity == "EFortRarity::Quality")
+            else if (theItem.Rarity == "EFortRarity::Epic" || theItem.Rarity == "EFortRarity::Quality")
             {
                 Image rarityBg = Resources.E512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Rare")
+            else if (theItem.Rarity == "EFortRarity::Rare")
             {
                 Image rarityBg = Resources.R512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == "EFortRarity::Common" || SpecialMode == "ammo") // Force common rarity if ammo, as ammo is always common in FN
+            else if (theItem.Rarity == "EFortRarity::Common" || SpecialMode == "ammo") // Force common rarity if ammo, as ammo is always common in FN
             {
                 Image rarityBg = Resources.C512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
-            if (theItem.Rarity == null)
+            else
             {
                 Image rarityBg = Resources.U512;
                 toDrawOn.DrawImage(rarityBg, new Point(0, 0));
@@ -2004,29 +2004,56 @@ namespace FModel
                                     UpdateConsole("Parsing " + catName.Substring(catName.LastIndexOf('.') + 1) + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                                     for (int i = 0; i < featuredId.Length; i++)
                                     {
-                                        if (featuredId[i].DetailsImage != null)
+                                        //Thanks EPIC
+                                        if (CurrentUsedItem == "DA_Featured_CID_319_Athena_Commando_F_Nautilus")
                                         {
-                                            string textureFile = featuredId[i].DetailsImage.ResourceObject;
-
-                                            if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                            else
-                                                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                            string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
-
-                                            if (textureFilePath != null && textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
+                                            if (featuredId[i].TileImage != null)
                                             {
-                                                ItemIconPath = GetRenderSwitchMaterialTexture(textureFile, textureFilePath);
+                                                string textureFile = featuredId[i].TileImage.ResourceObject;
+
+                                                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
+                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                else
+                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+
+                                                if (textureFilePath != null)
+                                                {
+                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
+                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
+                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                    UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
+                                                }
+                                                else
+                                                    UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
                                             }
-                                            else if (textureFilePath != null && !textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
+                                        }
+                                        else
+                                        {
+                                            if (featuredId[i].DetailsImage != null)
                                             {
-                                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                                ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
-                                                UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
+                                                string textureFile = featuredId[i].DetailsImage.ResourceObject;
+
+                                                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
+                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                else
+                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+
+                                                if (textureFilePath != null && textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
+                                                {
+                                                    ItemIconPath = GetRenderSwitchMaterialTexture(textureFile, textureFilePath);
+                                                }
+                                                else if (textureFilePath != null && !textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
+                                                {
+                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
+                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
+                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                    UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
+                                                }
+                                                else
+                                                    UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
                                             }
-                                            else
-                                                UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
                                         }
                                     }
                                 }
