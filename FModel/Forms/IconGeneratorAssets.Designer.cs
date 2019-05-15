@@ -57,7 +57,8 @@
             "Variants",
             "Ammo",
             "STW Heroes",
-            "STW Defenders"});
+            "STW Defenders",
+            "STW Card Packs"});
             this.checkedAssets.Location = new System.Drawing.Point(12, 12);
             this.checkedAssets.Name = "checkedAssets";
             this.checkedAssets.Size = new System.Drawing.Size(307, 274);

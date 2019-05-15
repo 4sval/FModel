@@ -23,6 +23,7 @@ namespace FModel.Forms
             checkedAssets.SetItemChecked(5, Properties.Settings.Default.createIconForAmmo);
             checkedAssets.SetItemChecked(6, Properties.Settings.Default.createIconForSTWHeroes);
             checkedAssets.SetItemChecked(7, Properties.Settings.Default.createIconForSTWDefenders);
+            checkedAssets.SetItemChecked(8, Properties.Settings.Default.createIconForSTWCardPacks);
         }
 
         private void OKButton_Click(object sender, EventArgs e)
@@ -36,6 +37,7 @@ namespace FModel.Forms
             Properties.Settings.Default.createIconForAmmo = checkedAssets.GetItemChecked(5);
             Properties.Settings.Default.createIconForSTWHeroes = checkedAssets.GetItemChecked(6);
             Properties.Settings.Default.createIconForSTWDefenders = checkedAssets.GetItemChecked(7);
+            Properties.Settings.Default.createIconForSTWCardPacks = checkedAssets.GetItemChecked(8);
 
             Properties.Settings.Default.Save(); //SAVE
             Close();

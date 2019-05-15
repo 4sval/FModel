@@ -466,5 +466,17 @@ namespace FModel.Properties {
                 this["createIconForSTWHeroes"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool createIconForSTWCardPacks {
+            get {
+                return ((bool)(this["createIconForSTWCardPacks"]));
+            }
+            set {
+                this["createIconForSTWCardPacks"] = value;
+            }
+        }
     }
 }

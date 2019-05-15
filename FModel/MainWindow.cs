@@ -1323,7 +1323,12 @@ namespace FModel
             string toReturn = string.Empty;
 
             MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, Settings.Default.AESKey);
-            string[] results = Array.FindAll(MyExtractor.GetFileList().ToArray(), s => s.Contains("/" + currentItem + "."));
+
+            string[] results = null;
+            if (currentItem.Contains("."))
+                results = Array.FindAll(MyExtractor.GetFileList().ToArray(), s => s.Contains("/" + currentItem));
+            else
+                results = Array.FindAll(MyExtractor.GetFileList().ToArray(), s => s.Contains("/" + currentItem + "."));
 
             for (int i = 0; i < results.Length; i++)
             {
@@ -1444,19 +1449,21 @@ namespace FModel
                 for (int i = 0; i < itemId.Length; i++)
                 {
                     if (Settings.Default.createIconForCosmetics && (itemId[i].ExportType.Contains("Athena") && itemId[i].ExportType.Contains("Item") && itemId[i].ExportType.Contains("Definition")))
-                        CreateItemIcon(itemId[i], true);
+                        CreateItemIcon(itemId[i], "athIteDef");
                     else if (Settings.Default.createIconForConsumablesWeapons && (itemId[i].ExportType == "FortWeaponRangedItemDefinition" || itemId[i].ExportType == "FortWeaponMeleeItemDefinition"))
-                        CreateItemIcon(itemId[i], false, true);
+                        CreateItemIcon(itemId[i], "consAndWeap");
                     else if (Settings.Default.createIconForTraps && (itemId[i].ExportType == "FortTrapItemDefinition" || itemId[i].ExportType == "FortContextTrapItemDefinition"))
                         CreateItemIcon(itemId[i]);
                     else if (Settings.Default.createIconForVariants && (itemId[i].ExportType == "FortVariantTokenType"))
-                        CreateItemIcon(itemId[i], false, false, true);
+                        CreateItemIcon(itemId[i], "variant");
                     else if (Settings.Default.createIconForAmmo && (itemId[i].ExportType == "FortAmmoItemDefinition"))
-                        CreateItemIcon(itemId[i], false, false, false, "ammo");
+                        CreateItemIcon(itemId[i], "ammo");
                     else if (Settings.Default.createIconForSTWHeroes && (itemId[i].ExportType == "FortHeroType" && (questJson.Contains("ItemDefinition") || questJson.Contains("TestDefsSkydive") || questJson.Contains("GameplayPrototypes")))) //Contains x not to trigger HID from BR
-                        CreateItemIcon(itemId[i], false, false, false, "stwHeroes");
+                        CreateItemIcon(itemId[i], "stwHeroes");
                     else if (Settings.Default.createIconForSTWDefenders && (itemId[i].ExportType == "FortDefenderItemDefinition"))
-                        CreateItemIcon(itemId[i], false, false, false, "stwDefenders");
+                        CreateItemIcon(itemId[i], "stwDefenders");
+                    else if (Settings.Default.createIconForSTWCardPacks && (itemId[i].ExportType == "FortCardPackItemDefinition"))
+                        CreateItemIcon(itemId[i]);
                     else if (itemId[i].ExportType == "FortChallengeBundleItemDefinition")
                         CreateChallengesIcon(itemId[i], parsedJson, questJson);
                     else if (itemId[i].ExportType == "Texture2D")
@@ -1472,7 +1479,7 @@ namespace FModel
                 Console.WriteLine(ex.Message);
             }
         }
-        private void CreateItemIcon(ItemsIdParser theItem, bool athIteDef = false, bool consAndWeap = false, bool variant = false, string SpecialMode = null)
+        private void CreateItemIcon(ItemsIdParser theItem, string SpecialMode = null)
         {
             UpdateConsole(CurrentUsedItem + " is a Cosmetic ID", Color.FromArgb(255, 66, 244, 66), "Success");
 
@@ -1557,7 +1564,7 @@ namespace FModel
                 AppendText("Description ", Color.SteelBlue);
                 AppendText("found", Color.Black, true);
             } //DESCRIPTION
-            if (athIteDef)
+            if (SpecialMode == "athIteDef")
             {
                 try
                 {
@@ -1591,7 +1598,7 @@ namespace FModel
                     AppendText("found", Color.Black, true);
                 } //COSMETIC SOURCE
             }
-            if (consAndWeap)
+            if (SpecialMode == "consAndWeap")
             {
                 try
                 {
@@ -1634,7 +1641,7 @@ namespace FModel
                     getAmmoData(theItem.AmmoData.AssetPathName, g);
                 }
             }
-            if (variant)
+            if (SpecialMode == "variant")
             {
                 try
                 {
