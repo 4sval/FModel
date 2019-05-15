@@ -48,6 +48,7 @@ namespace FModel
         public static Dictionary<string, string> AllpaksDictionary;
         private static Dictionary<string, long> _questStageDict;
         private static Dictionary<string, string> _diffToExtract;
+        private static Dictionary<string, string> _paksMountPoint;
         private static string _backupFileName;
         private static string _backupDynamicKeys;
         private static List<string> _itemsToDisplay;
@@ -565,6 +566,8 @@ namespace FModel
 
                     if (MyExtractor.GetFileList() != null)
                     {
+                        _paksMountPoint.Add(arCurrentUsedPak, MyExtractor.GetMountPoint().Substring(9));
+
                         if (loadAllPaKs)
                             if (!File.Exists(DefaultOutputPath + "\\FortnitePAKs.txt"))
                                 File.Create(DefaultOutputPath + "\\FortnitePAKs.txt").Dispose();
@@ -617,7 +620,10 @@ namespace FModel
                     MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text, Settings.Default.AESKey);
 
                     if (MyExtractor.GetFileList() != null)
+                    {
+                        _paksMountPoint.Add(theSinglePak.ClickedItem.Text, MyExtractor.GetMountPoint().Substring(9));
                         pakAsTxt = MyExtractor.GetFileList().ToArray();
+                    }
                 }
                 catch (Exception)
                 {
@@ -720,6 +726,7 @@ namespace FModel
         {
             AllpaksDictionary = new Dictionary<string, string>();
             _diffToExtract = new Dictionary<string, string>();
+            _paksMountPoint = new Dictionary<string, string>();
             Settings.Default.AESKey = AESKeyTextBox.Text.Substring(2).ToUpper();
             Settings.Default.Save();
 
@@ -1311,6 +1318,27 @@ namespace FModel
 
         #region EXTRACT BUTTON
         //METHODS
+        private string ExtractAsset(string currentPak, string currentItem)
+        {
+            string toReturn = string.Empty;
+
+            MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, Settings.Default.AESKey);
+            string[] results = Array.FindAll(MyExtractor.GetFileList().ToArray(), s => s.Contains("/" + currentItem + "."));
+
+            for (int i = 0; i < results.Length; i++)
+            {
+                int index = Array.IndexOf(MyExtractor.GetFileList().ToArray(), results[i]);
+
+                uint y = (uint)index;
+                byte[] b = MyExtractor.GetData(y);
+                Directory.CreateDirectory(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i].Substring(0, results[i].LastIndexOf("/")));
+                File.WriteAllBytes(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i], b);
+
+                toReturn = DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i];
+            }
+
+            return toReturn.Replace("/", "\\");
+        }
         private void ExtractAndSerializeItems(DoWorkEventArgs e, bool updateMode = false)
         {
             if (updateMode == false)
@@ -1355,10 +1383,9 @@ namespace FModel
                 CurrentUsedItem = SelectedItemsArray[i];
 
                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + CurrentUsedItem + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                    ExtractedFilePath = ExtractAsset(CurrentUsedPak, CurrentUsedItem);
                 else
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[CurrentUsedItem] + "\" \"" + CurrentUsedItem + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                ExtractedFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", CurrentUsedItem + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                    ExtractedFilePath = ExtractAsset(AllpaksDictionary[CurrentUsedItem], CurrentUsedItem);
 
                 if (ExtractedFilePath != null)
                 {
@@ -1793,11 +1820,11 @@ namespace FModel
         {
             if (theItem.HeroDefinition != null)
             {
+                string heroFilePath = string.Empty;
                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + theItem.HeroDefinition + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                    heroFilePath = ExtractAsset(CurrentUsedPak, theItem.HeroDefinition);
                 else
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[theItem.HeroDefinition] + "\" \"" + theItem.HeroDefinition + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                string heroFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", theItem.HeroDefinition + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                    heroFilePath = ExtractAsset(AllpaksDictionary[theItem.HeroDefinition], theItem.HeroDefinition);
 
                 if (heroFilePath != null)
                 {
@@ -1823,17 +1850,18 @@ namespace FModel
                                                 Path.GetFileName(itemId[i].LargePreviewImage.AssetPathName)
                                                     .LastIndexOf('.'));
 
+
+                                        string textureFilePath = string.Empty;
                                         if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                            JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                            textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                         else
-                                            JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                        string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                            textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
 
                                         if (textureFilePath != null)
                                         {
-                                            MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                            MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                            ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                            MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                            MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                            ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                             UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                         }
                                         else
@@ -1862,11 +1890,11 @@ namespace FModel
                 if (theItem.WeaponDefinition == "WID_Harvest_Pickaxe_Wukong")
                     theItem.WeaponDefinition = "WID_Harvest_Pickaxe_WuKong";
 
+                string weaponFilePath = string.Empty;
                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + theItem.WeaponDefinition + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                    weaponFilePath = ExtractAsset(CurrentUsedPak, theItem.WeaponDefinition);
                 else
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[theItem.WeaponDefinition] + "\" \"" + theItem.WeaponDefinition + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                string weaponFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", theItem.WeaponDefinition + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                    weaponFilePath = ExtractAsset(AllpaksDictionary[theItem.WeaponDefinition], theItem.WeaponDefinition);
 
                 if (weaponFilePath != null)
                 {
@@ -1892,17 +1920,17 @@ namespace FModel
                                                 Path.GetFileName(itemId[i].LargePreviewImage.AssetPathName)
                                                     .LastIndexOf('.'));
 
+                                        string textureFilePath = string.Empty;
                                         if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                            JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                            textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                         else
-                                            JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                        string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                            textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
 
                                         if (textureFilePath != null)
                                         {
-                                            MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                            MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                            ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                            MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                            MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                            ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                             UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                         }
                                         else
@@ -1933,17 +1961,17 @@ namespace FModel
                 string textureFile = Path.GetFileName(theItem.LargePreviewImage.AssetPathName)?.Substring(0,
                     Path.GetFileName(theItem.LargePreviewImage.AssetPathName).LastIndexOf('.'));
 
+                string textureFilePath = string.Empty;
                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                 else
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
 
                 if (textureFilePath != null)
                 {
-                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                     UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                 }
                 else
@@ -1954,17 +1982,17 @@ namespace FModel
                 string textureFile = Path.GetFileName(theItem.SmallPreviewImage.AssetPathName)?.Substring(0,
                     Path.GetFileName(theItem.SmallPreviewImage.AssetPathName).LastIndexOf('.'));
 
+                string textureFilePath = string.Empty;
                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                 else
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
 
                 if (textureFilePath != null)
                 {
-                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                     UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                 }
                 else
@@ -1981,11 +2009,11 @@ namespace FModel
                     GetItemIcon(theItem);
                 else
                 {
+                    string catalogFilePath = string.Empty;
                     if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                        JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + catName.Substring(catName.LastIndexOf('.') + 1) + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                        catalogFilePath = ExtractAsset(CurrentUsedPak, catName.Substring(catName.LastIndexOf('.') + 1));
                     else
-                        JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[catName.Substring(catName.LastIndexOf('.') + 1)] + "\" \"" + catName.Substring(catName.LastIndexOf('.') + 1) + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                    string catalogFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", catName.Substring(catName.LastIndexOf('.') + 1) + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                        catalogFilePath = ExtractAsset(AllpaksDictionary[catName.Substring(catName.LastIndexOf('.') + 1)], catName.Substring(catName.LastIndexOf('.') + 1));
 
                     if (catalogFilePath != null)
                     {
@@ -2011,17 +2039,17 @@ namespace FModel
                                             {
                                                 string textureFile = featuredId[i].TileImage.ResourceObject;
 
+                                                string textureFilePath = string.Empty;
                                                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                                 else
-                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
 
                                                 if (textureFilePath != null)
                                                 {
-                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                                     UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                                 }
                                                 else
@@ -2034,11 +2062,11 @@ namespace FModel
                                             {
                                                 string textureFile = featuredId[i].DetailsImage.ResourceObject;
 
+                                                string textureFilePath = string.Empty;
                                                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                                 else
-                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
 
                                                 if (textureFilePath != null && textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
                                                 {
@@ -2046,9 +2074,9 @@ namespace FModel
                                                 }
                                                 else if (textureFilePath != null && !textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
                                                 {
-                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                                     UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                                 }
                                                 else
@@ -2083,11 +2111,11 @@ namespace FModel
                 {
                     CurrentUsedItem = catName;
 
+                    string catalogFilePath = string.Empty;
                     if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                        JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + catName + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                        catalogFilePath = ExtractAsset(CurrentUsedPak, catName);
                     else
-                        JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[catName] + "\" \"" + catName + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                    string catalogFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", catName + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                        catalogFilePath = ExtractAsset(AllpaksDictionary[catName], catName);
 
                     if (catalogFilePath != null)
                     {
@@ -2113,17 +2141,17 @@ namespace FModel
                                             {
                                                 string textureFile = featuredId[i].TileImage.ResourceObject;
 
+                                                string textureFilePath = string.Empty;
                                                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                                 else
-                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
 
                                                 if (textureFilePath != null)
                                                 {
-                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                                     UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                                 }
                                                 else
@@ -2136,11 +2164,11 @@ namespace FModel
                                             {
                                                 string textureFile = featuredId[i].DetailsImage.ResourceObject;
 
+                                                string textureFilePath = string.Empty;
                                                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                                 else
-                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
 
                                                 if (textureFilePath != null && textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
                                                 {
@@ -2148,9 +2176,9 @@ namespace FModel
                                                 }
                                                 else if (textureFilePath != null && !textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
                                                 {
-                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                                     UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                                 }
                                                 else
@@ -2196,17 +2224,17 @@ namespace FModel
                             {
                                 string textureFile = rsmid[i].TextureParameterValues.FirstOrDefault()?.ParameterValue;
 
+                                string textureFilePath = string.Empty;
                                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                 else
-                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
 
                                 if (textureFilePath != null)
                                 {
-                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                    toReturn = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                    toReturn = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                     UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                 }
                                 else
@@ -2225,11 +2253,11 @@ namespace FModel
         }
         private void getAmmoData(string ammoFile, Graphics toDrawOn)
         {
+            string ammoFilePath = string.Empty;
             if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                ammoFilePath = ExtractAsset(CurrentUsedPak, ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
             else
-                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[ammoFile.Substring(ammoFile.LastIndexOf('.') + 1)] + "\" \"" + ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-            string ammoFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                ammoFilePath = ExtractAsset(AllpaksDictionary[ammoFile.Substring(ammoFile.LastIndexOf('.') + 1)], ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
 
             if (ammoFilePath != null)
             {
@@ -2321,11 +2349,11 @@ namespace FModel
                         {
                             try
                             {
+                                string challengeFilePath = string.Empty;
                                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + SelectedChallengesArray[i2] + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                    challengeFilePath = ExtractAsset(CurrentUsedPak, SelectedChallengesArray[i2]);
                                 else
-                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[SelectedChallengesArray[i2]] + "\" \"" + SelectedChallengesArray[i2] + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                string challengeFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", SelectedChallengesArray[i2] + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                    challengeFilePath = ExtractAsset(AllpaksDictionary[SelectedChallengesArray[i2]], SelectedChallengesArray[i2]);
 
                                 if (challengeFilePath != null)
                                 {
@@ -2539,17 +2567,17 @@ namespace FModel
                                             #region DRAW ICON
                                             string textureFile = "T_UI_PuzzleIcon_64";
 
+                                            string textureFilePath = string.Empty;
                                             if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                             else
-                                                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                            string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                                textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
 
                                             if (textureFilePath != null)
                                             {
-                                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                                ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                                ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                                 UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                             }
                                             else
@@ -2770,11 +2798,11 @@ namespace FModel
             string pngPath;
             string textureFile = Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
 
+            string textureFilePath = string.Empty;
             if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
             else
-                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-            string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
 
             if (textureFilePath != null && textureFile == "M_UI_ChallengeTile_PCB")
             {
@@ -2785,9 +2813,9 @@ namespace FModel
             }
             else if (textureFilePath != null)
             {
-                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                pngPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                pngPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                 UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
 
                 Image challengeIcon;
@@ -2808,8 +2836,7 @@ namespace FModel
             {
                 try
                 {
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[qAssetName] + "\" \"" + qAssetName + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                    string challengeFilePathLoop = Directory.GetFiles(DefaultOutputPath + "\\Extracted", qAssetName + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                    string challengeFilePathLoop = ExtractAsset(AllpaksDictionary[qAssetName], qAssetName);
 
                     if (challengeFilePathLoop != null)
                     {
@@ -3148,8 +3175,7 @@ namespace FModel
                 {
                     iconName = value;
 
-                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[iconName] + "\" \"" + iconName + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                    string extractedIconPath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", iconName + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                    string extractedIconPath = ExtractAsset(AllpaksDictionary[iconName], iconName);
                     if (extractedIconPath != null)
                     {
                         UpdateConsole(iconName + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
@@ -3206,8 +3232,7 @@ namespace FModel
         {
             ItemIconPath = string.Empty;
 
-            JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary["BannerIcons"] + "\" \"BannerIcons\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-            string extractedBannerPath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", "BannerIcons" + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+            string extractedBannerPath = ExtractAsset(AllpaksDictionary["BannerIcons"], "BannerIcons");
             if (extractedBannerPath != null)
             {
                 UpdateConsole("BannerIcons successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
@@ -3234,17 +3259,17 @@ namespace FModel
                                         ?.Substring(0,
                                             Path.GetFileName(bannerId.LargeImage.AssetPathName).LastIndexOf('.'));
 
+                                    string textureFilePath = string.Empty;
                                     if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                        JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                        textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                     else
-                                        JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                    string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                        textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
 
                                     if (textureFilePath != null)
                                     {
-                                        MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                        MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                        ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                        MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                        MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                        ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                         UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                     }
                                     else
@@ -3256,17 +3281,17 @@ namespace FModel
                                         ?.Substring(0,
                                             Path.GetFileName(bannerId.SmallImage.AssetPathName).LastIndexOf('.'));
 
+                                    string textureFilePath = string.Empty;
                                     if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                        JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                        textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                     else
-                                        JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                    string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                        textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
 
                                     if (textureFilePath != null)
                                     {
-                                        MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                        MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                        ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                        MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                        MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                        ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                         UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                     }
                                     else
@@ -3373,11 +3398,11 @@ namespace FModel
                             string pngPath;
                             string textureFile = Path.GetFileName(bundleParser[i].DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(bundleParser[i].DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
 
+                            string textureFilePath = string.Empty;
                             if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                             else
-                                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                            string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
 
                             if (textureFilePath != null && textureFile == "M_UI_ChallengeTile_PCB")
                             {
@@ -3388,9 +3413,9 @@ namespace FModel
                             }
                             else if (textureFilePath != null)
                             {
-                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                pngPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                pngPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                 UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
 
                                 Image challengeIcon;
@@ -3424,11 +3449,11 @@ namespace FModel
                 {
                     try
                     {
+                        string challengeFilePath = string.Empty;
                         if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                            JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + SelectedChallengesArray[i2] + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                            challengeFilePath = ExtractAsset(CurrentUsedPak, SelectedChallengesArray[i2]);
                         else
-                            JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[SelectedChallengesArray[i2]] + "\" \"" + SelectedChallengesArray[i2] + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                        string challengeFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", SelectedChallengesArray[i2] + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                            challengeFilePath = ExtractAsset(AllpaksDictionary[SelectedChallengesArray[i2]], SelectedChallengesArray[i2]);
 
                         if (challengeFilePath != null)
                         {
@@ -3480,17 +3505,18 @@ namespace FModel
 
                                                                 #region getIcon
                                                                 string textureFile = Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName)?.Substring(0, Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName).LastIndexOf('.'));
+
+                                                                string textureFilePath = string.Empty;
                                                                 if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                                                 else
-                                                                    JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                                                string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
 
                                                                 if (textureFilePath != null)
                                                                 {
-                                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                                                     UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                                                 }
                                                                 else
@@ -3532,17 +3558,18 @@ namespace FModel
 
                                                             #region getIcon
                                                             string textureFile = Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName)?.Substring(0, Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName).LastIndexOf('.'));
+
+                                                            string textureFilePath = string.Empty;
                                                             if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + CurrentUsedPak + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
+                                                                textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
                                                             else
-                                                                JwpmProcess("extract \"" + Settings.Default.PAKsPath + "\\" + AllpaksDictionary[textureFile ?? throw new InvalidOperationException()] + "\" \"" + textureFile + "\" \"" + DefaultOutputPath + "\" " + Settings.Default.AESKey);
-                                                            string textureFilePath = Directory.GetFiles(DefaultOutputPath + "\\Extracted", textureFile + ".*", SearchOption.AllDirectories).Where(x => !x.EndsWith(".png")).FirstOrDefault();
+                                                                textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
 
                                                             if (textureFilePath != null)
                                                             {
-                                                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile);
-                                                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png");
-                                                                ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf('\\')) + "\\" + textureFile + ".png";
+                                                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")));
+                                                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png");
+                                                                ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".")) + ".png";
                                                                 UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
                                                             }
                                                             else
@@ -3693,9 +3720,9 @@ namespace FModel
         {
             UpdateConsole(CurrentUsedItem + " is a Texture2D", Color.FromArgb(255, 66, 244, 66), "Success");
 
-            MyAsset = new PakAsset(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf('\\')) + "\\" + CurrentUsedItem);
-            MyAsset.SaveTexture(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf('\\')) + "\\" + CurrentUsedItem + ".png");
-            string imgPath = ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf('\\')) + "\\" + CurrentUsedItem + ".png";
+            MyAsset = new PakAsset(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".")));
+            MyAsset.SaveTexture(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".")) + ".png");
+            string imgPath = ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".")) + ".png";
 
             if (File.Exists(imgPath))
             {
