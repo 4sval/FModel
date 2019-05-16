@@ -113,6 +113,7 @@
     <Compile Include="Custom\JsonExtensions.cs" />
     <Compile Include="Custom\Prompt.cs" />
     <Compile Include="Custom\TypeAssistant.cs" />
+    <Compile Include="Methods\IconGenerator\Rarity.cs" />
     <Compile Include="Forms\About.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -201,10 +202,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CurrentCommit.txt" />
     <Content Include="csharp_wick.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="CurrentCommit.txt" />
     <Content Include="DLLs\csharp-wick.dll" />
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
@@ -240,6 +241,7 @@
     <None Include="Resources\folder_Closed_16xLG.png" />
     <None Include="Resources\folder_16x.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">
     <ItemGroup>

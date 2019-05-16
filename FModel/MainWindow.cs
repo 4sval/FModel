@@ -30,7 +30,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ScintillaNET;
 using ScintillaNET_FindReplaceDialog;
-using FileInfo = System.IO.FileInfo;
 using Image = System.Drawing.Image;
 using Settings = FModel.Properties.Settings;
 
@@ -111,18 +110,6 @@ namespace FModel
         }
 
         #region USEFUL METHODS
-        private void JwpmProcess(string args)
-        {
-            using (Process p = new Process())
-            {
-                p.StartInfo.FileName = DefaultOutputPath + "/john-wick-parse_custom.exe";
-                p.StartInfo.Arguments = args;
-                p.StartInfo.CreateNoWindow = true;
-                p.StartInfo.UseShellExecute = false;
-                p.Start();
-                p.WaitForExit();
-            }
-        }
         private void UpdateConsole(string textToDisplay, Color seColor, string seText)
         {
             if (InvokeRequired)
@@ -273,48 +260,13 @@ namespace FModel
         }
         private void JohnWickCheck()
         {
-            bool connection = IsInternetAvailable();
-            FileInfo parserInfo;
-
-            if (!File.Exists(DefaultOutputPath + "\\john-wick-parse_custom.exe") && connection)
+            if (File.Exists(DefaultOutputPath + "\\john-wick-parse-modded.exe"))
             {
-                WebClient client = new WebClient();
-                client.DownloadFile("https://dl.dropbox.com/s/af5n0wr3wyb5n1u/john-wick-parse_custom.exe?dl=0", DefaultOutputPath + "\\john-wick-parse_custom.exe");
-
-                UpdateConsole("john-wick-parse_custom.exe downloaded successfully", Color.FromArgb(255, 66, 244, 66), "Success");
+                File.Delete(DefaultOutputPath + "\\john-wick-parse-modded.exe");
             }
-            else if (!File.Exists(DefaultOutputPath + "\\john-wick-parse_custom.exe") && connection == false)
-            {
-                UpdateConsole("Can't download john-wick-parse_custom.exe, no internet connection", Color.FromArgb(255, 244, 66, 66), "Error");
-            }
-
             if (File.Exists(DefaultOutputPath + "\\john-wick-parse_custom.exe"))
             {
-                parserInfo = new FileInfo(DefaultOutputPath + "\\john-wick-parse_custom.exe");
-
-                string url = "https://pastebin.com/raw/d7BCj2NH";
-                long fileSize;
-                if (connection)
-                {
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                    using (Stream stream = response.GetResponseStream())
-                    using (StreamReader reader = new StreamReader(stream ?? throw new InvalidOperationException()))
-                    {
-                        fileSize = Convert.ToInt64(reader.ReadToEnd());
-                    }
-                    if (parserInfo.Length != fileSize)
-                    {
-                        WebClient client = new WebClient();
-                        client.DownloadFile("https://dl.dropbox.com/s/af5n0wr3wyb5n1u/john-wick-parse_custom.exe?dl=0", DefaultOutputPath + "\\john-wick-parse_custom.exe");
-
-                        UpdateConsole("john-wick-parse_custom.exe updated successfully", Color.FromArgb(255, 66, 244, 66), "Success");
-                    }
-                }
-                else
-                {
-                    UpdateConsole("Can't check if john-wick-parse_custom.exe needs to be updated", Color.FromArgb(255, 244, 66, 66), "Error");
-                }
+                File.Delete(DefaultOutputPath + "\\john-wick-parse_custom.exe");
             }
         }
         private void KeyCheck()
@@ -1500,13 +1452,13 @@ namespace FModel
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
             if (theItem.Series != null)
-                GetSeriesRarity(theItem, g);
+                Rarity.GetSeriesRarity(theItem, g);
             else
                 // Special ammo force-rarity check
                 if (SpecialMode == "ammo")
-                    GetItemRarity(theItem, g, "ammo");
+                Rarity.GetItemRarity(theItem, g, "ammo");
                 else
-                    GetItemRarity(theItem, g);
+                Rarity.GetItemRarity(theItem, g);
 
             ItemIconPath = string.Empty;
             if (Settings.Default.loadFeaturedImage == false)
@@ -1763,52 +1715,6 @@ namespace FModel
                 }));
                 AppendText(CurrentUsedItem, Color.DarkRed);
                 AppendText(" successfully saved", Color.Black, true);
-            }
-        }
-        private void GetSeriesRarity(ItemsIdParser theItem, Graphics toDrawOn)
-        {
-            if (theItem.Series == "MarvelSeries")
-            {
-                Image rarityBg = Resources.Marvel512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-        }
-        private void GetItemRarity(ItemsIdParser theItem, Graphics toDrawOn, string SpecialMode = null)
-        {
-            if (theItem.Rarity == "EFortRarity::Transcendent")
-            {
-                Image rarityBg = Resources.T512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else if (theItem.Rarity == "EFortRarity::Mythic")
-            {
-                Image rarityBg = Resources.M512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else if (theItem.Rarity == "EFortRarity::Legendary")
-            {
-                Image rarityBg = Resources.L512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else if (theItem.Rarity == "EFortRarity::Epic" || theItem.Rarity == "EFortRarity::Quality")
-            {
-                Image rarityBg = Resources.E512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else if (theItem.Rarity == "EFortRarity::Rare")
-            {
-                Image rarityBg = Resources.R512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else if (theItem.Rarity == "EFortRarity::Common" || SpecialMode == "ammo") // Force common rarity if ammo, as ammo is always common in FN
-            {
-                Image rarityBg = Resources.C512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else
-            {
-                Image rarityBg = Resources.U512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
             }
         }
         private void GetItemIcon(ItemsIdParser theItem, bool featured = false)
@@ -2226,15 +2132,14 @@ namespace FModel
             UpdateConsole(theTexture + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
             if (theTexturePath.Contains(".uasset") || theTexturePath.Contains(".uexp") || theTexturePath.Contains(".ubulk"))
             {
-                JwpmProcess("serialize \"" + theTexturePath.Substring(0, theTexturePath.LastIndexOf('.')) + "\"");
+                MyAsset = new PakAsset(theTexturePath.Substring(0, theTexturePath.LastIndexOf('.')));
                 try
                 {
-                    string jsonRsmExtractedFilePath = Directory.GetFiles(DefaultOutputPath, theTexture + ".json", SearchOption.AllDirectories).FirstOrDefault();
-                    if (jsonRsmExtractedFilePath != null)
+                    if (MyAsset.GetSerialized() != null)
                     {
                         UpdateConsole(theTexture + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-                        string parsedRsmJson = JToken.Parse(File.ReadAllText(jsonRsmExtractedFilePath)).ToString();
-                        File.Delete(jsonRsmExtractedFilePath);
+
+                        string parsedRsmJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
                         var rsmid = RenderSwitchMaterial.FromJson(parsedRsmJson);
                         UpdateConsole("Parsing " + theTexture + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                         for (int i = 0; i < rsmid.Length; i++)
