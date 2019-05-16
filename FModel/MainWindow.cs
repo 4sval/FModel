@@ -615,6 +615,9 @@ namespace FModel
             }
             if (theSinglePak != null && ReadPakGuid(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text) != "0-0-0-0") //LOADING DYNAMIC PAK
             {
+                CurrentUsedPak = theSinglePak.ClickedItem.Text;
+                CurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + CurrentUsedPak);
+
                 try
                 {
                     MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text, Settings.Default.AESKey);
@@ -1336,10 +1339,19 @@ namespace FModel
 
                 uint y = (uint)index;
                 byte[] b = MyExtractor.GetData(y);
-                Directory.CreateDirectory(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i].Substring(0, results[i].LastIndexOf("/")));
-                File.WriteAllBytes(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i], b);
 
-                toReturn = DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i];
+                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
+                {
+                    Directory.CreateDirectory(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[CurrentUsedPak] + results[i].Substring(0, results[i].LastIndexOf("/")));
+                    File.WriteAllBytes(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[CurrentUsedPak] + results[i], b);
+                    toReturn = DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[CurrentUsedPak] + results[i];
+                }
+                else
+                {
+                    Directory.CreateDirectory(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i].Substring(0, results[i].LastIndexOf("/")));
+                    File.WriteAllBytes(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i], b);
+                    toReturn = DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i];
+                }
             }
 
             return toReturn.Replace("/", "\\");
