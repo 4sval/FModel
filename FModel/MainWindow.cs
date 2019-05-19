@@ -40,8 +40,8 @@ namespace FModel
         #region EVERYTHING WE NEED
         FindReplace _myFindReplace;
         public Stopwatch StopWatch;
-        public PakAsset MyAsset;
-        public PakExtractor MyExtractor;
+        public static PakAsset MyAsset;
+        public static PakExtractor MyExtractor;
         private static string[] _paksArray;
         public static string[] pakAsTxt;
         public static Dictionary<string, string> AllpaksDictionary;
@@ -1273,21 +1273,22 @@ namespace FModel
 
         #region EXTRACT BUTTON
         //METHODS
-        private string ExtractAsset(string currentPak, string currentItem)
+        public static string ExtractAsset(string currentPak, string currentItem)
         {
             string toReturn = string.Empty;
 
             MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, Settings.Default.AESKey);
+            string[] myArray = MyExtractor.GetFileList().ToArray();
 
             string[] results = null;
             if (currentItem.Contains("."))
-                results = Array.FindAll(MyExtractor.GetFileList().ToArray(), s => s.Contains("/" + currentItem));
+                results = Array.FindAll(myArray, s => s.Contains("/" + currentItem));
             else
-                results = Array.FindAll(MyExtractor.GetFileList().ToArray(), s => s.Contains("/" + currentItem + "."));
+                results = Array.FindAll(myArray, s => s.Contains("/" + currentItem + "."));
 
             for (int i = 0; i < results.Length; i++)
             {
-                int index = Array.IndexOf(MyExtractor.GetFileList().ToArray(), results[i]);
+                int index = Array.IndexOf(myArray, results[i]);
 
                 uint y = (uint)index;
                 byte[] b = MyExtractor.GetData(y);
@@ -1296,12 +1297,14 @@ namespace FModel
                 {
                     Directory.CreateDirectory(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[CurrentUsedPak] + results[i].Substring(0, results[i].LastIndexOf("/")));
                     File.WriteAllBytes(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[CurrentUsedPak] + results[i], b);
+
                     toReturn = DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[CurrentUsedPak] + results[i];
                 }
                 else
                 {
                     Directory.CreateDirectory(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i].Substring(0, results[i].LastIndexOf("/")));
                     File.WriteAllBytes(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i], b);
+
                     toReturn = DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i];
                 }
             }
@@ -1365,7 +1368,7 @@ namespace FModel
                         JsonParseFile();
                     }
                     if (ExtractedFilePath.Contains(".ufont"))
-                        ConvertToOtf(ExtractedFilePath);
+                        ConvertToTtf(ExtractedFilePath);
                     if (ExtractedFilePath.Contains(".ini"))
                     {
                         Invoke(new Action(() =>
@@ -1451,14 +1454,7 @@ namespace FModel
             Graphics g = Graphics.FromImage(bmp);
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
-            if (theItem.Series != null)
-                Rarity.GetSeriesRarity(theItem, g);
-            else
-                // Special ammo force-rarity check
-                if (SpecialMode == "ammo")
-                Rarity.GetItemRarity(theItem, g, "ammo");
-                else
-                Rarity.GetItemRarity(theItem, g);
+            Rarity.DrawRarity(theItem, g, SpecialMode);
 
             ItemIconPath = string.Empty;
             if (Settings.Default.loadFeaturedImage == false)
@@ -3672,9 +3668,9 @@ namespace FModel
             OpenWithDefaultProgramAndNoFocus(UnrealEngineDataToOgg.ConvertToOgg(soundPathToConvert));
             UpdateConsole("Opening " + CurrentUsedItem + ".ogg", Color.FromArgb(255, 66, 244, 66), "Success");
         }
-        private void ConvertToOtf(string file)
+        private void ConvertToTtf(string file)
         {
-            File.Move(file, Path.ChangeExtension(file, ".otf") ?? throw new InvalidOperationException());
+            File.Move(file, Path.ChangeExtension(file, ".ttf") ?? throw new InvalidOperationException());
             UpdateConsole(CurrentUsedItem + " successfully converter to a font", Color.FromArgb(255, 66, 244, 66), "Success");
         }
 

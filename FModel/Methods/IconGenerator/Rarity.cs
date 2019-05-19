@@ -6,52 +6,60 @@ namespace FModel
 {
     class Rarity
     {
-        public static void GetItemRarity(ItemsIdParser theItem, Graphics toDrawOn, string SpecialMode = null)
+        public static Image GetRarityImage(ItemsIdParser theItem)
         {
-            if (theItem.Rarity == "EFortRarity::Transcendent")
+            switch (theItem.Rarity)
             {
-                Image rarityBg = Resources.T512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else if (theItem.Rarity == "EFortRarity::Mythic")
-            {
-                Image rarityBg = Resources.M512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else if (theItem.Rarity == "EFortRarity::Legendary")
-            {
-                Image rarityBg = Resources.L512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else if (theItem.Rarity == "EFortRarity::Epic" || theItem.Rarity == "EFortRarity::Quality")
-            {
-                Image rarityBg = Resources.E512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else if (theItem.Rarity == "EFortRarity::Rare")
-            {
-                Image rarityBg = Resources.R512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else if (theItem.Rarity == "EFortRarity::Common" || SpecialMode == "ammo") // Force common rarity if ammo, as ammo is always common in FN
-            {
-                Image rarityBg = Resources.C512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
-            }
-            else
-            {
-                Image rarityBg = Resources.U512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
+                case "EFortRarity::Transcendent":
+                    return Resources.T512;
+                case "EFortRarity::Mythic":
+                    return Resources.M512;
+                case "EFortRarity::Legendary":
+                    return Resources.L512;
+                case "EFortRarity::Epic":
+                    return Resources.E512;
+                case "EFortRarity::Quality":
+                    return Resources.E512;
+                case "EFortRarity::Rare":
+                    return Resources.R512;
+                case "EFortRarity::Common":
+                    return Resources.C512;
+                default:
+                    return Resources.U512;
             }
         }
-
-        public static void GetSeriesRarity(ItemsIdParser theItem, Graphics toDrawOn)
+        public static Image GetSeriesImage(ItemsIdParser theItem)
         {
-            if (theItem.Series == "MarvelSeries")
+            switch (theItem.Series)
             {
-                Image rarityBg = Resources.Marvel512;
-                toDrawOn.DrawImage(rarityBg, new Point(0, 0));
+                case "MarvelSeries":
+                    return Resources.Marvel512;
+                default:
+                    return GetRarityImage(theItem);
             }
+        }
+        public static Image GetSpecialModeImage(ItemsIdParser theItem, string SpecialMode)
+        {
+            switch (SpecialMode)
+            {
+                case "ammo":
+                    return Resources.C512;
+                default:
+                    return GetRarityImage(theItem);
+            }
+        }
+        public static void DrawRarity(ItemsIdParser theItem, Graphics toDrawOn, string SpecialMode = null)
+        {
+            Image rarityBg;
+
+            if (theItem.Series != null)
+                rarityBg = GetSeriesImage(theItem);
+            else if (SpecialMode != null)
+                rarityBg = GetSpecialModeImage(theItem, SpecialMode);
+            else
+                rarityBg = GetRarityImage(theItem);
+
+            toDrawOn.DrawImage(rarityBg, new Point(0, 0));
         }
     }
 }
