@@ -17,7 +17,6 @@ namespace FModel
                 case "EFortRarity::Legendary":
                     return Resources.L512;
                 case "EFortRarity::Epic":
-                    return Resources.E512;
                 case "EFortRarity::Quality":
                     return Resources.E512;
                 case "EFortRarity::Rare":
@@ -30,34 +29,60 @@ namespace FModel
         }
         public static Image GetSeriesImage(ItemsIdParser theItem)
         {
+            if (theItem.Series == "MarvelSeries")
+            {
+                return Resources.Marvel512;
+            }
+            else
+            {
+                return GetRarityImage(theItem);
+            }
+
+            /* SWITCH STATEMENT IN CASE THERE'S MORE SERIES
             switch (theItem.Series)
             {
                 case "MarvelSeries":
                     return Resources.Marvel512;
                 default:
                     return GetRarityImage(theItem);
-            }
+            }*/
         }
-        public static Image GetSpecialModeImage(ItemsIdParser theItem, string SpecialMode)
+        public static Image GetSpecialModeImage(ItemsIdParser theItem, string specialMode)
         {
+            if (specialMode == "ammo")
+            {
+                return Resources.C512;
+            }
+            else
+            {
+                return GetRarityImage(theItem);
+            }
+
+            /* SWITCH STATEMENT IN CASE THERE'S MORE SPECIAL MODE
             switch (SpecialMode)
             {
                 case "ammo":
                     return Resources.C512;
                 default:
                     return GetRarityImage(theItem);
-            }
+            }*/
         }
-        public static void DrawRarity(ItemsIdParser theItem, Graphics toDrawOn, string SpecialMode = null)
+        public static void DrawRarity(ItemsIdParser theItem, Graphics toDrawOn, string specialMode = null)
         {
             Image rarityBg;
 
             if (theItem.Series != null)
+            {
                 rarityBg = GetSeriesImage(theItem);
-            else if (SpecialMode != null)
-                rarityBg = GetSpecialModeImage(theItem, SpecialMode);
+            }
+            else if (specialMode != null)
+            {
+                rarityBg = GetSpecialModeImage(theItem, specialMode);
+            }
             else
+            {
                 rarityBg = GetRarityImage(theItem);
+            }
 
             toDrawOn.DrawImage(rarityBg, new Point(0, 0));
         }

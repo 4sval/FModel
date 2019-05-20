@@ -7,9 +7,9 @@ namespace FModel.Converter
 {
     class UnrealEngineDataToOgg
     {
-        static byte[] oggFind = { 0x4F, 0x67, 0x67, 0x53 };
-        static byte[] oggNoHeader = { 0x4F, 0x67, 0x67, 0x53 };
-        static byte[] uexpToDelete = { 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00 };
+        static byte[] _oggFind = { 0x4F, 0x67, 0x67, 0x53 };
+        static byte[] _oggNoHeader = { 0x4F, 0x67, 0x67, 0x53 };
+        static byte[] _uexpToDelete = { 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00 };
         static byte[] _oggOutNewArray;
         public static List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
         {
@@ -65,7 +65,7 @@ namespace FModel.Converter
                 if (File.ReadAllText(file).Contains(oggPattern))
                 {
                     byte[] src = File.ReadAllBytes(file);
-                    TryFindAndReplace(src, oggFind, oggNoHeader, out _oggOutNewArray);
+                    TryFindAndReplace(src, _oggFind, _oggNoHeader, out _oggOutNewArray);
                     File.WriteAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp", _oggOutNewArray);
 
                     FileInfo fi = new FileInfo(Path.GetFileNameWithoutExtension(file) + ".temp");
@@ -91,9 +91,9 @@ namespace FModel.Converter
                 if (File.ReadAllText(file).Contains(oggPattern))
                 {
                     byte[] src = File.ReadAllBytes(file);
-                    List<int> positions = SearchBytePattern(uexpToDelete, src);
+                    List<int> positions = SearchBytePattern(_uexpToDelete, src);
 
-                    TryFindAndReplace(src, oggFind, oggNoHeader, out _oggOutNewArray);
+                    TryFindAndReplace(src, _oggFind, _oggNoHeader, out _oggOutNewArray);
                     File.WriteAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp", _oggOutNewArray);
 
                     int lengthToDelete = src.Length - positions[0];

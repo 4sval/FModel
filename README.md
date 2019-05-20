@@ -6,8 +6,6 @@
 
 **A Fortnite .PAK files explorer built in C#**
 
-
-
 ## GETTING STARTED
 ### Prerequisites
 [.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471)
@@ -19,20 +17,20 @@
 ![](https://i.imgur.com/so1iz1B.gif)
 
 **2.** Restart the executable, enter the AES Key, click **Load** and select your .PAK file
-  - It will parse all Assets contained in the selected .PAK file with their respective path
+- It will parse all Assets contained in the selected .PAK file with their respective path
   
 **3.** Navigate through the tree to find the Asset you want
 
 **4.** Clicking on **Extract** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
-  - Asset is an **_ID_**:
+- Asset is an **_ID_**:
     - Try to create an [Icon](https://i.imgur.com/etUcOEj.png) with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
-  - Asset is a **_Texture_**:
+- Asset is a **_Texture_**:
     - Try to display the Asset as PNG
-  - Asset is a **_Sound_**:
+- Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
-  - Asset is a **_Bundle Of Challenges_**:
+- Asset is a **_Bundle Of Challenges_**:
     - Try to create an [Icon](https://i.imgur.com/1Uzrlb0.png) with all **Challenges' Description**, **Count** and the **Reward**
-  - Asset is a **_Font_**:
+- Asset is a **_Font_**:
     - Try to convert the Asset to OTF
 
 ### Difference Mode
@@ -53,8 +51,6 @@
 
 [Demonstration](https://streamable.com/234bg)
 
-
-
 ## DOCUMENTATION
 ### Important
 If issues occur when compiling the source code, make sure that the software is being built for x64.
@@ -62,22 +58,22 @@ If issues occur when compiling the source code, make sure that the software is b
 If somehow FModel crash because of permissions, please either disable Windows Defender or add and exception for FModel.exe.
 Also if you find this project useful, feel free to give it a :star: thank you :kissing_heart:
 ### Features
-1. Extract
-2. Serialize (CTRL+F/G/I support)
-3. Filter & Search
-4. Create Cosmetics Icon
-5. Create Challenges Icon
-6. Merge Icons
-7. Backup current .PAK files
-8. Load difference between current .PAK files and backup file
-9. Load, Extract and Save Assets automatically between current .PAK files and backup file
+ 1. Extract
+ 2. Serialize (CTRL+F/G/I support)
+ 3. Filter & Search
+ 4. Create Cosmetics Icon
+ 5. Create Challenges Icon
+ 6. Merge Icons
+ 7. Backup current .PAK files
+ 8. Load difference between current .PAK files and backup file
+ 9. Load, Extract and Save Assets automatically between current .PAK files and backup file
 ### What i'm using
-- [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - Custom Version With Output Control And No `key.txt`
-- [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
-- [JSON Parser](https://app.quicktype.io/)
-- [ScintillaNET](https://www.nuget.org/packages/jacobslusser.ScintillaNET)
-- [Find & Replace for ScintillaNET](https://www.nuget.org/packages/snt.ScintillaNet.FindReplaceDialog/)
-- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+  - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - Custom Version With Output Control And No `key.txt`
+  - [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
+  - [JSON Parser](https://app.quicktype.io/)
+  - [ScintillaNET](https://www.nuget.org/packages/jacobslusser.ScintillaNET)
+  - [Find & Replace for ScintillaNET](https://www.nuget.org/packages/snt.ScintillaNet.FindReplaceDialog/)
+  - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 ### Contributors
 | <a href="https://github.com/SirWaddles" target="_blank">**Waddlesworth**</a> | <a href="https://github.com/AyeTSG" target="_blank">**AyeTSG**</a> | <a href="https://github.com/ItsFireMonkey" target="_blank">**FireMonkey**</a> |
 | :---: | :---: | :---: |
@@ -88,19 +84,19 @@ This project is mainly based on what [UModel](https://github.com/gildor2/UModel)
 I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionnaly.
 
 ## TODO
-- [ ] Get new file content
-- [ ] Display support for .locres files + compare
-- [x] Code refactoring
-- [x] Multithreading
-- [x] Stop button
-- [x] Auto update
-- [x] CTRL F, CTRL G, CTRL I for jsonTextBox
-- [x] STW Icons
-- [x] Update Mode
-- [x] Search through PAKs
-- [x] Improve speed
-- [x] Filter for the items ListBox
-- [x] Quest viewer or something
-- [x] Load all paks
-- [x] Load only difference between 2 paks version
-- [x] Custom watermark option on icons
+  - [ ] Get new file content
+  - [ ] Display support for .locres files + compare
+  - [x] Code refactoring
+  - [x] Multithreading
+  - [x] Stop button
+  - [x] Auto update
+  - [x] CTRL F, CTRL G, CTRL I for jsonTextBox
+  - [x] STW Icons
+  - [x] Update Mode
+  - [x] Search through PAKs
+  - [x] Improve speed
+  - [x] Filter for the items ListBox
+  - [x] Quest viewer or something
+  - [x] Load all paks
+  - [x] Load only difference between 2 paks version
+  - [x] Custom watermark option on icons

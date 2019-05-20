@@ -7,19 +7,19 @@ namespace FModel
     {
         public event EventHandler Idled = delegate { };
         public int WaitingMilliSeconds { get; set; }
-        Timer waitingTimer;
+        Timer _waitingTimer;
 
         public TypeAssistant(int waitingMilliSeconds = 600)
         {
             WaitingMilliSeconds = waitingMilliSeconds;
-            waitingTimer = new Timer(p =>
+            _waitingTimer = new Timer(p =>
             {
                 Idled(this, EventArgs.Empty);
             });
         }
         public void TextChanged()
         {
-            waitingTimer.Change(WaitingMilliSeconds, Timeout.Infinite);
+            _waitingTimer.Change(WaitingMilliSeconds, Timeout.Infinite);
         }
     }
 }
