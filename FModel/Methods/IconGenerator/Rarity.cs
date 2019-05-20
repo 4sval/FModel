@@ -37,15 +37,6 @@ namespace FModel
             {
                 return GetRarityImage(theItem);
             }
-
-            /* SWITCH STATEMENT IN CASE THERE'S MORE SERIES
-            switch (theItem.Series)
-            {
-                case "MarvelSeries":
-                    return Resources.Marvel512;
-                default:
-                    return GetRarityImage(theItem);
-            }*/
         }
         public static Image GetSpecialModeImage(ItemsIdParser theItem, string specialMode)
         {
@@ -57,15 +48,6 @@ namespace FModel
             {
                 return GetRarityImage(theItem);
             }
-
-            /* SWITCH STATEMENT IN CASE THERE'S MORE SPECIAL MODE
-            switch (SpecialMode)
-            {
-                case "ammo":
-                    return Resources.C512;
-                default:
-                    return GetRarityImage(theItem);
-            }*/
         }
         public static void DrawRarity(ItemsIdParser theItem, Graphics toDrawOn, string specialMode = null)
         {

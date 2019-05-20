@@ -32,7 +32,7 @@ namespace FModel.Forms
 
             if (MainWindow.PakAsTxt != null)
             {
-                if (MainWindow.CurrentUsedPakGuid != null && MainWindow.CurrentUsedPakGuid != "0-0-0-0")
+                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
                 {
                     for (int i = 0; i < MainWindow.PakAsTxt.Length; i++)
                     {
@@ -40,13 +40,13 @@ namespace FModel.Forms
                         {
                             if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal))))
                             {
-                                _myInfosDict.Add(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), MainWindow.CurrentUsedPak);
+                                _myInfosDict.Add(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), ThePak.CurrentUsedPak);
 
                                 _fileName = MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal));
                                 _myInfos.Add(new FileInfo
                                 {
                                     FileName = _fileName,
-                                    PakFile = MainWindow.CurrentUsedPak,
+                                    PakFile = ThePak.CurrentUsedPak,
                                 });
                             }
                         }
@@ -54,13 +54,13 @@ namespace FModel.Forms
                         {
                             if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i]))
                             {
-                                _myInfosDict.Add(MainWindow.PakAsTxt[i], MainWindow.CurrentUsedPak);
+                                _myInfosDict.Add(MainWindow.PakAsTxt[i], ThePak.CurrentUsedPak);
 
                                 _fileName = MainWindow.PakAsTxt[i];
                                 _myInfos.Add(new FileInfo
                                 {
                                     FileName = _fileName,
-                                    PakFile = MainWindow.CurrentUsedPak,
+                                    PakFile = ThePak.CurrentUsedPak,
                                 });
                             }
                         }
@@ -74,13 +74,13 @@ namespace FModel.Forms
                         {
                             if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal))))
                             {
-                                _myInfosDict.Add(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), MainWindow.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.PakAsTxt[i])]);
+                                _myInfosDict.Add(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.PakAsTxt[i])]);
 
                                 _fileName = MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal));
                                 _myInfos.Add(new FileInfo
                                 {
                                     FileName = _fileName,
-                                    PakFile = MainWindow.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.PakAsTxt[i])],
+                                    PakFile = ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.PakAsTxt[i])],
                                 });
                             }
                         }
@@ -88,13 +88,13 @@ namespace FModel.Forms
                         {
                             if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i]))
                             {
-                                _myInfosDict.Add(MainWindow.PakAsTxt[i], MainWindow.AllpaksDictionary[Path.GetFileName(MainWindow.PakAsTxt[i])]);
+                                _myInfosDict.Add(MainWindow.PakAsTxt[i], ThePak.AllpaksDictionary[Path.GetFileName(MainWindow.PakAsTxt[i])]);
 
                                 _fileName = MainWindow.PakAsTxt[i];
                                 _myInfos.Add(new FileInfo
                                 {
                                     FileName = _fileName,
-                                    PakFile = MainWindow.AllpaksDictionary[Path.GetFileName(MainWindow.PakAsTxt[i])],
+                                    PakFile = ThePak.AllpaksDictionary[Path.GetFileName(MainWindow.PakAsTxt[i])],
                                 });
                             }
                         }
@@ -156,7 +156,7 @@ namespace FModel.Forms
 
             if (MainWindow.PakAsTxt != null)
             {
-                if (MainWindow.CurrentUsedPakGuid != null && MainWindow.CurrentUsedPakGuid != "0-0-0-0")
+                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
                 {
                     if (!string.IsNullOrEmpty(textBox1.Text) && textBox1.Text.Length > 2)
                     {
@@ -168,13 +168,13 @@ namespace FModel.Forms
                                 {
                                     if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal))))
                                     {
-                                        _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), MainWindow.CurrentUsedPak);
+                                        _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.CurrentUsedPak);
 
                                         _fileName = _myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal));
                                         _myFilteredInfos.Add(new FileInfoFilter
                                         {
                                             FileName = _fileName,
-                                            PakFile = MainWindow.CurrentUsedPak,
+                                            PakFile = ThePak.CurrentUsedPak,
                                         });
                                     }
                                 }
@@ -182,13 +182,13 @@ namespace FModel.Forms
                                 {
                                     if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName))
                                     {
-                                        _myFilteredInfosDict.Add(_myInfos[i].FileName, MainWindow.CurrentUsedPak);
+                                        _myFilteredInfosDict.Add(_myInfos[i].FileName, ThePak.CurrentUsedPak);
 
                                         _fileName = _myInfos[i].FileName;
                                         _myFilteredInfos.Add(new FileInfoFilter
                                         {
                                             FileName = _fileName,
-                                            PakFile = MainWindow.CurrentUsedPak,
+                                            PakFile = ThePak.CurrentUsedPak,
                                         });
                                     }
                                 }
@@ -214,13 +214,13 @@ namespace FModel.Forms
                                 {
                                     if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal))))
                                     {
-                                        _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), MainWindow.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)]);
+                                        _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)]);
 
                                         _fileName = _myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal));
                                         _myFilteredInfos.Add(new FileInfoFilter
                                         {
                                             FileName = _fileName,
-                                            PakFile = MainWindow.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)],
+                                            PakFile = ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)],
                                         });
                                     }
                                 }
@@ -228,13 +228,13 @@ namespace FModel.Forms
                                 {
                                     if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName))
                                     {
-                                        _myFilteredInfosDict.Add(_myInfos[i].FileName, MainWindow.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)]);
+                                        _myFilteredInfosDict.Add(_myInfos[i].FileName, ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)]);
 
                                         _fileName = _myInfos[i].FileName;
                                         _myFilteredInfos.Add(new FileInfoFilter
                                         {
                                             FileName = _fileName,
-                                            PakFile = MainWindow.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)],
+                                            PakFile = ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)],
                                         });
                                     }
                                 }

@@ -81,7 +81,7 @@ namespace FModel.Converter
                     byte[] bar = new byte[i + 1];
                     Array.Copy(srcFinal, bar, i + 1);
 
-                    File.WriteAllBytes(MainWindow.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg", bar);
+                    File.WriteAllBytes(App.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg", bar);
                     File.Delete(Path.GetFileNameWithoutExtension(file) + ".temp");
                 }
             }
@@ -125,11 +125,11 @@ namespace FModel.Converter
                     byte[] bar = new byte[i + 1];
                     Array.Copy(srcFinal, bar, i + 1);
 
-                    File.WriteAllBytes(MainWindow.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg", bar);
+                    File.WriteAllBytes(App.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg", bar);
                     File.Delete(Path.GetFileNameWithoutExtension(file) + ".temp");
                 }
             }
-            return MainWindow.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg";
+            return App.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg";
         }
     }
 }

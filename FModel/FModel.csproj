@@ -152,6 +152,8 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Methods\JohnWick\JohnWick.cs" />
+    <Compile Include="Methods\VarApp.cs" />
     <Compile Include="Parser\Banners\BannersParser.cs" />
     <Compile Include="Parser\Challenges\ChallengeBundleIdParser.cs" />
     <Compile Include="Parser\Featured\FeaturedParser.cs" />

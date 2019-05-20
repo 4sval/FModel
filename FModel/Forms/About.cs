@@ -9,7 +9,7 @@ namespace FModel.Forms
             InitializeComponent();
 
             label2.Text += @" " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
-            commitHash.Text = FModel.Properties.Resources.CurrentCommit;
+            commitHash.Text = Properties.Resources.CurrentCommit;
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

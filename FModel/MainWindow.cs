@@ -40,28 +40,17 @@ namespace FModel
         #region EVERYTHING WE NEED
         FindReplace _myFindReplace;
         public Stopwatch StopWatch;
-        public static PakAsset MyAsset;
-        public static PakExtractor MyExtractor;
         private static string[] _paksArray;
         public static string[] PakAsTxt;
-        public static Dictionary<string, string> AllpaksDictionary;
         private static Dictionary<string, long> _questStageDict;
         private static Dictionary<string, string> _diffToExtract;
-        private static Dictionary<string, string> _paksMountPoint;
         private static string _backupFileName;
         private static string _backupDynamicKeys;
         private static List<string> _itemsToDisplay;
-        public static string DefaultOutputPath;
-        public static string CurrentUsedPak;
-        public static string CurrentUsedPakGuid;
-        public static string CurrentUsedItem;
         public static string ExtractedFilePath;
         public static string[] SelectedItemsArray;
         public static string[] SelectedChallengesArray;
-        public static bool WasFeatured;
         public static string ItemIconPath;
-        public static int YAfterLoop;
-        public static bool UmWorking;
         #endregion
 
         #region FONTS
@@ -181,14 +170,14 @@ namespace FModel
         }
         private void CreateDir()
         {
-            if (!Directory.Exists(DefaultOutputPath + "\\Backup\\"))
-                Directory.CreateDirectory(DefaultOutputPath + "\\Backup\\");
-            if (!Directory.Exists(DefaultOutputPath + "\\Extracted\\"))
-                Directory.CreateDirectory(DefaultOutputPath + "\\Extracted\\");
-            if (!Directory.Exists(DefaultOutputPath + "\\Icons\\"))
-                Directory.CreateDirectory(DefaultOutputPath + "\\Icons\\");
-            if (!Directory.Exists(DefaultOutputPath + "\\Sounds\\"))
-                Directory.CreateDirectory(DefaultOutputPath + "\\Sounds\\");
+            if (!Directory.Exists(App.DefaultOutputPath + "\\Backup\\"))
+                Directory.CreateDirectory(App.DefaultOutputPath + "\\Backup\\");
+            if (!Directory.Exists(App.DefaultOutputPath + "\\Extracted\\"))
+                Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\");
+            if (!Directory.Exists(App.DefaultOutputPath + "\\Icons\\"))
+                Directory.CreateDirectory(App.DefaultOutputPath + "\\Icons\\");
+            if (!Directory.Exists(App.DefaultOutputPath + "\\Sounds\\"))
+                Directory.CreateDirectory(App.DefaultOutputPath + "\\Sounds\\");
         }
         public static void SetFolderPermission(string folderPath)
         {
@@ -244,29 +233,29 @@ namespace FModel
         }
         private void SetOutput()
         {
-            DefaultOutputPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\FModel"; //DOCUMENTS FOLDER BY DEFAULT
+            App.DefaultOutputPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\FModel"; //DOCUMENTS FOLDER BY DEFAULT
             if (string.IsNullOrEmpty(Settings.Default.ExtractOutput))
             {
-                Settings.Default.ExtractOutput = DefaultOutputPath;
+                Settings.Default.ExtractOutput = App.DefaultOutputPath;
                 Settings.Default.Save();
             }
             else
             {
-                DefaultOutputPath = Settings.Default.ExtractOutput;
+                App.DefaultOutputPath = Settings.Default.ExtractOutput;
             }
 
-            if (!Directory.Exists(DefaultOutputPath))
-                Directory.CreateDirectory(DefaultOutputPath);
+            if (!Directory.Exists(App.DefaultOutputPath))
+                Directory.CreateDirectory(App.DefaultOutputPath);
         }
         private void JohnWickCheck()
         {
-            if (File.Exists(DefaultOutputPath + "\\john-wick-parse-modded.exe"))
+            if (File.Exists(App.DefaultOutputPath + "\\john-wick-parse-modded.exe"))
             {
-                File.Delete(DefaultOutputPath + "\\john-wick-parse-modded.exe");
+                File.Delete(App.DefaultOutputPath + "\\john-wick-parse-modded.exe");
             }
-            if (File.Exists(DefaultOutputPath + "\\john-wick-parse_custom.exe"))
+            if (File.Exists(App.DefaultOutputPath + "\\john-wick-parse_custom.exe"))
             {
-                File.Delete(DefaultOutputPath + "\\john-wick-parse_custom.exe");
+                File.Delete(App.DefaultOutputPath + "\\john-wick-parse_custom.exe");
             }
         }
         private void KeyCheck()
@@ -345,7 +334,7 @@ namespace FModel
                 FillWithPaKs();
                 KeyCheck();
                 SetOutput();
-                SetFolderPermission(DefaultOutputPath);
+                SetFolderPermission(App.DefaultOutputPath);
                 JohnWickCheck();
                 CreateDir();
                 SetScintillaStyle();
@@ -509,75 +498,75 @@ namespace FModel
                 {
                     try
                     {
-                        MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, Settings.Default.AESKey);
+                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, Settings.Default.AESKey);
                     }
                     catch (Exception)
                     {
                         break;
                     }
 
-                    if (MyExtractor.GetFileList() != null)
+                    if (JohnWick.MyExtractor.GetFileList() != null)
                     {
-                        _paksMountPoint.Add(arCurrentUsedPak, MyExtractor.GetMountPoint().Substring(9));
+                        ThePak.PaksMountPoint.Add(arCurrentUsedPak, JohnWick.MyExtractor.GetMountPoint().Substring(9));
 
                         if (loadAllPaKs)
-                            if (!File.Exists(DefaultOutputPath + "\\FortnitePAKs.txt"))
-                                File.Create(DefaultOutputPath + "\\FortnitePAKs.txt").Dispose();
+                            if (!File.Exists(App.DefaultOutputPath + "\\FortnitePAKs.txt"))
+                                File.Create(App.DefaultOutputPath + "\\FortnitePAKs.txt").Dispose();
 
-                        string[] currentUsedPakLines = MyExtractor.GetFileList().ToArray();
-                        for (int ii = 0; ii < currentUsedPakLines.Length; ii++)
+                        string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                        for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                         {
-                            currentUsedPakLines[ii] = MyExtractor.GetMountPoint().Substring(6) + currentUsedPakLines[ii];
+                            CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
 
-                            string currentUsedPakFileName = currentUsedPakLines[ii].Substring(currentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
-                            if (currentUsedPakFileName.Contains(".uasset") || currentUsedPakFileName.Contains(".uexp") || currentUsedPakFileName.Contains(".ubulk"))
+                            string CurrentUsedPakFileName = CurrentUsedPakLines[ii].Substring(CurrentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
+                            if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
                             {
-                                if (!AllpaksDictionary.ContainsKey(currentUsedPakFileName.Substring(0, currentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal))))
+                                if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal))))
                                 {
-                                    AllpaksDictionary.Add(currentUsedPakFileName.Substring(0, currentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal)), arCurrentUsedPak);
+                                    ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal)), arCurrentUsedPak);
                                 }
                             }
                             else
                             {
-                                if (!AllpaksDictionary.ContainsKey(currentUsedPakFileName))
+                                if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName))
                                 {
-                                    AllpaksDictionary.Add(currentUsedPakFileName, arCurrentUsedPak);
+                                    ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName, arCurrentUsedPak);
                                 }
                             }
                         }
                         if (loadAllPaKs)
                         {
-                            UpdateConsole(".PAK mount point: " + MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
+                            UpdateConsole(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
 
-                            File.AppendAllLines(DefaultOutputPath + "\\FortnitePAKs.txt", currentUsedPakLines);
+                            File.AppendAllLines(App.DefaultOutputPath + "\\FortnitePAKs.txt", CurrentUsedPakLines);
 
-                            CurrentUsedPak = null;
-                            CurrentUsedPakGuid = null;
+                            ThePak.CurrentUsedPak = null;
+                            ThePak.CurrentUsedPakGuid = null;
                         }
                     }
                 }
                 if (theSinglePak != null)
                 {
-                    CurrentUsedPak = theSinglePak.ClickedItem.Text;
-                    CurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + CurrentUsedPak);
+                    ThePak.CurrentUsedPak = theSinglePak.ClickedItem.Text;
+                    ThePak.CurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
 
-                    if (arCurrentUsedPak == theSinglePak.ClickedItem.Text && MyExtractor.GetFileList() != null)
-                        PakAsTxt = MyExtractor.GetFileList().ToArray();
+                    if (arCurrentUsedPak == theSinglePak.ClickedItem.Text && JohnWick.MyExtractor.GetFileList() != null)
+                        PakAsTxt = JohnWick.MyExtractor.GetFileList().ToArray();
                 }
             }
             if (theSinglePak != null && ReadPakGuid(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text) != "0-0-0-0") //LOADING DYNAMIC PAK
             {
-                CurrentUsedPak = theSinglePak.ClickedItem.Text;
-                CurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + CurrentUsedPak);
+                ThePak.CurrentUsedPak = theSinglePak.ClickedItem.Text;
+                ThePak.CurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
 
                 try
                 {
-                    MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text, Settings.Default.AESKey);
+                    JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text, Settings.Default.AESKey);
 
-                    if (MyExtractor.GetFileList() != null)
+                    if (JohnWick.MyExtractor.GetFileList() != null)
                     {
-                        _paksMountPoint.Add(theSinglePak.ClickedItem.Text, MyExtractor.GetMountPoint().Substring(9));
-                        PakAsTxt = MyExtractor.GetFileList().ToArray();
+                        ThePak.PaksMountPoint.Add(theSinglePak.ClickedItem.Text, JohnWick.MyExtractor.GetMountPoint().Substring(9));
+                        PakAsTxt = JohnWick.MyExtractor.GetFileList().ToArray();
                     }
                 }
                 catch (Exception)
@@ -627,13 +616,13 @@ namespace FModel
         }
         private void ComparePaKs()
         {
-            PakAsTxt = File.ReadAllLines(DefaultOutputPath + "\\FortnitePAKs.txt");
-            File.Delete(DefaultOutputPath + "\\FortnitePAKs.txt");
+            PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\FortnitePAKs.txt");
+            File.Delete(App.DefaultOutputPath + "\\FortnitePAKs.txt");
 
             //ASK DIFFERENCE FILE AND COMPARE
             OpenFileDialog theDialog = new OpenFileDialog();
             theDialog.Title = @"Choose your Backup PAK File";
-            theDialog.InitialDirectory = DefaultOutputPath + "\\Backup";
+            theDialog.InitialDirectory = App.DefaultOutputPath + "\\Backup";
             theDialog.Multiselect = false;
             theDialog.Filter = @"TXT Files (*.txt)|*.txt|All Files (*.*)|*.*";
             Invoke(new Action(() =>
@@ -648,14 +637,14 @@ namespace FModel
                     IEnumerable<String> onlyB = PakAsTxt.Except(linesA);
                     IEnumerable<String> removed = linesA.Except(PakAsTxt);
 
-                    File.WriteAllLines(DefaultOutputPath + "\\Result.txt", onlyB);
-                    File.WriteAllLines(DefaultOutputPath + "\\Removed.txt", removed);
+                    File.WriteAllLines(App.DefaultOutputPath + "\\Result.txt", onlyB);
+                    File.WriteAllLines(App.DefaultOutputPath + "\\Removed.txt", removed);
                 }
             }));
 
             //GET REMOVED FILES
-            var removedTxt = File.ReadAllLines(DefaultOutputPath + "\\Removed.txt");
-            File.Delete(DefaultOutputPath + "\\Removed.txt");
+            var removedTxt = File.ReadAllLines(App.DefaultOutputPath + "\\Removed.txt");
+            File.Delete(App.DefaultOutputPath + "\\Removed.txt");
 
             List<string> removedItems = new List<string>();
             for (int i = 0; i < removedTxt.Length; i++)
@@ -674,14 +663,14 @@ namespace FModel
                 }));
             }
 
-            PakAsTxt = File.ReadAllLines(DefaultOutputPath + "\\Result.txt");
-            File.Delete(DefaultOutputPath + "\\Result.txt");
+            PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\Result.txt");
+            File.Delete(App.DefaultOutputPath + "\\Result.txt");
         }
         private void CreatePakList(ToolStripItemClickedEventArgs selectedPak = null, bool loadAllPaKs = false, bool getDiff = false, bool updateMode = false)
         {
-            AllpaksDictionary = new Dictionary<string, string>();
+            ThePak.AllpaksDictionary = new Dictionary<string, string>();
             _diffToExtract = new Dictionary<string, string>();
-            _paksMountPoint = new Dictionary<string, string>();
+            ThePak.PaksMountPoint = new Dictionary<string, string>();
             Settings.Default.AESKey = AESKeyTextBox.Text.Substring(2).ToUpper();
             Settings.Default.Save();
 
@@ -713,14 +702,14 @@ namespace FModel
                 //ADD TO DICTIONNARY
                 RegisterPaKsinDict(_paksArray, null, true);
 
-                if (!File.Exists(DefaultOutputPath + "\\FortnitePAKs.txt"))
+                if (!File.Exists(App.DefaultOutputPath + "\\FortnitePAKs.txt"))
                 {
                     UpdateConsole("Can't read .PAK files with this key", Color.FromArgb(255, 244, 66, 66), "Error");
                 }
                 else
                 {
-                    PakAsTxt = File.ReadAllLines(DefaultOutputPath + "\\FortnitePAKs.txt");
-                    File.Delete(DefaultOutputPath + "\\FortnitePAKs.txt");
+                    PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\FortnitePAKs.txt");
+                    File.Delete(App.DefaultOutputPath + "\\FortnitePAKs.txt");
 
                     Invoke(new Action(() =>
                     {
@@ -739,7 +728,7 @@ namespace FModel
                 //ADD TO DICTIONNARY
                 RegisterPaKsinDict(_paksArray, null, true);
 
-                if (!File.Exists(DefaultOutputPath + "\\FortnitePAKs.txt"))
+                if (!File.Exists(App.DefaultOutputPath + "\\FortnitePAKs.txt"))
                 {
                     UpdateConsole("Can't read .PAK files with this key", Color.FromArgb(255, 244, 66, 66), "Error");
                 }
@@ -750,7 +739,7 @@ namespace FModel
                     if (updateMode)
                     {
                         UmFilter(PakAsTxt, _diffToExtract);
-                        UmWorking = true;
+                        Checking.UmWorking = true;
                     }
 
                     Invoke(new Action(() =>
@@ -793,26 +782,26 @@ namespace FModel
                 {
                     try
                     {
-                        MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, Settings.Default.AESKey);
+                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, Settings.Default.AESKey);
                     }
                     catch (Exception)
                     {
                         break;
                     }
 
-                    if (MyExtractor.GetFileList() != null)
+                    if (JohnWick.MyExtractor.GetFileList() != null)
                     {
-                        if (!File.Exists(DefaultOutputPath + "\\Backup" + _backupFileName))
-                            File.Create(DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
+                        if (!File.Exists(App.DefaultOutputPath + "\\Backup" + _backupFileName))
+                            File.Create(App.DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
 
-                        string[] currentUsedPakLines = MyExtractor.GetFileList().ToArray();
-                        for (int ii = 0; ii < currentUsedPakLines.Length; ii++)
+                        string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                        for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                         {
-                            currentUsedPakLines[ii] = MyExtractor.GetMountPoint().Substring(6) + currentUsedPakLines[ii];
+                            CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
                         }
-                        UpdateConsole(".PAK mount point: " + MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
+                        UpdateConsole(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
 
-                        File.AppendAllLines(DefaultOutputPath + "\\Backup" + _backupFileName, currentUsedPakLines);
+                        File.AppendAllLines(App.DefaultOutputPath + "\\Backup" + _backupFileName, CurrentUsedPakLines);
                     }
                 }
                 else
@@ -824,26 +813,26 @@ namespace FModel
                         {
                             try
                             {
-                                MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, parts[1].Substring(2));
+                                JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, parts[1].Substring(2));
                             }
                             catch (Exception)
                             {
                                 continue;
                             }
 
-                            if (MyExtractor.GetFileList() != null)
+                            if (JohnWick.MyExtractor.GetFileList() != null)
                             {
-                                if (!File.Exists(DefaultOutputPath + "\\Backup" + _backupFileName))
-                                    File.Create(DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
+                                if (!File.Exists(App.DefaultOutputPath + "\\Backup" + _backupFileName))
+                                    File.Create(App.DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
 
-                                string[] currentUsedPakLines = MyExtractor.GetFileList().ToArray();
-                                for (int ii = 0; ii < currentUsedPakLines.Length; ii++)
+                                string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                                for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                                 {
-                                    currentUsedPakLines[ii] = MyExtractor.GetMountPoint().Substring(6) + currentUsedPakLines[ii];
+                                    CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
                                 }
                                 UpdateConsole(arCurrentUsedPak, Color.FromArgb(255, 244, 132, 66), "Waiting");
 
-                                File.AppendAllLines(DefaultOutputPath + "\\Backup" + _backupFileName, currentUsedPakLines);
+                                File.AppendAllLines(App.DefaultOutputPath + "\\Backup" + _backupFileName, CurrentUsedPakLines);
                             }
                         }
                         else if (parts[0] == arCurrentUsedPak && parts[1] == "undefined")
@@ -855,28 +844,28 @@ namespace FModel
                             /*string promptValue = Prompt.ShowDialog("AES Key:", arCurrentUsedPak);
                             if (!string.IsNullOrEmpty(promptValue))
                             {
-                                JwpmProcess("filelist \"" + Settings.Default.PAKsPath + "\\" + arCurrentUsedPak + "\" \"" + DefaultOutputPath + "\" " + promptValue.Substring(2));
-                                if (File.Exists(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt"))
+                                JwpmProcess("filelist \"" + Settings.Default.PAKsPath + "\\" + arCurrentUsedPak + "\" \"" + App.DefaultOutputPath + "\" " + promptValue.Substring(2));
+                                if (File.Exists(App.DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt"))
                                 {
-                                    if (!File.Exists(DefaultOutputPath + "\\Backup" + _backupFileName))
-                                        File.Create(DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
+                                    if (!File.Exists(App.DefaultOutputPath + "\\Backup" + _backupFileName))
+                                        File.Create(App.DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
 
-                                    string[] currentUsedPakLines = File.ReadAllLines(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
-                                    for (int ii = 0; ii < currentUsedPakLines.Length; ii++)
+                                    string[] CurrentUsedPakLines = File.ReadAllLines(App.DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                                    for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                                     {
-                                        currentUsedPakLines[ii] = "FortniteGame/" + currentUsedPakLines[ii];
+                                        CurrentUsedPakLines[ii] = "FortniteGame/" + CurrentUsedPakLines[ii];
                                     }
                                     UpdateConsole(".PAK mount point: \"/FortniteGame/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
 
-                                    File.AppendAllLines(DefaultOutputPath + "\\Backup" + _backupFileName, currentUsedPakLines);
-                                    File.Delete(DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
+                                    File.AppendAllLines(App.DefaultOutputPath + "\\Backup" + _backupFileName, CurrentUsedPakLines);
+                                    File.Delete(App.DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
                                 }
                             }*/
                         }
                     }
                 }
             }
-            if (File.Exists(DefaultOutputPath + "\\Backup" + _backupFileName))
+            if (File.Exists(App.DefaultOutputPath + "\\Backup" + _backupFileName))
                 UpdateConsole("\\Backup" + _backupFileName + " successfully created", Color.FromArgb(255, 66, 244, 66), "Success");
             else
                 UpdateConsole("Can't create " + _backupFileName.Substring(1), Color.FromArgb(255, 244, 66, 66), "Error");
@@ -1038,7 +1027,7 @@ namespace FModel
             {
                 UpdateConsole(e.Error.Message, Color.FromArgb(255, 244, 66, 66), "Error");
             }
-            else if (UmWorking == false)
+            else if (Checking.UmWorking == false)
             {
                 UpdateConsole("Can't read .PAK files with this key", Color.FromArgb(255, 244, 66, 66), "Error");
             }
@@ -1050,7 +1039,7 @@ namespace FModel
             }
 
             SelectedItemsArray = null;
-            UmWorking = false;
+            Checking.UmWorking = false;
             Invoke(new Action(() =>
             {
                 updateModeToolStripMenuItem.Checked = false;
@@ -1273,44 +1262,6 @@ namespace FModel
 
         #region EXTRACT BUTTON
         //METHODS
-        public static string ExtractAsset(string currentPak, string currentItem)
-        {
-            string toReturn = string.Empty;
-
-            MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, Settings.Default.AESKey);
-            string[] myArray = MyExtractor.GetFileList().ToArray();
-
-            string[] results;
-            if (currentItem.Contains("."))
-                results = Array.FindAll(myArray, s => s.Contains("/" + currentItem));
-            else
-                results = Array.FindAll(myArray, s => s.Contains("/" + currentItem + "."));
-
-            for (int i = 0; i < results.Length; i++)
-            {
-                int index = Array.IndexOf(myArray, results[i]);
-
-                uint y = (uint)index;
-                byte[] b = MyExtractor.GetData(y);
-
-                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                {
-                    Directory.CreateDirectory(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[CurrentUsedPak] + results[i].Substring(0, results[i].LastIndexOf("/", StringComparison.Ordinal)));
-                    File.WriteAllBytes(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[CurrentUsedPak] + results[i], b);
-
-                    toReturn = DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[CurrentUsedPak] + results[i];
-                }
-                else
-                {
-                    Directory.CreateDirectory(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i].Substring(0, results[i].LastIndexOf("/", StringComparison.Ordinal)));
-                    File.WriteAllBytes(DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i], b);
-
-                    toReturn = DefaultOutputPath + "\\Extracted\\" + _paksMountPoint[AllpaksDictionary[currentItem]] + results[i];
-                }
-            }
-
-            return toReturn.Replace("/", "\\");
-        }
         private void ExtractAndSerializeItems(DoWorkEventArgs e, bool updateMode = false)
         {
             if (updateMode == false)
@@ -1352,19 +1303,19 @@ namespace FModel
                     return;
                 }
 
-                CurrentUsedItem = SelectedItemsArray[i];
+                ThePak.CurrentUsedItem = SelectedItemsArray[i];
 
-                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                    ExtractedFilePath = ExtractAsset(CurrentUsedPak, CurrentUsedItem);
+                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                    ExtractedFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, ThePak.CurrentUsedItem);
                 else
-                    ExtractedFilePath = ExtractAsset(AllpaksDictionary[CurrentUsedItem], CurrentUsedItem);
+                    ExtractedFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[ThePak.CurrentUsedItem], ThePak.CurrentUsedItem);
 
                 if (ExtractedFilePath != null)
                 {
-                    UpdateConsole(CurrentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
+                    UpdateConsole(ThePak.CurrentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                     if (ExtractedFilePath.Contains(".uasset") || ExtractedFilePath.Contains(".uexp") || ExtractedFilePath.Contains(".ubulk"))
                     {
-                        MyAsset = new PakAsset(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf('.')));
+                        JohnWick.MyAsset = new PakAsset(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf('.')));
                         JsonParseFile();
                     }
                     if (ExtractedFilePath.Contains(".ufont"))
@@ -1378,29 +1329,29 @@ namespace FModel
                     }
                 }
                 else
-                    UpdateConsole("Error while extracting " + CurrentUsedItem, Color.FromArgb(255, 244, 66, 66), "Error");
+                    UpdateConsole("Error while extracting " + ThePak.CurrentUsedItem, Color.FromArgb(255, 244, 66, 66), "Error");
             }
         }
         private void JsonParseFile()
         {
-            if (MyAsset.GetSerialized() != null)
+            if (JohnWick.MyAsset.GetSerialized() != null)
             {
-                UpdateConsole(CurrentUsedItem + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
+                UpdateConsole(ThePak.CurrentUsedItem + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
 
                 Invoke(new Action(() =>
                 {
                     try
                     {
-                        scintilla1.Text = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                        scintilla1.Text = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                     }
                     catch (JsonReaderException)
                     {
-                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                         AppendText(".JSON file can't be displayed", Color.Black, true);
                     }
                 }));
 
-                NavigateThroughJson(MyAsset, ExtractedFilePath);
+                NavigateThroughJson(JohnWick.MyAsset, ExtractedFilePath);
             }
             else
                 UpdateConsole("No serialized file found", Color.FromArgb(255, 244, 66, 66), "Error");
@@ -1412,7 +1363,7 @@ namespace FModel
                 string parsedJson = JToken.Parse(theAsset.GetSerialized()).ToString();
                 var itemId = ItemsIdParser.FromJson(parsedJson);
 
-                UpdateConsole("Parsing " + CurrentUsedItem + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
+                UpdateConsole("Parsing " + ThePak.CurrentUsedItem + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                 for (int i = 0; i < itemId.Length; i++)
                 {
                     if (Settings.Default.createIconForCosmetics && (itemId[i].ExportType.Contains("Athena") && itemId[i].ExportType.Contains("Item") && itemId[i].ExportType.Contains("Definition")))
@@ -1438,7 +1389,7 @@ namespace FModel
                     else if (itemId[i].ExportType == "SoundWave")
                         ConvertSoundWave();
                     else
-                        UpdateConsole(CurrentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
+                        UpdateConsole(ThePak.CurrentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                 }
             }
             catch (Exception ex)
@@ -1448,7 +1399,7 @@ namespace FModel
         }
         private void CreateItemIcon(ItemsIdParser theItem, string specialMode = null)
         {
-            UpdateConsole(CurrentUsedItem + " is a Cosmetic ID", Color.FromArgb(255, 66, 244, 66), "Success");
+            UpdateConsole(ThePak.CurrentUsedItem + " is a Cosmetic ID", Color.FromArgb(255, 66, 244, 66), "Success");
 
             Bitmap bmp = new Bitmap(522, 522);
             Graphics g = Graphics.FromImage(bmp);
@@ -1484,13 +1435,13 @@ namespace FModel
             #endregion
 
             #region WATERMARK
-            if (UmWorking == false && (Settings.Default.isWatermark && !string.IsNullOrEmpty(Settings.Default.wFilename)))
+            if (Checking.UmWorking == false && (Settings.Default.isWatermark && !string.IsNullOrEmpty(Settings.Default.wFilename)))
             {
                 Image watermark = Image.FromFile(Settings.Default.wFilename);
                 var opacityImage = SetImageOpacity(watermark, (float)Settings.Default.wOpacity / 100);
                 g.DrawImage(Forms.Settings.ResizeImage(opacityImage, Settings.Default.wSize, Settings.Default.wSize), (522 - Settings.Default.wSize) / 2, (522 - Settings.Default.wSize) / 2, Settings.Default.wSize, Settings.Default.wSize);
             }
-            if (UmWorking && (Settings.Default.UMWatermark && !string.IsNullOrEmpty(Settings.Default.UMFilename)))
+            if (Checking.UmWorking && (Settings.Default.UMWatermark && !string.IsNullOrEmpty(Settings.Default.UMFilename)))
             {
                 Image watermark = Image.FromFile(Settings.Default.UMFilename);
                 var opacityImage = SetImageOpacity(watermark, (float)Settings.Default.UMOpacity / 100);
@@ -1508,7 +1459,7 @@ namespace FModel
             }
             catch (NullReferenceException)
             {
-                AppendText(CurrentUsedItem + " ", Color.Red);
+                AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                 AppendText("No ", Color.Black);
                 AppendText("DisplayName ", Color.SteelBlue);
                 AppendText("found", Color.Black, true);
@@ -1519,7 +1470,7 @@ namespace FModel
             }
             catch (NullReferenceException)
             {
-                AppendText(CurrentUsedItem + " ", Color.Red);
+                AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                 AppendText("No ", Color.Black);
                 AppendText("Description ", Color.SteelBlue);
                 AppendText("found", Color.Black, true);
@@ -1532,7 +1483,7 @@ namespace FModel
                 }
                 catch (NullReferenceException)
                 {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
                     AppendText("ShortDescription ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
@@ -1543,14 +1494,14 @@ namespace FModel
                 }
                 catch (NullReferenceException)
                 {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
                     AppendText("GameplayTags ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
                     AppendText("GameplayTags ", Color.SteelBlue);
                     AppendText("as ", Color.Black);
@@ -1566,7 +1517,7 @@ namespace FModel
                 }
                 catch (NullReferenceException)
                 {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
                     AppendText("GameplayTags ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
@@ -1579,14 +1530,14 @@ namespace FModel
                     }
                     catch (NullReferenceException)
                     {
-                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                         AppendText("No ", Color.Black);
                         AppendText("GameplayTags ", Color.SteelBlue);
                         AppendText("found", Color.Black, true);
                     }
                     catch (IndexOutOfRangeException)
                     {
-                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                         AppendText("No ", Color.Black);
                         AppendText("GameplayTags ", Color.SteelBlue);
                         AppendText("as ", Color.Black);
@@ -1609,7 +1560,7 @@ namespace FModel
                 }
                 catch (NullReferenceException)
                 {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
                     AppendText("ShortDescription ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
@@ -1620,7 +1571,7 @@ namespace FModel
                 }
                 catch (NullReferenceException)
                 {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
                     AppendText("Cosmetic Item ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
@@ -1669,7 +1620,7 @@ namespace FModel
                 }
                 catch (NullReferenceException)
                 {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
                     AppendText("AttributeInitCategory ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
@@ -1683,14 +1634,14 @@ namespace FModel
                 }
                 catch (NullReferenceException)
                 {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
                     AppendText("GameplayTags ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                     AppendText("No ", Color.Black);
                     AppendText("GameplayTags ", Color.SteelBlue);
                     AppendText("as ", Color.Black);
@@ -1706,9 +1657,9 @@ namespace FModel
             {
                 Invoke(new Action(() =>
                 {
-                    pictureBox1.Image.Save(DefaultOutputPath + "\\Icons\\" + CurrentUsedItem + ".png", ImageFormat.Png);
+                    pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
                 }));
-                AppendText(CurrentUsedItem, Color.DarkRed);
+                AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
                 AppendText(" successfully saved", Color.Black, true);
             }
         }
@@ -1716,7 +1667,7 @@ namespace FModel
         {
             if (featured == false)
             {
-                WasFeatured = false;
+                Checking.WasFeatured = false;
                 SearchAthIteDefIcon(theItem);
             }
             if (featured)
@@ -1728,7 +1679,7 @@ namespace FModel
                 }
                 else if (theItem.DisplayAssetPath == null && theItem.ExportType != "AthenaItemWrapDefinition")
                 {
-                    SearchFeaturedCharacterIcon(theItem, "DA_Featured_" + CurrentUsedItem, true);
+                    SearchFeaturedCharacterIcon(theItem, "DA_Featured_" + ThePak.CurrentUsedItem, true);
                 }
                 else
                 {
@@ -1741,24 +1692,24 @@ namespace FModel
             if (theItem.HeroDefinition != null)
             {
                 string heroFilePath;
-                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                    heroFilePath = ExtractAsset(CurrentUsedPak, theItem.HeroDefinition);
+                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                    heroFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, theItem.HeroDefinition);
                 else
-                    heroFilePath = ExtractAsset(AllpaksDictionary[theItem.HeroDefinition], theItem.HeroDefinition);
+                    heroFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[theItem.HeroDefinition], theItem.HeroDefinition);
 
                 if (heroFilePath != null)
                 {
                     UpdateConsole(theItem.HeroDefinition + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                     if (heroFilePath.Contains(".uasset") || heroFilePath.Contains(".uexp") || heroFilePath.Contains(".ubulk"))
                     {
-                        MyAsset = new PakAsset(heroFilePath.Substring(0, heroFilePath.LastIndexOf('.')));
+                        JohnWick.MyAsset = new PakAsset(heroFilePath.Substring(0, heroFilePath.LastIndexOf('.')));
                         try
                         {
-                            if (MyAsset.GetSerialized() != null)
+                            if (JohnWick.MyAsset.GetSerialized() != null)
                             {
                                 UpdateConsole(theItem.HeroDefinition + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
 
-                                string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                                 var itemId = ItemsIdParser.FromJson(parsedJson);
                                 UpdateConsole("Parsing " + theItem.HeroDefinition + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                                 for (int i = 0; i < itemId.Length; i++)
@@ -1771,21 +1722,7 @@ namespace FModel
                                                     .LastIndexOf('.'));
 
 
-                                        string textureFilePath;
-                                        if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                            textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                        else
-                                            textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
-
-                                        if (textureFilePath != null)
-                                        {
-                                            MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                            MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                            ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                            UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                        }
-                                        else
-                                            UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                        ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                     }
                                 }
                             }
@@ -1794,7 +1731,7 @@ namespace FModel
                         }
                         catch (JsonSerializationException)
                         {
-                            AppendText(CurrentUsedItem + " ", Color.Red);
+                            AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                             AppendText(".JSON file can't be displayed", Color.Black, true);
                         }
                     }
@@ -1811,24 +1748,24 @@ namespace FModel
                     theItem.WeaponDefinition = "WID_Harvest_Pickaxe_WuKong";
 
                 string weaponFilePath;
-                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                    weaponFilePath = ExtractAsset(CurrentUsedPak, theItem.WeaponDefinition);
+                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                    weaponFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, theItem.WeaponDefinition);
                 else
-                    weaponFilePath = ExtractAsset(AllpaksDictionary[theItem.WeaponDefinition], theItem.WeaponDefinition);
+                    weaponFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[theItem.WeaponDefinition], theItem.WeaponDefinition);
 
                 if (weaponFilePath != null)
                 {
                     UpdateConsole(theItem.WeaponDefinition + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                     if (weaponFilePath.Contains(".uasset") || weaponFilePath.Contains(".uexp") || weaponFilePath.Contains(".ubulk"))
                     {
-                        MyAsset = new PakAsset(weaponFilePath.Substring(0, weaponFilePath.LastIndexOf('.')));
+                        JohnWick.MyAsset = new PakAsset(weaponFilePath.Substring(0, weaponFilePath.LastIndexOf('.')));
                         try
                         {
-                            if (MyAsset.GetSerialized() != null)
+                            if (JohnWick.MyAsset.GetSerialized() != null)
                             {
                                 UpdateConsole(theItem.WeaponDefinition + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
 
-                                string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                                 var itemId = ItemsIdParser.FromJson(parsedJson);
                                 UpdateConsole("Parsing " + theItem.WeaponDefinition + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                                 for (int i = 0; i < itemId.Length; i++)
@@ -1840,21 +1777,7 @@ namespace FModel
                                                 Path.GetFileName(itemId[i].LargePreviewImage.AssetPathName)
                                                     .LastIndexOf('.'));
 
-                                        string textureFilePath;
-                                        if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                            textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                        else
-                                            textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
-
-                                        if (textureFilePath != null)
-                                        {
-                                            MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                            MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                            ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                            UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                        }
-                                        else
-                                            UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                        ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                     }
                                 }
                             }
@@ -1863,7 +1786,7 @@ namespace FModel
                         }
                         catch (JsonSerializationException)
                         {
-                            AppendText(CurrentUsedItem + " ", Color.Red);
+                            AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                             AppendText(".JSON file can't be displayed", Color.Black, true);
                         }
                     }
@@ -1881,99 +1804,57 @@ namespace FModel
                 string textureFile = Path.GetFileName(theItem.LargePreviewImage.AssetPathName)?.Substring(0,
                     Path.GetFileName(theItem.LargePreviewImage.AssetPathName).LastIndexOf('.'));
 
-                string textureFilePath;
-                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                else
-                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
-
-                if (textureFilePath != null)
-                {
-                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                    UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                }
-                else
-                    UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
             }
             else if (theItem.SmallPreviewImage != null)
             {
                 string textureFile = Path.GetFileName(theItem.SmallPreviewImage.AssetPathName)?.Substring(0,
                     Path.GetFileName(theItem.SmallPreviewImage.AssetPathName).LastIndexOf('.'));
 
-                string textureFilePath;
-                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                else
-                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
-
-                if (textureFilePath != null)
-                {
-                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                    UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                }
-                else
-                    UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
             }
         }
         private void SearchFeaturedCharacterIcon(ItemsIdParser theItem, string catName, bool manualSearch = false)
         {
             if (manualSearch == false)
             {
-                CurrentUsedItem = catName.Substring(catName.LastIndexOf('.') + 1);
+                ThePak.CurrentUsedItem = catName.Substring(catName.LastIndexOf('.') + 1);
 
-                if (CurrentUsedItem == "DA_Featured_Glider_ID_141_AshtonBoardwalk")
+                if (ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_141_AshtonBoardwalk")
                     GetItemIcon(theItem);
                 else
                 {
                     string catalogFilePath;
-                    if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                        catalogFilePath = ExtractAsset(CurrentUsedPak, catName.Substring(catName.LastIndexOf('.') + 1));
+                    if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                        catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName.Substring(catName.LastIndexOf('.') + 1));
                     else
-                        catalogFilePath = ExtractAsset(AllpaksDictionary[catName.Substring(catName.LastIndexOf('.') + 1)], catName.Substring(catName.LastIndexOf('.') + 1));
+                        catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName.Substring(catName.LastIndexOf('.') + 1)], catName.Substring(catName.LastIndexOf('.') + 1));
 
                     if (catalogFilePath != null)
                     {
-                        WasFeatured = true;
+                        Checking.WasFeatured = true;
                         UpdateConsole(catName.Substring(catName.LastIndexOf('.') + 1) + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                         if (catalogFilePath.Contains(".uasset") || catalogFilePath.Contains(".uexp") || catalogFilePath.Contains(".ubulk"))
                         {
-                            MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
+                            JohnWick.MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
                             try
                             {
-                                if (MyAsset.GetSerialized() != null)
+                                if (JohnWick.MyAsset.GetSerialized() != null)
                                 {
                                     UpdateConsole(catName.Substring(catName.LastIndexOf('.') + 1) + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-                                    string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                                    string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                                     var featuredId = FeaturedParser.FromJson(parsedJson);
                                     UpdateConsole("Parsing " + catName.Substring(catName.LastIndexOf('.') + 1) + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                                     for (int i = 0; i < featuredId.Length; i++)
                                     {
                                         //Thanks EPIC
-                                        if (CurrentUsedItem == "DA_Featured_CID_319_Athena_Commando_F_Nautilus")
+                                        if (ThePak.CurrentUsedItem == "DA_Featured_CID_319_Athena_Commando_F_Nautilus")
                                         {
                                             if (featuredId[i].TileImage != null)
                                             {
                                                 string textureFile = featuredId[i].TileImage.ResourceObject;
 
-                                                string textureFilePath;
-                                                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                                else
-                                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
-
-                                                if (textureFilePath != null)
-                                                {
-                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                                    UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                                }
-                                                else
-                                                    UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                             }
                                         }
                                         else
@@ -1982,25 +1863,7 @@ namespace FModel
                                             {
                                                 string textureFile = featuredId[i].DetailsImage.ResourceObject;
 
-                                                string textureFilePath;
-                                                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                                else
-                                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
-
-                                                if (textureFilePath != null && textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
-                                                {
-                                                    ItemIconPath = GetRenderSwitchMaterialTexture(textureFile, textureFilePath);
-                                                }
-                                                else if (textureFilePath != null && !textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
-                                                {
-                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                                    UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                                }
-                                                else
-                                                    UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                             }
                                         }
                                     }
@@ -2008,7 +1871,7 @@ namespace FModel
                             }
                             catch (JsonSerializationException)
                             {
-                                AppendText(CurrentUsedItem + " ", Color.Red);
+                                AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                                 AppendText(".JSON file can't be displayed", Color.Black, true);
                             }
                         }
@@ -2027,55 +1890,41 @@ namespace FModel
                     catName == "DA_Featured_Pickaxe_ID_028_Space" || 
                     catName == "DA_Featured_Pickaxe_ID_029_Assassin")
                     GetItemIcon(theItem);
-                else if (AllpaksDictionary.ContainsKey(catName))
+                else if (ThePak.AllpaksDictionary.ContainsKey(catName))
                 {
-                    CurrentUsedItem = catName;
+                    ThePak.CurrentUsedItem = catName;
 
                     string catalogFilePath;
-                    if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                        catalogFilePath = ExtractAsset(CurrentUsedPak, catName);
+                    if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                        catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName);
                     else
-                        catalogFilePath = ExtractAsset(AllpaksDictionary[catName], catName);
+                        catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
 
                     if (catalogFilePath != null)
                     {
-                        WasFeatured = true;
+                        Checking.WasFeatured = true;
                         UpdateConsole(catName + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                         if (catalogFilePath.Contains(".uasset") || catalogFilePath.Contains(".uexp") || catalogFilePath.Contains(".ubulk"))
                         {
-                            MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
+                            JohnWick.MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
                             try
                             {
-                                if (MyAsset.GetSerialized() != null)
+                                if (JohnWick.MyAsset.GetSerialized() != null)
                                 {
                                     UpdateConsole(catName + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-                                    string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                                    string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                                     var featuredId = FeaturedParser.FromJson(parsedJson);
                                     UpdateConsole("Parsing " + catName + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                                     for (int i = 0; i < featuredId.Length; i++)
                                     {
                                         //Thanks EPIC
-                                        if (CurrentUsedItem == "DA_Featured_Glider_ID_070_DarkViking")
+                                        if (ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_070_DarkViking")
                                         {
                                             if (featuredId[i].TileImage != null)
                                             {
                                                 string textureFile = featuredId[i].TileImage.ResourceObject;
 
-                                                string textureFilePath;
-                                                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                                else
-                                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
-
-                                                if (textureFilePath != null)
-                                                {
-                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                                    UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                                }
-                                                else
-                                                    UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                             }
                                         }
                                         else
@@ -2084,25 +1933,7 @@ namespace FModel
                                             {
                                                 string textureFile = featuredId[i].DetailsImage.ResourceObject;
 
-                                                string textureFilePath;
-                                                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                                else
-                                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
-
-                                                if (textureFilePath != null && textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
-                                                {
-                                                    ItemIconPath = GetRenderSwitchMaterialTexture(textureFile, textureFilePath);
-                                                }
-                                                else if (textureFilePath != null && !textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_"))
-                                                {
-                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                                    UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                                }
-                                                else
-                                                    UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                             }
                                         }
                                     }
@@ -2110,7 +1941,7 @@ namespace FModel
                             }
                             catch (JsonSerializationException)
                             {
-                                AppendText(CurrentUsedItem + " ", Color.Red);
+                                AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                                 AppendText(".JSON file can't be displayed", Color.Black, true);
                             }
                         }
@@ -2120,76 +1951,26 @@ namespace FModel
                     GetItemIcon(theItem);
             }
         }
-        private string GetRenderSwitchMaterialTexture(string theTexture, string theTexturePath)
-        {
-            string toReturn = string.Empty;
-
-            UpdateConsole(theTexture + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
-            if (theTexturePath.Contains(".uasset") || theTexturePath.Contains(".uexp") || theTexturePath.Contains(".ubulk"))
-            {
-                MyAsset = new PakAsset(theTexturePath.Substring(0, theTexturePath.LastIndexOf('.')));
-                try
-                {
-                    if (MyAsset.GetSerialized() != null)
-                    {
-                        UpdateConsole(theTexture + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-
-                        string parsedRsmJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
-                        var rsmid = RenderSwitchMaterial.FromJson(parsedRsmJson);
-                        UpdateConsole("Parsing " + theTexture + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                        for (int i = 0; i < rsmid.Length; i++)
-                        {
-                            if (rsmid[i].TextureParameterValues.FirstOrDefault()?.ParameterValue != null)
-                            {
-                                string textureFile = rsmid[i].TextureParameterValues.FirstOrDefault()?.ParameterValue;
-
-                                string textureFilePath;
-                                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                else
-                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
-
-                                if (textureFilePath != null)
-                                {
-                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                    toReturn = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                    UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                }
-                                else
-                                    UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
-                            }
-                        }
-                    }
-                }
-                catch (JsonSerializationException)
-                {
-                    AppendText(CurrentUsedItem + " ", Color.Red);
-                    AppendText(".JSON file can't be displayed", Color.Black, true);
-                }
-            }
-            return toReturn;
-        }
         private void GetAmmoData(string ammoFile, Graphics toDrawOn)
         {
             string ammoFilePath;
-            if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                ammoFilePath = ExtractAsset(CurrentUsedPak, ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
+            if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                ammoFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
             else
-                ammoFilePath = ExtractAsset(AllpaksDictionary[ammoFile.Substring(ammoFile.LastIndexOf('.') + 1)], ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
+                ammoFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[ammoFile.Substring(ammoFile.LastIndexOf('.') + 1)], ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
 
             if (ammoFilePath != null)
             {
                 UpdateConsole(ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                 if (ammoFilePath.Contains(".uasset") || ammoFilePath.Contains(".uexp") || ammoFilePath.Contains(".ubulk"))
                 {
-                    MyAsset = new PakAsset(ammoFilePath.Substring(0, ammoFilePath.LastIndexOf('.')));
+                    JohnWick.MyAsset = new PakAsset(ammoFilePath.Substring(0, ammoFilePath.LastIndexOf('.')));
                     try
                     {
-                        if (MyAsset.GetSerialized() != null)
+                        if (JohnWick.MyAsset.GetSerialized() != null)
                         {
                             UpdateConsole(ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-                            string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                            string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                             var ammoId = ItemsIdParser.FromJson(parsedJson);
                             UpdateConsole("Parsing " + ammoFile.Substring(ammoFile.LastIndexOf('.') + 1) + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                             for (int i = 0; i < ammoId.Length; i++)
@@ -2215,7 +1996,7 @@ namespace FModel
                     }
                     catch (JsonSerializationException)
                     {
-                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                         AppendText(".JSON file can't be displayed", Color.Black, true);
                     }
                 }
@@ -2229,7 +2010,7 @@ namespace FModel
         {
             if (theItem.ExportType == "FortChallengeBundleItemDefinition")
             {
-                if (CurrentUsedItem == "QuestBundle_S9_Fortbyte")
+                if (ThePak.CurrentUsedItem == "QuestBundle_S9_Fortbyte")
                     CreateFortByteChallengesIcon(theItem, theParsedJson, questJson);
                 else
                 {
@@ -2239,7 +2020,7 @@ namespace FModel
                     g.SmoothingMode = SmoothingMode.HighQuality;
                     int iamY = 275;
                     int justSkip = 0;
-                    YAfterLoop = 0;
+                    Checking.YAfterLoop = 0;
                     bool v2 = false;
 
                     var bundleParser = ChallengeBundleIdParser.FromJson(theParsedJson);
@@ -2267,24 +2048,24 @@ namespace FModel
                             try
                             {
                                 string challengeFilePath;
-                                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                    challengeFilePath = ExtractAsset(CurrentUsedPak, SelectedChallengesArray[i2]);
+                                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                                    challengeFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, SelectedChallengesArray[i2]);
                                 else
-                                    challengeFilePath = ExtractAsset(AllpaksDictionary[SelectedChallengesArray[i2]], SelectedChallengesArray[i2]);
+                                    challengeFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[SelectedChallengesArray[i2]], SelectedChallengesArray[i2]);
 
                                 if (challengeFilePath != null)
                                 {
                                     UpdateConsole(SelectedChallengesArray[i2] + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                                     if (challengeFilePath.Contains(".uasset") || challengeFilePath.Contains(".uexp") || challengeFilePath.Contains(".ubulk"))
                                     {
-                                        MyAsset = new PakAsset(challengeFilePath.Substring(0, challengeFilePath.LastIndexOf('.')));
+                                        JohnWick.MyAsset = new PakAsset(challengeFilePath.Substring(0, challengeFilePath.LastIndexOf('.')));
                                         try
                                         {
-                                            if (MyAsset.GetSerialized() != null)
+                                            if (JohnWick.MyAsset.GetSerialized() != null)
                                             {
                                                 UpdateConsole(SelectedChallengesArray[i2] + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
 
-                                                string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                                                 var questParser = QuestParser.FromJson(parsedJson);
                                                 UpdateConsole("Parsing " + SelectedChallengesArray[i2] + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                                                 for (int ii = 0; ii < questParser.Length; ii++)
@@ -2432,7 +2213,7 @@ namespace FModel
                                                             for (int ii3 = 0; ii3 < questParser[ii].Rewards.Length; ii3++)
                                                             {
                                                                 LoopStageQuest(questParser[ii].Rewards[ii3].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser[ii].Rewards[ii3].ItemPrimaryAssetId.PrimaryAssetName, g, iamY, justSkip);
-                                                                iamY = YAfterLoop;
+                                                                iamY = Checking.YAfterLoop;
                                                             }
                                                         }
                                                         catch (Exception ex)
@@ -2447,7 +2228,7 @@ namespace FModel
                                         }
                                         catch (JsonSerializationException)
                                         {
-                                            AppendText(CurrentUsedItem + " ", Color.Red);
+                                            AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                                             AppendText(".JSON file can't be displayed", Color.Black, true);
                                         }
                                     }
@@ -2484,21 +2265,7 @@ namespace FModel
                                             #region DRAW ICON
                                             string textureFile = "T_UI_PuzzleIcon_64";
 
-                                            string textureFilePath;
-                                            if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                            else
-                                                textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
-
-                                            if (textureFilePath != null)
-                                            {
-                                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                                ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                                UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                            }
-                                            else
-                                                UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                            ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
 
                                             if (File.Exists(ItemIconPath))
                                             {
@@ -2651,9 +2418,9 @@ namespace FModel
                     {
                         Invoke(new Action(() =>
                         {
-                            pictureBox1.Image.Save(DefaultOutputPath + "\\Icons\\" + CurrentUsedItem + ".png", ImageFormat.Png);
+                            pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
                         }));
-                        AppendText(CurrentUsedItem, Color.DarkRed);
+                        AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
                         AppendText(" successfully saved", Color.Black, true);
                     }
 
@@ -2712,37 +2479,17 @@ namespace FModel
                 AppendText("found", Color.Black, true);
             } //NAME
 
-            string pngPath;
             string textureFile = Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName)?.Substring(0,
                 Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
 
-            string textureFilePath;
-            if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-            else
-                textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
+            string pngPath = JohnWick.AssetToTexture2D(textureFile);
 
-            if (textureFilePath != null && textureFile == "M_UI_ChallengeTile_PCB")
+            Image challengeIcon;
+            using (var bmpTemp = new Bitmap(pngPath))
             {
-                pngPath = GetRenderSwitchMaterialTexture(textureFile, textureFilePath);
-
-                Image challengeIcon = Image.FromFile(pngPath);
-                toDrawOn.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0));
+                challengeIcon = new Bitmap(bmpTemp);
             }
-            else if (textureFilePath != null)
-            {
-                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                pngPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-
-                Image challengeIcon;
-                using (var bmpTemp = new Bitmap(pngPath))
-                {
-                    challengeIcon = new Bitmap(bmpTemp);
-                }
-                toDrawOn.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0));
-            }
+            toDrawOn.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0));
         }
         private void LoopStageQuest(string qAssetType, string qAssetName, Graphics toDrawOn, int yeay, int line)
         {
@@ -2754,21 +2501,21 @@ namespace FModel
             {
                 try
                 {
-                    string challengeFilePathLoop = ExtractAsset(AllpaksDictionary[qAssetName], qAssetName);
+                    string challengeFilePathLoop = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[qAssetName], qAssetName);
 
                     if (challengeFilePathLoop != null)
                     {
                         UpdateConsole(qAssetName + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                         if (challengeFilePathLoop.Contains(".uasset") || challengeFilePathLoop.Contains(".uexp") || challengeFilePathLoop.Contains(".ubulk"))
                         {
-                            MyAsset = new PakAsset(challengeFilePathLoop.Substring(0, challengeFilePathLoop.LastIndexOf('.')));
+                            JohnWick.MyAsset = new PakAsset(challengeFilePathLoop.Substring(0, challengeFilePathLoop.LastIndexOf('.')));
                             try
                             {
-                                if (MyAsset.GetSerialized() != null)
+                                if (JohnWick.MyAsset.GetSerialized() != null)
                                 {
                                     UpdateConsole(qAssetName + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
 
-                                    string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                                    string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                                     var questParser = QuestParser.FromJson(parsedJson);
                                     UpdateConsole("Parsing " + qAssetName + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                                     for (int i = 0; i < questParser.Length; i++)
@@ -2777,7 +2524,7 @@ namespace FModel
                                         string oldCount = string.Empty;
                                         for (int ii = 0; ii < questParser[i].Objectives.Length; ii++)
                                         {
-                                            if (CurrentUsedItem == "QuestBundle_S8_ExtraCredit" || CurrentUsedItem == "QuestBundle_S7_Overtime")
+                                            if (ThePak.CurrentUsedItem == "QuestBundle_S8_ExtraCredit" || ThePak.CurrentUsedItem == "QuestBundle_S7_Overtime")
                                             {
                                                 string newQuest = questParser[i].Objectives[ii].Description;
                                                 string newCount = questParser[i].Objectives[ii].Count.ToString();
@@ -2917,7 +2664,7 @@ namespace FModel
                                                 for (int iii = 0; iii < questParser[i].Rewards.Length; iii++)
                                                 {
                                                     LoopStageQuest(questParser[i].Rewards[iii].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser[i].Rewards[iii].ItemPrimaryAssetId.PrimaryAssetName, toDrawOnLoop, yeayLoop, lineLoop);
-                                                    yeayLoop = YAfterLoop;
+                                                    yeayLoop = Checking.YAfterLoop;
                                                 }
                                             }
                                             else if (!_questStageDict.ContainsKey(questParser[i].Objectives[ii].Description))
@@ -3058,7 +2805,7 @@ namespace FModel
                                                 for (int iii = 0; iii < questParser[i].Rewards.Length; iii++)
                                                 {
                                                     LoopStageQuest(questParser[i].Rewards[iii].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser[i].Rewards[iii].ItemPrimaryAssetId.PrimaryAssetName, toDrawOnLoop, yeayLoop, lineLoop);
-                                                    yeayLoop = YAfterLoop;
+                                                    yeayLoop = Checking.YAfterLoop;
                                                 }
                                             }
                                         }
@@ -3069,7 +2816,7 @@ namespace FModel
                             }
                             catch (JsonSerializationException)
                             {
-                                AppendText(CurrentUsedItem + " ", Color.Red);
+                                AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                                 AppendText(".JSON file can't be displayed", Color.Black, true);
                             }
                         }
@@ -3081,32 +2828,32 @@ namespace FModel
                     AppendText(qAssetName, Color.SteelBlue);
                 }
             }
-            YAfterLoop = yeayLoop;
+            Checking.YAfterLoop = yeayLoop;
         }
         private void DrawRewardIcon(string iconName, Graphics toDrawOn, int y)
         {
             ItemIconPath = string.Empty;
             try
             {
-                var value = AllpaksDictionary.Where(x => String.Equals(x.Key, iconName, StringComparison.CurrentCultureIgnoreCase)).Select(d => d.Key).FirstOrDefault();
+                var value = ThePak.AllpaksDictionary.Where(x => String.Equals(x.Key, iconName, StringComparison.CurrentCultureIgnoreCase)).Select(d => d.Key).FirstOrDefault();
                 if (value != null)
                 {
                     iconName = value;
 
-                    string extractedIconPath = ExtractAsset(AllpaksDictionary[iconName], iconName);
+                    string extractedIconPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[iconName], iconName);
                     if (extractedIconPath != null)
                     {
                         UpdateConsole(iconName + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                         if (extractedIconPath.Contains(".uasset") || extractedIconPath.Contains(".uexp") || extractedIconPath.Contains(".ubulk"))
                         {
-                            MyAsset = new PakAsset(extractedIconPath.Substring(0, extractedIconPath.LastIndexOf('.')));
+                            JohnWick.MyAsset = new PakAsset(extractedIconPath.Substring(0, extractedIconPath.LastIndexOf('.')));
                             try
                             {
-                                if (MyAsset.GetSerialized() != null)
+                                if (JohnWick.MyAsset.GetSerialized() != null)
                                 {
                                     UpdateConsole(iconName + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
 
-                                    string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                                    string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                                     var itemId = ItemsIdParser.FromJson(parsedJson);
                                     UpdateConsole("Parsing " + iconName + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                                     for (int i = 0; i < itemId.Length; i++)
@@ -3134,7 +2881,7 @@ namespace FModel
                             }
                             catch (JsonSerializationException)
                             {
-                                AppendText(CurrentUsedItem + " ", Color.Red);
+                                AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                                 AppendText(".JSON file can't be displayed", Color.Black, true);
                             }
                         }
@@ -3150,20 +2897,20 @@ namespace FModel
         {
             ItemIconPath = string.Empty;
 
-            string extractedBannerPath = ExtractAsset(AllpaksDictionary["BannerIcons"], "BannerIcons");
+            string extractedBannerPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["BannerIcons"], "BannerIcons");
             if (extractedBannerPath != null)
             {
                 UpdateConsole("BannerIcons successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                 if (extractedBannerPath.Contains(".uasset") || extractedBannerPath.Contains(".uexp") || extractedBannerPath.Contains(".ubulk"))
                 {
-                    MyAsset = new PakAsset(extractedBannerPath.Substring(0, extractedBannerPath.LastIndexOf('.')));
+                    JohnWick.MyAsset = new PakAsset(extractedBannerPath.Substring(0, extractedBannerPath.LastIndexOf('.')));
                     try
                     {
-                        if (MyAsset.GetSerialized() != null)
+                        if (JohnWick.MyAsset.GetSerialized() != null)
                         {
                             UpdateConsole("BannerIcons successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
 
-                            string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                            string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                             parsedJson = parsedJson.TrimStart('[').TrimEnd(']');
                             JObject jo = JObject.Parse(parsedJson);
                             foreach (JToken token in jo.FindTokens(bannerName))
@@ -3177,21 +2924,7 @@ namespace FModel
                                         ?.Substring(0,
                                             Path.GetFileName(bannerId.LargeImage.AssetPathName).LastIndexOf('.'));
 
-                                    string textureFilePath;
-                                    if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                        textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                    else
-                                        textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
-
-                                    if (textureFilePath != null)
-                                    {
-                                        MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                        MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                        ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                        UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                    }
-                                    else
-                                        UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                    ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                 }
                                 else if (bannerId.SmallImage != null)
                                 {
@@ -3199,21 +2932,7 @@ namespace FModel
                                         ?.Substring(0,
                                             Path.GetFileName(bannerId.SmallImage.AssetPathName).LastIndexOf('.'));
 
-                                    string textureFilePath;
-                                    if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                        textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                    else
-                                        textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
-
-                                    if (textureFilePath != null)
-                                    {
-                                        MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                        MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                        ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                        UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                    }
-                                    else
-                                        UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                    ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                 }
 
                                 if (File.Exists(ItemIconPath))
@@ -3237,7 +2956,7 @@ namespace FModel
                     }
                     catch (JsonSerializationException)
                     {
-                        AppendText(CurrentUsedItem + " ", Color.Red);
+                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                         AppendText(".JSON file can't be displayed", Color.Black, true);
                     }
                 }
@@ -3251,7 +2970,7 @@ namespace FModel
             g.SmoothingMode = SmoothingMode.HighQuality;
             int iamY = 275;
             int justSkip = 0;
-            YAfterLoop = 0;
+            Checking.YAfterLoop = 0;
             bool v2 = false;
             int sRed;
             int sGreen;
@@ -3313,36 +3032,16 @@ namespace FModel
                                 AppendText("found", Color.Black, true);
                             } //NAME
 
-                            string pngPath;
                             string textureFile = Path.GetFileName(bundleParser[i].DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(bundleParser[i].DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
 
-                            string textureFilePath;
-                            if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                            else
-                                textureFilePath = ExtractAsset(AllpaksDictionary[textureFile], textureFile);
+                            string pngPath = JohnWick.AssetToTexture2D(textureFile);
 
-                            if (textureFilePath != null && textureFile == "M_UI_ChallengeTile_PCB")
+                            Image challengeIcon;
+                            using (var bmpTemp = new Bitmap(pngPath))
                             {
-                                pngPath = GetRenderSwitchMaterialTexture(textureFile, textureFilePath);
-
-                                Image challengeIcon = Image.FromFile(pngPath);
-                                g.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0)); //327
+                                challengeIcon = new Bitmap(bmpTemp);
                             }
-                            else if (textureFilePath != null)
-                            {
-                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                pngPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-
-                                Image challengeIcon;
-                                using (var bmpTemp = new Bitmap(pngPath))
-                                {
-                                    challengeIcon = new Bitmap(bmpTemp);
-                                }
-                                g.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0)); //327
-                            }
+                            g.DrawImage(Forms.Settings.ResizeImage(challengeIcon, 271, 271), new Point(40, 0));
                             #endregion
                         }
                     }
@@ -3368,24 +3067,24 @@ namespace FModel
                     try
                     {
                         string challengeFilePath;
-                        if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                            challengeFilePath = ExtractAsset(CurrentUsedPak, SelectedChallengesArray[i2]);
+                        if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                            challengeFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, SelectedChallengesArray[i2]);
                         else
-                            challengeFilePath = ExtractAsset(AllpaksDictionary[SelectedChallengesArray[i2]], SelectedChallengesArray[i2]);
+                            challengeFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[SelectedChallengesArray[i2]], SelectedChallengesArray[i2]);
 
                         if (challengeFilePath != null)
                         {
                             UpdateConsole(SelectedChallengesArray[i2] + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                             if (challengeFilePath.Contains(".uasset") || challengeFilePath.Contains(".uexp") || challengeFilePath.Contains(".ubulk"))
                             {
-                                MyAsset = new PakAsset(challengeFilePath.Substring(0, challengeFilePath.LastIndexOf('.')));
+                                JohnWick.MyAsset = new PakAsset(challengeFilePath.Substring(0, challengeFilePath.LastIndexOf('.')));
                                 try
                                 {
-                                    if (MyAsset.GetSerialized() != null)
+                                    if (JohnWick.MyAsset.GetSerialized() != null)
                                     {
                                         UpdateConsole(SelectedChallengesArray[i2] + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
 
-                                        string parsedJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
+                                        string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                                         var questParser = QuestParser.FromJson(parsedJson);
                                         UpdateConsole("Parsing " + SelectedChallengesArray[i2] + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                                         for (int ii = 0; ii < questParser.Length; ii++)
@@ -3424,21 +3123,7 @@ namespace FModel
                                                                 #region getIcon
                                                                 string textureFile = Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName)?.Substring(0, Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName).LastIndexOf('.'));
 
-                                                                string textureFilePath;
-                                                                if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                                    textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                                                else
-                                                                    textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
-
-                                                                if (textureFilePath != null)
-                                                                {
-                                                                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                                                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                                                    ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                                                    UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                                                }
-                                                                else
-                                                                    UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
 
                                                                 if (File.Exists(ItemIconPath))
                                                                 {
@@ -3477,21 +3162,7 @@ namespace FModel
                                                             #region getIcon
                                                             string textureFile = Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName)?.Substring(0, Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName).LastIndexOf('.'));
 
-                                                            string textureFilePath;
-                                                            if (CurrentUsedPakGuid != null && CurrentUsedPakGuid != "0-0-0-0")
-                                                                textureFilePath = ExtractAsset(CurrentUsedPak, textureFile);
-                                                            else
-                                                                textureFilePath = ExtractAsset(AllpaksDictionary[textureFile ?? throw new InvalidOperationException()], textureFile);
-
-                                                            if (textureFilePath != null)
-                                                            {
-                                                                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                                                                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                                                                ItemIconPath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-                                                                UpdateConsole(textureFile + " successfully converted to .PNG", Color.FromArgb(255, 66, 244, 66), "Success");
-                                                            }
-                                                            else
-                                                                UpdateConsole("Error while extracting " + textureFile, Color.FromArgb(255, 244, 66, 66), "Error");
+                                                            ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
 
                                                             if (File.Exists(ItemIconPath))
                                                             {
@@ -3522,7 +3193,7 @@ namespace FModel
                                 }
                                 catch (JsonSerializationException)
                                 {
-                                    AppendText(CurrentUsedItem + " ", Color.Red);
+                                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
                                     AppendText(".JSON file can't be displayed", Color.Black, true);
                                 }
                             }
@@ -3625,9 +3296,9 @@ namespace FModel
             {
                 Invoke(new Action(() =>
                 {
-                    pictureBox1.Image.Save(DefaultOutputPath + "\\Icons\\" + CurrentUsedItem + ".png", ImageFormat.Png);
+                    pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
                 }));
-                AppendText(CurrentUsedItem, Color.DarkRed);
+                AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
                 AppendText(" successfully saved", Color.Black, true);
             }
 
@@ -3636,10 +3307,10 @@ namespace FModel
 
         private void ConvertTexture2D()
         {
-            UpdateConsole(CurrentUsedItem + " is a Texture2D", Color.FromArgb(255, 66, 244, 66), "Success");
+            UpdateConsole(ThePak.CurrentUsedItem + " is a Texture2D", Color.FromArgb(255, 66, 244, 66), "Success");
 
-            MyAsset = new PakAsset(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-            MyAsset.SaveTexture(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
+            JohnWick.MyAsset = new PakAsset(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)));
+            JohnWick.MyAsset.SaveTexture(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
             string imgPath = ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
 
             if (File.Exists(imgPath))
@@ -3651,25 +3322,25 @@ namespace FModel
             {
                 Invoke(new Action(() =>
                 {
-                    pictureBox1.Image.Save(DefaultOutputPath + "\\Icons\\" + CurrentUsedItem + ".png", ImageFormat.Png);
+                    pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
                 }));
-                AppendText(CurrentUsedItem, Color.DarkRed);
+                AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
                 AppendText(" successfully saved", Color.Black, true);
             }
         }
         private void ConvertSoundWave()
         {
-            UpdateConsole(CurrentUsedItem + " is a Sound", Color.FromArgb(255, 66, 244, 66), "Success");
+            UpdateConsole(ThePak.CurrentUsedItem + " is a Sound", Color.FromArgb(255, 66, 244, 66), "Success");
 
-            string soundPathToConvert = ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf('\\')) + "\\" + CurrentUsedItem + ".uexp";
-            UpdateConsole("Converting " + CurrentUsedItem, Color.FromArgb(255, 244, 132, 66), "Processing");
+            string soundPathToConvert = ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf('\\')) + "\\" + ThePak.CurrentUsedItem + ".uexp";
+            UpdateConsole("Converting " + ThePak.CurrentUsedItem, Color.FromArgb(255, 244, 132, 66), "Processing");
             OpenWithDefaultProgramAndNoFocus(UnrealEngineDataToOgg.ConvertToOgg(soundPathToConvert));
-            UpdateConsole("Opening " + CurrentUsedItem + ".ogg", Color.FromArgb(255, 66, 244, 66), "Success");
+            UpdateConsole("Opening " + ThePak.CurrentUsedItem + ".ogg", Color.FromArgb(255, 66, 244, 66), "Success");
         }
         private void ConvertToTtf(string file)
         {
             File.Move(file, Path.ChangeExtension(file, ".ttf") ?? throw new InvalidOperationException());
-            UpdateConsole(CurrentUsedItem + " successfully converter to a font", Color.FromArgb(255, 66, 244, 66), "Success");
+            UpdateConsole(ThePak.CurrentUsedItem + " successfully converter to a font", Color.FromArgb(255, 66, 244, 66), "Success");
         }
 
         //EVENTS
@@ -3749,7 +3420,7 @@ Steps:
             {
                 OpenFileDialog theDialog = new OpenFileDialog();
                 theDialog.Multiselect = true;
-                theDialog.InitialDirectory = DefaultOutputPath + "\\Icons\\";
+                theDialog.InitialDirectory = App.DefaultOutputPath + "\\Icons\\";
                 theDialog.Title = @"Choose your images";
                 theDialog.Filter = @"PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*";
 
@@ -3808,7 +3479,7 @@ Steps:
                     }
                 }
             }
-            bmp.Save(DefaultOutputPath + "\\" + Settings.Default.mergerFileName + ".png", ImageFormat.Png);
+            bmp.Save(App.DefaultOutputPath + "\\" + Settings.Default.mergerFileName + ".png", ImageFormat.Png);
 
             OpenMerged(bmp);
         }
@@ -3825,7 +3496,7 @@ Steps:
                 newForm.WindowState = FormWindowState.Maximized;
                 newForm.Size = mergedImage.Size;
                 newForm.Icon = Resources.FModel;
-                newForm.Text = DefaultOutputPath + @"\" + Settings.Default.mergerFileName + @".png";
+                newForm.Text = App.DefaultOutputPath + @"\" + Settings.Default.mergerFileName + @".png";
                 newForm.StartPosition = FormStartPosition.CenterScreen;
                 newForm.Controls.Add(pb);
                 newForm.Show();
@@ -3846,7 +3517,7 @@ Steps:
 
                 newForm.Size = pictureBox1.Image.Size;
                 newForm.Icon = Resources.FModel;
-                newForm.Text = CurrentUsedItem;
+                newForm.Text = ThePak.CurrentUsedItem;
                 newForm.StartPosition = FormStartPosition.CenterScreen;
                 newForm.Controls.Add(pb);
                 newForm.Show();
@@ -3859,12 +3530,12 @@ Steps:
                 SaveFileDialog saveTheDialog = new SaveFileDialog();
                 saveTheDialog.Title = @"Save Icon";
                 saveTheDialog.Filter = @"PNG Files (*.png)|*.png";
-                saveTheDialog.InitialDirectory = DefaultOutputPath + "\\Icons\\";
-                saveTheDialog.FileName = CurrentUsedItem;
+                saveTheDialog.InitialDirectory = App.DefaultOutputPath + "\\Icons\\";
+                saveTheDialog.FileName = ThePak.CurrentUsedItem;
                 if (saveTheDialog.ShowDialog() == DialogResult.OK)
                 {
                     pictureBox1.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
-                    AppendText(CurrentUsedItem, Color.DarkRed);
+                    AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
                     AppendText(" successfully saved", Color.Black, true);
                 }
             }
