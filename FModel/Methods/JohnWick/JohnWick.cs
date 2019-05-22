@@ -72,7 +72,7 @@ namespace FModel
 
 
             string TexturePath = string.Empty;
-            if (textureFilePath != null && (textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_") || textureFilePath.Contains("M_UI_ChallengeTile_PCB") || textureFilePath.Contains("Wraps\\FeaturedMaterials\\")))
+            if (textureFilePath != null && (textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_") || textureFilePath.Contains("M_UI_ChallengeTile_PCB") || textureFilePath.Contains("Wraps\\FeaturedMaterials\\") || textureFilePath.Contains("M-Wraps-StreetDemon")))
             {
                 return GetRenderSwitchMaterialTexture(AssetName, textureFilePath);
             }

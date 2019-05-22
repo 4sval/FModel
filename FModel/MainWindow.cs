@@ -1507,6 +1507,23 @@ namespace FModel
                     AppendText("Cosmetics.Source ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
                 } //COSMETIC SOURCE
+                if (theItem.ExportType == "AthenaItemWrapDefinition" && Checking.WasFeatured && ItemIconPath.Contains("WeaponRenders")) //ONLY TRIGGER IF THE WEAPON RENDER IS TRIGGERED
+                {
+                    string wrapAddImg = theItem.LargePreviewImage.AssetPathName.Substring(theItem.LargePreviewImage.AssetPathName.LastIndexOf(".", StringComparison.Ordinal) + 1);
+
+                    UpdateConsole("Additional image " + wrapAddImg, Color.FromArgb(255, 244, 132, 66), "Waiting");
+                    ItemIconPath = JohnWick.AssetToTexture2D(wrapAddImg);
+
+                    if (File.Exists(ItemIconPath))
+                    {
+                        Image itemIcon;
+                        using (var bmpTemp = new Bitmap(ItemIconPath))
+                        {
+                            itemIcon = new Bitmap(bmpTemp);
+                        }
+                        g.DrawImage(Forms.Settings.ResizeImage(itemIcon, 122, 122), new Point(395, 282));
+                    }
+                }
             }
             if (specialMode == "consAndWeap")
             {
