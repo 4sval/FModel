@@ -42,8 +42,6 @@ namespace FModel
 
         public static string ExtractAsset(string currentPak, string currentItem)
         {
-            string toReturn = string.Empty;
-
             MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, Settings.Default.AESKey);
             string[] myArray = MyExtractor.GetFileList().ToArray();
 
@@ -53,6 +51,7 @@ namespace FModel
             else
                 results = Array.FindAll(myArray, s => s.Contains("/" + currentItem + "."));
 
+            string AssetPath = string.Empty;
             for (int i = 0; i < results.Length; i++)
             {
                 int index = Array.IndexOf(myArray, results[i]);
@@ -60,21 +59,20 @@ namespace FModel
                 uint y = (uint)index;
                 byte[] b = MyExtractor.GetData(y);
 
-                toReturn = WriteFile(currentItem, results[i], b);
+                AssetPath = WriteFile(currentItem, results[i], b).Replace("/", "\\");
             }
-
-            return toReturn.Replace("/", "\\");
+            return AssetPath;
         }
         public static string AssetToTexture2D(string AssetName)
         {
-            string toReturn = string.Empty;
-
             string textureFilePath;
             if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
                 textureFilePath = ExtractAsset(ThePak.CurrentUsedPak, AssetName);
             else
                 textureFilePath = ExtractAsset(ThePak.AllpaksDictionary[AssetName ?? throw new InvalidOperationException()], AssetName);
 
+
+            string TexturePath = string.Empty;
             if (textureFilePath != null && (textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_") || textureFilePath.Contains("M_UI_ChallengeTile_PCB")))
             {
                 return GetRenderSwitchMaterialTexture(AssetName, textureFilePath);
@@ -83,15 +81,13 @@ namespace FModel
             {
                 MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
                 MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                toReturn = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
+                TexturePath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
             }
-
-            return toReturn;
+            return TexturePath;
         }
         public static string GetRenderSwitchMaterialTexture(string AssetName, string AssetPath)
         {
-            string toReturn = string.Empty;
-
+            string TexturePath = string.Empty;
             if (AssetPath.Contains(".uasset") || AssetPath.Contains(".uexp") || AssetPath.Contains(".ubulk"))
             {
                 MyAsset = new PakAsset(AssetPath.Substring(0, AssetPath.LastIndexOf('.')));
@@ -107,15 +103,14 @@ namespace FModel
                             {
                                 string textureFile = rsmid[i].TextureParameterValues.FirstOrDefault()?.ParameterValue;
 
-                                toReturn = AssetToTexture2D(textureFile);
+                                TexturePath = AssetToTexture2D(textureFile);
                             }
                         }
                     }
                 }
                 catch (JsonSerializationException) { }
             }
-
-            return toReturn;
+            return TexturePath;
         }
     }
 }

@@ -2435,19 +2435,18 @@ namespace FModel
             int sBlue;
 
             string seasonFolder = questJson.Substring(questJson.Substring(0, questJson.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
+            sRed = (int)(myBundle.DisplayStyle.AccentColor.R * 255);
+            sGreen = (int)(myBundle.DisplayStyle.AccentColor.G * 255);
+            sBlue = (int)(myBundle.DisplayStyle.AccentColor.B * 255);
 
-            if (seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)) != "LTM")
+            if (sRed <= 25 && sGreen <= 25 && sBlue <= 25)
             {
                 sRed = (int)(myBundle.DisplayStyle.SecondaryColor.R * 255);
                 sGreen = (int)(myBundle.DisplayStyle.SecondaryColor.G * 255);
                 sBlue = (int)(myBundle.DisplayStyle.SecondaryColor.B * 255);
             }
-            else
-            {
-                sRed = (int)(myBundle.DisplayStyle.AccentColor.R * 255);
-                sGreen = (int)(myBundle.DisplayStyle.AccentColor.G * 255);
-                sBlue = (int)(myBundle.DisplayStyle.AccentColor.B * 255);
-            }
+
+            Console.WriteLine(sRed + " " + sGreen + " " + sBlue);
 
             int seasonRed = Convert.ToInt32(sRed / 1.5);
             int seasonGreen = Convert.ToInt32(sGreen / 1.5);
@@ -2964,7 +2963,7 @@ namespace FModel
         }
         private void CreateFortByteChallengesIcon(ItemsIdParser theItem, string theParsedJson, string questJson = null)
         {
-            Bitmap bmp = new Bitmap(2500, 7500);
+            Bitmap bmp = new Bitmap(2500, 10000);
             Graphics g = Graphics.FromImage(bmp);
             g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
             g.SmoothingMode = SmoothingMode.HighQuality;
