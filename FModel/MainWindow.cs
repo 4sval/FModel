@@ -24,7 +24,6 @@ using FModel.Parser.Challenges;
 using FModel.Parser.Featured;
 using FModel.Parser.Items;
 using FModel.Parser.Quests;
-using FModel.Parser.RenderMat;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -1672,12 +1671,12 @@ namespace FModel
             }
             if (featured)
             {
-                if (theItem.DisplayAssetPath != null && theItem.DisplayAssetPath.AssetPathName.Contains("/Game/Catalog/DisplayAssets/") && theItem.ExportType != "AthenaItemWrapDefinition")
+                if (theItem.DisplayAssetPath != null && theItem.DisplayAssetPath.AssetPathName.Contains("/Game/Catalog/DisplayAssets/"))
                 {
                     string catalogName = theItem.DisplayAssetPath.AssetPathName;
                     SearchFeaturedCharacterIcon(theItem, catalogName);
                 }
-                else if (theItem.DisplayAssetPath == null && theItem.ExportType != "AthenaItemWrapDefinition")
+                else if (theItem.DisplayAssetPath == null)
                 {
                     SearchFeaturedCharacterIcon(theItem, "DA_Featured_" + ThePak.CurrentUsedItem, true);
                 }
@@ -1888,7 +1887,8 @@ namespace FModel
                     catName == "DA_Featured_Glider_ID_017_Assassin" || 
                     catName == "DA_Featured_Pickaxe_ID_027_Scavenger" || 
                     catName == "DA_Featured_Pickaxe_ID_028_Space" || 
-                    catName == "DA_Featured_Pickaxe_ID_029_Assassin")
+                    catName == "DA_Featured_Pickaxe_ID_029_Assassin" ||
+                    catName == "DA_Featured_EID_Dunk")
                     GetItemIcon(theItem);
                 else if (ThePak.AllpaksDictionary.ContainsKey(catName))
                 {
@@ -2430,23 +2430,17 @@ namespace FModel
         }
         private void DrawV2(ChallengeBundleIdParser myBundle, ItemsIdParser theItem, string questJson, Graphics toDrawOn, Bitmap myBitmap)
         {
-            int sRed;
-            int sGreen;
-            int sBlue;
-
             string seasonFolder = questJson.Substring(questJson.Substring(0, questJson.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
-            sRed = (int)(myBundle.DisplayStyle.AccentColor.R * 255);
-            sGreen = (int)(myBundle.DisplayStyle.AccentColor.G * 255);
-            sBlue = (int)(myBundle.DisplayStyle.AccentColor.B * 255);
+            int sRed = (int)(myBundle.DisplayStyle.SecondaryColor.R * 255);
+            int sGreen = (int)(myBundle.DisplayStyle.SecondaryColor.G * 255);
+            int sBlue = (int)(myBundle.DisplayStyle.SecondaryColor.B * 255);
 
-            if (sRed <= 25 && sGreen <= 25 && sBlue <= 25)
+            if (string.Equals(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), "LTM") || sRed + sGreen + sBlue <= 75)
             {
-                sRed = (int)(myBundle.DisplayStyle.SecondaryColor.R * 255);
-                sGreen = (int)(myBundle.DisplayStyle.SecondaryColor.G * 255);
-                sBlue = (int)(myBundle.DisplayStyle.SecondaryColor.B * 255);
+                sRed = (int)(myBundle.DisplayStyle.AccentColor.R * 255);
+                sGreen = (int)(myBundle.DisplayStyle.AccentColor.G * 255);
+                sBlue = (int)(myBundle.DisplayStyle.AccentColor.B * 255);
             }
-
-            Console.WriteLine(sRed + " " + sGreen + " " + sBlue);
 
             int seasonRed = Convert.ToInt32(sRed / 1.5);
             int seasonGreen = Convert.ToInt32(sGreen / 1.5);

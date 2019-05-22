@@ -4,7 +4,6 @@ using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -73,7 +72,7 @@ namespace FModel
 
 
             string TexturePath = string.Empty;
-            if (textureFilePath != null && (textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_") || textureFilePath.Contains("M_UI_ChallengeTile_PCB")))
+            if (textureFilePath != null && (textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_") || textureFilePath.Contains("M_UI_ChallengeTile_PCB") || textureFilePath.Contains("Wraps\\FeaturedMaterials\\")))
             {
                 return GetRenderSwitchMaterialTexture(AssetName, textureFilePath);
             }
