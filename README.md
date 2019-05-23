@@ -87,6 +87,8 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
   - [ ] Get new file content
   - [ ] Display support for .locres files + compare
   - [ ] Export Queue
+  - [ ] AES Manager
+  - [ ] Nintendo Switch PAKs
   - [x] Code refactoring
   - [x] Multithreading
   - [x] Stop button
