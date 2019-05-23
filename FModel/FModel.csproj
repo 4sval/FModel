@@ -115,6 +115,7 @@
     <Compile Include="Custom\JsonExtensions.cs" />
     <Compile Include="Custom\Prompt.cs" />
     <Compile Include="Custom\TypeAssistant.cs" />
+    <Compile Include="Methods\IconGenerator\ItemIcon.cs" />
     <Compile Include="Methods\IconGenerator\Rarity.cs" />
     <Compile Include="Forms\About.cs">
       <SubType>Form</SubType>
