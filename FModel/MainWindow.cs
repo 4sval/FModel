@@ -468,29 +468,12 @@ namespace FModel
 
         #region PAKLIST & FILL TREE
         //METHODS
-        private string ReadPakGuid(string pakPath)
-        {
-            using (BinaryReader reader = new BinaryReader(File.Open(pakPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
-            {
-                reader.BaseStream.Seek(reader.BaseStream.Length - 61 - 160, SeekOrigin.Begin);
-                uint g1 = reader.ReadUInt32();
-                reader.BaseStream.Seek(reader.BaseStream.Length - 57 - 160, SeekOrigin.Begin);
-                uint g2 = reader.ReadUInt32();
-                reader.BaseStream.Seek(reader.BaseStream.Length - 53 - 160, SeekOrigin.Begin);
-                uint g3 = reader.ReadUInt32();
-                reader.BaseStream.Seek(reader.BaseStream.Length - 49 - 160, SeekOrigin.Begin);
-                uint g4 = reader.ReadUInt32();
-
-                var guid = g1 + "-" + g2 + "-" + g3 + "-" + g4;
-                return guid;
-            }
-        }
         private void RegisterPaKsinDict(string[] allYourPaKs, ToolStripItemClickedEventArgs theSinglePak = null, bool loadAllPaKs = false)
         {
             for (int i = 0; i < allYourPaKs.Length; i++)
             {
                 string arCurrentUsedPak = allYourPaKs[i]; //SET CURRENT PAK
-                string arCurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak); //SET CURRENT PAK GUID
+                string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak); //SET CURRENT PAK GUID
 
                 if (arCurrentUsedPakGuid == "0-0-0-0") //NO DYNAMIC PAK IN DICTIONARY
                 {
@@ -546,16 +529,16 @@ namespace FModel
                 if (theSinglePak != null)
                 {
                     ThePak.CurrentUsedPak = theSinglePak.ClickedItem.Text;
-                    ThePak.CurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
+                    ThePak.CurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
 
                     if (arCurrentUsedPak == theSinglePak.ClickedItem.Text && JohnWick.MyExtractor.GetFileList() != null)
                         PakAsTxt = JohnWick.MyExtractor.GetFileList().ToArray();
                 }
             }
-            if (theSinglePak != null && ReadPakGuid(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text) != "0-0-0-0") //LOADING DYNAMIC PAK
+            if (theSinglePak != null && ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text) != "0-0-0-0") //LOADING DYNAMIC PAK
             {
                 ThePak.CurrentUsedPak = theSinglePak.ClickedItem.Text;
-                ThePak.CurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
+                ThePak.CurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
 
                 try
                 {
@@ -774,7 +757,7 @@ namespace FModel
             for (int i = 0; i < allYourPaKs.Length; i++)
             {
                 string arCurrentUsedPak = allYourPaKs[i]; //SET CURRENT PAK
-                string arCurrentUsedPakGuid = ReadPakGuid(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak); //SET CURRENT PAK GUID
+                string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak); //SET CURRENT PAK GUID
 
                 if (arCurrentUsedPakGuid == "0-0-0-0") //NO DYNAMIC PAK
                 {

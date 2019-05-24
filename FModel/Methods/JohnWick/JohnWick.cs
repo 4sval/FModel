@@ -13,6 +13,8 @@ namespace FModel
     {
         public static PakAsset MyAsset;
         public static PakExtractor MyExtractor;
+        private static string[] myArray { get; set; }
+        private static string currentPakToCheck { get; set; }
 
         private static string GetMountPointFromDict(string currentItem, bool DynamicPak = false)
         {
@@ -41,8 +43,11 @@ namespace FModel
 
         public static string ExtractAsset(string currentPak, string currentItem)
         {
-            MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, Settings.Default.AESKey);
-            string[] myArray = MyExtractor.GetFileList().ToArray();
+            if (currentPak != currentPakToCheck)
+            {
+                MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, Settings.Default.AESKey);
+                myArray = MyExtractor.GetFileList().ToArray();
+            }
 
             string[] results;
             if (currentItem.Contains("."))
@@ -60,6 +65,8 @@ namespace FModel
 
                 AssetPath = WriteFile(currentItem, results[i], b).Replace("/", "\\");
             }
+
+            currentPakToCheck = currentPak;
             return AssetPath;
         }
         public static string AssetToTexture2D(string AssetName)
