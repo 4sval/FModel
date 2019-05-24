@@ -53,6 +53,15 @@ namespace FModel.Parser.Items
 
         [JsonProperty("AttributeInitKey")]
         public AttributeInitKey AttributeInitKey { get; set; }
+
+        [JsonProperty("MaxStackSize")]
+        public long MaxStackSize { get; set; }
+
+        [JsonProperty("MinLevel")]
+        public long MinLevel { get; set; }
+
+        [JsonProperty("MaxLevel")]
+        public long MaxLevel { get; set; }
     }
 
     public class GameplayTags

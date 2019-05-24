@@ -1545,6 +1545,20 @@ namespace FModel
                         AppendText("found", Color.Black, true);
                     }
                 } //ACTION
+                if (ExtractedFilePath.Contains("Items\\Consumables"))
+                {
+                    try
+                    {
+                        g.DrawString("Max Stack Size: " + theItem.MaxStackSize, new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                    }
+                    catch (NullReferenceException)
+                    {
+                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
+                        AppendText("No ", Color.Black);
+                        AppendText("MaxStackSize ", Color.SteelBlue);
+                        AppendText("found", Color.Black, true);
+                    } //MAX STACK SIZE
+                }
                 if (theItem.AmmoData != null && theItem.AmmoData.AssetPathName.Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
                 {
                     ItemIcon.GetAmmoData(theItem.AmmoData.AssetPathName, g);
@@ -1623,6 +1637,17 @@ namespace FModel
                     AppendText("AttributeInitCategory ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
                 } //CHARACTER TYPE
+                try
+                {
+                    g.DrawString("Power " + theItem.MinLevel + " to " + theItem.MaxLevel, new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                }
+                catch (NullReferenceException)
+                {
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
+                    AppendText("No ", Color.Black);
+                    AppendText("Level ", Color.SteelBlue);
+                    AppendText("found", Color.Black, true);
+                } //LEVEL
             }
             if (specialMode == "stwDefenders")
             {
@@ -1646,6 +1671,17 @@ namespace FModel
                     AppendText("NPC.CharacterType.Survivor.Defender ", Color.SteelBlue);
                     AppendText("found", Color.Black, true);
                 } //CHARACTER TYPE
+                try
+                {
+                    g.DrawString("Power " + theItem.MinLevel + " to " + theItem.MaxLevel, new Font(_pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                }
+                catch (NullReferenceException)
+                {
+                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
+                    AppendText("No ", Color.Black);
+                    AppendText("Level ", Color.SteelBlue);
+                    AppendText("found", Color.Black, true);
+                } //LEVEL
             }
             #endregion
 

@@ -67,7 +67,7 @@ Also if you find this project useful, feel free to give it a :star: thank you :k
  8. Load difference between current .PAK files and backup file
  9. Load, Extract and Save Assets automatically between current .PAK files and backup file
 ### What i'm using
-  - C# bindings for the [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse)
+  - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - *C# Bind*
   - [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
   - [JSON Parser](https://app.quicktype.io/)
   - [ScintillaNET](https://www.nuget.org/packages/jacobslusser.ScintillaNET)

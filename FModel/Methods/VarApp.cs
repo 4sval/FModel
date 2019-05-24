@@ -34,9 +34,9 @@ namespace FModel
             using (BinaryReader reader = new BinaryReader(File.Open(pakPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
             {
                 reader.BaseStream.Seek(reader.BaseStream.Length - 40 - 160, SeekOrigin.Begin);
-                uint guid = reader.ReadUInt32();
+                uint version = reader.ReadUInt32();
 
-                return guid.ToString();
+                return version.ToString();
             }
         }
     }
