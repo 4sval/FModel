@@ -207,6 +207,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="oo2core_5_win64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="CurrentCommit.txt" />
     <Content Include="csharp_wick.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
