@@ -146,7 +146,9 @@ namespace FModel
             {
                 ThePak.CurrentUsedItem = catName.Substring(catName.LastIndexOf('.') + 1);
 
-                if (ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_141_AshtonBoardwalk")
+                if (ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_141_AshtonBoardwalk" ||
+                    ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_150_TechOpsBlue" ||
+                    ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_131_SpeedyMidnight")
                     GetItemIcon(theItem);
                 else
                 {
