@@ -119,11 +119,11 @@
     <Compile Include="Custom\JsonExtensions.cs" />
     <Compile Include="Custom\Prompt.cs" />
     <Compile Include="Custom\TypeAssistant.cs" />
-    <Compile Include="Methods\BackupPAKs\DynamicPAKs.cs" />
-    <Compile Include="Methods\BackupPAKs\Parser\AccessCodeParser.cs" />
-    <Compile Include="Methods\BackupPAKs\Parser\AccessTokenParser.cs" />
-    <Compile Include="Methods\BackupPAKs\Parser\AESKeyParser.cs" />
-    <Compile Include="Methods\BackupPAKs\Parser\ExchangeTokenParser.cs" />
+    <Compile Include="Methods\BackPAKs\DynamicPAKs.cs" />
+    <Compile Include="Methods\BackPAKs\Parser\AccessCodeParser.cs" />
+    <Compile Include="Methods\BackPAKs\Parser\AccessTokenParser.cs" />
+    <Compile Include="Methods\BackPAKs\Parser\AESKeyParser.cs" />
+    <Compile Include="Methods\BackPAKs\Parser\ExchangeTokenParser.cs" />
     <Compile Include="Methods\IconGenerator\ItemIcon.cs" />
     <Compile Include="Methods\IconGenerator\Rarity.cs" />
     <Compile Include="Forms\About.cs">
