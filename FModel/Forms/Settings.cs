@@ -79,6 +79,9 @@ namespace FModel.Forms
             textBox2.Text = Properties.Settings.Default.PAKsPath;
             textBox1.Text = Properties.Settings.Default.ExtractOutput;
 
+            textBox4.Text = Properties.Settings.Default.eEmail;
+            textBox5.Text = Properties.Settings.Default.ePassword;
+
             //MERGER
             textBox3.Text = Properties.Settings.Default.mergerFileName;
             imgsPerRow.Value = Properties.Settings.Default.mergerImagesRow;
@@ -149,6 +152,9 @@ namespace FModel.Forms
             {
                 MessageBox.Show(@"Please, restart FModel to apply your new output path", @"FModel Output Path Changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+
+            Properties.Settings.Default.eEmail = textBox4.Text;
+            Properties.Settings.Default.ePassword = textBox5.Text;
 
             //MERGER
             Properties.Settings.Default.mergerFileName = textBox3.Text;

@@ -9,7 +9,6 @@ using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
@@ -21,7 +20,7 @@ using FModel.Converter;
 using FModel.Forms;
 using FModel.Parser.Banners;
 using FModel.Parser.Challenges;
-using FModel.Parser.Featured;
+using FModel.Methods.BackupPAKs.Parser.AESKeyParser;
 using FModel.Parser.Items;
 using FModel.Parser.Quests;
 using FModel.Properties;
@@ -44,7 +43,7 @@ namespace FModel
         private static Dictionary<string, long> _questStageDict;
         private static Dictionary<string, string> _diffToExtract;
         private static string _backupFileName;
-        private static string _backupDynamicKeys;
+        private static string[] _backupDynamicKeys;
         private static List<string> _itemsToDisplay;
         public static string ExtractedFilePath;
         public static string[] SelectedItemsArray;
@@ -738,17 +737,17 @@ namespace FModel
         }
         private void CreateBackupList(string[] allYourPaKs)
         {
+            _backupDynamicKeys = null;
+
             bool connection = IsInternetAvailable();
-            string url = "https://pastebin.com/raw/bbnhmjWN";
-            if (connection)
+            if (connection && (!string.IsNullOrWhiteSpace(Settings.Default.eEmail) || !string.IsNullOrWhiteSpace(Settings.Default.ePassword)))
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                using (Stream stream = response.GetResponseStream())
-                using (StreamReader reader = new StreamReader(stream ?? throw new InvalidOperationException()))
-                {
-                    _backupDynamicKeys = reader.ReadToEnd();
-                }
+                string myContent = DynamicPAKs.GetEndpoint("https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", true);
+
+                if (myContent.Contains("\"errorCode\": \"errors.com.epicgames.common.authentication.authentication_failed\""))
+                    AppendText("EPIC Authentification Failed.", Color.Red, true);
+                else
+                    _backupDynamicKeys = AesKeyParser.FromJson(myContent);
             }
 
             Settings.Default.AESKey = AESKeyTextBox.Text.Substring(2).ToUpper();
@@ -785,16 +784,20 @@ namespace FModel
                         File.AppendAllLines(App.DefaultOutputPath + "\\Backup" + _backupFileName, CurrentUsedPakLines);
                     }
                 }
-                else
+                else if (_backupDynamicKeys != null)
                 {
-                    foreach (var myString in _backupDynamicKeys.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+                    foreach (string myString in _backupDynamicKeys)
                     {
-                        var parts = myString.Split(':');
-                        if (parts[0] == arCurrentUsedPak && parts[1].StartsWith("0x"))
+                        string[] parts = myString.Split(':');
+
+                        if (DynamicPAKs.getPakGuidFromKeychain(parts) == arCurrentUsedPakGuid)
                         {
+                            byte[] bytes = Convert.FromBase64String(parts[1]);
+                            string aeskey = BitConverter.ToString(bytes).Replace("-", "");
+
                             try
                             {
-                                JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, parts[1].Substring(2));
+                                JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, aeskey);
                             }
                             catch (Exception)
                             {
@@ -811,41 +814,16 @@ namespace FModel
                                 {
                                     CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
                                 }
-                                UpdateConsole(arCurrentUsedPak, Color.FromArgb(255, 244, 132, 66), "Waiting");
+                                AppendText("Backing up ", Color.Black);
+                                AppendText(arCurrentUsedPak, Color.DarkRed, true);
 
                                 File.AppendAllLines(App.DefaultOutputPath + "\\Backup" + _backupFileName, CurrentUsedPakLines);
                             }
                         }
-                        else if (parts[0] == arCurrentUsedPak && parts[1] == "undefined")
-                        {
-                            AppendText("No key found for ", Color.Black);
-                            AppendText(arCurrentUsedPak, Color.DarkRed, true);
-
-                            //TODO: BETTER VERSION KTHX
-                            /*string promptValue = Prompt.ShowDialog("AES Key:", arCurrentUsedPak);
-                            if (!string.IsNullOrEmpty(promptValue))
-                            {
-                                JwpmProcess("filelist \"" + Settings.Default.PAKsPath + "\\" + arCurrentUsedPak + "\" \"" + App.DefaultOutputPath + "\" " + promptValue.Substring(2));
-                                if (File.Exists(App.DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt"))
-                                {
-                                    if (!File.Exists(App.DefaultOutputPath + "\\Backup" + _backupFileName))
-                                        File.Create(App.DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
-
-                                    string[] CurrentUsedPakLines = File.ReadAllLines(App.DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
-                                    for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
-                                    {
-                                        CurrentUsedPakLines[ii] = "FortniteGame/" + CurrentUsedPakLines[ii];
-                                    }
-                                    UpdateConsole(".PAK mount point: \"/FortniteGame/\"", Color.FromArgb(255, 244, 132, 66), "Waiting");
-
-                                    File.AppendAllLines(App.DefaultOutputPath + "\\Backup" + _backupFileName, CurrentUsedPakLines);
-                                    File.Delete(App.DefaultOutputPath + "\\" + arCurrentUsedPak + ".txt");
-                                }
-                            }*/
-                        }
                     }
                 }
             }
+
             if (File.Exists(App.DefaultOutputPath + "\\Backup" + _backupFileName))
                 UpdateConsole("\\Backup" + _backupFileName + " successfully created", Color.FromArgb(255, 66, 244, 66), "Success");
             else

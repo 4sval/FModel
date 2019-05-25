@@ -148,7 +148,8 @@ namespace FModel
 
                 if (ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_141_AshtonBoardwalk" ||
                     ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_150_TechOpsBlue" ||
-                    ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_131_SpeedyMidnight")
+                    ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_131_SpeedyMidnight" ||
+                    ThePak.CurrentUsedItem == "DA_Featured_Pickaxe_ID_178_SpeedyMidnight")
                     GetItemIcon(theItem);
                 else
                 {

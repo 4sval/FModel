@@ -478,5 +478,29 @@ namespace FModel.Properties {
                 this["createIconForSTWCardPacks"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string eEmail {
+            get {
+                return ((string)(this["eEmail"]));
+            }
+            set {
+                this["eEmail"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ePassword {
+            get {
+                return ((string)(this["ePassword"]));
+            }
+            set {
+                this["ePassword"] = value;
+            }
+        }
     }
 }
