@@ -323,17 +323,18 @@
             this.groupBox5.Size = new System.Drawing.Size(560, 92);
             this.groupBox5.TabIndex = 18;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Backup PAKs 1000+";
+            this.groupBox5.Text = "Optional - Backup PAKs 1000+";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
             this.label7.ForeColor = System.Drawing.Color.Red;
-            this.label7.Location = new System.Drawing.Point(347, 72);
+            this.label7.Location = new System.Drawing.Point(294, 72);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(207, 13);
+            this.label7.Size = new System.Drawing.Size(262, 13);
             this.label7.TabIndex = 6;
-            this.label7.Text = "This is only used to backup dynamic PAKs";
+            this.label7.Text = "This is only used to get keys to backup dynamic PAKs";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // textBox5
             // 

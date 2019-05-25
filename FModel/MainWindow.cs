@@ -745,7 +745,7 @@ namespace FModel
                 string myContent = DynamicPAKs.GetEndpoint("https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", true);
 
                 if (myContent.Contains("\"errorCode\": \"errors.com.epicgames.common.authentication.authentication_failed\""))
-                    AppendText("EPIC Authentification Failed.", Color.Red, true);
+                    AppendText("EPIC Authentication Failed.", Color.Red, true);
                 else
                     _backupDynamicKeys = AesKeyParser.FromJson(myContent);
             }
