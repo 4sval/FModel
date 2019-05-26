@@ -83,12 +83,12 @@ This project is mainly based on what [UModel](https://github.com/gildor2/UModel)
 I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionnaly.
 
 ## TODO
+  - [ ] Code refactoring
   - [ ] Get new file content
   - [ ] Display support for .locres files + compare
   - [ ] Export Queue
   - [ ] AES Manager
   - [x] Nintendo Switch PAKs
-  - [x] Code refactoring
   - [x] Multithreading
   - [x] Stop button
   - [x] Auto update
