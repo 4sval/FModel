@@ -53,6 +53,7 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -313,6 +314,7 @@
             // groupBox5
             // 
             this.groupBox5.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.groupBox5.Controls.Add(this.checkBox1);
             this.groupBox5.Controls.Add(this.label7);
             this.groupBox5.Controls.Add(this.textBox5);
             this.groupBox5.Controls.Add(this.label6);
@@ -325,11 +327,22 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Optional - Backup PAKs 1000+";
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(499, 71);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(60, 17);
+            this.checkBox1.TabIndex = 7;
+            this.checkBox1.Text = "Reveal";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
             this.label7.ForeColor = System.Drawing.Color.Red;
-            this.label7.Location = new System.Drawing.Point(294, 72);
+            this.label7.Location = new System.Drawing.Point(214, 72);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(262, 13);
             this.label7.TabIndex = 6;
@@ -340,9 +353,9 @@
             // 
             this.textBox5.Location = new System.Drawing.Point(95, 45);
             this.textBox5.Name = "textBox5";
-            this.textBox5.PasswordChar = '*';
             this.textBox5.Size = new System.Drawing.Size(459, 20);
             this.textBox5.TabIndex = 4;
+            this.textBox5.UseSystemPasswordChar = true;
             // 
             // label6
             // 
@@ -357,9 +370,9 @@
             // 
             this.textBox4.Location = new System.Drawing.Point(74, 19);
             this.textBox4.Name = "textBox4";
-            this.textBox4.PasswordChar = '*';
             this.textBox4.Size = new System.Drawing.Size(480, 20);
             this.textBox4.TabIndex = 2;
+            this.textBox4.UseSystemPasswordChar = true;
             // 
             // label2
             // 
@@ -437,5 +450,6 @@
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

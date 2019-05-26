@@ -786,14 +786,22 @@ namespace FModel
                 }
                 else if (_backupDynamicKeys != null)
                 {
+                    string oldGuid = string.Empty;
                     foreach (string myString in _backupDynamicKeys)
                     {
                         string[] parts = myString.Split(':');
+                        string newGuid = DynamicPAKs.getPakGuidFromKeychain(parts);
 
-                        if (DynamicPAKs.getPakGuidFromKeychain(parts) == arCurrentUsedPakGuid)
+                        /***
+                         * if same guid several time in keychain do not backup twice
+                         * it works fine that way because of the loop through all the paks
+                         * even if in keychain we do "found 1004" -> "found 1001" -> "found 1004" through the paks we do 1000 -> 1001 -> 1002...
+                        ***/
+                        if (newGuid == arCurrentUsedPakGuid && oldGuid != newGuid)
                         {
                             byte[] bytes = Convert.FromBase64String(parts[1]);
                             string aeskey = BitConverter.ToString(bytes).Replace("-", "");
+                            oldGuid = newGuid;
 
                             try
                             {

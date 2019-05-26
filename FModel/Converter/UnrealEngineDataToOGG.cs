@@ -11,7 +11,7 @@ namespace FModel.Converter
         static byte[] _oggNoHeader = { 0x4F, 0x67, 0x67, 0x53 };
         static byte[] _uexpToDelete = { 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00 };
         static byte[] _oggOutNewArray;
-        public static List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
+        private static List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
         {
             List<int> positions = new List<int>();
             int patternLength = pattern.Length;
@@ -32,7 +32,7 @@ namespace FModel.Converter
             }
             return positions;
         }
-        public static bool TryFindAndReplace<T>(T[] source, T[] pattern, T[] replacement, out T[] newArray)
+        private static bool TryFindAndReplace<T>(T[] source, T[] pattern, T[] replacement, out T[] newArray)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));

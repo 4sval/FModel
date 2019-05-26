@@ -349,5 +349,19 @@ namespace FModel.Forms
                 Application.OpenForms[assetsForm.Name].Focus();
             }
         }
+
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                textBox4.UseSystemPasswordChar = false;
+                textBox5.UseSystemPasswordChar = false;
+            }
+            else
+            {
+                textBox4.UseSystemPasswordChar = true;
+                textBox5.UseSystemPasswordChar = true;
+            }
+        }
     }
 }
