@@ -219,7 +219,6 @@
     <Content Include="oo2core_5_win64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="CurrentCommit.txt" />
     <Content Include="csharp_wick.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -268,6 +267,7 @@
     </ItemGroup>
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>git rev-parse --short HEAD &gt; "$(ProjectDir)\CurrentCommit.txt"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>

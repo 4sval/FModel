@@ -7,10 +7,10 @@ namespace FModel.Converter
 {
     class UnrealEngineDataToOgg
     {
-        static byte[] _oggFind = { 0x4F, 0x67, 0x67, 0x53 };
-        static byte[] _oggNoHeader = { 0x4F, 0x67, 0x67, 0x53 };
-        static byte[] _uexpToDelete = { 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00 };
-        static byte[] _oggOutNewArray;
+        private static byte[] _oggFind = { 0x4F, 0x67, 0x67, 0x53 };
+        private static byte[] _uexpToDelete = { 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, 0x00 };
+        private static byte[] _oggOutNewArray;
+        private static string oggPattern = "OggS";
         private static List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
         {
             List<int> positions = new List<int>();
@@ -56,30 +56,36 @@ namespace FModel.Converter
             }
             return false;
         }
+        private static byte[] Combine(params byte[][] arrays)
+        {
+            byte[] rv = new byte[arrays.Sum(a => a.Length)];
+            int offset = 0;
+            foreach (byte[] array in arrays)
+            {
+                Buffer.BlockCopy(array, 0, rv, offset, array.Length);
+                offset += array.Length;
+            }
+            return rv;
+        }
+
         public static string ConvertToOgg(string file)
         {
             var isUbulkFound = new DirectoryInfo(Path.GetDirectoryName(file) ?? throw new InvalidOperationException()).GetFiles(Path.GetFileNameWithoutExtension(file) + "*.ubulk", SearchOption.AllDirectories).FirstOrDefault();
             if (isUbulkFound == null)
             {
-                string oggPattern = "OggS";
                 if (File.ReadAllText(file).Contains(oggPattern))
                 {
                     byte[] src = File.ReadAllBytes(file);
-                    TryFindAndReplace(src, _oggFind, _oggNoHeader, out _oggOutNewArray);
-                    File.WriteAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp", _oggOutNewArray);
+                    TryFindAndReplace(src, _oggFind, _oggFind, out _oggOutNewArray); //MAKE THE ARRAY START AT PATTERN POSITION
 
-                    FileInfo fi = new FileInfo(Path.GetFileNameWithoutExtension(file) + ".temp");
-                    FileStream fs = fi.Open(FileMode.Open);
-                    long bytesToDelete = 4;
-                    fs.SetLength(Math.Max(0, fi.Length - bytesToDelete));
-                    fs.Close();
+                    byte[] tmp = new byte[_oggOutNewArray.Length];
+                    Array.Copy(_oggOutNewArray, tmp, Math.Max(0, _oggOutNewArray.Length - 4)); //DELETE LAST 4 BYTES
 
-                    byte[] srcFinal = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp");
-                    int i = srcFinal.Length - 7;
-                    while (srcFinal[i] == 0)
+                    int i = tmp.Length - 7;
+                    while (tmp[i] == 0)
                         --i;
                     byte[] bar = new byte[i + 1];
-                    Array.Copy(srcFinal, bar, i + 1);
+                    Array.Copy(tmp, bar, i + 1); //DELETE EMPTY BYTES AT THE END
 
                     File.WriteAllBytes(App.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg", bar);
                     File.Delete(Path.GetFileNameWithoutExtension(file) + ".temp");
@@ -87,43 +93,26 @@ namespace FModel.Converter
             }
             else
             {
-                string oggPattern = "OggS";
                 if (File.ReadAllText(file).Contains(oggPattern))
                 {
                     byte[] src = File.ReadAllBytes(file);
+                    byte[] srcUbulk = File.ReadAllBytes(Path.GetDirectoryName(file) + "\\" + isUbulkFound);
+
                     List<int> positions = SearchBytePattern(_uexpToDelete, src);
-
-                    TryFindAndReplace(src, _oggFind, _oggNoHeader, out _oggOutNewArray);
-                    File.WriteAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp", _oggOutNewArray);
-
                     int lengthToDelete = src.Length - positions[0];
 
-                    FileInfo fi = new FileInfo(Path.GetFileNameWithoutExtension(file) + ".temp");
-                    FileStream fs = fi.Open(FileMode.Open);
-                    long bytesToDelete = lengthToDelete;
-                    fs.SetLength(Math.Max(0, fi.Length - bytesToDelete));
-                    fs.Close();
+                    TryFindAndReplace(src, _oggFind, _oggFind, out _oggOutNewArray); //MAKE THE ARRAY START AT PATTERN POSITION
 
-                    byte[] src44 = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp");
-                    byte[] srcUbulk = File.ReadAllBytes(Path.GetDirectoryName(file) + "\\" + isUbulkFound);
-                    byte[] buffer = new byte[srcUbulk.Length];
-                    using (FileStream fs1 = new FileStream(Path.GetDirectoryName(file) + "\\" + isUbulkFound, FileMode.Open, FileAccess.ReadWrite))
-                    {
-                        fs1.Read(buffer, 0, buffer.Length);
+                    byte[] tmp = new byte[_oggOutNewArray.Length];
+                    Array.Copy(_oggOutNewArray, tmp, Math.Max(0, _oggOutNewArray.Length - lengthToDelete)); //DELETE LAST BYTES WHEN _uexpToDelete IS FOUND
 
-                        FileStream fs2 = new FileStream(Path.GetFileNameWithoutExtension(file) + ".temp", FileMode.Open, FileAccess.ReadWrite);
-                        fs2.Position = src44.Length;
-                        fs2.Write(buffer, 0, buffer.Length);
-                        fs2.Close();
-                        fs1.Close();
-                    }
+                    byte[] tmp2 = Combine(tmp, srcUbulk); //ADD UBULK ARRAY TO UEXP ARRAY
 
-                    byte[] srcFinal = File.ReadAllBytes(Path.GetFileNameWithoutExtension(file) + ".temp");
-                    int i = srcFinal.Length - 1;
-                    while (srcFinal[i] == 0)
+                    int i = tmp2.Length - 1;
+                    while (tmp2[i] == 0)
                         --i;
                     byte[] bar = new byte[i + 1];
-                    Array.Copy(srcFinal, bar, i + 1);
+                    Array.Copy(tmp2, bar, i + 1); //DELETE EMPTY BYTES AT THE END
 
                     File.WriteAllBytes(App.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg", bar);
                     File.Delete(Path.GetFileNameWithoutExtension(file) + ".temp");

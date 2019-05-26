@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.IO;
+using System.Windows.Forms;
 
 namespace FModel.Forms
 {
@@ -9,7 +10,6 @@ namespace FModel.Forms
             InitializeComponent();
 
             label2.Text += @" " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
-            commitHash.Text = Properties.Resources.CurrentCommit;
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
