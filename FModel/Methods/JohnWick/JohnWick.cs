@@ -16,6 +16,13 @@ namespace FModel
         private static string[] myArray { get; set; }
         private static string currentPakToCheck { get; set; }
 
+        /// <summary>
+        /// Normal pak file: using AllpaksDictionary, it tells you the pak name depending on currentItem. Using this pak name and PaksMountPoint we get the mount point
+        /// Dynamic pak file: It's made so we already know the name of the pak, so we just use PaksMountPoint to get the mount point
+        /// </summary>
+        /// <param name="currentItem"></param>
+        /// <param name="DynamicPak"></param>
+        /// <returns> the mount point as string, used to create subfolders when extracting or create the tree when loading all paks </returns>
         private static string GetMountPointFromDict(string currentItem, bool DynamicPak = false)
         {
             if (DynamicPak == true)
@@ -23,6 +30,14 @@ namespace FModel
             else
                 return ThePak.PaksMountPoint[ThePak.AllpaksDictionary[currentItem ?? throw new InvalidOperationException()] ?? throw new InvalidOperationException()];
         }
+
+        /// <summary>
+        /// just the method to create subfolders using GetMountPointFromDict and write the file from myResults with its byte[] data
+        /// </summary>
+        /// <param name="currentItem"></param>
+        /// <param name="myResults"></param>
+        /// <param name="data"></param>
+        /// <returns> the path to this brand new created file </returns>
         private static string WriteFile(string currentItem, string myResults, byte[] data)
         {
             if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
@@ -41,6 +56,14 @@ namespace FModel
             }
         }
 
+        /// <summary>
+        /// We get the file list of currentPak, we find all files that matched our currentItem, for each result we get its indexes (it's used to get its data)
+        /// Then we can use WriteFile to write each results with its data
+        /// If currentPak is the same twice in a row, we do not try to get a new file list
+        /// </summary>
+        /// <param name="currentPak"></param>
+        /// <param name="currentItem"></param>
+        /// <returns> the path of the last created file (usually the uexp file but we don't care about the extension, so it's fine) </returns>
         public static string ExtractAsset(string currentPak, string currentItem)
         {
             if (currentPak != currentPakToCheck)
@@ -69,6 +92,12 @@ namespace FModel
             currentPakToCheck = currentPak;
             return AssetPath;
         }
+
+        /// <summary>
+        /// just convert the asset to a png image with some exceptions in case AssetName is a material
+        /// </summary>
+        /// <param name="AssetName"></param>
+        /// <returns> the path to the png image </returns>
         public static string AssetToTexture2D(string AssetName)
         {
             string textureFilePath;
@@ -81,7 +110,7 @@ namespace FModel
             string TexturePath = string.Empty;
             if (textureFilePath != null && (textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_") || textureFilePath.Contains("M_UI_ChallengeTile_PCB") || textureFilePath.Contains("Wraps\\FeaturedMaterials\\") || textureFilePath.Contains("M-Wraps-StreetDemon")))
             {
-                return GetRenderSwitchMaterialTexture(AssetName, textureFilePath);
+                return GetRenderSwitchMaterialTexture(textureFilePath);
             }
             else if (textureFilePath != null)
             {
@@ -91,7 +120,13 @@ namespace FModel
             }
             return TexturePath;
         }
-        public static string GetRenderSwitchMaterialTexture(string AssetName, string AssetPath)
+
+        /// <summary>
+        /// serialize the material to get the texture and convert this texture to a png image
+        /// </summary>
+        /// <param name="AssetPath"></param>
+        /// <returns> the path to the png image </returns>
+        public static string GetRenderSwitchMaterialTexture(string AssetPath)
         {
             string TexturePath = string.Empty;
             if (AssetPath.Contains(".uasset") || AssetPath.Contains(".uexp") || AssetPath.Contains(".ubulk"))

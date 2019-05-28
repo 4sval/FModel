@@ -31,8 +31,8 @@ namespace FModel.Forms
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                    var opacityImage = Settings.SetImageOpacity(watermark, (float)Properties.Settings.Default.UMOpacity / 100);
-                    g.DrawImage(Settings.ResizeImage(opacityImage, Properties.Settings.Default.UMSize, Properties.Settings.Default.UMSize), (522 - Properties.Settings.Default.UMSize) / 2, (522 - Properties.Settings.Default.UMSize) / 2, Properties.Settings.Default.UMSize, Properties.Settings.Default.UMSize);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)Properties.Settings.Default.UMOpacity / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, Properties.Settings.Default.UMSize, Properties.Settings.Default.UMSize), (522 - Properties.Settings.Default.UMSize) / 2, (522 - Properties.Settings.Default.UMSize) / 2, Properties.Settings.Default.UMSize, Properties.Settings.Default.UMSize);
 
                     wPictureBox.Image = bmp;
                 }
@@ -47,8 +47,8 @@ namespace FModel.Forms
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                    var opacityImage = Settings.SetImageOpacity(watermark, (float)Properties.Settings.Default.UMOpacity / 100);
-                    g.DrawImage(Settings.ResizeImage(opacityImage, Properties.Settings.Default.UMSize, Properties.Settings.Default.UMSize), (522 - Properties.Settings.Default.UMSize) / 2, (522 - Properties.Settings.Default.UMSize) / 2, Properties.Settings.Default.UMSize, Properties.Settings.Default.UMSize);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)Properties.Settings.Default.UMOpacity / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, Properties.Settings.Default.UMSize, Properties.Settings.Default.UMSize), (522 - Properties.Settings.Default.UMSize) / 2, (522 - Properties.Settings.Default.UMSize) / 2, Properties.Settings.Default.UMSize, Properties.Settings.Default.UMSize);
 
                     wPictureBox.Image = bmp;
                 }
@@ -165,8 +165,8 @@ namespace FModel.Forms
                         Graphics g = Graphics.FromImage(bmp);
 
                         Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                        var opacityImage = Settings.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                        g.DrawImage(Settings.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                        var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                        g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
 
                         wPictureBox.Image = bmp;
                     }
@@ -179,8 +179,8 @@ namespace FModel.Forms
                         Graphics g = Graphics.FromImage(bmp);
 
                         Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                        var opacityImage = Settings.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                        g.DrawImage(Settings.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                        var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                        g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
 
                         wPictureBox.Image = bmp;
                     }
@@ -200,8 +200,8 @@ namespace FModel.Forms
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                    var opacityImage = Settings.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                    g.DrawImage(Settings.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
 
                     wPictureBox.Image = bmp;
                     wPictureBox.Refresh();
@@ -215,8 +215,8 @@ namespace FModel.Forms
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                    var opacityImage = Settings.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                    g.DrawImage(Settings.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
 
                     wPictureBox.Image = bmp;
                     wPictureBox.Refresh();
@@ -233,8 +233,8 @@ namespace FModel.Forms
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                    var opacityImage = Settings.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                    g.DrawImage(Settings.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
 
                     wPictureBox.Image = bmp;
                     wPictureBox.Refresh();
@@ -248,8 +248,8 @@ namespace FModel.Forms
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                    var opacityImage = Settings.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                    g.DrawImage(Settings.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
 
                     wPictureBox.Image = bmp;
                     wPictureBox.Refresh();
@@ -283,8 +283,8 @@ namespace FModel.Forms
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                    var opacityImage = Settings.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                    g.DrawImage(Settings.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
                 }
                 wPictureBox.Image = bmp;
             }
@@ -295,8 +295,8 @@ namespace FModel.Forms
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                    var opacityImage = Settings.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                    g.DrawImage(Settings.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
                 }
                 wPictureBox.Image = bmp;
             }

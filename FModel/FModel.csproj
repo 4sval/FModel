@@ -124,6 +124,7 @@
     <Compile Include="Methods\BackPAKs\Parser\AccessTokenParser.cs" />
     <Compile Include="Methods\BackPAKs\Parser\AESKeyParser.cs" />
     <Compile Include="Methods\BackPAKs\Parser\ExchangeTokenParser.cs" />
+    <Compile Include="Methods\Utilities\FontUtilities.cs" />
     <Compile Include="Methods\IconGenerator\ItemIcon.cs" />
     <Compile Include="Methods\IconGenerator\Rarity.cs" />
     <Compile Include="Forms\About.cs">
@@ -162,7 +163,9 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Methods\Utilities\ImageUtilities.cs" />
     <Compile Include="Methods\JohnWick\JohnWick.cs" />
+    <Compile Include="Methods\Utilities\Utilities.cs" />
     <Compile Include="Methods\VarApp.cs" />
     <Compile Include="Parser\Banners\BannersParser.cs" />
     <Compile Include="Parser\Challenges\ChallengeBundleIdParser.cs" />

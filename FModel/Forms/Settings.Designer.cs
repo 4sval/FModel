@@ -342,11 +342,11 @@
             // 
             this.label7.AutoSize = true;
             this.label7.ForeColor = System.Drawing.Color.Red;
-            this.label7.Location = new System.Drawing.Point(214, 72);
+            this.label7.Location = new System.Drawing.Point(137, 72);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(262, 13);
+            this.label7.Size = new System.Drawing.Size(355, 13);
             this.label7.TabIndex = 6;
-            this.label7.Text = "This is only used to get keys to backup dynamic PAKs";
+            this.label7.Text = "2FA must be disabled to make it work or use another account without 2FA";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // textBox5

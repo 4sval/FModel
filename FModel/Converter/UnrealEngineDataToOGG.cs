@@ -78,8 +78,8 @@ namespace FModel.Converter
                     byte[] src = File.ReadAllBytes(file);
                     TryFindAndReplace(src, _oggFind, _oggFind, out _oggOutNewArray); //MAKE THE ARRAY START AT PATTERN POSITION
 
-                    byte[] tmp = new byte[_oggOutNewArray.Length];
-                    Array.Copy(_oggOutNewArray, tmp, Math.Max(0, _oggOutNewArray.Length - 4)); //DELETE LAST 4 BYTES
+                    byte[] tmp = new byte[_oggOutNewArray.Length - 4];
+                    Array.Copy(_oggOutNewArray, tmp, tmp.Length); //DELETE LAST 4 BYTES
 
                     int i = tmp.Length - 7;
                     while (tmp[i] == 0)
@@ -88,7 +88,6 @@ namespace FModel.Converter
                     Array.Copy(tmp, bar, i + 1); //DELETE EMPTY BYTES AT THE END
 
                     File.WriteAllBytes(App.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg", bar);
-                    File.Delete(Path.GetFileNameWithoutExtension(file) + ".temp");
                 }
             }
             else
@@ -103,8 +102,8 @@ namespace FModel.Converter
 
                     TryFindAndReplace(src, _oggFind, _oggFind, out _oggOutNewArray); //MAKE THE ARRAY START AT PATTERN POSITION
 
-                    byte[] tmp = new byte[_oggOutNewArray.Length];
-                    Array.Copy(_oggOutNewArray, tmp, Math.Max(0, _oggOutNewArray.Length - lengthToDelete)); //DELETE LAST BYTES WHEN _uexpToDelete IS FOUND
+                    byte[] tmp = new byte[_oggOutNewArray.Length - lengthToDelete];
+                    Array.Copy(_oggOutNewArray, tmp, Math.Max(0, tmp.Length)); //DELETE LAST BYTES WHEN _uexpToDelete IS FOUND
 
                     byte[] tmp2 = Combine(tmp, srcUbulk); //ADD UBULK ARRAY TO UEXP ARRAY
 
@@ -115,7 +114,6 @@ namespace FModel.Converter
                     Array.Copy(tmp2, bar, i + 1); //DELETE EMPTY BYTES AT THE END
 
                     File.WriteAllBytes(App.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg", bar);
-                    File.Delete(Path.GetFileNameWithoutExtension(file) + ".temp");
                 }
             }
             return App.DefaultOutputPath + "\\Sounds\\" + Path.GetFileNameWithoutExtension(file) + ".ogg";

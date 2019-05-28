@@ -88,6 +88,7 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
   - [ ] Display support for .locres files + compare
   - [ ] Export Queue
   - [ ] AES Manager
+  - [ ] Nintendo Switch sound files
   - [x] Nintendo Switch PAKs
   - [x] Multithreading
   - [x] Stop button

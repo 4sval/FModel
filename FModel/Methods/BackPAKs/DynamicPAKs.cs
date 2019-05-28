@@ -12,6 +12,12 @@ namespace FModel
 {
     class DynamicPAKs
     {
+        /// <summary>
+        /// get url content as string with authentication
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="auth"></param>
+        /// <returns> url content </returns>
         public static string GetEndpoint(string url, bool auth)
         {
             string content = string.Empty;
@@ -81,6 +87,12 @@ namespace FModel
             return Enumerable.Range(0, str.Length / chunkSize)
                 .Select(i => str.Substring(i * chunkSize, chunkSize));
         }
+        /// <summary>
+        /// split KeychainPart each 8 letter
+        /// for each of these letters, convert to hexadecimal as string
+        /// </summary>
+        /// <param name="KeychainPart"></param>
+        /// <returns> the guid (ie 17722063-2246354315-4143272431-3887619937) </returns>
         public static string getPakGuidFromKeychain(string[] KeychainPart)
         {
             IEnumerable<string> guid = SplitGuid(KeychainPart[0], 8);

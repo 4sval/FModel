@@ -6,7 +6,12 @@ namespace FModel
 {
     class Rarity
     {
-        public static Image GetRarityImage(ItemsIdParser theItem)
+        /// <summary>
+        /// check the rarity and return the right image
+        /// </summary>
+        /// <param name="theItem"></param>
+        /// <returns> the resource image depending on the rarity </returns>
+        private static Image GetRarityImage(ItemsIdParser theItem)
         {
             switch (theItem.Rarity)
             {
@@ -27,7 +32,14 @@ namespace FModel
                     return Resources.U512;
             }
         }
-        public static Image GetSeriesImage(ItemsIdParser theItem)
+
+        /// <summary>
+        /// check the series and return the right image
+        /// if no series known, return the normal item rarity image with GetRarityImage
+        /// </summary>
+        /// <param name="theItem"></param>
+        /// <returns> the resource image depending on the series </returns>
+        private static Image GetSeriesImage(ItemsIdParser theItem)
         {
             if (theItem.Series == "MarvelSeries")
             {
@@ -38,7 +50,15 @@ namespace FModel
                 return GetRarityImage(theItem);
             }
         }
-        public static Image GetSpecialModeImage(ItemsIdParser theItem, string specialMode)
+
+        /// <summary>
+        /// if specialMode isn't null and is known return the right image
+        /// if specialMode is unknown, return the normal item rarity image with GetRarityImage
+        /// </summary>
+        /// <param name="theItem"></param>
+        /// <param name="specialMode"></param>
+        /// <returns> the resource image depending on specialMode </returns>
+        private static Image GetSpecialModeImage(ItemsIdParser theItem, string specialMode)
         {
             if (specialMode == "ammo")
             {
@@ -49,6 +69,13 @@ namespace FModel
                 return GetRarityImage(theItem);
             }
         }
+
+        /// <summary>
+        /// just draw the rarity
+        /// </summary>
+        /// <param name="theItem"></param>
+        /// <param name="toDrawOn"></param>
+        /// <param name="specialMode"></param>
         public static void DrawRarity(ItemsIdParser theItem, Graphics toDrawOn, string specialMode = null)
         {
             Image rarityBg;

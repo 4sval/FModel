@@ -12,6 +12,13 @@ namespace FModel
         public static Dictionary<string, string> PaksMountPoint { get; set; }
         public static Dictionary<string, string> AllpaksDictionary { get; set; }
 
+        /// <summary>
+        /// read the GUID of a the param, it's basically just reading some bytes at the end of a pak file, but it's useful to tell if the pak is dynamically encrypted
+        /// "0-0-0-0" for normal pak
+        /// "123456789-9876543210-741085209630-015975306482" for dynamic pak (these numbers are an example)
+        /// </summary>
+        /// <param name="pakPath"> path to the pak file to get its GUID </param>
+        /// <returns> the guid </returns>
         public static string ReadPakGuid(string pakPath)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(pakPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
@@ -29,6 +36,12 @@ namespace FModel
                 return guid;
             }
         }
+
+        /// <summary>
+        /// read the pak version (v8 28.05.2019), it's basically just reading one byte at the end of a pak file
+        /// </summary>
+        /// <param name="pakPath"> path to the pak file to get its version </param>
+        /// <returns> the version </returns>
         public static string ReadPakVersion(string pakPath)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(pakPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))

@@ -13,6 +13,12 @@ namespace FModel
     {
         public static string ItemIconPath { get; set; }
 
+        /// <summary>
+        /// if user doesn't want featured image, make WasFeatured false and move to SearchAthIteDefIcon
+        /// else search or guess the display asset, if found move to SearchFeaturedIcon, if not found move to SearchAthIteDefIcon
+        /// </summary>
+        /// <param name="theItem"></param>
+        /// <param name="featured"></param>
         public static void GetItemIcon(ItemsIdParser theItem, bool featured = false)
         {
             if (featured == false)
@@ -37,6 +43,12 @@ namespace FModel
                 }
             }
         }
+
+        /// <summary>
+        /// extract, serialize, get Large or Small image for HeroDefinition or WeaponDefinition
+        /// if no HeroDefinition and WeaponDefinition move to SearchLargeSmallIcon
+        /// </summary>
+        /// <param name="theItem"></param>
         public static void SearchAthIteDefIcon(ItemsIdParser theItem)
         {
             if (theItem.HeroDefinition != null)
@@ -123,6 +135,11 @@ namespace FModel
             else
                 SearchLargeSmallIcon(theItem);
         }
+
+        /// <summary>
+        /// convert Large or Small image to a png image
+        /// </summary>
+        /// <param name="theItem"></param>
         private static void SearchLargeSmallIcon(ItemsIdParser theItem)
         {
             if (theItem.LargePreviewImage != null)
@@ -140,6 +157,15 @@ namespace FModel
                 ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
             }
         }
+
+        /// <summary>
+        /// With GetItemIcon we already know if manualSeach is True or False
+        /// manualSearch False: extract, serialize the catalogFile and parse to get and convert the featured file to a png image
+        /// manualSearch True: if the catalogFile is in AllpaksDictionary (is known) do same thing as manualSearch False
+        /// </summary>
+        /// <param name="theItem"></param>
+        /// <param name="catName"></param>
+        /// <param name="manualSearch"></param>
         public static void SearchFeaturedIcon(ItemsIdParser theItem, string catName, bool manualSearch = false)
         {
             if (manualSearch == false)
@@ -261,6 +287,13 @@ namespace FModel
                     GetItemIcon(theItem);
             }
         }
+
+        /// <summary>
+        /// This is only triggered if ThePak.CurrentUsedItem is a weapon id, it's to display the bullet type
+        /// extract, serialize and parse the ammoFile, search a Large or Small icon, display this icon at the top left of the rarity image
+        /// </summary>
+        /// <param name="ammoFile"></param>
+        /// <param name="toDrawOn"></param>
         public static void GetAmmoData(string ammoFile, Graphics toDrawOn)
         {
             string ammoFilePath;
@@ -291,12 +324,12 @@ namespace FModel
                                     {
                                         itemIcon = new Bitmap(bmpTemp);
                                     }
-                                    toDrawOn.DrawImage(Forms.Settings.ResizeImage(itemIcon, 64, 64), new Point(6, 6));
+                                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 64, 64), new Point(6, 6));
                                 }
                                 else
                                 {
                                     Image itemIcon = Resources.unknown512;
-                                    toDrawOn.DrawImage(Forms.Settings.ResizeImage(itemIcon, 64, 64), new Point(6, 6));
+                                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 64, 64), new Point(6, 6));
                                 }
                             }
                         }
