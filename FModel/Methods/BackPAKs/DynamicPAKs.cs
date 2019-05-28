@@ -7,10 +7,11 @@ using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace FModel
 {
-    class DynamicPAKs
+    static class DynamicPAKs
     {
         /// <summary>
         /// get url content as string with authentication
@@ -36,9 +37,6 @@ namespace FModel
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("[ERROR] ");
-                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(ex.Message);
             }
             return content;
@@ -95,21 +93,19 @@ namespace FModel
         /// <returns> the guid (ie 17722063-2246354315-4143272431-3887619937) </returns>
         public static string getPakGuidFromKeychain(string[] KeychainPart)
         {
+            StringBuilder sB = new StringBuilder();
             IEnumerable<string> guid = SplitGuid(KeychainPart[0], 8);
             int count = 0;
-            string pakguid = string.Empty;
 
             foreach (string p in guid)
             {
                 count += 1;
 
-                if (count != guid.Count())
-                    pakguid += (uint)int.Parse(p, NumberStyles.HexNumber) + "-";
-                else
-                    pakguid += (uint)int.Parse(p, NumberStyles.HexNumber);
+                if (count != guid.Count()) { sB.Append((uint)int.Parse(p, NumberStyles.HexNumber) + "-"); }
+                else { sB.Append((uint)int.Parse(p, NumberStyles.HexNumber)); }
             }
 
-            return pakguid;
+            return sB.ToString();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 
 namespace FModel
 {
-    class ImageUtilities
+    static class ImageUtilities
     {
         /// <summary>
         /// Set the opacity of an Image -> convert Image to Bitmap, create a graphic object of the Bitmap, create a color matrix object to set the opacity

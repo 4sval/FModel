@@ -7,7 +7,7 @@ using System.Security.Principal;
 
 namespace FModel
 {
-    class Utilities
+    static class Utilities
     {
         /// <summary>
         /// OpenWithDefaultProgramAndNoFocus is used to automatically open sound file once they are converted
@@ -26,14 +26,10 @@ namespace FModel
         /// </summary>
         public static void CreateDefaultFolders()
         {
-            if (!Directory.Exists(App.DefaultOutputPath + "\\Backup\\"))
-                Directory.CreateDirectory(App.DefaultOutputPath + "\\Backup\\");
-            if (!Directory.Exists(App.DefaultOutputPath + "\\Extracted\\"))
-                Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\");
-            if (!Directory.Exists(App.DefaultOutputPath + "\\Icons\\"))
-                Directory.CreateDirectory(App.DefaultOutputPath + "\\Icons\\");
-            if (!Directory.Exists(App.DefaultOutputPath + "\\Sounds\\"))
-                Directory.CreateDirectory(App.DefaultOutputPath + "\\Sounds\\");
+            Directory.CreateDirectory(App.DefaultOutputPath + "\\Backup\\");
+            Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\");
+            Directory.CreateDirectory(App.DefaultOutputPath + "\\Icons\\");
+            Directory.CreateDirectory(App.DefaultOutputPath + "\\Sounds\\");
         }
 
         /// <summary>

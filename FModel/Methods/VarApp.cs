@@ -3,7 +3,7 @@ using System.IO;
 
 namespace FModel
 {
-    class ThePak
+    static class ThePak
     {
         public static string CurrentUsedPak { get; set; }
         public static string CurrentUsedPakGuid { get; set; }
@@ -54,12 +54,12 @@ namespace FModel
         }
     }
 
-    class App
+    static class App
     {
         public static string DefaultOutputPath { get; set; }
     }
 
-    class Checking
+    static class Checking
     {
         public static bool WasFeatured { get; set; }
         public static int YAfterLoop { get; set; }

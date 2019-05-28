@@ -9,7 +9,7 @@ using System.IO;
 
 namespace FModel
 {
-    class ItemIcon
+    static class ItemIcon
     {
         public static string ItemIconPath { get; set; }
 
@@ -31,11 +31,11 @@ namespace FModel
                 if (theItem.DisplayAssetPath != null && theItem.DisplayAssetPath.AssetPathName.Contains("/Game/Catalog/DisplayAssets/"))
                 {
                     string catalogName = theItem.DisplayAssetPath.AssetPathName;
-                    SearchFeaturedIcon(theItem, catalogName);
+                    SearchFeaturedIcon(theItem, catalogName.Substring(catalogName.LastIndexOf('.') + 1));
                 }
                 else if (theItem.DisplayAssetPath == null)
                 {
-                    SearchFeaturedIcon(theItem, "DA_Featured_" + ThePak.CurrentUsedItem, true);
+                    SearchFeaturedIcon(theItem, "DA_Featured_" + ThePak.CurrentUsedItem);
                 }
                 else
                 {
@@ -93,9 +93,13 @@ namespace FModel
             {
                 //MANUAL FIX
                 if (theItem.WeaponDefinition == "WID_Harvest_Pickaxe_NutCracker")
+                {
                     theItem.WeaponDefinition = "WID_Harvest_Pickaxe_Nutcracker";
+                }
                 if (theItem.WeaponDefinition == "WID_Harvest_Pickaxe_Wukong")
+                {
                     theItem.WeaponDefinition = "WID_Harvest_Pickaxe_WuKong";
+                }
 
                 string weaponFilePath;
                 if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
@@ -159,133 +163,95 @@ namespace FModel
         }
 
         /// <summary>
-        /// With GetItemIcon we already know if manualSeach is True or False
-        /// manualSearch False: extract, serialize the catalogFile and parse to get and convert the featured file to a png image
-        /// manualSearch True: if the catalogFile is in AllpaksDictionary (is known) do same thing as manualSearch False
+        /// thank to epic, this is needed
+        /// do not load featured icon for these files
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="catName"></param>
-        /// <param name="manualSearch"></param>
-        public static void SearchFeaturedIcon(ItemsIdParser theItem, string catName, bool manualSearch = false)
+        public static void SearchFeaturedIcon(ItemsIdParser theItem, string catName)
         {
-            if (manualSearch == false)
+            switch (catName)
             {
-                ThePak.CurrentUsedItem = catName.Substring(catName.LastIndexOf('.') + 1);
-
-                if (ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_141_AshtonBoardwalk" ||
-                    ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_150_TechOpsBlue" ||
-                    ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_131_SpeedyMidnight" ||
-                    ThePak.CurrentUsedItem == "DA_Featured_Pickaxe_ID_178_SpeedyMidnight")
+                case "DA_Featured_Glider_ID_141_AshtonBoardwalk":
+                case "DA_Featured_Glider_ID_150_TechOpsBlue":
+                case "DA_Featured_Glider_ID_131_SpeedyMidnight":
+                case "DA_Featured_Pickaxe_ID_178_SpeedyMidnight":
+                case "DA_Featured_Glider_ID_015_Brite":
+                case "DA_Featured_Glider_ID_016_Tactical":
+                case "DA_Featured_Glider_ID_017_Assassin":
+                case "DA_Featured_Pickaxe_ID_027_Scavenger":
+                case "DA_Featured_Pickaxe_ID_028_Space":
+                case "DA_Featured_Pickaxe_ID_029_Assassin":
+                case "DA_Featured_EID_Dunk":
                     GetItemIcon(theItem);
+                    break;
+                default:
+                    GetFeaturedItemIcon(theItem, catName);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// if the catalogFile is in AllpaksDictionary (is known) extract, serialize the catalogFile and parse to get and convert the featured file to a png image
+        /// </summary>
+        /// <param name="theItem"></param>
+        /// <param name="catName"></param>
+        private static void GetFeaturedItemIcon(ItemsIdParser theItem, string catName)
+        {
+            if (ThePak.AllpaksDictionary.ContainsKey(catName))
+            {
+                ThePak.CurrentUsedItem = catName;
+
+                string catalogFilePath;
+                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                {
+                    catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName);
+                }
                 else
                 {
-                    string catalogFilePath;
-                    if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                        catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName.Substring(catName.LastIndexOf('.') + 1));
-                    else
-                        catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName.Substring(catName.LastIndexOf('.') + 1)], catName.Substring(catName.LastIndexOf('.') + 1));
+                    catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
+                }
 
-                    if (catalogFilePath != null)
+                if (catalogFilePath != null)
+                {
+                    Checking.WasFeatured = true;
+                    if (catalogFilePath.Contains(".uasset") || catalogFilePath.Contains(".uexp") || catalogFilePath.Contains(".ubulk"))
                     {
-                        Checking.WasFeatured = true;
-                        if (catalogFilePath.Contains(".uasset") || catalogFilePath.Contains(".uexp") || catalogFilePath.Contains(".ubulk"))
+                        JohnWick.MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
+                        try
                         {
-                            JohnWick.MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
-                            try
+                            if (JohnWick.MyAsset.GetSerialized() != null)
                             {
-                                if (JohnWick.MyAsset.GetSerialized() != null)
+                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
+                                var featuredId = FeaturedParser.FromJson(parsedJson);
+                                for (int i = 0; i < featuredId.Length; i++)
                                 {
-                                    string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                                    var featuredId = FeaturedParser.FromJson(parsedJson);
-                                    for (int i = 0; i < featuredId.Length; i++)
+                                    switch (catName)
                                     {
-                                        //Thanks EPIC
-                                        if (ThePak.CurrentUsedItem == "DA_Featured_CID_319_Athena_Commando_F_Nautilus")
-                                        {
+                                        case "DA_Featured_Glider_ID_070_DarkViking":
+                                        case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
                                             if (featuredId[i].TileImage != null)
                                             {
                                                 string textureFile = featuredId[i].TileImage.ResourceObject;
                                                 ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                             }
-                                        }
-                                        else
-                                        {
+                                            break;
+                                        default:
                                             if (featuredId[i].DetailsImage != null)
                                             {
                                                 string textureFile = featuredId[i].DetailsImage.ResourceObject;
                                                 ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                             }
-                                        }
+                                            break;
                                     }
                                 }
                             }
-                            catch (JsonSerializationException) { }
                         }
+                        catch (JsonSerializationException) { }
                     }
                 }
             }
-            if (manualSearch)
-            {
-                //Thanks EPIC
-                if (catName == "DA_Featured_Glider_ID_015_Brite" ||
-                    catName == "DA_Featured_Glider_ID_016_Tactical" ||
-                    catName == "DA_Featured_Glider_ID_017_Assassin" ||
-                    catName == "DA_Featured_Pickaxe_ID_027_Scavenger" ||
-                    catName == "DA_Featured_Pickaxe_ID_028_Space" ||
-                    catName == "DA_Featured_Pickaxe_ID_029_Assassin" ||
-                    catName == "DA_Featured_EID_Dunk")
-                    GetItemIcon(theItem);
-                else if (ThePak.AllpaksDictionary.ContainsKey(catName))
-                {
-                    ThePak.CurrentUsedItem = catName;
-
-                    string catalogFilePath;
-                    if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                        catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName);
-                    else
-                        catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
-
-                    if (catalogFilePath != null)
-                    {
-                        Checking.WasFeatured = true;
-                        if (catalogFilePath.Contains(".uasset") || catalogFilePath.Contains(".uexp") || catalogFilePath.Contains(".ubulk"))
-                        {
-                            JohnWick.MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
-                            try
-                            {
-                                if (JohnWick.MyAsset.GetSerialized() != null)
-                                {
-                                    string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                                    var featuredId = FeaturedParser.FromJson(parsedJson);
-                                    for (int i = 0; i < featuredId.Length; i++)
-                                    {
-                                        //Thanks EPIC
-                                        if (ThePak.CurrentUsedItem == "DA_Featured_Glider_ID_070_DarkViking")
-                                        {
-                                            if (featuredId[i].TileImage != null)
-                                            {
-                                                string textureFile = featuredId[i].TileImage.ResourceObject;
-                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (featuredId[i].DetailsImage != null)
-                                            {
-                                                string textureFile = featuredId[i].DetailsImage.ResourceObject;
-                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            catch (JsonSerializationException) { }
-                        }
-                    }
-                }
-                else
-                    GetItemIcon(theItem);
-            }
+            else { GetItemIcon(theItem); }
         }
 
         /// <summary>

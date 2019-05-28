@@ -1296,7 +1296,7 @@ namespace FModel
             #region DRAW TEXT
             try
             {
-                g.DrawString(theItem.DisplayName, new Font(FontUtilities._pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities._centeredString);
+                g.DrawString(theItem.DisplayName, new Font(FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
             }
             catch (NullReferenceException)
             {
@@ -1307,7 +1307,7 @@ namespace FModel
             } //NAME
             try
             {
-                g.DrawString(theItem.Description, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities._centeredStringLine);
+                g.DrawString(theItem.Description, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
             }
             catch (NullReferenceException)
             {
@@ -1320,7 +1320,7 @@ namespace FModel
             {
                 try
                 {
-                    g.DrawString(theItem.ShortDescription, new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                    g.DrawString(theItem.ShortDescription, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
                 }
                 catch (NullReferenceException)
                 {
@@ -1331,7 +1331,7 @@ namespace FModel
                 } //TYPE
                 try
                 {
-                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities._rightString);
+                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
                 }
                 catch (NullReferenceException)
                 {
@@ -1371,7 +1371,7 @@ namespace FModel
             {
                 try
                 {
-                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Athena.ItemAction."))].Substring(18), new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities._rightString);
+                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Athena.ItemAction."))].Substring(18), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
                 }
                 catch (NullReferenceException)
                 {
@@ -1384,7 +1384,7 @@ namespace FModel
                 {
                     try
                     {
-                        g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Weapon."))].Substring(7), new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities._rightString);
+                        g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Weapon."))].Substring(7), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
                     }
                     catch (NullReferenceException)
                     {
@@ -1409,7 +1409,7 @@ namespace FModel
                 {
                     try
                     {
-                        g.DrawString("Max Stack Size: " + theItem.MaxStackSize, new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                        g.DrawString("Max Stack Size: " + theItem.MaxStackSize, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
                     }
                     catch (NullReferenceException)
                     {
@@ -1428,7 +1428,7 @@ namespace FModel
             {
                 try
                 {
-                    g.DrawString(theItem.ShortDescription, new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                    g.DrawString(theItem.ShortDescription, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
                 }
                 catch (NullReferenceException)
                 {
@@ -1439,7 +1439,7 @@ namespace FModel
                 } //TYPE
                 try
                 {
-                    g.DrawString(theItem.CosmeticItem, new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities._rightString);
+                    g.DrawString(theItem.CosmeticItem, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
                 }
                 catch (NullReferenceException)
                 {
@@ -1488,7 +1488,7 @@ namespace FModel
             {
                 try
                 {
-                    g.DrawString(theItem.AttributeInitKey.AttributeInitCategory, new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities._rightString);
+                    g.DrawString(theItem.AttributeInitKey.AttributeInitCategory, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
                 }
                 catch (NullReferenceException)
                 {
@@ -1499,7 +1499,7 @@ namespace FModel
                 } //CHARACTER TYPE
                 try
                 {
-                    g.DrawString("Power " + theItem.MinLevel + " to " + theItem.MaxLevel, new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                    g.DrawString("Power " + theItem.MinLevel + " to " + theItem.MaxLevel, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
                 }
                 catch (NullReferenceException)
                 {
@@ -1513,7 +1513,7 @@ namespace FModel
             {
                 try
                 {
-                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("NPC.CharacterType.Survivor.Defender."))].Substring(36), new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities._rightString);
+                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("NPC.CharacterType.Survivor.Defender."))].Substring(36), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
                 }
                 catch (NullReferenceException)
                 {
@@ -1533,7 +1533,7 @@ namespace FModel
                 } //CHARACTER TYPE
                 try
                 {
-                    g.DrawString("Power " + theItem.MinLevel + " to " + theItem.MaxLevel, new Font(FontUtilities._pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+                    g.DrawString("Power " + theItem.MinLevel + " to " + theItem.MaxLevel, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
                 }
                 catch (NullReferenceException)
                 {
@@ -1635,10 +1635,10 @@ namespace FModel
                                                             {
                                                                 justSkip += 1;
                                                                 iamY += 140;
-                                                                g.DrawString(questParser[ii].Objectives[ii2].Description, new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
+                                                                g.DrawString(questParser[ii].Objectives[ii2].Description, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
                                                                 Image slider = Resources.Challenges_Slider;
                                                                 g.DrawImage(slider, new Point(108, iamY + 86));
-                                                                g.DrawString(questParser[ii].Objectives[ii2].Count.ToString(), new Font(FontUtilities._pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, iamY + 87));
+                                                                g.DrawString(questParser[ii].Objectives[ii2].Count.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, iamY + 87));
                                                                 if (justSkip != 1)
                                                                 {
                                                                     g.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, iamY - 10, 2410, iamY - 10);
@@ -1664,10 +1664,10 @@ namespace FModel
                                                                                 questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
                                                                         .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
                                                                         .FirstOrDefault().Quantity.ToString(),
-                                                                                FontUtilities._pfc.Families[1],
+                                                                                FontUtilities.pfc.Families[1],
                                                                                 (int)FontStyle.Regular,
                                                                                 60,
-                                                                                new Point(2322, iamY + 25), FontUtilities._rightString);
+                                                                                new Point(2322, iamY + 25), FontUtilities.rightString);
                                                                             g.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
 
                                                                             g.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
@@ -1684,10 +1684,10 @@ namespace FModel
                                                                                 questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
                                                                         .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
                                                                         .FirstOrDefault().Quantity.ToString(),
-                                                                                FontUtilities._pfc.Families[1],
+                                                                                FontUtilities.pfc.Families[1],
                                                                                 (int)FontStyle.Regular,
                                                                                 60,
-                                                                                new Point(2322, iamY + 25), FontUtilities._rightString);
+                                                                                new Point(2322, iamY + 25), FontUtilities.rightString);
                                                                             g.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
 
                                                                             g.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
@@ -1704,10 +1704,10 @@ namespace FModel
                                                                                 questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
                                                                         .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
                                                                         .FirstOrDefault().Quantity.ToString(),
-                                                                                FontUtilities._pfc.Families[1],
+                                                                                FontUtilities.pfc.Families[1],
                                                                                 (int)FontStyle.Regular,
                                                                                 60,
-                                                                                new Point(2322, iamY + 25), FontUtilities._rightString);
+                                                                                new Point(2322, iamY + 25), FontUtilities.rightString);
                                                                             g.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
 
                                                                             g.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
@@ -1837,9 +1837,9 @@ namespace FModel
                                             #endregion
 
                                             if (compCount == "-1")
-                                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
+                                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
                                             else
-                                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
+                                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
                                         }
                                         else
                                         {
@@ -1857,10 +1857,10 @@ namespace FModel
                                                 GraphicsPath p = new GraphicsPath();
                                                 p.AddString(
                                                     bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].Quantity.ToString(),
-                                                    FontUtilities._pfc.Families[1],
+                                                    FontUtilities.pfc.Families[1],
                                                     (int)FontStyle.Regular,
                                                     60,
-                                                    new Point(2322, iamY + 25), FontUtilities._rightString);
+                                                    new Point(2322, iamY + 25), FontUtilities.rightString);
                                                 g.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
 
                                                 g.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
@@ -1875,10 +1875,10 @@ namespace FModel
                                                 GraphicsPath p = new GraphicsPath();
                                                 p.AddString(
                                                     bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].Quantity.ToString(),
-                                                    FontUtilities._pfc.Families[1],
+                                                    FontUtilities.pfc.Families[1],
                                                     (int)FontStyle.Regular,
                                                     60,
-                                                    new Point(2322, iamY + 25), FontUtilities._rightString);
+                                                    new Point(2322, iamY + 25), FontUtilities.rightString);
                                                 g.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
 
                                                 g.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
@@ -1893,10 +1893,10 @@ namespace FModel
                                                 GraphicsPath p = new GraphicsPath();
                                                 p.AddString(
                                                     bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].Quantity.ToString(),
-                                                    FontUtilities._pfc.Families[1],
+                                                    FontUtilities.pfc.Families[1],
                                                     (int)FontStyle.Regular,
                                                     60,
-                                                    new Point(2322, iamY + 25), FontUtilities._rightString);
+                                                    new Point(2322, iamY + 25), FontUtilities.rightString);
                                                 g.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
 
                                                 g.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
@@ -1906,9 +1906,9 @@ namespace FModel
                                                 DrawRewardIcon(itemReward, g, iamY);
 
                                             if (compCount == "-1")
-                                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
+                                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
                                             else
-                                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
+                                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
                                         }
                                     }
                                 }
@@ -1925,7 +1925,7 @@ namespace FModel
                     {
                         #region WATERMARK
                         g.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, iamY + 240, bmp.Width, 40));
-                        g.DrawString(theItem.DisplayName + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities._pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width / 2, iamY + 250), FontUtilities._centeredString);
+                        g.DrawString(theItem.DisplayName + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width / 2, iamY + 250), FontUtilities.centeredString);
                         #endregion
                         if (v2 == false)
                         {
@@ -1933,7 +1933,7 @@ namespace FModel
                             try
                             {
                                 string seasonFolder = questJson.Substring(questJson.Substring(0, questJson.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
-                                g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities._pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(340, 40));
+                                g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(340, 40));
                             }
                             catch (NullReferenceException)
                             {
@@ -1944,7 +1944,7 @@ namespace FModel
                             } //LAST SUBFOLDER
                             try
                             {
-                                g.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities._pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+                                g.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
                             }
                             catch (NullReferenceException)
                             {
@@ -2004,7 +2004,7 @@ namespace FModel
 
             try
             {
-                toDrawOn.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities._pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Point(340, 40));
+                toDrawOn.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Point(340, 40));
             }
             catch (NullReferenceException)
             {
@@ -2015,7 +2015,7 @@ namespace FModel
             } //LAST SUBFOLDER
             try
             {
-                toDrawOn.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities._pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+                toDrawOn.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
             }
             catch (NullReferenceException)
             {
@@ -2082,10 +2082,10 @@ namespace FModel
                                                         toDrawOnLoop.TextRenderingHint = TextRenderingHint.AntiAlias;
                                                         lineLoop += 1;
                                                         yeayLoop += 140;
-                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Description, new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, yeayLoop));
+                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Description, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, yeayLoop));
                                                         Image slider = Resources.Challenges_Slider;
                                                         toDrawOnLoop.DrawImage(slider, new Point(108, yeayLoop + 86));
-                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Count.ToString(), new Font(FontUtilities._pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, yeayLoop + 87));
+                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Count.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, yeayLoop + 87));
                                                         if (lineLoop != 1)
                                                         {
                                                             toDrawOnLoop.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, yeayLoop - 10, 2410, yeayLoop - 10);
@@ -2112,10 +2112,10 @@ namespace FModel
                                                                         questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
                                                                 .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
                                                                 .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities._pfc.Families[1],
+                                                                        FontUtilities.pfc.Families[1],
                                                                         (int)FontStyle.Regular,
                                                                         60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities._rightString);
+                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
                                                                     toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
 
                                                                     toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
@@ -2132,10 +2132,10 @@ namespace FModel
                                                                         questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
                                                                 .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
                                                                 .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities._pfc.Families[1],
+                                                                        FontUtilities.pfc.Families[1],
                                                                         (int)FontStyle.Regular,
                                                                         60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities._rightString);
+                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
                                                                     toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
 
                                                                     toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
@@ -2152,10 +2152,10 @@ namespace FModel
                                                                         questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
                                                                 .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
                                                                 .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities._pfc.Families[1],
+                                                                        FontUtilities.pfc.Families[1],
                                                                         (int)FontStyle.Regular,
                                                                         60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities._rightString);
+                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
                                                                     toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
 
                                                                     toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
@@ -2225,10 +2225,10 @@ namespace FModel
                                                     {
                                                         lineLoop += 1;
                                                         yeayLoop += 140;
-                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Description, new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, yeayLoop));
+                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Description, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, yeayLoop));
                                                         Image slider = Resources.Challenges_Slider;
                                                         toDrawOnLoop.DrawImage(slider, new Point(108, yeayLoop + 86));
-                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Count.ToString(), new Font(FontUtilities._pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, yeayLoop + 87));
+                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Count.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, yeayLoop + 87));
                                                         if (lineLoop != 1)
                                                         {
                                                             toDrawOnLoop.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, yeayLoop - 10, 2410, yeayLoop - 10);
@@ -2255,10 +2255,10 @@ namespace FModel
                                                                         questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
                                                                 .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
                                                                 .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities._pfc.Families[1],
+                                                                        FontUtilities.pfc.Families[1],
                                                                         (int)FontStyle.Regular,
                                                                         60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities._rightString);
+                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
                                                                     toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
 
                                                                     toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
@@ -2275,10 +2275,10 @@ namespace FModel
                                                                         questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
                                                                 .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
                                                                 .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities._pfc.Families[1],
+                                                                        FontUtilities.pfc.Families[1],
                                                                         (int)FontStyle.Regular,
                                                                         60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities._rightString);
+                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
                                                                     toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
 
                                                                     toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
@@ -2295,10 +2295,10 @@ namespace FModel
                                                                         questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
                                                                 .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
                                                                 .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities._pfc.Families[1],
+                                                                        FontUtilities.pfc.Families[1],
                                                                         (int)FontStyle.Regular,
                                                                         60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities._rightString);
+                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
                                                                     toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
 
                                                                     toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
@@ -2557,7 +2557,7 @@ namespace FModel
 
                             try
                             {
-                                g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities._pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Point(340, 40));
+                                g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Point(340, 40));
                             }
                             catch (NullReferenceException)
                             {
@@ -2568,7 +2568,7 @@ namespace FModel
                             } //LAST SUBFOLDER
                             try
                             {
-                                g.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities._pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+                                g.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
                             }
                             catch (NullReferenceException)
                             {
@@ -2656,11 +2656,11 @@ namespace FModel
                                                                 justSkip += 1;
                                                                 iamY += 140;
 
-                                                                g.DrawString(questParser[ii].Objectives[ii2].Description, new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
+                                                                g.DrawString(questParser[ii].Objectives[ii2].Description, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
                                                                 damageOpPosition = iamY;
                                                                 Image slider = Resources.Challenges_Slider;
                                                                 g.DrawImage(slider, new Point(108, iamY + 86));
-                                                                g.DrawString(questParser[ii].Objectives[ii2].Count.ToString(), new Font(FontUtilities._pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, iamY + 87));
+                                                                g.DrawString(questParser[ii].Objectives[ii2].Count.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, iamY + 87));
                                                                 if (justSkip != 1)
                                                                 {
                                                                     g.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, iamY - 10, 2410, iamY - 10);
@@ -2696,10 +2696,10 @@ namespace FModel
                                                             justSkip += 1;
                                                             iamY += 140;
 
-                                                            g.DrawString(questParser[ii].Objectives[ii2].Description, new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
+                                                            g.DrawString(questParser[ii].Objectives[ii2].Description, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
                                                             Image slider = Resources.Challenges_Slider;
                                                             g.DrawImage(slider, new Point(108, iamY + 86));
-                                                            g.DrawString(questParser[ii].Objectives[ii2].Count.ToString(), new Font(FontUtilities._pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, iamY + 87));
+                                                            g.DrawString(questParser[ii].Objectives[ii2].Count.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, iamY + 87));
                                                             if (justSkip != 1)
                                                             {
                                                                 g.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, iamY - 10, 2410, iamY - 10);
@@ -2754,7 +2754,7 @@ namespace FModel
                     }
                 }
 
-                g.DrawString("Same Quest x" + damageOpCount, new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(1500, damageOpPosition + 25));
+                g.DrawString("Same Quest x" + damageOpCount, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(1500, damageOpPosition + 25));
                 iamY += 100;
 
                 //BundleCompletionRewards
@@ -2779,9 +2779,9 @@ namespace FModel
                                 DrawRewardIcon(itemReward, g, iamY);
 
                             if (compCount == "-1")
-                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
+                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
                             else
-                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities._pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
+                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
                         }
                     }
                 }
@@ -2796,7 +2796,7 @@ namespace FModel
             {
                 #region WATERMARK
                 g.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, iamY + 240, bmp.Width, 40));
-                g.DrawString(theItem.DisplayName + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities._pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width / 2, iamY + 250), FontUtilities._centeredString);
+                g.DrawString(theItem.DisplayName + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width / 2, iamY + 250), FontUtilities.centeredString);
                 #endregion
                 if (v2 == false)
                 {
@@ -2804,7 +2804,7 @@ namespace FModel
                     try
                     {
                         string seasonFolder = questJson.Substring(questJson.Substring(0, questJson.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
-                        g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities._pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(340, 40));
+                        g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(340, 40));
                     }
                     catch (NullReferenceException)
                     {
@@ -2815,7 +2815,7 @@ namespace FModel
                     } //LAST SUBFOLDER
                     try
                     {
-                        g.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities._pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+                        g.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
                     }
                     catch (NullReferenceException)
                     {

@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace FModel
 {
-    class Rarity
+    static class Rarity
     {
         /// <summary>
         /// check the rarity and return the right image

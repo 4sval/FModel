@@ -22,8 +22,7 @@ namespace FModel
             {
                 using (var stream = executingAssembly.GetManifestResourceStream(resource))
                 {
-                    if (stream == null)
-                        continue;
+                    if (stream == null) { continue; }
 
                     var bytes = new byte[stream.Length];
                     stream.Read(bytes, 0, bytes.Length);

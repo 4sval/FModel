@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace FModel
 {
-    class JohnWick
+    static class JohnWick
     {
         public static PakAsset MyAsset;
         public static PakExtractor MyExtractor;
@@ -25,10 +25,14 @@ namespace FModel
         /// <returns> the mount point as string, used to create subfolders when extracting or create the tree when loading all paks </returns>
         private static string GetMountPointFromDict(string currentItem, bool DynamicPak = false)
         {
-            if (DynamicPak == true)
-                return ThePak.PaksMountPoint[ThePak.CurrentUsedPak ?? throw new InvalidOperationException()];
+            if (DynamicPak)
+            {
+                return ThePak.PaksMountPoint[ThePak.CurrentUsedPak];
+            }
             else
-                return ThePak.PaksMountPoint[ThePak.AllpaksDictionary[currentItem ?? throw new InvalidOperationException()] ?? throw new InvalidOperationException()];
+            {
+                return ThePak.PaksMountPoint[ThePak.AllpaksDictionary[currentItem]];
+            }
         }
 
         /// <summary>
@@ -74,9 +78,13 @@ namespace FModel
 
             string[] results;
             if (currentItem.Contains("."))
+            {
                 results = Array.FindAll(myArray, s => s.Contains("/" + currentItem));
+            }
             else
+            {
                 results = Array.FindAll(myArray, s => s.Contains("/" + currentItem + "."));
+            }
 
             string AssetPath = string.Empty;
             for (int i = 0; i < results.Length; i++)
@@ -102,9 +110,13 @@ namespace FModel
         {
             string textureFilePath;
             if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+            {
                 textureFilePath = ExtractAsset(ThePak.CurrentUsedPak, AssetName);
+            }
             else
-                textureFilePath = ExtractAsset(ThePak.AllpaksDictionary[AssetName ?? throw new InvalidOperationException()], AssetName);
+            {
+                textureFilePath = ExtractAsset(ThePak.AllpaksDictionary[AssetName], AssetName);
+            }
 
 
             string TexturePath = string.Empty;
