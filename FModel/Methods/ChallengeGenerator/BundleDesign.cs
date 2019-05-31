@@ -26,7 +26,7 @@ namespace FModel
             if (Settings.Default.createIconForChallenges && myBundle.DisplayStyle != null)
             {
                 //main header
-                toDrawOn.FillRectangle(new SolidBrush(BundleInfos.getSecondaryColor(myBundle)), new Rectangle(0, 0, myBitmap.Width, 271));
+                toDrawOn.FillRectangle(new SolidBrush(BundleInfos.getSecondaryColor(myBundle)), new Rectangle(0, 0, myBitmap.Width, 281));
 
                 //gradient at left and right main header
                 LinearGradientBrush linGrBrush_left = new LinearGradientBrush(new Point(0, 282 / 2), new Point(282, 282 / 2),
@@ -146,7 +146,7 @@ namespace FModel
 
         private static void drawForbyteReward()
         {
-            string textureFile = "T_UI_PuzzleIcon_64";
+            string textureFile = "T_UI_ChallengeTile_Fortbytes";
             ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
 
             if (File.Exists(ItemIcon.ItemIconPath))
