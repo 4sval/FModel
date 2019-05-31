@@ -83,6 +83,7 @@ This project is mainly based on what [UModel](https://github.com/gildor2/UModel)
 I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionnaly.
 
 ## TODO
+  - [ ] 2FA support
   - [ ] Code refactoring
   - [ ] Get new file content
   - [ ] Display support for .locres files + compare

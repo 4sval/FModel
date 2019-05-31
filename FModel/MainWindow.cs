@@ -1207,30 +1207,45 @@ namespace FModel
                 UpdateConsole("Parsing " + ThePak.CurrentUsedItem + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                 for (int i = 0; i < itemId.Length; i++)
                 {
-                    if (Settings.Default.createIconForCosmetics && (itemId[i].ExportType.Contains("Athena") && itemId[i].ExportType.Contains("Item") && itemId[i].ExportType.Contains("Definition")))
-                        CreateItemIcon(itemId[i], "athIteDef");
+                    if (Settings.Default.createIconForCosmetics && itemId[i].ExportType.Contains("Athena") && itemId[i].ExportType.Contains("Item") && itemId[i].ExportType.Contains("Definition"))
+                    {
+                        pictureBox1.Image = CreateItemIcon(itemId[i], "athIteDef");
+                    }
                     else if (Settings.Default.createIconForConsumablesWeapons && (itemId[i].ExportType == "FortWeaponRangedItemDefinition" || itemId[i].ExportType == "FortWeaponMeleeItemDefinition"))
-                        CreateItemIcon(itemId[i], "consAndWeap");
+                    {
+                        pictureBox1.Image = CreateItemIcon(itemId[i], "consAndWeap");
+                    }
                     else if (Settings.Default.createIconForTraps && (itemId[i].ExportType == "FortTrapItemDefinition" || itemId[i].ExportType == "FortContextTrapItemDefinition"))
-                        CreateItemIcon(itemId[i]);
+                    {
+                        pictureBox1.Image = CreateItemIcon(itemId[i]);
+                    }
                     else if (Settings.Default.createIconForVariants && (itemId[i].ExportType == "FortVariantTokenType"))
-                        CreateItemIcon(itemId[i], "variant");
+                    {
+                        pictureBox1.Image = CreateItemIcon(itemId[i], "variant");
+                    }
                     else if (Settings.Default.createIconForAmmo && (itemId[i].ExportType == "FortAmmoItemDefinition"))
-                        CreateItemIcon(itemId[i], "ammo");
+                    {
+                        pictureBox1.Image = CreateItemIcon(itemId[i], "ammo");
+                    }
                     else if (questJson != null && (Settings.Default.createIconForSTWHeroes && (itemId[i].ExportType == "FortHeroType" && (questJson.Contains("ItemDefinition") || questJson.Contains("TestDefsSkydive") || questJson.Contains("GameplayPrototypes"))))) //Contains x not to trigger HID from BR
-                        CreateItemIcon(itemId[i], "stwHeroes");
+                    {
+                        pictureBox1.Image = CreateItemIcon(itemId[i], "stwHeroes");
+                    }
                     else if (Settings.Default.createIconForSTWDefenders && (itemId[i].ExportType == "FortDefenderItemDefinition"))
-                        CreateItemIcon(itemId[i], "stwDefenders");
+                    {
+                        pictureBox1.Image = CreateItemIcon(itemId[i], "stwDefenders");
+                    }
                     else if (Settings.Default.createIconForSTWCardPacks && (itemId[i].ExportType == "FortCardPackItemDefinition"))
-                        CreateItemIcon(itemId[i]);
+                    {
+                        pictureBox1.Image = CreateItemIcon(itemId[i]);
+                    }
                     else if (itemId[i].ExportType == "FortChallengeBundleItemDefinition")
-                        CreateChallengesIcon(itemId[i], parsedJson, questJson);
-                    else if (itemId[i].ExportType == "Texture2D")
-                        ConvertTexture2D();
-                    else if (itemId[i].ExportType == "SoundWave")
-                        ConvertSoundWave();
-                    else
-                        UpdateConsole(ThePak.CurrentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
+                    {
+                        CreateBundleChallengesIcon(itemId[i], parsedJson, questJson);
+                    }
+                    else if (itemId[i].ExportType == "Texture2D") { ConvertTexture2D(); }
+                    else if (itemId[i].ExportType == "SoundWave") { ConvertSoundWave(); }
+                    else { UpdateConsole(ThePak.CurrentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success"); }
                 }
             }
             catch (Exception ex)
@@ -1238,7 +1253,7 @@ namespace FModel
                 Console.WriteLine(ex.Message);
             }
         }
-        private void CreateItemIcon(ItemsIdParser theItem, string specialMode = null)
+        private Bitmap CreateItemIcon(ItemsIdParser theItem, string specialMode = null)
         {
             UpdateConsole(ThePak.CurrentUsedItem + " is an Item Definition", Color.FromArgb(255, 66, 244, 66), "Success");
 
@@ -1249,16 +1264,7 @@ namespace FModel
             Rarity.DrawRarity(theItem, g, specialMode);
 
             ItemIcon.ItemIconPath = string.Empty;
-            if (Settings.Default.loadFeaturedImage == false)
-            {
-                ItemIcon.GetItemIcon(theItem);
-            }
-            if (Settings.Default.loadFeaturedImage)
-            {
-                ItemIcon.GetItemIcon(theItem, true);
-            }
-
-            #region DRAW ICON
+            ItemIcon.GetItemIcon(theItem, Settings.Default.loadFeaturedImage);
             if (File.Exists(ItemIcon.ItemIconPath))
             {
                 Image itemIcon;
@@ -1273,22 +1279,8 @@ namespace FModel
                 Image itemIcon = Resources.unknown512;
                 g.DrawImage(itemIcon, new Point(0, 0));
             }
-            #endregion
 
-            #region WATERMARK
-            if (Checking.UmWorking == false && (Settings.Default.isWatermark && !string.IsNullOrEmpty(Settings.Default.wFilename)))
-            {
-                Image watermark = Image.FromFile(Settings.Default.wFilename);
-                var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)Settings.Default.wOpacity / 100);
-                g.DrawImage(ImageUtilities.ResizeImage(opacityImage, Settings.Default.wSize, Settings.Default.wSize), (522 - Settings.Default.wSize) / 2, (522 - Settings.Default.wSize) / 2, Settings.Default.wSize, Settings.Default.wSize);
-            }
-            if (Checking.UmWorking && (Settings.Default.UMWatermark && !string.IsNullOrEmpty(Settings.Default.UMFilename)))
-            {
-                Image watermark = Image.FromFile(Settings.Default.UMFilename);
-                var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)Settings.Default.UMOpacity / 100);
-                g.DrawImage(ImageUtilities.ResizeImage(opacityImage, Settings.Default.UMSize, Settings.Default.UMSize), (522 - Settings.Default.UMSize) / 2, (522 - Settings.Default.UMSize) / 2, Settings.Default.UMSize, Settings.Default.UMSize);
-            }
-            #endregion
+            ItemIcon.DrawWatermark(g);
 
             Image bg512 = Resources.BG512;
             g.DrawImage(bg512, new Point(5, 383));
@@ -1545,17 +1537,19 @@ namespace FModel
             }
             #endregion
 
-            pictureBox1.Image = bmp;
             UpdateConsole(theItem.DisplayName, Color.FromArgb(255, 66, 244, 66), "Success");
             if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
             {
-                Invoke(new Action(() =>
+                bmp.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
+
+                if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
                 {
-                    pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
-                }));
-                AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                AppendText(" successfully saved", Color.Black, true);
+                    AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
+                    AppendText(" successfully saved", Color.Black, true);
+                }
             }
+
+            return bmp;
         }
 
 
@@ -1566,1336 +1560,69 @@ namespace FModel
         /// <param name="theParsedJson"> to parse from this instead of calling MyAsset.GetSerialized() again </param>
         /// <param name="extractedBundlePath"> needed for the LastFolder </param>
         /// <returns> the bundle image ready to be displayed in pictureBox1 </returns>
-        public Bitmap CreateBundleChallengesIcon(ItemsIdParser theItem, string theParsedJson, string extractedBundlePath)
+        private void CreateBundleChallengesIcon(ItemsIdParser theItem, string theParsedJson, string extractedBundlePath)
         {
-            Bitmap bmp = new Bitmap(2500, 10000);
-            BundleDesign.BundlePath = extractedBundlePath;
-            BundleDesign.theY = 275;
-            BundleDesign.toDrawOn = Graphics.FromImage(bmp);
-            BundleDesign.toDrawOn.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-            BundleDesign.toDrawOn.SmoothingMode = SmoothingMode.HighQuality;
-            BundleDesign.myItem = theItem;
-
             ChallengeBundleIdParser bundleParser = ChallengeBundleIdParser.FromJson(theParsedJson).FirstOrDefault();
             BundleInfos.getBundleData(bundleParser);
+            Bitmap bmp = null;
 
-            BundleDesign.drawBackground(bmp, bundleParser);
+            if (Settings.Default.createIconForChallenges)
+            {
+                bmp = new Bitmap(2500, 5000);
+                BundleDesign.BundlePath = extractedBundlePath;
+                BundleDesign.theY = 275;
+                BundleDesign.toDrawOn = Graphics.FromImage(bmp);
+                BundleDesign.toDrawOn.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                BundleDesign.toDrawOn.SmoothingMode = SmoothingMode.HighQuality;
+                BundleDesign.myItem = theItem;
 
-            int justSkip = 0;
+                BundleDesign.drawBackground(bmp, bundleParser);
+            }
+
             for (int i = 0; i < BundleInfos.BundleData.Count; i++)
             {
                 AppendText(BundleInfos.BundleData[i].questDescr, Color.SteelBlue);
                 AppendText("\t\tCount: " + BundleInfos.BundleData[i].questCount, Color.DarkRed);
                 AppendText("\t\t" + BundleInfos.BundleData[i].rewardItemId + ":" + BundleInfos.BundleData[i].rewardItemQuantity, Color.DarkGreen, true);
 
-                BundleDesign.theY += 140;
-                justSkip += 1;
-
-                //draw quest description
-                BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
-
-                //draw slider + quest count
-                Image slider = Resources.Challenges_Slider;
-                BundleDesign.toDrawOn.DrawImage(slider, new Point(108, BundleDesign.theY + 86));
-                BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questCount.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, BundleDesign.theY + 87));
-
-                //draw quest reward
-                DrawingRewards.getRewards(BundleInfos.BundleData[i].rewardItemId, BundleInfos.BundleData[i].rewardItemQuantity);
-
-                if (justSkip != 1)
+                if (Settings.Default.createIconForChallenges)
                 {
-                    //draw separator
-                    BundleDesign.toDrawOn.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, BundleDesign.theY - 10, 2410, BundleDesign.theY - 10);
+                    BundleDesign.theY += 140;
+
+                    //draw quest description
+                    BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
+
+                    //draw slider + quest count
+                    Image slider = Resources.Challenges_Slider;
+                    BundleDesign.toDrawOn.DrawImage(slider, new Point(108, BundleDesign.theY + 86));
+                    BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questCount.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, BundleDesign.theY + 87));
+
+                    //draw quest reward
+                    DrawingRewards.getRewards(BundleInfos.BundleData[i].rewardItemId, BundleInfos.BundleData[i].rewardItemQuantity);
+
+                    if (i != 0)
+                    {
+                        //draw separator
+                        BundleDesign.toDrawOn.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, BundleDesign.theY - 10, 2410, BundleDesign.theY - 10);
+                    }
                 }
             }
             AppendText("", Color.Black, true);
 
-            //cut if too long and return the bitmap
-            using (Bitmap bmp2 = bmp)
-            {
-                var newImg = bmp2.Clone(
-                    new Rectangle { X = 0, Y = 0, Width = bmp.Width, Height = BundleDesign.theY + 280 },
-                    bmp2.PixelFormat);
-
-                return newImg;
-            }
-        }
-        private void CreateChallengesIcon(ItemsIdParser theItem, string theParsedJson, string questJson = null)
-        {
-            if (theItem.ExportType == "FortChallengeBundleItemDefinition")
-            {
-                if (ThePak.CurrentUsedItem == "QuestBundle_S9_Fortbyte")
-                    CreateFortByteChallengesIcon(theItem, theParsedJson, questJson);
-                else
-                {
-                    Bitmap bmp = new Bitmap(Resources.Quest);
-                    Graphics g = Graphics.FromImage(bmp);
-                    g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-                    g.SmoothingMode = SmoothingMode.HighQuality;
-                    int iamY = 275;
-                    int justSkip = 0;
-                    Checking.YAfterLoop = 0;
-                    bool v2 = false;
-
-                    var bundleParser = ChallengeBundleIdParser.FromJson(theParsedJson);
-                    for (int i = 0; i < bundleParser.Length; i++)
-                    {
-                        SelectedChallengesArray = new string[bundleParser[i].QuestInfos.Length];
-                        for (int i2 = 0; i2 < bundleParser[i].QuestInfos.Length; i2++)
-                        {
-                            string cName = Path.GetFileName(bundleParser[i].QuestInfos[i2].QuestDefinition.AssetPathName);
-                            SelectedChallengesArray[i2] = cName.Substring(0, cName.LastIndexOf('.'));
-                        }
-
-                        try
-                        {
-                            if (Settings.Default.createIconForChallenges && bundleParser[i].DisplayStyle.DisplayImage != null)
-                            {
-                                DrawV2(bundleParser[i], theItem, questJson, g, bmp);
-                                v2 = true;
-                            }
-                        }
-                        catch (Exception) { }
-
-                        for (int i2 = 0; i2 < SelectedChallengesArray.Length; i2++)
-                        {
-                            try
-                            {
-                                string challengeFilePath;
-                                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                                    challengeFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, SelectedChallengesArray[i2]);
-                                else
-                                    challengeFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[SelectedChallengesArray[i2]], SelectedChallengesArray[i2]);
-
-                                if (challengeFilePath != null)
-                                {
-                                    UpdateConsole(SelectedChallengesArray[i2] + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
-                                    if (challengeFilePath.Contains(".uasset") || challengeFilePath.Contains(".uexp") || challengeFilePath.Contains(".ubulk"))
-                                    {
-                                        JohnWick.MyAsset = new PakAsset(challengeFilePath.Substring(0, challengeFilePath.LastIndexOf('.')));
-                                        try
-                                        {
-                                            if (JohnWick.MyAsset.GetSerialized() != null)
-                                            {
-                                                UpdateConsole(SelectedChallengesArray[i2] + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-
-                                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                                                var questParser = QuestParser.FromJson(parsedJson);
-                                                UpdateConsole("Parsing " + SelectedChallengesArray[i2] + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                                                for (int ii = 0; ii < questParser.Length; ii++)
-                                                {
-                                                    string oldQuest = string.Empty;
-                                                    string oldCount = string.Empty;
-                                                    for (int ii2 = 0; ii2 < questParser[ii].Objectives.Length; ii2++)
-                                                    {
-                                                        string newQuest = questParser[ii].Objectives[ii2].Description;
-                                                        string newCount = questParser[ii].Objectives[ii2].Count.ToString();
-                                                        if (newQuest != oldQuest && newCount != oldCount)
-                                                        {
-                                                            if (Settings.Default.createIconForChallenges)
-                                                            {
-                                                                justSkip += 1;
-                                                                iamY += 140;
-                                                                g.DrawString(questParser[ii].Objectives[ii2].Description, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
-                                                                Image slider = Resources.Challenges_Slider;
-                                                                g.DrawImage(slider, new Point(108, iamY + 86));
-                                                                g.DrawString(questParser[ii].Objectives[ii2].Count.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, iamY + 87));
-                                                                if (justSkip != 1)
-                                                                {
-                                                                    g.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, iamY - 10, 2410, iamY - 10);
-                                                                }
-                                                            }
-                                                            AppendText(questParser[ii].Objectives[ii2].Description, Color.SteelBlue);
-                                                            if (questParser[ii].Rewards != null)
-                                                            {
-                                                                AppendText("\t\tCount: " + questParser[ii].Objectives[ii2].Count, Color.DarkRed);
-                                                                try
-                                                                {
-                                                                    if (Settings.Default.createIconForChallenges)
-                                                                    {
-                                                                        string itemToExtract = questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest").Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token").FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName;
-                                                                        if (string.Equals(itemToExtract, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase))
-                                                                        {
-                                                                            #region DRAW ICON
-                                                                            Image rewardIcon = Resources.T_FNBR_BattlePoints_L;
-                                                                            g.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
-
-                                                                            GraphicsPath p = new GraphicsPath();
-                                                                            p.AddString(
-                                                                                questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                        .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                        .FirstOrDefault().Quantity.ToString(),
-                                                                                FontUtilities.pfc.Families[1],
-                                                                                (int)FontStyle.Regular,
-                                                                                60,
-                                                                                new Point(2322, iamY + 25), FontUtilities.rightString);
-                                                                            g.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
-
-                                                                            g.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
-                                                                            #endregion
-                                                                        }
-                                                                        else if (string.Equals(itemToExtract, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase))
-                                                                        {
-                                                                            #region DRAW ICON
-                                                                            Image rewardIcon = Resources.T_FNBR_SeasonalXP_L;
-                                                                            g.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
-
-                                                                            GraphicsPath p = new GraphicsPath();
-                                                                            p.AddString(
-                                                                                questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                        .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                        .FirstOrDefault().Quantity.ToString(),
-                                                                                FontUtilities.pfc.Families[1],
-                                                                                (int)FontStyle.Regular,
-                                                                                60,
-                                                                                new Point(2322, iamY + 25), FontUtilities.rightString);
-                                                                            g.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
-
-                                                                            g.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
-                                                                            #endregion
-                                                                        }
-                                                                        else if (string.Equals(itemToExtract, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase))
-                                                                        {
-                                                                            #region DRAW ICON
-                                                                            Image rewardIcon = Resources.T_Items_MTX_L;
-                                                                            g.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
-
-                                                                            GraphicsPath p = new GraphicsPath();
-                                                                            p.AddString(
-                                                                                questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                        .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                        .FirstOrDefault().Quantity.ToString(),
-                                                                                FontUtilities.pfc.Families[1],
-                                                                                (int)FontStyle.Regular,
-                                                                                60,
-                                                                                new Point(2322, iamY + 25), FontUtilities.rightString);
-                                                                            g.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
-
-                                                                            g.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
-                                                                            #endregion
-                                                                        }
-                                                                        else
-                                                                            DrawRewardIcon(itemToExtract, g, iamY);
-                                                                    }
-
-                                                                    AppendText("\t\t" + questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                        .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                        .FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetType.Name + ":"
-                                                                        + questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                        .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                        .FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName + ":"
-                                                                        + questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                            .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                            .FirstOrDefault().Quantity, Color.DarkGreen, true);
-                                                                }
-                                                                catch (NullReferenceException)
-                                                                {
-                                                                    if (questParser[ii].HiddenRewards != null)
-                                                                    {
-                                                                        if (Settings.Default.createIconForChallenges)
-                                                                        {
-                                                                            var partsofbruhreally = questParser[ii].HiddenRewards.FirstOrDefault().TemplateId.Split(':');
-                                                                            if (partsofbruhreally[0] != "HomebaseBannerIcon")
-                                                                                DrawRewardIcon(partsofbruhreally[1], g, iamY);
-                                                                            else
-                                                                                DrawRewardBanner(partsofbruhreally[1], g, iamY);
-                                                                        }
-
-                                                                        AppendText("\t\t" + questParser[ii].HiddenRewards.FirstOrDefault().TemplateId + ":"
-                                                                            + questParser[ii].HiddenRewards.FirstOrDefault().Quantity, Color.DarkGreen, true);
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        AppendText("", Color.Black, true);
-                                                                    }
-                                                                }
-                                                                catch (Exception ex)
-                                                                {
-                                                                    Console.WriteLine(ex.Message);
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                AppendText("\t\tCount: " + questParser[ii].Objectives[ii2].Count, Color.DarkRed, true);
-                                                            }
-
-                                                            oldQuest = questParser[ii].Objectives[ii2].Description;
-                                                            oldCount = questParser[ii].Objectives[ii2].Count.ToString();
-                                                        }
-                                                        try
-                                                        {
-                                                            for (int ii3 = 0; ii3 < questParser[ii].Rewards.Length; ii3++)
-                                                            {
-                                                                LoopStageQuest(questParser[ii].Rewards[ii3].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser[ii].Rewards[ii3].ItemPrimaryAssetId.PrimaryAssetName, g, iamY, justSkip);
-                                                                iamY = Checking.YAfterLoop;
-                                                            }
-                                                        }
-                                                        catch (Exception ex)
-                                                        {
-                                                            Console.WriteLine(ex.Message);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            else
-                                                UpdateConsole("No serialized file found", Color.FromArgb(255, 244, 66, 66), "Error");
-                                        }
-                                        catch (JsonSerializationException)
-                                        {
-                                            AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                                            AppendText(".JSON file can't be displayed", Color.Black, true);
-                                        }
-                                    }
-                                }
-                                else
-                                    UpdateConsole("Error while extracting " + SelectedChallengesArray[i2], Color.FromArgb(255, 244, 66, 66), "Error");
-                            }
-                            catch (KeyNotFoundException)
-                            {
-                                AppendText("Can't extract ", Color.Black);
-                                AppendText(SelectedChallengesArray[i2], Color.SteelBlue, true);
-                            }
-                        }
-
-                        iamY += 100;
-
-                        //BundleCompletionRewards
-                        try
-                        {
-                            for (int i2 = 0; i2 < bundleParser[i].BundleCompletionRewards.Length; i2++)
-                            {
-                                for (int i3 = 0; i3 < bundleParser[i].BundleCompletionRewards[i2].Rewards.Length; i3++)
-                                {
-                                    string itemReward = Path.GetFileName(bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].ItemDefinition.AssetPathName.Substring(0, bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].ItemDefinition.AssetPathName.LastIndexOf(".", StringComparison.Ordinal)));
-                                    string compCount = bundleParser[i].BundleCompletionRewards[i2].CompletionCount.ToString();
-
-                                    if (itemReward != "AthenaBattlePass_WeeklyChallenge_Token" && itemReward != "AthenaBattlePass_WeeklyBundle_Token")
-                                    {
-                                        justSkip += 1;
-                                        iamY += 140;
-
-                                        if (itemReward.Contains("Fortbyte_WeeklyChallengesComplete_"))
-                                        {
-                                            #region DRAW ICON
-                                            string textureFile = "T_UI_PuzzleIcon_64";
-
-                                            ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-
-                                            if (File.Exists(ItemIcon.ItemIconPath))
-                                            {
-                                                Image itemIcon;
-                                                using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                                                {
-                                                    itemIcon = new Bitmap(bmpTemp);
-                                                }
-                                                g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, iamY + 6));
-                                            }
-                                            else
-                                            {
-                                                Image itemIcon = Resources.unknown512;
-                                                g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, iamY + 6));
-                                            }
-                                            #endregion
-
-                                            if (compCount == "-1")
-                                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
-                                            else
-                                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
-                                        }
-                                        else
-                                        {
-                                            if (bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].ItemDefinition.AssetPathName == "None")
-                                            {
-                                                var partsofbruhreally = bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].TemplateId.Split(':');
-                                                DrawRewardBanner(partsofbruhreally[1], g, iamY);
-                                            }
-                                            else if (string.Equals(itemReward, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase))
-                                            {
-                                                #region DRAW ICON
-                                                Image rewardIcon = Resources.T_FNBR_BattlePoints_L;
-                                                g.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
-
-                                                GraphicsPath p = new GraphicsPath();
-                                                p.AddString(
-                                                    bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].Quantity.ToString(),
-                                                    FontUtilities.pfc.Families[1],
-                                                    (int)FontStyle.Regular,
-                                                    60,
-                                                    new Point(2322, iamY + 25), FontUtilities.rightString);
-                                                g.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
-
-                                                g.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
-                                                #endregion
-                                            }
-                                            else if (string.Equals(itemReward, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase))
-                                            {
-                                                #region DRAW ICON
-                                                Image rewardIcon = Resources.T_FNBR_SeasonalXP_L;
-                                                g.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
-
-                                                GraphicsPath p = new GraphicsPath();
-                                                p.AddString(
-                                                    bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].Quantity.ToString(),
-                                                    FontUtilities.pfc.Families[1],
-                                                    (int)FontStyle.Regular,
-                                                    60,
-                                                    new Point(2322, iamY + 25), FontUtilities.rightString);
-                                                g.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
-
-                                                g.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
-                                                #endregion
-                                            }
-                                            else if (string.Equals(itemReward, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase))
-                                            {
-                                                #region DRAW ICON
-                                                Image rewardIcon = Resources.T_Items_MTX_L;
-                                                g.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, iamY + 22));
-
-                                                GraphicsPath p = new GraphicsPath();
-                                                p.AddString(
-                                                    bundleParser[i].BundleCompletionRewards[i2].Rewards[i3].Quantity.ToString(),
-                                                    FontUtilities.pfc.Families[1],
-                                                    (int)FontStyle.Regular,
-                                                    60,
-                                                    new Point(2322, iamY + 25), FontUtilities.rightString);
-                                                g.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
-
-                                                g.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
-                                                #endregion
-                                            }
-                                            else
-                                                DrawRewardIcon(itemReward, g, iamY);
-
-                                            if (compCount == "-1")
-                                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
-                                            else
-                                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            UpdateConsole(ex.Message, Color.FromArgb(255, 244, 66, 66), "Error");
-                            iamY -= 100;
-                        }
-                    }
-
-                    if (Settings.Default.createIconForChallenges)
-                    {
-                        #region WATERMARK
-                        g.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, iamY + 240, bmp.Width, 40));
-                        g.DrawString(theItem.DisplayName + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width / 2, iamY + 250), FontUtilities.centeredString);
-                        #endregion
-                        if (v2 == false)
-                        {
-                            #region DRAW TEXT
-                            try
-                            {
-                                string seasonFolder = questJson.Substring(questJson.Substring(0, questJson.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
-                                g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(340, 40));
-                            }
-                            catch (NullReferenceException)
-                            {
-                                AppendText("[NullReferenceException] ", Color.Red);
-                                AppendText("No ", Color.Black);
-                                AppendText("Season ", Color.SteelBlue);
-                                AppendText("found", Color.Black, true);
-                            } //LAST SUBFOLDER
-                            try
-                            {
-                                g.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
-                            }
-                            catch (NullReferenceException)
-                            {
-                                AppendText("[NullReferenceException] ", Color.Red);
-                                AppendText("No ", Color.Black);
-                                AppendText("DisplayName ", Color.SteelBlue);
-                                AppendText("found", Color.Black, true);
-                            } //NAME
-                            #endregion
-                        }
-                        #region CUT IMAGE
-                        using (Bitmap bmp2 = bmp)
-                        {
-                            var newImg = bmp2.Clone(
-                                new Rectangle { X = 0, Y = 0, Width = bmp.Width, Height = iamY + 280 },
-                                bmp2.PixelFormat);
-                            pictureBox1.Image = newImg;
-                        } //CUT
-                        #endregion
-                    }
-
-                    UpdateConsole(theItem.DisplayName, Color.FromArgb(255, 66, 244, 66), "Success");
-                    if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
-                    {
-                        Invoke(new Action(() =>
-                        {
-                            pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
-                        }));
-                        AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                        AppendText(" successfully saved", Color.Black, true);
-                    }
-
-                    AppendText("", Color.Black, true);
-                }
-            }
-        }
-        private void DrawV2(ChallengeBundleIdParser myBundle, ItemsIdParser theItem, string questJson, Graphics toDrawOn, Bitmap myBitmap)
-        {
-            string seasonFolder = questJson.Substring(questJson.Substring(0, questJson.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
-            int sRed = (int)(myBundle.DisplayStyle.SecondaryColor.R * 255);
-            int sGreen = (int)(myBundle.DisplayStyle.SecondaryColor.G * 255);
-            int sBlue = (int)(myBundle.DisplayStyle.SecondaryColor.B * 255);
-
-            if (string.Equals(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), "LTM") || sRed + sGreen + sBlue <= 75)
-            {
-                sRed = (int)(myBundle.DisplayStyle.AccentColor.R * 255);
-                sGreen = (int)(myBundle.DisplayStyle.AccentColor.G * 255);
-                sBlue = (int)(myBundle.DisplayStyle.AccentColor.B * 255);
-            }
-
-            int seasonRed = Convert.ToInt32(sRed / 1.5);
-            int seasonGreen = Convert.ToInt32(sGreen / 1.5);
-            int seasonBlue = Convert.ToInt32(sBlue / 1.5);
-
-            toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(255, sRed, sGreen, sBlue)), new Rectangle(0, 0, myBitmap.Width, 271));
-            toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Rectangle(0, 271, myBitmap.Width, myBitmap.Height - 271));
-
-            try
-            {
-                toDrawOn.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Point(340, 40));
-            }
-            catch (NullReferenceException)
-            {
-                AppendText("[NullReferenceException] ", Color.Red);
-                AppendText("No ", Color.Black);
-                AppendText("Season ", Color.SteelBlue);
-                AppendText("found", Color.Black, true);
-            } //LAST SUBFOLDER
-            try
-            {
-                toDrawOn.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
-            }
-            catch (NullReferenceException)
-            {
-                AppendText("[NullReferenceException] ", Color.Red);
-                AppendText("No ", Color.Black);
-                AppendText("DisplayName ", Color.SteelBlue);
-                AppendText("found", Color.Black, true);
-            } //NAME
-
-            string textureFile = Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName)?.Substring(0,
-                Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
-
-            string pngPath = JohnWick.AssetToTexture2D(textureFile);
-
-            Image challengeIcon;
-            using (var bmpTemp = new Bitmap(pngPath))
-            {
-                challengeIcon = new Bitmap(bmpTemp);
-            }
-            toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 271, 271), new Point(40, 0));
-        }
-        private void LoopStageQuest(string qAssetType, string qAssetName, Graphics toDrawOn, int yeay, int line)
-        {
-            Graphics toDrawOnLoop = toDrawOn;
-            int yeayLoop = yeay;
-            int lineLoop = line;
-
-            if (qAssetType == "Quest")
-            {
-                try
-                {
-                    string challengeFilePathLoop = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[qAssetName], qAssetName);
-
-                    if (challengeFilePathLoop != null)
-                    {
-                        UpdateConsole(qAssetName + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
-                        if (challengeFilePathLoop.Contains(".uasset") || challengeFilePathLoop.Contains(".uexp") || challengeFilePathLoop.Contains(".ubulk"))
-                        {
-                            JohnWick.MyAsset = new PakAsset(challengeFilePathLoop.Substring(0, challengeFilePathLoop.LastIndexOf('.')));
-                            try
-                            {
-                                if (JohnWick.MyAsset.GetSerialized() != null)
-                                {
-                                    UpdateConsole(qAssetName + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-
-                                    string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                                    var questParser = QuestParser.FromJson(parsedJson);
-                                    UpdateConsole("Parsing " + qAssetName + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                                    for (int i = 0; i < questParser.Length; i++)
-                                    {
-                                        string oldQuest = string.Empty;
-                                        string oldCount = string.Empty;
-                                        for (int ii = 0; ii < questParser[i].Objectives.Length; ii++)
-                                        {
-                                            if (ThePak.CurrentUsedItem == "QuestBundle_S8_ExtraCredit" || ThePak.CurrentUsedItem == "QuestBundle_S7_Overtime")
-                                            {
-                                                string newQuest = questParser[i].Objectives[ii].Description;
-                                                string newCount = questParser[i].Objectives[ii].Count.ToString();
-
-                                                if (newQuest != oldQuest && newCount != oldCount)
-                                                {
-                                                    if (Settings.Default.createIconForChallenges)
-                                                    {
-                                                        toDrawOnLoop.TextRenderingHint = TextRenderingHint.AntiAlias;
-                                                        lineLoop += 1;
-                                                        yeayLoop += 140;
-                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Description, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, yeayLoop));
-                                                        Image slider = Resources.Challenges_Slider;
-                                                        toDrawOnLoop.DrawImage(slider, new Point(108, yeayLoop + 86));
-                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Count.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, yeayLoop + 87));
-                                                        if (lineLoop != 1)
-                                                        {
-                                                            toDrawOnLoop.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, yeayLoop - 10, 2410, yeayLoop - 10);
-                                                        }
-                                                    }
-                                                    AppendText(questParser[i].Objectives[ii].Description, Color.SteelBlue);
-                                                    AppendText("\t\tCount: " + questParser[i].Objectives[ii].Count, Color.DarkRed);
-                                                    if (questParser[i].Rewards != null)
-                                                    {
-                                                        AppendText("\t\tCount: " + questParser[i].Objectives[ii].Count, Color.DarkRed);
-                                                        try
-                                                        {
-                                                            if (Settings.Default.createIconForChallenges)
-                                                            {
-                                                                string itemToExtract = questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest").Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token").FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName;
-                                                                if (string.Equals(itemToExtract, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase))
-                                                                {
-                                                                    #region DRAW ICON
-                                                                    Image rewardIcon = Resources.T_FNBR_BattlePoints_L;
-                                                                    toDrawOnLoop.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, yeayLoop + 22));
-
-                                                                    GraphicsPath p = new GraphicsPath();
-                                                                    p.AddString(
-                                                                        questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities.pfc.Families[1],
-                                                                        (int)FontStyle.Regular,
-                                                                        60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
-                                                                    toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
-
-                                                                    toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
-                                                                    #endregion
-                                                                }
-                                                                else if (string.Equals(itemToExtract, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase))
-                                                                {
-                                                                    #region DRAW ICON
-                                                                    Image rewardIcon = Resources.T_FNBR_SeasonalXP_L;
-                                                                    toDrawOnLoop.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, yeayLoop + 22));
-
-                                                                    GraphicsPath p = new GraphicsPath();
-                                                                    p.AddString(
-                                                                        questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities.pfc.Families[1],
-                                                                        (int)FontStyle.Regular,
-                                                                        60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
-                                                                    toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
-
-                                                                    toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
-                                                                    #endregion
-                                                                }
-                                                                else if (string.Equals(itemToExtract, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase))
-                                                                {
-                                                                    #region DRAW ICON
-                                                                    Image rewardIcon = Resources.T_Items_MTX_L;
-                                                                    toDrawOnLoop.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, yeayLoop + 22));
-
-                                                                    GraphicsPath p = new GraphicsPath();
-                                                                    p.AddString(
-                                                                        questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities.pfc.Families[1],
-                                                                        (int)FontStyle.Regular,
-                                                                        60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
-                                                                    toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
-
-                                                                    toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
-                                                                    #endregion
-                                                                }
-                                                                else
-                                                                    DrawRewardIcon(itemToExtract, toDrawOnLoop, yeayLoop);
-                                                            }
-
-                                                            AppendText("\t\t" + questParser[i].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                .FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetType.Name + ":"
-                                                                + questParser[i].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                .FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName + ":"
-                                                                + questParser[i].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                    .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                    .FirstOrDefault().Quantity, Color.DarkGreen, true);
-                                                        }
-                                                        catch (NullReferenceException)
-                                                        {
-                                                            if (questParser[i].HiddenRewards != null)
-                                                            {
-                                                                if (Settings.Default.createIconForChallenges)
-                                                                {
-                                                                    var partsofbruhreally = questParser[i].HiddenRewards.FirstOrDefault().TemplateId.Split(':');
-                                                                    if (partsofbruhreally[0] != "HomebaseBannerIcon")
-                                                                        DrawRewardIcon(partsofbruhreally[1], toDrawOnLoop, yeayLoop);
-                                                                }
-
-                                                                AppendText("\t\t" + questParser[i].HiddenRewards.FirstOrDefault().TemplateId + ":"
-                                                                    + questParser[i].HiddenRewards.FirstOrDefault().Quantity, Color.DarkGreen, true);
-                                                            }
-                                                            else
-                                                            {
-                                                                AppendText("", Color.Black, true);
-                                                            }
-                                                        }
-                                                        catch (Exception ex)
-                                                        {
-                                                            Console.WriteLine(ex.Message);
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        AppendText("\t\tCount: " + questParser[i].Objectives[ii].Count, Color.DarkRed, true);
-                                                    }
-
-                                                    oldQuest = questParser[i].Objectives[ii].Description;
-                                                    oldCount = questParser[i].Objectives[ii].Count.ToString();
-                                                }
-                                                for (int iii = 0; iii < questParser[i].Rewards.Length; iii++)
-                                                {
-                                                    LoopStageQuest(questParser[i].Rewards[iii].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser[i].Rewards[iii].ItemPrimaryAssetId.PrimaryAssetName, toDrawOnLoop, yeayLoop, lineLoop);
-                                                    yeayLoop = Checking.YAfterLoop;
-                                                }
-                                            }
-                                            else if (!_questStageDict.ContainsKey(questParser[i].Objectives[ii].Description))
-                                            {
-                                                string newQuest = questParser[i].Objectives[ii].Description;
-                                                string newCount = questParser[i].Objectives[ii].Count.ToString();
-                                                _questStageDict.Add(questParser[i].Objectives[ii].Description, questParser[i].Objectives[ii].Count);
-
-                                                if (newQuest != oldQuest && newCount != oldCount)
-                                                {
-                                                    if (Settings.Default.createIconForChallenges)
-                                                    {
-                                                        lineLoop += 1;
-                                                        yeayLoop += 140;
-                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Description, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, yeayLoop));
-                                                        Image slider = Resources.Challenges_Slider;
-                                                        toDrawOnLoop.DrawImage(slider, new Point(108, yeayLoop + 86));
-                                                        toDrawOnLoop.DrawString(questParser[i].Objectives[ii].Count.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, yeayLoop + 87));
-                                                        if (lineLoop != 1)
-                                                        {
-                                                            toDrawOnLoop.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, yeayLoop - 10, 2410, yeayLoop - 10);
-                                                        }
-                                                    }
-                                                    AppendText(questParser[i].Objectives[ii].Description, Color.SteelBlue);
-                                                    AppendText("\t\tCount: " + questParser[i].Objectives[ii].Count, Color.DarkRed);
-                                                    if (questParser[i].Rewards != null)
-                                                    {
-                                                        AppendText("\t\tCount: " + questParser[i].Objectives[ii].Count, Color.DarkRed);
-                                                        try
-                                                        {
-                                                            if (Settings.Default.createIconForChallenges)
-                                                            {
-                                                                string itemToExtract = questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest").Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token").FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName;
-                                                                if (string.Equals(itemToExtract, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase))
-                                                                {
-                                                                    #region DRAW ICON
-                                                                    Image rewardIcon = Resources.T_FNBR_BattlePoints_L;
-                                                                    toDrawOnLoop.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, yeayLoop + 22));
-
-                                                                    GraphicsPath p = new GraphicsPath();
-                                                                    p.AddString(
-                                                                        questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities.pfc.Families[1],
-                                                                        (int)FontStyle.Regular,
-                                                                        60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
-                                                                    toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 143, 74, 32), 5), p);
-
-                                                                    toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
-                                                                    #endregion
-                                                                }
-                                                                else if (string.Equals(itemToExtract, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase))
-                                                                {
-                                                                    #region DRAW ICON
-                                                                    Image rewardIcon = Resources.T_FNBR_SeasonalXP_L;
-                                                                    toDrawOnLoop.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, yeayLoop + 22));
-
-                                                                    GraphicsPath p = new GraphicsPath();
-                                                                    p.AddString(
-                                                                        questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities.pfc.Families[1],
-                                                                        (int)FontStyle.Regular,
-                                                                        60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
-                                                                    toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 81, 131, 15), 5), p);
-
-                                                                    toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
-                                                                    #endregion
-                                                                }
-                                                                else if (string.Equals(itemToExtract, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase))
-                                                                {
-                                                                    #region DRAW ICON
-                                                                    Image rewardIcon = Resources.T_Items_MTX_L;
-                                                                    toDrawOnLoop.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, yeayLoop + 22));
-
-                                                                    GraphicsPath p = new GraphicsPath();
-                                                                    p.AddString(
-                                                                        questParser[ii].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                .FirstOrDefault().Quantity.ToString(),
-                                                                        FontUtilities.pfc.Families[1],
-                                                                        (int)FontStyle.Regular,
-                                                                        60,
-                                                                        new Point(2322, yeayLoop + 25), FontUtilities.rightString);
-                                                                    toDrawOnLoop.DrawPath(new Pen(Color.FromArgb(255, 100, 160, 175), 5), p);
-
-                                                                    toDrawOnLoop.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
-                                                                    #endregion
-                                                                }
-                                                                else
-                                                                    DrawRewardIcon(itemToExtract, toDrawOnLoop, yeayLoop);
-                                                            }
-
-                                                            AppendText("\t\t" + questParser[i].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                .FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetType.Name + ":"
-                                                                + questParser[i].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                .FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName + ":"
-                                                                + questParser[i].Rewards.Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest")
-                                                                    .Where(x => x.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token")
-                                                                    .FirstOrDefault().Quantity, Color.DarkGreen, true);
-                                                        }
-                                                        catch (Exception ex)
-                                                        {
-                                                            if (questParser[i].HiddenRewards != null)
-                                                            {
-                                                                if (Settings.Default.createIconForChallenges)
-                                                                {
-                                                                    var partsofbruhreally = questParser[i].HiddenRewards.FirstOrDefault().TemplateId.Split(':');
-                                                                    if (partsofbruhreally[0] != "HomebaseBannerIcon")
-                                                                        DrawRewardIcon(partsofbruhreally[1], toDrawOnLoop, yeayLoop);
-                                                                    else
-                                                                        DrawRewardBanner(partsofbruhreally[1], toDrawOnLoop, yeayLoop);
-                                                                }
-
-                                                                AppendText("\t\t" + questParser[i].HiddenRewards.FirstOrDefault().TemplateId + ":"
-                                                                    + questParser[i].HiddenRewards.FirstOrDefault().Quantity, Color.DarkGreen, true);
-                                                            }
-                                                            else
-                                                            {
-                                                                Console.WriteLine(ex.Message);
-                                                            }
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        AppendText("\t\tCount: " + questParser[i].Objectives[ii].Count, Color.DarkRed, true);
-                                                    }
-
-                                                    oldQuest = questParser[i].Objectives[ii].Description;
-                                                    oldCount = questParser[i].Objectives[ii].Count.ToString();
-                                                }
-                                                for (int iii = 0; iii < questParser[i].Rewards.Length; iii++)
-                                                {
-                                                    LoopStageQuest(questParser[i].Rewards[iii].ItemPrimaryAssetId.PrimaryAssetType.Name, questParser[i].Rewards[iii].ItemPrimaryAssetId.PrimaryAssetName, toDrawOnLoop, yeayLoop, lineLoop);
-                                                    yeayLoop = Checking.YAfterLoop;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                    UpdateConsole("No serialized file found", Color.FromArgb(255, 244, 66, 66), "Error");
-                            }
-                            catch (JsonSerializationException)
-                            {
-                                AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                                AppendText(".JSON file can't be displayed", Color.Black, true);
-                            }
-                        }
-                    }
-                }
-                catch (KeyNotFoundException)
-                {
-                    AppendText("Can't extract ", Color.Black);
-                    AppendText(qAssetName, Color.SteelBlue);
-                }
-            }
-            Checking.YAfterLoop = yeayLoop;
-        }
-        private void DrawRewardIcon(string iconName, Graphics toDrawOn, int y)
-        {
-            ItemIcon.ItemIconPath = string.Empty;
-            try
-            {
-                var value = ThePak.AllpaksDictionary.Where(x => String.Equals(x.Key, iconName, StringComparison.CurrentCultureIgnoreCase)).Select(d => d.Key).FirstOrDefault();
-                if (value != null)
-                {
-                    iconName = value;
-
-                    string extractedIconPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[iconName], iconName);
-                    if (extractedIconPath != null)
-                    {
-                        UpdateConsole(iconName + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
-                        if (extractedIconPath.Contains(".uasset") || extractedIconPath.Contains(".uexp") || extractedIconPath.Contains(".ubulk"))
-                        {
-                            JohnWick.MyAsset = new PakAsset(extractedIconPath.Substring(0, extractedIconPath.LastIndexOf('.')));
-                            try
-                            {
-                                if (JohnWick.MyAsset.GetSerialized() != null)
-                                {
-                                    UpdateConsole(iconName + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-
-                                    string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                                    var itemId = ItemsIdParser.FromJson(parsedJson);
-                                    UpdateConsole("Parsing " + iconName + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                                    for (int i = 0; i < itemId.Length; i++)
-                                    {
-                                        ItemIcon.SearchAthIteDefIcon(itemId[i]);
-
-                                        if (File.Exists(ItemIcon.ItemIconPath))
-                                        {
-                                            Image itemIcon;
-                                            using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                                            {
-                                                itemIcon = new Bitmap(bmpTemp);
-                                            }
-                                            toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, y + 6));
-                                        }
-                                        else
-                                        {
-                                            Image itemIcon = Resources.unknown512;
-                                            toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, y + 6));
-                                        }
-                                    }
-                                }
-                                else
-                                    UpdateConsole("No serialized file found", Color.FromArgb(255, 244, 66, 66), "Error");
-                            }
-                            catch (JsonSerializationException)
-                            {
-                                AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                                AppendText(".JSON file can't be displayed", Color.Black, true);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
-        private void DrawRewardBanner(string bannerName, Graphics toDrawOn, int y)
-        {
-            ItemIcon.ItemIconPath = string.Empty;
-
-            string extractedBannerPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["BannerIcons"], "BannerIcons");
-            if (extractedBannerPath != null)
-            {
-                UpdateConsole("BannerIcons successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
-                if (extractedBannerPath.Contains(".uasset") || extractedBannerPath.Contains(".uexp") || extractedBannerPath.Contains(".ubulk"))
-                {
-                    JohnWick.MyAsset = new PakAsset(extractedBannerPath.Substring(0, extractedBannerPath.LastIndexOf('.')));
-                    try
-                    {
-                        if (JohnWick.MyAsset.GetSerialized() != null)
-                        {
-                            UpdateConsole("BannerIcons successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-
-                            string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                            parsedJson = parsedJson.TrimStart('[').TrimEnd(']');
-                            JObject jo = JObject.Parse(parsedJson);
-                            foreach (JToken token in jo.FindTokens(bannerName))
-                            {
-                                var bannerId = BannersParser.FromJson(token.ToString());
-                                UpdateConsole("Parsing " + token.Path + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
-
-                                if (bannerId.LargeImage != null)
-                                {
-                                    string textureFile = Path.GetFileName(bannerId.LargeImage.AssetPathName)
-                                        ?.Substring(0,
-                                            Path.GetFileName(bannerId.LargeImage.AssetPathName).LastIndexOf('.'));
-
-                                    ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-                                }
-                                else if (bannerId.SmallImage != null)
-                                {
-                                    string textureFile = Path.GetFileName(bannerId.SmallImage.AssetPathName)
-                                        ?.Substring(0,
-                                            Path.GetFileName(bannerId.SmallImage.AssetPathName).LastIndexOf('.'));
-
-                                    ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-                                }
-
-                                if (File.Exists(ItemIcon.ItemIconPath))
-                                {
-                                    Image itemIcon;
-                                    using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                                    {
-                                        itemIcon = new Bitmap(bmpTemp);
-                                    }
-                                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, y + 6));
-                                }
-                                else
-                                {
-                                    Image itemIcon = Resources.unknown512;
-                                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, y + 6));
-                                }
-                            }
-                        }
-                        else
-                            UpdateConsole("No serialized file found", Color.FromArgb(255, 244, 66, 66), "Error");
-                    }
-                    catch (JsonSerializationException)
-                    {
-                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                        AppendText(".JSON file can't be displayed", Color.Black, true);
-                    }
-                }
-            }
-        }
-        private void CreateFortByteChallengesIcon(ItemsIdParser theItem, string theParsedJson, string questJson = null)
-        {
-            Bitmap bmp = new Bitmap(2500, 10000);
-            Graphics g = Graphics.FromImage(bmp);
-            g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-            g.SmoothingMode = SmoothingMode.HighQuality;
-            int iamY = 275;
-            int justSkip = 0;
-            Checking.YAfterLoop = 0;
-            bool v2 = false;
-            int sRed;
-            int sGreen;
-            int sBlue;
-
-            var bundleParser = ChallengeBundleIdParser.FromJson(theParsedJson);
-            for (int i = 0; i < bundleParser.Length; i++)
-            {
-                #region DRAW BUNDLE ICON
-                try
-                {
-                    if (Settings.Default.createIconForChallenges)
-                    {
-                        if (bundleParser[i].DisplayStyle.DisplayImage != null)
-                        {
-                            v2 = true;
-                            string seasonFolder = questJson.Substring(questJson.Substring(0, questJson.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
-                            #region COLORS + IMAGE
-                            if (seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)) != "LTM")
-                            {
-                                sRed = (int)(bundleParser[i].DisplayStyle.SecondaryColor.R * 255);
-                                sGreen = (int)(bundleParser[i].DisplayStyle.SecondaryColor.G * 255);
-                                sBlue = (int)(bundleParser[i].DisplayStyle.SecondaryColor.B * 255);
-                            }
-                            else
-                            {
-                                sRed = (int)(bundleParser[i].DisplayStyle.AccentColor.R * 255);
-                                sGreen = (int)(bundleParser[i].DisplayStyle.AccentColor.G * 255);
-                                sBlue = (int)(bundleParser[i].DisplayStyle.AccentColor.B * 255);
-                            }
-
-                            int seasonRed = Convert.ToInt32(sRed / 1.5);
-                            int seasonGreen = Convert.ToInt32(sGreen / 1.5);
-                            int seasonBlue = Convert.ToInt32(sBlue / 1.5);
-
-                            g.FillRectangle(new SolidBrush(Color.FromArgb(255, sRed, sGreen, sBlue)), new Rectangle(0, 0, bmp.Width, 271));
-                            g.FillRectangle(new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Rectangle(0, 271, bmp.Width, bmp.Height - 271));
-
-                            try
-                            {
-                                g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, seasonRed, seasonGreen, seasonBlue)), new Point(340, 40));
-                            }
-                            catch (NullReferenceException)
-                            {
-                                AppendText("[NullReferenceException] ", Color.Red);
-                                AppendText("No ", Color.Black);
-                                AppendText("Season ", Color.SteelBlue);
-                                AppendText("found", Color.Black, true);
-                            } //LAST SUBFOLDER
-                            try
-                            {
-                                g.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
-                            }
-                            catch (NullReferenceException)
-                            {
-                                AppendText("[NullReferenceException] ", Color.Red);
-                                AppendText("No ", Color.Black);
-                                AppendText("DisplayName ", Color.SteelBlue);
-                                AppendText("found", Color.Black, true);
-                            } //NAME
-
-                            string textureFile = Path.GetFileName(bundleParser[i].DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(bundleParser[i].DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
-
-                            string pngPath = JohnWick.AssetToTexture2D(textureFile);
-
-                            Image challengeIcon;
-                            using (var bmpTemp = new Bitmap(pngPath))
-                            {
-                                challengeIcon = new Bitmap(bmpTemp);
-                            }
-                            g.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 271, 271), new Point(40, 0));
-                            #endregion
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-                #endregion
-
-                SelectedChallengesArray = new string[bundleParser[i].QuestInfos.Length];
-                for (int i2 = 0; i2 < bundleParser[i].QuestInfos.Length; i2++)
-                {
-                    string cName = Path.GetFileName(bundleParser[i].QuestInfos[i2].QuestDefinition.AssetPathName);
-                    SelectedChallengesArray[i2] = cName.Substring(0, cName.LastIndexOf('.'));
-                }
-
-                int damageOpCount = 0;
-                int damageOpPosition = 0;
-
-                for (int i2 = 0; i2 < SelectedChallengesArray.Length; i2++)
-                {
-                    try
-                    {
-                        string challengeFilePath;
-                        if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                            challengeFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, SelectedChallengesArray[i2]);
-                        else
-                            challengeFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[SelectedChallengesArray[i2]], SelectedChallengesArray[i2]);
-
-                        if (challengeFilePath != null)
-                        {
-                            UpdateConsole(SelectedChallengesArray[i2] + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
-                            if (challengeFilePath.Contains(".uasset") || challengeFilePath.Contains(".uexp") || challengeFilePath.Contains(".ubulk"))
-                            {
-                                JohnWick.MyAsset = new PakAsset(challengeFilePath.Substring(0, challengeFilePath.LastIndexOf('.')));
-                                try
-                                {
-                                    if (JohnWick.MyAsset.GetSerialized() != null)
-                                    {
-                                        UpdateConsole(SelectedChallengesArray[i2] + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
-
-                                        string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                                        var questParser = QuestParser.FromJson(parsedJson);
-                                        UpdateConsole("Parsing " + SelectedChallengesArray[i2] + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
-                                        for (int ii = 0; ii < questParser.Length; ii++)
-                                        {
-                                            string oldQuest = string.Empty;
-                                            string oldCount = string.Empty;
-                                            for (int ii2 = 0; ii2 < questParser[ii].Objectives.Length; ii2++)
-                                            {
-                                                string newQuest = questParser[ii].Objectives[ii2].Description;
-                                                string newCount = questParser[ii].Objectives[ii2].Count.ToString();
-                                                if (newQuest != oldQuest && newCount != oldCount)
-                                                {
-                                                    if (Settings.Default.createIconForChallenges)
-                                                    {
-                                                        if (questParser[ii].Objectives[ii2].Description == "Deal damage to opponents")
-                                                        {
-                                                            damageOpCount += 1;
-                                                            if (damageOpCount == 1)
-                                                            {
-                                                                AppendText(questParser[ii].Objectives[ii2].Description, Color.SteelBlue);
-                                                                AppendText("\t\tCount: " + questParser[ii].Objectives[ii2].Count, Color.DarkRed, true);
-
-                                                                justSkip += 1;
-                                                                iamY += 140;
-
-                                                                g.DrawString(questParser[ii].Objectives[ii2].Description, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
-                                                                damageOpPosition = iamY;
-                                                                Image slider = Resources.Challenges_Slider;
-                                                                g.DrawImage(slider, new Point(108, iamY + 86));
-                                                                g.DrawString(questParser[ii].Objectives[ii2].Count.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, iamY + 87));
-                                                                if (justSkip != 1)
-                                                                {
-                                                                    g.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, iamY - 10, 2410, iamY - 10);
-                                                                }
-
-                                                                #region getIcon
-                                                                string textureFile = Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName)?.Substring(0, Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName).LastIndexOf('.'));
-
-                                                                ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-
-                                                                if (File.Exists(ItemIcon.ItemIconPath))
-                                                                {
-                                                                    Image itemIcon;
-                                                                    using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                                                                    {
-                                                                        itemIcon = new Bitmap(bmpTemp);
-                                                                    }
-                                                                    g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, iamY + 6));
-                                                                }
-                                                                else
-                                                                {
-                                                                    Image itemIcon = Resources.unknown512;
-                                                                    g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, iamY + 6));
-                                                                }
-                                                                #endregion
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            AppendText(questParser[ii].Objectives[ii2].Description, Color.SteelBlue);
-                                                            AppendText("\t\tCount: " + questParser[ii].Objectives[ii2].Count, Color.DarkRed, true);
-
-                                                            justSkip += 1;
-                                                            iamY += 140;
-
-                                                            g.DrawString(questParser[ii].Objectives[ii2].Description, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY));
-                                                            Image slider = Resources.Challenges_Slider;
-                                                            g.DrawImage(slider, new Point(108, iamY + 86));
-                                                            g.DrawString(questParser[ii].Objectives[ii2].Count.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, iamY + 87));
-                                                            if (justSkip != 1)
-                                                            {
-                                                                g.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, iamY - 10, 2410, iamY - 10);
-                                                            }
-
-                                                            #region getIcon
-                                                            string textureFile = Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName)?.Substring(0, Path.GetFileName(questParser[ii].LargePreviewImage.AssetPathName).LastIndexOf('.'));
-
-                                                            ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-
-                                                            if (File.Exists(ItemIcon.ItemIconPath))
-                                                            {
-                                                                Image itemIcon;
-                                                                using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                                                                {
-                                                                    itemIcon = new Bitmap(bmpTemp);
-                                                                }
-                                                                g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, iamY + 6));
-                                                            }
-                                                            else
-                                                            {
-                                                                Image itemIcon = Resources.unknown512;
-                                                                g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, iamY + 6));
-                                                            }
-                                                            #endregion
-                                                        }
-                                                    }
-
-                                                    oldQuest = questParser[ii].Objectives[ii2].Description;
-                                                    oldCount = questParser[ii].Objectives[ii2].Count.ToString();
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                        UpdateConsole("No serialized file found", Color.FromArgb(255, 244, 66, 66), "Error");
-                                }
-                                catch (JsonSerializationException)
-                                {
-                                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                                    AppendText(".JSON file can't be displayed", Color.Black, true);
-                                }
-                            }
-                        }
-                        else
-                            UpdateConsole("Error while extracting " + SelectedChallengesArray[i2], Color.FromArgb(255, 244, 66, 66), "Error");
-                    }
-                    catch (KeyNotFoundException)
-                    {
-                        AppendText("Can't extract ", Color.Black);
-                        AppendText(SelectedChallengesArray[i2], Color.SteelBlue, true);
-                    }
-                }
-
-                g.DrawString("Same Quest x" + damageOpCount, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(1500, damageOpPosition + 25));
-                iamY += 100;
-
-                //BundleCompletionRewards
-                try
-                {
-                    for (int i2 = 0; i2 < bundleParser[i].BundleCompletionRewards.Length; i2++)
-                    {
-                        string itemReward = bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().ItemDefinition.AssetPathName.Substring(bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().ItemDefinition.AssetPathName.LastIndexOf(".", StringComparison.Ordinal) + 1);
-                        string compCount = bundleParser[i].BundleCompletionRewards[i2].CompletionCount.ToString();
-
-                        if (itemReward != "AthenaBattlePass_WeeklyChallenge_Token" && itemReward != "AthenaBattlePass_WeeklyBundle_Token")
-                        {
-                            justSkip += 1;
-                            iamY += 140;
-
-                            if (bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().ItemDefinition.AssetPathName == "None")
-                            {
-                                var partsofbruhreally = bundleParser[i].BundleCompletionRewards[i2].Rewards.FirstOrDefault().TemplateId.Split(':');
-                                DrawRewardBanner(partsofbruhreally[1], g, iamY);
-                            }
-                            else
-                                DrawRewardIcon(itemReward, g, iamY);
-
-                            if (compCount == "-1")
-                                g.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
-                            else
-                                g.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, iamY + 22));
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    UpdateConsole(ex.Message, Color.FromArgb(255, 244, 66, 66), "Error");
-                    iamY -= 100;
-                }
-            }
-
             if (Settings.Default.createIconForChallenges)
             {
-                #region WATERMARK
-                g.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, iamY + 240, bmp.Width, 40));
-                g.DrawString(theItem.DisplayName + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width / 2, iamY + 250), FontUtilities.centeredString);
-                #endregion
-                if (v2 == false)
-                {
-                    #region DRAW TEXT
-                    try
-                    {
-                        string seasonFolder = questJson.Substring(questJson.Substring(0, questJson.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
-                        g.DrawString(seasonFolder.Substring(0, seasonFolder.LastIndexOf("\\", StringComparison.Ordinal)), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(340, 40));
-                    }
-                    catch (NullReferenceException)
-                    {
-                        AppendText("[NullReferenceException] ", Color.Red);
-                        AppendText("No ", Color.Black);
-                        AppendText("Season ", Color.SteelBlue);
-                        AppendText("found", Color.Black, true);
-                    } //LAST SUBFOLDER
-                    try
-                    {
-                        g.DrawString(theItem.DisplayName.ToUpper(), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
-                    }
-                    catch (NullReferenceException)
-                    {
-                        AppendText("[NullReferenceException] ", Color.Red);
-                        AppendText("No ", Color.Black);
-                        AppendText("DisplayName ", Color.SteelBlue);
-                        AppendText("found", Color.Black, true);
-                    } //NAME
-                    #endregion
-                }
-                #region CUT IMAGE
+                BundleDesign.drawCompletionReward(bundleParser);
+                BundleDesign.drawWatermark(bmp);
+
+                //cut if too long and return the bitmap
                 using (Bitmap bmp2 = bmp)
                 {
                     var newImg = bmp2.Clone(
-                        new Rectangle { X = 0, Y = 0, Width = bmp.Width, Height = iamY + 280 },
+                        new Rectangle { X = 0, Y = 0, Width = bmp.Width, Height = BundleDesign.theY + 280 },
                         bmp2.PixelFormat);
+
                     pictureBox1.Image = newImg;
-                } //CUT
-                #endregion
+                }
             }
 
             UpdateConsole(theItem.DisplayName, Color.FromArgb(255, 66, 244, 66), "Success");
@@ -2905,11 +1632,13 @@ namespace FModel
                 {
                     pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
                 }));
-                AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                AppendText(" successfully saved", Color.Black, true);
-            }
 
-            AppendText("", Color.Black, true);
+                if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
+                {
+                    AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
+                    AppendText(" successfully saved", Color.Black, true);
+                }
+            }
         }
 
         private void ConvertTexture2D()
@@ -2953,6 +1682,8 @@ namespace FModel
         }
         private void ConvertToTtf(string file)
         {
+            if (File.Exists(file)) { File.Delete(file);  }
+
             File.Move(file, Path.ChangeExtension(file, ".ttf") ?? throw new InvalidOperationException());
             UpdateConsole(ThePak.CurrentUsedItem + " successfully converter to a font", Color.FromArgb(255, 66, 244, 66), "Success");
         }

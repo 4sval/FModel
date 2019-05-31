@@ -304,5 +304,30 @@ namespace FModel
                 }
             }
         }
+
+        /// <summary>
+        /// Draw a watermark on an Item Icon
+        /// Keep in mind the update mode use different settings than the normal mode, hence there's 2 if statement
+        /// </summary>
+        /// <param name="toDrawOn"></param>
+        public static void DrawWatermark(Graphics toDrawOn)
+        {
+            if (Checking.UmWorking == false && (Settings.Default.isWatermark && !string.IsNullOrEmpty(Settings.Default.wFilename)))
+            {
+                Image watermark = Image.FromFile(Settings.Default.wFilename);
+
+                var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)Settings.Default.wOpacity / 100);
+
+                toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, Settings.Default.wSize, Settings.Default.wSize), (522 - Settings.Default.wSize) / 2, (522 - Settings.Default.wSize) / 2, Settings.Default.wSize, Settings.Default.wSize);
+            }
+            if (Checking.UmWorking && (Settings.Default.UMWatermark && !string.IsNullOrEmpty(Settings.Default.UMFilename)))
+            {
+                Image watermark = Image.FromFile(Settings.Default.UMFilename);
+
+                var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)Settings.Default.UMOpacity / 100);
+
+                toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, Settings.Default.UMSize, Settings.Default.UMSize), (522 - Settings.Default.UMSize) / 2, (522 - Settings.Default.UMSize) / 2, Settings.Default.UMSize, Settings.Default.UMSize);
+            }
+        }
     }
 }

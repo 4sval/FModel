@@ -1,16 +1,11 @@
 ﻿using FModel.Parser.Challenges;
 using FModel.Parser.Items;
 using FModel.Properties;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System;
 
 namespace FModel
 {
@@ -70,6 +65,109 @@ namespace FModel
                 //name
                 toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
             }
+        }
+
+        /// <summary>
+        /// get and draw completion text and its reward
+        /// if AssetPathName is "None" we take the TemplateId (it's most likely a banner)
+        /// else we take AssetPathName and we ignore "AthenaBattlePass_WeeklyChallenge_Token" and "AthenaBattlePass_WeeklyBundle_Token" because these are useless
+        /// ignoring these 2 should give us an item id, we draw this item
+        /// </summary>
+        /// <param name="myBundle"></param>
+        public static void drawCompletionReward(ChallengeBundleIdParser myBundle)
+        {
+            if (myBundle.BundleCompletionRewards != null)
+            {
+                theY += 100;
+                for (int x = 0; x < myBundle.BundleCompletionRewards.Length; x++)
+                {
+                    for (int i = 0; i < myBundle.BundleCompletionRewards[x].Rewards.Length; i++)
+                    {
+                        string compCount = myBundle.BundleCompletionRewards[x].CompletionCount.ToString();
+                        string itemQuantity = myBundle.BundleCompletionRewards[x].Rewards[i].Quantity.ToString();
+
+                        if (myBundle.BundleCompletionRewards[x].Rewards[i].ItemDefinition.AssetPathName == "None")
+                        {
+                            theY += 140;
+
+                            DrawingRewards.getRewards(myBundle.BundleCompletionRewards[x].Rewards[i].TemplateId, itemQuantity);
+
+                            if (compCount == "-1")
+                            {
+                                toDrawOn.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
+                            }
+                            else
+                            {
+                                toDrawOn.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
+                            }
+                        }
+                        else
+                        {
+                            string rewardId = Path.GetFileName(myBundle.BundleCompletionRewards[x].Rewards[i].ItemDefinition.AssetPathName.Substring(0, myBundle.BundleCompletionRewards[x].Rewards[i].ItemDefinition.AssetPathName.LastIndexOf(".", StringComparison.Ordinal)));
+
+                            if (rewardId != "AthenaBattlePass_WeeklyChallenge_Token" && rewardId != "AthenaBattlePass_WeeklyBundle_Token")
+                            {
+                                theY += 140;
+
+                                try //needed for rare cases where the icon is in /Content/icon.uasset and atm idk why but i can't extract
+                                {
+                                    if (rewardId.Contains("Fortbyte_WeeklyChallengesComplete_")) { drawForbyteReward(); }
+                                    else { DrawingRewards.getRewards(rewardId, itemQuantity); }
+                                }
+                                catch (Exception)
+                                {
+                                    drawUnknownReward();
+                                }
+
+                                if (compCount == "-1")
+                                {
+                                    toDrawOn.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
+                                }
+                                else
+                                {
+                                    toDrawOn.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// draw the watermark at the bottom of the bundle of challenges icon
+        /// </summary>
+        /// <param name="myBitmap"></param>
+        public static void drawWatermark(Bitmap myBitmap)
+        {
+            toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, theY + 240, myBitmap.Width, 40));
+            toDrawOn.DrawString(myItem.DisplayName + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
+        }
+
+        private static void drawForbyteReward()
+        {
+            string textureFile = "T_UI_PuzzleIcon_64";
+            ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+
+            if (File.Exists(ItemIcon.ItemIconPath))
+            {
+                Image itemIcon;
+                using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
+                {
+                    itemIcon = new Bitmap(bmpTemp);
+                }
+                toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, theY + 6));
+            }
+            else
+            {
+                Image itemIcon = Resources.unknown512;
+                toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, theY + 6));
+            }
+        }
+        private static void drawUnknownReward()
+        {
+            Image itemIcon = Resources.unknown512;
+            toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, theY + 6));
         }
     }
 }

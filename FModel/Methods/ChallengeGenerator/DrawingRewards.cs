@@ -11,69 +11,78 @@ using System.Linq;
 
 namespace FModel
 {
-    class DrawingRewards
+    static class DrawingRewards
     {
+        /// <summary>
+        /// if itemToExtract is empty, no need to do this
+        /// if itemToExtract contains ':' ("HomebaseBannerIcon" or "AthenaLoadingScreen" or "CosmeticVariantToken"), split to get the itemId
+        /// </summary>
+        /// <param name="itemToExtract"></param>
+        /// <param name="itemQuantity"></param>
         public static void getRewards(string itemToExtract, string itemQuantity)
         {
-            if (itemToExtract.Contains(":"))
+            if (!string.IsNullOrWhiteSpace(itemToExtract))
             {
-                var parts = itemToExtract.Split(':');
-                if (parts[0] == "HomebaseBannerIcon") { DrawRewardBanner(parts[1]); }
-                else { DrawRewardIcon(parts[1]); }
+                if (itemToExtract.Contains(":"))
+                {
+                    var parts = itemToExtract.Split(':');
+                    if (parts[0] == "HomebaseBannerIcon") { DrawRewardBanner(parts[1]); }
+                    else { DrawRewardIcon(parts[1]); }
+                }
+                else if (string.Equals(itemToExtract, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase)) { drawBattleStar(itemQuantity); }
+                else if (string.Equals(itemToExtract, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase)) { drawSeasonalXp(itemQuantity); }
+                else if (string.Equals(itemToExtract, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase)) { drawMtxGiveaway(itemQuantity); }
+                else { DrawRewardIcon(itemToExtract); }
             }
-            else if (string.Equals(itemToExtract, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase)) { drawBattleStar(itemQuantity); }
-            else if (string.Equals(itemToExtract, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase)) { drawSeasonalXp(itemQuantity); }
-            else if (string.Equals(itemToExtract, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase)) { drawMtxGiveaway(itemQuantity); }
-            else { DrawRewardIcon(itemToExtract); }
         }
+
+        /// <summary>
+        /// JohnWick is case sensitive so that way we search the item in the dictionary with CurrentCultureIgnoreCase and if he exists, we take his name
+        /// so the name taken will be working for JohnWick
+        /// </summary>
+        /// <param name="item"></param>
         public static void DrawRewardIcon(string item)
         {
             ItemIcon.ItemIconPath = string.Empty;
-            try
-            {
-                var value = ThePak.AllpaksDictionary.Where(x => string.Equals(x.Key, item, StringComparison.CurrentCultureIgnoreCase)).Select(d => d.Key).FirstOrDefault();
-                if (value != null)
-                {
-                    string extractedIconPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[value], value);
-                    if (extractedIconPath != null)
-                    {
-                        if (extractedIconPath.Contains(".uasset") || extractedIconPath.Contains(".uexp") || extractedIconPath.Contains(".ubulk"))
-                        {
-                            JohnWick.MyAsset = new PakAsset(extractedIconPath.Substring(0, extractedIconPath.LastIndexOf('.')));
-                            try
-                            {
-                                if (JohnWick.MyAsset.GetSerialized() != null)
-                                {
-                                    var itemId = ItemsIdParser.FromJson(JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString());
-                                    for (int i = 0; i < itemId.Length; i++)
-                                    {
-                                        ItemIcon.SearchAthIteDefIcon(itemId[i]);
+            var value = ThePak.AllpaksDictionary.Where(x => string.Equals(x.Key, item, StringComparison.CurrentCultureIgnoreCase)).Select(d => d.Key).FirstOrDefault();
 
-                                        if (File.Exists(ItemIcon.ItemIconPath))
+            if (value != null)
+            {
+                string extractedIconPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[value], value);
+                if (extractedIconPath != null)
+                {
+                    if (extractedIconPath.Contains(".uasset") || extractedIconPath.Contains(".uexp") || extractedIconPath.Contains(".ubulk"))
+                    {
+                        JohnWick.MyAsset = new PakAsset(extractedIconPath.Substring(0, extractedIconPath.LastIndexOf('.')));
+                        try
+                        {
+                            if (JohnWick.MyAsset.GetSerialized() != null)
+                            {
+                                var itemId = ItemsIdParser.FromJson(JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString());
+                                for (int i = 0; i < itemId.Length; i++)
+                                {
+                                    ItemIcon.SearchAthIteDefIcon(itemId[i]);
+
+                                    if (File.Exists(ItemIcon.ItemIconPath))
+                                    {
+                                        Image itemIcon;
+                                        using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
                                         {
-                                            Image itemIcon;
-                                            using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                                            {
-                                                itemIcon = new Bitmap(bmpTemp);
-                                            }
-                                            BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
+                                            itemIcon = new Bitmap(bmpTemp);
                                         }
-                                        else
-                                        {
-                                            Image itemIcon = Resources.unknown512;
-                                            BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
-                                        }
+                                        BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
+                                    }
+                                    else
+                                    {
+                                        Image itemIcon = Resources.unknown512;
+                                        BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
                                     }
                                 }
                             }
-                            catch (JsonSerializationException) { }
                         }
+                        catch (JsonSerializationException) { }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
         }
         public static void DrawRewardBanner(string bannerName)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace FModel
@@ -66,9 +67,9 @@ namespace FModel
 
         public static bool UmWorking { get; set; }
     }
-    public struct BundleInfoEntry
+    public struct BundleInfoEntry: IEquatable<BundleInfoEntry>
     {
-        public BundleInfoEntry(string QuestDescription, long QuestCount, string RewardId, string RewardQuantity)
+        internal BundleInfoEntry(string QuestDescription, long QuestCount, string RewardId, string RewardQuantity)
         {
             questDescr = QuestDescription;
             questCount = QuestCount;
@@ -79,5 +80,10 @@ namespace FModel
         public long questCount { get; set; }
         public string rewardItemId { get; set; }
         public string rewardItemQuantity { get; set; }
+
+        bool IEquatable<BundleInfoEntry>.Equals(BundleInfoEntry other)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

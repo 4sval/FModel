@@ -39,12 +39,12 @@ namespace FModel
         public static string getLastFolder(string pathToExtractedBundle)
         {
             string folderAndFileNameWithExtension = pathToExtractedBundle.Substring(pathToExtractedBundle.Substring(0, pathToExtractedBundle.LastIndexOf("\\", StringComparison.Ordinal)).LastIndexOf("\\", StringComparison.Ordinal) + 1).ToUpper();
-            return folderAndFileNameWithExtension.Substring(0, folderAndFileNameWithExtension.LastIndexOf("\\", StringComparison.Ordinal));
+            return folderAndFileNameWithExtension.Substring(0, folderAndFileNameWithExtension.LastIndexOf("\\", StringComparison.Ordinal)); //just the folder now
         }
 
         /// <summary>
         /// main method to set the data to get it out of this class
-        /// extract quests one by one and add description, count, reward item, reward quantity to List<BundleInfoEntry> BundleData
+        /// foreach questfile to getQuestData()
         /// </summary>
         /// <param name="myBundle"></param>
         public static void getBundleData(ChallengeBundleIdParser myBundle)
@@ -53,77 +53,102 @@ namespace FModel
 
             for (int i = 0; i < myBundle.QuestInfos.Length; i++)
             {
-                string questName = Path.GetFileName(myBundle.QuestInfos[i].QuestDefinition.AssetPathName);
-                getQuestData(questName.Substring(0, questName.LastIndexOf(".")));
+                string questName = Path.GetFileName(myBundle.QuestInfos[i].QuestDefinition.AssetPathName).Substring(0, Path.GetFileName(myBundle.QuestInfos[i].QuestDefinition.AssetPathName).LastIndexOf(".", StringComparison.Ordinal));
+                getQuestData(questName);
             }
         }
+
+        /// <summary>
+        /// extract quest and add description, count, reward item, reward quantity to List<BundleInfoEntry> BundleData
+        /// loop if stage exist
+        /// </summary>
+        /// <param name="questFile"></param>
         private static void getQuestData(string questFile)
         {
-            string questFilePath;
-            if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+            try
             {
-                questFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, questFile);
-            }
-            else
-            {
-                questFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[questFile], questFile);
-            }
-
-            if (questFilePath != null)
-            {
-                if (questFilePath.Contains(".uasset") || questFilePath.Contains(".uexp") || questFilePath.Contains(".ubulk"))
+                string questFilePath;
+                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
                 {
-                    JohnWick.MyAsset = new PakAsset(questFilePath.Substring(0, questFilePath.LastIndexOf('.')));
-                    try
+                    questFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, questFile);
+                }
+                else
+                {
+                    questFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[questFile], questFile);
+                }
+
+                if (questFilePath != null)
+                {
+                    if (questFilePath.Contains(".uasset") || questFilePath.Contains(".uexp") || questFilePath.Contains(".ubulk"))
                     {
-                        if (JohnWick.MyAsset.GetSerialized() != null)
+                        JohnWick.MyAsset = new PakAsset(questFilePath.Substring(0, questFilePath.LastIndexOf('.')));
+                        try
                         {
-                            QuestParser[] questParser = QuestParser.FromJson(JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString());
-                            for (int x = 0; x < questParser.Length; x++)
+                            if (JohnWick.MyAsset.GetSerialized() != null)
                             {
-                                string oldQuest = string.Empty;
-                                long oldCount = 0;
-                                for (int p = 0; p < questParser[x].Objectives.Length; p++)
+                                QuestParser[] questParser = QuestParser.FromJson(JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString());
+                                for (int x = 0; x < questParser.Length; x++)
                                 {
-                                    string newQuest = questParser[x].Objectives[p].Description;
-                                    long newCount = questParser[x].Objectives[p].Count;
-
-                                    if (newQuest != oldQuest && newCount != oldCount)
+                                    string oldQuest = string.Empty;
+                                    long oldCount = 0;
+                                    for (int p = 0; p < questParser[x].Objectives.Length; p++)
                                     {
-                                        if (questParser[x].Rewards != null)
-                                        {
-                                            try
-                                            {
-                                                string rewardId = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest").Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token").FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName;
-                                                string rewardQuantity = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest").Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token").FirstOrDefault().Quantity.ToString();
+                                        string newQuest = questParser[x].Objectives[p].Description;
+                                        long newCount = questParser[x].Objectives[p].Count;
 
-                                                BundleData.Add(new BundleInfoEntry(newQuest, newCount, rewardId, rewardQuantity));
-                                            }
-                                            catch (NullReferenceException)
+                                        if (newQuest != oldQuest && newCount != oldCount)
+                                        {
+                                            if (questParser[x].Rewards != null)
                                             {
-                                                if (questParser[x].HiddenRewards != null)
+                                                try
                                                 {
-                                                    string rewardId = questParser[x].HiddenRewards.FirstOrDefault().TemplateId;
-                                                    string rewardQuantity = questParser[x].HiddenRewards.FirstOrDefault().Quantity.ToString();
+                                                    string rewardId = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest").Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token").FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName;
+                                                    string rewardQuantity = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest").Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token").FirstOrDefault().Quantity.ToString();
 
                                                     BundleData.Add(new BundleInfoEntry(newQuest, newCount, rewardId, rewardQuantity));
                                                 }
+                                                catch (NullReferenceException)
+                                                {
+                                                    if (questParser[x].HiddenRewards != null)
+                                                    {
+                                                        string rewardId = questParser[x].HiddenRewards.FirstOrDefault().TemplateId;
+                                                        string rewardQuantity = questParser[x].HiddenRewards.FirstOrDefault().Quantity.ToString();
+
+                                                        BundleData.Add(new BundleInfoEntry(newQuest, newCount, rewardId, rewardQuantity));
+                                                    }
+                                                }
+
+                                                //get stage
+                                                for (int k = 0; k < questParser[x].Rewards.Length; k++)
+                                                {
+                                                    string qAssetType = questParser[x].Rewards[k].ItemPrimaryAssetId.PrimaryAssetType.Name;
+                                                    string qAssetName = questParser[x].Rewards[k].ItemPrimaryAssetId.PrimaryAssetName;
+
+                                                    if (qAssetType == "Quest")
+                                                    {
+                                                        getQuestData(qAssetName);
+                                                    }
+                                                }
                                             }
-                                        }
-                                        else
-                                        {
-                                            BundleData.Add(new BundleInfoEntry(newQuest, newCount, "", ""));
+                                            else
+                                            {
+                                                BundleData.Add(new BundleInfoEntry(newQuest, newCount, "", ""));
+                                            }
+
+                                            oldQuest = newQuest;
+                                            oldCount = newCount;
                                         }
                                     }
-
-                                    oldQuest = newQuest;
-                                    oldCount = newCount;
                                 }
                             }
                         }
+                        catch (JsonSerializationException) { }
                     }
-                    catch (JsonSerializationException) { }
                 }
+            }
+            catch (KeyNotFoundException)
+            {
+                Console.WriteLine("Can't extract " + questFile);
             }
         }
     }
