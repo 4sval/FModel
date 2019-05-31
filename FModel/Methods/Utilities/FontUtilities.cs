@@ -8,10 +8,11 @@ namespace FModel
 {
     static class FontUtilities
     {
-        public static PrivateFontCollection pfc = new PrivateFontCollection();
-        public static StringFormat centeredString = new StringFormat();
-        public static StringFormat rightString = new StringFormat();
-        public static StringFormat centeredStringLine = new StringFormat();
+        public static readonly PrivateFontCollection pfc = new PrivateFontCollection();
+        public static readonly StringFormat centeredString = new StringFormat();
+        public static readonly StringFormat rightString = new StringFormat();
+        public static readonly StringFormat leftString = new StringFormat();
+        public static readonly StringFormat centeredStringLine = new StringFormat();
         private static int _fontLength { get; set; }
         private static byte[] _fontdata { get; set; }
 
@@ -34,6 +35,8 @@ namespace FModel
 
             centeredString.Alignment = StringAlignment.Center;
             rightString.Alignment = StringAlignment.Far;
+            leftString.Alignment = StringAlignment.Near;
+
             centeredStringLine.LineAlignment = StringAlignment.Center;
             centeredStringLine.Alignment = StringAlignment.Center;
         }

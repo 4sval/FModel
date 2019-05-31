@@ -1558,7 +1558,68 @@ namespace FModel
             }
         }
 
-        //TODO: SIMPLIFY
+
+        /// <summary>
+        /// this is the main method that draw the bundle of challenges
+        /// </summary>
+        /// <param name="theItem"> needed for the DisplayName </param>
+        /// <param name="theParsedJson"> to parse from this instead of calling MyAsset.GetSerialized() again </param>
+        /// <param name="extractedBundlePath"> needed for the LastFolder </param>
+        /// <returns> the bundle image ready to be displayed in pictureBox1 </returns>
+        public Bitmap CreateBundleChallengesIcon(ItemsIdParser theItem, string theParsedJson, string extractedBundlePath)
+        {
+            Bitmap bmp = new Bitmap(2500, 10000);
+            BundleDesign.BundlePath = extractedBundlePath;
+            BundleDesign.theY = 275;
+            BundleDesign.toDrawOn = Graphics.FromImage(bmp);
+            BundleDesign.toDrawOn.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            BundleDesign.toDrawOn.SmoothingMode = SmoothingMode.HighQuality;
+            BundleDesign.myItem = theItem;
+
+            ChallengeBundleIdParser bundleParser = ChallengeBundleIdParser.FromJson(theParsedJson).FirstOrDefault();
+            BundleInfos.getBundleData(bundleParser);
+
+            BundleDesign.drawBackground(bmp, bundleParser);
+
+            int justSkip = 0;
+            for (int i = 0; i < BundleInfos.BundleData.Count; i++)
+            {
+                AppendText(BundleInfos.BundleData[i].questDescr, Color.SteelBlue);
+                AppendText("\t\tCount: " + BundleInfos.BundleData[i].questCount, Color.DarkRed);
+                AppendText("\t\t" + BundleInfos.BundleData[i].rewardItemId + ":" + BundleInfos.BundleData[i].rewardItemQuantity, Color.DarkGreen, true);
+
+                BundleDesign.theY += 140;
+                justSkip += 1;
+
+                //draw quest description
+                BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
+
+                //draw slider + quest count
+                Image slider = Resources.Challenges_Slider;
+                BundleDesign.toDrawOn.DrawImage(slider, new Point(108, BundleDesign.theY + 86));
+                BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questCount.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, BundleDesign.theY + 87));
+
+                //draw quest reward
+                DrawingRewards.getRewards(BundleInfos.BundleData[i].rewardItemId, BundleInfos.BundleData[i].rewardItemQuantity);
+
+                if (justSkip != 1)
+                {
+                    //draw separator
+                    BundleDesign.toDrawOn.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, BundleDesign.theY - 10, 2410, BundleDesign.theY - 10);
+                }
+            }
+            AppendText("", Color.Black, true);
+
+            //cut if too long and return the bitmap
+            using (Bitmap bmp2 = bmp)
+            {
+                var newImg = bmp2.Clone(
+                    new Rectangle { X = 0, Y = 0, Width = bmp.Width, Height = BundleDesign.theY + 280 },
+                    bmp2.PixelFormat);
+
+                return newImg;
+            }
+        }
         private void CreateChallengesIcon(ItemsIdParser theItem, string theParsedJson, string questJson = null)
         {
             if (theItem.ExportType == "FortChallengeBundleItemDefinition")

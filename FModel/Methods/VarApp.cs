@@ -66,4 +66,18 @@ namespace FModel
 
         public static bool UmWorking { get; set; }
     }
+    public struct BundleInfoEntry
+    {
+        public BundleInfoEntry(string QuestDescription, long QuestCount, string RewardId, string RewardQuantity)
+        {
+            questDescr = QuestDescription;
+            questCount = QuestCount;
+            rewardItemId = RewardId;
+            rewardItemQuantity = RewardQuantity;
+        }
+        public string questDescr { get; set; }
+        public long questCount { get; set; }
+        public string rewardItemId { get; set; }
+        public string rewardItemQuantity { get; set; }
+    }
 }

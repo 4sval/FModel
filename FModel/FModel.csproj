@@ -123,6 +123,9 @@
     <Compile Include="Methods\BackPAKs\Parser\AccessTokenParser.cs" />
     <Compile Include="Methods\BackPAKs\Parser\AESKeyParser.cs" />
     <Compile Include="Methods\BackPAKs\Parser\ExchangeTokenParser.cs" />
+    <Compile Include="Methods\ChallengeGenerator\BundleDesign.cs" />
+    <Compile Include="Methods\ChallengeGenerator\BundleInfos.cs" />
+    <Compile Include="Methods\ChallengeGenerator\DrawingRewards.cs" />
     <Compile Include="Methods\Utilities\FontUtilities.cs" />
     <Compile Include="Methods\IconGenerator\ItemIcon.cs" />
     <Compile Include="Methods\IconGenerator\Rarity.cs" />
