@@ -16,6 +16,8 @@ namespace FModel.Forms
         private static Dictionary<string, string> _myFilteredInfosDict;
         public static string SfPath;
         public static bool IsClosed;
+        public static bool FilesToSearch;
+        public static string[] myItems;
 
         public SearchFiles()
         {
@@ -28,6 +30,7 @@ namespace FModel.Forms
         private async void SearchFiles_Load(object sender, EventArgs e)
         {
             IsClosed = false;
+            FilesToSearch = false;
             _myInfosDict = new Dictionary<string, string>();
 
             if (MainWindow.PakAsTxt != null)
@@ -279,7 +282,21 @@ namespace FModel.Forms
             if (true)
             {
                 button1.Enabled = true;
+                button2.Enabled = true;
             }
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedIndexCollection col = listView1.SelectedIndices;
+            myItems = new string[col.Count];
+            for (int i = 0; i < col.Count; i++) //ADD SELECTED ITEM TO ARRAY
+            {
+                myItems[i] = listView1.Items[col[i]].Text.Substring(listView1.Items[col[i]].Text.LastIndexOf("/") + 1);
+            }
+
+            FilesToSearch = true;
+            Close();
         }
     }
 

@@ -760,7 +760,7 @@ namespace FModel
             StopWatch = new Stopwatch();
             StopWatch.Start();
             Utilities.CreateDefaultFolders();
-            ExtractAndSerializeItems(e, true);
+            RegisterInArray(e, true);
         }
         private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -982,6 +982,32 @@ namespace FModel
                     if (node.Text == pathList[0])
                         ExpandMyLitleBoys(node, pathList);
             }
+            else if (SearchFiles.FilesToSearch)
+            {
+                AddAndSelectAllItems(SearchFiles.myItems);
+            }
+        }
+        private void AddAndSelectAllItems(string[] myItemsToAdd)
+        {
+            listBox1.BeginUpdate();
+            for (int i = 0; i < myItemsToAdd.Length; i++)
+            {
+                listBox1.Items.Add(myItemsToAdd[i]);
+            }
+            for (int i = 0; i < listBox1.Items.Count; i++) { listBox1.SetSelected(i, true); }
+            listBox1.EndUpdate();
+
+            //same as click on extract button
+            scintilla1.Text = "";
+            pictureBox1.Image = null;
+            ExtractButton.Enabled = false;
+            OpenImageButton.Enabled = false;
+            StopButton.Enabled = true;
+
+            if (backgroundWorker1.IsBusy != true)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
         }
 
         //EVENTS
@@ -1008,23 +1034,10 @@ namespace FModel
 
         #region EXTRACT BUTTON
         //METHODS
-        private void ExtractAndSerializeItems(DoWorkEventArgs e, bool updateMode = false)
+        private void RegisterInArray(DoWorkEventArgs e, bool updateMode = false)
         {
-            if (updateMode == false)
+            if (updateMode)
             {
-                //REGISTER SELECTED ITEMS
-                Invoke(new Action(() =>
-                {
-                    SelectedItemsArray = new string[listBox1.SelectedItems.Count];
-                    for (int i = 0; i < listBox1.SelectedItems.Count; i++) //ADD SELECTED ITEM TO ARRAY
-                    {
-                        SelectedItemsArray[i] = listBox1.SelectedItems[i].ToString();
-                    }
-                }));
-            }
-            else
-            {
-                //REGISTER SELECTED ITEMS
                 Invoke(new Action(() =>
                 {
                     SelectedItemsArray = new string[_diffToExtract.Count];
@@ -1034,8 +1047,22 @@ namespace FModel
                     }
                 }));
             }
+            else
+            {
+                Invoke(new Action(() =>
+                {
+                    SelectedItemsArray = new string[listBox1.SelectedItems.Count];
+                    for (int i = 0; i < listBox1.SelectedItems.Count; i++) //ADD SELECTED ITEM TO ARRAY
+                    {
+                        SelectedItemsArray[i] = listBox1.SelectedItems[i].ToString();
+                    }
+                }));
+            }
 
-            //DO WORK
+            ExtractAndSerializeItems(e);
+        }
+        private void ExtractAndSerializeItems(DoWorkEventArgs e)
+        {
             for (int i = 0; i < SelectedItemsArray.Length; i++)
             {
                 if (backgroundWorker1.CancellationPending && backgroundWorker1.IsBusy)
@@ -1599,7 +1626,7 @@ namespace FModel
             StopWatch = new Stopwatch();
             StopWatch.Start();
             Utilities.CreateDefaultFolders();
-            ExtractAndSerializeItems(e);
+            RegisterInArray(e);
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -1627,7 +1654,7 @@ namespace FModel
                 ExtractButton.Enabled = true;
             }));
         }
-        private void ExtractButton_Click(object sender, EventArgs e)
+        public void ExtractButton_Click(object sender, EventArgs e)
         {
             scintilla1.Text = "";
             pictureBox1.Image = null;
