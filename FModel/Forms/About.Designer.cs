@@ -77,7 +77,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(360, 40);
             this.label1.TabIndex = 3;
-            this.label1.Text = "FModel is a Fortnite .PAK file explorer built in C#\r\nIf you find this project useful, feel free to give it a star on GitHub\r\n⊂(◉‿◉)つ";
+            this.label1.Text = "FModel is a Fortnite .PAK file explorer built in C#\r\nIf you find this project useful, feel free to give it a star on GitHub\r\n⊂(◕‿◕)つ";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label2
