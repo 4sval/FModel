@@ -85,7 +85,10 @@ namespace FModel
                                 }
                             }
                         }
-                        catch (JsonSerializationException) { }
+                        catch (JsonSerializationException)
+                        {
+                            //do not crash when JsonSerialization does weird stuff
+                        }
                     }
                 }
             }
@@ -103,9 +106,13 @@ namespace FModel
 
                 string weaponFilePath;
                 if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                {
                     weaponFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, theItem.WeaponDefinition);
+                }
                 else
+                {
                     weaponFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[theItem.WeaponDefinition], theItem.WeaponDefinition);
+                }
 
                 if (weaponFilePath != null)
                 {
@@ -132,12 +139,14 @@ namespace FModel
                                 }
                             }
                         }
-                        catch (JsonSerializationException) { }
+                        catch (JsonSerializationException)
+                        {
+                            //do not crash when JsonSerialization does weird stuff
+                        }
                     }
                 }
             }
-            else
-                SearchLargeSmallIcon(theItem);
+            else { SearchLargeSmallIcon(theItem); }
         }
 
         /// <summary>
@@ -247,7 +256,10 @@ namespace FModel
                                 }
                             }
                         }
-                        catch (JsonSerializationException) { }
+                        catch (JsonSerializationException)
+                        {
+                            //do not crash when JsonSerialization does weird stuff
+                        }
                     }
                 }
             }

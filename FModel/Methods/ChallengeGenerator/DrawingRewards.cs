@@ -75,6 +75,14 @@ namespace FModel
                 }
             }
         }
+
+        /// <summary>
+        /// "BannerIcons" contains all banners id, their image path and more
+        /// so basically we export and serialize "BannerIcons", locate where our banner id is, with FindTokens
+        /// after that we only have what we want with token.ToString() -> "SmallImage", "LargeImage", "asset_path_name", "CategoryRowName", "DisplayName", "DisplayDescription"
+        /// so we can just parse token.ToString() to properly get the LargeImage's asset_path_name or SmallImage's asset_path_name and draw
+        /// </summary>
+        /// <param name="bannerName"></param>
         public static void DrawRewardBanner(string bannerName)
         {
             ItemIcon.ItemIconPath = string.Empty;
@@ -146,12 +154,7 @@ namespace FModel
             BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
 
             GraphicsPath p = new GraphicsPath();
-            Pen myPen = new Pen(Color.FromArgb(255, 143, 74, 32), 5);
-            myPen.LineJoin = LineJoin.Round; //needed to avoid spikes
-            p.AddString(quantity, FontUtilities.pfc.Families[1], (int)FontStyle.Regular, 60, new Point(2322, BundleDesign.theY + 25), FontUtilities.rightString);
-            BundleDesign.toDrawOn.DrawPath(myPen, p);
-
-            BundleDesign.toDrawOn.FillPath(new SolidBrush(Color.FromArgb(255, 255, 219, 103)), p);
+            drawPathAndFill(p, quantity, Color.FromArgb(255, 143, 74, 32), Color.FromArgb(255, 255, 219, 103));
         }
         private static void drawSeasonalXp(string quantity)
         {
@@ -159,12 +162,7 @@ namespace FModel
             BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
 
             GraphicsPath p = new GraphicsPath();
-            Pen myPen = new Pen(Color.FromArgb(255, 81, 131, 15), 5);
-            myPen.LineJoin = LineJoin.Round; //needed to avoid spikes
-            p.AddString(quantity, FontUtilities.pfc.Families[1], (int)FontStyle.Regular, 60, new Point(2322, BundleDesign.theY + 25), FontUtilities.rightString);
-            BundleDesign.toDrawOn.DrawPath(myPen, p);
-
-            BundleDesign.toDrawOn.FillPath(new SolidBrush(Color.FromArgb(255, 230, 253, 177)), p);
+            drawPathAndFill(p, quantity, Color.FromArgb(255, 81, 131, 15), Color.FromArgb(255, 230, 253, 177));
         }
         private static void drawMtxGiveaway(string quantity)
         {
@@ -172,12 +170,24 @@ namespace FModel
             BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
 
             GraphicsPath p = new GraphicsPath();
-            Pen myPen = new Pen(Color.FromArgb(255, 100, 160, 175), 5);
+            drawPathAndFill(p, quantity, Color.FromArgb(255, 100, 160, 175), Color.FromArgb(255, 220, 230, 255));
+        }
+
+        /// <summary>
+        /// define a pen to draw the outlines of a string with a color and fill with another color
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="quantity"></param>
+        /// <param name="border"></param>
+        /// <param name="filled"></param>
+        private static void drawPathAndFill(GraphicsPath p, string quantity, Color border, Color filled)
+        {
+            Pen myPen = new Pen(border, 5);
             myPen.LineJoin = LineJoin.Round; //needed to avoid spikes
             p.AddString(quantity, FontUtilities.pfc.Families[1], (int)FontStyle.Regular, 60, new Point(2322, BundleDesign.theY + 25), FontUtilities.rightString);
             BundleDesign.toDrawOn.DrawPath(myPen, p);
 
-            BundleDesign.toDrawOn.FillPath(new SolidBrush(Color.FromArgb(255, 220, 230, 255)), p);
+            BundleDesign.toDrawOn.FillPath(new SolidBrush(filled), p);
         }
     }
 }

@@ -142,13 +142,17 @@ namespace FModel
                                 }
                             }
                         }
-                        catch (JsonSerializationException) { }
+                        catch (JsonSerializationException)
+                        {
+                            //do not crash when JsonSerialization does weird stuff
+                        }
                     }
                 }
             }
             catch (KeyNotFoundException)
             {
-                Console.WriteLine("Can't extract " + questFile);
+                //do not stop when questFile doesn't exist
+                //Console.WriteLine("Can't extract " + questFile);
             }
         }
     }

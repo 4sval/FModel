@@ -125,14 +125,7 @@ namespace FModel
 
                             DrawingRewards.getRewards(myBundle.BundleCompletionRewards[x].Rewards[i].TemplateId, itemQuantity);
 
-                            if (compCount == "-1")
-                            {
-                                toDrawOn.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
-                            }
-                            else
-                            {
-                                toDrawOn.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
-                            }
+                            drawCompletionText(compCount);
                         }
                         else
                         {
@@ -152,18 +145,22 @@ namespace FModel
                                     drawUnknownReward();
                                 }
 
-                                if (compCount == "-1")
-                                {
-                                    toDrawOn.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
-                                }
-                                else
-                                {
-                                    toDrawOn.DrawString("Complete ANY " + compCount + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
-                                }
+                                drawCompletionText(compCount);
                             }
                         }
                     }
                 }
+            }
+        }
+        private static void drawCompletionText(string count)
+        {
+            if (count == "-1")
+            {
+                toDrawOn.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
+            }
+            else
+            {
+                toDrawOn.DrawString("Complete ANY " + count + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
             }
         }
 

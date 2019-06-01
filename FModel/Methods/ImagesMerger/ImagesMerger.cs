@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace FModel
 {
-    class ImagesMerger
+    static class ImagesMerger
     {
         /// <summary>
         /// open a FileDialog to choose our images to merge, add them to the list of images

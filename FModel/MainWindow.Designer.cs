@@ -105,7 +105,7 @@
             this.toolStripStatusLabel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.toolStripStatusLabel2.Margin = new System.Windows.Forms.Padding(0, 3, 50, 2);
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(963, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(994, 17);
             this.toolStripStatusLabel2.Spring = true;
             // 
             // toolStripStatusLabel3
@@ -445,7 +445,6 @@
             this.scintilla1.ScrollWidth = 496;
             this.scintilla1.Size = new System.Drawing.Size(517, 304);
             this.scintilla1.TabIndex = 0;
-            this.scintilla1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.scintilla1_KeyDown);
             // 
             // pictureBox1
             // 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FModel
 {
-    class DLLImport
+    static class DLLImport
     {
         /// <summary>
         /// used to check if internet is turned on or off

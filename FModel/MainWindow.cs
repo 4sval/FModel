@@ -20,8 +20,6 @@ using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ScintillaNET;
-using ScintillaNET_FindReplaceDialog;
 using Image = System.Drawing.Image;
 using Settings = FModel.Properties.Settings;
 
@@ -29,36 +27,29 @@ namespace FModel
 {
     public partial class MainWindow : Form
     {
-        #region EVERYTHING WE NEED
-        FindReplace _myFindReplace;
-        public Stopwatch StopWatch;
-        private static string[] _paksArray;
-        public static string[] PakAsTxt;
-        private static Dictionary<string, string> _diffToExtract;
-        private static string _backupFileName;
-        private static string[] _backupDynamicKeys;
-        private static List<string> _itemsToDisplay;
-        public static string ExtractedFilePath;
-        public static string[] SelectedItemsArray;
-        #endregion
+        private static Stopwatch StopWatch { get; set; }
+        private static string[] _paksArray { get; set; }
+        public static string[] PakAsTxt { get; set; }
+        private static Dictionary<string, string> _diffToExtract { get; set; }
+        private static string _backupFileName { get; set; }
+        private static string[] _backupDynamicKeys { get; set; }
+        private static List<string> _itemsToDisplay { get; set; }
+        public static string ExtractedFilePath { get; set; }
+        public static string[] SelectedItemsArray { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
 
+            //FModel version
             toolStripStatusLabel1.Text += @" " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
 
             treeView1.Sort();
-            //REMOVE SPACE CAUSED BY SIZING GRIP
+
+            //Remove space caused by SizingGrip
             statusStrip1.Padding = new Padding(statusStrip1.Padding.Left, statusStrip1.Padding.Top, statusStrip1.Padding.Left, statusStrip1.Padding.Bottom);
 
-            // Create instance of FindReplace with reference to a ScintillaNET control.
-            _myFindReplace = new FindReplace(scintilla1); // For WinForms
-            _myFindReplace.Window.StartPosition = FormStartPosition.CenterScreen;
-            // Tie in FindReplace event
-            _myFindReplace.KeyPressed += MyFindReplace_KeyPressed;
-            // Tie in Scintilla event
-            scintilla1.KeyDown += scintilla1_KeyDown;
+            MyScintilla.ScintillaInstance(scintilla1);
         }
 
         #region USEFUL METHODS
@@ -136,33 +127,6 @@ namespace FModel
             }
             AESKeyTextBox.Text = @"0x" + Settings.Default.AESKey;
         }
-        private void SetScintillaStyle()
-        {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new Action(SetScintillaStyle));
-                return;
-            }
-
-            scintilla1.Styles[Style.Json.Default].ForeColor = Color.Silver;
-            scintilla1.Styles[Style.Json.BlockComment].ForeColor = Color.FromArgb(0, 128, 0);
-            scintilla1.Styles[Style.Json.LineComment].ForeColor = Color.FromArgb(0, 128, 0);
-            scintilla1.Styles[Style.Json.Number].ForeColor = Color.Green;
-            scintilla1.Styles[Style.Json.PropertyName].ForeColor = Color.SteelBlue;
-            scintilla1.Styles[Style.Json.String].ForeColor = Color.OrangeRed;
-            scintilla1.Styles[Style.Json.StringEol].BackColor = Color.OrangeRed;
-            scintilla1.Styles[Style.Json.Operator].ForeColor = Color.Black;
-            scintilla1.Styles[Style.LineNumber].ForeColor = Color.DarkGray;
-            var nums = scintilla1.Margins[1];
-            nums.Width = 30;
-            nums.Type = MarginType.Number;
-            nums.Sensitive = true;
-            nums.Mask = 0;
-
-            scintilla1.ClearCmdKey(Keys.Control | Keys.F);
-            scintilla1.ClearCmdKey(Keys.Control | Keys.Z);
-            scintilla1.Lexer = Lexer.Json;
-        }
 
         //EVENTS
         private async void MainWindow_Load(object sender, EventArgs e)
@@ -170,6 +134,7 @@ namespace FModel
             AutoUpdater.Start("https://dl.dropbox.com/s/3kv2pukqu6tj1r0/FModel.xml?dl=0");
 
             DLLImport.SetTreeViewTheme(treeView1.Handle);
+
             _backupFileName = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
 
             // Copy user settings from previous application version if necessary
@@ -187,9 +152,10 @@ namespace FModel
                 Utilities.SetFolderPermission(App.DefaultOutputPath);
                 Utilities.JohnWickCheck();
                 Utilities.CreateDefaultFolders();
-                SetScintillaStyle();
                 FontUtilities.SetFont();
             });
+
+            MyScintilla.SetScintillaStyle(scintilla1);
         }
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -235,44 +201,6 @@ namespace FModel
             {
                 loadAllToolStripMenuItem.Text = @"Load Difference";
             }
-        }
-        private void scintilla1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Control && e.KeyCode == Keys.F)
-            {
-                _myFindReplace.ShowFind();
-                e.SuppressKeyPress = true;
-            }
-            else if (e.Shift && e.KeyCode == Keys.F3)
-            {
-                _myFindReplace.Window.FindPrevious();
-                e.SuppressKeyPress = true;
-            }
-            else if (e.KeyCode == Keys.F3)
-            {
-                _myFindReplace.Window.FindNext();
-                e.SuppressKeyPress = true;
-            }
-            else if (e.Control && e.KeyCode == Keys.H)
-            {
-                _myFindReplace.ShowReplace();
-                e.SuppressKeyPress = true;
-            }
-            else if (e.Control && e.KeyCode == Keys.I)
-            {
-                _myFindReplace.ShowIncrementalSearch();
-                e.SuppressKeyPress = true;
-            }
-            else if (e.Control && e.KeyCode == Keys.G)
-            {
-                GoTo myGoTo = new GoTo((Scintilla)sender);
-                myGoTo.ShowGoToDialog();
-                e.SuppressKeyPress = true;
-            }
-        }
-        private void MyFindReplace_KeyPressed(object sender, KeyEventArgs e)
-        {
-            scintilla1_KeyDown(sender, e);
         }
 
         //FORMS
