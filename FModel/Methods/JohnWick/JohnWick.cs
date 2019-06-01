@@ -161,7 +161,10 @@ namespace FModel
                         }
                     }
                 }
-                catch (JsonSerializationException) { }
+                catch (JsonSerializationException)
+                {
+                    //do not crash when JsonSerialization does weird stuff
+                }
             }
             return TexturePath;
         }

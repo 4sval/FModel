@@ -264,9 +264,13 @@ namespace FModel
         {
             string ammoFilePath;
             if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+            {
                 ammoFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
+            }
             else
+            {
                 ammoFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[ammoFile.Substring(ammoFile.LastIndexOf('.') + 1)], ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
+            }
 
             if (ammoFilePath != null)
             {
@@ -300,7 +304,10 @@ namespace FModel
                             }
                         }
                     }
-                    catch (JsonSerializationException) { }
+                    catch (JsonSerializationException)
+                    {
+                        //do not crash when JsonSerialization does weird stuff
+                    }
                 }
             }
         }

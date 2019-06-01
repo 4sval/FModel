@@ -63,24 +63,14 @@ namespace FModel
                                 {
                                     ItemIcon.SearchAthIteDefIcon(itemId[i]);
 
-                                    if (File.Exists(ItemIcon.ItemIconPath))
-                                    {
-                                        Image itemIcon;
-                                        using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                                        {
-                                            itemIcon = new Bitmap(bmpTemp);
-                                        }
-                                        BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
-                                    }
-                                    else
-                                    {
-                                        Image itemIcon = Resources.unknown512;
-                                        BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
-                                    }
+                                    drawIcon();
                                 }
                             }
                         }
-                        catch (JsonSerializationException) { }
+                        catch (JsonSerializationException)
+                        {
+                            //do not crash when JsonSerialization does weird stuff
+                        }
                     }
                 }
             }
@@ -121,28 +111,35 @@ namespace FModel
                                     ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                 }
 
-                                if (File.Exists(ItemIcon.ItemIconPath))
-                                {
-                                    Image itemIcon;
-                                    using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                                    {
-                                        itemIcon = new Bitmap(bmpTemp);
-                                    }
-                                    BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
-                                }
-                                else
-                                {
-                                    Image itemIcon = Resources.unknown512;
-                                    BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
-                                }
+                                drawIcon();
                             }
                         }
                     }
-                    catch (JsonSerializationException) { }
+                    catch (JsonSerializationException)
+                    {
+                        //do not crash when JsonSerialization does weird stuff
+                    }
                 }
             }
         }
 
+        private static void drawIcon()
+        {
+            if (File.Exists(ItemIcon.ItemIconPath))
+            {
+                Image itemIcon;
+                using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
+                {
+                    itemIcon = new Bitmap(bmpTemp);
+                }
+                BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
+            }
+            else
+            {
+                Image itemIcon = Resources.unknown512;
+                BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
+            }
+        }
         private static void drawBattleStar(string quantity)
         {
             Image rewardIcon = Resources.T_FNBR_BattlePoints_L;

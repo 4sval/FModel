@@ -17,7 +17,22 @@ namespace FModel
         public static ItemsIdParser myItem { get; set; }
 
         /// <summary>
-        /// draw the pretty header if DisplayStyle exist, else the shitty background
+        /// get a random color in case DisplayStyle doesn't exist in drawBackground()
+        /// </summary>
+        /// <returns></returns>
+        private static Color getRandomColor()
+        {
+            Random rnd = new Random();
+
+            int Red = rnd.Next(50, 200);
+            int Green = rnd.Next(50, 200);
+            int Blue = rnd.Next(50, 200);
+
+            return Color.FromArgb(255, Red, Green, Blue);
+        }
+
+        /// <summary>
+        /// draw the pretty header if DisplayStyle exist, else the pretty header but with random colors
         /// </summary>
         /// <param name="myBitmap"></param>
         /// <param name="myBundle"></param>
@@ -49,7 +64,11 @@ namespace FModel
 
                 //image
                 string textureFile = Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
-                Image challengeIcon = new Bitmap(JohnWick.AssetToTexture2D(textureFile));
+                Image challengeIcon;
+                using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                {
+                    challengeIcon = new Bitmap(bmpTemp);
+                }
                 toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
 
                 //fill the rest
@@ -57,13 +76,27 @@ namespace FModel
             }
             else
             {
-                toDrawOn.DrawImage(new Bitmap(Resources.Quest), new Point(0, 0));
+                Color myBaseColor = getRandomColor();
+
+                //main header
+                toDrawOn.FillRectangle(new SolidBrush(myBaseColor), new Rectangle(0, 0, myBitmap.Width, 281));
+
+                //gradient at left and right main header
+                LinearGradientBrush linGrBrush_left = new LinearGradientBrush(new Point(0, 282 / 2), new Point(282, 282 / 2),
+                    ControlPaint.Light(myBaseColor, (float)0.3), myBaseColor);
+                toDrawOn.FillRectangle(linGrBrush_left, new Rectangle(0, 0, 282, 282));
+                LinearGradientBrush linGrBrush_right = new LinearGradientBrush(new Point(2500, 282 / 2), new Point(1500, 282 / 2),
+                    ControlPaint.Light(myBaseColor, (float)0.3), myBaseColor);
+                toDrawOn.FillRectangle(linGrBrush_right, new Rectangle(1500, 0, 1000, 282));
+
+                //fill the rest
+                toDrawOn.FillRectangle(new SolidBrush(ControlPaint.Dark(myBaseColor, (float)0.1)), new Rectangle(0, 271, myBitmap.Width, myBitmap.Height));
 
                 //last folder
-                toDrawOn.DrawString(BundleInfos.getLastFolder(BundlePath), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(Color.FromArgb(255, 149, 213, 255)), new Point(340, 40));
+                toDrawOn.DrawString(BundleInfos.getLastFolder(BundlePath), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(ControlPaint.Dark(myBaseColor, (float)0.05)), new Point(40, 40));
 
                 //name
-                toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+                toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(25, 70));
             }
         }
 

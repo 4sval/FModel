@@ -28,7 +28,7 @@
 - Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
 - Asset is a **_Bundle Of Challenges_**:
-    - Try to create an [Icon](https://i.imgur.com/1Uzrlb0.png) with all **Challenges' Description**, **Count** and the **Reward**
+    - Try to create an [Icon](https://i.imgur.com/pUVxUih.png) with all **Challenges' Description**, **Count** and the **Reward**
 - Asset is a **_Font_**:
     - Try to convert the Asset to OTF
 

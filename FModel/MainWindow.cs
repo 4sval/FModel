@@ -6,21 +6,17 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AutoUpdaterDotNET;
 using csharp_wick;
 using FModel.Converter;
 using FModel.Forms;
-using FModel.Parser.Banners;
 using FModel.Parser.Challenges;
 using FModel.Methods.BackupPAKs.Parser.AESKeyParser;
 using FModel.Parser.Items;
-using FModel.Parser.Quests;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -38,29 +34,12 @@ namespace FModel
         public Stopwatch StopWatch;
         private static string[] _paksArray;
         public static string[] PakAsTxt;
-        private static Dictionary<string, long> _questStageDict;
         private static Dictionary<string, string> _diffToExtract;
         private static string _backupFileName;
         private static string[] _backupDynamicKeys;
         private static List<string> _itemsToDisplay;
         public static string ExtractedFilePath;
         public static string[] SelectedItemsArray;
-        public static string[] SelectedChallengesArray;
-        #endregion
-
-        #region DLLIMPORT
-        [DllImport("wininet.dll")]
-        private extern static bool InternetGetConnectedState(out int description, int reservedValue);
-        public static bool IsInternetAvailable()
-        {
-            return InternetGetConnectedState(description: out _, reservedValue: 0);
-        }
-        [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
-        private static extern int SetWindowTheme(IntPtr hwnd, string pszSubAppName, string pszSubIdList);
-        public static void SetTreeViewTheme(IntPtr treeHandle)
-        {
-            SetWindowTheme(treeHandle, "explorer", null);
-        }
         #endregion
 
         public MainWindow()
@@ -190,7 +169,7 @@ namespace FModel
         {
             AutoUpdater.Start("https://dl.dropbox.com/s/3kv2pukqu6tj1r0/FModel.xml?dl=0");
 
-            SetTreeViewTheme(treeView1.Handle);
+            DLLImport.SetTreeViewTheme(treeView1.Handle);
             _backupFileName = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
 
             // Copy user settings from previous application version if necessary
@@ -613,8 +592,7 @@ namespace FModel
         {
             _backupDynamicKeys = null;
 
-            bool connection = IsInternetAvailable();
-            if (connection && (!string.IsNullOrWhiteSpace(Settings.Default.eEmail) || !string.IsNullOrWhiteSpace(Settings.Default.ePassword)))
+            if (DLLImport.IsInternetAvailable() && (!string.IsNullOrWhiteSpace(Settings.Default.eEmail) || !string.IsNullOrWhiteSpace(Settings.Default.ePassword)))
             {
                 string myContent = DynamicPAKs.GetEndpoint("https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", true);
 
@@ -715,7 +693,6 @@ namespace FModel
         {
             CreatePakList(null, false, true, true);
 
-            _questStageDict = new Dictionary<string, long>();
             Invoke(new Action(() =>
             {
                 ExtractButton.Enabled = false;
@@ -1726,7 +1703,6 @@ namespace FModel
         {
             scintilla1.Text = "";
             pictureBox1.Image = null;
-            _questStageDict = new Dictionary<string, long>();
             ExtractButton.Enabled = false;
             OpenImageButton.Enabled = false;
             StopButton.Enabled = true;
@@ -1750,104 +1726,6 @@ namespace FModel
         #endregion
 
         #region IMAGES SAVE & MERGE
-        //METHODS
-        private void AskMergeImages()
-        {
-            if (string.IsNullOrEmpty(Settings.Default.mergerFileName))
-            {
-                MessageBox.Show(@"Please, set a name to your Merger file before trying to merge images
-
-Steps:
-	- Load
-	- Settings", @"Merger File Name Missing", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                OpenFileDialog theDialog = new OpenFileDialog();
-                theDialog.Multiselect = true;
-                theDialog.InitialDirectory = App.DefaultOutputPath + "\\Icons\\";
-                theDialog.Title = @"Choose your images";
-                theDialog.Filter = @"PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*";
-
-                Invoke(new Action(() =>
-                {
-                    if (theDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        List<Image> selectedImages = new List<Image>();
-                        foreach (var files in theDialog.FileNames)
-                        {
-                            selectedImages.Add(Image.FromFile(files));
-                        }
-
-                        MergeSelected(selectedImages);
-                    }
-                }));
-            }
-        }
-        private void MergeSelected(List<Image> mySelectedImages)
-        {
-            if (Settings.Default.mergerImagesRow == 0)
-            {
-                Settings.Default.mergerImagesRow = 7;
-                Settings.Default.Save();
-            }
-
-            int numperrow = Settings.Default.mergerImagesRow;
-            var w = 530 * numperrow;
-            if (mySelectedImages.Count * 530 < 530 * numperrow)
-            {
-                w = mySelectedImages.Count * 530;
-            }
-
-            int h = int.Parse(Math.Ceiling(double.Parse(mySelectedImages.Count.ToString()) / numperrow).ToString(CultureInfo.InvariantCulture)) * 530;
-            Bitmap bmp = new Bitmap(w - 8, h - 8);
-
-            var num = 1;
-            var curW = 0;
-            var curH = 0;
-
-            for (int i = 0; i < mySelectedImages.Count; i++)
-            {
-                using (Graphics g = Graphics.FromImage(bmp))
-                {
-                    g.DrawImage(ImageUtilities.ResizeImage(mySelectedImages[i], 522, 522), new PointF(curW, curH));
-                    if (num % numperrow == 0)
-                    {
-                        curW = 0;
-                        curH += 530;
-                        num += 1;
-                    }
-                    else
-                    {
-                        curW += 530;
-                        num += 1;
-                    }
-                }
-            }
-            bmp.Save(App.DefaultOutputPath + "\\" + Settings.Default.mergerFileName + ".png", ImageFormat.Png);
-
-            OpenMerged(bmp);
-        }
-        private void OpenMerged(Bitmap mergedImage)
-        {
-            if (mergedImage != null)
-            {
-                var newForm = new Form();
-                PictureBox pb = new PictureBox();
-                pb.Dock = DockStyle.Fill;
-                pb.Image = mergedImage;
-                pb.SizeMode = PictureBoxSizeMode.Zoom;
-
-                newForm.WindowState = FormWindowState.Maximized;
-                newForm.Size = mergedImage.Size;
-                newForm.Icon = Resources.FModel;
-                newForm.Text = App.DefaultOutputPath + @"\" + Settings.Default.mergerFileName + @".png";
-                newForm.StartPosition = FormStartPosition.CenterScreen;
-                newForm.Controls.Add(pb);
-                newForm.Show();
-            }
-        }
-
         //EVENTS
         private void OpenImageButton_Click(object sender, EventArgs e)
         {
@@ -1885,11 +1763,9 @@ Steps:
                 }
             }
         }
-        private async void mergeImagesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void mergeImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await Task.Run(() => {
-                AskMergeImages();
-            });
+            ImagesMerger.AskMergeImages();
         }
         #endregion
     }
