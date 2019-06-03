@@ -10,10 +10,10 @@
 ### Prerequisites
 [.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471)
 ### Download
-[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/2.3.2)
+[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/2.3.3)
 ### How does it works
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder.
-![](https://i.imgur.com/so1iz1B.gif)
+![](https://i.imgur.com/O2Vg3Bx.gif)
 
 **2.** Restart the executable, enter the AES Key, click **Load** and select your .PAK file
 - It will parse all Assets contained in the selected .PAK file with their respective path
