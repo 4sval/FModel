@@ -307,11 +307,12 @@ namespace FModel
                                 Image bulletImage = Resources.dmg64;
                                 myGraphic.DrawImage(ImageUtilities.ResizeImage(bulletImage, 15, 15), new Point(5, 500));
 
-                                if (statParsed.DmgPb != 0 && statParsed.ClipSize != 0)
-                                {
-                                    DrawToRight("Reload Time: " + statParsed.ReloadTime + " seconds", myGraphic);
-                                    DrawToLeft("    " + statParsed.DmgPb, myGraphic); //damage per bullet
-                                }
+                                Image clipSizeImage = Resources.clipSize64;
+                                myGraphic.DrawImage(ImageUtilities.ResizeImage(clipSizeImage, 15, 15), new Point(52, 500));
+
+                                DrawToRight("Reload Time: " + statParsed.ReloadTime + " seconds", myGraphic);
+                                DrawToLeft("    " + statParsed.DmgPb, myGraphic); //damage per bullet
+                                myGraphic.DrawString("     " + statParsed.ClipSize, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(50, 500));
                             }
                         }
                     }
