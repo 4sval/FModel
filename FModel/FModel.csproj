@@ -234,6 +234,7 @@
     <Content Include="DLLs\csharp-wick.dll" />
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
+    <None Include="Resources\LBolt64.png" />
     <None Include="Resources\dmg64.png" />
     <None Include="Resources\Challenges_Slider.png" />
     <None Include="Resources\T-Items-MTX-L.png" />

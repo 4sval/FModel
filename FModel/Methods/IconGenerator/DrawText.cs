@@ -11,48 +11,48 @@ namespace FModel
 {
     static class DrawText
     {
-        private static string cosmeticSource { get; set; }
-        private static string shortDescription { get; set; }
-        private static string cosmeticId { get; set; }
-        private static string maxStackSize { get; set; }
-        private static string itemAction { get; set; }
-        private static string weaponRowName { get; set; }
-        private static string cosmeticUFF { get; set; }
-        private static string heroType { get; set; }
-        private static string defenderType { get; set; }
-        private static string minToMax { get; set; }
+        private static string CosmeticSource { get; set; }
+        private static string ShortDescription { get; set; }
+        private static string CosmeticId { get; set; }
+        private static string MaxStackSize { get; set; }
+        private static string ItemAction { get; set; }
+        private static string WeaponRowName { get; set; }
+        private static string CosmeticUff { get; set; }
+        private static string HeroType { get; set; }
+        private static string DefenderType { get; set; }
+        private static string MinToMax { get; set; }
 
-        public static void DrawTexts(ItemsIdParser theItem, Graphics myGraphic, string Mode)
+        public static void DrawTexts(ItemsIdParser theItem, Graphics myGraphic, string mode)
         {
             DrawDisplayName(theItem, myGraphic);
             DrawDescription(theItem, myGraphic);
 
-            setTexts(theItem);
+            SetTexts(theItem);
 
-            switch (Mode)
+            switch (mode)
             {
                 case "athIteDef":
-                    DrawToLeft(shortDescription, myGraphic);
-                    DrawToRight(cosmeticSource, myGraphic);
+                    DrawToLeft(ShortDescription, myGraphic);
+                    DrawToRight(CosmeticSource, myGraphic);
                     break;
                 case "consAndWeap":
-                    DrawToRight(itemAction, myGraphic);
+                    DrawToRight(ItemAction, myGraphic);
                     if (MainWindow.ExtractedFilePath.Contains("Items\\Consumables\\"))
                     {
-                        DrawToLeft(maxStackSize, myGraphic);
+                        DrawToLeft(MaxStackSize, myGraphic);
                     }
                     break;
                 case "variant":
-                    DrawToLeft(shortDescription, myGraphic);
-                    DrawToRight(cosmeticId, myGraphic);
+                    DrawToLeft(ShortDescription, myGraphic);
+                    DrawToRight(CosmeticId, myGraphic);
                     break;
                 case "stwHeroes":
-                    DrawToRight(heroType, myGraphic);
-                    DrawToLeft(minToMax, myGraphic);
+                    DrawToRight(HeroType, myGraphic);
+                    DrawPower(myGraphic);
                     break;
                 case "stwDefenders":
-                    DrawToRight(defenderType, myGraphic);
-                    DrawToLeft(minToMax, myGraphic);
+                    DrawToRight(DefenderType, myGraphic);
+                    DrawPower(myGraphic);
                     break;
             }
 
@@ -63,28 +63,28 @@ namespace FModel
             if (theItem.AmmoData != null && theItem.AmmoData.AssetPathName.Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
             {
                 ItemIcon.GetAmmoData(theItem.AmmoData.AssetPathName, myGraphic);
-                DrawWeaponStat(weaponRowName, myGraphic);
+                DrawWeaponStat(WeaponRowName, myGraphic);
             }
 
-            DrawCosmeticUFF(theItem, myGraphic);
+            DrawCosmeticUff(theItem, myGraphic);
         }
 
-        private static void setTexts(ItemsIdParser theItem)
+        private static void SetTexts(ItemsIdParser theItem)
         {
-            cosmeticSource = "";
-            shortDescription = "";
-            cosmeticId = "";
-            maxStackSize = "";
-            itemAction = "";
-            weaponRowName = "";
-            cosmeticUFF = "";
-            heroType = "";
-            defenderType = "";
-            minToMax = "";
+            CosmeticSource = "";
+            ShortDescription = "";
+            CosmeticId = "";
+            MaxStackSize = "";
+            ItemAction = "";
+            WeaponRowName = "";
+            CosmeticUff = "";
+            HeroType = "";
+            DefenderType = "";
+            MinToMax = "";
 
             try
             {
-                shortDescription = theItem.ShortDescription;
+                ShortDescription = theItem.ShortDescription;
             }
             catch (Exception)
             {
@@ -92,7 +92,7 @@ namespace FModel
             }
             try
             {
-                cosmeticSource = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17);
+                CosmeticSource = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17);
             }
             catch (Exception)
             {
@@ -100,7 +100,7 @@ namespace FModel
             }
             try
             {
-                cosmeticId = theItem.CosmeticItem;
+                CosmeticId = theItem.CosmeticItem;
             }
             catch (Exception)
             {
@@ -108,7 +108,7 @@ namespace FModel
             }
             try
             {
-                maxStackSize = "Max Stack Size: " + theItem.MaxStackSize;
+                MaxStackSize = "Max Stack Size: " + theItem.MaxStackSize;
             }
             catch (Exception)
             {
@@ -116,7 +116,7 @@ namespace FModel
             }
             try
             {
-                itemAction = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Athena.ItemAction."))].Substring(18);
+                ItemAction = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Athena.ItemAction."))].Substring(18);
             }
             catch (Exception)
             {
@@ -124,9 +124,9 @@ namespace FModel
             }
             try
             {
-                if (theItem.WeaponStatHandle.RowName != "Harvest_Pickaxe_Athena_C_T01")
+                if (theItem.WeaponStatHandle.RowName != "Harvest_Pickaxe_Athena_C_T01" || theItem.WeaponStatHandle.RowName != "Edged_Sword_Athena_C_T01")
                 {
-                    weaponRowName = theItem.WeaponStatHandle.RowName;
+                    WeaponRowName = theItem.WeaponStatHandle.RowName;
                 }
             }
             catch (Exception)
@@ -135,7 +135,7 @@ namespace FModel
             }
             try
             {
-                cosmeticUFF = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))];
+                CosmeticUff = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))];
             }
             catch (Exception)
             {
@@ -143,7 +143,7 @@ namespace FModel
             }
             try
             {
-                heroType = theItem.AttributeInitKey.AttributeInitCategory;
+                HeroType = theItem.AttributeInitKey.AttributeInitCategory;
             }
             catch (Exception)
             {
@@ -151,7 +151,7 @@ namespace FModel
             }
             try
             {
-                defenderType = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("NPC.CharacterType.Survivor.Defender."))].Substring(36);
+                DefenderType = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("NPC.CharacterType.Survivor.Defender."))].Substring(36);
             }
             catch (Exception)
             {
@@ -159,7 +159,7 @@ namespace FModel
             }
             try
             {
-                minToMax = "Power " + theItem.MinLevel + " to " + theItem.MaxLevel;
+                MinToMax = "   " + theItem.MinLevel + " to " + theItem.MaxLevel;
             }
             catch (Exception)
             {
@@ -173,36 +173,36 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawCosmeticUFF(ItemsIdParser theItem, Graphics myGraphic)
+        private static void DrawCosmeticUff(ItemsIdParser theItem, Graphics myGraphic)
         {
-            if (cosmeticUFF != null)
+            if (CosmeticUff != null)
             {
-                if (cosmeticUFF.Contains("Animated"))
+                if (CosmeticUff.Contains("Animated"))
                 {
                     Image animatedLogo = Resources.T_Icon_Animated_64;
                     myGraphic.DrawImage(ImageUtilities.ResizeImage(animatedLogo, 32, 32), new Point(6, -2));
                 }
-                else if (cosmeticUFF.Contains("HasUpgradeQuests") && theItem.ExportType != "AthenaPetCarrierItemDefinition")
+                else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem.ExportType != "AthenaPetCarrierItemDefinition")
                 {
                     Image questLogo = Resources.T_Icon_Quests_64;
                     myGraphic.DrawImage(ImageUtilities.ResizeImage(questLogo, 32, 32), new Point(6, 6));
                 }
-                else if (cosmeticUFF.Contains("HasUpgradeQuests") && theItem.ExportType == "AthenaPetCarrierItemDefinition")
+                else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem.ExportType == "AthenaPetCarrierItemDefinition")
                 {
                     Image petLogo = Resources.T_Icon_Pets_64;
                     myGraphic.DrawImage(ImageUtilities.ResizeImage(petLogo, 32, 32), new Point(6, 6));
                 }
-                else if (cosmeticUFF.Contains("HasVariants"))
+                else if (CosmeticUff.Contains("HasVariants"))
                 {
                     Image variantsLogo = Resources.T_Icon_Variant_64;
                     myGraphic.DrawImage(ImageUtilities.ResizeImage(variantsLogo, 32, 32), new Point(6, 6));
                 }
-                else if (cosmeticUFF.Contains("Reactive"))
+                else if (CosmeticUff.Contains("Reactive"))
                 {
                     Image reactiveLogo = Resources.T_Icon_Adaptive_64;
                     myGraphic.DrawImage(ImageUtilities.ResizeImage(reactiveLogo, 32, 32), new Point(7, 7));
                 }
-                else if (cosmeticUFF.Contains("Traversal"))
+                else if (CosmeticUff.Contains("Traversal"))
                 {
                     Image traversalLogo = Resources.T_Icon_Traversal_64;
                     myGraphic.DrawImage(ImageUtilities.ResizeImage(traversalLogo, 32, 32), new Point(6, 3));
@@ -285,7 +285,7 @@ namespace FModel
         /// </summary>
         /// <param name="weaponName"></param>
         /// <param name="myGraphic"></param>
-        public static void DrawWeaponStat(string weaponName, Graphics myGraphic)
+        private static void DrawWeaponStat(string weaponName, Graphics myGraphic)
         {
             ItemIcon.ItemIconPath = string.Empty;
             string extractedWeaponsStatPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["AthenaRangedWeapons"], "AthenaRangedWeapons");
@@ -321,6 +321,19 @@ namespace FModel
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// this is only triggered for heroes and defenders
+        /// draw the minimum and maximum level as well as a bolt icon
+        /// </summary>
+        /// <param name="myGraphic"></param>
+        private static void DrawPower(Graphics myGraphic)
+        {
+            Image bolt = Resources.LBolt64;
+            myGraphic.DrawImage(ImageUtilities.ResizeImage(bolt, 15, 15), new Point(5, 501));
+
+            DrawToLeft(MinToMax, myGraphic);
         }
     }
 }
