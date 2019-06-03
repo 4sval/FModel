@@ -62,6 +62,9 @@ namespace FModel.Parser.Items
 
         [JsonProperty("MaxLevel")]
         public long MaxLevel { get; set; }
+
+        [JsonProperty("WeaponStatHandle")]
+        public WeaponStatHandle WeaponStatHandle { get; set; }
     }
 
     public class GameplayTags
@@ -104,6 +107,15 @@ namespace FModel.Parser.Items
 
         [JsonProperty("AttributeInitSubCategory")]
         public string AttributeInitSubCategory { get; set; }
+    }
+
+    public partial class WeaponStatHandle
+    {
+        [JsonProperty("DataTable")]
+        public string DataTable { get; set; }
+
+        [JsonProperty("RowName")]
+        public string RowName { get; set; }
     }
 
     public partial class ItemsIdParser

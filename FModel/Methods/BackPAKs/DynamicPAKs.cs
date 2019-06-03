@@ -1,6 +1,5 @@
-﻿using FModel.Methods.BackupPAKs.Parser.AccessTokenParser;
-using FModel.Methods.BackupPAKs.Parser.AccessCodeParser;
-using FModel.Methods.BackupPAKs.Parser.ExchangeTokenParser;
+﻿using FModel.Methods.BackupPAKs.Parser.AccessCodeParser;
+using FModel.Methods.BackupPAKs.Parser.TokenParser;
 using RestSharp;
 using System;
 using Newtonsoft.Json.Linq;
@@ -54,7 +53,7 @@ namespace FModel
             getAccessTokenRequest.AddHeader("Authorization", "basic MzQ0NmNkNzI2OTRjNGE0NDg1ZDgxYjc3YWRiYjIxNDE6OTIwOWQ0YTVlMjVhNDU3ZmI5YjA3NDg5ZDMxM2I0MWE=");
             getAccessTokenRequest.AddHeader("Content-Type", "application/x-www-form-urlencoded");
 
-            return AccessTokenParser.FromJson(getAccessTokenClient.Execute(getAccessTokenRequest).Content).AccessToken;
+            return TokenParser.FromJson(getAccessTokenClient.Execute(getAccessTokenRequest).Content).AccessToken;
         }
         private static string getAccessCode(string accessToken)
         {
@@ -77,7 +76,7 @@ namespace FModel
             getExchangeTokenRequest.AddParameter("includePerms", true);
             getExchangeTokenRequest.AddParameter("token_type", "eg1");
 
-            return ExchangeTokenParser.FromJson(getExchangeTokenClient.Execute(getExchangeTokenRequest).Content).AccessToken;
+            return TokenParser.FromJson(getExchangeTokenClient.Execute(getExchangeTokenRequest).Content).AccessToken;
         }
 
         private static IEnumerable<string> SplitGuid(string str, int chunkSize)

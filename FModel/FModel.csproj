@@ -120,13 +120,13 @@
     <Compile Include="Custom\TypeAssistant.cs" />
     <Compile Include="Methods\BackPAKs\DynamicPAKs.cs" />
     <Compile Include="Methods\BackPAKs\Parser\AccessCodeParser.cs" />
-    <Compile Include="Methods\BackPAKs\Parser\AccessTokenParser.cs" />
     <Compile Include="Methods\BackPAKs\Parser\AESKeyParser.cs" />
-    <Compile Include="Methods\BackPAKs\Parser\ExchangeTokenParser.cs" />
+    <Compile Include="Methods\BackPAKs\Parser\TokenParser.cs" />
     <Compile Include="Methods\ChallengeGenerator\BundleDesign.cs" />
     <Compile Include="Methods\ChallengeGenerator\BundleInfos.cs" />
     <Compile Include="Methods\ChallengeGenerator\DrawingRewards.cs" />
     <Compile Include="Methods\DLLImport.cs" />
+    <Compile Include="Methods\IconGenerator\DrawText.cs" />
     <Compile Include="Methods\ImagesMerger\ImagesMerger.cs" />
     <Compile Include="Methods\Scintilla\MyScintilla.cs" />
     <Compile Include="Methods\Utilities\FontUtilities.cs" />
@@ -179,6 +179,7 @@
     <Compile Include="Parser\Meshes\MeshesParser.cs" />
     <Compile Include="Parser\Quests\QuestParser.cs" />
     <Compile Include="Parser\RenderMat\RenderSwitchMaterial.cs" />
+    <Compile Include="Parser\Weapons\WeaponStatParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\About.resx">
@@ -233,6 +234,7 @@
     <Content Include="DLLs\csharp-wick.dll" />
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
+    <None Include="Resources\dmg64.png" />
     <None Include="Resources\Challenges_Slider.png" />
     <None Include="Resources\T-Items-MTX-L.png" />
     <None Include="Resources\T-FNBR-SeasonalXP-L.png" />

@@ -4,9 +4,9 @@
 //
 //    using FModel.Methods.BackupPAKs.Parser.ExchangeTokenParser;
 //
-//    var exchangeTokenParser = ExchangeTokenParser.FromJson(jsonString);
+//    var TokenParser = ExchangeTokenParser.FromJson(jsonString);
 
-namespace FModel.Methods.BackupPAKs.Parser.ExchangeTokenParser
+namespace FModel.Methods.BackupPAKs.Parser.TokenParser
 {
     using System;
 
@@ -14,7 +14,7 @@ namespace FModel.Methods.BackupPAKs.Parser.ExchangeTokenParser
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
-    public partial class ExchangeTokenParser
+    public partial class TokenParser
     {
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }
@@ -68,14 +68,14 @@ namespace FModel.Methods.BackupPAKs.Parser.ExchangeTokenParser
         public long Action { get; set; }
     }
 
-    public partial class ExchangeTokenParser
+    public partial class TokenParser
     {
-        public static ExchangeTokenParser FromJson(string json) => JsonConvert.DeserializeObject<ExchangeTokenParser>(json, FModel.Methods.BackupPAKs.Parser.ExchangeTokenParser.Converter.Settings);
+        public static TokenParser FromJson(string json) => JsonConvert.DeserializeObject<TokenParser>(json, FModel.Methods.BackupPAKs.Parser.TokenParser.Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this ExchangeTokenParser self) => JsonConvert.SerializeObject(self, FModel.Methods.BackupPAKs.Parser.ExchangeTokenParser.Converter.Settings);
+        public static string ToJson(this TokenParser self) => JsonConvert.SerializeObject(self, FModel.Methods.BackupPAKs.Parser.TokenParser.Converter.Settings);
     }
 
     internal static class Converter

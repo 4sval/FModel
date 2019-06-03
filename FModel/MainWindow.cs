@@ -27,6 +27,7 @@ namespace FModel
 {
     public partial class MainWindow : Form
     {
+        #region to refactor
         private static Stopwatch StopWatch { get; set; }
         private static string[] _paksArray { get; set; }
         public static string[] PakAsTxt { get; set; }
@@ -36,6 +37,7 @@ namespace FModel
         private static List<string> _itemsToDisplay { get; set; }
         public static string ExtractedFilePath { get; set; }
         public static string[] SelectedItemsArray { get; set; }
+        #endregion
 
         public MainWindow()
         {
@@ -1217,257 +1219,7 @@ namespace FModel
             Image bg512 = Resources.BG512;
             g.DrawImage(bg512, new Point(5, 383));
 
-            #region DRAW TEXT
-            try
-            {
-                g.DrawString(theItem.DisplayName, new Font(FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
-            }
-            catch (NullReferenceException)
-            {
-                AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                AppendText("No ", Color.Black);
-                AppendText("DisplayName ", Color.SteelBlue);
-                AppendText("found", Color.Black, true);
-            } //NAME
-            try
-            {
-                g.DrawString(theItem.Description, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
-            }
-            catch (NullReferenceException)
-            {
-                AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                AppendText("No ", Color.Black);
-                AppendText("Description ", Color.SteelBlue);
-                AppendText("found", Color.Black, true);
-            } //DESCRIPTION
-            if (specialMode == "athIteDef")
-            {
-                try
-                {
-                    g.DrawString(theItem.ShortDescription, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("ShortDescription ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //TYPE
-                try
-                {
-                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("GameplayTags ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("GameplayTags ", Color.SteelBlue);
-                    AppendText("as ", Color.Black);
-                    AppendText("Cosmetics.Source ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //COSMETIC SOURCE
-                if (theItem.ExportType == "AthenaItemWrapDefinition" && Checking.WasFeatured && ItemIcon.ItemIconPath.Contains("WeaponRenders")) //ONLY TRIGGER IF THE WEAPON RENDER IS TRIGGERED
-                {
-                    string wrapAddImg = theItem.LargePreviewImage.AssetPathName.Substring(theItem.LargePreviewImage.AssetPathName.LastIndexOf(".", StringComparison.Ordinal) + 1);
-
-                    UpdateConsole("Additional image " + wrapAddImg, Color.FromArgb(255, 244, 132, 66), "Waiting");
-                    ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(wrapAddImg);
-
-                    if (File.Exists(ItemIcon.ItemIconPath))
-                    {
-                        Image itemIcon;
-                        using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                        {
-                            itemIcon = new Bitmap(bmpTemp);
-                        }
-                        g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 122, 122), new Point(395, 282));
-                    }
-                }
-            }
-            if (specialMode == "consAndWeap")
-            {
-                try
-                {
-                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Athena.ItemAction."))].Substring(18), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("GameplayTags ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    try
-                    {
-                        g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Weapon."))].Substring(7), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
-                    }
-                    catch (NullReferenceException)
-                    {
-                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                        AppendText("No ", Color.Black);
-                        AppendText("GameplayTags ", Color.SteelBlue);
-                        AppendText("found", Color.Black, true);
-                    }
-                    catch (IndexOutOfRangeException)
-                    {
-                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                        AppendText("No ", Color.Black);
-                        AppendText("GameplayTags ", Color.SteelBlue);
-                        AppendText("as ", Color.Black);
-                        AppendText("Athena.ItemAction ", Color.SteelBlue);
-                        AppendText("or ", Color.Black);
-                        AppendText("Weapon ", Color.SteelBlue);
-                        AppendText("found", Color.Black, true);
-                    }
-                } //ACTION
-                if (ExtractedFilePath.Contains("Items\\Consumables"))
-                {
-                    try
-                    {
-                        g.DrawString("Max Stack Size: " + theItem.MaxStackSize, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
-                    }
-                    catch (NullReferenceException)
-                    {
-                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                        AppendText("No ", Color.Black);
-                        AppendText("MaxStackSize ", Color.SteelBlue);
-                        AppendText("found", Color.Black, true);
-                    } //MAX STACK SIZE
-                }
-                if (theItem.AmmoData != null && theItem.AmmoData.AssetPathName.Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
-                {
-                    ItemIcon.GetAmmoData(theItem.AmmoData.AssetPathName, g);
-                }
-            }
-            if (specialMode == "variant")
-            {
-                try
-                {
-                    g.DrawString(theItem.ShortDescription, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("ShortDescription ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //TYPE
-                try
-                {
-                    g.DrawString(theItem.CosmeticItem, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("Cosmetic Item ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //COSMETIC ITEM
-            }
-            try
-            {
-                if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Animated"))
-                {
-                    Image animatedLogo = Resources.T_Icon_Animated_64;
-                    g.DrawImage(ImageUtilities.ResizeImage(animatedLogo, 32, 32), new Point(6, -2));
-                }
-                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasUpgradeQuests") && theItem.ExportType != "AthenaPetCarrierItemDefinition")
-                {
-                    Image questLogo = Resources.T_Icon_Quests_64;
-                    g.DrawImage(ImageUtilities.ResizeImage(questLogo, 32, 32), new Point(6, 6));
-                }
-                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasUpgradeQuests") && theItem.ExportType == "AthenaPetCarrierItemDefinition")
-                {
-                    Image petLogo = Resources.T_Icon_Pets_64;
-                    g.DrawImage(ImageUtilities.ResizeImage(petLogo, 32, 32), new Point(6, 6));
-                }
-                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("HasVariants"))
-                {
-                    Image variantsLogo = Resources.T_Icon_Variant_64;
-                    g.DrawImage(ImageUtilities.ResizeImage(variantsLogo, 32, 32), new Point(6, 6));
-                }
-                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Reactive"))
-                {
-                    Image reactiveLogo = Resources.T_Icon_Adaptive_64;
-                    g.DrawImage(ImageUtilities.ResizeImage(reactiveLogo, 32, 32), new Point(7, 7));
-                }
-                else if (theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))].Contains("Traversal"))
-                {
-                    Image traversalLogo = Resources.T_Icon_Traversal_64;
-                    g.DrawImage(ImageUtilities.ResizeImage(traversalLogo, 32, 32), new Point(6, 3));
-                }
-            }
-            catch (Exception) { } //COSMETIC USER FACING FLAGS
-
-            if (specialMode == "stwHeroes")
-            {
-                try
-                {
-                    g.DrawString(theItem.AttributeInitKey.AttributeInitCategory, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("AttributeInitCategory ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //CHARACTER TYPE
-                try
-                {
-                    g.DrawString("Power " + theItem.MinLevel + " to " + theItem.MaxLevel, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("Level ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //LEVEL
-            }
-            if (specialMode == "stwDefenders")
-            {
-                try
-                {
-                    g.DrawString(theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("NPC.CharacterType.Survivor.Defender."))].Substring(36), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("GameplayTags ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("GameplayTags ", Color.SteelBlue);
-                    AppendText("as ", Color.Black);
-                    AppendText("NPC.CharacterType.Survivor.Defender ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //CHARACTER TYPE
-                try
-                {
-                    g.DrawString("Power " + theItem.MinLevel + " to " + theItem.MaxLevel, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
-                }
-                catch (NullReferenceException)
-                {
-                    AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                    AppendText("No ", Color.Black);
-                    AppendText("Level ", Color.SteelBlue);
-                    AppendText("found", Color.Black, true);
-                } //LEVEL
-            }
-            #endregion
+            DrawText.DrawTexts(theItem, g, specialMode);
 
             UpdateConsole(theItem.DisplayName, Color.FromArgb(255, 66, 244, 66), "Success");
             if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
@@ -1654,7 +1406,7 @@ namespace FModel
                 ExtractButton.Enabled = true;
             }));
         }
-        public void ExtractButton_Click(object sender, EventArgs e)
+        private void ExtractButton_Click(object sender, EventArgs e)
         {
             scintilla1.Text = "";
             pictureBox1.Image = null;
