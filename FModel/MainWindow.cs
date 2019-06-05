@@ -992,6 +992,7 @@ namespace FModel
         private void AddAndSelectAllItems(string[] myItemsToAdd)
         {
             listBox1.BeginUpdate();
+            listBox1.Items.Clear();
             for (int i = 0; i < myItemsToAdd.Length; i++)
             {
                 listBox1.Items.Add(myItemsToAdd[i]);
