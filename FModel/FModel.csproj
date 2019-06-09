@@ -128,6 +128,7 @@
     <Compile Include="Methods\DLLImport.cs" />
     <Compile Include="Methods\IconGenerator\DrawText.cs" />
     <Compile Include="Methods\ImagesMerger\ImagesMerger.cs" />
+    <Compile Include="Methods\LocRes\TempStringFinder.cs" />
     <Compile Include="Methods\Scintilla\MyScintilla.cs" />
     <Compile Include="Methods\Utilities\FontUtilities.cs" />
     <Compile Include="Methods\IconGenerator\ItemIcon.cs" />

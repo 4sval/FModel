@@ -37,7 +37,7 @@ namespace FModel.Forms
             checkBox8.Checked = Properties.Settings.Default.loadFeaturedImage;
             if (Properties.Settings.Default.loadFeaturedImage == false)
             {
-                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                if (File.Exists(Properties.Settings.Default.wFilename))
                 {
                     filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
 
@@ -53,7 +53,7 @@ namespace FModel.Forms
             }
             if (Properties.Settings.Default.loadFeaturedImage)
             {
-                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                if (File.Exists(Properties.Settings.Default.wFilename))
                 {
                     filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
 

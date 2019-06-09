@@ -23,7 +23,7 @@ namespace FModel.Forms
             checkBox8.Checked = Properties.Settings.Default.UMFeatured;
             if (Properties.Settings.Default.UMFeatured == false)
             {
-                if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
+                if (File.Exists(Properties.Settings.Default.UMFilename))
                 {
                     filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.UMFilename);
 
@@ -39,7 +39,7 @@ namespace FModel.Forms
             }
             if (Properties.Settings.Default.UMFeatured)
             {
-                if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
+                if (File.Exists(Properties.Settings.Default.UMFilename))
                 {
                     filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.UMFilename);
 

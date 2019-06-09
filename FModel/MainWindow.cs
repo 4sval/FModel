@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Image = System.Drawing.Image;
 using Settings = FModel.Properties.Settings;
+using System.Text;
 
 namespace FModel
 {
@@ -252,6 +253,8 @@ namespace FModel
         //METHODS
         private void RegisterPaKsinDict(string[] allYourPaKs, ToolStripItemClickedEventArgs theSinglePak = null, bool loadAllPaKs = false)
         {
+            StringBuilder sb = new StringBuilder();
+
             for (int i = 0; i < allYourPaKs.Length; i++)
             {
                 string arCurrentUsedPak = allYourPaKs[i]; //SET CURRENT PAK
@@ -272,14 +275,16 @@ namespace FModel
                     {
                         ThePak.PaksMountPoint.Add(arCurrentUsedPak, JohnWick.MyExtractor.GetMountPoint().Substring(9));
 
-                        if (loadAllPaKs)
-                            if (!File.Exists(App.DefaultOutputPath + "\\FortnitePAKs.txt"))
-                                File.Create(App.DefaultOutputPath + "\\FortnitePAKs.txt").Dispose();
-
                         string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
                         for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                         {
                             CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
+
+                            if (loadAllPaKs)
+                            {
+                                sb.Append(CurrentUsedPakLines[ii]);
+                                sb.AppendLine();
+                            }
 
                             string CurrentUsedPakFileName = CurrentUsedPakLines[ii].Substring(CurrentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
                             if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
@@ -301,13 +306,14 @@ namespace FModel
                         {
                             UpdateConsole(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
 
-                            File.AppendAllLines(App.DefaultOutputPath + "\\FortnitePAKs.txt", CurrentUsedPakLines);
+                            File.WriteAllText(App.DefaultOutputPath + "\\FortnitePAKs.txt", sb.ToString());
 
                             ThePak.CurrentUsedPak = null;
                             ThePak.CurrentUsedPakGuid = null;
                         }
                     }
                 }
+
                 if (theSinglePak != null)
                 {
                     ThePak.CurrentUsedPak = theSinglePak.ClickedItem.Text;
@@ -521,6 +527,7 @@ namespace FModel
         private void CreateBackupList(string[] allYourPaKs)
         {
             _backupDynamicKeys = null;
+            StringBuilder sb = new StringBuilder();
 
             if (DLLImport.IsInternetAvailable() && (!string.IsNullOrWhiteSpace(Settings.Default.eEmail) || !string.IsNullOrWhiteSpace(Settings.Default.ePassword)))
             {
@@ -560,10 +567,11 @@ namespace FModel
                         for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                         {
                             CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
+
+                            sb.Append(CurrentUsedPakLines[ii]);
+                            sb.AppendLine();
                         }
                         UpdateConsole(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
-
-                        File.AppendAllLines(App.DefaultOutputPath + "\\Backup" + _backupFileName, CurrentUsedPakLines);
                     }
                 }
                 else if (_backupDynamicKeys != null)
@@ -596,23 +604,22 @@ namespace FModel
 
                             if (JohnWick.MyExtractor.GetFileList() != null)
                             {
-                                if (!File.Exists(App.DefaultOutputPath + "\\Backup" + _backupFileName))
-                                    File.Create(App.DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
-
                                 string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
                                 for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                                 {
                                     CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
+
+                                    sb.Append(CurrentUsedPakLines[ii]);
+                                    sb.AppendLine();
                                 }
                                 AppendText("Backing up ", Color.Black);
                                 AppendText(arCurrentUsedPak, Color.DarkRed, true);
-
-                                File.AppendAllLines(App.DefaultOutputPath + "\\Backup" + _backupFileName, CurrentUsedPakLines);
                             }
                         }
                     }
                 }
             }
+            File.WriteAllText(App.DefaultOutputPath + "\\Backup" + _backupFileName, sb.ToString());
 
             if (File.Exists(App.DefaultOutputPath + "\\Backup" + _backupFileName))
                 UpdateConsole("\\Backup" + _backupFileName + " successfully created", Color.FromArgb(255, 66, 244, 66), "Success");
@@ -1476,5 +1483,20 @@ namespace FModel
             ImagesMerger.AskMergeImages();
         }
         #endregion
+
+        private void LocresStringFinderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(App.DefaultOutputPath + "\\Extracted\\FortniteGame\\Content\\Localization\\"))
+            {
+                Invoke(new Action(() =>
+                {
+                    scintilla1.Text = TempStringFinder.locresOpenFile(App.DefaultOutputPath + "\\Extracted\\FortniteGame\\Content\\Localization\\");
+                }));
+            }
+            else
+            {
+                AppendText("No .locres file currently extracted", Color.DarkRed, true);
+            }
+        }
     }
 }
