@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -16,37 +17,46 @@ namespace FModel
         /// <returns></returns>
         private static string StringFinder(string filepath)
         {
-            StringBuilder sb = new StringBuilder();
-            List<string> LocalizedStringArray = new List<string>();
+            var dict = new Dictionary<string, string>();
 
             using (BinaryReader reader = new BinaryReader(File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Encoding.GetEncoding(1252)))
             {
                 byte[] MagicNumber = reader.ReadBytes(16);
 
                 byte VersionNumber = reader.ReadByte();
-                //Console.WriteLine("VersionNumber: " + VersionNumber);
 
                 long LocalizedStringArrayOffset = -1;
                 LocalizedStringArrayOffset = reader.ReadInt64();
-                //Console.WriteLine("LocalizedStringArrayOffset: " + LocalizedStringArrayOffset);
-
-                uint EntriesCount = reader.ReadUInt32();
-                //Console.WriteLine("EntriesCount: " + EntriesCount);
-
-                uint NamespaceCount = reader.ReadUInt32();
-                //Console.WriteLine("NamespaceCount: " + NamespaceCount);
-
-                reader.BaseStream.Position = LocalizedStringArrayOffset;
-
-                readCleanString(reader, LocalizedStringArray);
-
-                foreach (string s in LocalizedStringArray)
+                if (LocalizedStringArrayOffset != -1)
                 {
-                    sb.Append(s.Replace("\0", string.Empty) + "\n");
+                    long CurrentFileOffset = reader.BaseStream.Position;
+
+                    reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
+                    int arrayLength = reader.ReadInt32();
+                    Console.WriteLine("arrayLength: " + arrayLength);
+
+                    reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
+
+                    string[] LocalizedStringArray = new string[arrayLength];
+                    for (int i = 0; i < LocalizedStringArray.Length; i++)
+                    {
+                        if (!dict.ContainsKey("key " + i))
+                        {
+                            dict.Add("key " + i, readCleanString(reader));
+                        }
+                    }
+
+                    reader.BaseStream.Seek(CurrentFileOffset, SeekOrigin.Begin);
                 }
+
+                /*uint NamespaceCount = reader.ReadUInt32();
+                Console.WriteLine("NamespaceCount: " + NamespaceCount);
+
+                uint KeyCount = reader.ReadUInt32();
+                Console.WriteLine("KeyCount: " + KeyCount);*/
             }
 
-            return sb.ToString();
+            return JsonConvert.SerializeObject(dict, Formatting.Indented);
         }
 
         /// <summary>
@@ -54,7 +64,7 @@ namespace FModel
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="allMyStrings"></param>
-        private static void readCleanString(BinaryReader reader, List<string> allMyStrings)
+        private static string readCleanString(BinaryReader reader)
         {
             reader.ReadInt32();
             int stringLength = 0;
@@ -67,18 +77,16 @@ namespace FModel
             {
                 byte[] data = reader.ReadBytes((-1 - stringLength) * 2);
                 reader.ReadBytes(2);
-                allMyStrings.Add(Encoding.Unicode.GetString(data));
+                return Encoding.Unicode.GetString(data);
             }
             else if (stringLength == 0)
             {
-                return;
+                return "";
             }
             else
             {
-                allMyStrings.Add(Encoding.GetEncoding(1252).GetString(reader.ReadBytes(stringLength)));
+                return Encoding.GetEncoding(1252).GetString(reader.ReadBytes(stringLength)).TrimEnd('\0');
             }
-
-            readCleanString(reader, allMyStrings);
         }
 
         public static string locresOpenFile(string defaultPath)
