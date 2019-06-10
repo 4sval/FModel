@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FModel
 {
     static class TempStringFinder
     {
-        private static List<string> weirdStrings;
-        private static bool previousByteWasValid = false;
-
         /// <summary>
         /// 
         /// </summary>
@@ -22,6 +17,7 @@ namespace FModel
         private static string StringFinder(string filepath)
         {
             StringBuilder sb = new StringBuilder();
+            List<string> LocalizedStringArray = new List<string>();
 
             using (BinaryReader reader = new BinaryReader(File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Encoding.GetEncoding(1252)))
             {
@@ -40,48 +36,49 @@ namespace FModel
                 uint NamespaceCount = reader.ReadUInt32();
                 //Console.WriteLine("NamespaceCount: " + NamespaceCount);
 
-                /*reader.BaseStream.Position = 50;
-                ByteArrayToString(reader, (int)LocalizedStringArrayOffset);*/
-
-                weirdStrings = new List<string>();
                 reader.BaseStream.Position = LocalizedStringArrayOffset;
-                byte[] LocalizedStringArray = reader.ReadBytes((int)reader.BaseStream.Length - (int)LocalizedStringArrayOffset);
 
-                string pattern = @"^[\w.:',+-=!?\""{}()\[\]|>«»#&% ]";
-                Regex regex = new Regex(pattern);
+                readCleanString(reader, LocalizedStringArray);
 
-                foreach (byte b in LocalizedStringArray) // Iterate throught all the bytes of the array
+                foreach (string s in LocalizedStringArray)
                 {
-                    string byteString = string.Empty;
-
-                    if (b == 0x00) { continue; } //skip if empty byte
-                    if (b == 0xA0) { byteString = " "; } //weird spaces
-                    else
-                    {
-                        byteString = Encoding.GetEncoding(1252).GetString(new[] { b }); //generate string for single byte
-                    }
-
-                    bool valid = regex.IsMatch(byteString);
-
-                    if (valid)
-                    {
-                        if (previousByteWasValid) weirdStrings[weirdStrings.Count - 1] += byteString;
-                        else weirdStrings.Add(byteString);
-                    }
-                    previousByteWasValid = valid;
-                }
-
-                foreach (string str in weirdStrings)
-                {
-                    if (str.Length > 2)
-                    {
-                        if (str.Contains("ÿÿ")) { sb.Append(str.Substring(str.LastIndexOf("ÿ") + 1) + "\n"); }
-                        else { sb.Append(str + "\n"); }
-                    }
+                    sb.Append(s.Replace("\0", string.Empty) + "\n");
                 }
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="allMyStrings"></param>
+        private static void readCleanString(BinaryReader reader, List<string> allMyStrings)
+        {
+            reader.ReadInt32();
+            int stringLength = 0;
+            if (reader.BaseStream.Position != reader.BaseStream.Length)
+            {
+                stringLength = reader.ReadInt32();
+            }
+
+            if (stringLength < 0)
+            {
+                byte[] data = reader.ReadBytes((-1 - stringLength) * 2);
+                reader.ReadBytes(2);
+                allMyStrings.Add(Encoding.Unicode.GetString(data));
+            }
+            else if (stringLength == 0)
+            {
+                return;
+            }
+            else
+            {
+                allMyStrings.Add(Encoding.GetEncoding(1252).GetString(reader.ReadBytes(stringLength)));
+            }
+
+            readCleanString(reader, allMyStrings);
         }
 
         public static string locresOpenFile(string defaultPath)
