@@ -22,7 +22,7 @@ namespace FModel
 
                 byte[] bytes = File.ReadAllBytes(filepath);
 
-                string pattern = @"^[a-zA-Z0-9 ]+$";
+                string pattern = @"^[a-zA-Z0-9()'\-.&!+, ]";
                 Regex regex = new Regex(pattern);
 
                 foreach (byte b in bytes) // Iterate throught all the bytes of the file
@@ -42,7 +42,7 @@ namespace FModel
                 bool found = false;
                 foreach (string str in weirdStrings)
                 {
-                    if (str.Length > 2)
+                    if (str.Length >= 2)
                     {
                         if (found) { myNamespacesList.Add(str); break; }
 
@@ -55,10 +55,13 @@ namespace FModel
                         || str == "Glider"
                         || str == "Contrail"
                         || str == "Emote"
+                        || str == "Emoticon"
                         || str == "Toy"
                         || str == "Music")
                         {
                             int index = listBeforeData.IndexOf(str);
+
+                            //Console.WriteLine("DName: " + listBeforeData[index - 3]);
 
                             myNamespacesList.Add(listBeforeData[index - 3]);
                             myNamespacesList.Add(listBeforeData[index - 1]);

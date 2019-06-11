@@ -8,9 +8,6 @@
         {
             switch (selectedLanguage)
             {
-                case "English":
-                    myLocRes = getMyLocRes("en");
-                    break;
                 case "French":
                     myLocRes = getMyLocRes("fr");
                     break;

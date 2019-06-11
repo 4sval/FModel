@@ -90,12 +90,10 @@ namespace FModel
         //METHODS
         private void AddPaKs(IEnumerable<string> thePaks, int index)
         {
-            if (InvokeRequired)
+            Invoke(new Action(() =>
             {
-                BeginInvoke(new Action<IEnumerable<string>, int>(AddPaKs), thePaks, index);
-                return;
-            }
-            loadOneToolStripMenuItem.DropDownItems.Add(Path.GetFileName(thePaks.ElementAt(index)));
+                loadOneToolStripMenuItem.DropDownItems.Add(Path.GetFileName(thePaks.ElementAt(index)));
+            }));
         }
         private void FillWithPaKs()
         {
@@ -123,12 +121,21 @@ namespace FModel
         }
         private void KeyCheck()
         {
-            if (InvokeRequired)
+            Invoke(new Action(() =>
             {
-                BeginInvoke(new Action(KeyCheck));
-                return;
-            }
-            AESKeyTextBox.Text = @"0x" + Settings.Default.AESKey;
+                try
+                {
+                    foreach (string s in AESManager.deserialize())
+                    {
+                        if (!AESKeyComboBox.Items.Contains(@"0x" + s)) { AESKeyComboBox.Items.Add(@"0x" + s); }
+                        AESKeyComboBox.SelectedIndex = AESKeyComboBox.FindStringExact(@"0x" + Settings.Default.AESKey);
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                    AESKeyComboBox.Text = @"0x" + Settings.Default.AESKey;
+                }
+            }));
         }
 
         //EVENTS
@@ -139,6 +146,7 @@ namespace FModel
             DLLImport.SetTreeViewTheme(treeView1.Handle);
 
             _backupFileName = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
+            AESManager.AESEntries = new List<AESEntry>();
 
             // Copy user settings from previous application version if necessary
             if (Settings.Default.UpdateSettings)
@@ -440,8 +448,14 @@ namespace FModel
             ThePak.AllpaksDictionary = new Dictionary<string, string>();
             _diffToExtract = new Dictionary<string, string>();
             ThePak.PaksMountPoint = new Dictionary<string, string>();
-            Settings.Default.AESKey = AESKeyTextBox.Text.Substring(2).ToUpper();
-            Settings.Default.Save();
+
+            Invoke(new Action(() =>
+            {
+                Settings.Default.AESKey = AESKeyComboBox.Text.Substring(2).ToUpper();
+                Settings.Default.Save();
+                AESManager.serialize(Settings.Default.AESKey);
+                KeyCheck();
+            }));
 
             if (selectedPak != null)
             {
@@ -534,13 +548,23 @@ namespace FModel
                 string myContent = DynamicPAKs.GetEndpoint("https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", true);
 
                 if (myContent.Contains("\"errorCode\": \"errors.com.epicgames.common.authentication.authentication_failed\""))
+                {
                     AppendText("EPIC Authentication Failed.", Color.Red, true);
+                }
                 else
+                {
+                    AppendText("Successfully Authenticated.", Color.Green, true);
                     _backupDynamicKeys = AesKeyParser.FromJson(myContent);
+                }
             }
 
-            Settings.Default.AESKey = AESKeyTextBox.Text.Substring(2).ToUpper();
-            Settings.Default.Save();
+            Invoke(new Action(() =>
+            {
+                Settings.Default.AESKey = AESKeyComboBox.Text.Substring(2).ToUpper();
+                Settings.Default.Save();
+                AESManager.serialize(Settings.Default.AESKey);
+                KeyCheck();
+            }));
 
             for (int i = 0; i < allYourPaKs.Length; i++)
             {

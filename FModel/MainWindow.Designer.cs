@@ -59,7 +59,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.FilterTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.AESKeyTextBox = new System.Windows.Forms.TextBox();
             this.ExtractButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -71,6 +70,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.AESKeyComboBox = new System.Windows.Forms.ComboBox();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -211,7 +211,7 @@
             // searchToolStripMenuItem
             // 
             this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
-            this.searchToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.searchToolStripMenuItem.Text = "Search";
             this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
             // 
@@ -271,12 +271,12 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
+            this.panel1.Controls.Add(this.AESKeyComboBox);
             this.panel1.Controls.Add(this.StopButton);
             this.panel1.Controls.Add(this.OpenImageButton);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.FilterTextBox);
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.AESKeyTextBox);
             this.panel1.Controls.Add(this.ExtractButton);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 657);
@@ -333,20 +333,11 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(436, 7);
+            this.label1.Location = new System.Drawing.Point(424, 7);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(52, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "AES Key:";
-            // 
-            // AESKeyTextBox
-            // 
-            this.AESKeyTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AESKeyTextBox.Location = new System.Drawing.Point(494, 4);
-            this.AESKeyTextBox.Name = "AESKeyTextBox";
-            this.AESKeyTextBox.Size = new System.Drawing.Size(442, 20);
-            this.AESKeyTextBox.TabIndex = 1;
-            this.AESKeyTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // ExtractButton
             // 
@@ -469,6 +460,15 @@
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
             this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
             // 
+            // AESKeyComboBox
+            // 
+            this.AESKeyComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.AESKeyComboBox.FormattingEnabled = true;
+            this.AESKeyComboBox.Location = new System.Drawing.Point(482, 4);
+            this.AESKeyComboBox.Name = "AESKeyComboBox";
+            this.AESKeyComboBox.Size = new System.Drawing.Size(454, 21);
+            this.AESKeyComboBox.TabIndex = 7;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -522,7 +522,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button ExtractButton;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox AESKeyTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox FilterTextBox;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
@@ -543,6 +542,7 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker2;
         private System.Windows.Forms.ToolStripMenuItem filesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
+        private System.Windows.Forms.ComboBox AESKeyComboBox;
     }
 }
 

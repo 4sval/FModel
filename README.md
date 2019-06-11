@@ -87,8 +87,8 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
   - [ ] Icons translation
   - [ ] 2FA support
   - [ ] Export Queue
-  - [ ] AES Manager
   - [ ] Nintendo Switch sound files
+  - [x] AES Manager
   - [x] Display support for .locres files
   - [x] Nintendo Switch PAKs
   - [x] Multithreading

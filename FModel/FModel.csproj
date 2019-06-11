@@ -102,6 +102,7 @@
       <HintPath>..\packages\jacobslusser.ScintillaNET.3.6.3\lib\net40\ScintillaNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -118,6 +119,7 @@
     <Compile Include="Converter\UnrealEngineDataToOGG.cs" />
     <Compile Include="Custom\JsonExtensions.cs" />
     <Compile Include="Custom\TypeAssistant.cs" />
+    <Compile Include="Methods\AESManager\AESManager.cs" />
     <Compile Include="Methods\BackPAKs\DynamicPAKs.cs" />
     <Compile Include="Methods\BackPAKs\Parser\AccessCodeParser.cs" />
     <Compile Include="Methods\BackPAKs\Parser\AESKeyParser.cs" />

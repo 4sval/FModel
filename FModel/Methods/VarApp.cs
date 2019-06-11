@@ -84,4 +84,18 @@ namespace FModel
             throw new NotImplementedException();
         }
     }
+
+    public struct AESEntry : IEquatable<AESEntry>
+    {
+        internal AESEntry(string myKey)
+        {
+            theKey = myKey;
+        }
+        public string theKey { get; set; }
+
+        bool IEquatable<AESEntry>.Equals(AESEntry other)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

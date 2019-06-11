@@ -4,6 +4,7 @@ using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
@@ -21,7 +22,7 @@ namespace FModel
         /// <param name="featured"></param>
         public static void GetItemIcon(ItemsIdParser theItem, bool featured = false)
         {
-            if (featured == false)
+            if (!featured)
             {
                 Checking.WasFeatured = false;
                 SearchAthIteDefIcon(theItem);
@@ -207,11 +208,11 @@ namespace FModel
         /// <param name="catName"></param>
         private static void GetFeaturedItemIcon(ItemsIdParser theItem, string catName)
         {
-            if (ThePak.AllpaksDictionary.ContainsKey(catName))
-            {
-                ThePak.CurrentUsedItem = catName;
+            ThePak.CurrentUsedItem = catName;
 
-                string catalogFilePath;
+            string catalogFilePath;
+            try
+            {
                 if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
                 {
                     catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName);
@@ -263,7 +264,10 @@ namespace FModel
                     }
                 }
             }
-            else { GetItemIcon(theItem); }
+            catch (KeyNotFoundException)
+            {
+                GetItemIcon(theItem);
+            }
         }
 
         /// <summary>
