@@ -1110,6 +1110,10 @@ namespace FModel
                             scintilla1.Text = File.ReadAllText(ExtractedFilePath);
                         }));
                     }
+                    if (ExtractedFilePath.Contains(".locres") && !ExtractedFilePath.Contains("EngineOverrides"))
+                    {
+                        SerializeLocRes();
+                    }
                 }
                 else
                     UpdateConsole("Error while extracting " + ThePak.CurrentUsedItem, Color.FromArgb(255, 244, 66, 66), "Error");
@@ -1333,6 +1337,31 @@ namespace FModel
             }
         }
 
+        /// <summary>
+        /// because the filename is usually the same for each language, John Wick extract all of them
+        /// but then i have to manually get the right path from the treeview
+        /// TODO: find bug for EngineOverrides
+        /// </summary>
+        private void SerializeLocRes()
+        {
+            Invoke(new Action(() =>
+            {
+                string treeviewPath = treeView1.SelectedNode.FullPath;
+                if (treeviewPath.StartsWith("..\\")) { treeviewPath = treeviewPath.Substring(3); } //if loading all paks
+
+                string filePath = App.DefaultOutputPath + "\\Extracted\\" + treeviewPath + "\\" + listBox1.SelectedItem;
+                Console.WriteLine(filePath);
+                if (File.Exists(filePath))
+                {
+                    scintilla1.Text = LocResSerializer.StringFinder(filePath);
+                }
+                else
+                {
+                    AppendText("Error while searching " + listBox1.SelectedItem, Color.DarkRed, true);
+                }
+            }));
+        }
+
         private void ConvertTexture2D()
         {
             UpdateConsole(ThePak.CurrentUsedItem + " is a Texture2D", Color.FromArgb(255, 66, 244, 66), "Success");
@@ -1483,20 +1512,5 @@ namespace FModel
             ImagesMerger.AskMergeImages();
         }
         #endregion
-
-        private void LocresStringFinderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Directory.Exists(App.DefaultOutputPath + "\\Extracted\\FortniteGame\\Content\\Localization\\"))
-            {
-                Invoke(new Action(() =>
-                {
-                    scintilla1.Text = TempStringFinder.locresOpenFile(App.DefaultOutputPath + "\\Extracted\\FortniteGame\\Content\\Localization\\");
-                }));
-            }
-            else
-            {
-                AppendText("No .locres file currently extracted", Color.DarkRed, true);
-            }
-        }
     }
 }
