@@ -738,13 +738,13 @@ namespace FModel
                 listBox1.Items.Clear();
             }));
 
-            if (differenceModeToolStripMenuItem.Checked == false)
+            if (!differenceModeToolStripMenuItem.Checked)
             {
                 await Task.Run(() => {
                     CreatePakList(null, true);
                 });
             }
-            if (differenceModeToolStripMenuItem.Checked && updateModeToolStripMenuItem.Checked == false)
+            if (differenceModeToolStripMenuItem.Checked && !updateModeToolStripMenuItem.Checked)
             {
                 await Task.Run(() => {
                     CreatePakList(null, false, true);
@@ -1350,7 +1350,6 @@ namespace FModel
                 if (treeviewPath.StartsWith("..\\")) { treeviewPath = treeviewPath.Substring(3); } //if loading all paks
 
                 string filePath = App.DefaultOutputPath + "\\Extracted\\" + treeviewPath + "\\" + listBox1.SelectedItem;
-                Console.WriteLine(filePath);
                 if (File.Exists(filePath))
                 {
                     scintilla1.Text = LocResSerializer.StringFinder(filePath);

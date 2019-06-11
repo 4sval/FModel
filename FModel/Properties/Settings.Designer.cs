@@ -502,5 +502,17 @@ namespace FModel.Properties {
                 this["ePassword"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("English")]
+        public string IconLanguage {
+            get {
+                return ((string)(this["IconLanguage"]));
+            }
+            set {
+                this["IconLanguage"] = value;
+            }
+        }
     }
 }

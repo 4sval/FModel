@@ -33,7 +33,7 @@ namespace FModel
                 reader.BaseStream.Seek(reader.BaseStream.Length - 49 - 160, SeekOrigin.Begin);
                 uint g4 = reader.ReadUInt32();
 
-                var guid = g1 + "-" + g2 + "-" + g3 + "-" + g4;
+                string guid = g1 + "-" + g2 + "-" + g3 + "-" + g4;
                 return guid;
             }
         }
@@ -63,8 +63,6 @@ namespace FModel
     static class Checking
     {
         public static bool WasFeatured { get; set; }
-        public static int YAfterLoop { get; set; }
-
         public static bool UmWorking { get; set; }
     }
     public struct BundleInfoEntry: IEquatable<BundleInfoEntry>

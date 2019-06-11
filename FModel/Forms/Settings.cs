@@ -35,7 +35,7 @@ namespace FModel.Forms
 
             //FEATURED
             checkBox8.Checked = Properties.Settings.Default.loadFeaturedImage;
-            if (Properties.Settings.Default.loadFeaturedImage == false)
+            if (!Properties.Settings.Default.loadFeaturedImage)
             {
                 if (File.Exists(Properties.Settings.Default.wFilename))
                 {
@@ -67,6 +67,8 @@ namespace FModel.Forms
                     wPictureBox.Image = bmp;
                 }
             }
+
+            comboBox1.SelectedIndex = comboBox1.FindStringExact(Properties.Settings.Default.IconLanguage);
 
             _paKsPathBefore = Properties.Settings.Default.PAKsPath;
             _outputPathBefore = Properties.Settings.Default.ExtractOutput;
@@ -112,6 +114,8 @@ namespace FModel.Forms
                 Properties.Settings.Default.loadFeaturedImage = true;
             if (checkBox8.Checked == false)
                 Properties.Settings.Default.loadFeaturedImage = false;
+
+            Properties.Settings.Default.IconLanguage = comboBox1.SelectedItem.ToString();
 
             Properties.Settings.Default.Save(); //SAVE
             Close();
@@ -250,11 +254,11 @@ namespace FModel.Forms
 
         private void checkBox8_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox8.Checked == false)
+            if (!checkBox8.Checked)
             {
                 Bitmap bmp = new Bitmap(Resources.wTemplate);
                 Graphics g = Graphics.FromImage(bmp);
-                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                if (File.Exists(Properties.Settings.Default.wFilename))
                 {
                     Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
                     var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
@@ -266,7 +270,7 @@ namespace FModel.Forms
             {
                 Bitmap bmp = new Bitmap(Resources.wTemplateF);
                 Graphics g = Graphics.FromImage(bmp);
-                if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
+                if (File.Exists(Properties.Settings.Default.wFilename))
                 {
                     Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
                     var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
@@ -278,7 +282,7 @@ namespace FModel.Forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var assetsForm = new Forms.IconGeneratorAssets();
+            var assetsForm = new IconGeneratorAssets();
             if (Application.OpenForms[assetsForm.Name] == null)
             {
                 assetsForm.Show();

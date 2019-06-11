@@ -127,6 +127,9 @@
     <Compile Include="Methods\ChallengeGenerator\DrawingRewards.cs" />
     <Compile Include="Methods\DLLImport.cs" />
     <Compile Include="Methods\IconGenerator\DrawText.cs" />
+    <Compile Include="Methods\IconGenerator\Translations\LoadLocRes.cs" />
+    <Compile Include="Methods\IconGenerator\Translations\SearchNamespaces.cs" />
+    <Compile Include="Methods\IconGenerator\Translations\SearchResource.cs" />
     <Compile Include="Methods\ImagesMerger\ImagesMerger.cs" />
     <Compile Include="Methods\LocRes\LocResSerializer.cs" />
     <Compile Include="Methods\Scintilla\MyScintilla.cs" />
@@ -177,6 +180,7 @@
     <Compile Include="Parser\Challenges\ChallengeBundleIdParser.cs" />
     <Compile Include="Parser\Featured\FeaturedParser.cs" />
     <Compile Include="Parser\Items\ItemIDParser.cs" />
+    <Compile Include="Parser\LocRes\LocResParser.cs" />
     <Compile Include="Parser\Meshes\MeshesParser.cs" />
     <Compile Include="Parser\Quests\QuestParser.cs" />
     <Compile Include="Parser\RenderMat\RenderSwitchMaterial.cs" />
@@ -251,7 +255,6 @@
     <None Include="Resources\T-Icon-Traversal-64.png" />
     <None Include="Resources\T-Icon-Animated-64.png" />
     <None Include="Resources\T-Icon-Adaptive-64.png" />
-    <None Include="Resources\Quest.png" />
     <None Include="Resources\FModel_Logo.png" />
     <None Include="Resources\wTemplateF.png" />
     <None Include="Resources\wTemplate.png" />
@@ -261,7 +264,6 @@
     <None Include="Resources\R512.png" />
     <None Include="Resources\M512.png" />
     <None Include="Resources\L512.png" />
-    <None Include="Resources\I512.png" />
     <None Include="Resources\E512.png" />
     <None Include="Resources\C512.png" />
     <None Include="Resources\BG512.png" />
