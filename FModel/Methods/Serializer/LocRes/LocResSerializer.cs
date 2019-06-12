@@ -5,19 +5,25 @@ using System.Text;
 
 namespace FModel
 {
+    /*
+     * Author: Asval
+     * pretty sure it can be refactored
+     * 
+     * */
     static class LocResSerializer
     {
-        //TODO: refactor
         private static long LocalizedStringArrayOffset { get; set; }
         private static string[] LocalizedStringArray { get; set; }
-        private static int stringIndex { get; set; }
         private static string NamespacesString { get; set; }
-        private static string myKey = "LocResText";
+        private static string myKey { get; set; }
         private static Dictionary<string, Dictionary<string, string>> LocResDict { get; set; }
 
         public static string StringFinder(string filepath)
         {
             LocResDict = new Dictionary<string, Dictionary<string, string>>();
+            myKey = "LocResText";
+            NamespacesString = "";
+            LocalizedStringArrayOffset = -1;
 
             using (BinaryReader reader = new BinaryReader(File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Encoding.GetEncoding(1252)))
             {
@@ -25,7 +31,6 @@ namespace FModel
 
                 byte VersionNumber = reader.ReadByte();
 
-                LocalizedStringArrayOffset = -1;
                 LocalizedStringArrayOffset = reader.ReadInt64();
                 if (LocalizedStringArrayOffset != -1)
                 {
@@ -39,7 +44,7 @@ namespace FModel
                     LocalizedStringArray = new string[arrayLength];
                     for (int i = 0; i < LocalizedStringArray.Length; i++)
                     {
-                        LocalizedStringArray[i] = readCleanString(reader);
+                        LocalizedStringArray[i] = AssetReader.readCleanString(reader);
                     }
 
                     reader.BaseStream.Seek(CurrentFileOffset, SeekOrigin.Begin);
@@ -56,31 +61,6 @@ namespace FModel
             }
 
             return JsonConvert.SerializeObject(LocResDict, Formatting.Indented);
-        }
-
-        private static string readCleanString(BinaryReader reader)
-        {
-            reader.ReadInt32();
-            int stringLength = 0;
-            if (reader.BaseStream.Position != reader.BaseStream.Length)
-            {
-                stringLength = reader.ReadInt32();
-            }
-
-            if (stringLength < 0)
-            {
-                byte[] data = reader.ReadBytes((-1 - stringLength) * 2);
-                reader.ReadBytes(2);
-                return Encoding.Unicode.GetString(data);
-            }
-            else if (stringLength == 0)
-            {
-                return "";
-            }
-            else
-            {
-                return Encoding.GetEncoding(1252).GetString(reader.ReadBytes(stringLength)).TrimEnd('\0');
-            }
         }
 
         private static void readNamespaces(BinaryReader br)
@@ -104,7 +84,7 @@ namespace FModel
             }
 
             br.ReadInt32();
-            stringIndex = br.ReadInt32();
+            int stringIndex = br.ReadInt32();
             if (stringIndex > LocalizedStringArray.Length || stringIndex < 0)
             {
                 if (!LocResDict.ContainsKey(NamespacesString))
@@ -118,7 +98,12 @@ namespace FModel
                 int KeyCount = br.ReadInt32();
                 for (int i = 0; i < KeyCount; i++)
                 {
-                    readNpKeys(br);
+                    myKey = AssetReader.readCleanString(br);
+
+                    br.ReadInt32();
+                    stringIndex = br.ReadInt32();
+
+                    LocResDict[NamespacesString][myKey] = LocalizedStringArray[stringIndex];
                 }
             }
             else
@@ -129,32 +114,6 @@ namespace FModel
                     LocResDict[NamespacesString][myKey] = LocalizedStringArray[stringIndex];
                 }
             }
-        }
-
-        private static void readNpKeys(BinaryReader reader)
-        {
-            reader.ReadInt32();
-            int stringLength = reader.ReadInt32();
-
-            if (stringLength < 0)
-            {
-                byte[] data = reader.ReadBytes((-1 - stringLength) * 2);
-                reader.ReadBytes(2);
-                myKey = Encoding.Unicode.GetString(data);
-            }
-            else if (stringLength == 0)
-            {
-                myKey = "";
-            }
-            else
-            {
-                myKey = Encoding.GetEncoding(1252).GetString(reader.ReadBytes(stringLength)).TrimEnd('\0');
-            }
-
-            reader.ReadInt32();
-            stringIndex = reader.ReadInt32();
-
-            LocResDict[NamespacesString][myKey] = LocalizedStringArray[stringIndex];
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,10 +8,10 @@ using System.Text.RegularExpressions;
 
 namespace FModel
 {
-    static class SearchNamespaces
+    static class AssetNameMap
     {
         public static List<string> myNamespacesList { get; set; }
-        public static void searchNamespacesInUexp(string filepath)
+        public static void searchStringsInUexp(string filepath)
         {
             myNamespacesList = new List<string>();
 
@@ -68,6 +69,39 @@ namespace FModel
 
                             found = true;
                         }
+                    }
+                }
+            }
+        }
+
+        public static void getNameMap(string filepath)
+        {
+            Console.Clear();
+
+            using (BinaryReader reader = new BinaryReader(File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Encoding.GetEncoding(1252)))
+            {
+                reader.ReadBytes(24);
+
+                int fileLength = reader.ReadInt32();
+                Console.WriteLine(fileLength);
+
+                reader.ReadBytes(13);
+                int NamespaceCount = reader.ReadInt32();
+
+                long LocalizedStringArrayOffset = -1;
+                LocalizedStringArrayOffset = reader.ReadInt64();
+                if (LocalizedStringArrayOffset != -1)
+                {
+                    long newOffset = LocalizedStringArrayOffset - 4;
+                    reader.BaseStream.Seek(newOffset, SeekOrigin.Begin);
+
+                    string[] LocalizedStringArray = new string[NamespaceCount];
+                    for (int i = 0; i < LocalizedStringArray.Length; i++)
+                    {
+                        string tag = AssetReader.readCleanString(reader);
+                        if (tag != "None") { LocalizedStringArray[i] = tag; }
+
+                        Console.WriteLine(LocalizedStringArray[i]);
                     }
                 }
             }

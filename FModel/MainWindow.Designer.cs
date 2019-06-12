@@ -54,6 +54,7 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutFModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.AESKeyComboBox = new System.Windows.Forms.ComboBox();
             this.StopButton = new System.Windows.Forms.Button();
             this.OpenImageButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -70,7 +71,6 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
-            this.AESKeyComboBox = new System.Windows.Forms.ComboBox();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -284,6 +284,15 @@
             this.panel1.Size = new System.Drawing.Size(1191, 26);
             this.panel1.TabIndex = 2;
             // 
+            // AESKeyComboBox
+            // 
+            this.AESKeyComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.AESKeyComboBox.FormattingEnabled = true;
+            this.AESKeyComboBox.Location = new System.Drawing.Point(482, 4);
+            this.AESKeyComboBox.Name = "AESKeyComboBox";
+            this.AESKeyComboBox.Size = new System.Drawing.Size(454, 21);
+            this.AESKeyComboBox.TabIndex = 7;
+            // 
             // StopButton
             // 
             this.StopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -459,15 +468,6 @@
             this.backgroundWorker2.WorkerSupportsCancellation = true;
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
             this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
-            // 
-            // AESKeyComboBox
-            // 
-            this.AESKeyComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AESKeyComboBox.FormattingEnabled = true;
-            this.AESKeyComboBox.Location = new System.Drawing.Point(482, 4);
-            this.AESKeyComboBox.Name = "AESKeyComboBox";
-            this.AESKeyComboBox.Size = new System.Drawing.Size(454, 21);
-            this.AESKeyComboBox.TabIndex = 7;
             // 
             // MainWindow
             // 

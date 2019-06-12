@@ -61,7 +61,7 @@ namespace FModel
         }
 
         /// <summary>
-        /// We get the file list of currentPak, we find all files that matched our currentItem, for each result we get its indexes (it's used to get its data)
+        /// We get the file list of currentPak, we find all files that matched our currentItem, for each result we get its index (it's used to get its data)
         /// Then we can use WriteFile to write each results with its data
         /// If currentPak is the same twice in a row, we do not try to get a new file list
         /// </summary>
@@ -98,6 +98,11 @@ namespace FModel
             }
 
             currentPakToCheck = currentPak;
+            /*if (File.Exists(AssetPath.Substring(0, AssetPath.LastIndexOf(".")) + ".uasset")) //TEST
+            {
+                AssetNameMap.getNameMap(AssetPath.Substring(0, AssetPath.LastIndexOf(".")) + ".uasset");
+            }*/
+
             return AssetPath;
         }
 

@@ -279,20 +279,15 @@ namespace FModel
                         break;
                     }
 
-                    if (JohnWick.MyExtractor.GetFileList() != null)
+                    string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                    if (CurrentUsedPakLines != null)
                     {
-                        ThePak.PaksMountPoint.Add(arCurrentUsedPak, JohnWick.MyExtractor.GetMountPoint().Substring(9));
+                        string mountPoint = JohnWick.MyExtractor.GetMountPoint();
+                        ThePak.PaksMountPoint.Add(arCurrentUsedPak, mountPoint.Substring(9));
 
-                        string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
                         for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                         {
-                            CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
-
-                            if (loadAllPaKs)
-                            {
-                                sb.Append(CurrentUsedPakLines[ii]);
-                                sb.AppendLine();
-                            }
+                            CurrentUsedPakLines[ii] = mountPoint.Substring(6) + CurrentUsedPakLines[ii];
 
                             string CurrentUsedPakFileName = CurrentUsedPakLines[ii].Substring(CurrentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
                             if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
@@ -309,47 +304,53 @@ namespace FModel
                                     ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName, arCurrentUsedPak);
                                 }
                             }
-                        }
-                        if (loadAllPaKs)
-                        {
-                            UpdateConsole(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
 
-                            File.WriteAllText(App.DefaultOutputPath + "\\FortnitePAKs.txt", sb.ToString());
-
-                            ThePak.CurrentUsedPak = null;
-                            ThePak.CurrentUsedPakGuid = null;
+                            if (loadAllPaKs)
+                            {
+                                sb.Append(CurrentUsedPakLines[ii] + "\n");
+                            }
                         }
+
+                        if (loadAllPaKs) { UpdateConsole(".PAK mount point: " + mountPoint.Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting"); }
+                        if (theSinglePak != null && arCurrentUsedPak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
                     }
                 }
-
-                if (theSinglePak != null)
-                {
-                    ThePak.CurrentUsedPak = theSinglePak.ClickedItem.Text;
-                    ThePak.CurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
-
-                    if (arCurrentUsedPak == theSinglePak.ClickedItem.Text && JohnWick.MyExtractor.GetFileList() != null)
-                        PakAsTxt = JohnWick.MyExtractor.GetFileList().ToArray();
-                }
             }
-            if (theSinglePak != null && ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text) != "0-0-0-0") //LOADING DYNAMIC PAK
+            if (theSinglePak != null)
             {
                 ThePak.CurrentUsedPak = theSinglePak.ClickedItem.Text;
                 ThePak.CurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
 
-                try
+                if (ThePak.CurrentUsedPakGuid != "0-0-0-0") //LOADING DYNAMIC PAK
                 {
-                    JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + theSinglePak.ClickedItem.Text, Settings.Default.AESKey);
-
-                    if (JohnWick.MyExtractor.GetFileList() != null)
+                    try
                     {
-                        ThePak.PaksMountPoint.Add(theSinglePak.ClickedItem.Text, JohnWick.MyExtractor.GetMountPoint().Substring(9));
+                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak, Settings.Default.AESKey);
+
                         PakAsTxt = JohnWick.MyExtractor.GetFileList().ToArray();
+                        if (PakAsTxt != null)
+                        {
+                            string mountPoint = JohnWick.MyExtractor.GetMountPoint();
+                            ThePak.PaksMountPoint.Add(ThePak.CurrentUsedPak, mountPoint.Substring(9));
+
+                            for (int i = 0; i < PakAsTxt.Length; i++)
+                            {
+                                PakAsTxt[i] = mountPoint.Substring(6) + PakAsTxt[i];
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        UpdateConsole("Can't read " + ThePak.CurrentUsedPak + " with this key", Color.FromArgb(255, 244, 66, 66), "Error");
                     }
                 }
-                catch (Exception)
-                {
-                    UpdateConsole("Can't read " + theSinglePak.ClickedItem.Text + " with this key", Color.FromArgb(255, 244, 66, 66), "Error");
-                }
+            }
+            if (loadAllPaKs)
+            {
+                File.WriteAllText(App.DefaultOutputPath + "\\FortnitePAKs.txt", sb.ToString()); //File will always exist
+
+                ThePak.CurrentUsedPak = null;
+                ThePak.CurrentUsedPakGuid = null;
             }
             UpdateConsole("Building tree, please wait...", Color.FromArgb(255, 244, 132, 66), "Loading");
         }
@@ -448,6 +449,7 @@ namespace FModel
             ThePak.AllpaksDictionary = new Dictionary<string, string>();
             _diffToExtract = new Dictionary<string, string>();
             ThePak.PaksMountPoint = new Dictionary<string, string>();
+            PakAsTxt = null;
 
             Invoke(new Action(() =>
             {
@@ -485,8 +487,9 @@ namespace FModel
                 //ADD TO DICTIONNARY
                 RegisterPaKsinDict(_paksArray, null, true);
 
-                if (!File.Exists(App.DefaultOutputPath + "\\FortnitePAKs.txt"))
+                if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0) //File will always exist so we check the file size instead
                 {
+                    File.Delete(App.DefaultOutputPath + "\\FortnitePAKs.txt");
                     UpdateConsole("Can't read .PAK files with this key", Color.FromArgb(255, 244, 66, 66), "Error");
                 }
                 else
@@ -582,18 +585,14 @@ namespace FModel
                         break;
                     }
 
-                    if (JohnWick.MyExtractor.GetFileList() != null)
+                    string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                    if (CurrentUsedPakLines != null)
                     {
-                        if (!File.Exists(App.DefaultOutputPath + "\\Backup" + _backupFileName))
-                            File.Create(App.DefaultOutputPath + "\\Backup" + _backupFileName).Dispose();
-
-                        string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
                         for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                         {
                             CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
 
-                            sb.Append(CurrentUsedPakLines[ii]);
-                            sb.AppendLine();
+                            sb.Append(CurrentUsedPakLines[ii] + "\n");
                         }
                         UpdateConsole(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
                     }
@@ -626,15 +625,14 @@ namespace FModel
                                 continue;
                             }
 
-                            if (JohnWick.MyExtractor.GetFileList() != null)
+                            string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                            if (CurrentUsedPakLines != null)
                             {
-                                string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
                                 for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                                 {
                                     CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
 
-                                    sb.Append(CurrentUsedPakLines[ii]);
-                                    sb.AppendLine();
+                                    sb.Append(CurrentUsedPakLines[ii] + "\n");
                                 }
                                 AppendText("Backing up ", Color.Black);
                                 AppendText(arCurrentUsedPak, Color.DarkRed, true);
@@ -643,12 +641,17 @@ namespace FModel
                     }
                 }
             }
-            File.WriteAllText(App.DefaultOutputPath + "\\Backup" + _backupFileName, sb.ToString());
 
-            if (File.Exists(App.DefaultOutputPath + "\\Backup" + _backupFileName))
+            File.WriteAllText(App.DefaultOutputPath + "\\Backup" + _backupFileName, sb.ToString()); //File will always exist so we check the file size instead
+            if (new System.IO.FileInfo(App.DefaultOutputPath + "\\Backup" + _backupFileName).Length > 0)
+            {
                 UpdateConsole("\\Backup" + _backupFileName + " successfully created", Color.FromArgb(255, 66, 244, 66), "Success");
+            }
             else
+            {
+                File.Delete(App.DefaultOutputPath + "\\Backup" + _backupFileName);
                 UpdateConsole("Can't create " + _backupFileName.Substring(1), Color.FromArgb(255, 244, 66, 66), "Error");
+            }
         }
         private void UpdateModeExtractSave()
         {

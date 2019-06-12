@@ -130,10 +130,11 @@
     <Compile Include="Methods\DLLImport.cs" />
     <Compile Include="Methods\IconGenerator\DrawText.cs" />
     <Compile Include="Methods\IconGenerator\Translations\LoadLocRes.cs" />
-    <Compile Include="Methods\IconGenerator\Translations\SearchNamespaces.cs" />
+    <Compile Include="Methods\IconGenerator\Translations\AssetNameMap.cs" />
     <Compile Include="Methods\IconGenerator\Translations\SearchResource.cs" />
     <Compile Include="Methods\ImagesMerger\ImagesMerger.cs" />
-    <Compile Include="Methods\LocRes\LocResSerializer.cs" />
+    <Compile Include="Methods\Serializer\AssetReader.cs" />
+    <Compile Include="Methods\Serializer\LocRes\LocResSerializer.cs" />
     <Compile Include="Methods\Scintilla\MyScintilla.cs" />
     <Compile Include="Methods\Utilities\FontUtilities.cs" />
     <Compile Include="Methods\IconGenerator\ItemIcon.cs" />
