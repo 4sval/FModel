@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FModel
 {
-    class AssetReader
+    static class AssetReader
     {
         public static string readCleanString(BinaryReader reader)
         {

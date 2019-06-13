@@ -6,6 +6,8 @@ namespace FModel
 {
     static class ThePak
     {
+        public static List<PaksEntry> mainPaksList { get; set; }
+        public static List<PaksEntry> dynamicPaksList { get; set; }
         public static string CurrentUsedPak { get; set; }
         public static string CurrentUsedPakGuid { get; set; }
         public static string CurrentUsedItem { get; set; }
@@ -85,15 +87,17 @@ namespace FModel
         }
     }
 
-    public struct AESEntry : IEquatable<AESEntry>
+    public struct PaksEntry : IEquatable<PaksEntry>
     {
-        internal AESEntry(string myKey)
+        internal PaksEntry(string myPak, string myPakGuid)
         {
-            theKey = myKey;
+            thePak = myPak;
+            thePakGuid = myPakGuid;
         }
-        public string theKey { get; set; }
+        public string thePak { get; set; }
+        public string thePakGuid { get; set; }
 
-        bool IEquatable<AESEntry>.Equals(AESEntry other)
+        bool IEquatable<PaksEntry>.Equals(PaksEntry other)
         {
             throw new NotImplementedException();
         }

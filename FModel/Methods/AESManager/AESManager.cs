@@ -8,7 +8,7 @@ namespace FModel
 {
     static class AESManager
     {
-        public static List<AESEntry> AESEntries { get; set; }
+        /*public static List<AESEntry> AESEntries { get; set; }
         private static XmlSerializer serializer = new XmlSerializer(typeof(List<AESEntry>));
 
         public static void serialize(string data)
@@ -51,6 +51,6 @@ namespace FModel
                 toReturn[i] = outputList[i].theKey;
             }
             return toReturn;
-        }
+        }*/
     }
 }

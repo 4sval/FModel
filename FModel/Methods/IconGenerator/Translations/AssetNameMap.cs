@@ -82,8 +82,8 @@ namespace FModel
             {
                 reader.ReadBytes(24);
 
-                int fileLength = reader.ReadInt32();
-                Console.WriteLine(fileLength);
+                int AssetLength = reader.ReadInt32();
+                Console.WriteLine(AssetLength);
 
                 reader.ReadBytes(13);
                 int NamespaceCount = reader.ReadInt32();
@@ -99,9 +99,7 @@ namespace FModel
                     for (int i = 0; i < LocalizedStringArray.Length; i++)
                     {
                         string tag = AssetReader.readCleanString(reader);
-                        if (tag != "None") { LocalizedStringArray[i] = tag; }
-
-                        Console.WriteLine(LocalizedStringArray[i]);
+                        if (tag != "None") { LocalizedStringArray[i] = tag; Console.WriteLine(LocalizedStringArray[i]); }
                     }
                 }
             }

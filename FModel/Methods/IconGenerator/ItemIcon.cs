@@ -4,6 +4,7 @@ using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -262,6 +263,7 @@ namespace FModel
                             //do not crash when JsonSerialization does weird stuff
                         }
                     }
+                    else { GetItemIcon(theItem); } //Trails_ID_059_Sony2 smh :thinking:
                 }
             }
             catch (KeyNotFoundException)

@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{8FABCD3A-9D55-4B54-B237-B259D815DEB8}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>FModel</RootNamespace>
     <AssemblyName>FModel</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
@@ -119,6 +119,12 @@
     <Compile Include="Converter\UnrealEngineDataToOGG.cs" />
     <Compile Include="Custom\JsonExtensions.cs" />
     <Compile Include="Custom\TypeAssistant.cs" />
+    <Compile Include="Forms\AESManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AESManager.Designer.cs">
+      <DependentUpon>AESManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="Methods\AESManager\AESManager.cs" />
     <Compile Include="Methods\BackPAKs\DynamicPAKs.cs" />
     <Compile Include="Methods\BackPAKs\Parser\AccessCodeParser.cs" />
@@ -192,6 +198,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\About.resx">
       <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AESManager.resx">
+      <DependentUpon>AESManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SearchFiles.resx">
       <DependentUpon>SearchFiles.cs</DependentUpon>

@@ -30,7 +30,6 @@ namespace FModel
     {
         #region to refactor
         private static Stopwatch StopWatch { get; set; }
-        private static string[] _paksArray { get; set; }
         public static string[] PakAsTxt { get; set; }
         private static Dictionary<string, string> _diffToExtract { get; set; }
         private static string _backupFileName { get; set; }
@@ -87,7 +86,11 @@ namespace FModel
         #endregion
 
         #region LOAD & LEAVE
-        //METHODS
+        /// <summary>
+        /// add all paks found to the toolstripmenu as an item
+        /// </summary>
+        /// <param name="thePaks"></param>
+        /// <param name="index"></param>
         private void AddPaKs(IEnumerable<string> thePaks, int index)
         {
             Invoke(new Action(() =>
@@ -95,6 +98,11 @@ namespace FModel
                 loadOneToolStripMenuItem.DropDownItems.Add(Path.GetFileName(thePaks.ElementAt(index)));
             }));
         }
+
+        /// <summary>
+        /// check if path exists
+        /// get all files with extension .pak, add them to the toolstripmenu, read the guid and add them to the right list
+        /// </summary>
         private void FillWithPaKs()
         {
             if (!Directory.Exists(Settings.Default.PAKsPath))
@@ -108,34 +116,23 @@ namespace FModel
             else
             {
                 IEnumerable<string> yourPaKs = Directory.GetFiles(Settings.Default.PAKsPath).Where(x => x.EndsWith(".pak"));
-                int count = 0;
-                var thePaks = yourPaKs as string[] ?? yourPaKs.ToArray();
-                foreach (var dummy in thePaks) count++;
-                _paksArray = new string[count];
-                for (int i = 0; i < thePaks.Count(); i++)
+                for (int i = 0; i < yourPaKs.Count(); i++)
                 {
-                    AddPaKs(thePaks, i);
-                    _paksArray[i] = Path.GetFileName(thePaks.ElementAt(i));
-                }
-            }
-        }
-        private void KeyCheck()
-        {
-            Invoke(new Action(() =>
-            {
-                try
-                {
-                    foreach (string s in AESManager.deserialize())
+                    AddPaKs(yourPaKs, i); //add to toolstrip
+
+                    string arCurrentUsedPak = yourPaKs.ElementAt(i); //SET CURRENT PAK
+                    string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + Path.GetFileName(arCurrentUsedPak)); //SET CURRENT PAK GUID
+
+                    if (arCurrentUsedPakGuid == "0-0-0-0")
                     {
-                        if (!AESKeyComboBox.Items.Contains(@"0x" + s)) { AESKeyComboBox.Items.Add(@"0x" + s); }
-                        AESKeyComboBox.SelectedIndex = AESKeyComboBox.FindStringExact(@"0x" + Settings.Default.AESKey);
+                        ThePak.mainPaksList.Add(new PaksEntry(Path.GetFileName(arCurrentUsedPak), arCurrentUsedPakGuid));
+                    }
+                    if (arCurrentUsedPakGuid != "0-0-0-0")
+                    {
+                        ThePak.dynamicPaksList.Add(new PaksEntry(Path.GetFileName(arCurrentUsedPak), arCurrentUsedPakGuid));
                     }
                 }
-                catch (FileNotFoundException)
-                {
-                    AESKeyComboBox.Text = @"0x" + Settings.Default.AESKey;
-                }
-            }));
+            }
         }
 
         //EVENTS
@@ -146,7 +143,8 @@ namespace FModel
             DLLImport.SetTreeViewTheme(treeView1.Handle);
 
             _backupFileName = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
-            AESManager.AESEntries = new List<AESEntry>();
+            ThePak.dynamicPaksList = new List<PaksEntry>();
+            ThePak.mainPaksList = new List<PaksEntry>();
 
             // Copy user settings from previous application version if necessary
             if (Settings.Default.UpdateSettings)
@@ -158,7 +156,6 @@ namespace FModel
 
             await Task.Run(() => {
                 FillWithPaKs();
-                KeyCheck();
                 Utilities.SetOutputFolder();
                 Utilities.SetFolderPermission(App.DefaultOutputPath);
                 Utilities.JohnWickCheck();
@@ -255,65 +252,71 @@ namespace FModel
                 OpenMe();
             };
         }
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            var aesForms = new Forms.AESManager();
+            if (Application.OpenForms[aesForms.Name] == null)
+            {
+                aesForms.Show();
+            }
+            else
+            {
+                Application.OpenForms[aesForms.Name].Focus();
+            }
+        }
         #endregion
 
         #region PAKLIST & FILL TREE
         //METHODS
-        private void RegisterPaKsinDict(string[] allYourPaKs, ToolStripItemClickedEventArgs theSinglePak = null, bool loadAllPaKs = false)
+        private void RegisterPaKsinDict(ToolStripItemClickedEventArgs theSinglePak = null, bool loadAllPaKs = false)
         {
             StringBuilder sb = new StringBuilder();
 
-            for (int i = 0; i < allYourPaKs.Length; i++)
+            for (int i = 0; i < ThePak.mainPaksList.Count; i++)
             {
-                string arCurrentUsedPak = allYourPaKs[i]; //SET CURRENT PAK
-                string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak); //SET CURRENT PAK GUID
-
-                if (arCurrentUsedPakGuid == "0-0-0-0") //NO DYNAMIC PAK IN DICTIONARY
+                try
                 {
-                    try
-                    {
-                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, Settings.Default.AESKey);
-                    }
-                    catch (Exception)
-                    {
-                        break;
-                    }
+                    JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
+                }
+                catch (Exception)
+                {
+                    break;
+                }
 
-                    string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
-                    if (CurrentUsedPakLines != null)
-                    {
-                        string mountPoint = JohnWick.MyExtractor.GetMountPoint();
-                        ThePak.PaksMountPoint.Add(arCurrentUsedPak, mountPoint.Substring(9));
+                string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                if (CurrentUsedPakLines != null)
+                {
+                    string mountPoint = JohnWick.MyExtractor.GetMountPoint();
+                    ThePak.PaksMountPoint.Add(ThePak.mainPaksList[i].thePak, mountPoint.Substring(9));
 
-                        for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
+                    for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
+                    {
+                        CurrentUsedPakLines[ii] = mountPoint.Substring(6) + CurrentUsedPakLines[ii];
+
+                        string CurrentUsedPakFileName = CurrentUsedPakLines[ii].Substring(CurrentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
+                        if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
                         {
-                            CurrentUsedPakLines[ii] = mountPoint.Substring(6) + CurrentUsedPakLines[ii];
-
-                            string CurrentUsedPakFileName = CurrentUsedPakLines[ii].Substring(CurrentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
-                            if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
+                            if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal))))
                             {
-                                if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal))))
-                                {
-                                    ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal)), arCurrentUsedPak);
-                                }
+                                ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.mainPaksList[i].thePak);
                             }
-                            else
+                        }
+                        else
+                        {
+                            if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName))
                             {
-                                if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName))
-                                {
-                                    ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName, arCurrentUsedPak);
-                                }
-                            }
-
-                            if (loadAllPaKs)
-                            {
-                                sb.Append(CurrentUsedPakLines[ii] + "\n");
+                                ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName, ThePak.mainPaksList[i].thePak);
                             }
                         }
 
-                        if (loadAllPaKs) { UpdateConsole(".PAK mount point: " + mountPoint.Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting"); }
-                        if (theSinglePak != null && arCurrentUsedPak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
+                        if (loadAllPaKs)
+                        {
+                            sb.Append(CurrentUsedPakLines[ii] + "\n");
+                        }
                     }
+
+                    if (loadAllPaKs) { UpdateConsole(".PAK mount point: " + mountPoint.Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting"); }
+                    if (theSinglePak != null && ThePak.mainPaksList[i].thePak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
                 }
             }
             if (theSinglePak != null)
@@ -451,20 +454,12 @@ namespace FModel
             ThePak.PaksMountPoint = new Dictionary<string, string>();
             PakAsTxt = null;
 
-            Invoke(new Action(() =>
-            {
-                Settings.Default.AESKey = AESKeyComboBox.Text.Substring(2).ToUpper();
-                Settings.Default.Save();
-                AESManager.serialize(Settings.Default.AESKey);
-                KeyCheck();
-            }));
-
             if (selectedPak != null)
             {
                 UpdateConsole(Settings.Default.PAKsPath + "\\" + selectedPak.ClickedItem.Text, Color.FromArgb(255, 244, 132, 66), "Loading");
 
                 //ADD TO DICTIONNARY
-                RegisterPaKsinDict(_paksArray, selectedPak);
+                RegisterPaKsinDict(selectedPak);
 
                 if (PakAsTxt != null)
                 {
@@ -485,7 +480,7 @@ namespace FModel
             if (loadAllPaKs)
             {
                 //ADD TO DICTIONNARY
-                RegisterPaKsinDict(_paksArray, null, true);
+                RegisterPaKsinDict(null, true);
 
                 if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0) //File will always exist so we check the file size instead
                 {
@@ -512,7 +507,7 @@ namespace FModel
             if (getDiff)
             {
                 //ADD TO DICTIONNARY
-                RegisterPaKsinDict(_paksArray, null, true);
+                RegisterPaKsinDict(null, true);
 
                 if (!File.Exists(App.DefaultOutputPath + "\\FortnitePAKs.txt"))
                 {
@@ -541,7 +536,7 @@ namespace FModel
                 }
             }
         }
-        private void CreateBackupList(string[] allYourPaKs)
+        private void CreateBackupList()
         {
             _backupDynamicKeys = null;
             StringBuilder sb = new StringBuilder();
@@ -561,43 +556,34 @@ namespace FModel
                 }
             }
 
-            Invoke(new Action(() =>
+            for (int i = 0; i < ThePak.mainPaksList.Count; i++)
             {
-                Settings.Default.AESKey = AESKeyComboBox.Text.Substring(2).ToUpper();
-                Settings.Default.Save();
-                AESManager.serialize(Settings.Default.AESKey);
-                KeyCheck();
-            }));
-
-            for (int i = 0; i < allYourPaKs.Length; i++)
-            {
-                string arCurrentUsedPak = allYourPaKs[i]; //SET CURRENT PAK
-                string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak); //SET CURRENT PAK GUID
-
-                if (arCurrentUsedPakGuid == "0-0-0-0") //NO DYNAMIC PAK
+                try
                 {
-                    try
-                    {
-                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, Settings.Default.AESKey);
-                    }
-                    catch (Exception)
-                    {
-                        break;
-                    }
-
-                    string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
-                    if (CurrentUsedPakLines != null)
-                    {
-                        for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
-                        {
-                            CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
-
-                            sb.Append(CurrentUsedPakLines[ii] + "\n");
-                        }
-                        UpdateConsole(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
-                    }
+                    JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
                 }
-                else if (_backupDynamicKeys != null)
+                catch (Exception)
+                {
+                    AppendText("0x" + Settings.Default.AESKey + " doesn't work with the main paks.", Color.Red, true);
+                    break;
+                }
+
+                string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                if (CurrentUsedPakLines != null)
+                {
+                    for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
+                    {
+                        CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
+
+                        sb.Append(CurrentUsedPakLines[ii] + "\n");
+                    }
+                    UpdateConsole(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
+                }
+            }
+
+            for (int i = 0; i < ThePak.dynamicPaksList.Count; i++)
+            {
+                if (_backupDynamicKeys != null)
                 {
                     string oldGuid = string.Empty;
                     foreach (string myString in _backupDynamicKeys)
@@ -610,7 +596,7 @@ namespace FModel
                          * it works fine that way because of the loop through all the paks
                          * even if in keychain we do "found 1004" -> "found 1001" -> "found 1004" through the paks we do 1000 -> 1001 -> 1002...
                         ***/
-                        if (newGuid == arCurrentUsedPakGuid && oldGuid != newGuid)
+                        if (newGuid == ThePak.dynamicPaksList[i].thePakGuid && oldGuid != newGuid)
                         {
                             byte[] bytes = Convert.FromBase64String(parts[1]);
                             string aeskey = BitConverter.ToString(bytes).Replace("-", "");
@@ -618,10 +604,11 @@ namespace FModel
 
                             try
                             {
-                                JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + arCurrentUsedPak, aeskey);
+                                JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.dynamicPaksList[i].thePak, aeskey);
                             }
                             catch (Exception)
                             {
+                                AppendText("0x" + aeskey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true); //this should never be triggered
                                 continue;
                             }
 
@@ -635,7 +622,7 @@ namespace FModel
                                     sb.Append(CurrentUsedPakLines[ii] + "\n");
                                 }
                                 AppendText("Backing up ", Color.Black);
-                                AppendText(arCurrentUsedPak, Color.DarkRed, true);
+                                AppendText(ThePak.dynamicPaksList[i].thePak, Color.DarkRed, true);
                             }
                         }
                     }
@@ -742,6 +729,7 @@ namespace FModel
         private async void loadOneToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             await Task.Run(() => {
+                JohnWick.myArray = null;
                 Invoke(new Action(() =>
                 {
                     scintilla1.Text = "";
@@ -756,6 +744,7 @@ namespace FModel
         }
         private async void loadAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            JohnWick.myArray = null;
             Invoke(new Action(() =>
             {
                 scintilla1.Text = "";
@@ -787,7 +776,7 @@ namespace FModel
         private async void backupPAKsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             await Task.Run(() => {
-                CreateBackupList(_paksArray);
+                CreateBackupList();
             });
         }
         //UPDATE MODE
@@ -1398,7 +1387,12 @@ namespace FModel
 
             if (File.Exists(imgPath))
             {
-                pictureBox1.Image = Image.FromFile(imgPath);
+                Image img;
+                using (var bmpTemp = new Bitmap(imgPath))
+                {
+                    img = new Bitmap(bmpTemp);
+                }
+                pictureBox1.Image = img;
             }
 
             if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)

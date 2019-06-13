@@ -218,8 +218,10 @@
             // 
             // filenameLabel
             // 
+            this.filenameLabel.AutoEllipsis = true;
             this.filenameLabel.AutoSize = true;
             this.filenameLabel.Location = new System.Drawing.Point(115, 76);
+            this.filenameLabel.MaximumSize = new System.Drawing.Size(260, 13);
             this.filenameLabel.Name = "filenameLabel";
             this.filenameLabel.Size = new System.Drawing.Size(60, 13);
             this.filenameLabel.TabIndex = 24;

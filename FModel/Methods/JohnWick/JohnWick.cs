@@ -13,7 +13,7 @@ namespace FModel
     {
         public static PakAsset MyAsset;
         public static PakExtractor MyExtractor;
-        private static string[] myArray { get; set; }
+        public static string[] myArray { get; set; }
         private static string currentPakToCheck { get; set; }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace FModel
         /// <returns> the path of the last created file (usually the uexp file but we don't care about the extension, so it's fine) </returns>
         public static string ExtractAsset(string currentPak, string currentItem)
         {
-            if (currentPak != currentPakToCheck)
+            if (currentPak != currentPakToCheck || myArray == null)
             {
                 MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, Settings.Default.AESKey);
                 myArray = MyExtractor.GetFileList().ToArray();
