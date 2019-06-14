@@ -13,6 +13,7 @@ namespace FModel
     {
         public static PakAsset MyAsset;
         public static PakExtractor MyExtractor;
+        public static string MyKey;
         public static string[] myArray { get; set; }
         private static string currentPakToCheck { get; set; }
 
@@ -72,7 +73,7 @@ namespace FModel
         {
             if (currentPak != currentPakToCheck || myArray == null)
             {
-                MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, Settings.Default.AESKey);
+                MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, MyKey);
                 myArray = MyExtractor.GetFileList().ToArray();
             }
 

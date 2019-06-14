@@ -142,6 +142,8 @@ namespace FModel
 
             DLLImport.SetTreeViewTheme(treeView1.Handle);
 
+            DynamicKeysManager.deserialize();
+
             _backupFileName = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
             ThePak.dynamicPaksList = new List<PaksEntry>();
             ThePak.mainPaksList = new List<PaksEntry>();
@@ -286,6 +288,7 @@ namespace FModel
                 string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
                 if (CurrentUsedPakLines != null)
                 {
+                    JohnWick.MyKey = Settings.Default.AESKey;
                     string mountPoint = JohnWick.MyExtractor.GetMountPoint();
                     ThePak.PaksMountPoint.Add(ThePak.mainPaksList[i].thePak, mountPoint.Substring(9));
 
@@ -319,32 +322,42 @@ namespace FModel
                     if (theSinglePak != null && ThePak.mainPaksList[i].thePak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
                 }
             }
-            if (theSinglePak != null)
+            if (theSinglePak != null) //IMPORTANT: IT STILLS LOAD THE DICTIONARY -> IT'S GONNA BE USEFUL FOR TRANSLATIONS
             {
                 ThePak.CurrentUsedPak = theSinglePak.ClickedItem.Text;
                 ThePak.CurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
 
                 if (ThePak.CurrentUsedPakGuid != "0-0-0-0") //LOADING DYNAMIC PAK
                 {
-                    try
+                    if (DynamicKeysManager.AESEntries != null)
                     {
-                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak, Settings.Default.AESKey);
-
-                        PakAsTxt = JohnWick.MyExtractor.GetFileList().ToArray();
-                        if (PakAsTxt != null)
+                        foreach (AESEntry s in DynamicKeysManager.AESEntries)
                         {
-                            string mountPoint = JohnWick.MyExtractor.GetMountPoint();
-                            ThePak.PaksMountPoint.Add(ThePak.CurrentUsedPak, mountPoint.Substring(9));
-
-                            for (int i = 0; i < PakAsTxt.Length; i++)
+                            if (s.thePak == ThePak.CurrentUsedPak)
                             {
-                                PakAsTxt[i] = mountPoint.Substring(6) + PakAsTxt[i];
+                                try
+                                {
+                                    JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak, s.theKey);
+
+                                    PakAsTxt = JohnWick.MyExtractor.GetFileList().ToArray();
+                                    if (PakAsTxt != null)
+                                    {
+                                        JohnWick.MyKey = s.theKey;
+                                        string mountPoint = JohnWick.MyExtractor.GetMountPoint();
+                                        ThePak.PaksMountPoint.Add(ThePak.CurrentUsedPak, mountPoint.Substring(9));
+
+                                        for (int i = 0; i < PakAsTxt.Length; i++)
+                                        {
+                                            PakAsTxt[i] = mountPoint.Substring(6) + PakAsTxt[i];
+                                        }
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                    //do not crash
+                                }
                             }
                         }
-                    }
-                    catch (Exception)
-                    {
-                        UpdateConsole("Can't read " + ThePak.CurrentUsedPak + " with this key", Color.FromArgb(255, 244, 66, 66), "Error");
                     }
                 }
             }
@@ -475,7 +488,7 @@ namespace FModel
                     UpdateConsole(Settings.Default.PAKsPath + "\\" + selectedPak.ClickedItem.Text, Color.FromArgb(255, 66, 244, 66), "Success");
                 }
                 else
-                    UpdateConsole("Can't read " + selectedPak.ClickedItem.Text + " with this key", Color.FromArgb(255, 244, 66, 66), "Error");
+                    UpdateConsole("Please, provide a working key in the AES Manager for " + selectedPak.ClickedItem.Text, Color.FromArgb(255, 244, 66, 66), "Error");
             }
             if (loadAllPaKs)
             {

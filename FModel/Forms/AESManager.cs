@@ -36,12 +36,41 @@ namespace FModel.Forms
                 lbl.Size = new Size(155, 13);
                 lbl.Text = dCurrentUsedPak.Substring(0, dCurrentUsedPak.LastIndexOf("."));
                 lbl.Parent = panel1;
+
+                if (DynamicKeysManager.AESEntries != null)
+                {
+                    foreach (AESEntry s in DynamicKeysManager.AESEntries)
+                    {
+                        if (s.thePak == dCurrentUsedPak) { txtBox.Text = @"0x" + s.theKey; }
+                    }
+                }
             }
         }
 
         private void OKButton_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.AESKey = textBox2.Text.Substring(2).ToUpper();
+
+            DynamicKeysManager.AESEntries = new List<AESEntry>();
+            for (int i = 0; i < ThePak.dynamicPaksList.Count; i++)
+            {
+                string dCurrentUsedPak = ThePak.dynamicPaksList[i].thePak; //SET CURRENT DYNAMIC PAK
+                int pFrom = dCurrentUsedPak.IndexOf("pakchunk") + "pakchunk".Length;
+                int pTo = dCurrentUsedPak.LastIndexOf("WindowsClient.pak");
+
+                Control[] controls = this.Controls.Find("txtBox_" + dCurrentUsedPak.Substring(pFrom, pTo - pFrom - 1), true);
+                if (controls.Length > 0)
+                {
+                    TextBox txtBox = controls[0] as TextBox;
+                    if (txtBox != null)
+                    {
+                        if (!string.IsNullOrWhiteSpace(txtBox.Text))
+                        {
+                            DynamicKeysManager.serialize(txtBox.Text.Substring(2).ToUpper(), dCurrentUsedPak);
+                        }
+                    }
+                }
+            }
 
             Properties.Settings.Default.Save();
             Close();
