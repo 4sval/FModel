@@ -1,4 +1,4 @@
-﻿using csharp_wick;
+using csharp_wick;
 using FModel.Parser.Challenges;
 using FModel.Parser.Items;
 using FModel.Parser.Quests;
@@ -95,6 +95,9 @@ namespace FModel
                                     {
                                         string newQuest = questParser[x].Objectives[p].Description;
                                         long newCount = questParser[x].Objectives[p].Count;
+
+                                        if (questParser[x].BAthenaMustCompleteInSingleMatch != false && questParser[x].ObjectiveCompletionCount > 0)
+                                            newCount = questParser[x].ObjectiveCompletionCount;
 
                                         if (newQuest != oldQuest && newCount != oldCount)
                                         {
