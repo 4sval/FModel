@@ -1545,5 +1545,25 @@ namespace FModel
             ImagesMerger.AskMergeImages();
         }
         #endregion
+
+        private void CopySelectedFilePathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedItem != null)
+            {
+                string treeviewPath = treeView1.SelectedNode.FullPath;
+                if (treeviewPath.StartsWith("..\\")) { treeviewPath = treeviewPath.Substring(3); } //if loading all paks
+
+                string path = treeviewPath + "\\" + listBox1.SelectedItem;
+                if (!path.Contains(".")) //if file uasset/uexp/ubulk
+                {
+                    Clipboard.SetText(path.Replace("\\", "/") + ".uasset");
+                }
+                else
+                {
+                    Clipboard.SetText(path.Replace("\\", "/"));
+                }
+                AppendText("Copied!", Color.Green, true);
+            }
+        }
     }
 }

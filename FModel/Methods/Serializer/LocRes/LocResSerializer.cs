@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace FModel
@@ -12,6 +14,7 @@ namespace FModel
      * */
     static class LocResSerializer
     {
+        private static byte[] LocResMagic = { 0x0E, 0x14, 0x74, 0x75, 0x67, 0x4A, 0x03, 0xFC, 0x4A, 0x15, 0x90, 0x9D, 0xC3, 0x37, 0x7F, 0x1B };
         private static long LocalizedStringArrayOffset { get; set; }
         private static string[] LocalizedStringArray { get; set; }
         private static string NamespacesString { get; set; }
@@ -28,36 +31,42 @@ namespace FModel
             using (BinaryReader reader = new BinaryReader(File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Encoding.GetEncoding(1252)))
             {
                 byte[] MagicNumber = reader.ReadBytes(16);
-
-                byte VersionNumber = reader.ReadByte();
-
-                LocalizedStringArrayOffset = reader.ReadInt64();
-                if (LocalizedStringArrayOffset != -1)
+                if (MagicNumber.SequenceEqual(LocResMagic))
                 {
-                    long CurrentFileOffset = reader.BaseStream.Position;
-
-                    reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
-                    int arrayLength = reader.ReadInt32();
-
-                    reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
-
-                    LocalizedStringArray = new string[arrayLength];
-                    for (int i = 0; i < LocalizedStringArray.Length; i++)
+                    byte VersionNumber = reader.ReadByte();
+                    if (VersionNumber == 2) //optimized
                     {
-                        LocalizedStringArray[i] = AssetReader.readCleanString(reader);
+                        LocalizedStringArrayOffset = reader.ReadInt64();
+                        if (LocalizedStringArrayOffset != -1)
+                        {
+                            long CurrentFileOffset = reader.BaseStream.Position;
+
+                            reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
+                            int arrayLength = reader.ReadInt32();
+
+                            reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
+
+                            LocalizedStringArray = new string[arrayLength];
+                            for (int i = 0; i < LocalizedStringArray.Length; i++)
+                            {
+                                LocalizedStringArray[i] = AssetReader.readCleanString(reader);
+                            }
+
+                            reader.BaseStream.Seek(CurrentFileOffset, SeekOrigin.Begin);
+
+                            uint NamespaceCount = reader.ReadUInt32();
+                            reader.ReadBytes(17);
+
+                            for (uint i = 0; i < NamespaceCount; i++)
+                            {
+                                reader.ReadInt32();
+                                readNamespaces(reader);
+                            }
+                        }
                     }
-
-                    reader.BaseStream.Seek(CurrentFileOffset, SeekOrigin.Begin);
-
-                    uint NamespaceCount = reader.ReadUInt32();
-                    reader.ReadBytes(17);
-
-                    for (uint i = 0; i < NamespaceCount; i++)
-                    {
-                        reader.ReadInt32();
-                        readNamespaces(reader);
-                    }
+                    else { throw new Exception("Unsupported LocRes version."); }
                 }
+                else { throw new Exception("Wrong LocResMagic number."); }
             }
 
             return JsonConvert.SerializeObject(LocResDict, Formatting.Indented);

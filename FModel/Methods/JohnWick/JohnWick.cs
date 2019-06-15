@@ -99,9 +99,16 @@ namespace FModel
             }
 
             currentPakToCheck = currentPak;
-            /*if (File.Exists(AssetPath.Substring(0, AssetPath.LastIndexOf(".")) + ".uasset")) //TEST
+            /*if (AssetPath.Contains("Athena\\Items\\") && File.Exists(AssetPath.Substring(0, AssetPath.LastIndexOf(".")) + ".uexp")) //TEST
             {
-                AssetNameMap.getNameMap(AssetPath.Substring(0, AssetPath.LastIndexOf(".")) + ".uasset");
+                try
+                {
+                    AssetNameMap.searchStringsInUexp(AssetPath.Substring(0, AssetPath.LastIndexOf(".")) + ".uexp");
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
             }*/
 
             return AssetPath;

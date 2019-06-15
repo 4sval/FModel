@@ -48,7 +48,7 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-           // 
+            // 
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
@@ -77,7 +77,8 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(360, 40);
             this.label1.TabIndex = 3;
-            this.label1.Text = "FModel is a Fortnite .PAK file explorer built in C#\r\nIf you find this project useful, feel free to give it a star on GitHub\r\n⊂(◕‿◕)つ";
+            this.label1.Text = "FModel is a Fortnite .PAK file explorer built in C#\r\nIf you find this project use" +
+    "ful, feel free to give it a star on GitHub\r\n⊂(◕‿◕)つ";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label2
@@ -109,9 +110,9 @@
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(53, 124);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(71, 12);
+            this.label4.Size = new System.Drawing.Size(277, 13);
             this.label4.TabIndex = 11;
-            this.label4.Text = "• Asval • Waddlesworth • AyeTSG • FireMonkey";
+            this.label4.Text = "• Asval • Waddlesworth • AyeTSG • FireMonkey • Maiky M";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // About

@@ -62,7 +62,8 @@ namespace FModel
                         {
                             int index = listBeforeData.IndexOf(str);
 
-                            //Console.WriteLine("DName: " + listBeforeData[index - 3]);
+                            Console.WriteLine("DName: " + listBeforeData[index - 3]);
+                            Console.WriteLine("Description: " + listBeforeData[index - 1]);
 
                             myNamespacesList.Add(listBeforeData[index - 3]);
                             myNamespacesList.Add(listBeforeData[index - 1]);
@@ -83,7 +84,7 @@ namespace FModel
                 reader.ReadBytes(24);
 
                 int AssetLength = reader.ReadInt32();
-                Console.WriteLine(AssetLength);
+                //Console.WriteLine(AssetLength);
 
                 reader.ReadBytes(13);
                 int NamespaceCount = reader.ReadInt32();
