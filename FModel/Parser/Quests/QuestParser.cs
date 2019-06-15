@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -12,11 +12,14 @@ namespace FModel.Parser.Quests
         [JsonProperty("QuestType")]
         public string QuestType { get; set; }
 
+        [JsonProperty("bAthenaMustCompleteInSingleMatch")]
+        public bool BAthenaMustCompleteInSingleMatch { get; set; }
+
         [JsonProperty("bIncludedInCategories")]
         public bool BIncludedInCategories { get; set; }
 
         [JsonProperty("ObjectiveCompletionCount")]
-        public string ObjectiveCompletionCount { get; set; }
+        public long ObjectiveCompletionCount { get; set; }
 
         [JsonProperty("Rewards")]
         public Reward[] Rewards { get; set; }
