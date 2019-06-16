@@ -49,7 +49,11 @@ namespace FModel.Forms
 
         private void OKButton_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.AESKey = textBox2.Text.Substring(2).ToUpper();
+            if (!string.IsNullOrWhiteSpace(textBox2.Text))
+            {
+                Properties.Settings.Default.AESKey = textBox2.Text.Substring(2).ToUpper();
+            }
+            else { Properties.Settings.Default.AESKey = ""; }
 
             DynamicKeysManager.AESEntries = new List<AESEntry>();
             for (int i = 0; i < ThePak.dynamicPaksList.Count; i++)

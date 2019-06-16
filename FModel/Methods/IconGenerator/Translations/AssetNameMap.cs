@@ -62,8 +62,8 @@ namespace FModel
                         {
                             int index = listBeforeData.IndexOf(str);
 
-                            Console.WriteLine("DName: " + listBeforeData[index - 3]);
-                            Console.WriteLine("Description: " + listBeforeData[index - 1]);
+                            //Console.WriteLine("DName: " + listBeforeData[index - 3]);
+                            //Console.WriteLine("Description: " + listBeforeData[index - 1]);
 
                             myNamespacesList.Add(listBeforeData[index - 3]);
                             myNamespacesList.Add(listBeforeData[index - 1]);

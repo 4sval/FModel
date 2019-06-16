@@ -278,7 +278,11 @@ namespace FModel
             {
                 try
                 {
-                    JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
+                    if (!string.IsNullOrWhiteSpace(Settings.Default.AESKey))
+                    {
+                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
+                    }
+                    else { break; }
                 }
                 catch (Exception)
                 {

@@ -65,10 +65,10 @@
             this.linkLabel2.AutoSize = true;
             this.linkLabel2.Location = new System.Drawing.Point(398, 91);
             this.linkLabel2.Name = "linkLabel2";
-            this.linkLabel2.Size = new System.Drawing.Size(42, 13);
+            this.linkLabel2.Size = new System.Drawing.Size(43, 13);
             this.linkLabel2.TabIndex = 2;
             this.linkLabel2.TabStop = true;
-            this.linkLabel2.Text = "Donate";
+            this.linkLabel2.Text = "Discord";
             this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
             // 
             // label1
