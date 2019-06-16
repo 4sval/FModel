@@ -73,7 +73,7 @@ namespace FModel
         }
 
         /// <summary>
-        /// Once upon a time, it was used for shitty stuff
+        /// 
         /// </summary>
         public static void JohnWickCheck()
         {

@@ -64,9 +64,9 @@ namespace FModel
                             }
                         }
                     }
-                    else { throw new Exception("Unsupported LocRes version."); }
+                    else { throw new ArgumentException("Unsupported LocRes version."); }
                 }
-                else { throw new Exception("Wrong LocResMagic number."); }
+                else { throw new ArgumentException("Wrong LocResMagic number."); }
             }
 
             return JsonConvert.SerializeObject(LocResDict, Formatting.Indented);

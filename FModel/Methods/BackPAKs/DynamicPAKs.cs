@@ -1,7 +1,6 @@
 ﻿using FModel.Methods.BackupPAKs.Parser.AccessCodeParser;
 using FModel.Methods.BackupPAKs.Parser.TokenParser;
 using RestSharp;
-using System;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Collections.Generic;
@@ -20,24 +19,17 @@ namespace FModel
         /// <returns> url content </returns>
         public static string GetEndpoint(string url, bool auth)
         {
-            string content = string.Empty;
-            try
-            {
-                RestClient EndpointClient = new RestClient(url);
-                RestRequest EndpointRequest = new RestRequest(Method.GET);
+            RestClient EndpointClient = new RestClient(url);
+            RestRequest EndpointRequest = new RestRequest(Method.GET);
 
-                if (auth)
-                {
-                    EndpointRequest.AddHeader("Authorization", "bearer " + getExchangeToken(getAccessCode(getAccessToken(Properties.Settings.Default.eEmail, Properties.Settings.Default.ePassword))));
-                }
-
-                var response = EndpointClient.Execute(EndpointRequest);
-                content = JToken.Parse(response.Content).ToString(Newtonsoft.Json.Formatting.Indented);
-            }
-            catch (Exception ex)
+            if (auth)
             {
-                throw new Exception(ex.Message);
+                EndpointRequest.AddHeader("Authorization", "bearer " + getExchangeToken(getAccessCode(getAccessToken(Properties.Settings.Default.eEmail, Properties.Settings.Default.ePassword))));
             }
+
+            var response = EndpointClient.Execute(EndpointRequest);
+            string content = JToken.Parse(response.Content).ToString(Newtonsoft.Json.Formatting.Indented);
+
             return content;
         }
         private static string getAccessToken(string email, string password)

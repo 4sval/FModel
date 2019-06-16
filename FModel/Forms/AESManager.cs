@@ -75,5 +75,10 @@ namespace FModel.Forms
             Properties.Settings.Default.Save();
             Close();
         }
+
+        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://benbotfn.tk:8080/api/aes");
+        }
     }
 }
