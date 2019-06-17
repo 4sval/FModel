@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -1290,10 +1290,11 @@ namespace FModel
             ChallengeBundleIdParser bundleParser = ChallengeBundleIdParser.FromJson(theParsedJson).FirstOrDefault();
             BundleInfos.getBundleData(bundleParser);
             Bitmap bmp = null;
+            bool isFortbyte = false;
 
             if (Settings.Default.createIconForChallenges)
             {
-                bmp = new Bitmap(2500, 5000);
+                bmp = new Bitmap(2500, 15000);
                 BundleDesign.BundlePath = extractedBundlePath;
                 BundleDesign.theY = 275;
                 BundleDesign.toDrawOn = Graphics.FromImage(bmp);
@@ -1302,6 +1303,18 @@ namespace FModel
                 BundleDesign.myItem = theItem;
 
                 BundleDesign.drawBackground(bmp, bundleParser);
+            }
+
+            if (BundleInfos.BundleData[0].rewardItemId != null && string.Equals(BundleInfos.BundleData[0].rewardItemId, "AthenaFortbyte", StringComparison.CurrentCultureIgnoreCase))
+                isFortbyte = true;
+
+            // Fortbytes: Sort by number
+            if (isFortbyte)
+            {
+                BundleInfos.BundleData.Sort(delegate (BundleInfoEntry a, BundleInfoEntry b)
+                {
+                    return Int32.Parse(a.rewardItemQuantity).CompareTo(Int32.Parse(b.rewardItemQuantity));
+                });
             }
 
             for (int i = 0; i < BundleInfos.BundleData.Count; i++)
@@ -1315,7 +1328,7 @@ namespace FModel
                     BundleDesign.theY += 140;
 
                     //draw quest description
-                    BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
+                    BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, new Font(FontUtilities.pfc.Families[1], isFortbyte ? 40 : 50), new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
 
                     //draw slider + quest count
                     Image slider = Resources.Challenges_Slider;
