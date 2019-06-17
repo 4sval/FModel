@@ -154,13 +154,49 @@ namespace FModel
         }
         private static void drawCompletionText(string count)
         {
+            string all = string.Empty;
+            string any = string.Empty;
+            switch (Settings.Default.IconLanguage)
+            {
+                case "English":
+                    all = "Complete ALL CHALLENGES to earn the reward item";
+                    any = "Complete ANY " + count + " CHALLENGES to earn the reward item";
+                    goto default;
+                case "French":
+                    all = "Terminez CHACUN DES DÉFIS pour gagner la récompense";
+                    any = "Terminez " + count + " DES DÉFIS pour gagner la récompense";
+                    goto default;
+                case "German":
+                    all = "Schließe ALLE HERAUSFORDERUNGEN ab, um die Belohnung zu verdienen";
+                    any = "Schließe " + count + " HERAUSFORDERUNGEN ab, um die Belohnung zu verdienen";
+                    goto default;
+                case "Italian":
+                    all = "Completa TUTTE LE SFIDE per ottenere l'oggetto in ricompensa";
+                    any = "Completa " + count + " SFIDE QUALSIASI per ottenere l'oggetto ricompensa";
+                    goto default;
+                case "Spanish":
+                    all = "Completa LOS DESAFÍOS para conseguir el objeto de recompensa";
+                    any = "Completa " + count + " DE LOS DESAFÍOS para conseguir el objeto de recompensa";
+                    goto default;
+                default:
+                    if (count == "-1")
+                    {
+                        toDrawOn.DrawString(all, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
+                    }
+                    else
+                    {
+                        toDrawOn.DrawString(any, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
+                    }
+                    break;
+            }
+
             if (count == "-1")
             {
-                toDrawOn.DrawString("Complete ALL CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
+                toDrawOn.DrawString(all, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
             }
             else
             {
-                toDrawOn.DrawString("Complete ANY " + count + " CHALLENGES to earn the reward item", new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
+                toDrawOn.DrawString(any, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
             }
         }
 
@@ -170,8 +206,25 @@ namespace FModel
         /// <param name="myBitmap"></param>
         public static void drawWatermark(Bitmap myBitmap)
         {
-            toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, theY + 240, myBitmap.Width, 40));
-            toDrawOn.DrawString(myItem.DisplayName + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
+            if (LoadLocRes.myLocRes != null && Settings.Default.IconLanguage != "English")
+            {
+                string text = SearchResource.getTranslatedText(myItem.DisplayName.Key);
+                if (!string.IsNullOrEmpty(text))
+                {
+                    toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, theY + 240, myBitmap.Width, 40));
+                    toDrawOn.DrawString(text + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
+                }
+                else
+                {
+                    toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, theY + 240, myBitmap.Width, 40));
+                    toDrawOn.DrawString(myItem.DisplayName.SourceString + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
+                }
+            }
+            else
+            {
+                toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, theY + 240, myBitmap.Width, 40));
+                toDrawOn.DrawString(myItem.DisplayName.SourceString + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
+            }
         }
 
         private static void drawForbyteReward()

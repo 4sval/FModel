@@ -118,6 +118,11 @@ namespace FModel.Forms
             Properties.Settings.Default.IconLanguage = comboBox1.SelectedItem.ToString();
 
             Properties.Settings.Default.Save(); //SAVE
+
+            if (ThePak.AllpaksDictionary != null)
+            {
+                LoadLocRes.LoadMySelectedLocRes(Properties.Settings.Default.IconLanguage);
+            }
             Close();
         }
 

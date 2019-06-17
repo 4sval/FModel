@@ -19,13 +19,22 @@ namespace FModel.Parser.Challenges
         public DisplayStyle DisplayStyle { get; set; }
 
         [JsonProperty("DisplayName")]
-        public string DisplayName { get; set; }
+        public DisplayName DisplayName { get; set; }
 
         [JsonProperty("SmallPreviewImage")]
         public LargePreviewImage SmallPreviewImage { get; set; }
 
         [JsonProperty("LargePreviewImage")]
         public LargePreviewImage LargePreviewImage { get; set; }
+    }
+
+    public partial class DisplayName
+    {
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("source_string")]
+        public string SourceString { get; set; }
     }
 
     public class BundleCompletionReward

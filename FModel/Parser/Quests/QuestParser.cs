@@ -31,16 +31,16 @@ namespace FModel.Parser.Quests
         public Objective[] Objectives { get; set; }
 
         [JsonProperty("CompletionText")]
-        public string CompletionText { get; set; }
+        public FTextInfos CompletionText { get; set; }
 
         [JsonProperty("GrantToProfileType")]
         public string GrantToProfileType { get; set; }
 
         [JsonProperty("DisplayName")]
-        public string DisplayName { get; set; }
+        public FTextInfos DisplayName { get; set; }
 
         [JsonProperty("Description")]
-        public string Description { get; set; }
+        public FTextInfos Description { get; set; }
 
         [JsonProperty("GameplayTags")]
         public GameplayTags GameplayTags { get; set; }
@@ -50,6 +50,15 @@ namespace FModel.Parser.Quests
 
         [JsonProperty("LargePreviewImage")]
         public LargePreviewImage LargePreviewImage { get; set; }
+    }
+
+    public partial class FTextInfos
+    {
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("source_string")]
+        public string SourceString { get; set; }
     }
 
     public class GameplayTags
@@ -115,10 +124,10 @@ namespace FModel.Parser.Quests
         public long LinkSquadIndex { get; set; }
 
         [JsonProperty("Description")]
-        public string Description { get; set; }
+        public FTextInfos Description { get; set; }
 
         [JsonProperty("HudShortDescription")]
-        public string HudShortDescription { get; set; }
+        public FTextInfos HudShortDescription { get; set; }
 
         [JsonProperty("HudIcon")]
         public LargePreviewImage HudIcon { get; set; }

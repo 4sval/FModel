@@ -27,13 +27,22 @@ namespace FModel.Parser.Banners
         public string CategoryRowName { get; set; }
 
         [JsonProperty("DisplayName")]
-        public string DisplayName { get; set; }
+        public FTextInfos DisplayName { get; set; }
 
         [JsonProperty("DisplayDescription")]
-        public string DisplayDescription { get; set; }
+        public FTextInfos DisplayDescription { get; set; }
 
         [JsonProperty("bFullUsageRights")]
         public bool BFullUsageRights { get; set; }
+    }
+
+    public partial class FTextInfos
+    {
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("source_string")]
+        public string SourceString { get; set; }
     }
 
     public class Image

@@ -136,7 +136,6 @@
     <Compile Include="Methods\DLLImport.cs" />
     <Compile Include="Methods\IconGenerator\DrawText.cs" />
     <Compile Include="Methods\IconGenerator\Translations\LoadLocRes.cs" />
-    <Compile Include="Methods\IconGenerator\Translations\AssetNameMap.cs" />
     <Compile Include="Methods\IconGenerator\Translations\SearchResource.cs" />
     <Compile Include="Methods\ImagesMerger\ImagesMerger.cs" />
     <Compile Include="Methods\Serializer\AssetReader.cs" />
@@ -242,10 +241,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="oo2core_5_win64.dll">
+    <Content Include="csharp_wick.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="csharp_wick.dll">
+    <Content Include="oo2core_5_win64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="DLLs\csharp-wick.dll" />

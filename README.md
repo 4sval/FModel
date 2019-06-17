@@ -10,12 +10,12 @@
 ### Prerequisites
 [.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471)
 ### Download
-[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/2.3.3)
+[![](https://img.shields.io/badge/Release-Executable-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/tag/2.4.0)
 ### How does it works
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder.
 ![](https://i.imgur.com/O2Vg3Bx.gif)
 
-**2.** Restart the executable, enter the AES Key, click **Load** and select your .PAK file
+**2.** Restart the executable, go to the AES Manager and add you AES Keys, click **Load** and select your .PAK file
 - It will parse all Assets contained in the selected .PAK file with their respective path
   
 **3.** Navigate through the tree to find the Asset you want
@@ -84,10 +84,10 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instea
 
 ## TODO
   - [ ] Code refactoring
-  - [ ] Icons translation
   - [ ] 2FA support
   - [ ] Export Queue
   - [ ] Nintendo Switch sound files
+  - [x] Translation support
   - [x] AES Manager
   - [x] Display support for .locres files
   - [x] Nintendo Switch PAKs
