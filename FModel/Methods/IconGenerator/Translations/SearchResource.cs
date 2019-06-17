@@ -6,17 +6,19 @@ namespace FModel
     static class SearchResource
     {
         private static string parsedJsonToCheck { get; set; }
+        private static JObject jo { get; set; }
+        private static string oldLanguage = Properties.Settings.Default.IconLanguage;
 
         public static string getTranslatedText(string theNamespace)
         {
             string toReturn = string.Empty;
-            string myParsedJson = string.Empty;
+            string newLanguage = Properties.Settings.Default.IconLanguage;
 
-            if (myParsedJson != parsedJsonToCheck)
+            if (parsedJsonToCheck == null || newLanguage != oldLanguage)
             {
-                myParsedJson = JToken.Parse(LoadLocRes.myLocRes).ToString().TrimStart('[').TrimEnd(']');
+                parsedJsonToCheck = JToken.Parse(LoadLocRes.myLocRes).ToString().TrimStart('[').TrimEnd(']');
+                jo = JObject.Parse(parsedJsonToCheck);
             }
-            JObject jo = JObject.Parse(myParsedJson);
             foreach (JToken token in jo.FindTokens(theNamespace))
             {
                 LocResParser LocResParse = LocResParser.FromJson(token.ToString());
@@ -24,13 +26,9 @@ namespace FModel
                 {
                     toReturn = LocResParse.LocResText;
                 }
-                else if (LocResParse.WorkerSetBonusTraitPattern != null)
-                {
-                    toReturn = LocResParse.WorkerSetBonusTraitPattern;
-                }
             }
+            oldLanguage = newLanguage;
 
-            parsedJsonToCheck = myParsedJson;
             return toReturn;
         }
     }

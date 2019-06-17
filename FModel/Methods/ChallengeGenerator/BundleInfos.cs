@@ -34,7 +34,16 @@ namespace FModel
         }
         public static string getBundleDisplayName(ItemsIdParser theItem)
         {
-            return theItem.DisplayName.ToUpper();
+            if (LoadLocRes.myLocRes != null && Properties.Settings.Default.IconLanguage != "English")
+            {
+                string text = SearchResource.getTranslatedText(theItem.DisplayName.Key);
+                if (!string.IsNullOrEmpty(text))
+                {
+                    return text.ToUpper();
+                }
+                else { return theItem.DisplayName.SourceString.ToUpper(); }
+            }
+            else { return theItem.DisplayName.SourceString.ToUpper(); }
         }
         public static string getLastFolder(string pathToExtractedBundle)
         {
@@ -94,11 +103,18 @@ namespace FModel
 
                                     for (int p = 0; p < questParser[x].Objectives.Length; p++)
                                     {
-                                        string newQuest = questParser[x].Objectives[p].Description;
+                                        string newQuest;
+                                        if (LoadLocRes.myLocRes != null && Properties.Settings.Default.IconLanguage != "English")
+                                        {
+                                            newQuest = SearchResource.getTranslatedText(questParser[x].Objectives[p].Description.Key);
+                                        }
+                                        else { newQuest = questParser[x].Objectives[p].Description.SourceString; }
                                         long newCount = questParser[x].Objectives[p].Count;
 
-                                        if (questParser[x].BAthenaMustCompleteInSingleMatch != false && questParser[x].ObjectiveCompletionCount > 0)
+                                        if (questParser[x].BAthenaMustCompleteInSingleMatch && questParser[x].ObjectiveCompletionCount > 0)
+                                        {
                                             newCount = questParser[x].ObjectiveCompletionCount;
+                                        }
 
                                         if (newQuest != oldQuest && newCount != oldCount)
                                         {

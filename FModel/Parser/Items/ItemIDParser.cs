@@ -28,13 +28,13 @@ namespace FModel.Parser.Items
         public string Series { get; set; }
 
         [JsonProperty("DisplayName")]
-        public string DisplayName { get; set; }
+        public FTextInfos DisplayName { get; set; }
 
         [JsonProperty("ShortDescription")]
-        public string ShortDescription { get; set; }
+        public FTextInfos ShortDescription { get; set; }
 
         [JsonProperty("Description")]
-        public string Description { get; set; }
+        public FTextInfos Description { get; set; }
 
         [JsonProperty("GameplayTags")]
         public GameplayTags GameplayTags { get; set; }
@@ -65,6 +65,15 @@ namespace FModel.Parser.Items
 
         [JsonProperty("WeaponStatHandle")]
         public WeaponStatHandle WeaponStatHandle { get; set; }
+    }
+
+    public partial class FTextInfos
+    {
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("source_string")]
+        public string SourceString { get; set; }
     }
 
     public class GameplayTags

@@ -27,7 +27,11 @@
 
         private static string getMyLocRes(string selectedLanguage)
         {
+            string oldKey = JohnWick.MyKey;
+            JohnWick.MyKey = Properties.Settings.Default.AESKey;
             string locResPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["Game_BR.locres"], "Game_BR.locres");
+            JohnWick.MyKey = oldKey;
+
             return LocResSerializer.StringFinder(locResPath.Replace("zh-Hant", selectedLanguage));
         }
     }

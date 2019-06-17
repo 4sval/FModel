@@ -19,7 +19,7 @@ namespace FModel.Forms
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://paypal.me/AsvalD3SK1NG");
+            System.Diagnostics.Process.Start("https://discordapp.com/invite/JmWvXKb");
         }
     }
 }

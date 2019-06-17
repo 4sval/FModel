@@ -278,7 +278,11 @@ namespace FModel
             {
                 try
                 {
-                    JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
+                    if (!string.IsNullOrWhiteSpace(Settings.Default.AESKey))
+                    {
+                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
+                    }
+                    else { break; }
                 }
                 catch (Exception)
                 {
@@ -368,6 +372,7 @@ namespace FModel
                 ThePak.CurrentUsedPak = null;
                 ThePak.CurrentUsedPakGuid = null;
             }
+            LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage);
             UpdateConsole("Building tree, please wait...", Color.FromArgb(255, 244, 132, 66), "Loading");
         }
         private void TreeParsePath(TreeNodeCollection nodeList, string path) //https://social.msdn.microsoft.com/Forums/en-US/c75c1804-6933-40ba-b17a-0e36ae8bcbb5/how-to-create-a-tree-view-with-full-paths?forum=csharplanguage
@@ -1262,7 +1267,7 @@ namespace FModel
 
             DrawText.DrawTexts(theItem, g, specialMode);
 
-            UpdateConsole(theItem.DisplayName, Color.FromArgb(255, 66, 244, 66), "Success");
+            UpdateConsole(theItem.DisplayName.SourceString, Color.FromArgb(255, 66, 244, 66), "Success");
             if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
             {
                 bmp.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
@@ -1363,7 +1368,7 @@ namespace FModel
                 }
             }
 
-            UpdateConsole(theItem.DisplayName, Color.FromArgb(255, 66, 244, 66), "Success");
+            UpdateConsole(theItem.DisplayName.SourceString, Color.FromArgb(255, 66, 244, 66), "Success");
             if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
             {
                 Invoke(new Action(() =>

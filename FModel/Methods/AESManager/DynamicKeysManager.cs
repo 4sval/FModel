@@ -39,7 +39,6 @@ namespace FModel
                 }
                 AESEntries = outputList;
             }
-            else { throw new Exception("Fail to locate AESManager.xml"); }
         }
     }
 }

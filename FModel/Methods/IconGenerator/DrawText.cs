@@ -84,7 +84,19 @@ namespace FModel
 
             try
             {
-                ShortDescription = theItem.ShortDescription;
+                switch (Settings.Default.IconLanguage)
+                {
+                    case "French":
+                    case "German":
+                    case "Italian":
+                    case "Spanish":
+                        ShortDescription = SearchResource.getTranslatedText(theItem.ShortDescription.Key);
+                        if (string.IsNullOrEmpty(ShortDescription)) { ShortDescription = theItem.ShortDescription.SourceString; }
+                        break;
+                    default:
+                        ShortDescription = theItem.ShortDescription.SourceString;
+                        break;
+                }
             }
             catch (Exception)
             {
@@ -219,7 +231,22 @@ namespace FModel
         {
             if (theItem.DisplayName != null)
             {
-                myGraphic.DrawString(theItem.DisplayName, new Font(FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
+                if (LoadLocRes.myLocRes != null && Settings.Default.IconLanguage != "English")
+                {
+                    string text = SearchResource.getTranslatedText(theItem.DisplayName.Key);
+                    if (!string.IsNullOrEmpty(text))
+                    {
+                        myGraphic.DrawString(text, new Font(FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
+                    }
+                    else
+                    {
+                        myGraphic.DrawString(theItem.DisplayName.SourceString, new Font(FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
+                    }
+                }
+                else
+                {
+                    myGraphic.DrawString(theItem.DisplayName.SourceString, new Font(FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
+                }
             }
         }
 
@@ -232,7 +259,22 @@ namespace FModel
         {
             if (theItem.Description != null)
             {
-                myGraphic.DrawString(theItem.Description, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
+                if (LoadLocRes.myLocRes != null && Settings.Default.IconLanguage != "English")
+                {
+                    string text = SearchResource.getTranslatedText(theItem.Description.Key);
+                    if (!string.IsNullOrEmpty(text))
+                    {
+                        myGraphic.DrawString(text, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
+                    }
+                    else
+                    {
+                        myGraphic.DrawString(theItem.Description.SourceString, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
+                    }
+                }
+                else
+                {
+                    myGraphic.DrawString(theItem.Description.SourceString, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
+                }
             }
         }
 
