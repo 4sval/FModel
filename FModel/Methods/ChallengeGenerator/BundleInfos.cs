@@ -116,9 +116,14 @@ namespace FModel
                                             newCount = questParser[x].ObjectiveCompletionCount;
                                         }
 
+                                        bool isFortbyte = false;
+                                        var assetTypeToken = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name == "Token").FirstOrDefault();
+                                        if (assetTypeToken != null)
+                                            isFortbyte = assetTypeToken.ItemPrimaryAssetId.PrimaryAssetName == "AthenaFortbyte";
+
                                         if (newQuest != oldQuest && newCount != oldCount)
                                         {
-                                            if (questParser[x].Rewards != null && !questFilePath.Contains("Fortbyte_"))
+                                            if (questParser[x].Rewards != null && !isFortbyte)
                                             {
                                                 try
                                                 {
@@ -150,8 +155,8 @@ namespace FModel
                                                     }
                                                 }
                                             }
-                                            else if (questFilePath.Contains("Fortbyte_"))
-                                                BundleData.Add(new BundleInfoEntry(newQuest, newCount, "AthenaFortbyte", questParser[x].Weight > 0 ? questParser[x].Weight.ToString() : "01"));
+                                            else if (isFortbyte && assetTypeToken != null)
+                                                BundleData.Add(new BundleInfoEntry(newQuest, newCount, assetTypeToken.ItemPrimaryAssetId.PrimaryAssetName, questParser[x].Weight > 0 ? questParser[x].Weight.ToString() : "01"));
                                             else
                                                 BundleData.Add(new BundleInfoEntry(newQuest, newCount, "", ""));
 
