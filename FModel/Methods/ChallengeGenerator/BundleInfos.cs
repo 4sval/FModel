@@ -100,6 +100,7 @@ namespace FModel
                                 {
                                     string oldQuest = string.Empty;
                                     long oldCount = 0;
+
                                     for (int p = 0; p < questParser[x].Objectives.Length; p++)
                                     {
                                         string newQuest;
@@ -117,7 +118,7 @@ namespace FModel
 
                                         if (newQuest != oldQuest && newCount != oldCount)
                                         {
-                                            if (questParser[x].Rewards != null)
+                                            if (questParser[x].Rewards != null && !questFilePath.Contains("Fortbyte_"))
                                             {
                                                 try
                                                 {
@@ -149,10 +150,10 @@ namespace FModel
                                                     }
                                                 }
                                             }
+                                            else if (questFilePath.Contains("Fortbyte_"))
+                                                BundleData.Add(new BundleInfoEntry(newQuest, newCount, "AthenaFortbyte", questParser[x].Weight > 0 ? questParser[x].Weight.ToString() : "01"));
                                             else
-                                            {
                                                 BundleData.Add(new BundleInfoEntry(newQuest, newCount, "", ""));
-                                            }
 
                                             oldQuest = newQuest;
                                             oldCount = newCount;

@@ -1,4 +1,4 @@
-﻿using csharp_wick;
+using csharp_wick;
 using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
@@ -32,6 +32,7 @@ namespace FModel
                 else if (string.Equals(itemToExtract, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase)) { drawBattleStar(itemQuantity); }
                 else if (string.Equals(itemToExtract, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase)) { drawSeasonalXp(itemQuantity); }
                 else if (string.Equals(itemToExtract, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase)) { drawMtxGiveaway(itemQuantity); }
+                else if (string.Equals(itemToExtract, "AthenaFortbyte", StringComparison.CurrentCultureIgnoreCase)) { drawFortbyte(itemQuantity); }
                 else { DrawRewardIcon(itemToExtract); }
             }
         }
@@ -148,6 +149,7 @@ namespace FModel
                 BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
             }
         }
+
         private static void drawBattleStar(string quantity)
         {
             Image rewardIcon = Resources.T_FNBR_BattlePoints_L;
@@ -156,6 +158,7 @@ namespace FModel
             GraphicsPath p = new GraphicsPath();
             drawPathAndFill(p, quantity, Color.FromArgb(255, 143, 74, 32), Color.FromArgb(255, 255, 219, 103));
         }
+
         private static void drawSeasonalXp(string quantity)
         {
             Image rewardIcon = Resources.T_FNBR_SeasonalXP_L;
@@ -164,6 +167,7 @@ namespace FModel
             GraphicsPath p = new GraphicsPath();
             drawPathAndFill(p, quantity, Color.FromArgb(255, 81, 131, 15), Color.FromArgb(255, 230, 253, 177));
         }
+
         private static void drawMtxGiveaway(string quantity)
         {
             Image rewardIcon = Resources.T_Items_MTX_L;
@@ -171,6 +175,11 @@ namespace FModel
 
             GraphicsPath p = new GraphicsPath();
             drawPathAndFill(p, quantity, Color.FromArgb(255, 100, 160, 175), Color.FromArgb(255, 220, 230, 255));
+        }
+
+        private static void drawFortbyte(string quantity)
+        {
+            BundleDesign.toDrawOn.DrawString("#" + Int32.Parse(quantity).ToString("D2"), new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(2325, BundleDesign.theY + 22));
         }
 
         /// <summary>

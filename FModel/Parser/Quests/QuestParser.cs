@@ -30,6 +30,9 @@ namespace FModel.Parser.Quests
         [JsonProperty("Objectives")]
         public Objective[] Objectives { get; set; }
 
+        [JsonProperty("Weight")]
+        public double Weight { get; set; }
+
         [JsonProperty("CompletionText")]
         public FTextInfos CompletionText { get; set; }
 
