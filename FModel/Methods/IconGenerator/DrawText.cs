@@ -1,4 +1,4 @@
-﻿using csharp_wick;
+using csharp_wick;
 using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
@@ -90,6 +90,7 @@ namespace FModel
                     case "German":
                     case "Italian":
                     case "Spanish":
+                    case "Spanish (LA)":
                         ShortDescription = SearchResource.getTranslatedText(theItem.ShortDescription.Key);
                         if (string.IsNullOrEmpty(ShortDescription)) { ShortDescription = theItem.ShortDescription.SourceString; }
                         break;
