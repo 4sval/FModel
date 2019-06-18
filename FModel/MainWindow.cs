@@ -1341,7 +1341,7 @@ namespace FModel
                     BundleDesign.theY += 140;
 
                     //draw quest description
-                    BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, new Font(FontUtilities.pfc.Families[1], isFortbyte ? 40 : 50), new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
+                    BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, new Font(FontUtilities.pfc.Families[1], isFortbyte ? (BundleInfos.BundleData[i].questDescr.Length > 80 ? 33 : 40) : 50), new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
 
                     //draw slider + quest count
                     Image slider = Resources.Challenges_Slider;

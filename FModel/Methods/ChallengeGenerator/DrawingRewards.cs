@@ -26,14 +26,21 @@ namespace FModel
                 if (itemToExtract.Contains(":"))
                 {
                     var parts = itemToExtract.Split(':');
-                    if (parts[0] == "HomebaseBannerIcon") { DrawRewardBanner(parts[1]); }
-                    else { DrawRewardIcon(parts[1]); }
+                    if (parts[0] == "HomebaseBannerIcon")
+                        DrawRewardBanner(parts[1]);
+                    else
+                        DrawRewardIcon(parts[1]);
                 }
-                else if (string.Equals(itemToExtract, "athenabattlestar", StringComparison.CurrentCultureIgnoreCase)) { drawBattleStar(itemQuantity); }
-                else if (string.Equals(itemToExtract, "AthenaSeasonalXP", StringComparison.CurrentCultureIgnoreCase)) { drawSeasonalXp(itemQuantity); }
-                else if (string.Equals(itemToExtract, "MtxGiveaway", StringComparison.CurrentCultureIgnoreCase)) { drawMtxGiveaway(itemQuantity); }
-                else if (string.Equals(itemToExtract, "AthenaFortbyte", StringComparison.CurrentCultureIgnoreCase)) { drawFortbyte(itemQuantity); }
-                else { DrawRewardIcon(itemToExtract); }
+                else if (IsRewardType(itemToExtract, "athenabattlestar"))
+                    drawRewards("athenabattlestar", itemQuantity);
+                else if (IsRewardType(itemToExtract, "AthenaSeasonalXP"))
+                    drawRewards("AthenaSeasonalXP", itemQuantity);
+                else if (IsRewardType(itemToExtract, "MtxGiveaway"))
+                    drawRewards("MtxGiveaway", itemQuantity);
+                else if (IsRewardType(itemToExtract, "AthenaFortbyte"))
+                    drawRewards("AthenaFortbyte", itemQuantity);
+                else
+                    DrawRewardIcon(itemToExtract);
             }
         }
 
@@ -150,36 +157,59 @@ namespace FModel
             }
         }
 
-        private static void drawBattleStar(string quantity)
+        private static void drawRewards(string type, string quantity)
         {
-            Image rewardIcon = Resources.T_FNBR_BattlePoints_L;
-            BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
+            Image rewardIcon            = null;
+            GraphicsPath graphicsPath   = null;
 
-            GraphicsPath p = new GraphicsPath();
-            drawPathAndFill(p, quantity, Color.FromArgb(255, 143, 74, 32), Color.FromArgb(255, 255, 219, 103));
+            switch (type)
+            {
+                case "athenabattlestar":
+                {
+                    rewardIcon = Resources.T_FNBR_BattlePoints_L;
+                    BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
+
+                    graphicsPath = new GraphicsPath();
+                    drawPathAndFill(graphicsPath, quantity, Color.FromArgb(255, 143, 74, 32), Color.FromArgb(255, 255, 219, 103));
+                    break;
+                }
+                case "AthenaSeasonalXP":
+                {
+                    rewardIcon = Resources.T_FNBR_SeasonalXP_L;
+                    BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
+
+                    graphicsPath = new GraphicsPath();
+                    drawPathAndFill(graphicsPath, quantity, Color.FromArgb(255, 81, 131, 15), Color.FromArgb(255, 230, 253, 177));
+                    break;
+                }
+                case "MtxGiveaway":
+                {
+                    rewardIcon = Resources.T_Items_MTX_L;
+                    BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
+
+                    graphicsPath = new GraphicsPath();
+                    drawPathAndFill(graphicsPath, quantity, Color.FromArgb(255, 100, 160, 175), Color.FromArgb(255, 220, 230, 255));
+                    break;
+                }
+                case "AthenaFortbyte":
+                {
+                    BundleDesign.toDrawOn.DrawString("#" + Int32.Parse(quantity).ToString("D2"), new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(2325, BundleDesign.theY + 22));
+                    break;
+                }
+                default:
+                    break;
+            }
+
+            if (rewardIcon != null)
+                rewardIcon = null;
+
+            if (graphicsPath != null)
+                graphicsPath.Dispose();
         }
 
-        private static void drawSeasonalXp(string quantity)
+        private static bool IsRewardType(string value, string comparison)
         {
-            Image rewardIcon = Resources.T_FNBR_SeasonalXP_L;
-            BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
-
-            GraphicsPath p = new GraphicsPath();
-            drawPathAndFill(p, quantity, Color.FromArgb(255, 81, 131, 15), Color.FromArgb(255, 230, 253, 177));
-        }
-
-        private static void drawMtxGiveaway(string quantity)
-        {
-            Image rewardIcon = Resources.T_Items_MTX_L;
-            BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
-
-            GraphicsPath p = new GraphicsPath();
-            drawPathAndFill(p, quantity, Color.FromArgb(255, 100, 160, 175), Color.FromArgb(255, 220, 230, 255));
-        }
-
-        private static void drawFortbyte(string quantity)
-        {
-            BundleDesign.toDrawOn.DrawString("#" + Int32.Parse(quantity).ToString("D2"), new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(2325, BundleDesign.theY + 22));
+            return string.Equals(value, comparison, StringComparison.CurrentCultureIgnoreCase);
         }
 
         /// <summary>
