@@ -1,3 +1,5 @@
+using System;
+
 namespace FModel
 {
     static class LoadLocRes
@@ -30,12 +32,16 @@ namespace FModel
 
         private static string getMyLocRes(string selectedLanguage)
         {
-            string oldKey = JohnWick.MyKey;
-            JohnWick.MyKey = Properties.Settings.Default.AESKey;
-            string locResPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["Game_BR.locres"], "Game_BR.locres");
-            JohnWick.MyKey = oldKey;
+            if (ThePak.AllpaksDictionary != null)
+            {
+                string oldKey = JohnWick.MyKey;
+                JohnWick.MyKey = Properties.Settings.Default.AESKey;
+                string locResPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["Game_BR.locres"], "Game_BR.locres");
+                JohnWick.MyKey = oldKey;
 
-            return LocResSerializer.StringFinder(locResPath.Replace("zh-Hant", selectedLanguage));
+                return LocResSerializer.StringFinder(locResPath.Replace("zh-Hant", selectedLanguage));
+            }
+            else { return ""; }
         }
     }
 }

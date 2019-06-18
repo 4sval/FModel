@@ -91,11 +91,11 @@ namespace FModel
         /// </summary>
         /// <param name="thePaks"></param>
         /// <param name="index"></param>
-        private void AddPaKs(IEnumerable<string> thePaks, int index)
+        private void AddPaKs(string thePak)
         {
             Invoke(new Action(() =>
             {
-                loadOneToolStripMenuItem.DropDownItems.Add(Path.GetFileName(thePaks.ElementAt(index)));
+                loadOneToolStripMenuItem.DropDownItems.Add(thePak);
             }));
         }
 
@@ -118,19 +118,23 @@ namespace FModel
                 IEnumerable<string> yourPaKs = Directory.GetFiles(Settings.Default.PAKsPath).Where(x => x.EndsWith(".pak"));
                 for (int i = 0; i < yourPaKs.Count(); i++)
                 {
-                    AddPaKs(yourPaKs, i); //add to toolstrip
-
                     string arCurrentUsedPak = yourPaKs.ElementAt(i); //SET CURRENT PAK
-                    string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + Path.GetFileName(arCurrentUsedPak)); //SET CURRENT PAK GUID
+                    if (!Utilities.IsFileLocked(new System.IO.FileInfo(arCurrentUsedPak)))
+                    {
+                        string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + Path.GetFileName(arCurrentUsedPak)); //SET CURRENT PAK GUID
 
-                    if (arCurrentUsedPakGuid == "0-0-0-0")
-                    {
-                        ThePak.mainPaksList.Add(new PaksEntry(Path.GetFileName(arCurrentUsedPak), arCurrentUsedPakGuid));
+                        if (arCurrentUsedPakGuid == "0-0-0-0")
+                        {
+                            ThePak.mainPaksList.Add(new PaksEntry(Path.GetFileName(arCurrentUsedPak), arCurrentUsedPakGuid));
+                            AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
+                        }
+                        if (arCurrentUsedPakGuid != "0-0-0-0")
+                        {
+                            ThePak.dynamicPaksList.Add(new PaksEntry(Path.GetFileName(arCurrentUsedPak), arCurrentUsedPakGuid));
+                            AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
+                        }
                     }
-                    if (arCurrentUsedPakGuid != "0-0-0-0")
-                    {
-                        ThePak.dynamicPaksList.Add(new PaksEntry(Path.GetFileName(arCurrentUsedPak), arCurrentUsedPakGuid));
-                    }
+                    else { AppendText(Path.GetFileName(arCurrentUsedPak) + " is locked by another process.", Color.Red, true); }
                 }
             }
         }
@@ -273,6 +277,9 @@ namespace FModel
         private void RegisterPaKsinDict(ToolStripItemClickedEventArgs theSinglePak = null, bool loadAllPaKs = false)
         {
             StringBuilder sb = new StringBuilder();
+            ThePak.CurrentUsedPak = null;
+            ThePak.CurrentUsedPakGuid = null;
+            bool bMainKeyWorking = false;
 
             for (int i = 0; i < ThePak.mainPaksList.Count; i++)
             {
@@ -292,6 +299,8 @@ namespace FModel
                 string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
                 if (CurrentUsedPakLines != null)
                 {
+                    bMainKeyWorking = true;
+
                     JohnWick.MyKey = Settings.Default.AESKey;
                     string mountPoint = JohnWick.MyExtractor.GetMountPoint();
                     ThePak.PaksMountPoint.Add(ThePak.mainPaksList[i].thePak, mountPoint.Substring(9));
@@ -326,6 +335,8 @@ namespace FModel
                     if (theSinglePak != null && ThePak.mainPaksList[i].thePak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
                 }
             }
+            if (bMainKeyWorking) { LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage); }
+
             if (theSinglePak != null) //IMPORTANT: IT STILLS LOAD THE DICTIONARY -> IT'S GONNA BE USEFUL FOR TRANSLATIONS
             {
                 ThePak.CurrentUsedPak = theSinglePak.ClickedItem.Text;
@@ -337,7 +348,7 @@ namespace FModel
                     {
                         foreach (AESEntry s in DynamicKeysManager.AESEntries)
                         {
-                            if (s.thePak == ThePak.CurrentUsedPak)
+                            if (s.thePak == ThePak.CurrentUsedPak && s.theKey.Length > 2)
                             {
                                 try
                                 {
@@ -358,7 +369,7 @@ namespace FModel
                                 }
                                 catch (Exception)
                                 {
-                                    //do not crash
+                                    return;
                                 }
                             }
                         }
@@ -368,11 +379,8 @@ namespace FModel
             if (loadAllPaKs)
             {
                 File.WriteAllText(App.DefaultOutputPath + "\\FortnitePAKs.txt", sb.ToString()); //File will always exist
-
-                ThePak.CurrentUsedPak = null;
-                ThePak.CurrentUsedPakGuid = null;
             }
-            LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage);
+
             UpdateConsole("Building tree, please wait...", Color.FromArgb(255, 244, 132, 66), "Loading");
         }
         private void TreeParsePath(TreeNodeCollection nodeList, string path) //https://social.msdn.microsoft.com/Forums/en-US/c75c1804-6933-40ba-b17a-0e36ae8bcbb5/how-to-create-a-tree-view-with-full-paths?forum=csharplanguage

@@ -72,6 +72,10 @@ namespace FModel.Forms
                         {
                             DynamicKeysManager.serialize(txtBox.Text.Substring(2).ToUpper(), dCurrentUsedPak);
                         }
+                        else
+                        {
+                            DynamicKeysManager.serialize("", dCurrentUsedPak);
+                        }
                     }
                 }
             }

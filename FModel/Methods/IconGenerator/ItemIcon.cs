@@ -209,11 +209,11 @@ namespace FModel
         /// <param name="catName"></param>
         private static void GetFeaturedItemIcon(ItemsIdParser theItem, string catName)
         {
-            ThePak.CurrentUsedItem = catName;
-
-            string catalogFilePath;
-            try
+            if (ThePak.AllpaksDictionary.ContainsKey(catName))
             {
+                ThePak.CurrentUsedItem = catName;
+
+                string catalogFilePath;
                 if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
                 {
                     catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName);
@@ -263,13 +263,9 @@ namespace FModel
                             //do not crash when JsonSerialization does weird stuff
                         }
                     }
-                    else { GetItemIcon(theItem); } //Trails_ID_059_Sony2 smh :thinking:
                 }
             }
-            catch (KeyNotFoundException)
-            {
-                GetItemIcon(theItem);
-            }
+            else { GetItemIcon(theItem); }
         }
 
         /// <summary>
