@@ -21,6 +21,7 @@ namespace FModel
         private static string HeroType { get; set; }
         private static string DefenderType { get; set; }
         private static string MinToMax { get; set; }
+        private static JObject jo { get; set; }
 
         public static void DrawTexts(ItemsIdParser theItem, Graphics myGraphic, string mode)
         {
@@ -69,6 +70,10 @@ namespace FModel
             DrawCosmeticUff(theItem, myGraphic);
         }
 
+        /// <summary>
+        /// find a better way to handle errors
+        /// </summary>
+        /// <param name="theItem"></param>
         private static void SetTexts(ItemsIdParser theItem)
         {
             CosmeticSource = "";
@@ -330,40 +335,48 @@ namespace FModel
         /// <param name="myGraphic"></param>
         private static void DrawWeaponStat(string weaponName, Graphics myGraphic)
         {
-            ItemIcon.ItemIconPath = string.Empty;
-            string extractedWeaponsStatPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["AthenaRangedWeapons"], "AthenaRangedWeapons");
-            if (extractedWeaponsStatPath != null)
+            if (jo == null)
             {
-                if (extractedWeaponsStatPath.Contains(".uasset") || extractedWeaponsStatPath.Contains(".uexp") || extractedWeaponsStatPath.Contains(".ubulk"))
+                ItemIcon.ItemIconPath = string.Empty;
+                string extractedWeaponsStatPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["AthenaRangedWeapons"], "AthenaRangedWeapons");
+                if (extractedWeaponsStatPath != null)
                 {
-                    JohnWick.MyAsset = new PakAsset(extractedWeaponsStatPath.Substring(0, extractedWeaponsStatPath.LastIndexOf('.')));
-                    try
+                    if (extractedWeaponsStatPath.Contains(".uasset") || extractedWeaponsStatPath.Contains(".uexp") || extractedWeaponsStatPath.Contains(".ubulk"))
                     {
-                        if (JohnWick.MyAsset.GetSerialized() != null)
+                        JohnWick.MyAsset = new PakAsset(extractedWeaponsStatPath.Substring(0, extractedWeaponsStatPath.LastIndexOf('.')));
+                        try
                         {
-                            string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString().TrimStart('[').TrimEnd(']');
-                            JObject jo = JObject.Parse(parsedJson);
-                            foreach (JToken token in jo.FindTokens(weaponName))
+                            if (JohnWick.MyAsset.GetSerialized() != null)
                             {
-                                var statParsed = Parser.Weapons.WeaponStatParser.FromJson(token.ToString());
-
-                                Image bulletImage = Resources.dmg64;
-                                myGraphic.DrawImage(ImageUtilities.ResizeImage(bulletImage, 15, 15), new Point(5, 500));
-
-                                Image clipSizeImage = Resources.clipSize64;
-                                myGraphic.DrawImage(ImageUtilities.ResizeImage(clipSizeImage, 15, 15), new Point(52, 500));
-
-                                DrawToRight("Reload Time: " + statParsed.ReloadTime + " seconds", myGraphic);
-                                DrawToLeft("    " + statParsed.DmgPb, myGraphic); //damage per bullet
-                                myGraphic.DrawString("     " + statParsed.ClipSize, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(50, 500));
+                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString().TrimStart('[').TrimEnd(']');
+                                jo = JObject.Parse(parsedJson);
+                                loopingLol(weaponName, myGraphic);
                             }
                         }
-                    }
-                    catch (JsonSerializationException)
-                    {
-                        //do not crash when JsonSerialization does weird stuff
+                        catch (JsonSerializationException)
+                        {
+                            //do not crash when JsonSerialization does weird stuff
+                        }
                     }
                 }
+            }
+            else { loopingLol(weaponName, myGraphic); }
+        }
+        private static void loopingLol(string weaponName, Graphics myGraphic)
+        {
+            foreach (JToken token in jo.FindTokens(weaponName))
+            {
+                var statParsed = Parser.Weapons.WeaponStatParser.FromJson(token.ToString());
+
+                Image bulletImage = Resources.dmg64;
+                myGraphic.DrawImage(ImageUtilities.ResizeImage(bulletImage, 15, 15), new Point(5, 500));
+
+                Image clipSizeImage = Resources.clipSize64;
+                myGraphic.DrawImage(ImageUtilities.ResizeImage(clipSizeImage, 15, 15), new Point(52, 500));
+
+                DrawToRight("Reload Time: " + statParsed.ReloadTime + " seconds", myGraphic);
+                DrawToLeft("    " + statParsed.DmgPb, myGraphic); //damage per bullet
+                myGraphic.DrawString("     " + statParsed.ClipSize, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(50, 500));
             }
         }
 

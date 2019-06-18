@@ -115,14 +115,11 @@ namespace FModel.Forms
             if (checkBox8.Checked == false)
                 Properties.Settings.Default.loadFeaturedImage = false;
 
+            //LOCRES
             Properties.Settings.Default.IconLanguage = comboBox1.SelectedItem.ToString();
+            LoadLocRes.LoadMySelectedLocRes(Properties.Settings.Default.IconLanguage);
 
             Properties.Settings.Default.Save(); //SAVE
-
-            if (ThePak.AllpaksDictionary != null)
-            {
-                LoadLocRes.LoadMySelectedLocRes(Properties.Settings.Default.IconLanguage);
-            }
             Close();
         }
 
