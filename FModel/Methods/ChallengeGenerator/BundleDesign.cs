@@ -1,4 +1,4 @@
-﻿using FModel.Parser.Challenges;
+using FModel.Parser.Challenges;
 using FModel.Parser.Items;
 using FModel.Properties;
 using System.Drawing;
@@ -175,6 +175,7 @@ namespace FModel
                     any = "Completa " + count + " SFIDE QUALSIASI per ottenere l'oggetto ricompensa";
                     goto default;
                 case "Spanish":
+                case "Spanish (LA)":
                     all = "Completa LOS DESAFÍOS para conseguir el objeto de recompensa";
                     any = "Completa " + count + " DE LOS DESAFÍOS para conseguir el objeto de recompensa";
                     goto default;

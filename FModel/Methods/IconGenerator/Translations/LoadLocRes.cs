@@ -1,4 +1,4 @@
-﻿namespace FModel
+namespace FModel
 {
     static class LoadLocRes
     {
@@ -19,6 +19,9 @@
                     break;
                 case "Spanish":
                     myLocRes = getMyLocRes("es");
+                    break;
+                case "Spanish (LA)":
+                    myLocRes = getMyLocRes("es-419");
                     break;
                 default:
                     break;
