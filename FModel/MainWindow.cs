@@ -450,28 +450,34 @@ namespace FModel
             }));
 
             //GET REMOVED FILES
-            var removedTxt = File.ReadAllLines(App.DefaultOutputPath + "\\Removed.txt");
-            File.Delete(App.DefaultOutputPath + "\\Removed.txt");
+            if (File.Exists(App.DefaultOutputPath + "\\Removed.txt"))
+            {
+                var removedTxt = File.ReadAllLines(App.DefaultOutputPath + "\\Removed.txt");
+                File.Delete(App.DefaultOutputPath + "\\Removed.txt");
 
-            List<string> removedItems = new List<string>();
-            for (int i = 0; i < removedTxt.Length; i++)
-            {
-                if (removedTxt[i].Contains("FortniteGame/Content/Athena/Items/Cosmetics/"))
-                    removedItems.Add(removedTxt[i].Substring(0, removedTxt[i].LastIndexOf(".", StringComparison.Ordinal)));
-            }
-            if (removedItems.Count != 0)
-            {
-                Invoke(new Action(() =>
+                List<string> removedItems = new List<string>();
+                for (int i = 0; i < removedTxt.Length; i++)
                 {
-                    AppendText("Items Removed/Renamed:", Color.Red, true);
-                    removedItems = removedItems.Distinct().ToList();
-                    for (int ii = 0; ii < removedItems.Count; ii++)
-                        AppendText("    - " + removedItems[ii], Color.Black, true);
-                }));
+                    if (removedTxt[i].Contains("FortniteGame/Content/Athena/Items/Cosmetics/"))
+                        removedItems.Add(removedTxt[i].Substring(0, removedTxt[i].LastIndexOf(".", StringComparison.Ordinal)));
+                }
+                if (removedItems.Count != 0)
+                {
+                    Invoke(new Action(() =>
+                    {
+                        AppendText("Items Removed/Renamed:", Color.Red, true);
+                        removedItems = removedItems.Distinct().ToList();
+                        for (int ii = 0; ii < removedItems.Count; ii++)
+                            AppendText("    - " + removedItems[ii], Color.Black, true);
+                    }));
+                }
             }
 
-            PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\Result.txt");
-            File.Delete(App.DefaultOutputPath + "\\Result.txt");
+            if (File.Exists(App.DefaultOutputPath + "\\Result.txt"))
+            {
+                PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\Result.txt");
+                File.Delete(App.DefaultOutputPath + "\\Result.txt");
+            }
         }
         private void CreatePakList(ToolStripItemClickedEventArgs selectedPak = null, bool loadAllPaKs = false, bool getDiff = false, bool updateMode = false)
         {
