@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+using System;
+using Newtonsoft.Json.Linq;
 using FModel.Parser.LocResParser;
 
 namespace FModel
@@ -35,9 +36,22 @@ namespace FModel
                     toReturn = LocResParse.LocResText;
                 }
             }
-            oldLanguage = newLanguage;
 
+            oldLanguage = newLanguage;
             return toReturn;
+        }
+
+        public static string getTextByKey(string key, string defaultText)
+        {
+            string text = defaultText;
+            if (LoadLocRes.myLocRes != null && Properties.Settings.Default.IconLanguage != "English")
+            {
+                text = getTranslatedText(key);
+                if (string.IsNullOrEmpty(text))
+                    text = defaultText;
+            }
+
+            return text;
         }
     }
 }

@@ -34,16 +34,8 @@ namespace FModel
         }
         public static string getBundleDisplayName(ItemsIdParser theItem)
         {
-            if (LoadLocRes.myLocRes != null && Properties.Settings.Default.IconLanguage != "English")
-            {
-                string text = SearchResource.getTranslatedText(theItem.DisplayName.Key);
-                if (!string.IsNullOrEmpty(text))
-                {
-                    return text.ToUpper();
-                }
-                else { return theItem.DisplayName.SourceString.ToUpper(); }
-            }
-            else { return theItem.DisplayName.SourceString.ToUpper(); }
+            string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString);
+            return text.ToUpper();
         }
         public static string getLastFolder(string pathToExtractedBundle)
         {
@@ -103,12 +95,6 @@ namespace FModel
 
                                     for (int p = 0; p < questParser[x].Objectives.Length; p++)
                                     {
-                                        string newQuest;
-                                        if (LoadLocRes.myLocRes != null && Properties.Settings.Default.IconLanguage != "English")
-                                            newQuest = SearchResource.getTranslatedText(questParser[x].Objectives[p].Description.Key);
-                                        else
-                                            newQuest = questParser[x].Objectives[p].Description.SourceString;
-
                                         long newCount = questParser[x].Objectives[p].Count;
                                         if (questParser[x].ObjectiveCompletionCount > 0)
                                             newCount = questParser[x].ObjectiveCompletionCount;
@@ -125,6 +111,7 @@ namespace FModel
                                             }
                                         }
 
+                                        string newQuest = SearchResource.getTextByKey(questParser[x].Objectives[p].Description.Key, questParser[x].Objectives[p].Description.SourceString);
                                         if (newQuest != oldQuest && newCount != oldCount)
                                         {
                                             if (questParser[x].Rewards != null && !isFortbyte)

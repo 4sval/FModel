@@ -96,11 +96,10 @@ namespace FModel
                     case "Italian":
                     case "Spanish":
                     case "Spanish (LA)":
-                        ShortDescription = SearchResource.getTranslatedText(theItem.ShortDescription.Key);
-                        if (string.IsNullOrEmpty(ShortDescription)) { ShortDescription = theItem.ShortDescription.SourceString; }
+                        ShortDescription = theItem.ShortDescription != null ? SearchResource.getTextByKey(theItem.ShortDescription.Key, theItem.ShortDescription.SourceString) : "";
                         break;
                     default:
-                        ShortDescription = theItem.ShortDescription.SourceString;
+                        ShortDescription = theItem.ShortDescription != null ? theItem.ShortDescription.SourceString : "";
                         break;
                 }
             }
@@ -161,7 +160,7 @@ namespace FModel
             }
             try
             {
-                HeroType = theItem.AttributeInitKey.AttributeInitCategory;
+                HeroType = theItem.AttributeInitKey != null ? theItem.AttributeInitKey.AttributeInitCategory : "";
             }
             catch (Exception)
             {
@@ -237,22 +236,8 @@ namespace FModel
         {
             if (theItem.DisplayName != null)
             {
-                if (LoadLocRes.myLocRes != null && Settings.Default.IconLanguage != "English")
-                {
-                    string text = SearchResource.getTranslatedText(theItem.DisplayName.Key);
-                    if (!string.IsNullOrEmpty(text))
-                    {
-                        myGraphic.DrawString(text, new Font(FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
-                    }
-                    else
-                    {
-                        myGraphic.DrawString(theItem.DisplayName.SourceString, new Font(FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
-                    }
-                }
-                else
-                {
-                    myGraphic.DrawString(theItem.DisplayName.SourceString, new Font(FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
-                }
+                string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString);
+                myGraphic.DrawString(text, new Font(FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
             }
         }
 
@@ -265,22 +250,8 @@ namespace FModel
         {
             if (theItem.Description != null)
             {
-                if (LoadLocRes.myLocRes != null && Settings.Default.IconLanguage != "English")
-                {
-                    string text = SearchResource.getTranslatedText(theItem.Description.Key);
-                    if (!string.IsNullOrEmpty(text))
-                    {
-                        myGraphic.DrawString(text, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
-                    }
-                    else
-                    {
-                        myGraphic.DrawString(theItem.Description.SourceString, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
-                    }
-                }
-                else
-                {
-                    myGraphic.DrawString(theItem.Description.SourceString, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
-                }
+                string text = SearchResource.getTextByKey(theItem.Description.Key, theItem.Description.SourceString);
+                myGraphic.DrawString(text, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
             }
         }
 

@@ -207,25 +207,9 @@ namespace FModel
         /// <param name="myBitmap"></param>
         public static void drawWatermark(Bitmap myBitmap)
         {
-            if (LoadLocRes.myLocRes != null && Settings.Default.IconLanguage != "English")
-            {
-                string text = SearchResource.getTranslatedText(myItem.DisplayName.Key);
-                if (!string.IsNullOrEmpty(text))
-                {
-                    toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, theY + 240, myBitmap.Width, 40));
-                    toDrawOn.DrawString(text + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
-                }
-                else
-                {
-                    toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, theY + 240, myBitmap.Width, 40));
-                    toDrawOn.DrawString(myItem.DisplayName.SourceString + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
-                }
-            }
-            else
-            {
-                toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, theY + 240, myBitmap.Width, 40));
-                toDrawOn.DrawString(myItem.DisplayName.SourceString + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
-            }
+            string text = SearchResource.getTextByKey(myItem.DisplayName.Key, myItem.DisplayName.SourceString);
+            toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, theY + 240, myBitmap.Width, 40));
+            toDrawOn.DrawString(text + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
         }
 
         private static void drawForbyteReward()
