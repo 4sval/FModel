@@ -37,6 +37,7 @@ namespace FModel
         private static List<string> _itemsToDisplay { get; set; }
         public static string ExtractedFilePath { get; set; }
         public static string[] SelectedItemsArray { get; set; }
+        private bool differenceFileExists = false;
         #endregion
 
         public MainWindow()
@@ -477,6 +478,7 @@ namespace FModel
             {
                 PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\Result.txt");
                 File.Delete(App.DefaultOutputPath + "\\Result.txt");
+                differenceFileExists = true;
             }
         }
         private void CreatePakList(ToolStripItemClickedEventArgs selectedPak = null, bool loadAllPaKs = false, bool getDiff = false, bool updateMode = false)
@@ -549,7 +551,7 @@ namespace FModel
                 {
                     UpdateConsole("Comparing files...", Color.FromArgb(255, 244, 132, 66), "Loading");
                     ComparePaKs();
-                    if (updateMode)
+                    if (updateMode && differenceFileExists)
                     {
                         UmFilter(PakAsTxt, _diffToExtract);
                         Checking.UmWorking = true;
@@ -564,6 +566,8 @@ namespace FModel
                         }
                         treeView1.EndUpdate();
                     }));
+
+                    differenceFileExists = false;
                     UpdateConsole("Files compared", Color.FromArgb(255, 66, 244, 66), "Success");
                 }
             }
