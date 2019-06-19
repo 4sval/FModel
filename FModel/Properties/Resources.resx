@@ -217,4 +217,7 @@
   <data name="clipSize64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\clipSize64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="reload64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\reload64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

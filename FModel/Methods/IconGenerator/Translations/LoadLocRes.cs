@@ -41,6 +41,7 @@ namespace FModel
             if (ThePak.AllpaksDictionary != null && ThePak.AllpaksDictionary["Game_BR.locres"] != null)
             {
                 string oldKey = JohnWick.MyKey; //get the old key
+                string oldGuid = ThePak.CurrentUsedPakGuid; //get the old guid
 
                 JohnWick.MyKey = Properties.Settings.Default.AESKey; //set the main key to extract
                 ThePak.CurrentUsedPakGuid = "0-0-0-0"; //fake the guid -> writeFile need this guid to get the mountPoint, otherwise it crashes
@@ -48,6 +49,7 @@ namespace FModel
                 string locResPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["Game_BR.locres"], "Game_BR.locres");
 
                 JohnWick.MyKey = oldKey; //set the old key
+                ThePak.CurrentUsedPakGuid = oldGuid; //set the old guid
 
                 return LocResSerializer.StringFinder(locResPath.Replace("zh-Hant", selectedLanguage));
             }

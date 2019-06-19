@@ -120,7 +120,22 @@ namespace FModel
                 for (int i = 0; i < yourPaKs.Count(); i++)
                 {
                     string arCurrentUsedPak = yourPaKs.ElementAt(i); //SET CURRENT PAK
-                    if (!Utilities.IsFileLocked(new System.IO.FileInfo(arCurrentUsedPak)))
+                    string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + Path.GetFileName(arCurrentUsedPak)); //SET CURRENT PAK GUID
+
+                    if (arCurrentUsedPakGuid == "0-0-0-0")
+                    {
+                        ThePak.mainPaksList.Add(new PaksEntry(Path.GetFileName(arCurrentUsedPak), arCurrentUsedPakGuid));
+                        AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
+                    }
+                    if (arCurrentUsedPakGuid != "0-0-0-0")
+                    {
+                        ThePak.dynamicPaksList.Add(new PaksEntry(Path.GetFileName(arCurrentUsedPak), arCurrentUsedPakGuid));
+                        AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
+                    }
+
+                    //IT'S TRIGGERED WHEN FORTNITE IS RUNNING BUT FILES CAN BE READ AND I WANT IT TO BE TRIGGERED WHEN FILE IS FULLY LOCKED AND CAN'T BE USED AT ALL
+                    //aka while you're updating the game
+                    /*if (!Utilities.IsFileLocked(new System.IO.FileInfo(arCurrentUsedPak)))
                     {
                         string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + Path.GetFileName(arCurrentUsedPak)); //SET CURRENT PAK GUID
 
@@ -135,7 +150,7 @@ namespace FModel
                             AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
                         }
                     }
-                    else { AppendText(Path.GetFileName(arCurrentUsedPak) + " is locked by another process.", Color.Red, true); }
+                    else { AppendText(Path.GetFileName(arCurrentUsedPak) + " is locked by another process.", Color.Red, true); }*/
                 }
             }
         }
@@ -473,6 +488,12 @@ namespace FModel
                     }));
                 }
             }
+            else
+            {
+                AppendText("Canceled! ", Color.Red);
+                AppendText("All pak files loaded...", Color.Black, true);
+                return;
+            }
 
             if (File.Exists(App.DefaultOutputPath + "\\Result.txt"))
             {
@@ -543,7 +564,7 @@ namespace FModel
                 //ADD TO DICTIONNARY
                 RegisterPaKsinDict(null, true);
 
-                if (!File.Exists(App.DefaultOutputPath + "\\FortnitePAKs.txt"))
+                if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0)
                 {
                     UpdateConsole("Can't read .PAK files with this key", Color.FromArgb(255, 244, 66, 66), "Error");
                 }
@@ -1285,7 +1306,6 @@ namespace FModel
 
             DrawText.DrawTexts(theItem, g, specialMode);
 
-            UpdateConsole(theItem.DisplayName.SourceString, Color.FromArgb(255, 66, 244, 66), "Success");
             if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
             {
                 bmp.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);

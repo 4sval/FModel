@@ -110,9 +110,9 @@
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(53, 124);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(277, 13);
+            this.label4.Size = new System.Drawing.Size(241, 13);
             this.label4.TabIndex = 11;
-            this.label4.Text = "• Asval • Waddlesworth • AyeTSG • FireMonkey • Maiky M";
+            this.label4.Text = "• Waddlesworth • Maiky M • AyeTSG • FireMonkey";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // About

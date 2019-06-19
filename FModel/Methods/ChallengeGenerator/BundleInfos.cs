@@ -113,10 +113,17 @@ namespace FModel
                                         if (questParser[x].ObjectiveCompletionCount > 0)
                                             newCount = questParser[x].ObjectiveCompletionCount;
 
+                                        //fortbyte check
                                         bool isFortbyte = false;
-                                        var assetTypeToken = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name == "Token").FirstOrDefault();
-                                        if (assetTypeToken != null)
-                                            isFortbyte = assetTypeToken.ItemPrimaryAssetId.PrimaryAssetName == "AthenaFortbyte";
+                                        Parser.Quests.Reward assetTypeToken = null;
+                                        if (questParser[x].Rewards != null) //this caused a null exception for some challenges (most of them in the Styles folder)
+                                        {
+                                            assetTypeToken = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name == "Token").FirstOrDefault();
+                                            if (assetTypeToken != null)
+                                            {
+                                                isFortbyte = assetTypeToken.ItemPrimaryAssetId.PrimaryAssetName == "AthenaFortbyte";
+                                            }
+                                        }
 
                                         if (newQuest != oldQuest && newCount != oldCount)
                                         {
