@@ -71,6 +71,10 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.locResToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveCurrentLocResToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.getDifferenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -205,7 +209,9 @@
             // 
             this.filesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.searchToolStripMenuItem,
-            this.copySelectedFilePathToolStripMenuItem});
+            this.copySelectedFilePathToolStripMenuItem,
+            this.toolStripSeparator4,
+            this.locResToolStripMenuItem});
             this.filesToolStripMenuItem.Name = "filesToolStripMenuItem";
             this.filesToolStripMenuItem.Size = new System.Drawing.Size(42, 20);
             this.filesToolStripMenuItem.Text = "Files";
@@ -472,6 +478,34 @@
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
             this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
             // 
+            // locResToolStripMenuItem
+            // 
+            this.locResToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveCurrentLocResToolStripMenuItem,
+            this.getDifferenceToolStripMenuItem});
+            this.locResToolStripMenuItem.Name = "locResToolStripMenuItem";
+            this.locResToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.locResToolStripMenuItem.Text = "LocRes";
+            // 
+            // saveCurrentLocResToolStripMenuItem
+            // 
+            this.saveCurrentLocResToolStripMenuItem.Name = "saveCurrentLocResToolStripMenuItem";
+            this.saveCurrentLocResToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.saveCurrentLocResToolStripMenuItem.Text = "Save Current LocRes";
+            this.saveCurrentLocResToolStripMenuItem.Click += new System.EventHandler(this.SaveCurrentLocResToolStripMenuItem_Click);
+            // 
+            // getDifferenceToolStripMenuItem
+            // 
+            this.getDifferenceToolStripMenuItem.Name = "getDifferenceToolStripMenuItem";
+            this.getDifferenceToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.getDifferenceToolStripMenuItem.Text = "Get Difference";
+            this.getDifferenceToolStripMenuItem.Click += new System.EventHandler(this.GetDifferenceToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(213, 6);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -546,6 +580,10 @@
         private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ToolStripMenuItem copySelectedFilePathToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem locResToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveCurrentLocResToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem getDifferenceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }
 

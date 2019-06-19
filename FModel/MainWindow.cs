@@ -37,6 +37,7 @@ namespace FModel
         private static List<string> _itemsToDisplay { get; set; }
         public static string ExtractedFilePath { get; set; }
         public static string[] SelectedItemsArray { get; set; }
+        private bool bIsLocres { get; set; }
         private bool differenceFileExists = false;
         #endregion
 
@@ -296,6 +297,7 @@ namespace FModel
             ThePak.CurrentUsedPak = null;
             ThePak.CurrentUsedPakGuid = null;
             bool bMainKeyWorking = false;
+            bIsLocres = false;
 
             for (int i = 0; i < ThePak.mainPaksList.Count; i++)
             {
@@ -1168,6 +1170,7 @@ namespace FModel
 
                 if (ExtractedFilePath != null)
                 {
+                    bIsLocres = false;
                     UpdateConsole(ThePak.CurrentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
                     if (ExtractedFilePath.Contains(".uasset") || ExtractedFilePath.Contains(".uexp") || ExtractedFilePath.Contains(".ubulk"))
                     {
@@ -1370,8 +1373,13 @@ namespace FModel
                 {
                     BundleDesign.theY += 140;
 
+                    //in case you wanna make some changes
+                    //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(107, BundleDesign.theY + 7, 2000, 93)); //rectangle that resize the font -> used for "Font goodFont = "
+                    //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Green)), new Rectangle(107, BundleDesign.theY + 7, 2000, 75)); //rectangle the font needs to be fit with
+                    
                     //draw quest description
-                    BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, new Font(FontUtilities.pfc.Families[1], isFortbyte ? (BundleInfos.BundleData[i].questDescr.Length > 80 ? 33 : 40) : 50), new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
+                    Font goodFont = FontUtilities.FindFont(BundleDesign.toDrawOn, BundleInfos.BundleData[i].questDescr, new Rectangle(107, BundleDesign.theY + 7, 2000, 93).Size, new Font(FontUtilities.pfc.Families[1], 50)); //size in "new Font()" is never check
+                    BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, goodFont, new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
 
                     //draw slider + quest count
                     Image slider = Resources.Challenges_Slider;
@@ -1437,10 +1445,12 @@ namespace FModel
                 string filePath = App.DefaultOutputPath + "\\Extracted\\" + treeviewPath + "\\" + listBox1.SelectedItem;
                 if (File.Exists(filePath))
                 {
+                    bIsLocres = true;
                     scintilla1.Text = LocResSerializer.StringFinder(filePath);
                 }
                 else
                 {
+                    bIsLocres = false;
                     AppendText("Error while searching " + listBox1.SelectedItem, Color.DarkRed, true);
                 }
             }));
@@ -1620,6 +1630,33 @@ namespace FModel
                 }
                 AppendText("Copied!", Color.Green, true);
             }
+        }
+
+        private void SaveCurrentLocResToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (bIsLocres)
+            {
+                SaveFileDialog saveTheDialog = new SaveFileDialog();
+                saveTheDialog.Title = @"Save LocRes";
+                saveTheDialog.Filter = @"JSON Files (*.json)|*.json";
+                saveTheDialog.InitialDirectory = App.DefaultOutputPath + "\\LocRes\\";
+                saveTheDialog.FileName = ThePak.CurrentUsedItem.Substring(0, ThePak.CurrentUsedItem.LastIndexOf('.'));
+                if (saveTheDialog.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllText(saveTheDialog.FileName, scintilla1.Text);
+                    AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
+                    AppendText(" successfully saved", Color.Black, true);
+                }
+            }
+            else
+            {
+                AppendText("Please load a .locres file first.\t\t\t", Color.Black);
+                AppendText(@"FortniteGame\Content\Localization\ - pakchunk0-WindowsClient.pak", Color.DarkRed, true);
+            }
+        }
+        private void GetDifferenceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 }

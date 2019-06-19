@@ -349,9 +349,31 @@ namespace FModel
 
                 Image reload = Resources.reload64;
                 myGraphic.DrawImage(ImageUtilities.ResizeImage(reload, 15, 15), new Point(50 + (statParsed.ClipSize.ToString().Length * 7) + 47, 500)); //50=clipsize text position | for each clipsize letter we add 7 to x | 47=difference between 2 icons
-                myGraphic.DrawString(statParsed.ReloadTime + " seconds", new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(64 + (statParsed.ClipSize.ToString().Length * 7) + 47, 500)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
+                myGraphic.DrawString(statParsed.ReloadTime + getSecondsWithLanguage(), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(64 + (statParsed.ClipSize.ToString().Length * 7) + 47, 500)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
 
                 DrawToRight(weaponName, myGraphic);
+            }
+        }
+        /// <summary>
+        /// manual translation to improve speed and in case the key is deleted
+        /// that's just 1 word so /shrug
+        /// </summary>
+        /// <returns></returns>
+        private static string getSecondsWithLanguage()
+        {
+            switch (Settings.Default.IconLanguage)
+            {
+                case "French":
+                    return " secondes";
+                case "German":
+                    return " Sekunden";
+                case "Italian":
+                    return " secondi";
+                case "Spanish":
+                case "Spanish (LA)":
+                    return " segundos";
+                default:
+                    return " seconds";
             }
         }
 

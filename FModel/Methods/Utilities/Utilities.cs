@@ -30,6 +30,7 @@ namespace FModel
             Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\");
             Directory.CreateDirectory(App.DefaultOutputPath + "\\Icons\\");
             Directory.CreateDirectory(App.DefaultOutputPath + "\\Sounds\\");
+            Directory.CreateDirectory(App.DefaultOutputPath + "\\LocRes\\");
         }
 
         /// <summary>
