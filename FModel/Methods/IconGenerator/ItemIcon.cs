@@ -339,7 +339,6 @@ namespace FModel
                 if (watermark != null)
                 {
                     var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)Settings.Default.wOpacity / 100);
-
                     toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, Settings.Default.wSize, Settings.Default.wSize), (522 - Settings.Default.wSize) / 2, (522 - Settings.Default.wSize) / 2, Settings.Default.wSize, Settings.Default.wSize);
                 }
             }

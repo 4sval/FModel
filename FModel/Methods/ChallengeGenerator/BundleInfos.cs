@@ -105,16 +105,13 @@ namespace FModel
                                     {
                                         string newQuest;
                                         if (LoadLocRes.myLocRes != null && Properties.Settings.Default.IconLanguage != "English")
-                                        {
                                             newQuest = SearchResource.getTranslatedText(questParser[x].Objectives[p].Description.Key);
-                                        }
-                                        else { newQuest = questParser[x].Objectives[p].Description.SourceString; }
-                                        long newCount = questParser[x].Objectives[p].Count;
+                                        else
+                                            newQuest = questParser[x].Objectives[p].Description.SourceString;
 
-                                        if (questParser[x].BAthenaMustCompleteInSingleMatch && questParser[x].ObjectiveCompletionCount > 0)
-                                        {
+                                        long newCount = questParser[x].Objectives[p].Count;
+                                        if (questParser[x].ObjectiveCompletionCount > 0)
                                             newCount = questParser[x].ObjectiveCompletionCount;
-                                        }
 
                                         bool isFortbyte = false;
                                         var assetTypeToken = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name == "Token").FirstOrDefault();
