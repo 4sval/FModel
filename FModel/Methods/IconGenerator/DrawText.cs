@@ -141,7 +141,7 @@ namespace FModel
             }
             try
             {
-                if (theItem.WeaponStatHandle.RowName != "Harvest_Pickaxe_Athena_C_T01" || theItem.WeaponStatHandle.RowName != "Edged_Sword_Athena_C_T01")
+                if (theItem.WeaponStatHandle != null && theItem.WeaponStatHandle.RowName != "Harvest_Pickaxe_Athena_C_T01" && theItem.WeaponStatHandle.RowName != "Edged_Sword_Athena_C_T01")
                 {
                     WeaponRowName = theItem.WeaponStatHandle.RowName;
                 }
