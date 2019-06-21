@@ -1279,50 +1279,48 @@ namespace FModel
         {
             UpdateConsole(ThePak.CurrentUsedItem + " is an Item Definition", Color.FromArgb(255, 66, 244, 66), "Success");
 
-            using (Bitmap bmp = new Bitmap(522, 522))
+            Bitmap bmp = new Bitmap(522, 522);
+            Graphics g = Graphics.FromImage(bmp);
+            g.TextRenderingHint = TextRenderingHint.AntiAlias;
+
+            Rarity.DrawRarity(theItem, g, specialMode);
+
+            ItemIcon.ItemIconPath = string.Empty;
+            ItemIcon.GetItemIcon(theItem, Settings.Default.loadFeaturedImage);
+            if (File.Exists(ItemIcon.ItemIconPath))
             {
-                Graphics g = Graphics.FromImage(bmp);
-                g.TextRenderingHint = TextRenderingHint.AntiAlias;
-
-                Rarity.DrawRarity(theItem, g, specialMode);
-
-                ItemIcon.ItemIconPath = string.Empty;
-                ItemIcon.GetItemIcon(theItem, Settings.Default.loadFeaturedImage);
-                if (File.Exists(ItemIcon.ItemIconPath))
+                Image itemIcon;
+                using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
                 {
-                    Image itemIcon;
-                    using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                    {
-                        itemIcon = new Bitmap(bmpTemp);
-                    }
-                    g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 512, 512), new Point(5, 5));
+                    itemIcon = new Bitmap(bmpTemp);
                 }
-                else
-                {
-                    Image itemIcon = Resources.unknown512;
-                    g.DrawImage(itemIcon, new Point(0, 0));
-                }
-
-                ItemIcon.DrawWatermark(g);
-
-                Image bg512 = Resources.BG512;
-                g.DrawImage(bg512, new Point(5, 383));
-
-                DrawText.DrawTexts(theItem, g, specialMode);
-
-                if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
-                {
-                    bmp.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
-
-                    if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
-                    {
-                        AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                        AppendText(" successfully saved", Color.Black, true);
-                    }
-                }
-
-                return bmp;
+                g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 512, 512), new Point(5, 5));
             }
+            else
+            {
+                Image itemIcon = Resources.unknown512;
+                g.DrawImage(itemIcon, new Point(0, 0));
+            }
+
+            ItemIcon.DrawWatermark(g);
+
+            Image bg512 = Resources.BG512;
+            g.DrawImage(bg512, new Point(5, 383));
+
+            DrawText.DrawTexts(theItem, g, specialMode);
+
+            if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
+            {
+                bmp.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
+
+                if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
+                {
+                    AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
+                    AppendText(" successfully saved", Color.Black, true);
+                }
+            }
+
+            return bmp;
         }
 
 
@@ -1430,7 +1428,7 @@ namespace FModel
                     AppendText(" successfully saved", Color.Black, true);
                 }
             }
-            bmp.Dispose();
+            BundleDesign.toDrawOn.Dispose(); //actually this is the most useful thing in this method
         }
 
         /// <summary>
