@@ -1319,7 +1319,7 @@ namespace FModel
                     AppendText(" successfully saved", Color.Black, true);
                 }
             }
-
+            g.Dispose();
             return bmp;
         }
 
@@ -1657,10 +1657,6 @@ namespace FModel
                 AppendText("Please load a .locres file first.\t\t\t", Color.Black);
                 AppendText(@"FortniteGame\Content\Localization\ - pakchunk0-WindowsClient.pak", Color.DarkRed, true);
             }
-        }
-        private void GetDifferenceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
         }
     }
 }

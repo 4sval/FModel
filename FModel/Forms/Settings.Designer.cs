@@ -176,7 +176,16 @@ namespace FModel.Forms
             "German",
             "Italian",
             "Spanish",
-            "Spanish (LA)"});
+            "Spanish (LA)",
+            "Arabic",
+            "Japanese",
+            "Korean",
+            "Polish",
+            "Portuguese (Brazil)",
+            "Russian",
+            "Turkish",
+            "Chinese (S)",
+            "Traditional Chinese"});
             this.comboBox1.Location = new System.Drawing.Point(70, 161);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(309, 21);

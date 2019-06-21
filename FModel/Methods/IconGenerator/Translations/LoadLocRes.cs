@@ -1,5 +1,3 @@
-using System;
-
 namespace FModel
 {
     static class LoadLocRes
@@ -24,6 +22,33 @@ namespace FModel
                     break;
                 case "Spanish (LA)":
                     myLocRes = getMyLocRes("es-419");
+                    break;
+                case "Arabic":
+                    myLocRes = getMyLocRes("ar");
+                    break;
+                case "Japanese":
+                    myLocRes = getMyLocRes("ja");
+                    break;
+                case "Korean":
+                    myLocRes = getMyLocRes("ko");
+                    break;
+                case "Polish":
+                    myLocRes = getMyLocRes("pl");
+                    break;
+                case "Portuguese (Brazil)":
+                    myLocRes = getMyLocRes("pt-BR");
+                    break;
+                case "Russian":
+                    myLocRes = getMyLocRes("ru");
+                    break;
+                case "Turkish":
+                    myLocRes = getMyLocRes("tr");
+                    break;
+                case "Chinese (S)":
+                    myLocRes = getMyLocRes("zh-CN");
+                    break;
+                case "Traditional Chinese":
+                    myLocRes = getMyLocRes("zh-Hant");
                     break;
                 default:
                     break;

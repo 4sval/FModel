@@ -179,6 +179,42 @@ namespace FModel
                     all = "Completa LOS DESAFÍOS para conseguir el objeto de recompensa";
                     any = "Completa " + count + " DE LOS DESAFÍOS para conseguir el objeto de recompensa";
                     goto default;
+                case "Arabic":
+                    all = "أكمل جميع التحديات لتربح عنصر المكافأة";
+                    any = "أكمل أيًا " + count + " من التحديات للحصول على عنصر المكافأة";
+                    goto default;
+                case "Japanese":
+                    all = "全個のチャレンジをクリアして報酬アイテムを獲得する";
+                    any = "いずれか" + count + "個のチャレンジをクリアして、報酬アイテムを獲得する";
+                    goto default;
+                case "Korean":
+                    all = "개의 도전을 모두 완료하고 보상 아이템을 얻으세요.";
+                    any = count + "개</>의 도전 완료";
+                    goto default;
+                case "Polish":
+                    all = "Ukończ wszystkie wyzwań, by otrzymać tę nagrodę";
+                    any = "Ukończ " + count + " dowolnych wyzwań, by otrzymać tę nagrodę";
+                    goto default;
+                case "Portuguese (Brazil)":
+                    all = "Conclua TODOS OS DESAFIOS para receber o item de recompensa";
+                    any = "Conclua " + count + " DESAFIO(S) para receber o item de recompensa";
+                    goto default;
+                case "Russian":
+                    all = "Выполните все испытания, чтобы получить награду";
+                    any = "Выполните не менее " + count + " любых испытаний для награды";
+                    goto default;
+                case "Turkish":
+                    all = "Ödülü kazanmak için GÖREVI DE tamamla.";
+                    any = "Ödülü kazanmak için herhangi " + count + " GÖREVI tamamla.";
+                    goto default;
+                case "Chinese (S)":
+                    all = "完成所有个挑战以赢得奖励物品";
+                    any = "完成任意" + count + "个挑战以赢得奖励物品";
+                    goto default;
+                case "Traditional Chinese":
+                    all = "完成所有個挑戰以贏得獎勵物品";
+                    any = "完成任意" + count + "個挑戰以贏得獎勵物品";
+                    goto default;
                 default:
                     if (count == "-1")
                     {
@@ -189,15 +225,6 @@ namespace FModel
                         toDrawOn.DrawString(any, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
                     }
                     break;
-            }
-
-            if (count == "-1")
-            {
-                toDrawOn.DrawString(all, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
-            }
-            else
-            {
-                toDrawOn.DrawString(any, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
             }
         }
 

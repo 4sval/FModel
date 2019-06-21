@@ -1,4 +1,4 @@
-using csharp_wick;
+﻿using csharp_wick;
 using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
@@ -25,49 +25,52 @@ namespace FModel
 
         public static void DrawTexts(ItemsIdParser theItem, Graphics myGraphic, string mode)
         {
-            DrawDisplayName(theItem, myGraphic);
-            DrawDescription(theItem, myGraphic);
-
-            SetTexts(theItem);
-
-            switch (mode)
+            using (myGraphic)
             {
-                case "athIteDef":
-                    DrawToLeft(ShortDescription, myGraphic);
-                    DrawToRight(CosmeticSource, myGraphic);
-                    break;
-                case "consAndWeap":
-                    DrawToRight(ItemAction, myGraphic);
-                    if (MainWindow.ExtractedFilePath.Contains("Items\\Consumables\\"))
-                    {
-                        DrawToLeft(MaxStackSize, myGraphic);
-                    }
-                    break;
-                case "variant":
-                    DrawToLeft(ShortDescription, myGraphic);
-                    DrawToRight(CosmeticId, myGraphic);
-                    break;
-                case "stwHeroes":
-                    DrawToRight(HeroType, myGraphic);
-                    DrawPower(myGraphic);
-                    break;
-                case "stwDefenders":
-                    DrawToRight(DefenderType, myGraphic);
-                    DrawPower(myGraphic);
-                    break;
-            }
+                DrawDisplayName(theItem, myGraphic);
+                DrawDescription(theItem, myGraphic);
 
-            if (theItem.ExportType == "AthenaItemWrapDefinition" && Checking.WasFeatured && ItemIcon.ItemIconPath.Contains("WeaponRenders"))
-            {
-                DrawAdditionalImage(theItem, myGraphic);
-            }
-            if (theItem.AmmoData != null && theItem.AmmoData.AssetPathName.Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
-            {
-                ItemIcon.GetAmmoData(theItem.AmmoData.AssetPathName, myGraphic);
-                DrawWeaponStat(WeaponRowName, myGraphic);
-            }
+                SetTexts(theItem);
 
-            DrawCosmeticUff(theItem, myGraphic);
+                switch (mode)
+                {
+                    case "athIteDef":
+                        DrawToLeft(ShortDescription, myGraphic);
+                        DrawToRight(CosmeticSource, myGraphic);
+                        break;
+                    case "consAndWeap":
+                        DrawToRight(ItemAction, myGraphic);
+                        if (MainWindow.ExtractedFilePath.Contains("Items\\Consumables\\"))
+                        {
+                            DrawToLeft(MaxStackSize, myGraphic);
+                        }
+                        break;
+                    case "variant":
+                        DrawToLeft(ShortDescription, myGraphic);
+                        DrawToRight(CosmeticId, myGraphic);
+                        break;
+                    case "stwHeroes":
+                        DrawToRight(HeroType, myGraphic);
+                        DrawPower(myGraphic);
+                        break;
+                    case "stwDefenders":
+                        DrawToRight(DefenderType, myGraphic);
+                        DrawPower(myGraphic);
+                        break;
+                }
+
+                if (theItem.ExportType == "AthenaItemWrapDefinition" && Checking.WasFeatured && ItemIcon.ItemIconPath.Contains("WeaponRenders"))
+                {
+                    DrawAdditionalImage(theItem, myGraphic);
+                }
+                if (theItem.AmmoData != null && theItem.AmmoData.AssetPathName.Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
+                {
+                    ItemIcon.GetAmmoData(theItem.AmmoData.AssetPathName, myGraphic);
+                    DrawWeaponStat(WeaponRowName, myGraphic);
+                }
+
+                DrawCosmeticUff(theItem, myGraphic);
+            }
         }
 
         /// <summary>
@@ -96,6 +99,15 @@ namespace FModel
                     case "Italian":
                     case "Spanish":
                     case "Spanish (LA)":
+                    case "Arabic":
+                    case "Japanese":
+                    case "Korean":
+                    case "Polish":
+                    case "Portuguese (Brazil)":
+                    case "Russian":
+                    case "Turkish":
+                    case "Chinese (S)":
+                    case "Traditional Chinese":
                         ShortDescription = theItem.ShortDescription != null ? SearchResource.getTextByKey(theItem.ShortDescription.Key, theItem.ShortDescription.SourceString) : "";
                         break;
                     default:
@@ -372,6 +384,24 @@ namespace FModel
                 case "Spanish":
                 case "Spanish (LA)":
                     return " segundos";
+                case "Arabic":
+                    return " الثواني"; //todo: right to left
+                case "Japanese":
+                    return " 秒"; //todo: right to left?
+                case "Korean":
+                    return " 초"; //todo: right to left?
+                case "Polish":
+                    return " s";
+                case "Portuguese (Brazil)":
+                    return " segundo(s)";
+                case "Russian":
+                    return " сек";
+                case "Turkish":
+                    return " saniye";
+                case "Chinese (S)":
+                    return " 秒"; //todo: right to left?
+                case "Traditional Chinese":
+                    return " 秒"; //todo: right to left?
                 default:
                     return " seconds";
             }
