@@ -1261,6 +1261,10 @@ namespace FModel
                     {
                         pictureBox1.Image = CreateItemIcon(itemId[i]);
                     }
+                    else if (Settings.Default.createIconForCreativeGalleries && (itemId[i].ExportType == "FortPlaysetGrenadeItemDefinition"))
+                    {
+                        pictureBox1.Image = CreateItemIcon(itemId[i]);
+                    }
                     else if (itemId[i].ExportType == "FortChallengeBundleItemDefinition")
                     {
                         CreateBundleChallengesIcon(itemId[i], parsedJson, questJson);
