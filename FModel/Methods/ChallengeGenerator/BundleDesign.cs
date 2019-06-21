@@ -207,9 +207,23 @@ namespace FModel
         /// <param name="myBitmap"></param>
         public static void drawWatermark(Bitmap myBitmap)
         {
-            string text = SearchResource.getTextByKey(myItem.DisplayName.Key, myItem.DisplayName.SourceString);
+            string text = Settings.Default.challengesWatermark;
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                text = "{Bundle_Name} Generated using FModel & JohnWickParse - {Date}";
+            }
+
+            if (text.Contains("{Bundle_Name}"))
+            {
+                text = text.Replace("{Bundle_Name}", SearchResource.getTextByKey(myItem.DisplayName.Key, myItem.DisplayName.SourceString));
+            }
+            if (text.Contains("{Date}"))
+            {
+                text = text.Replace("{Date}", DateTime.Now.ToString("dd/MM/yyyy"));
+            }
+
             toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, 0, 0, 0)), new Rectangle(0, theY + 240, myBitmap.Width, 40));
-            toDrawOn.DrawString(text + " Generated using FModel & JohnWickParse - " + DateTime.Now.ToString("dd/MM/yyyy"), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
+            toDrawOn.DrawString(text, new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width / 2, theY + 250), FontUtilities.centeredString);
         }
 
         private static void drawForbyteReward()

@@ -71,7 +71,7 @@ namespace FModel
                                 {
                                     ItemIcon.SearchAthIteDefIcon(itemId[i]);
 
-                                    drawIcon();
+                                    drawIcon(item);
                                 }
                             }
                         }
@@ -127,7 +127,7 @@ namespace FModel
                                     ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                 }
 
-                                drawIcon();
+                                drawIcon(bannerName);
                             }
                         }
                     }
@@ -139,10 +139,16 @@ namespace FModel
             }
         }
 
-        private static void drawIcon()
+        private static void drawIcon(string itemId)
         {
             if (File.Exists(ItemIcon.ItemIconPath))
             {
+                if (Settings.Default.challengesDebug)
+                {
+                    //draw quest reward id
+                    BundleDesign.toDrawOn.DrawString(itemId, new Font("Courier New", 12), new SolidBrush(Color.White), new RectangleF(2110, BundleDesign.theY + 30, 190, 60), FontUtilities.centeredStringLine);
+                }
+
                 Image itemIcon;
                 using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
                 {

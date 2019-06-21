@@ -10,6 +10,7 @@ namespace FModel.Forms
     {
         private static string _paKsPathBefore;
         private static string _outputPathBefore;
+        private static string _oldLanguage;
 
         public Settings()
         {
@@ -20,6 +21,14 @@ namespace FModel.Forms
 
             textBox4.Text = Properties.Settings.Default.eEmail;
             textBox5.Text = Properties.Settings.Default.ePassword;
+
+            textBox6.Text = Properties.Settings.Default.challengesWatermark;
+            checkBox2.Checked = Properties.Settings.Default.challengesDebug;
+            if (string.IsNullOrWhiteSpace(textBox6.Text))
+            {
+                textBox6.Text = "{Bundle_Name} Generated using FModel & JohnWickParse - {Date}";
+            }
+            else { textBox6.Text = Properties.Settings.Default.challengesWatermark; }
 
             //MERGER
             textBox3.Text = Properties.Settings.Default.mergerFileName;
@@ -68,6 +77,7 @@ namespace FModel.Forms
                 }
             }
 
+            _oldLanguage = Properties.Settings.Default.IconLanguage;
             comboBox1.SelectedIndex = comboBox1.FindStringExact(Properties.Settings.Default.IconLanguage);
 
             _paKsPathBefore = Properties.Settings.Default.PAKsPath;
@@ -97,6 +107,9 @@ namespace FModel.Forms
             Properties.Settings.Default.eEmail = textBox4.Text;
             Properties.Settings.Default.ePassword = textBox5.Text;
 
+            Properties.Settings.Default.challengesDebug = checkBox2.Checked;
+            Properties.Settings.Default.challengesWatermark = textBox6.Text;
+
             //MERGER
             Properties.Settings.Default.mergerFileName = textBox3.Text;
             Properties.Settings.Default.mergerImagesRow = Decimal.ToInt32(imgsPerRow.Value);
@@ -117,7 +130,10 @@ namespace FModel.Forms
 
             //LOCRES
             Properties.Settings.Default.IconLanguage = comboBox1.SelectedItem.ToString();
-            LoadLocRes.LoadMySelectedLocRes(Properties.Settings.Default.IconLanguage);
+            if (comboBox1.SelectedItem.ToString() != _oldLanguage)
+            {
+                LoadLocRes.LoadMySelectedLocRes(Properties.Settings.Default.IconLanguage);
+            }
 
             Properties.Settings.Default.Save(); //SAVE
             Close();

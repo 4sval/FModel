@@ -514,5 +514,29 @@ namespace FModel.Properties {
                 this["IconLanguage"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool challengesDebug {
+            get {
+                return ((bool)(this["challengesDebug"]));
+            }
+            set {
+                this["challengesDebug"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string challengesWatermark {
+            get {
+                return ((string)(this["challengesWatermark"]));
+            }
+            set {
+                this["challengesWatermark"] = value;
+            }
+        }
     }
 }

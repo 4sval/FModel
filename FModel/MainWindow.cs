@@ -1279,48 +1279,50 @@ namespace FModel
         {
             UpdateConsole(ThePak.CurrentUsedItem + " is an Item Definition", Color.FromArgb(255, 66, 244, 66), "Success");
 
-            Bitmap bmp = new Bitmap(522, 522);
-            Graphics g = Graphics.FromImage(bmp);
-            g.TextRenderingHint = TextRenderingHint.AntiAlias;
-
-            Rarity.DrawRarity(theItem, g, specialMode);
-
-            ItemIcon.ItemIconPath = string.Empty;
-            ItemIcon.GetItemIcon(theItem, Settings.Default.loadFeaturedImage);
-            if (File.Exists(ItemIcon.ItemIconPath))
+            using (Bitmap bmp = new Bitmap(522, 522))
             {
-                Image itemIcon;
-                using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
+                Graphics g = Graphics.FromImage(bmp);
+                g.TextRenderingHint = TextRenderingHint.AntiAlias;
+
+                Rarity.DrawRarity(theItem, g, specialMode);
+
+                ItemIcon.ItemIconPath = string.Empty;
+                ItemIcon.GetItemIcon(theItem, Settings.Default.loadFeaturedImage);
+                if (File.Exists(ItemIcon.ItemIconPath))
                 {
-                    itemIcon = new Bitmap(bmpTemp);
+                    Image itemIcon;
+                    using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
+                    {
+                        itemIcon = new Bitmap(bmpTemp);
+                    }
+                    g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 512, 512), new Point(5, 5));
                 }
-                g.DrawImage(ImageUtilities.ResizeImage(itemIcon, 512, 512), new Point(5, 5));
-            }
-            else
-            {
-                Image itemIcon = Resources.unknown512;
-                g.DrawImage(itemIcon, new Point(0, 0));
-            }
-
-            ItemIcon.DrawWatermark(g);
-
-            Image bg512 = Resources.BG512;
-            g.DrawImage(bg512, new Point(5, 383));
-
-            DrawText.DrawTexts(theItem, g, specialMode);
-
-            if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
-            {
-                bmp.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
-
-                if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
+                else
                 {
-                    AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                    AppendText(" successfully saved", Color.Black, true);
+                    Image itemIcon = Resources.unknown512;
+                    g.DrawImage(itemIcon, new Point(0, 0));
                 }
-            }
 
-            return bmp;
+                ItemIcon.DrawWatermark(g);
+
+                Image bg512 = Resources.BG512;
+                g.DrawImage(bg512, new Point(5, 383));
+
+                DrawText.DrawTexts(theItem, g, specialMode);
+
+                if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
+                {
+                    bmp.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
+
+                    if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
+                    {
+                        AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
+                        AppendText(" successfully saved", Color.Black, true);
+                    }
+                }
+
+                return bmp;
+            }
         }
 
 
@@ -1375,7 +1377,7 @@ namespace FModel
 
                     //in case you wanna make some changes
                     //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(107, BundleDesign.theY + 7, 2000, 93)); //rectangle that resize the font -> used for "Font goodFont = "
-                    //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Green)), new Rectangle(107, BundleDesign.theY + 7, 2000, 75)); //rectangle the font needs to be fit with
+                    //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Blue)), new Rectangle(107, BundleDesign.theY + 7, 2000, 75)); //rectangle the font needs to be fit with
                     
                     //draw quest description
                     Font goodFont = FontUtilities.FindFont(BundleDesign.toDrawOn, BundleInfos.BundleData[i].questDescr, new Rectangle(107, BundleDesign.theY + 7, 2000, 93).Size, new Font(FontUtilities.pfc.Families[1], 50)); //size in "new Font()" is never check
@@ -1428,6 +1430,7 @@ namespace FModel
                     AppendText(" successfully saved", Color.Black, true);
                 }
             }
+            bmp.Dispose();
         }
 
         /// <summary>
@@ -1500,10 +1503,13 @@ namespace FModel
             else
                 UpdateConsole("Couldn't convert " + ThePak.CurrentUsedItem, Color.FromArgb(255, 244, 66, 66), "Error");
         }
+
+        /// <summary>
+        /// todo: overwrite existing extracted font
+        /// </summary>
+        /// <param name="file"></param>
         private void ConvertToTtf(string file)
         {
-            if (File.Exists(file)) { File.Delete(file);  }
-
             File.Move(file, Path.ChangeExtension(file, ".ttf") ?? throw new InvalidOperationException());
             UpdateConsole(ThePak.CurrentUsedItem + " successfully converter to a font", Color.FromArgb(255, 66, 244, 66), "Success");
         }
