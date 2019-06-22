@@ -277,7 +277,7 @@ namespace FModel
         }
         private void Button1_Click(object sender, EventArgs e)
         {
-            var aesForms = new Forms.AESManager();
+            var aesForms = new AESManager();
             if (Application.OpenForms[aesForms.Name] == null)
             {
                 aesForms.Show();

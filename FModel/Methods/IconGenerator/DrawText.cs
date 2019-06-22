@@ -376,32 +376,20 @@ namespace FModel
             switch (Settings.Default.IconLanguage)
             {
                 case "French":
-                    return " secondes";
                 case "German":
-                    return " Sekunden";
                 case "Italian":
-                    return " secondi";
                 case "Spanish":
                 case "Spanish (LA)":
-                    return " segundos";
                 case "Arabic":
-                    return " الثواني"; //todo: right to left
                 case "Japanese":
-                    return " 秒"; //todo: right to left?
                 case "Korean":
-                    return " 초"; //todo: right to left?
                 case "Polish":
-                    return " s";
                 case "Portuguese (Brazil)":
-                    return " segundo(s)";
                 case "Russian":
-                    return " сек";
                 case "Turkish":
-                    return " saniye";
                 case "Chinese (S)":
-                    return " 秒"; //todo: right to left?
                 case "Traditional Chinese":
-                    return " 秒"; //todo: right to left?
+                    return " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds");
                 default:
                     return " seconds";
             }

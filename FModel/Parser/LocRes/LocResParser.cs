@@ -8,8 +8,6 @@
 
 namespace FModel.Parser.LocResParser
 {
-    using System.Collections.Generic;
-
     using System.Globalization;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
@@ -21,6 +19,12 @@ namespace FModel.Parser.LocResParser
 
         [JsonProperty("WorkerSetBonusTraitPattern")]
         public string WorkerSetBonusTraitPattern { get; set; }
+
+        [JsonProperty("CompletionRewardFormat_All")]
+        public string CompletionRewardFormatAll { get; set; }
+
+        [JsonProperty("CompletionRewardFormat")]
+        public string CompletionRewardFormat { get; set; }
     }
 
     public partial class LocResParser

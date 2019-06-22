@@ -6,7 +6,7 @@ namespace FModel
     static class SearchResource
     {
         private static string parsedJsonToCheck { get; set; }
-        private static JObject jo { get; set; }
+        public static JObject jo { get; set; }
         private static string oldLanguage = Properties.Settings.Default.IconLanguage;
 
         /// <summary>

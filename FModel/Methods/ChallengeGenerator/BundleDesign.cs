@@ -6,6 +6,8 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
 using System;
+using Newtonsoft.Json.Linq;
+using FModel.Parser.LocResParser;
 
 namespace FModel
 {
@@ -160,57 +162,45 @@ namespace FModel
             switch (Settings.Default.IconLanguage)
             {
                 case "French":
-                    all = "Terminez CHACUN DES DÉFIS pour gagner la récompense";
-                    any = "Terminez " + count + " DES DÉFIS pour gagner la récompense";
-                    break;
                 case "German":
-                    all = "Schließe ALLE HERAUSFORDERUNGEN ab, um die Belohnung zu verdienen";
-                    any = "Schließe " + count + " HERAUSFORDERUNGEN ab, um die Belohnung zu verdienen";
-                    break;
                 case "Italian":
-                    all = "Completa TUTTE LE SFIDE per ottenere l'oggetto in ricompensa";
-                    any = "Completa " + count + " SFIDE QUALSIASI per ottenere l'oggetto ricompensa";
-                    break;
                 case "Spanish":
                 case "Spanish (LA)":
-                    all = "Completa TODOS LOS DESAFÍOS para conseguir el objeto de recompensa";
-                    any = "Completa " + count + " DE LOS DESAFÍOS para conseguir el objeto de recompensa";
-                    break;
                 case "Arabic":
-                    all = "أكمل جميع التحديات لتربح عنصر المكافأة";
-                    any = "أكمل أيًا " + count + " من التحديات للحصول على عنصر المكافأة";
-                    break;
                 case "Japanese":
-                    all = "全個のチャレンジをクリアして報酬アイテムを獲得する";
-                    any = "いずれか" + count + "個のチャレンジをクリアして、報酬アイテムを獲得する";
-                    break;
                 case "Korean":
-                    all = "개의 도전을 모두 완료하고 보상 아이템을 얻으세요.";
-                    any = count + "개</>의 도전 완료";
-                    break;
                 case "Polish":
-                    all = "Ukończ wszystkie wyzwań, by otrzymać tę nagrodę";
-                    any = "Ukończ " + count + " dowolnych wyzwań, by otrzymać tę nagrodę";
-                    break;
                 case "Portuguese (Brazil)":
-                    all = "Conclua TODOS OS DESAFIOS para receber o item de recompensa";
-                    any = "Conclua " + count + " DESAFIO(S) para receber o item de recompensa";
-                    break;
                 case "Russian":
-                    all = "Выполните все испытания, чтобы получить награду";
-                    any = "Выполните не менее " + count + " любых испытаний для награды";
-                    break;
                 case "Turkish":
-                    all = "Ödülü kazanmak için GÖREVI DE tamamla.";
-                    any = "Ödülü kazanmak için herhangi " + count + " GÖREVI tamamla.";
-                    break;
                 case "Chinese (S)":
-                    all = "完成所有个挑战以赢得奖励物品";
-                    any = "完成任意" + count + "个挑战以赢得奖励物品";
-                    break;
                 case "Traditional Chinese":
-                    all = "完成所有個挑戰以贏得獎勵物品";
-                    any = "完成任意" + count + "個挑戰以贏得獎勵物品";
+                    foreach (JToken token in SearchResource.jo.FindTokens("AthenaChallengeDetailsEntry")) //no need to check if we need a new SearchResource.jo
+                    {
+                        LocResParser LocResParse = LocResParser.FromJson(token.ToString());
+                        if (LocResParse.CompletionRewardFormatAll != null)
+                        {
+                            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+                            doc.LoadHtml(LocResParse.CompletionRewardFormatAll);
+
+                            if (doc.DocumentNode.InnerText.Contains(" {0}")) //avoid white space
+                            {
+                                all = doc.DocumentNode.InnerText.Replace(" {0}", string.Empty);
+                            }
+                            else { all = doc.DocumentNode.InnerText.Replace("{0}", string.Empty); }
+                        }
+                        if (LocResParse.CompletionRewardFormat != null)
+                        {
+                            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+                            doc.LoadHtml(LocResParse.CompletionRewardFormat);
+
+                            if (doc.DocumentNode.InnerText.Contains("{QuestNumber}")) //russian
+                            {
+                                any = doc.DocumentNode.InnerText.Replace("{QuestNumber}", count);
+                            }
+                            else { any = string.Format(doc.DocumentNode.InnerText, count); }
+                        }
+                    }
                     break;
                 default:
                     break;
