@@ -248,8 +248,12 @@ namespace FModel
         {
             if (theItem.DisplayName != null)
             {
+                //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(5, 395, 512, 49));
+
                 string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString);
-                myGraphic.DrawString(text, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35), new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
+
+                Font goodFont = FontUtilities.FindFont(myGraphic, text, new Rectangle(5, 395, 512, 49).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35));
+                myGraphic.DrawString(text, goodFont, new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
             }
         }
 
