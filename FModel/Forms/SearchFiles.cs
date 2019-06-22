@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace FModel.Forms
 {
+    //todo: refactor this shit + search with multiple word separated by spaces
     public partial class SearchFiles : Form
     {
         TypeAssistant _assistant;
@@ -165,7 +166,7 @@ namespace FModel.Forms
                     {
                         for (int i = 0; i < _myInfos.Count; i++)
                         {
-                            if (MainWindow.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text))
+                            if (Utilities.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text))
                             {
                                 if (_myInfos[i].FileName.Contains(".uasset") || _myInfos[i].FileName.Contains(".uexp") || _myInfos[i].FileName.Contains(".ubulk"))
                                 {
@@ -211,7 +212,7 @@ namespace FModel.Forms
                     {
                         for (int i = 0; i < _myInfos.Count; i++)
                         {
-                            if (MainWindow.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text))
+                            if (Utilities.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text))
                             {
                                 if (_myInfos[i].FileName.Contains(".uasset") || _myInfos[i].FileName.Contains(".uexp") || _myInfos[i].FileName.Contains(".ubulk"))
                                 {

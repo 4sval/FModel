@@ -32,13 +32,8 @@ namespace FModel
         private static Stopwatch StopWatch { get; set; }
         public static string[] PakAsTxt { get; set; }
         private static Dictionary<string, string> _diffToExtract { get; set; }
-        private static string _backupFileName { get; set; }
-        private static string[] _backupDynamicKeys { get; set; }
         private static List<string> _itemsToDisplay { get; set; }
-        public static string ExtractedFilePath { get; set; }
         public static string[] SelectedItemsArray { get; set; }
-        private bool bIsLocres { get; set; }
-        private bool differenceFileExists = false;
         #endregion
 
         public MainWindow()
@@ -165,7 +160,7 @@ namespace FModel
 
             DynamicKeysManager.deserialize();
 
-            _backupFileName = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
+            Checking.BackupFileName = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
             ThePak.dynamicPaksList = new List<PaksEntry>();
             ThePak.mainPaksList = new List<PaksEntry>();
 
@@ -259,23 +254,7 @@ namespace FModel
                 Application.OpenForms[aboutForm.Name].Focus();
             }
         }
-        private void searchToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var searchForm = new SearchFiles();
-            if (Application.OpenForms[searchForm.Name] == null)
-            {
-                searchForm.Show();
-            }
-            else
-            {
-                Application.OpenForms[searchForm.Name].Focus();
-            }
-            searchForm.FormClosing += (o, c) =>
-            {
-                OpenMe();
-            };
-        }
-        private void Button1_Click(object sender, EventArgs e)
+        private void AESManagerButton_Click(object sender, EventArgs e)
         {
             var aesForms = new AESManager();
             if (Application.OpenForms[aesForms.Name] == null)
@@ -297,7 +276,6 @@ namespace FModel
             ThePak.CurrentUsedPak = null;
             ThePak.CurrentUsedPakGuid = null;
             bool bMainKeyWorking = false;
-            bIsLocres = false;
 
             for (int i = 0; i < ThePak.mainPaksList.Count; i++)
             {
@@ -401,7 +379,13 @@ namespace FModel
 
             UpdateConsole("Building tree, please wait...", Color.FromArgb(255, 244, 132, 66), "Loading");
         }
-        private void TreeParsePath(TreeNodeCollection nodeList, string path) //https://social.msdn.microsoft.com/Forums/en-US/c75c1804-6933-40ba-b17a-0e36ae8bcbb5/how-to-create-a-tree-view-with-full-paths?forum=csharplanguage
+
+        /// <summary>
+        /// https://social.msdn.microsoft.com/Forums/en-US/c75c1804-6933-40ba-b17a-0e36ae8bcbb5/how-to-create-a-tree-view-with-full-paths?forum=csharplanguage
+        /// </summary>
+        /// <param name="nodeList"></param>
+        /// <param name="path"></param>
+        private void TreeParsePath(TreeNodeCollection nodeList, string path)
         {
             TreeNode node;
             string folder;
@@ -501,7 +485,7 @@ namespace FModel
             {
                 PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\Result.txt");
                 File.Delete(App.DefaultOutputPath + "\\Result.txt");
-                differenceFileExists = true;
+                Checking.DifferenceFileExists = true;
             }
         }
         private void CreatePakList(ToolStripItemClickedEventArgs selectedPak = null, bool loadAllPaKs = false, bool getDiff = false, bool updateMode = false)
@@ -574,7 +558,7 @@ namespace FModel
                 {
                     UpdateConsole("Comparing files...", Color.FromArgb(255, 244, 132, 66), "Loading");
                     ComparePaKs();
-                    if (updateMode && differenceFileExists)
+                    if (updateMode && Checking.DifferenceFileExists)
                     {
                         UmFilter(PakAsTxt, _diffToExtract);
                         Checking.UmWorking = true;
@@ -590,14 +574,14 @@ namespace FModel
                         treeView1.EndUpdate();
                     }));
 
-                    differenceFileExists = false;
+                    Checking.DifferenceFileExists = false;
                     UpdateConsole("Files compared", Color.FromArgb(255, 66, 244, 66), "Success");
                 }
             }
         }
         private void CreateBackupList()
         {
-            _backupDynamicKeys = null;
+            string[] _backupDynamicKeys = null;
             StringBuilder sb = new StringBuilder();
 
             if (DLLImport.IsInternetAvailable() && (!string.IsNullOrWhiteSpace(Settings.Default.eEmail) || !string.IsNullOrWhiteSpace(Settings.Default.ePassword)))
@@ -688,15 +672,15 @@ namespace FModel
                 }
             }
 
-            File.WriteAllText(App.DefaultOutputPath + "\\Backup" + _backupFileName, sb.ToString()); //File will always exist so we check the file size instead
-            if (new System.IO.FileInfo(App.DefaultOutputPath + "\\Backup" + _backupFileName).Length > 0)
+            File.WriteAllText(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName, sb.ToString()); //File will always exist so we check the file size instead
+            if (new System.IO.FileInfo(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName).Length > 0)
             {
-                UpdateConsole("\\Backup" + _backupFileName + " successfully created", Color.FromArgb(255, 66, 244, 66), "Success");
+                UpdateConsole("\\Backup" + Checking.BackupFileName + " successfully created", Color.FromArgb(255, 66, 244, 66), "Success");
             }
             else
             {
-                File.Delete(App.DefaultOutputPath + "\\Backup" + _backupFileName);
-                UpdateConsole("Can't create " + _backupFileName.Substring(1), Color.FromArgb(255, 244, 66, 66), "Error");
+                File.Delete(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName);
+                UpdateConsole("Can't create " + Checking.BackupFileName.Substring(1), Color.FromArgb(255, 244, 66, 66), "Error");
             }
         }
         private void UpdateModeExtractSave()
@@ -838,6 +822,7 @@ namespace FModel
                 CreateBackupList();
             });
         }
+
         //UPDATE MODE
         private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -943,10 +928,6 @@ namespace FModel
                 ExtractButton.Enabled = listBox1.SelectedIndex >= 0; //DISABLE EXTRACT BUTTON IF NOTHING IS SELECTED IN LISTBOX
             }));
         }
-        public static bool CaseInsensitiveContains(string text, string value, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
-        {
-            return text.IndexOf(value, stringComparison) >= 0;
-        } //FILTER INSENSITIVE
         private void FilterItems()
         {
             if (listBox1.InvokeRequired)
@@ -964,7 +945,7 @@ namespace FModel
                 {
                     for (int i = 0; i < _itemsToDisplay.Count; i++)
                     {
-                        if (CaseInsensitiveContains(_itemsToDisplay[i], FilterTextBox.Text))
+                        if (Utilities.CaseInsensitiveContains(_itemsToDisplay[i], FilterTextBox.Text))
                         {
                             listBox1.Items.Add(_itemsToDisplay[i]);
                         }
@@ -980,119 +961,6 @@ namespace FModel
             }
 
             listBox1.EndUpdate();
-        }
-        public async void ExpandMyLitleBoys(TreeNode node, List<string> path)
-        {
-            path.RemoveAt(0);
-            node.Expand();
-
-            if (path.Count == 0)
-                return;
-
-            if (path.Count == 1)
-            {
-                treeView1.SelectedNode = node;
-                await Task.Run(() => {
-                    List<string> itemsNotToDisplay = new List<string>();
-                    _itemsToDisplay = new List<string>();
-
-                    Invoke(new Action(() =>
-                    {
-                        listBox1.Items.Clear();
-                        FilterTextBox.Text = string.Empty;
-                    }));
-
-                    var all = GetAncestors(node, x => x.Parent).ToList();
-                    all.Reverse();
-                    var full = string.Join("/", all.Select(x => x.Text)) + "/" + node.Text + "/";
-                    if (string.IsNullOrEmpty(full))
-                    {
-                        return;
-                    }
-
-                    var dirfiles = PakAsTxt.Where(x => x.StartsWith(full) && !x.Replace(full, "").Contains("/"));
-                    var enumerable = dirfiles as string[] ?? dirfiles.ToArray();
-                    if (!enumerable.Any())
-                    {
-                        return;
-                    }
-
-                    foreach (var i in enumerable)
-                    {
-                        string v;
-                        if (i.Contains(".uasset") || i.Contains(".uexp") || i.Contains(".ubulk"))
-                        {
-                            v = i.Substring(0, i.LastIndexOf('.'));
-                        }
-                        else
-                        {
-                            v = i.Replace(full, "");
-                        }
-                        itemsNotToDisplay.Add(v.Replace(full, ""));
-                    }
-                    _itemsToDisplay = itemsNotToDisplay.Distinct().ToList(); //NO DUPLICATION + NO EXTENSION = EASY TO FIND WHAT WE WANT
-                    Invoke(new Action(() =>
-                    {
-                        for (int i = 0; i < _itemsToDisplay.Count; i++)
-                        {
-                            listBox1.Items.Add(_itemsToDisplay[i]);
-                        }
-                        ExtractButton.Enabled = listBox1.SelectedIndex >= 0; //DISABLE EXTRACT BUTTON IF NOTHING IS SELECTED IN LISTBOX
-                    }));
-                });
-                for (int i = 0; i < listBox1.Items.Count; i++)
-                {
-                    if (listBox1.Items[i].ToString() == SearchFiles.SfPath.Substring(SearchFiles.SfPath.LastIndexOf("/", StringComparison.Ordinal) + 1))
-                    {
-                        listBox1.SelectedItem = listBox1.Items[i];
-                    }
-                }
-            }
-
-            foreach (TreeNode mynode in node.Nodes)
-                if (mynode.Text == path[0])
-                {
-                    ExpandMyLitleBoys(mynode, path); //recursive call
-                    break;
-                }
-        }
-        public void OpenMe()
-        {
-            if (SearchFiles.IsClosed)
-            {
-                treeView1.CollapseAll();
-                var pathList = SearchFiles.SfPath.Split('/').ToList();
-                foreach (TreeNode node in treeView1.Nodes)
-                    if (node.Text == pathList[0])
-                        ExpandMyLitleBoys(node, pathList);
-            }
-            else if (SearchFiles.FilesToSearch)
-            {
-                AddAndSelectAllItems(SearchFiles.myItems);
-            }
-        }
-        private void AddAndSelectAllItems(string[] myItemsToAdd)
-        {
-            listBox1.BeginUpdate();
-            listBox1.Items.Clear();
-            for (int i = 0; i < myItemsToAdd.Length; i++)
-            {
-                listBox1.Items.Add(myItemsToAdd[i]);
-            }
-            for (int i = 0; i < listBox1.Items.Count; i++) { listBox1.SetSelected(i, true); }
-            listBox1.EndUpdate();
-
-            //same as click on extract button
-            scintilla1.Text = "";
-            pictureBox1.Image = null;
-            ExtractButton.Enabled = false;
-            OpenImageButton.Enabled = false;
-            StopButton.Enabled = true;
-
-            if (backgroundWorker1.IsBusy != true)
-            {
-                backgroundWorker1.RunWorkerAsync();
-            }
         }
 
         //EVENTS
@@ -1164,35 +1032,33 @@ namespace FModel
                 ThePak.CurrentUsedItem = SelectedItemsArray[i];
 
                 if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                    ExtractedFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, ThePak.CurrentUsedItem);
+                    Checking.ExtractedFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, ThePak.CurrentUsedItem);
                 else
-                    ExtractedFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[ThePak.CurrentUsedItem], ThePak.CurrentUsedItem);
+                    Checking.ExtractedFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[ThePak.CurrentUsedItem], ThePak.CurrentUsedItem);
 
-                if (ExtractedFilePath != null)
+                if (Checking.ExtractedFilePath != null)
                 {
-                    bIsLocres = false;
                     UpdateConsole(ThePak.CurrentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
-                    if (ExtractedFilePath.Contains(".uasset") || ExtractedFilePath.Contains(".uexp") || ExtractedFilePath.Contains(".ubulk"))
+                    if (Checking.ExtractedFilePath.Contains(".uasset") || Checking.ExtractedFilePath.Contains(".uexp") || Checking.ExtractedFilePath.Contains(".ubulk"))
                     {
-                        JohnWick.MyAsset = new PakAsset(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf('.')));
+                        JohnWick.MyAsset = new PakAsset(Checking.ExtractedFilePath.Substring(0, Checking.ExtractedFilePath.LastIndexOf('.')));
                         JsonParseFile();
                     }
-                    if (ExtractedFilePath.Contains(".ufont"))
-                        ConvertToTtf(ExtractedFilePath);
-                    if (ExtractedFilePath.Contains(".ini"))
+                    if (Checking.ExtractedFilePath.Contains(".ufont"))
+                        ConvertToTtf(Checking.ExtractedFilePath);
+                    if (Checking.ExtractedFilePath.Contains(".ini"))
                     {
                         Invoke(new Action(() =>
                         {
-                            scintilla1.Text = File.ReadAllText(ExtractedFilePath);
+                            scintilla1.Text = File.ReadAllText(Checking.ExtractedFilePath);
                         }));
                     }
-                    if (ExtractedFilePath.Contains(".locres") && !ExtractedFilePath.Contains("EngineOverrides"))
+                    if (Checking.ExtractedFilePath.Contains(".locres") && !Checking.ExtractedFilePath.Contains("EngineOverrides"))
                     {
                         SerializeLocRes();
                     }
                 }
-                else
-                    UpdateConsole("Error while extracting " + ThePak.CurrentUsedItem, Color.FromArgb(255, 244, 66, 66), "Error");
+                else { throw new ArgumentException("Error while extracting " + ThePak.CurrentUsedItem); }
             }
         }
         private void JsonParseFile()
@@ -1214,10 +1080,9 @@ namespace FModel
                     }
                 }));
 
-                NavigateThroughJson(JohnWick.MyAsset, ExtractedFilePath);
+                NavigateThroughJson(JohnWick.MyAsset, Checking.ExtractedFilePath);
             }
-            else
-                UpdateConsole("No serialized file found", Color.FromArgb(255, 244, 66, 66), "Error");
+            else { throw new ArgumentException("Can't serialize this file"); }
         }
         private void NavigateThroughJson(PakAsset theAsset, string questJson = null)
         {
@@ -1276,7 +1141,7 @@ namespace FModel
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                throw new ArgumentException(ex.Message);
             }
         }
         private Bitmap CreateItemIcon(ItemsIdParser theItem, string specialMode = null)
@@ -1450,14 +1315,9 @@ namespace FModel
                 string filePath = App.DefaultOutputPath + "\\Extracted\\" + treeviewPath + "\\" + listBox1.SelectedItem;
                 if (File.Exists(filePath))
                 {
-                    bIsLocres = true;
                     scintilla1.Text = LocResSerializer.StringFinder(filePath);
                 }
-                else
-                {
-                    bIsLocres = false;
-                    AppendText("Error while searching " + listBox1.SelectedItem, Color.DarkRed, true);
-                }
+                else { throw new FileNotFoundException("Error while searching " + listBox1.SelectedItem); }
             }));
         }
 
@@ -1465,9 +1325,9 @@ namespace FModel
         {
             UpdateConsole(ThePak.CurrentUsedItem + " is a Texture2D", Color.FromArgb(255, 66, 244, 66), "Success");
 
-            JohnWick.MyAsset = new PakAsset(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-            JohnWick.MyAsset.SaveTexture(ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-            string imgPath = ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
+            JohnWick.MyAsset = new PakAsset(Checking.ExtractedFilePath.Substring(0, Checking.ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)));
+            JohnWick.MyAsset.SaveTexture(Checking.ExtractedFilePath.Substring(0, Checking.ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
+            string imgPath = Checking.ExtractedFilePath.Substring(0, Checking.ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
 
             if (File.Exists(imgPath))
             {
@@ -1493,7 +1353,7 @@ namespace FModel
         {
             UpdateConsole(ThePak.CurrentUsedItem + " is a Sound", Color.FromArgb(255, 66, 244, 66), "Success");
 
-            string soundPathToConvert = ExtractedFilePath.Substring(0, ExtractedFilePath.LastIndexOf('\\')) + "\\" + ThePak.CurrentUsedItem + ".uexp";
+            string soundPathToConvert = Checking.ExtractedFilePath.Substring(0, Checking.ExtractedFilePath.LastIndexOf('\\')) + "\\" + ThePak.CurrentUsedItem + ".uexp";
             string soundPathConverted = UnrealEngineDataToOgg.ConvertToOgg(soundPathToConvert);
             UpdateConsole("Converting " + ThePak.CurrentUsedItem, Color.FromArgb(255, 244, 132, 66), "Processing");
 
@@ -1576,7 +1436,7 @@ namespace FModel
         }
         #endregion
 
-        #region IMAGES SAVE & MERGE
+        #region IMAGES TOOLSTRIP AND OPEN
         //EVENTS
         private void OpenImageButton_Click(object sender, EventArgs e)
         {
@@ -1620,6 +1480,145 @@ namespace FModel
         }
         #endregion
 
+        #region FILES TOOLSTRIP
+        //METHODS
+        private void OpenMe()
+        {
+            if (SearchFiles.IsClosed)
+            {
+                treeView1.CollapseAll();
+
+                List<string> pathList = SearchFiles.SfPath.Split('/').ToList();
+
+                foreach (TreeNode node in treeView1.Nodes)
+                {
+                    if (node.Text == pathList[0])
+                    {
+                        ExpandMyLitleBoys(node, pathList);
+                    }
+                }
+            }
+            else if (SearchFiles.FilesToSearch)
+            {
+                AddAndSelectAllItems(SearchFiles.myItems);
+            }
+        }
+        private async void ExpandMyLitleBoys(TreeNode node, List<string> path)
+        {
+            path.RemoveAt(0);
+            node.Expand();
+
+            if (path.Count == 0)
+                return;
+
+            if (path.Count == 1)
+            {
+                treeView1.SelectedNode = node;
+                await Task.Run(() => {
+                    List<string> itemsNotToDisplay = new List<string>();
+                    _itemsToDisplay = new List<string>();
+
+                    Invoke(new Action(() =>
+                    {
+                        listBox1.Items.Clear();
+                        FilterTextBox.Text = string.Empty;
+                    }));
+
+                    var all = GetAncestors(node, x => x.Parent).ToList();
+                    all.Reverse();
+                    var full = string.Join("/", all.Select(x => x.Text)) + "/" + node.Text + "/";
+                    if (string.IsNullOrEmpty(full))
+                    {
+                        return;
+                    }
+
+                    var dirfiles = PakAsTxt.Where(x => x.StartsWith(full) && !x.Replace(full, "").Contains("/"));
+                    var enumerable = dirfiles as string[] ?? dirfiles.ToArray();
+                    if (!enumerable.Any())
+                    {
+                        return;
+                    }
+
+                    foreach (var i in enumerable)
+                    {
+                        string v;
+                        if (i.Contains(".uasset") || i.Contains(".uexp") || i.Contains(".ubulk"))
+                        {
+                            v = i.Substring(0, i.LastIndexOf('.'));
+                        }
+                        else
+                        {
+                            v = i.Replace(full, "");
+                        }
+                        itemsNotToDisplay.Add(v.Replace(full, ""));
+                    }
+                    _itemsToDisplay = itemsNotToDisplay.Distinct().ToList(); //NO DUPLICATION + NO EXTENSION = EASY TO FIND WHAT WE WANT
+                    Invoke(new Action(() =>
+                    {
+                        for (int i = 0; i < _itemsToDisplay.Count; i++)
+                        {
+                            listBox1.Items.Add(_itemsToDisplay[i]);
+                        }
+                        ExtractButton.Enabled = listBox1.SelectedIndex >= 0; //DISABLE EXTRACT BUTTON IF NOTHING IS SELECTED IN LISTBOX
+                    }));
+                });
+                for (int i = 0; i < listBox1.Items.Count; i++)
+                {
+                    if (listBox1.Items[i].ToString() == SearchFiles.SfPath.Substring(SearchFiles.SfPath.LastIndexOf("/", StringComparison.Ordinal) + 1))
+                    {
+                        listBox1.SelectedItem = listBox1.Items[i];
+                    }
+                }
+            }
+
+            foreach (TreeNode mynode in node.Nodes)
+                if (mynode.Text == path[0])
+                {
+                    ExpandMyLitleBoys(mynode, path); //recursive call
+                    break;
+                }
+        }
+        private void AddAndSelectAllItems(string[] myItemsToAdd)
+        {
+            listBox1.BeginUpdate();
+            listBox1.Items.Clear();
+            for (int i = 0; i < myItemsToAdd.Length; i++)
+            {
+                listBox1.Items.Add(myItemsToAdd[i]);
+            }
+            for (int i = 0; i < listBox1.Items.Count; i++) { listBox1.SetSelected(i, true); }
+            listBox1.EndUpdate();
+
+            //same as click on extract button
+            scintilla1.Text = "";
+            pictureBox1.Image = null;
+            ExtractButton.Enabled = false;
+            OpenImageButton.Enabled = false;
+            StopButton.Enabled = true;
+
+            if (backgroundWorker1.IsBusy != true)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+        }
+
+        //EVENTS
+        private void searchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var searchForm = new SearchFiles();
+            if (Application.OpenForms[searchForm.Name] == null)
+            {
+                searchForm.Show();
+            }
+            else
+            {
+                Application.OpenForms[searchForm.Name].Focus();
+            }
+            searchForm.FormClosing += (o, c) =>
+            {
+                OpenMe();
+            };
+        }
         private void CopySelectedFilePathToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listBox1.SelectedItem != null)
@@ -1639,28 +1638,31 @@ namespace FModel
                 AppendText("Copied!", Color.Green, true);
             }
         }
-
-        private void SaveCurrentLocResToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveAsJSONToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (bIsLocres)
+            if (!string.IsNullOrEmpty(scintilla1.Text))
             {
                 SaveFileDialog saveTheDialog = new SaveFileDialog();
-                saveTheDialog.Title = @"Save LocRes";
+                saveTheDialog.Title = @"Save Serialized File";
                 saveTheDialog.Filter = @"JSON Files (*.json)|*.json";
-                saveTheDialog.InitialDirectory = App.DefaultOutputPath + "\\LocRes\\";
-                saveTheDialog.FileName = ThePak.CurrentUsedItem.Substring(0, ThePak.CurrentUsedItem.LastIndexOf('.'));
+                saveTheDialog.InitialDirectory = App.DefaultOutputPath + "\\Saved JSON\\";
+                saveTheDialog.FileName = ThePak.CurrentUsedItem.Contains('.') ? ThePak.CurrentUsedItem.Substring(0, ThePak.CurrentUsedItem.LastIndexOf('.')) : ThePak.CurrentUsedItem;
                 if (saveTheDialog.ShowDialog() == DialogResult.OK)
                 {
                     File.WriteAllText(saveTheDialog.FileName, scintilla1.Text);
-                    AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                    AppendText(" successfully saved", Color.Black, true);
+                    if (File.Exists(saveTheDialog.FileName))
+                    {
+                        AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
+                        AppendText(" successfully saved", Color.Black, true);
+                    }
+                    else
+                    {
+                        AppendText("Fail to save ", Color.Black);
+                        AppendText(ThePak.CurrentUsedItem, Color.DarkRed, true);
+                    }
                 }
             }
-            else
-            {
-                AppendText("Please load a .locres file first.\t\t\t", Color.Black);
-                AppendText(@"FortniteGame\Content\Localization\ - pakchunk0-WindowsClient.pak", Color.DarkRed, true);
-            }
         }
+        #endregion
     }
 }

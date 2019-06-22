@@ -66,6 +66,9 @@ namespace FModel
     {
         public static bool WasFeatured { get; set; }
         public static bool UmWorking { get; set; }
+        public static string BackupFileName { get; set; }
+        public static string ExtractedFilePath { get; set; }
+        public static bool DifferenceFileExists = false;
     }
     public struct BundleInfoEntry: IEquatable<BundleInfoEntry>
     {

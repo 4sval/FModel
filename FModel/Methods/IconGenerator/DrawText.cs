@@ -40,7 +40,7 @@ namespace FModel
                         break;
                     case "consAndWeap":
                         DrawToRight(ItemAction, myGraphic);
-                        if (MainWindow.ExtractedFilePath.Contains("Items\\Consumables\\"))
+                        if (Checking.ExtractedFilePath.Contains("Items\\Consumables\\"))
                         {
                             DrawToLeft(MaxStackSize, myGraphic);
                         }

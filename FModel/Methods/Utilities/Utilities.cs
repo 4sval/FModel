@@ -30,7 +30,7 @@ namespace FModel
             Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\");
             Directory.CreateDirectory(App.DefaultOutputPath + "\\Icons\\");
             Directory.CreateDirectory(App.DefaultOutputPath + "\\Sounds\\");
-            Directory.CreateDirectory(App.DefaultOutputPath + "\\LocRes\\");
+            Directory.CreateDirectory(App.DefaultOutputPath + "\\Saved JSON\\");
         }
 
         /// <summary>
@@ -86,6 +86,10 @@ namespace FModel
             {
                 File.Delete(App.DefaultOutputPath + "\\john-wick-parse_custom.exe");
             }
+            if (Directory.Exists(App.DefaultOutputPath + "\\LocRes\\"))
+            {
+                Directory.Delete(App.DefaultOutputPath + "\\LocRes\\");
+            }
         }
 
         /// <summary>
@@ -116,6 +120,18 @@ namespace FModel
 
             //file is not locked
             return false;
+        }
+
+        /// <summary>
+        /// filter text with case insensitive support
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="value"></param>
+        /// <param name="stringComparison"></param>
+        /// <returns></returns>
+        public static bool CaseInsensitiveContains(string text, string value, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
+        {
+            return text.IndexOf(value, stringComparison) >= 0;
         }
     }
 }
