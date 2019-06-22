@@ -1,4 +1,4 @@
-﻿using csharp_wick;
+using csharp_wick;
 using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
@@ -204,38 +204,38 @@ namespace FModel
         /// <param name="myGraphic"></param>
         private static void DrawCosmeticUff(ItemsIdParser theItem, Graphics myGraphic)
         {
+            Image imageLogo = null;
+            Point pointCoords = new Point(6, 6);
+
             if (CosmeticUff != null)
             {
                 if (CosmeticUff.Contains("Animated"))
                 {
-                    Image animatedLogo = Resources.T_Icon_Animated_64;
-                    myGraphic.DrawImage(ImageUtilities.ResizeImage(animatedLogo, 32, 32), new Point(6, -2));
+                    pointCoords = new Point(6, -2);
+                    imageLogo = Resources.T_Icon_Animated_64;
                 }
                 else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem.ExportType != "AthenaPetCarrierItemDefinition")
-                {
-                    Image questLogo = Resources.T_Icon_Quests_64;
-                    myGraphic.DrawImage(ImageUtilities.ResizeImage(questLogo, 32, 32), new Point(6, 6));
-                }
+                    imageLogo = Resources.T_Icon_Quests_64;
                 else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem.ExportType == "AthenaPetCarrierItemDefinition")
-                {
-                    Image petLogo = Resources.T_Icon_Pets_64;
-                    myGraphic.DrawImage(ImageUtilities.ResizeImage(petLogo, 32, 32), new Point(6, 6));
-                }
+                    imageLogo = Resources.T_Icon_Pets_64;
                 else if (CosmeticUff.Contains("HasVariants"))
-                {
-                    Image variantsLogo = Resources.T_Icon_Variant_64;
-                    myGraphic.DrawImage(ImageUtilities.ResizeImage(variantsLogo, 32, 32), new Point(6, 6));
-                }
+                    imageLogo = Resources.T_Icon_Variant_64;
                 else if (CosmeticUff.Contains("Reactive"))
                 {
-                    Image reactiveLogo = Resources.T_Icon_Adaptive_64;
-                    myGraphic.DrawImage(ImageUtilities.ResizeImage(reactiveLogo, 32, 32), new Point(7, 7));
+                    pointCoords = new Point(7, 7);
+                    imageLogo = Resources.T_Icon_Adaptive_64;
                 }
                 else if (CosmeticUff.Contains("Traversal"))
                 {
-                    Image traversalLogo = Resources.T_Icon_Traversal_64;
-                    myGraphic.DrawImage(ImageUtilities.ResizeImage(traversalLogo, 32, 32), new Point(6, 3));
+                    pointCoords = new Point(6, 3);
+                    imageLogo = Resources.T_Icon_Traversal_64;
                 }
+            }
+
+            if (imageLogo != null)
+            {
+                myGraphic.DrawImage(ImageUtilities.ResizeImage(imageLogo, 32, 32), pointCoords);
+                imageLogo.Dispose();
             }
         }
 

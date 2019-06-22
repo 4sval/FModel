@@ -141,6 +141,7 @@ namespace FModel
 
         private static void drawIcon(string itemId)
         {
+            Image itemIcon = null;
             if (File.Exists(ItemIcon.ItemIconPath))
             {
                 if (Settings.Default.challengesDebug)
@@ -149,17 +150,18 @@ namespace FModel
                     BundleDesign.toDrawOn.DrawString(itemId, new Font("Courier New", 12), new SolidBrush(Color.White), new RectangleF(2110, BundleDesign.theY + 30, 190, 60), FontUtilities.centeredStringLine);
                 }
 
-                Image itemIcon;
                 using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
                 {
                     itemIcon = new Bitmap(bmpTemp);
                 }
-                BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
             }
             else
+                itemIcon = Resources.unknown512;
+
+            if (itemIcon != null)
             {
-                Image itemIcon = Resources.unknown512;
                 BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
+                itemIcon.Dispose();
             }
         }
 

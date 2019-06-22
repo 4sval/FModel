@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -167,6 +167,7 @@ namespace FModel.Forms
                         wPictureBox.Image = bmp;
                     }
                 }
+
                 if (checkBox8.Checked)
                 {
                     if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
