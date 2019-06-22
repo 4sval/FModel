@@ -361,37 +361,9 @@ namespace FModel
 
                 Image reload = Resources.reload64;
                 myGraphic.DrawImage(ImageUtilities.ResizeImage(reload, 15, 15), new Point(50 + (statParsed.ClipSize.ToString().Length * 7) + 47, 500)); //50=clipsize text position | for each clipsize letter we add 7 to x | 47=difference between 2 icons
-                myGraphic.DrawString(statParsed.ReloadTime + getSecondsWithLanguage(), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(64 + (statParsed.ClipSize.ToString().Length * 7) + 47, 500)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
+                myGraphic.DrawString(statParsed.ReloadTime + " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds"), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(64 + (statParsed.ClipSize.ToString().Length * 7) + 47, 500)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
 
                 DrawToRight(weaponName, myGraphic);
-            }
-        }
-        /// <summary>
-        /// manual translation to improve speed and in case the key is deleted
-        /// that's just 1 word so /shrug
-        /// </summary>
-        /// <returns></returns>
-        private static string getSecondsWithLanguage()
-        {
-            switch (Settings.Default.IconLanguage)
-            {
-                case "French":
-                case "German":
-                case "Italian":
-                case "Spanish":
-                case "Spanish (LA)":
-                case "Arabic":
-                case "Japanese":
-                case "Korean":
-                case "Polish":
-                case "Portuguese (Brazil)":
-                case "Russian":
-                case "Turkish":
-                case "Chinese (S)":
-                case "Traditional Chinese":
-                    return " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds");
-                default:
-                    return " seconds";
             }
         }
 
