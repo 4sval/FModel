@@ -83,6 +83,16 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
+        internal static byte[] BurbankBigCondensed_Black_vJapanese {
+            get {
+                object obj = ResourceManager.GetObject("BurbankBigCondensed_Black_vJapanese", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Byte[].
+        /// </summary>
         internal static byte[] BurbankBigCondensed_Bold {
             get {
                 object obj = ResourceManager.GetObject("BurbankBigCondensed_Bold", resourceCulture);

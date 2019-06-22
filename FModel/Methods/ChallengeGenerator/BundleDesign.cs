@@ -57,12 +57,12 @@ namespace FModel
                 GraphicsPath p = new GraphicsPath();
                 Pen myPen = new Pen(ControlPaint.Light(BundleInfos.getSecondaryColor(myBundle), (float)0.2), 3);
                 myPen.LineJoin = LineJoin.Round; //needed to avoid spikes
-                p.AddString(BundleInfos.getLastFolder(BundlePath), FontUtilities.pfc.Families[1], (int)FontStyle.Regular, 55, new Point(342, 40), FontUtilities.leftString);
+                p.AddString(BundleInfos.getLastFolder(BundlePath), Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], (int)FontStyle.Regular, 55, new Point(342, 40), FontUtilities.leftString);
                 toDrawOn.DrawPath(myPen, p);
                 toDrawOn.FillPath(new SolidBrush(ControlPaint.Dark(BundleInfos.getSecondaryColor(myBundle), (float)0.05)), p);
 
                 //name
-                toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+                toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
 
                 //image
                 string textureFile = Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
@@ -95,10 +95,10 @@ namespace FModel
                 toDrawOn.FillRectangle(new SolidBrush(ControlPaint.Dark(myBaseColor, (float)0.1)), new Rectangle(0, 271, myBitmap.Width, myBitmap.Height));
 
                 //last folder
-                toDrawOn.DrawString(BundleInfos.getLastFolder(BundlePath), new Font(FontUtilities.pfc.Families[1], 42), new SolidBrush(ControlPaint.Dark(myBaseColor, (float)0.05)), new Point(40, 40));
+                toDrawOn.DrawString(BundleInfos.getLastFolder(BundlePath), new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 42), new SolidBrush(ControlPaint.Dark(myBaseColor, (float)0.05)), new Point(40, 40));
 
                 //name
-                toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(25, 70));
+                toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(25, 70));
             }
         }
 
@@ -206,7 +206,7 @@ namespace FModel
                     break;
             }
 
-            toDrawOn.DrawString(count == "-1" ? all : any, new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
+            toDrawOn.DrawString(count == "-1" ? all : any, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(100, theY + 22));
         }
 
         /// <summary>

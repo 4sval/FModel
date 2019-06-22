@@ -33,6 +33,12 @@ namespace FModel
             Marshal.Copy(_fontdata, 0, weirdData2, _fontLength);
             pfc.AddMemoryFont(weirdData2, _fontLength);
 
+            _fontLength = Resources.BurbankBigCondensed_Black_vJapanese.Length;
+            _fontdata = Resources.BurbankBigCondensed_Black_vJapanese;
+            IntPtr weirdData3 = Marshal.AllocCoTaskMem(_fontLength);
+            Marshal.Copy(_fontdata, 0, weirdData3, _fontLength);
+            pfc.AddMemoryFont(weirdData3, _fontLength);
+
             centeredString.Alignment = StringAlignment.Center;
             rightString.Alignment = StringAlignment.Far;
             leftString.Alignment = StringAlignment.Near;

@@ -1382,7 +1382,7 @@ namespace FModel
                     //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Blue)), new Rectangle(107, BundleDesign.theY + 7, 2000, 75)); //rectangle the font needs to be fit with
                     
                     //draw quest description
-                    Font goodFont = FontUtilities.FindFont(BundleDesign.toDrawOn, BundleInfos.BundleData[i].questDescr, new Rectangle(107, BundleDesign.theY + 7, 2000, 93).Size, new Font(FontUtilities.pfc.Families[1], 50)); //size in "new Font()" is never check
+                    Font goodFont = FontUtilities.FindFont(BundleDesign.toDrawOn, BundleInfos.BundleData[i].questDescr, new Rectangle(107, BundleDesign.theY + 7, 2000, 93).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 50)); //size in "new Font()" is never check
                     BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, goodFont, new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
 
                     //draw slider + quest count
