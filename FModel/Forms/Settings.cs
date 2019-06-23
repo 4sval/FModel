@@ -30,6 +30,8 @@ namespace FModel.Forms
             }
             else { textBox6.Text = Properties.Settings.Default.challengesWatermark; }
 
+            checkBox_tryToOpen.Checked = Properties.Settings.Default.tryToOpenAssets;
+
             //MERGER
             textBox3.Text = Properties.Settings.Default.mergerFileName;
             imgsPerRow.Value = Properties.Settings.Default.mergerImagesRow;
@@ -109,6 +111,8 @@ namespace FModel.Forms
 
             Properties.Settings.Default.challengesDebug = checkBox2.Checked;
             Properties.Settings.Default.challengesWatermark = textBox6.Text;
+
+            Properties.Settings.Default.tryToOpenAssets = checkBox_tryToOpen.Checked;
 
             //MERGER
             Properties.Settings.Default.mergerFileName = textBox3.Text;

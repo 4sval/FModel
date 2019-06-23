@@ -1359,8 +1359,14 @@ namespace FModel
 
             if (File.Exists(soundPathConverted))
             {
-                Utilities.OpenWithDefaultProgramAndNoFocus(soundPathConverted);
-                UpdateConsole("Opening " + ThePak.CurrentUsedItem + ".ogg", Color.FromArgb(255, 66, 244, 66), "Success");
+                if (Properties.Settings.Default.tryToOpenAssets)
+                {
+                    Utilities.OpenWithDefaultProgramAndNoFocus(soundPathConverted);
+                    UpdateConsole("Opening " + ThePak.CurrentUsedItem + ".ogg", Color.FromArgb(255, 66, 244, 66), "Success");
+                } else
+                {
+                    UpdateConsole("Extracted " + ThePak.CurrentUsedItem + ".ogg", Color.FromArgb(255, 66, 244, 66), "Success");
+                }
             }
             else
                 UpdateConsole("Couldn't convert " + ThePak.CurrentUsedItem, Color.FromArgb(255, 244, 66, 66), "Error");
