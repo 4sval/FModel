@@ -1,8 +1,9 @@
-﻿using FModel.Properties;
+using FModel.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Globalization;
 using System.Windows.Forms;
 
@@ -47,6 +48,20 @@ namespace FModel
         /// <param name="mySelectedImages"></param>
         private static void MergeSelected(List<Image> mySelectedImages)
         {
+            string mergeFileName = Settings.Default.mergerFileName;
+            if (Properties.Settings.Default.mergerImagesSaveAs)
+            {
+                SaveFileDialog saveFileMergerImages = new SaveFileDialog();
+                saveFileMergerImages.InitialDirectory = App.DefaultOutputPath;
+                saveFileMergerImages.DefaultExt = "png";
+                saveFileMergerImages.Filter = "Image PNG (.png)|*.png";
+                saveFileMergerImages.FileName = mergeFileName;
+
+                if (saveFileMergerImages.ShowDialog() != DialogResult.OK)
+                    return;
+                 mergeFileName = Path.GetFileName(saveFileMergerImages.FileName);
+            }
+
             if (Settings.Default.mergerImagesRow == 0)
             {
                 Settings.Default.mergerImagesRow = 7;
@@ -85,7 +100,11 @@ namespace FModel
                     }
                 }
             }
-            bmp.Save(App.DefaultOutputPath + "\\" + Settings.Default.mergerFileName + ".png", ImageFormat.Png);
+
+            if (!mergeFileName.Contains(".png"))
+                mergeFileName += ".png";
+
+            bmp.Save(App.DefaultOutputPath + "\\" + mergeFileName, ImageFormat.Png);
 
             OpenMerged(bmp);
         }

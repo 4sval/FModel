@@ -34,6 +34,7 @@ namespace FModel.Forms
 
             //MERGER
             textBox3.Text = Properties.Settings.Default.mergerFileName;
+            checkBoxSaveAsMergeImages.Checked = Properties.Settings.Default.mergerImagesSaveAs;
             imgsPerRow.Value = Properties.Settings.Default.mergerImagesRow;
 
             //WATERMARK
@@ -116,6 +117,7 @@ namespace FModel.Forms
 
             //MERGER
             Properties.Settings.Default.mergerFileName = textBox3.Text;
+            Properties.Settings.Default.mergerImagesSaveAs = checkBoxSaveAsMergeImages.Checked;
             Properties.Settings.Default.mergerImagesRow = Decimal.ToInt32(imgsPerRow.Value);
 
             //WATERMARK
