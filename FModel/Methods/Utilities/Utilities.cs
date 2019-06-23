@@ -30,7 +30,7 @@ namespace FModel
             Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\");
             Directory.CreateDirectory(App.DefaultOutputPath + "\\Icons\\");
             Directory.CreateDirectory(App.DefaultOutputPath + "\\Sounds\\");
-            Directory.CreateDirectory(App.DefaultOutputPath + "\\Saved JSON\\");
+            Directory.CreateDirectory(App.DefaultOutputPath + "\\Saved_JSON\\");
         }
 
         /// <summary>
@@ -86,9 +86,14 @@ namespace FModel
             {
                 File.Delete(App.DefaultOutputPath + "\\john-wick-parse_custom.exe");
             }
+            //this will stay for 1 update
             if (Directory.Exists(App.DefaultOutputPath + "\\LocRes\\"))
             {
                 Directory.Delete(App.DefaultOutputPath + "\\LocRes\\");
+            }
+            if (Directory.Exists(App.DefaultOutputPath + "\\Saved JSON\\"))
+            {
+                Directory.Delete(App.DefaultOutputPath + "\\Saved JSON\\");
             }
         }
 

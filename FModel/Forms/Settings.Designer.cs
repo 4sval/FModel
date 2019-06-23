@@ -33,6 +33,7 @@ namespace FModel.Forms
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBox_tryToOpen = new System.Windows.Forms.CheckBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.OKButton = new System.Windows.Forms.Button();
@@ -65,7 +66,6 @@ namespace FModel.Forms
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
-            this.checkBox_tryToOpen = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -119,11 +119,21 @@ namespace FModel.Forms
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Extraction";
             // 
+            // checkBox_tryToOpen
+            // 
+            this.checkBox_tryToOpen.AutoSize = true;
+            this.checkBox_tryToOpen.Location = new System.Drawing.Point(397, 22);
+            this.checkBox_tryToOpen.Name = "checkBox_tryToOpen";
+            this.checkBox_tryToOpen.Size = new System.Drawing.Size(157, 17);
+            this.checkBox_tryToOpen.TabIndex = 8;
+            this.checkBox_tryToOpen.Text = "Try to open Extracted Asset";
+            this.checkBox_tryToOpen.UseVisualStyleBackColor = true;
+            // 
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(54, 19);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(329, 20);
+            this.textBox1.Size = new System.Drawing.Size(337, 20);
             this.textBox1.TabIndex = 2;
             // 
             // label1
@@ -467,16 +477,6 @@ namespace FModel.Forms
             this.label12.Size = new System.Drawing.Size(62, 13);
             this.label12.TabIndex = 9;
             this.label12.Text = "Watermark:";
-            // 
-            // checkBox_tryToOpen
-            // 
-            this.checkBox_tryToOpen.AutoSize = true;
-            this.checkBox_tryToOpen.Location = new System.Drawing.Point(389, 22);
-            this.checkBox_tryToOpen.Name = "checkBox_tryToOpen";
-            this.checkBox_tryToOpen.Size = new System.Drawing.Size(162, 17);
-            this.checkBox_tryToOpen.TabIndex = 8;
-            this.checkBox_tryToOpen.Text = "Try to open Extracted Assets";
-            this.checkBox_tryToOpen.UseVisualStyleBackColor = true;
             // 
             // Settings
             // 
