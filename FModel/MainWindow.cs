@@ -1637,7 +1637,7 @@ namespace FModel
                 SaveFileDialog saveTheDialog = new SaveFileDialog();
                 saveTheDialog.Title = @"Save Serialized File";
                 saveTheDialog.Filter = @"JSON Files (*.json)|*.json";
-                saveTheDialog.InitialDirectory = App.DefaultOutputPath + "\\Saved JSON\\";
+                saveTheDialog.InitialDirectory = App.DefaultOutputPath + "\\Saved_JSON\\";
                 saveTheDialog.FileName = ThePak.CurrentUsedItem.Contains('.') ? ThePak.CurrentUsedItem.Substring(0, ThePak.CurrentUsedItem.LastIndexOf('.')) : ThePak.CurrentUsedItem;
                 if (saveTheDialog.ShowDialog() == DialogResult.OK)
                 {
