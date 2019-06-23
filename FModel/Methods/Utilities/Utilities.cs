@@ -102,7 +102,7 @@ namespace FModel
             FileStream stream = null;
             try
             {
-                stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+                stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             }
             catch (IOException)
             {

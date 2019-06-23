@@ -116,22 +116,8 @@ namespace FModel
                 for (int i = 0; i < yourPaKs.Count(); i++)
                 {
                     string arCurrentUsedPak = yourPaKs.ElementAt(i); //SET CURRENT PAK
-                    string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + Path.GetFileName(arCurrentUsedPak)); //SET CURRENT PAK GUID
 
-                    if (arCurrentUsedPakGuid == "0-0-0-0")
-                    {
-                        ThePak.mainPaksList.Add(new PaksEntry(Path.GetFileName(arCurrentUsedPak), arCurrentUsedPakGuid));
-                        AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
-                    }
-                    if (arCurrentUsedPakGuid != "0-0-0-0")
-                    {
-                        ThePak.dynamicPaksList.Add(new PaksEntry(Path.GetFileName(arCurrentUsedPak), arCurrentUsedPakGuid));
-                        AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
-                    }
-
-                    //IT'S TRIGGERED WHEN FORTNITE IS RUNNING BUT FILES CAN BE READ AND I WANT IT TO BE TRIGGERED WHEN FILE IS FULLY LOCKED AND CAN'T BE USED AT ALL
-                    //aka while you're updating the game
-                    /*if (!Utilities.IsFileLocked(new System.IO.FileInfo(arCurrentUsedPak)))
+                    if (!Utilities.IsFileLocked(new System.IO.FileInfo(arCurrentUsedPak)))
                     {
                         string arCurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + Path.GetFileName(arCurrentUsedPak)); //SET CURRENT PAK GUID
 
@@ -146,7 +132,7 @@ namespace FModel
                             AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
                         }
                     }
-                    else { AppendText(Path.GetFileName(arCurrentUsedPak) + " is locked by another process.", Color.Red, true); }*/
+                    else { AppendText(Path.GetFileName(arCurrentUsedPak) + " is locked by another process.", Color.Red, true); }
                 }
             }
         }
