@@ -65,6 +65,7 @@ namespace FModel.Forms
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
+            this.checkBox_tryToOpen = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -108,6 +109,7 @@ namespace FModel.Forms
             // groupBox2
             // 
             this.groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.groupBox2.Controls.Add(this.checkBox_tryToOpen);
             this.groupBox2.Controls.Add(this.textBox1);
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Location = new System.Drawing.Point(12, 67);
@@ -121,7 +123,7 @@ namespace FModel.Forms
             // 
             this.textBox1.Location = new System.Drawing.Point(54, 19);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(500, 20);
+            this.textBox1.Size = new System.Drawing.Size(329, 20);
             this.textBox1.TabIndex = 2;
             // 
             // label1
@@ -466,6 +468,16 @@ namespace FModel.Forms
             this.label12.TabIndex = 9;
             this.label12.Text = "Watermark:";
             // 
+            // checkBox_tryToOpen
+            // 
+            this.checkBox_tryToOpen.AutoSize = true;
+            this.checkBox_tryToOpen.Location = new System.Drawing.Point(389, 22);
+            this.checkBox_tryToOpen.Name = "checkBox_tryToOpen";
+            this.checkBox_tryToOpen.Size = new System.Drawing.Size(162, 17);
+            this.checkBox_tryToOpen.TabIndex = 8;
+            this.checkBox_tryToOpen.Text = "Try to open Extracted Assets";
+            this.checkBox_tryToOpen.UseVisualStyleBackColor = true;
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -543,5 +555,6 @@ namespace FModel.Forms
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.CheckBox checkBox_tryToOpen;
     }
 }
