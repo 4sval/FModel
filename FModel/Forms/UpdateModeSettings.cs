@@ -52,6 +52,7 @@ namespace FModel.Forms
             checkBox12.Checked = Properties.Settings.Default.UMTAthena;
             checkBox13.Checked = Properties.Settings.Default.UMTDevices;
             checkBox15.Checked = Properties.Settings.Default.UMTVehicles;
+            checkBoxUMCTGalleries.Checked = Properties.Settings.Default.UMCTGalleries;
         }
 
         private void optionsOKButton_Click(object sender, EventArgs e)
@@ -71,6 +72,7 @@ namespace FModel.Forms
             Properties.Settings.Default.UMTAthena               = checkBox12.Checked;
             Properties.Settings.Default.UMTDevices              = checkBox13.Checked;
             Properties.Settings.Default.UMTVehicles             = checkBox15.Checked;
+            Properties.Settings.Default.UMCTGalleries           = checkBoxUMCTGalleries.Checked;
 
             Properties.Settings.Default.UMSize                  = trackBar2.Value;
             Properties.Settings.Default.UMOpacity               = trackBar1.Value;

@@ -738,6 +738,8 @@ namespace FModel
                 searchResults.Add("UI/Foundation/Textures/Icons/Devices/");
             if (Settings.Default.UMTVehicles)
                 searchResults.Add("UI/Foundation/Textures/Icons/Vehicles/");
+            if (Settings.Default.UMCTGalleries)
+                searchResults.Add("Athena/Items/Consumables/PlaysetGrenade/PlaysetGrenadeInstances/");
 
             for (int i = 0; i < theFile.Length; i++)
             {

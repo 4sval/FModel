@@ -1,4 +1,4 @@
-﻿namespace FModel.Forms
+namespace FModel.Forms
 {
     partial class UpdateModeSettings
     {
@@ -34,6 +34,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBoxUMCTGalleries = new System.Windows.Forms.CheckBox();
             this.checkBox15 = new System.Windows.Forms.CheckBox();
             this.checkBox13 = new System.Windows.Forms.CheckBox();
             this.checkBox12 = new System.Windows.Forms.CheckBox();
@@ -119,6 +120,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBoxUMCTGalleries);
             this.groupBox1.Controls.Add(this.checkBox15);
             this.groupBox1.Controls.Add(this.checkBox13);
             this.groupBox1.Controls.Add(this.checkBox12);
@@ -130,15 +132,25 @@
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Location = new System.Drawing.Point(12, 231);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(560, 68);
+            this.groupBox1.Size = new System.Drawing.Size(633, 68);
             this.groupBox1.TabIndex = 22;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Texture Extraction";
             // 
+            // checkBoxUMCTGalleries
+            // 
+            this.checkBoxUMCTGalleries.AutoSize = true;
+            this.checkBoxUMCTGalleries.Location = new System.Drawing.Point(438, 42);
+            this.checkBoxUMCTGalleries.Name = "checkBoxUMCTGalleries";
+            this.checkBoxUMCTGalleries.Size = new System.Drawing.Size(108, 17);
+            this.checkBoxUMCTGalleries.TabIndex = 9;
+            this.checkBoxUMCTGalleries.Text = "Creative Galleries";
+            this.checkBoxUMCTGalleries.UseVisualStyleBackColor = true;
+            // 
             // checkBox15
             // 
             this.checkBox15.AutoSize = true;
-            this.checkBox15.Location = new System.Drawing.Point(482, 42);
+            this.checkBox15.Location = new System.Drawing.Point(360, 42);
             this.checkBox15.Name = "checkBox15";
             this.checkBox15.Size = new System.Drawing.Size(66, 17);
             this.checkBox15.TabIndex = 8;
@@ -148,7 +160,7 @@
             // checkBox13
             // 
             this.checkBox13.AutoSize = true;
-            this.checkBox13.Location = new System.Drawing.Point(344, 42);
+            this.checkBox13.Location = new System.Drawing.Point(438, 19);
             this.checkBox13.Name = "checkBox13";
             this.checkBox13.Size = new System.Drawing.Size(107, 17);
             this.checkBox13.TabIndex = 7;
@@ -178,7 +190,7 @@
             // checkBox10
             // 
             this.checkBox10.AutoSize = true;
-            this.checkBox10.Location = new System.Drawing.Point(482, 20);
+            this.checkBox10.Location = new System.Drawing.Point(551, 19);
             this.checkBox10.Name = "checkBox10";
             this.checkBox10.Size = new System.Drawing.Size(72, 17);
             this.checkBox10.TabIndex = 4;
@@ -201,7 +213,7 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(386, 19);
+            this.checkBox1.Location = new System.Drawing.Point(360, 20);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(72, 17);
             this.checkBox1.TabIndex = 2;
@@ -211,7 +223,7 @@
             // checkBox14
             // 
             this.checkBox14.AutoSize = true;
-            this.checkBox14.Location = new System.Drawing.Point(253, 19);
+            this.checkBox14.Location = new System.Drawing.Point(248, 20);
             this.checkBox14.Name = "checkBox14";
             this.checkBox14.Size = new System.Drawing.Size(106, 17);
             this.checkBox14.TabIndex = 1;
@@ -246,7 +258,7 @@
             this.groupBox4.Controls.Add(this.label6);
             this.groupBox4.Location = new System.Drawing.Point(12, 12);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(560, 213);
+            this.groupBox4.Size = new System.Drawing.Size(633, 213);
             this.groupBox4.TabIndex = 21;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Icon Creation";
@@ -286,7 +298,7 @@
             this.trackBar1.Location = new System.Drawing.Point(58, 158);
             this.trackBar1.Maximum = 100;
             this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(325, 45);
+            this.trackBar1.Size = new System.Drawing.Size(398, 45);
             this.trackBar1.TabIndex = 20;
             this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar1.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
@@ -306,7 +318,7 @@
             this.trackBar2.Maximum = 1000;
             this.trackBar2.Minimum = 1;
             this.trackBar2.Name = "trackBar2";
-            this.trackBar2.Size = new System.Drawing.Size(325, 45);
+            this.trackBar2.Size = new System.Drawing.Size(398, 45);
             this.trackBar2.TabIndex = 22;
             this.trackBar2.TickFrequency = 25;
             this.trackBar2.TickStyle = System.Windows.Forms.TickStyle.None;
@@ -335,7 +347,7 @@
             // wPictureBox
             // 
             this.wPictureBox.Image = global::FModel.Properties.Resources.wTemplate;
-            this.wPictureBox.Location = new System.Drawing.Point(389, 42);
+            this.wPictureBox.Location = new System.Drawing.Point(462, 42);
             this.wPictureBox.Name = "wPictureBox";
             this.wPictureBox.Size = new System.Drawing.Size(165, 165);
             this.wPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -409,7 +421,7 @@
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(148, 315);
+            this.label2.Location = new System.Drawing.Point(184, 315);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(320, 13);
             this.label2.TabIndex = 20;
@@ -420,9 +432,9 @@
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(132, 314);
+            this.label1.Location = new System.Drawing.Point(168, 314);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(19, 13);
+            this.label1.Size = new System.Drawing.Size(16, 13);
             this.label1.TabIndex = 19;
             this.label1.Text = "⚠️";
             // 
@@ -430,7 +442,7 @@
             // 
             this.optionsOKButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.optionsOKButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.optionsOKButton.Location = new System.Drawing.Point(476, 311);
+            this.optionsOKButton.Location = new System.Drawing.Point(512, 311);
             this.optionsOKButton.Name = "optionsOKButton";
             this.optionsOKButton.Size = new System.Drawing.Size(97, 21);
             this.optionsOKButton.TabIndex = 18;
@@ -442,7 +454,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 344);
+            this.ClientSize = new System.Drawing.Size(657, 344);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.groupBox1);
@@ -506,5 +518,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button optionsOKButton;
+        private System.Windows.Forms.CheckBox checkBoxUMCTGalleries;
     }
 }

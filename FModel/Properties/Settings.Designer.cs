@@ -574,5 +574,17 @@ namespace FModel.Properties {
                 this["mergerImagesSaveAs"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UMCTGalleries {
+            get {
+                return ((bool)(this["UMCTGalleries"]));
+            }
+            set {
+                this["UMCTGalleries"] = value;
+            }
+        }
     }
 }
