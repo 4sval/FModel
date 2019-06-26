@@ -144,8 +144,6 @@ namespace FModel
 
             DLLImport.SetTreeViewTheme(treeView1.Handle);
 
-            DynamicKeysManager.deserialize();
-
             Checking.BackupFileName = "\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".txt";
             ThePak.dynamicPaksList = new List<PaksEntry>();
             ThePak.mainPaksList = new List<PaksEntry>();
@@ -157,9 +155,11 @@ namespace FModel
                 Settings.Default.UpdateSettings = false;
                 Settings.Default.Save();
             }
+            DynamicKeysManager.deserialize();
 
             await Task.Run(() => {
                 FillWithPaKs();
+                Utilities.colorMyPaks(loadOneToolStripMenuItem);
                 Utilities.SetOutputFolder();
                 Utilities.SetFolderPermission(App.DefaultOutputPath);
                 Utilities.JohnWickCheck();
@@ -251,6 +251,13 @@ namespace FModel
             {
                 Application.OpenForms[aesForms.Name].Focus();
             }
+            aesForms.FormClosing += (o, c) =>
+            {
+                if (AESManager.isClosed)
+                {
+                    Utilities.colorMyPaks(loadOneToolStripMenuItem);
+                }
+            };
         }
         #endregion
 
@@ -271,10 +278,11 @@ namespace FModel
                     {
                         JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
                     }
-                    else { break; }
+                    else { JohnWick.MyExtractor.Dispose(); break; }
                 }
                 catch (Exception)
                 {
+                    JohnWick.MyExtractor.Dispose();
                     break;
                 }
 
@@ -316,6 +324,7 @@ namespace FModel
                     if (loadAllPaKs) { UpdateConsole(".PAK mount point: " + mountPoint.Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting"); }
                     if (theSinglePak != null && ThePak.mainPaksList[i].thePak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
                 }
+                JohnWick.MyExtractor.Dispose();
             }
             if (bMainKeyWorking) { LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage); }
 
@@ -348,9 +357,11 @@ namespace FModel
                                             PakAsTxt[i] = mountPoint.Substring(6) + PakAsTxt[i];
                                         }
                                     }
+                                    JohnWick.MyExtractor.Dispose();
                                 }
                                 catch (Exception)
                                 {
+                                    JohnWick.MyExtractor.Dispose();
                                     return;
                                 }
                             }
@@ -1084,39 +1095,39 @@ namespace FModel
                 {
                     if (Settings.Default.createIconForCosmetics && itemId[i].ExportType.Contains("Athena") && itemId[i].ExportType.Contains("Item") && itemId[i].ExportType.Contains("Definition"))
                     {
-                        pictureBox1.Image = CreateItemIcon(itemId[i], "athIteDef");
+                        CreateItemIcon(itemId[i], "athIteDef");
                     }
                     else if (Settings.Default.createIconForConsumablesWeapons && (itemId[i].ExportType == "FortWeaponRangedItemDefinition" || itemId[i].ExportType == "FortWeaponMeleeItemDefinition"))
                     {
-                        pictureBox1.Image = CreateItemIcon(itemId[i], "consAndWeap");
+                        CreateItemIcon(itemId[i], "consAndWeap");
                     }
                     else if (Settings.Default.createIconForTraps && (itemId[i].ExportType == "FortTrapItemDefinition" || itemId[i].ExportType == "FortContextTrapItemDefinition"))
                     {
-                        pictureBox1.Image = CreateItemIcon(itemId[i]);
+                        CreateItemIcon(itemId[i]);
                     }
                     else if (Settings.Default.createIconForVariants && (itemId[i].ExportType == "FortVariantTokenType"))
                     {
-                        pictureBox1.Image = CreateItemIcon(itemId[i], "variant");
+                        CreateItemIcon(itemId[i], "variant");
                     }
                     else if (Settings.Default.createIconForAmmo && (itemId[i].ExportType == "FortAmmoItemDefinition"))
                     {
-                        pictureBox1.Image = CreateItemIcon(itemId[i], "ammo");
+                        CreateItemIcon(itemId[i], "ammo");
                     }
                     else if (questJson != null && (Settings.Default.createIconForSTWHeroes && (itemId[i].ExportType == "FortHeroType" && (questJson.Contains("ItemDefinition") || questJson.Contains("TestDefsSkydive") || questJson.Contains("GameplayPrototypes"))))) //Contains x not to trigger HID from BR
                     {
-                        pictureBox1.Image = CreateItemIcon(itemId[i], "stwHeroes");
+                        CreateItemIcon(itemId[i], "stwHeroes");
                     }
                     else if (Settings.Default.createIconForSTWDefenders && (itemId[i].ExportType == "FortDefenderItemDefinition"))
                     {
-                        pictureBox1.Image = CreateItemIcon(itemId[i], "stwDefenders");
+                        CreateItemIcon(itemId[i], "stwDefenders");
                     }
                     else if (Settings.Default.createIconForSTWCardPacks && (itemId[i].ExportType == "FortCardPackItemDefinition"))
                     {
-                        pictureBox1.Image = CreateItemIcon(itemId[i]);
+                        CreateItemIcon(itemId[i]);
                     }
                     else if (Settings.Default.createIconForCreativeGalleries && (itemId[i].ExportType == "FortPlaysetGrenadeItemDefinition"))
                     {
-                        pictureBox1.Image = CreateItemIcon(itemId[i]);
+                        CreateItemIcon(itemId[i]);
                     }
                     else if (itemId[i].ExportType == "FortChallengeBundleItemDefinition")
                     {
@@ -1132,7 +1143,7 @@ namespace FModel
                 throw new ArgumentException(ex.Message);
             }
         }
-        private Bitmap CreateItemIcon(ItemsIdParser theItem, string specialMode = null)
+        private void CreateItemIcon(ItemsIdParser theItem, string specialMode = null)
         {
             UpdateConsole(ThePak.CurrentUsedItem + " is an Item Definition", Color.FromArgb(255, 66, 244, 66), "Success");
 
@@ -1176,8 +1187,9 @@ namespace FModel
                     AppendText(" successfully saved", Color.Black, true);
                 }
             }
+
+            pictureBox1.Image = bmp;
             g.Dispose();
-            return bmp;
         }
 
 

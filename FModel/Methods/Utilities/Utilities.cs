@@ -1,9 +1,13 @@
 ﻿using FModel.Properties;
 using System;
+using System.Linq;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace FModel
 {
@@ -137,6 +141,39 @@ namespace FModel
         public static bool CaseInsensitiveContains(string text, string value, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
         {
             return text.IndexOf(value, stringComparison) >= 0;
+        }
+
+        /// <summary>
+        /// in the ToolStripMenuItem, color the paks that have a key (working or not working)
+        /// result: improve readability when there's a lot of paks
+        /// </summary>
+        /// <param name="myToolStrip"></param>
+        public static void colorMyPaks(ToolStripMenuItem myToolStrip)
+        {
+            foreach (ToolStripItem toolstripmenuitem in myToolStrip.DropDownItems)
+            {
+                toolstripmenuitem.BackColor = Color.FromArgb(255, 255, 255, 255);
+
+                if (!string.IsNullOrEmpty(Settings.Default.AESKey))
+                {
+                    string pak = ThePak.mainPaksList.Where(i => i.thePak == toolstripmenuitem.Text).Select(i => i.thePak).FirstOrDefault();
+
+                    if (pak == toolstripmenuitem.Text)
+                    {
+                        toolstripmenuitem.BackColor = Color.FromArgb(50, 50, 92, 219);
+                    }
+                }
+                if (DynamicKeysManager.AESEntries != null)
+                {
+                    string pak = DynamicKeysManager.AESEntries.Where(i => i.thePak == toolstripmenuitem.Text).Select(i => i.thePak).FirstOrDefault();
+                    string key = DynamicKeysManager.AESEntries.Where(i => i.thePak == toolstripmenuitem.Text).Select(i => i.theKey).FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(key) && pak == toolstripmenuitem.Text)
+                    {
+                        toolstripmenuitem.BackColor = Color.FromArgb(50, 50, 92, 219);
+                    }
+                }
+            }
         }
     }
 }

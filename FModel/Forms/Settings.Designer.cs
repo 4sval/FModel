@@ -51,6 +51,7 @@ namespace FModel.Forms
             this.button1 = new System.Windows.Forms.Button();
             this.wPictureBox = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBoxSaveAsMergeImages = new System.Windows.Forms.CheckBox();
             this.imgsPerRow = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
@@ -66,7 +67,6 @@ namespace FModel.Forms
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
-            this.checkBoxSaveAsMergeImages = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -150,7 +150,7 @@ namespace FModel.Forms
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OKButton.Location = new System.Drawing.Point(475, 546);
+            this.OKButton.Location = new System.Drawing.Point(475, 532);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(97, 21);
             this.OKButton.TabIndex = 15;
@@ -325,14 +325,24 @@ namespace FModel.Forms
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Location = new System.Drawing.Point(12, 473);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(560, 67);
+            this.groupBox1.Size = new System.Drawing.Size(560, 49);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Merger";
             // 
+            // checkBoxSaveAsMergeImages
+            // 
+            this.checkBoxSaveAsMergeImages.AutoSize = true;
+            this.checkBoxSaveAsMergeImages.Location = new System.Drawing.Point(434, 21);
+            this.checkBoxSaveAsMergeImages.Name = "checkBoxSaveAsMergeImages";
+            this.checkBoxSaveAsMergeImages.Size = new System.Drawing.Size(120, 17);
+            this.checkBoxSaveAsMergeImages.TabIndex = 13;
+            this.checkBoxSaveAsMergeImages.Text = "Enable \"Save as...\"";
+            this.checkBoxSaveAsMergeImages.UseVisualStyleBackColor = true;
+            // 
             // imgsPerRow
             // 
-            this.imgsPerRow.Location = new System.Drawing.Point(509, 41);
+            this.imgsPerRow.Location = new System.Drawing.Point(375, 19);
             this.imgsPerRow.Maximum = new decimal(new int[] {
             20,
             0,
@@ -348,7 +358,7 @@ namespace FModel.Forms
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(415, 44);
+            this.label5.Location = new System.Drawing.Point(281, 22);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(88, 13);
             this.label5.TabIndex = 10;
@@ -358,7 +368,7 @@ namespace FModel.Forms
             // 
             this.textBox3.Location = new System.Drawing.Point(69, 19);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(337, 20);
+            this.textBox3.Size = new System.Drawing.Size(206, 20);
             this.textBox3.TabIndex = 8;
             // 
             // label4
@@ -480,21 +490,11 @@ namespace FModel.Forms
             this.label12.TabIndex = 9;
             this.label12.Text = "Watermark:";
             // 
-            // checkBoxSaveAsMergeImages
-            // 
-            this.checkBoxSaveAsMergeImages.AutoSize = true;
-            this.checkBoxSaveAsMergeImages.Location = new System.Drawing.Point(418, 18);
-            this.checkBoxSaveAsMergeImages.Name = "checkBoxSaveAsMergeImages";
-            this.checkBoxSaveAsMergeImages.Size = new System.Drawing.Size(120, 17);
-            this.checkBoxSaveAsMergeImages.TabIndex = 13;
-            this.checkBoxSaveAsMergeImages.Text = "Enable \"Save as...\"";
-            this.checkBoxSaveAsMergeImages.UseVisualStyleBackColor = true;
-            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 579);
+            this.ClientSize = new System.Drawing.Size(584, 565);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox1);

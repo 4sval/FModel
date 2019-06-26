@@ -12,9 +12,12 @@ namespace FModel.Forms
 {
     public partial class AESManager : Form
     {
+        public static bool isClosed { get; set; }
+
         public AESManager()
         {
             InitializeComponent();
+            isClosed = false;
 
             textBox2.Text = @"0x" + Properties.Settings.Default.AESKey;
 
@@ -81,6 +84,7 @@ namespace FModel.Forms
             }
 
             Properties.Settings.Default.Save();
+            isClosed = true;
             Close();
         }
 
