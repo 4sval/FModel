@@ -20,16 +20,16 @@
   
 **3.** Navigate through the tree to find the Asset you want
 
-**4.** Clicking on **Extract** will extract the selected Asset to your `Documents` folder, try to serialize it and will display infos about it
-- Asset is an **_ID_**:
+**4.** Clicking on **Extract** will extract the selected Asset to your `Documents` folder, it will also try to serialize it and will display information about it
+- if the Asset is an **_ID_**:
     - Try to create an [Icon](https://i.imgur.com/etUcOEj.png) with **Name**, **Description**, **Rarity**, **Type** and the **Cosmetic Source**
-- Asset is a **_Texture_**:
+- if the Asset is a **_Texture_**:
     - Try to display the Asset as PNG
-- Asset is a **_Sound_**:
+- if the Asset is a **_Sound_**:
     - Try to convert the Asset to OGG and play the sound
-- Asset is a **_Bundle Of Challenges_**:
+- if the Asset is a **_Bundle Of Challenges_**:
     - Try to create an [Icon](https://i.imgur.com/pUVxUih.png) with all **Challenges' Description**, **Count** and the **Reward**
-- Asset is a **_Font_**:
+- if the Asset is a **_Font_**:
     - Try to convert the Asset to OTF
 
 ### Difference Mode
@@ -54,7 +54,7 @@
 ### Important
 If issues occur when compiling the source code, make sure that the software is being built for x64.
 
-If somehow FModel crash because of permissions, please either disable Windows Defender or add and exception for FModel.exe.
+If somehow FModel crashed due to permissions, please either disable Windows Defender or add and exception for FModel.exe.
 Also if you find this project useful, feel free to give it a :star: thank you :kissing_heart:
 ### Features
  1. Extract
@@ -74,13 +74,12 @@ Also if you find this project useful, feel free to give it a :star: thank you :k
   - [Find & Replace for ScintillaNET](https://www.nuget.org/packages/snt.ScintillaNet.FindReplaceDialog/)
   - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 ### Contributors
-| <a href="https://github.com/SirWaddles" target="_blank">**Waddlesworth**</a> | <a href="https://github.com/MaikyM" target="_blank">**Maiky M**</a> | <a href="https://github.com/AyeTSG" target="_blank">**AyeTSG**</a> | <a href="https://github.com/ItsFireMonkey" target="_blank">**FireMonkey**</a> |
-| :---: | :---: | :---: | :---: |
-| [![Waddlesworth](https://avatars1.githubusercontent.com/u/769399?s=200&v=4)](https://github.com/SirWaddles) | [![Maiky M](https://avatars3.githubusercontent.com/u/51415805?s=200&v=4)](https://github.com/MaikyM) | [![AyeTSG](https://avatars1.githubusercontent.com/u/49595354?s=200&v=4)](https://github.com/AyeTSG) | [![FireMonkey](https://avatars2.githubusercontent.com/u/38590471?s=200&v=4)](https://github.com/ItsFireMonkey) |
-| <a href="https://github.com/SirWaddles" target="_blank">`https://github.com/SirWaddles`</a> | <a href="https://twitter.com/MaikyMOficial" target="_blank">`https://twitter.com/MaikyMOficial`</a> | <a href="https://twitter.com/AyeTSG" target="_blank">`https://twitter.com/AyeTSG`</a> | <a href="https://twitter.com/iFireMonkey" target="_blank">`https://twitter.com/iFireMonkey`</a> |
+<table><tr><td align="center"><a href="https://github.com/SirWaddles"><img src="https://avatars1.githubusercontent.com/u/769399?s=200&v=4" width="100px;" alt="Waddlesworth"/><br /><sub><b>Waddlesworth</b></sub></a><br><a href="https://github.com/SirWaddles" title="Github">🔧</a></td><td align="center"><a href="https://github.com/MaikyM"><img src="https://avatars3.githubusercontent.com/u/51415805?s=200&v=4" width="100px;" alt="Maiky M"/><br /><sub><b>Maiky M</b></sub></a><br /><a href="https://github.com/MaikyM" title="Github">🔧</a><a href="https://twitter.com/MaikyMOficial" title="Twitter">🐦</a></td><td align="center"><a href="https://github.com/AyeTSG"><img src="https://avatars1.githubusercontent.com/u/49595354?s=200&v=4" width="100px;" alt="AyeTSG"/><br><sub><b>AyeTSG</b></sub></a><br><a href="https://github.com/AyeTSG" title="Github">🔧</a><a href="https://twitter.com/AyeTSG" title="Twitter">🐦</a></td><td align="center"><a href="https://github.com/ItsFireMonkey"><img src="https://avatars2.githubusercontent.com/u/38590471?s=200&v=4" width="100px;" alt="FireMonkey"/><br /><sub><b>FireMonkey</b></sub></a><br><a href="https://github.com/ItsFireMonkey" title="Github">🔧</a><a href="https://twitter.com/iFireMonkey" title="Twitter">🐦</a></td></tr></table>
+
+
 ### Why FModel
-This project is mainly based on what [UModel](https://github.com/gildor2/UModel) can do, in a personalized way, in case UModel doesn't work, as a temporary rescue solution.
-I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionnaly.
+This project is mainly based on what [UModel](https://github.com/gildor2/UModel) can do, in a personalized way, if UModel doesn't work, as a temporary rescue solution.
+I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) instead if you wanna use something made professionally.
 
 ## TODO
   - [ ] Take a look at memory usage
