@@ -982,6 +982,18 @@ namespace FModel
                 ExtractButton.Enabled = true;
             }
         }
+
+        private void listBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (listBox1.SelectedIndex != -1 && e.Button == MouseButtons.Right)
+            {
+                bool isActive = !string.IsNullOrEmpty(scintilla1.Text);
+                saveAsJSONToolStripMenuItem1.Enabled = isActive;
+                saveAsJSONToolStripMenuItem1.ToolTipText = !isActive ? "Need extract a file" : "";
+
+                contextMenuStrip1.Show(Cursor.Position);
+            }
+        }
         #endregion
 
         #region EXTRACT BUTTON
@@ -1416,7 +1428,13 @@ namespace FModel
                 ExtractButton.Enabled = true;
             }));
         }
+
         private void ExtractButton_Click(object sender, EventArgs e)
+        {
+            ExtractProcess();
+        }
+
+        private void ExtractProcess()
         {
             scintilla1.Text = "";
             pictureBox1.Image = null;
@@ -1429,6 +1447,7 @@ namespace FModel
                 backgroundWorker1.RunWorkerAsync();
             }
         }
+
         private void StopButton_Click(object sender, EventArgs e)
         {
             if (backgroundWorker1.WorkerSupportsCancellation)
@@ -1627,24 +1646,38 @@ namespace FModel
         }
         private void CopySelectedFilePathToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            CopySelectedFile();
+        }
+
+        private void CopySelectedFile(bool isName = false, bool withExtension = true)
+        {
             if (listBox1.SelectedItem != null)
             {
                 string treeviewPath = treeView1.SelectedNode.FullPath;
-                if (treeviewPath.StartsWith("..\\")) { treeviewPath = treeviewPath.Substring(3); } //if loading all paks
+                // if loading all paks
+                if (treeviewPath.StartsWith("..\\"))
+                    treeviewPath = treeviewPath.Substring(3);
 
                 string path = treeviewPath + "\\" + listBox1.SelectedItem;
-                if (!path.Contains(".")) //if file uasset/uexp/ubulk
-                {
-                    Clipboard.SetText(path.Replace("\\", "/") + ".uasset");
-                }
-                else
-                {
-                    Clipboard.SetText(path.Replace("\\", "/"));
-                }
-                AppendText("Copied!", Color.Green, true);
+                // if file uasset/uexp/ubulk
+                path = !path.Contains(".") ? (path.Replace("\\", "/") + ".uasset") : path.Replace("\\", "/");
+                if (isName)
+                    path = Path.GetFileName(path);
+
+                if (!withExtension)
+                    path = isName ? Path.GetFileNameWithoutExtension(path) : Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
+
+                Clipboard.SetText(path);
+                AppendText(path + " Copied!", Color.Green, true);
             }
         }
+
         private void SaveAsJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveAsJSON();
+        }
+
+        private void SaveAsJSON()
         {
             if (!string.IsNullOrEmpty(scintilla1.Text))
             {
@@ -1670,5 +1703,35 @@ namespace FModel
             }
         }
         #endregion
+
+        private void copyFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectedFile();
+        }
+
+        private void copyFileNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectedFile(true);
+        }
+
+        private void copyFilePathWithoutExtensionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectedFile(false, false);
+        }
+
+        private void copyFileNameWithoutExtensionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectedFile(true, false);
+        }
+
+        private void extractToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExtractProcess();
+        }
+
+        private void saveAsJSONToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            SaveAsJSON();
+        }
     }
 }

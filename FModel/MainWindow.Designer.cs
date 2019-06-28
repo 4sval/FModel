@@ -1,4 +1,4 @@
-﻿namespace FModel
+namespace FModel
 {
     partial class MainWindow
     {
@@ -47,6 +47,7 @@
             this.filesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copySelectedFilePathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoSaveImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,13 +72,21 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
-            this.saveAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.extractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyFileNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyFilePathWithoutExtensionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyFileNameWithoutExtensionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsJSONToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -148,26 +157,26 @@
             // loadOneToolStripMenuItem
             // 
             this.loadOneToolStripMenuItem.Name = "loadOneToolStripMenuItem";
-            this.loadOneToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadOneToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.loadOneToolStripMenuItem.Text = "Load One PAK";
             this.loadOneToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.loadOneToolStripMenuItem_DropDownItemClicked);
             // 
             // loadAllToolStripMenuItem
             // 
             this.loadAllToolStripMenuItem.Name = "loadAllToolStripMenuItem";
-            this.loadAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadAllToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.loadAllToolStripMenuItem.Text = "Load All PAKs";
             this.loadAllToolStripMenuItem.Click += new System.EventHandler(this.loadAllToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(159, 6);
             // 
             // backupPAKsToolStripMenuItem
             // 
             this.backupPAKsToolStripMenuItem.Name = "backupPAKsToolStripMenuItem";
-            this.backupPAKsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.backupPAKsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.backupPAKsToolStripMenuItem.Text = "Backup PAKs";
             this.backupPAKsToolStripMenuItem.Click += new System.EventHandler(this.backupPAKsToolStripMenuItem_Click);
             // 
@@ -175,7 +184,7 @@
             // 
             this.differenceModeToolStripMenuItem.CheckOnClick = true;
             this.differenceModeToolStripMenuItem.Name = "differenceModeToolStripMenuItem";
-            this.differenceModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.differenceModeToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.differenceModeToolStripMenuItem.Text = "Difference Mode";
             this.differenceModeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.differenceModeToolStripMenuItem_CheckedChanged);
             // 
@@ -184,21 +193,21 @@
             this.updateModeToolStripMenuItem.CheckOnClick = true;
             this.updateModeToolStripMenuItem.Enabled = false;
             this.updateModeToolStripMenuItem.Name = "updateModeToolStripMenuItem";
-            this.updateModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.updateModeToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.updateModeToolStripMenuItem.Text = "Update Mode";
             this.updateModeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.updateModeToolStripMenuItem_CheckedChanged);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(159, 6);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Image = global::FModel.Properties.Resources.properties_16xLG;
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -228,6 +237,14 @@
             this.copySelectedFilePathToolStripMenuItem.Text = "Copy Selected File Path";
             this.copySelectedFilePathToolStripMenuItem.Click += new System.EventHandler(this.CopySelectedFilePathToolStripMenuItem_Click);
             // 
+            // saveAsJSONToolStripMenuItem
+            // 
+            this.saveAsJSONToolStripMenuItem.Name = "saveAsJSONToolStripMenuItem";
+            this.saveAsJSONToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
+            this.saveAsJSONToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.saveAsJSONToolStripMenuItem.Text = "Save as JSON";
+            this.saveAsJSONToolStripMenuItem.Click += new System.EventHandler(this.SaveAsJSONToolStripMenuItem_Click);
+            // 
             // imageToolStripMenuItem
             // 
             this.imageToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -242,7 +259,7 @@
             // saveImageToolStripMenuItem
             // 
             this.saveImageToolStripMenuItem.Name = "saveImageToolStripMenuItem";
-            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.saveImageToolStripMenuItem.Text = "Save Image";
             this.saveImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
             // 
@@ -250,18 +267,18 @@
             // 
             this.autoSaveImagesToolStripMenuItem.CheckOnClick = true;
             this.autoSaveImagesToolStripMenuItem.Name = "autoSaveImagesToolStripMenuItem";
-            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.autoSaveImagesToolStripMenuItem.Text = "Auto Save Images";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(165, 6);
             // 
             // mergeImagesToolStripMenuItem
             // 
             this.mergeImagesToolStripMenuItem.Name = "mergeImagesToolStripMenuItem";
-            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.mergeImagesToolStripMenuItem.Text = "Merge Images";
             this.mergeImagesToolStripMenuItem.Click += new System.EventHandler(this.mergeImagesToolStripMenuItem_Click);
             // 
@@ -277,7 +294,7 @@
             // 
             this.aboutFModelToolStripMenuItem.Image = global::FModel.Properties.Resources.StatusAnnotations_Information_16xLG_color;
             this.aboutFModelToolStripMenuItem.Name = "aboutFModelToolStripMenuItem";
-            this.aboutFModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutFModelToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.aboutFModelToolStripMenuItem.Text = "About FModel";
             this.aboutFModelToolStripMenuItem.Click += new System.EventHandler(this.aboutFModelToolStripMenuItem_Click);
             // 
@@ -413,6 +430,7 @@
             this.listBox1.Sorted = true;
             this.listBox1.TabIndex = 1;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.listBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseDown);
             // 
             // richTextBox1
             // 
@@ -474,13 +492,67 @@
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
             this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
             // 
-            // saveAsJSONToolStripMenuItem
+            // contextMenuStrip1
             // 
-            this.saveAsJSONToolStripMenuItem.Name = "saveAsJSONToolStripMenuItem";
-            this.saveAsJSONToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-            this.saveAsJSONToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
-            this.saveAsJSONToolStripMenuItem.Text = "Save as JSON";
-            this.saveAsJSONToolStripMenuItem.Click += new System.EventHandler(this.SaveAsJSONToolStripMenuItem_Click);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.extractToolStripMenuItem,
+            this.copyFilesToolStripMenuItem,
+            this.saveAsJSONToolStripMenuItem1});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 92);
+            // 
+            // extractToolStripMenuItem
+            // 
+            this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
+            this.extractToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractToolStripMenuItem.Text = "Extract";
+            this.extractToolStripMenuItem.Click += new System.EventHandler(this.extractToolStripMenuItem_Click);
+            // 
+            // copyFilesToolStripMenuItem
+            // 
+            this.copyFilesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyFileToolStripMenuItem,
+            this.copyFileNameToolStripMenuItem,
+            this.copyFilePathWithoutExtensionToolStripMenuItem,
+            this.copyFileNameWithoutExtensionToolStripMenuItem});
+            this.copyFilesToolStripMenuItem.Name = "copyFilesToolStripMenuItem";
+            this.copyFilesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.copyFilesToolStripMenuItem.Text = "Copy File";
+            // 
+            // copyFileToolStripMenuItem
+            // 
+            this.copyFileToolStripMenuItem.Name = "copyFileToolStripMenuItem";
+            this.copyFileToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.copyFileToolStripMenuItem.Text = "Copy File Path";
+            this.copyFileToolStripMenuItem.Click += new System.EventHandler(this.copyFileToolStripMenuItem_Click);
+            // 
+            // copyFileNameToolStripMenuItem
+            // 
+            this.copyFileNameToolStripMenuItem.Name = "copyFileNameToolStripMenuItem";
+            this.copyFileNameToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.copyFileNameToolStripMenuItem.Text = "Copy File Name";
+            this.copyFileNameToolStripMenuItem.Click += new System.EventHandler(this.copyFileNameToolStripMenuItem_Click);
+            // 
+            // copyFilePathWithoutExtensionToolStripMenuItem
+            // 
+            this.copyFilePathWithoutExtensionToolStripMenuItem.Name = "copyFilePathWithoutExtensionToolStripMenuItem";
+            this.copyFilePathWithoutExtensionToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.copyFilePathWithoutExtensionToolStripMenuItem.Text = "Copy File Path without Extension";
+            this.copyFilePathWithoutExtensionToolStripMenuItem.Click += new System.EventHandler(this.copyFilePathWithoutExtensionToolStripMenuItem_Click);
+            // 
+            // copyFileNameWithoutExtensionToolStripMenuItem
+            // 
+            this.copyFileNameWithoutExtensionToolStripMenuItem.Name = "copyFileNameWithoutExtensionToolStripMenuItem";
+            this.copyFileNameWithoutExtensionToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.copyFileNameWithoutExtensionToolStripMenuItem.Text = "Copy File Name without Extension";
+            this.copyFileNameWithoutExtensionToolStripMenuItem.Click += new System.EventHandler(this.copyFileNameWithoutExtensionToolStripMenuItem_Click);
+            // 
+            // saveAsJSONToolStripMenuItem1
+            // 
+            this.saveAsJSONToolStripMenuItem1.Name = "saveAsJSONToolStripMenuItem1";
+            this.saveAsJSONToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.saveAsJSONToolStripMenuItem1.Text = "Save as JSON";
+            this.saveAsJSONToolStripMenuItem1.Click += new System.EventHandler(this.saveAsJSONToolStripMenuItem1_Click);
             // 
             // MainWindow
             // 
@@ -508,6 +580,7 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -557,6 +630,14 @@
         private System.Windows.Forms.Button AESManagerButton;
         private System.Windows.Forms.ToolStripMenuItem copySelectedFilePathToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsJSONToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem extractToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyFilesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyFileNameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyFilePathWithoutExtensionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyFileNameWithoutExtensionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveAsJSONToolStripMenuItem1;
     }
 }
 
