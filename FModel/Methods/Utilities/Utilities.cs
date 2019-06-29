@@ -1,4 +1,4 @@
-﻿using FModel.Properties;
+using FModel.Properties;
 using System;
 using System.Linq;
 using System.Diagnostics;
@@ -152,6 +152,7 @@ namespace FModel
         {
             foreach (ToolStripItem toolstripmenuitem in myToolStrip.DropDownItems)
             {
+                toolstripmenuitem.Enabled = false;
                 toolstripmenuitem.BackColor = Color.FromArgb(255, 255, 255, 255);
 
                 if (!string.IsNullOrEmpty(Settings.Default.AESKey))
@@ -160,9 +161,11 @@ namespace FModel
 
                     if (pak == toolstripmenuitem.Text)
                     {
+                        toolstripmenuitem.Enabled = true;
                         toolstripmenuitem.BackColor = Color.FromArgb(50, 50, 92, 219);
                     }
                 }
+
                 if (DynamicKeysManager.AESEntries != null)
                 {
                     string pak = DynamicKeysManager.AESEntries.Where(i => i.thePak == toolstripmenuitem.Text).Select(i => i.thePak).FirstOrDefault();
@@ -170,6 +173,7 @@ namespace FModel
 
                     if (!string.IsNullOrEmpty(key) && pak == toolstripmenuitem.Text)
                     {
+                        toolstripmenuitem.Enabled = true;
                         toolstripmenuitem.BackColor = Color.FromArgb(50, 50, 92, 219);
                     }
                 }
