@@ -23,7 +23,7 @@ namespace FModel.Methods.BackupPAKs.Parser.TokenParser
         public long ExpiresIn { get; set; }
 
         [JsonProperty("expires_at")]
-        public DateTimeOffset ExpiresAt { get; set; }
+        public string ExpiresAt { get; set; }
 
         [JsonProperty("token_type")]
         public string TokenType { get; set; }

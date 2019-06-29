@@ -394,7 +394,7 @@ namespace FModel.Forms
             this.groupBox5.Size = new System.Drawing.Size(560, 92);
             this.groupBox5.TabIndex = 18;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Optional - Backup PAKs 1000+";
+            this.groupBox5.Text = "Optional - Automatic Key Detection for Dynamic PAKs";
             // 
             // checkBox1
             // 

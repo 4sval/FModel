@@ -8,7 +8,7 @@ namespace FModel
     {
         public static List<AESEntry> AESEntries { get; set; }
         private static XmlSerializer serializer = new XmlSerializer(typeof(List<AESEntry>));
-        private static string path = Properties.Settings.Default.ExtractOutput + "\\AESManager.xml";
+        public static string path = Properties.Settings.Default.ExtractOutput + "\\AESManager.xml";
 
         public static void serialize(string key, string pak)
         {

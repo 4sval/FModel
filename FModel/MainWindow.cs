@@ -136,6 +136,65 @@ namespace FModel
                 }
             }
         }
+        
+        /// <summary>
+        /// ask the keychain api for all dynamic keys and their guids
+        /// if an API guid match a local guid, the key is saved and the pak can be opened with this key
+        /// </summary>
+        private void checkAndAddDynamicKeys()
+        {
+            if (!File.Exists(DynamicKeysManager.path))
+            {
+                DynamicKeysManager.AESEntries = new List<AESEntry>();
+                DynamicKeysManager.serialize("", "");
+            }
+
+            string[] _backupDynamicKeys = null;
+            if (DLLImport.IsInternetAvailable() && (!string.IsNullOrWhiteSpace(Settings.Default.eEmail) && !string.IsNullOrWhiteSpace(Settings.Default.ePassword)))
+            {
+                string myContent = DynamicPAKs.GetEndpoint("https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", true);
+
+                if (myContent.Contains("\"errorCode\": \"errors.com.epicgames.common.authentication.authentication_failed\""))
+                {
+                    AppendText("EPIC Authentication Failed.", Color.Red, true);
+                }
+                else
+                {
+                    AppendText("EPIC Authentication Success.", Color.DarkGreen, true);
+                    AppendText("", Color.Green, true);
+                    _backupDynamicKeys = AesKeyParser.FromJson(myContent);
+                }
+            }
+
+            if (_backupDynamicKeys != null)
+            {
+                DynamicKeysManager.AESEntries = new List<AESEntry>();
+                foreach (string myString in _backupDynamicKeys)
+                {
+                    string[] parts = myString.Split(':');
+                    string apiGuid = DynamicPAKs.getPakGuidFromKeychain(parts);
+
+                    string actualPakGuid = ThePak.dynamicPaksList.Where(i => i.thePakGuid == apiGuid).Select(i => i.thePakGuid).FirstOrDefault();
+                    string actualPakName = ThePak.dynamicPaksList.Where(i => i.thePakGuid == apiGuid).Select(i => i.thePak).FirstOrDefault();
+
+                    bool pakAlreadyExist = DynamicKeysManager.AESEntries.Where(i => i.thePak == actualPakName).Any();
+
+                    if (!string.IsNullOrEmpty(actualPakGuid) && !pakAlreadyExist)
+                    {
+                        byte[] bytes = Convert.FromBase64String(parts[1]);
+                        string aeskey = BitConverter.ToString(bytes).Replace("-", "");
+
+                        DynamicKeysManager.serialize(aeskey.ToUpper(), actualPakName);
+
+                        AppendText(actualPakName, Color.SeaGreen);
+                        AppendText(" can be opened.", Color.Black, true);
+                    }
+                }
+                AppendText("", Color.Green, true);
+            }
+
+            DynamicKeysManager.deserialize();
+        }
 
         //EVENTS
         private async void MainWindow_Load(object sender, EventArgs e)
@@ -155,10 +214,10 @@ namespace FModel
                 Settings.Default.UpdateSettings = false;
                 Settings.Default.Save();
             }
-            DynamicKeysManager.deserialize();
 
             await Task.Run(() => {
                 FillWithPaKs();
+                checkAndAddDynamicKeys();
                 Utilities.colorMyPaks(loadOneToolStripMenuItem);
                 Utilities.SetOutputFolder();
                 Utilities.SetFolderPermission(App.DefaultOutputPath);
@@ -578,23 +637,7 @@ namespace FModel
         }
         private void CreateBackupList()
         {
-            string[] _backupDynamicKeys = null;
             StringBuilder sb = new StringBuilder();
-
-            if (DLLImport.IsInternetAvailable() && (!string.IsNullOrWhiteSpace(Settings.Default.eEmail) || !string.IsNullOrWhiteSpace(Settings.Default.ePassword)))
-            {
-                string myContent = DynamicPAKs.GetEndpoint("https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", true);
-
-                if (myContent.Contains("\"errorCode\": \"errors.com.epicgames.common.authentication.authentication_failed\""))
-                {
-                    AppendText("EPIC Authentication Failed.", Color.Red, true);
-                }
-                else
-                {
-                    AppendText("Successfully Authenticated.", Color.Green, true);
-                    _backupDynamicKeys = AesKeyParser.FromJson(myContent);
-                }
-            }
 
             for (int i = 0; i < ThePak.mainPaksList.Count; i++)
             {
@@ -605,6 +648,7 @@ namespace FModel
                 catch (Exception)
                 {
                     AppendText("0x" + Settings.Default.AESKey + " doesn't work with the main paks.", Color.Red, true);
+                    JohnWick.MyExtractor.Dispose();
                     break;
                 }
 
@@ -619,53 +663,40 @@ namespace FModel
                     }
                     UpdateConsole(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
                 }
+                JohnWick.MyExtractor.Dispose();
             }
 
             for (int i = 0; i < ThePak.dynamicPaksList.Count; i++)
             {
-                if (_backupDynamicKeys != null)
+                string pakName = DynamicKeysManager.AESEntries.Where(x => x.thePak == ThePak.dynamicPaksList[i].thePak).Select(x => x.thePak).FirstOrDefault();
+                string pakKey = DynamicKeysManager.AESEntries.Where(x => x.thePak == ThePak.dynamicPaksList[i].thePak).Select(x => x.theKey).FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(pakName) && !string.IsNullOrEmpty(pakKey))
                 {
-                    string oldGuid = string.Empty;
-                    foreach (string myString in _backupDynamicKeys)
+                    try
                     {
-                        string[] parts = myString.Split(':');
-                        string newGuid = DynamicPAKs.getPakGuidFromKeychain(parts);
-
-                        /***
-                         * if same guid several time in keychain do not backup twice
-                         * it works fine that way because of the loop through all the paks
-                         * even if in keychain we do "found 1004" -> "found 1001" -> "found 1004" through the paks we do 1000 -> 1001 -> 1002...
-                        ***/
-                        if (newGuid == ThePak.dynamicPaksList[i].thePakGuid && oldGuid != newGuid)
-                        {
-                            byte[] bytes = Convert.FromBase64String(parts[1]);
-                            string aeskey = BitConverter.ToString(bytes).Replace("-", "");
-                            oldGuid = newGuid;
-
-                            try
-                            {
-                                JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.dynamicPaksList[i].thePak, aeskey);
-                            }
-                            catch (Exception)
-                            {
-                                AppendText("0x" + aeskey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true); //this should never be triggered
-                                continue;
-                            }
-
-                            string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
-                            if (CurrentUsedPakLines != null)
-                            {
-                                for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
-                                {
-                                    CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
-
-                                    sb.Append(CurrentUsedPakLines[ii] + "\n");
-                                }
-                                AppendText("Backing up ", Color.Black);
-                                AppendText(ThePak.dynamicPaksList[i].thePak, Color.DarkRed, true);
-                            }
-                        }
+                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
                     }
+                    catch (Exception)
+                    {
+                        AppendText("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true);
+                        JohnWick.MyExtractor.Dispose();
+                        continue;
+                    }
+
+                    string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                    if (CurrentUsedPakLines != null)
+                    {
+                        for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
+                        {
+                            CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
+
+                            sb.Append(CurrentUsedPakLines[ii] + "\n");
+                        }
+                        AppendText("Backing up ", Color.Black);
+                        AppendText(ThePak.dynamicPaksList[i].thePak, Color.DarkRed, true);
+                    }
+                    JohnWick.MyExtractor.Dispose();
                 }
             }
 
@@ -1648,7 +1679,6 @@ namespace FModel
         {
             CopySelectedFile();
         }
-
         private void CopySelectedFile(bool isName = false, bool withExtension = true)
         {
             if (listBox1.SelectedItem != null)
@@ -1676,7 +1706,6 @@ namespace FModel
         {
             SaveAsJSON();
         }
-
         private void SaveAsJSON()
         {
             if (!string.IsNullOrEmpty(scintilla1.Text))
@@ -1704,6 +1733,7 @@ namespace FModel
         }
         #endregion
 
+        #region RIGHT CLICK
         private void copyFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CopySelectedFile();
@@ -1733,5 +1763,6 @@ namespace FModel
         {
             SaveAsJSON();
         }
+        #endregion
     }
 }
