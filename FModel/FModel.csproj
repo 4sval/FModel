@@ -283,7 +283,6 @@
     <None Include="Resources\L512.png" />
     <None Include="Resources\E512.png" />
     <None Include="Resources\C512.png" />
-    <None Include="Resources\BG512.png" />
     <None Include="Resources\properties_16xLG.png" />
     <None Include="Resources\StatusAnnotations_Information_16xLG_color.png" />
     <None Include="Resources\folder_Closed_16xLG.png" />

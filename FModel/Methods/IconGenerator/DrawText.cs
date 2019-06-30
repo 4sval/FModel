@@ -310,7 +310,7 @@ namespace FModel
                 {
                     itemIcon = new Bitmap(bmpTemp);
                 }
-                myGraphic.DrawImage(ImageUtilities.ResizeImage(itemIcon, 122, 122), new Point(395, 282));
+                myGraphic.DrawImage(ImageUtilities.ResizeImage(itemIcon, 122, 122), new Point(275, 272));
             }
         }
 

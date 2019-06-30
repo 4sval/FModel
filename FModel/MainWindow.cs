@@ -143,13 +143,19 @@ namespace FModel
         /// </summary>
         private void checkAndAddDynamicKeys()
         {
+            List<AESEntry> toCheck = null;
             if (!File.Exists(DynamicKeysManager.path))
             {
                 DynamicKeysManager.AESEntries = new List<AESEntry>();
                 DynamicKeysManager.serialize("", "");
             }
+            else
+            {
+                DynamicKeysManager.deserialize();
+                toCheck = DynamicKeysManager.AESEntries;
+            }
 
-            string[] _backupDynamicKeys = null;
+            string[] BackupDynamicKeys = null;
             if (DLLImport.IsInternetAvailable() && (!string.IsNullOrWhiteSpace(Settings.Default.eEmail) && !string.IsNullOrWhiteSpace(Settings.Default.ePassword)))
             {
                 string myContent = DynamicPAKs.GetEndpoint("https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", true);
@@ -162,14 +168,14 @@ namespace FModel
                 {
                     AppendText("EPIC Authentication Success.", Color.DarkGreen, true);
                     AppendText("", Color.Green, true);
-                    _backupDynamicKeys = AesKeyParser.FromJson(myContent);
+                    BackupDynamicKeys = AesKeyParser.FromJson(myContent);
                 }
             }
 
-            if (_backupDynamicKeys != null)
+            if (BackupDynamicKeys != null)
             {
                 DynamicKeysManager.AESEntries = new List<AESEntry>();
-                foreach (string myString in _backupDynamicKeys)
+                foreach (string myString in BackupDynamicKeys)
                 {
                     string[] parts = myString.Split(':');
                     string apiGuid = DynamicPAKs.getPakGuidFromKeychain(parts);
@@ -186,8 +192,24 @@ namespace FModel
 
                         DynamicKeysManager.serialize(aeskey.ToUpper(), actualPakName);
 
-                        AppendText(actualPakName, Color.SeaGreen);
-                        AppendText(" can be opened.", Color.Black, true);
+                        #region DISPLAY PAKS
+                        if (toCheck != null)
+                        {
+                            //display new paks that can be opened
+                            bool wasThereBeforeStartup = toCheck.Where(i => i.thePak == actualPakName).Any();
+                            if (!wasThereBeforeStartup)
+                            {
+                                AppendText(actualPakName, Color.SeaGreen);
+                                AppendText(" can now be opened.", Color.Black, true);
+                            }
+                        }
+                        else
+                        {
+                            //display all paks that can be opened
+                            AppendText(actualPakName, Color.SeaGreen);
+                            AppendText(" can be opened.", Color.Black, true);
+                        }
+                        #endregion
                     }
                 }
                 AppendText("", Color.Green, true);
@@ -1215,8 +1237,7 @@ namespace FModel
 
             ItemIcon.DrawWatermark(g);
 
-            Image bg512 = Resources.BG512;
-            g.DrawImage(bg512, new Point(5, 383));
+            g.FillRectangle(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), new Rectangle(5, 383, 512, 134));
 
             DrawText.DrawTexts(theItem, g, specialMode);
 

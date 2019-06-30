@@ -321,7 +321,7 @@ namespace FModel
             this.AESManagerButton.Name = "AESManagerButton";
             this.AESManagerButton.Size = new System.Drawing.Size(191, 21);
             this.AESManagerButton.TabIndex = 8;
-            this.AESManagerButton.Text = "AES Manager";
+            this.AESManagerButton.Text = "AES &Manager";
             this.AESManagerButton.UseVisualStyleBackColor = true;
             this.AESManagerButton.Click += new System.EventHandler(this.AESManagerButton_Click);
             // 
@@ -334,7 +334,7 @@ namespace FModel
             this.StopButton.Name = "StopButton";
             this.StopButton.Size = new System.Drawing.Size(75, 21);
             this.StopButton.TabIndex = 6;
-            this.StopButton.Text = "Stop";
+            this.StopButton.Text = "&Stop";
             this.StopButton.UseVisualStyleBackColor = true;
             this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
             // 
@@ -347,7 +347,7 @@ namespace FModel
             this.OpenImageButton.Name = "OpenImageButton";
             this.OpenImageButton.Size = new System.Drawing.Size(75, 21);
             this.OpenImageButton.TabIndex = 5;
-            this.OpenImageButton.Text = "Open Image";
+            this.OpenImageButton.Text = "&Open Image";
             this.OpenImageButton.UseVisualStyleBackColor = true;
             this.OpenImageButton.Click += new System.EventHandler(this.OpenImageButton_Click);
             // 
@@ -378,7 +378,7 @@ namespace FModel
             this.ExtractButton.Name = "ExtractButton";
             this.ExtractButton.Size = new System.Drawing.Size(75, 21);
             this.ExtractButton.TabIndex = 0;
-            this.ExtractButton.Text = "Extract";
+            this.ExtractButton.Text = "&Extract";
             this.ExtractButton.UseVisualStyleBackColor = true;
             this.ExtractButton.Click += new System.EventHandler(this.ExtractButton_Click);
             // 
@@ -499,12 +499,12 @@ namespace FModel
             this.copyFilesToolStripMenuItem,
             this.saveAsJSONToolStripMenuItem1});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(144, 70);
             // 
             // extractToolStripMenuItem
             // 
             this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
-            this.extractToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.extractToolStripMenuItem.Text = "Extract";
             this.extractToolStripMenuItem.Click += new System.EventHandler(this.extractToolStripMenuItem_Click);
             // 
@@ -516,7 +516,7 @@ namespace FModel
             this.copyFilePathWithoutExtensionToolStripMenuItem,
             this.copyFileNameWithoutExtensionToolStripMenuItem});
             this.copyFilesToolStripMenuItem.Name = "copyFilesToolStripMenuItem";
-            this.copyFilesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.copyFilesToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.copyFilesToolStripMenuItem.Text = "Copy File";
             // 
             // copyFileToolStripMenuItem
@@ -550,7 +550,7 @@ namespace FModel
             // saveAsJSONToolStripMenuItem1
             // 
             this.saveAsJSONToolStripMenuItem1.Name = "saveAsJSONToolStripMenuItem1";
-            this.saveAsJSONToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.saveAsJSONToolStripMenuItem1.Size = new System.Drawing.Size(143, 22);
             this.saveAsJSONToolStripMenuItem1.Text = "Save as JSON";
             this.saveAsJSONToolStripMenuItem1.Click += new System.EventHandler(this.saveAsJSONToolStripMenuItem1_Click);
             // 
