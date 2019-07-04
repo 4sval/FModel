@@ -333,6 +333,8 @@ namespace FModel.Forms
             // checkBoxSaveAsMergeImages
             // 
             this.checkBoxSaveAsMergeImages.AutoSize = true;
+            this.checkBoxSaveAsMergeImages.Checked = true;
+            this.checkBoxSaveAsMergeImages.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxSaveAsMergeImages.Location = new System.Drawing.Point(434, 21);
             this.checkBoxSaveAsMergeImages.Name = "checkBoxSaveAsMergeImages";
             this.checkBoxSaveAsMergeImages.Size = new System.Drawing.Size(120, 17);
