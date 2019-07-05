@@ -209,58 +209,65 @@ namespace FModel
         /// <param name="catName"></param>
         private static void GetFeaturedItemIcon(ItemsIdParser theItem, string catName)
         {
-            ThePak.CurrentUsedItem = catName;
-            string catalogFilePath = (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                ? catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName)
-                : catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
-
-            if (!string.IsNullOrEmpty(catalogFilePath))
+            try
             {
-                Checking.WasFeatured = true;
-                if (catalogFilePath.Contains(".uasset") || catalogFilePath.Contains(".uexp") || catalogFilePath.Contains(".ubulk"))
-                {
-                    JohnWick.MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
-                    try
-                    {
-                        if (JohnWick.MyAsset.GetSerialized() != null)
-                        {
-                            string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                            var featuredId = FeaturedParser.FromJson(parsedJson);
-                            for (int i = 0; i < featuredId.Length; i++)
-                            {
-                                switch (catName)
-                                {
-                                    case "DA_Featured_Glider_ID_070_DarkViking":
-                                    case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
-                                        if (featuredId[i].TileImage != null)
-                                        {
-                                            string textureFile = featuredId[i].TileImage.ResourceObject;
-                                            ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-                                        }
-                                        break;
-                                    default:
-                                        if (featuredId[i].DetailsImage != null)
-                                        {
-                                            string textureFile = featuredId[i].DetailsImage.ResourceObject;
-                                            ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-                                        }
-                                        break;
-                                }
-                            }
+                ThePak.CurrentUsedItem = catName;
+                string catalogFilePath = (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                    ? catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName)
+                    : catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
 
-                            // There is no featured image (as legends pack, shadow pack...)
-                            if (string.IsNullOrEmpty(ItemIconPath))
-                                GetItemIcon(theItem);
+                if (!string.IsNullOrEmpty(catalogFilePath))
+                {
+                    Checking.WasFeatured = true;
+                    if (catalogFilePath.Contains(".uasset") || catalogFilePath.Contains(".uexp") || catalogFilePath.Contains(".ubulk"))
+                    {
+                        JohnWick.MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
+                        try
+                        {
+                            if (JohnWick.MyAsset.GetSerialized() != null)
+                            {
+                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
+                                var featuredId = FeaturedParser.FromJson(parsedJson);
+                                for (int i = 0; i < featuredId.Length; i++)
+                                {
+                                    switch (catName)
+                                    {
+                                        case "DA_Featured_Glider_ID_070_DarkViking":
+                                        case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
+                                            if (featuredId[i].TileImage != null)
+                                            {
+                                                string textureFile = featuredId[i].TileImage.ResourceObject;
+                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                                            }
+                                            break;
+                                        default:
+                                            if (featuredId[i].DetailsImage != null)
+                                            {
+                                                string textureFile = featuredId[i].DetailsImage.ResourceObject;
+                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                                            }
+                                            break;
+                                    }
+                                }
+
+                                // There is no featured image (as legends pack, shadow pack...)
+                                if (string.IsNullOrEmpty(ItemIconPath))
+                                    GetItemIcon(theItem);
+                            }
+                        }
+                        catch (JsonSerializationException)
+                        {
+                            //do not crash when JsonSerialization does weird stuff
                         }
                     }
-                    catch (JsonSerializationException)
-                    {
-                        //do not crash when JsonSerialization does weird stuff
-                    }
                 }
+                else
+                    GetItemIcon(theItem);
             }
-            else
+            catch (KeyNotFoundException)
+            {
                 GetItemIcon(theItem);
+            }
         }
 
         /// <summary>
