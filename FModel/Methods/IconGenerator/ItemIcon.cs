@@ -28,7 +28,7 @@ namespace FModel
                 Checking.WasFeatured = false;
                 SearchAthIteDefIcon(theItem);
             }
-            if (featured)
+            else
             {
                 if (theItem.DisplayAssetPath != null && theItem.DisplayAssetPath.AssetPathName.Contains("/Game/Catalog/DisplayAssets/"))
                 {
@@ -209,63 +209,54 @@ namespace FModel
         /// <param name="catName"></param>
         private static void GetFeaturedItemIcon(ItemsIdParser theItem, string catName)
         {
-            if (ThePak.AllpaksDictionary.ContainsKey(catName))
+            ThePak.CurrentUsedItem = catName;
+            string catalogFilePath = (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                ? catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName)
+                : catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
+
+            if (catalogFilePath != null)
             {
-                ThePak.CurrentUsedItem = catName;
-
-                string catalogFilePath;
-                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                Checking.WasFeatured = true;
+                if (catalogFilePath.Contains(".uasset") || catalogFilePath.Contains(".uexp") || catalogFilePath.Contains(".ubulk"))
                 {
-                    catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName);
-                }
-                else
-                {
-                    catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
-                }
-
-                if (catalogFilePath != null)
-                {
-                    Checking.WasFeatured = true;
-                    if (catalogFilePath.Contains(".uasset") || catalogFilePath.Contains(".uexp") || catalogFilePath.Contains(".ubulk"))
+                    JohnWick.MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
+                    try
                     {
-                        JohnWick.MyAsset = new PakAsset(catalogFilePath.Substring(0, catalogFilePath.LastIndexOf('.')));
-                        try
+                        if (JohnWick.MyAsset.GetSerialized() != null)
                         {
-                            if (JohnWick.MyAsset.GetSerialized() != null)
+                            string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
+                            var featuredId = FeaturedParser.FromJson(parsedJson);
+                            for (int i = 0; i < featuredId.Length; i++)
                             {
-                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                                var featuredId = FeaturedParser.FromJson(parsedJson);
-                                for (int i = 0; i < featuredId.Length; i++)
+                                switch (catName)
                                 {
-                                    switch (catName)
-                                    {
-                                        case "DA_Featured_Glider_ID_070_DarkViking":
-                                        case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
-                                            if (featuredId[i].TileImage != null)
-                                            {
-                                                string textureFile = featuredId[i].TileImage.ResourceObject;
-                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-                                            }
-                                            break;
-                                        default:
-                                            if (featuredId[i].DetailsImage != null)
-                                            {
-                                                string textureFile = featuredId[i].DetailsImage.ResourceObject;
-                                                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-                                            }
-                                            break;
-                                    }
+                                    case "DA_Featured_Glider_ID_070_DarkViking":
+                                    case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
+                                        if (featuredId[i].TileImage != null)
+                                        {
+                                            string textureFile = featuredId[i].TileImage.ResourceObject;
+                                            ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                                        }
+                                        break;
+                                    default:
+                                        if (featuredId[i].DetailsImage != null)
+                                        {
+                                            string textureFile = featuredId[i].DetailsImage.ResourceObject;
+                                            ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                                        }
+                                        break;
                                 }
                             }
                         }
-                        catch (JsonSerializationException)
-                        {
-                            //do not crash when JsonSerialization does weird stuff
-                        }
+                    }
+                    catch (JsonSerializationException)
+                    {
+                        //do not crash when JsonSerialization does weird stuff
                     }
                 }
             }
-            else { GetItemIcon(theItem); }
+            else
+                GetItemIcon(theItem);
         }
 
         /// <summary>

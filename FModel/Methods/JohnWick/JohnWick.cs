@@ -1,4 +1,4 @@
-﻿using csharp_wick;
+using csharp_wick;
 using FModel.Parser.RenderMat;
 using FModel.Properties;
 using Newtonsoft.Json;
@@ -109,28 +109,23 @@ namespace FModel
         /// <returns> the path to the png image </returns>
         public static string AssetToTexture2D(string AssetName)
         {
-            string textureFilePath;
-            if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-            {
-                textureFilePath = ExtractAsset(ThePak.CurrentUsedPak, AssetName);
-            }
-            else
-            {
-                textureFilePath = ExtractAsset(ThePak.AllpaksDictionary[AssetName], AssetName);
-            }
-
+            string textureFilePath = (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                    ? ExtractAsset(ThePak.CurrentUsedPak, AssetName)
+                    : ExtractAsset(ThePak.AllpaksDictionary[AssetName], AssetName);
 
             string TexturePath = string.Empty;
-            if (textureFilePath != null && (textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_") || textureFilePath.Contains("M_UI_ChallengeTile_PCB") || textureFilePath.Contains("Wraps\\FeaturedMaterials\\") || textureFilePath.Contains("M-Wraps-StreetDemon")))
+            if (!string.IsNullOrEmpty(textureFilePath))
             {
-                return GetRenderSwitchMaterialTexture(textureFilePath);
+                if ((textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_") || textureFilePath.Contains("M_UI_ChallengeTile_PCB") || textureFilePath.Contains("Wraps\\FeaturedMaterials\\") || textureFilePath.Contains("M-Wraps-StreetDemon")))
+                    return GetRenderSwitchMaterialTexture(textureFilePath);
+                else
+                {
+                    MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
+                    MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
+                    TexturePath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
+                }
             }
-            else if (textureFilePath != null)
-            {
-                MyAsset = new PakAsset(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)));
-                MyAsset.SaveTexture(textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
-                TexturePath = textureFilePath.Substring(0, textureFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png";
-            }
+
             return TexturePath;
         }
 
