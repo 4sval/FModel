@@ -247,6 +247,10 @@ namespace FModel
                                         break;
                                 }
                             }
+
+                            // There is no featured image (as legends pack, shadow pack...)
+                            if (string.IsNullOrEmpty(ItemIconPath))
+                                GetItemIcon(theItem);
                         }
                     }
                     catch (JsonSerializationException)
