@@ -214,7 +214,7 @@ namespace FModel
                 ? catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName)
                 : catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
 
-            if (catalogFilePath != null)
+            if (!string.IsNullOrEmpty(catalogFilePath))
             {
                 Checking.WasFeatured = true;
                 if (catalogFilePath.Contains(".uasset") || catalogFilePath.Contains(".uexp") || catalogFilePath.Contains(".ubulk"))
