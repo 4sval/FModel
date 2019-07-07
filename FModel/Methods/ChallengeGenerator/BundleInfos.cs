@@ -111,7 +111,16 @@ namespace FModel
                                             }
                                         }
 
-                                        string newQuest = SearchResource.getTextByKey(questParser[x].Objectives[p].Description.Key, questParser[x].Objectives[p].Description.SourceString);
+                                        // In the game "Description" has priority over "Objectives.Description"
+                                        string descriptionKey = questParser[x].Objectives[p].Description.Key;
+                                        string descriptionSource = questParser[x].Objectives[p].Description.SourceString;
+                                        if (questParser[x].Description != null)
+                                        {
+                                            descriptionKey = questParser[x].Description.Key;
+                                            descriptionSource = questParser[x].Description.SourceString;
+                                        }
+
+                                        string newQuest = SearchResource.getTextByKey(descriptionKey, descriptionSource);
                                         if (newQuest != oldQuest && newCount != oldCount)
                                         {
                                             if (questParser[x].Rewards != null && !isFortbyte)
