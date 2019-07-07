@@ -80,6 +80,8 @@ namespace FModel
             this.copyFilePathWithoutExtensionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyFileNameWithoutExtensionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsJSONToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.tweetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -251,7 +253,9 @@ namespace FModel
             this.saveImageToolStripMenuItem,
             this.autoSaveImagesToolStripMenuItem,
             this.toolStripSeparator3,
-            this.mergeImagesToolStripMenuItem});
+            this.mergeImagesToolStripMenuItem,
+            this.toolStripSeparator4,
+            this.tweetToolStripMenuItem});
             this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
             this.imageToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.imageToolStripMenuItem.Text = "Image";
@@ -259,7 +263,7 @@ namespace FModel
             // saveImageToolStripMenuItem
             // 
             this.saveImageToolStripMenuItem.Name = "saveImageToolStripMenuItem";
-            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveImageToolStripMenuItem.Text = "Save Image";
             this.saveImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
             // 
@@ -267,18 +271,18 @@ namespace FModel
             // 
             this.autoSaveImagesToolStripMenuItem.CheckOnClick = true;
             this.autoSaveImagesToolStripMenuItem.Name = "autoSaveImagesToolStripMenuItem";
-            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.autoSaveImagesToolStripMenuItem.Text = "Auto Save Images";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
             // 
             // mergeImagesToolStripMenuItem
             // 
             this.mergeImagesToolStripMenuItem.Name = "mergeImagesToolStripMenuItem";
-            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.mergeImagesToolStripMenuItem.Text = "Merge Images";
             this.mergeImagesToolStripMenuItem.Click += new System.EventHandler(this.mergeImagesToolStripMenuItem_Click);
             // 
@@ -554,6 +558,18 @@ namespace FModel
             this.saveAsJSONToolStripMenuItem1.Text = "Save as JSON";
             this.saveAsJSONToolStripMenuItem1.Click += new System.EventHandler(this.saveAsJSONToolStripMenuItem1_Click);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+            // 
+            // tweetToolStripMenuItem
+            // 
+            this.tweetToolStripMenuItem.Name = "tweetToolStripMenuItem";
+            this.tweetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tweetToolStripMenuItem.Text = "Tweet";
+            this.tweetToolStripMenuItem.Click += new System.EventHandler(this.TweetToolStripMenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -638,6 +654,8 @@ namespace FModel
         private System.Windows.Forms.ToolStripMenuItem copyFilePathWithoutExtensionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyFileNameWithoutExtensionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsJSONToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem tweetToolStripMenuItem;
     }
 }
 

@@ -610,5 +610,53 @@ namespace FModel.Properties {
                 this["TokenExpiration"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string tConsKey {
+            get {
+                return ((string)(this["tConsKey"]));
+            }
+            set {
+                this["tConsKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string tConsSecret {
+            get {
+                return ((string)(this["tConsSecret"]));
+            }
+            set {
+                this["tConsSecret"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string tToken {
+            get {
+                return ((string)(this["tToken"]));
+            }
+            set {
+                this["tToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string tTokenSecret {
+            get {
+                return ((string)(this["tTokenSecret"]));
+            }
+            set {
+                this["tTokenSecret"] = value;
+            }
+        }
     }
 }

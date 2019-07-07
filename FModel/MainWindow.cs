@@ -1555,6 +1555,18 @@ namespace FModel
         {
             ImagesMerger.AskMergeImages();
         }
+        private void TweetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var twitterForm = new TweetForm();
+            if (Application.OpenForms[twitterForm.Name] == null)
+            {
+                twitterForm.Show();
+            }
+            else
+            {
+                Application.OpenForms[twitterForm.Name].Focus();
+            }
+        }
         #endregion
 
         #region FILES TOOLSTRIP
