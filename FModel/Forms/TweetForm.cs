@@ -11,6 +11,7 @@ namespace FModel.Forms
     public partial class TweetForm : Form
     {
         private static string ImagePath { get; set; }
+        private static TwitterService service { get; set; }
 
         public TweetForm()
         {
@@ -49,18 +50,25 @@ namespace FModel.Forms
 
         private void BackgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
+            label5.ForeColor = Color.FromArgb(255, 0, 0, 0);
+            string tweetText = "";
+            Invoke(new Action(() =>
+            {
+                tweetText = richTextBox1.Text;
+            }));
+
             Properties.Settings.Default.tConsKey = textBox1.Text;
             Properties.Settings.Default.tConsSecret = textBox2.Text;
             Properties.Settings.Default.tToken = textBox4.Text;
             Properties.Settings.Default.tTokenSecret = textBox3.Text;
             Properties.Settings.Default.Save();
 
-            TwitterService service = new TwitterService(Properties.Settings.Default.tConsKey, Properties.Settings.Default.tConsSecret);
-            service.AuthenticateWith(Properties.Settings.Default.tToken, Properties.Settings.Default.tTokenSecret);
-            Invoke(new Action(() =>
+            if (service == null)
             {
-                label5.Text = "Status: Authentication to Twitter";
-            }));
+                service = new TwitterService(Properties.Settings.Default.tConsKey, Properties.Settings.Default.tConsSecret);
+                service.AuthenticateWith(Properties.Settings.Default.tToken, Properties.Settings.Default.tTokenSecret);
+                UpdateStatus("Authentication to Twitter");
+            }
 
             Dictionary<string, Stream> myDict = new Dictionary<string, Stream>();
             if (pictureBox1.Image != null)
@@ -68,28 +76,50 @@ namespace FModel.Forms
                 myDict.Add(Path.GetFileNameWithoutExtension(ImagePath), new FileStream(ImagePath, FileMode.Open, FileAccess.Read, FileShare.Read));
             }
 
-            Invoke(new Action(() =>
+#pragma warning disable CS0618
+            if (pictureBox1.Image != null)
             {
-                #pragma warning disable CS0618
+                UpdateStatus("Tweeting with " + Path.GetFileNameWithoutExtension(ImagePath));
                 TwitterStatus response = service.SendTweetWithMedia(new SendTweetWithMediaOptions
                 {
-                    Status = richTextBox1.Text,
+                    Status = tweetText,
                     Images = myDict
                 });
-                #pragma warning restore CS0618
-            }));
+            }
+            else
+            {
+                UpdateStatus("Tweeting without image");
+                TwitterStatus response = service.SendTweet(new SendTweetOptions
+                {
+                    Status = tweetText
+                });
+            }
+#pragma warning restore CS0618
         }
 
         private void BackgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Error != null)
             {
+                label5.ForeColor = Color.FromArgb(255, 244, 66, 66);
                 label5.Text = "Status: " + e.Error.Message;
             }
             else
             {
+                label5.ForeColor = Color.FromArgb(255, 43, 135, 28);
                 label5.Text = "Status: Tweeted";
             }
+        }
+
+        private void UpdateStatus(string text)
+        {
+            if (label5.InvokeRequired)
+            {
+                BeginInvoke(new Action<string>(UpdateStatus), new object[] { text });
+                return;
+            }
+
+            label5.Text = "Status: " + text;
         }
     }
 }

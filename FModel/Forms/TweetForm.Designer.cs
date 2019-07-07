@@ -181,13 +181,12 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(12, 279);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(37, 13);
+            this.label5.Size = new System.Drawing.Size(40, 13);
             this.label5.TabIndex = 5;
-            this.label5.Text = "Status";
+            this.label5.Text = "Status:";
             // 
             // backgroundWorker1
             // 
-            this.backgroundWorker1.WorkerReportsProgress = true;
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BackgroundWorker1_DoWork);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.BackgroundWorker1_RunWorkerCompleted);
             // 
