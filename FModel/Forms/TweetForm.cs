@@ -16,11 +16,6 @@ namespace FModel.Forms
         public TweetForm()
         {
             InitializeComponent();
-
-            textBox1.Text = Properties.Settings.Default.tConsKey;
-            textBox2.Text = Properties.Settings.Default.tConsSecret;
-            textBox4.Text = Properties.Settings.Default.tToken;
-            textBox3.Text = Properties.Settings.Default.tTokenSecret;
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -56,12 +51,6 @@ namespace FModel.Forms
             {
                 tweetText = richTextBox1.Text;
             }));
-
-            Properties.Settings.Default.tConsKey = textBox1.Text;
-            Properties.Settings.Default.tConsSecret = textBox2.Text;
-            Properties.Settings.Default.tToken = textBox4.Text;
-            Properties.Settings.Default.tTokenSecret = textBox3.Text;
-            Properties.Settings.Default.Save();
 
             if (service == null)
             {
@@ -120,6 +109,53 @@ namespace FModel.Forms
             }
 
             label5.Text = "Status: " + text;
+        }
+
+        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedIndex == 0)
+            {
+                textBox5.Text = Properties.Settings.Default.tConsKey;
+            }
+            if (comboBox1.SelectedIndex == 1)
+            {
+                textBox5.Text = Properties.Settings.Default.tConsSecret;
+            }
+            if (comboBox1.SelectedIndex == 2)
+            {
+                textBox5.Text = Properties.Settings.Default.tToken;
+            }
+            if (comboBox1.SelectedIndex == 3)
+            {
+                textBox5.Text = Properties.Settings.Default.tTokenSecret;
+            }
+        }
+
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            textBox5.UseSystemPasswordChar = !checkBox1.Checked;
+        }
+
+        private void TextBox5_TextChanged(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedIndex == 0)
+            {
+                Properties.Settings.Default.tConsKey = textBox5.Text;
+            }
+            if (comboBox1.SelectedIndex == 1)
+            {
+                Properties.Settings.Default.tConsSecret = textBox5.Text;
+            }
+            if (comboBox1.SelectedIndex == 2)
+            {
+                Properties.Settings.Default.tToken = textBox5.Text;
+            }
+            if (comboBox1.SelectedIndex == 3)
+            {
+                Properties.Settings.Default.tTokenSecret = textBox5.Text;
+            }
+
+            Properties.Settings.Default.Save();
         }
     }
 }

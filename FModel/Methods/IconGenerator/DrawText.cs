@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 
 namespace FModel
@@ -210,10 +211,7 @@ namespace FModel
             if (CosmeticUff != null)
             {
                 if (CosmeticUff.Contains("Animated"))
-                {
-                    pointCoords = new Point(6, -2);
                     imageLogo = Resources.T_Icon_Animated_64;
-                }
                 else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem.ExportType != "AthenaPetCarrierItemDefinition")
                     imageLogo = Resources.T_Icon_Quests_64;
                 else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem.ExportType == "AthenaPetCarrierItemDefinition")
@@ -221,20 +219,14 @@ namespace FModel
                 else if (CosmeticUff.Contains("HasVariants"))
                     imageLogo = Resources.T_Icon_Variant_64;
                 else if (CosmeticUff.Contains("Reactive"))
-                {
-                    pointCoords = new Point(7, 7);
                     imageLogo = Resources.T_Icon_Adaptive_64;
-                }
                 else if (CosmeticUff.Contains("Traversal"))
-                {
-                    pointCoords = new Point(6, 3);
                     imageLogo = Resources.T_Icon_Traversal_64;
-                }
             }
 
             if (imageLogo != null)
             {
-                myGraphic.DrawImage(ImageUtilities.ResizeImage(imageLogo, 32, 32), pointCoords);
+                myGraphic.DrawImage(ImageUtilities.ResizeImage(imageLogo, 28, 28), pointCoords);
                 imageLogo.Dispose();
             }
         }
@@ -248,12 +240,12 @@ namespace FModel
         {
             if (theItem.DisplayName != null)
             {
-                //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(5, 395, 512, 49));
+                //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(5, 405, 512, 55));
 
                 string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString);
 
-                Font goodFont = FontUtilities.FindFont(myGraphic, text, new Rectangle(5, 395, 512, 49).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35));
-                myGraphic.DrawString(text, goodFont, new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
+                Font goodFont = FontUtilities.FindFont(myGraphic, text, new Rectangle(5, 405, 512, 55).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35));
+                myGraphic.DrawString(text, goodFont, new SolidBrush(Color.White), new Point(522, 405), FontUtilities.rightString);
             }
         }
 
@@ -266,8 +258,10 @@ namespace FModel
         {
             if (theItem.Description != null)
             {
+                //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new Rectangle(5, 455, 512, 42));
+
                 string text = SearchResource.getTextByKey(theItem.Description.Key, theItem.Description.SourceString);
-                myGraphic.DrawString(text, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
+                myGraphic.DrawString(text, new Font("Arial", 9), new SolidBrush(Color.White), new RectangleF(5, 455, 512, 42), FontUtilities.rightString);
             }
         }
 
@@ -278,7 +272,7 @@ namespace FModel
         /// <param name="myGraphic"></param>
         private static void DrawToRight(string text, Graphics myGraphic)
         {
-            myGraphic.DrawString(text, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(522 - 5, 500), FontUtilities.rightString);
+            myGraphic.DrawString(text, new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(522 - 5, 503), FontUtilities.rightString);
         }
 
         /// <summary>
@@ -288,7 +282,7 @@ namespace FModel
         /// <param name="myGraphic"></param>
         private static void DrawToLeft(string text, Graphics myGraphic)
         {
-            myGraphic.DrawString(text, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(5, 500));
+            myGraphic.DrawString(text, new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(5, 503));
         }
 
         /// <summary>
@@ -357,15 +351,15 @@ namespace FModel
 
                 Image bulletImage = Resources.dmg64;
                 myGraphic.DrawImage(ImageUtilities.ResizeImage(bulletImage, 15, 15), new Point(5, 500));
-                DrawToLeft("    " + statParsed.DmgPb, myGraphic); //damage per bullet
+                DrawToLeft("     " + statParsed.DmgPb, myGraphic); //damage per bullet
 
                 Image clipSizeImage = Resources.clipSize64;
                 myGraphic.DrawImage(ImageUtilities.ResizeImage(clipSizeImage, 15, 15), new Point(52, 500));
-                myGraphic.DrawString("     " + statParsed.ClipSize, new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(50, 500));
+                myGraphic.DrawString("      " + statParsed.ClipSize, new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(50, 503));
 
                 Image reload = Resources.reload64;
                 myGraphic.DrawImage(ImageUtilities.ResizeImage(reload, 15, 15), new Point(50 + (statParsed.ClipSize.ToString().Length * 7) + 47, 500)); //50=clipsize text position | for each clipsize letter we add 7 to x | 47=difference between 2 icons
-                myGraphic.DrawString(statParsed.ReloadTime + " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds"), new Font(FontUtilities.pfc.Families[0], 13), new SolidBrush(Color.White), new Point(64 + (statParsed.ClipSize.ToString().Length * 7) + 47, 500)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
+                myGraphic.DrawString(statParsed.ReloadTime + " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds"), new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(64 + (statParsed.ClipSize.ToString().Length * 7) + 47, 503)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
 
                 DrawToRight(weaponName, myGraphic);
             }

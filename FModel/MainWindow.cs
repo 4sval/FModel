@@ -1215,6 +1215,7 @@ namespace FModel
             Bitmap bmp = new Bitmap(522, 522);
             Graphics g = Graphics.FromImage(bmp);
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
+            g.SmoothingMode = SmoothingMode.HighQuality;
 
             Rarity.DrawRarity(theItem, g, specialMode);
 
@@ -1237,7 +1238,14 @@ namespace FModel
 
             ItemIcon.DrawWatermark(g);
 
-            g.FillRectangle(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), new Rectangle(5, 383, 512, 134));
+            GraphicsPath p = new GraphicsPath();
+            p.StartFigure();
+            p.AddLine(4, 438, 517, 383);
+            p.AddLine(517, 383, 517, 383 + 134);
+            p.AddLine(4, 383 + 134, 4, 383 + 134);
+            p.AddLine(4, 383 + 134, 4, 438);
+            p.CloseFigure();
+            g.FillPath(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), p);
 
             DrawText.DrawTexts(theItem, g, specialMode);
 
