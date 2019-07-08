@@ -69,6 +69,7 @@ namespace FModel
         public static string BackupFileName { get; set; }
         public static string ExtractedFilePath { get; set; }
         public static bool DifferenceFileExists = false;
+        public static string currentSelectedNodePartialPath { get; set; }
     }
     public struct BundleInfoEntry: IEquatable<BundleInfoEntry>
     {

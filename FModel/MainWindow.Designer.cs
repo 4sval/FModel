@@ -53,6 +53,8 @@ namespace FModel
             this.autoSaveImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mergeImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.tweetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutFModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -80,8 +82,8 @@ namespace FModel
             this.copyFilePathWithoutExtensionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyFileNameWithoutExtensionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsJSONToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.tweetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.extractFolderContentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -89,6 +91,7 @@ namespace FModel
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -263,7 +266,7 @@ namespace FModel
             // saveImageToolStripMenuItem
             // 
             this.saveImageToolStripMenuItem.Name = "saveImageToolStripMenuItem";
-            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.saveImageToolStripMenuItem.Text = "Save Image";
             this.saveImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
             // 
@@ -271,20 +274,32 @@ namespace FModel
             // 
             this.autoSaveImagesToolStripMenuItem.CheckOnClick = true;
             this.autoSaveImagesToolStripMenuItem.Name = "autoSaveImagesToolStripMenuItem";
-            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.autoSaveImagesToolStripMenuItem.Text = "Auto Save Images";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(165, 6);
             // 
             // mergeImagesToolStripMenuItem
             // 
             this.mergeImagesToolStripMenuItem.Name = "mergeImagesToolStripMenuItem";
-            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.mergeImagesToolStripMenuItem.Text = "Merge Images";
             this.mergeImagesToolStripMenuItem.Click += new System.EventHandler(this.mergeImagesToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(165, 6);
+            // 
+            // tweetToolStripMenuItem
+            // 
+            this.tweetToolStripMenuItem.Name = "tweetToolStripMenuItem";
+            this.tweetToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.tweetToolStripMenuItem.Text = "Tweet";
+            this.tweetToolStripMenuItem.Click += new System.EventHandler(this.TweetToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -558,17 +573,19 @@ namespace FModel
             this.saveAsJSONToolStripMenuItem1.Text = "Save as JSON";
             this.saveAsJSONToolStripMenuItem1.Click += new System.EventHandler(this.saveAsJSONToolStripMenuItem1_Click);
             // 
-            // toolStripSeparator4
+            // contextMenuStrip2
             // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.extractFolderContentsToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(197, 48);
             // 
-            // tweetToolStripMenuItem
+            // extractFolderContentsToolStripMenuItem
             // 
-            this.tweetToolStripMenuItem.Name = "tweetToolStripMenuItem";
-            this.tweetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.tweetToolStripMenuItem.Text = "Tweet";
-            this.tweetToolStripMenuItem.Click += new System.EventHandler(this.TweetToolStripMenuItem_Click);
+            this.extractFolderContentsToolStripMenuItem.Name = "extractFolderContentsToolStripMenuItem";
+            this.extractFolderContentsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.extractFolderContentsToolStripMenuItem.Text = "Extract Folder Contents";
+            this.extractFolderContentsToolStripMenuItem.Click += new System.EventHandler(this.ExtractFolderContentsToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -597,6 +614,7 @@ namespace FModel
             this.tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -656,6 +674,8 @@ namespace FModel
         private System.Windows.Forms.ToolStripMenuItem saveAsJSONToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem tweetToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem extractFolderContentsToolStripMenuItem;
     }
 }
 

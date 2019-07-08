@@ -1018,9 +1018,18 @@ namespace FModel
         //EVENTS
         private async void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            await Task.Run(() => {
-                GetFilesAndFill(e);
-            });
+            if (e.Node != null && e.Button == MouseButtons.Right)
+            {
+                Checking.currentSelectedNodePartialPath = e.Node.FullPath + "\\";
+                extractFolderContentsToolStripMenuItem.Text = "Extract " + e.Node.Text + " Folder Contents";
+                contextMenuStrip2.Show(Cursor.Position);
+            }
+            else
+            {
+                await Task.Run(() => {
+                    GetFilesAndFill(e);
+                });
+            }
         }
         private async void FilterTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -1118,9 +1127,9 @@ namespace FModel
                         }));
                     }
                     if (Checking.ExtractedFilePath.Contains(".locres") && !Checking.ExtractedFilePath.Contains("EngineOverrides"))
-                    {
                         SerializeLocRes();
-                    }
+                    if (Checking.ExtractedFilePath.Contains(".uplugin"))
+                        uPluginConvertToJson(Checking.ExtractedFilePath);
                 }
                 else { throw new ArgumentException("Error while extracting " + ThePak.CurrentUsedItem); }
             }
@@ -1249,7 +1258,7 @@ namespace FModel
 
             DrawText.DrawTexts(theItem, g, specialMode);
 
-            if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
+            if (autoSaveImagesToolStripMenuItem.Checked || Checking.UmWorking)
             {
                 bmp.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
 
@@ -1356,7 +1365,7 @@ namespace FModel
             }
 
             UpdateConsole(theItem.DisplayName.SourceString, Color.FromArgb(255, 66, 244, 66), "Success");
-            if (autoSaveImagesToolStripMenuItem.Checked || updateModeToolStripMenuItem.Checked)
+            if (autoSaveImagesToolStripMenuItem.Checked || Checking.UmWorking)
             {
                 Invoke(new Action(() =>
                 {
@@ -1450,8 +1459,21 @@ namespace FModel
         /// <param name="file"></param>
         private void ConvertToTtf(string file)
         {
-            File.Move(file, Path.ChangeExtension(file, ".ttf") ?? throw new InvalidOperationException());
-            UpdateConsole(ThePak.CurrentUsedItem + " successfully converter to a font", Color.FromArgb(255, 66, 244, 66), "Success");
+            if (File.Exists(Path.ChangeExtension(file, ".ttf"))) File.Delete(Path.ChangeExtension(file, ".ttf"));
+
+            File.Move(file, Path.ChangeExtension(file, ".ttf"));
+            UpdateConsole(ThePak.CurrentUsedItem + " successfully converted to a font", Color.FromArgb(255, 66, 244, 66), "Success");
+        }
+        private void uPluginConvertToJson(string file)
+        {
+            if (File.Exists(Path.ChangeExtension(file, ".json"))) File.Delete(Path.ChangeExtension(file, ".json"));
+
+            File.Move(file, Path.ChangeExtension(file, ".json"));
+            Invoke(new Action(() =>
+            {
+                scintilla1.Text = File.ReadAllText(Path.ChangeExtension(file, ".json"));
+            }));
+            UpdateConsole(ThePak.CurrentUsedItem + " successfully converter to JSON", Color.FromArgb(255, 66, 244, 66), "Success");
         }
 
         //EVENTS
@@ -1779,17 +1801,14 @@ namespace FModel
         {
             CopySelectedFile();
         }
-
         private void copyFileNameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CopySelectedFile(true);
         }
-
         private void copyFilePathWithoutExtensionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CopySelectedFile(false, false);
         }
-
         private void copyFileNameWithoutExtensionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CopySelectedFile(true, false);
@@ -1803,6 +1822,36 @@ namespace FModel
         private void saveAsJSONToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             SaveAsJSON();
+        }
+
+        private void ExtractFolderContentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _diffToExtract = new Dictionary<string, string>();
+
+            for (int i = 0; i < PakAsTxt.Length; i++)
+            {
+                if (PakAsTxt[i].Contains(Checking.currentSelectedNodePartialPath.Replace("\\", "/")))
+                {
+                    string filename = Path.GetFileName(PakAsTxt[i]);
+                    if (filename.Contains(".uasset") || filename.Contains(".uexp") || filename.Contains(".ubulk"))
+                    {
+                        if (!_diffToExtract.ContainsKey(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal))))
+                            _diffToExtract.Add(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal)), PakAsTxt[i]);
+                    }
+                }
+            }
+            Checking.UmWorking = true;
+
+            Invoke(new Action(() =>
+            {
+                ExtractButton.Enabled = false;
+                OpenImageButton.Enabled = false;
+                StopButton.Enabled = true;
+            }));
+            if (backgroundWorker2.IsBusy != true)
+            {
+                backgroundWorker2.RunWorkerAsync();
+            }
         }
         #endregion
     }
