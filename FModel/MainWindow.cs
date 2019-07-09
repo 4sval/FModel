@@ -1161,8 +1161,18 @@ namespace FModel
         {
             try
             {
-                string parsedJson = JToken.Parse(theAsset.GetSerialized()).ToString();
-                var itemId = ItemsIdParser.FromJson(parsedJson);
+                string parsedJson = string.Empty;
+
+                try
+                {
+                    parsedJson = JToken.Parse(theAsset.GetSerialized()).ToString();
+                }
+                catch (JsonReaderException)
+                {
+                    return;
+                }
+
+                ItemsIdParser[] itemId = ItemsIdParser.FromJson(parsedJson);
 
                 UpdateConsole("Parsing " + ThePak.CurrentUsedItem + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
                 for (int i = 0; i < itemId.Length; i++)
