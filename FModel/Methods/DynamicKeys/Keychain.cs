@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System;
+using System.Drawing;
 
 namespace FModel
 {
-    static class DynamicPAKs
+    static class Keychain
     {
         private static string AccessToken { get; set; }
         private static string AccessCode { get; set; }
@@ -105,7 +106,8 @@ namespace FModel
         /// </summary>
         public static void refreshToken()
         {
-            Console.WriteLine("refresh");
+            new UpdateMyConsole("[EPIC] Token Refresh", Color.CornflowerBlue, true).AppendToConsole();
+
             getAccessToken(Properties.Settings.Default.eEmail, Properties.Settings.Default.ePassword);
             getAccessCode(AccessToken);
             getExchangeToken(AccessCode);

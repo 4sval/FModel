@@ -15,7 +15,6 @@ using csharp_wick;
 using FModel.Converter;
 using FModel.Forms;
 using FModel.Parser.Challenges;
-using FModel.Methods.BackupPAKs.Parser.AESKeyParser;
 using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
@@ -39,6 +38,7 @@ namespace FModel
         public MainWindow()
         {
             InitializeComponent();
+            App.MainFormToUse = this;
 
             //FModel version
             toolStripStatusLabel1.Text += @" " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
@@ -51,24 +51,36 @@ namespace FModel
             MyScintilla.ScintillaInstance(scintilla1);
         }
 
-        #region USEFUL METHODS
-        private void UpdateConsole(string textToDisplay, Color seColor, string seText)
+        public void UpdateProcessState(string textToDisplay, string seText)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new Action<string, Color, string>(UpdateConsole), textToDisplay, seColor, seText);
+                BeginInvoke(new Action<string, string>(UpdateProcessState), textToDisplay, seText);
                 return;
             }
 
             toolStripStatusLabel2.Text = textToDisplay;
-            toolStripStatusLabel3.BackColor = seColor;
+            switch(seText)
+            {
+                case "Error":
+                    toolStripStatusLabel3.BackColor = Color.FromArgb(255, 244, 66, 66);
+                    break;
+                case "Waiting":
+                case "Loading":
+                case "Processing":
+                    toolStripStatusLabel3.BackColor = Color.FromArgb(255, 244, 132, 66);
+                    break;
+                case "Success":
+                    toolStripStatusLabel3.BackColor = Color.FromArgb(255, 66, 244, 66);
+                    break;
+            }
             toolStripStatusLabel3.Text = seText;
         }
-        private void AppendText(string text, Color color, bool addNewLine = false, HorizontalAlignment align = HorizontalAlignment.Left)
+        public void AppendTextToConsole(string text, Color color, bool addNewLine = false, HorizontalAlignment align = HorizontalAlignment.Left)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new Action<string, Color, bool, HorizontalAlignment>(AppendText), text, color, addNewLine, align);
+                BeginInvoke(new Action<string, Color, bool, HorizontalAlignment>(AppendTextToConsole), text, color, addNewLine, align);
                 return;
             }
             richTextBox1.SuspendLayout();
@@ -80,7 +92,6 @@ namespace FModel
             richTextBox1.ScrollToCaret();
             richTextBox1.ResumeLayout();
         }
-        #endregion
 
         #region LOAD & LEAVE
         /// <summary>
@@ -108,7 +119,7 @@ namespace FModel
                 loadAllToolStripMenuItem.Enabled = false;
                 backupPAKsToolStripMenuItem.Enabled = false;
 
-                UpdateConsole(".PAK Files Path is missing", Color.FromArgb(255, 244, 66, 66), "Error");
+                new UpdateMyState(".PAK Files Path is missing", "Error").ChangeProcessState();
             }
             else
             {
@@ -132,90 +143,9 @@ namespace FModel
                             AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
                         }
                     }
-                    else { AppendText(Path.GetFileName(arCurrentUsedPak) + " is locked by another process.", Color.Red, true); }
+                    else { new UpdateMyConsole(Path.GetFileName(arCurrentUsedPak) + " is locked by another process.", Color.Red, true).AppendToConsole(); }
                 }
             }
-        }
-        
-        /// <summary>
-        /// ask the keychain api for all dynamic keys and their guids
-        /// if an API guid match a local guid, the key is saved and the pak can be opened with this key
-        /// </summary>
-        private void checkAndAddDynamicKeys()
-        {
-            List<AESEntry> toCheck = null;
-            if (!File.Exists(DynamicKeysManager.path))
-            {
-                DynamicKeysManager.AESEntries = new List<AESEntry>();
-                DynamicKeysManager.serialize("", "");
-            }
-            else
-            {
-                DynamicKeysManager.deserialize();
-                toCheck = DynamicKeysManager.AESEntries;
-            }
-
-            string[] BackupDynamicKeys = null;
-            if (DLLImport.IsInternetAvailable() && (!string.IsNullOrWhiteSpace(Settings.Default.eEmail) && !string.IsNullOrWhiteSpace(Settings.Default.ePassword)))
-            {
-                string myContent = DynamicPAKs.GetEndpoint("https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", true);
-
-                if (myContent.Contains("\"errorCode\": \"errors.com.epicgames.common.authentication.authentication_failed\""))
-                {
-                    AppendText("EPIC Authentication Failed.", Color.Red, true);
-                }
-                else
-                {
-                    AppendText("EPIC Authentication Success.", Color.DarkGreen, true);
-                    AppendText("", Color.Green, true);
-                    BackupDynamicKeys = AesKeyParser.FromJson(myContent);
-                }
-            }
-
-            if (BackupDynamicKeys != null)
-            {
-                DynamicKeysManager.AESEntries = new List<AESEntry>();
-                foreach (string myString in BackupDynamicKeys)
-                {
-                    string[] parts = myString.Split(':');
-                    string apiGuid = DynamicPAKs.getPakGuidFromKeychain(parts);
-
-                    string actualPakGuid = ThePak.dynamicPaksList.Where(i => i.thePakGuid == apiGuid).Select(i => i.thePakGuid).FirstOrDefault();
-                    string actualPakName = ThePak.dynamicPaksList.Where(i => i.thePakGuid == apiGuid).Select(i => i.thePak).FirstOrDefault();
-
-                    bool pakAlreadyExist = DynamicKeysManager.AESEntries.Where(i => i.thePak == actualPakName).Any();
-
-                    if (!string.IsNullOrEmpty(actualPakGuid) && !pakAlreadyExist)
-                    {
-                        byte[] bytes = Convert.FromBase64String(parts[1]);
-                        string aeskey = BitConverter.ToString(bytes).Replace("-", "");
-
-                        DynamicKeysManager.serialize(aeskey.ToUpper(), actualPakName);
-
-                        #region DISPLAY PAKS
-                        if (toCheck != null)
-                        {
-                            //display new paks that can be opened
-                            bool wasThereBeforeStartup = toCheck.Where(i => i.thePak == actualPakName).Any();
-                            if (!wasThereBeforeStartup)
-                            {
-                                AppendText(actualPakName, Color.SeaGreen);
-                                AppendText(" can now be opened.", Color.Black, true);
-                            }
-                        }
-                        else
-                        {
-                            //display all paks that can be opened
-                            AppendText(actualPakName, Color.SeaGreen);
-                            AppendText(" can be opened.", Color.Black, true);
-                        }
-                        #endregion
-                    }
-                }
-                AppendText("", Color.Green, true);
-            }
-
-            DynamicKeysManager.deserialize();
         }
 
         //EVENTS
@@ -239,7 +169,7 @@ namespace FModel
 
             await Task.Run(() => {
                 FillWithPaKs();
-                checkAndAddDynamicKeys();
+                AddToUI.checkAndAddDynamicKeys();
                 Utilities.colorMyPaks(loadOneToolStripMenuItem);
                 Utilities.SetOutputFolder();
                 Utilities.SetFolderPermission(App.DefaultOutputPath);
@@ -402,7 +332,7 @@ namespace FModel
                         }
                     }
 
-                    if (loadAllPaKs) { UpdateConsole(".PAK mount point: " + mountPoint.Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting"); }
+                    if (loadAllPaKs) { new UpdateMyState(".PAK mount point: " + mountPoint.Substring(9), "Waiting").ChangeProcessState(); }
                     if (theSinglePak != null && ThePak.mainPaksList[i].thePak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
                 }
                 JohnWick.MyExtractor.Dispose();
@@ -455,7 +385,7 @@ namespace FModel
                 File.WriteAllText(App.DefaultOutputPath + "\\FortnitePAKs.txt", sb.ToString()); //File will always exist
             }
 
-            UpdateConsole("Building tree, please wait...", Color.FromArgb(255, 244, 132, 66), "Loading");
+            new UpdateMyState("Building tree, please wait...", "Loading").ChangeProcessState();
         }
 
         /// <summary>
@@ -545,17 +475,17 @@ namespace FModel
                 {
                     Invoke(new Action(() =>
                     {
-                        AppendText("Items Removed/Renamed:", Color.Red, true);
+                        new UpdateMyConsole("Items Removed/Renamed:", Color.Red, true).AppendToConsole();
                         removedItems = removedItems.Distinct().ToList();
                         for (int ii = 0; ii < removedItems.Count; ii++)
-                            AppendText("    - " + removedItems[ii], Color.Black, true);
+                            new UpdateMyConsole("    - " + removedItems[ii], Color.Black, true).AppendToConsole();
                     }));
                 }
             }
             else
             {
-                AppendText("Canceled! ", Color.Red);
-                AppendText("All pak files loaded...", Color.Black, true);
+                new UpdateMyConsole("Canceled! ", Color.Red).AppendToConsole();
+                new UpdateMyConsole("All pak files loaded...", Color.Black, true).AppendToConsole();
                 return;
             }
 
@@ -575,7 +505,7 @@ namespace FModel
 
             if (selectedPak != null)
             {
-                UpdateConsole(Settings.Default.PAKsPath + "\\" + selectedPak.ClickedItem.Text, Color.FromArgb(255, 244, 132, 66), "Loading");
+                new UpdateMyState(Settings.Default.PAKsPath + "\\" + selectedPak.ClickedItem.Text, "Loading").ChangeProcessState();
 
                 //ADD TO DICTIONNARY
                 RegisterPaKsinDict(selectedPak);
@@ -591,10 +521,10 @@ namespace FModel
                         }
                         treeView1.EndUpdate();
                     }));
-                    UpdateConsole(Settings.Default.PAKsPath + "\\" + selectedPak.ClickedItem.Text, Color.FromArgb(255, 66, 244, 66), "Success");
+                    new UpdateMyState(Settings.Default.PAKsPath + "\\" + selectedPak.ClickedItem.Text, "Success").ChangeProcessState();
                 }
                 else
-                    UpdateConsole("Please, provide a working key in the AES Manager for " + selectedPak.ClickedItem.Text, Color.FromArgb(255, 244, 66, 66), "Error");
+                    new UpdateMyState("Please, provide a working key in the AES Manager for " + selectedPak.ClickedItem.Text, "Error").ChangeProcessState();
             }
             if (loadAllPaKs)
             {
@@ -604,7 +534,7 @@ namespace FModel
                 if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0) //File will always exist so we check the file size instead
                 {
                     File.Delete(App.DefaultOutputPath + "\\FortnitePAKs.txt");
-                    UpdateConsole("Can't read .PAK files with this key", Color.FromArgb(255, 244, 66, 66), "Error");
+                    new UpdateMyState("Can't read .PAK files with this key", "Error").ChangeProcessState();
                 }
                 else
                 {
@@ -620,7 +550,7 @@ namespace FModel
                         }
                         treeView1.EndUpdate();
                     }));
-                    UpdateConsole(Settings.Default.PAKsPath, Color.FromArgb(255, 66, 244, 66), "Success");
+                    new UpdateMyState(Settings.Default.PAKsPath, "Success").ChangeProcessState();
                 }
             }
             if (getDiff)
@@ -630,11 +560,11 @@ namespace FModel
 
                 if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0)
                 {
-                    UpdateConsole("Can't read .PAK files with this key", Color.FromArgb(255, 244, 66, 66), "Error");
+                    new UpdateMyState("Can't read .PAK files with this key", "Error").ChangeProcessState();
                 }
                 else
                 {
-                    UpdateConsole("Comparing files...", Color.FromArgb(255, 244, 132, 66), "Loading");
+                    new UpdateMyState("Comparing files...", "Loading").ChangeProcessState();
                     ComparePaKs();
                     if (updateMode && Checking.DifferenceFileExists)
                     {
@@ -653,7 +583,7 @@ namespace FModel
                     }));
 
                     Checking.DifferenceFileExists = false;
-                    UpdateConsole("Files compared", Color.FromArgb(255, 66, 244, 66), "Success");
+                    new UpdateMyState("Files compared", "Success").ChangeProcessState();
                 }
             }
         }
@@ -669,7 +599,7 @@ namespace FModel
                 }
                 catch (Exception)
                 {
-                    AppendText("0x" + Settings.Default.AESKey + " doesn't work with the main paks.", Color.Red, true);
+                    new UpdateMyConsole("0x" + Settings.Default.AESKey + " doesn't work with the main paks.", Color.Red, true).AppendToConsole();
                     JohnWick.MyExtractor.Dispose();
                     break;
                 }
@@ -683,7 +613,7 @@ namespace FModel
 
                         sb.Append(CurrentUsedPakLines[ii] + "\n");
                     }
-                    UpdateConsole(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), Color.FromArgb(255, 244, 132, 66), "Waiting");
+                    new UpdateMyState(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), "Waiting").ChangeProcessState();
                 }
                 JohnWick.MyExtractor.Dispose();
             }
@@ -701,7 +631,7 @@ namespace FModel
                     }
                     catch (Exception)
                     {
-                        AppendText("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true);
+                        new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole();
                         JohnWick.MyExtractor.Dispose();
                         continue;
                     }
@@ -715,8 +645,8 @@ namespace FModel
 
                             sb.Append(CurrentUsedPakLines[ii] + "\n");
                         }
-                        AppendText("Backing up ", Color.Black);
-                        AppendText(ThePak.dynamicPaksList[i].thePak, Color.DarkRed, true);
+                        new UpdateMyConsole("Backing up ", Color.Black).AppendToConsole();
+                        new UpdateMyConsole(ThePak.dynamicPaksList[i].thePak, Color.DarkRed, true).AppendToConsole();
                     }
                     JohnWick.MyExtractor.Dispose();
                 }
@@ -725,12 +655,12 @@ namespace FModel
             File.WriteAllText(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName, sb.ToString()); //File will always exist so we check the file size instead
             if (new System.IO.FileInfo(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName).Length > 0)
             {
-                UpdateConsole("\\Backup" + Checking.BackupFileName + " successfully created", Color.FromArgb(255, 66, 244, 66), "Success");
+                new UpdateMyState("\\Backup" + Checking.BackupFileName + " successfully created", "Success").ChangeProcessState();
             }
             else
             {
                 File.Delete(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName);
-                UpdateConsole("Can't create " + Checking.BackupFileName.Substring(1), Color.FromArgb(255, 244, 66, 66), "Error");
+                new UpdateMyState("Can't create " + Checking.BackupFileName.Substring(1), "Error").ChangeProcessState();
             }
         }
         private void UpdateModeExtractSave()
@@ -888,21 +818,21 @@ namespace FModel
             StopWatch.Stop();
             if (e.Cancelled)
             {
-                UpdateConsole("Canceled!", Color.FromArgb(255, 244, 66, 66), "Error");
+                new UpdateMyState("Canceled!", "Error").ChangeProcessState();
             }
             else if (e.Error != null)
             {
-                UpdateConsole(e.Error.Message, Color.FromArgb(255, 244, 66, 66), "Error");
+                new UpdateMyState(e.Error.Message, "Error").ChangeProcessState();
             }
             else if (Checking.UmWorking == false)
             {
-                UpdateConsole("Can't read .PAK files with this key", Color.FromArgb(255, 244, 66, 66), "Error");
+                new UpdateMyState("Can't read .PAK files with this key", "Error").ChangeProcessState();
             }
             else
             {
                 TimeSpan ts = StopWatch.Elapsed;
                 string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                UpdateConsole("Time elapsed: " + elapsedTime, Color.FromArgb(255, 66, 244, 66), "Success");
+                new UpdateMyState("Time elapsed: " + elapsedTime, "Success").ChangeProcessState();
             }
 
             SelectedItemsArray = null;
@@ -1111,14 +1041,14 @@ namespace FModel
 
                 if (Checking.ExtractedFilePath != null)
                 {
-                    UpdateConsole(ThePak.CurrentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success");
+                    new UpdateMyState(ThePak.CurrentUsedItem + " successfully extracted", "Success").ChangeProcessState();
                     if (Checking.ExtractedFilePath.Contains(".uasset") || Checking.ExtractedFilePath.Contains(".uexp") || Checking.ExtractedFilePath.Contains(".ubulk"))
                     {
                         JohnWick.MyAsset = new PakAsset(Checking.ExtractedFilePath.Substring(0, Checking.ExtractedFilePath.LastIndexOf('.')));
                         JsonParseFile();
                     }
                     if (Checking.ExtractedFilePath.Contains(".ufont"))
-                        ConvertToTtf(Checking.ExtractedFilePath);
+                        FontUtilities.ConvertToTtf(Checking.ExtractedFilePath);
                     if (Checking.ExtractedFilePath.Contains(".ini"))
                     {
                         Invoke(new Action(() =>
@@ -1138,7 +1068,7 @@ namespace FModel
         {
             if (JohnWick.MyAsset.GetSerialized() != null)
             {
-                UpdateConsole(ThePak.CurrentUsedItem + " successfully serialized", Color.FromArgb(255, 66, 244, 66), "Success");
+                new UpdateMyState(ThePak.CurrentUsedItem + " successfully serialized", "Success").ChangeProcessState();
 
                 Invoke(new Action(() =>
                 {
@@ -1148,8 +1078,8 @@ namespace FModel
                     }
                     catch (JsonReaderException)
                     {
-                        AppendText(ThePak.CurrentUsedItem + " ", Color.Red);
-                        AppendText(".JSON file can't be displayed", Color.Black, true);
+                        new UpdateMyConsole(ThePak.CurrentUsedItem + " ", Color.Red).AppendToConsole();
+                        new UpdateMyConsole(".JSON file can't be displayed", Color.Black, true).AppendToConsole();
                     }
                 }));
 
@@ -1174,7 +1104,7 @@ namespace FModel
 
                 ItemsIdParser[] itemId = ItemsIdParser.FromJson(parsedJson);
 
-                UpdateConsole("Parsing " + ThePak.CurrentUsedItem + "...", Color.FromArgb(255, 244, 132, 66), "Waiting");
+                new UpdateMyState("Parsing " + ThePak.CurrentUsedItem + "...", "Waiting").ChangeProcessState();
                 for (int i = 0; i < itemId.Length; i++)
                 {
                     if (Settings.Default.createIconForCosmetics && itemId[i].ExportType.Contains("Athena") && itemId[i].ExportType.Contains("Item") && itemId[i].ExportType.Contains("Definition"))
@@ -1219,7 +1149,7 @@ namespace FModel
                     }
                     else if (itemId[i].ExportType == "Texture2D") { ConvertTexture2D(); }
                     else if (itemId[i].ExportType == "SoundWave") { ConvertSoundWave(); }
-                    else { UpdateConsole(ThePak.CurrentUsedItem + " successfully extracted", Color.FromArgb(255, 66, 244, 66), "Success"); }
+                    else { new UpdateMyState(ThePak.CurrentUsedItem + " successfully extracted", "Success").ChangeProcessState(); }
                 }
             }
             catch (Exception ex)
@@ -1229,7 +1159,7 @@ namespace FModel
         }
         private void CreateItemIcon(ItemsIdParser theItem, string specialMode = null)
         {
-            UpdateConsole(ThePak.CurrentUsedItem + " is an Item Definition", Color.FromArgb(255, 66, 244, 66), "Success");
+            new UpdateMyState(ThePak.CurrentUsedItem + " is an Item Definition", "Success").ChangeProcessState();
 
             Bitmap bmp = new Bitmap(522, 522);
             Graphics g = Graphics.FromImage(bmp);
@@ -1274,8 +1204,8 @@ namespace FModel
 
                 if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
                 {
-                    AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                    AppendText(" successfully saved", Color.Black, true);
+                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                    new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
                 }
             }
 
@@ -1325,9 +1255,9 @@ namespace FModel
 
             for (int i = 0; i < BundleInfos.BundleData.Count; i++)
             {
-                AppendText(BundleInfos.BundleData[i].questDescr, Color.SteelBlue);
-                AppendText("\t\tCount: " + BundleInfos.BundleData[i].questCount, Color.DarkRed);
-                AppendText("\t\t" + BundleInfos.BundleData[i].rewardItemId + ":" + BundleInfos.BundleData[i].rewardItemQuantity, Color.DarkGreen, true);
+                new UpdateMyConsole(BundleInfos.BundleData[i].questDescr, Color.SteelBlue).AppendToConsole();
+                new UpdateMyConsole("\t\tCount: " + BundleInfos.BundleData[i].questCount, Color.DarkRed).AppendToConsole();
+                new UpdateMyConsole("\t\t" + BundleInfos.BundleData[i].rewardItemId + ":" + BundleInfos.BundleData[i].rewardItemQuantity, Color.DarkGreen, true).AppendToConsole();
 
                 if (Settings.Default.createIconForChallenges)
                 {
@@ -1356,7 +1286,7 @@ namespace FModel
                     }
                 }
             }
-            AppendText("", Color.Black, true);
+            new UpdateMyConsole("", Color.Black, true).AppendToConsole();
 
             if (Settings.Default.createIconForChallenges)
             {
@@ -1374,7 +1304,7 @@ namespace FModel
                 }
             }
 
-            UpdateConsole(theItem.DisplayName.SourceString, Color.FromArgb(255, 66, 244, 66), "Success");
+            new UpdateMyState(theItem.DisplayName.SourceString, "Success").ChangeProcessState();
             if (autoSaveImagesToolStripMenuItem.Checked || Checking.UmWorking)
             {
                 Invoke(new Action(() =>
@@ -1384,8 +1314,8 @@ namespace FModel
 
                 if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
                 {
-                    AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                    AppendText(" successfully saved", Color.Black, true);
+                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                    new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
                 }
             }
             BundleDesign.toDrawOn.Dispose(); //actually this is the most useful thing in this method
@@ -1414,7 +1344,7 @@ namespace FModel
 
         private void ConvertTexture2D()
         {
-            UpdateConsole(ThePak.CurrentUsedItem + " is a Texture2D", Color.FromArgb(255, 66, 244, 66), "Success");
+            new UpdateMyState(ThePak.CurrentUsedItem + " is a Texture2D", "Success").ChangeProcessState();
 
             JohnWick.MyAsset = new PakAsset(Checking.ExtractedFilePath.Substring(0, Checking.ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)));
             JohnWick.MyAsset.SaveTexture(Checking.ExtractedFilePath.Substring(0, Checking.ExtractedFilePath.LastIndexOf(".", StringComparison.Ordinal)) + ".png");
@@ -1436,44 +1366,30 @@ namespace FModel
                 {
                     pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
                 }));
-                AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                AppendText(" successfully saved", Color.Black, true);
+                new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
             }
         }
         private void ConvertSoundWave()
         {
-            UpdateConsole(ThePak.CurrentUsedItem + " is a Sound", Color.FromArgb(255, 66, 244, 66), "Success");
+            new UpdateMyState(ThePak.CurrentUsedItem + " is a Sound", "Success").ChangeProcessState();
 
             string soundPathToConvert = Checking.ExtractedFilePath.Substring(0, Checking.ExtractedFilePath.LastIndexOf('\\')) + "\\" + ThePak.CurrentUsedItem + ".uexp";
             string soundPathConverted = UnrealEngineDataToOgg.ConvertToOgg(soundPathToConvert);
-            UpdateConsole("Converting " + ThePak.CurrentUsedItem, Color.FromArgb(255, 244, 132, 66), "Processing");
+            new UpdateMyState("Converting " + ThePak.CurrentUsedItem, "Processing").ChangeProcessState();
 
             if (File.Exists(soundPathConverted))
             {
                 if (Properties.Settings.Default.tryToOpenAssets)
                 {
                     Utilities.OpenWithDefaultProgramAndNoFocus(soundPathConverted);
-                    UpdateConsole("Opening " + ThePak.CurrentUsedItem + ".ogg", Color.FromArgb(255, 66, 244, 66), "Success");
-                } else
-                {
-                    UpdateConsole("Extracted " + ThePak.CurrentUsedItem + ".ogg", Color.FromArgb(255, 66, 244, 66), "Success");
-                }
+                    new UpdateMyState("Opening " + ThePak.CurrentUsedItem + ".ogg", "Success").ChangeProcessState();
+                } else { new UpdateMyState("Extracted " + ThePak.CurrentUsedItem + ".ogg", "Success").ChangeProcessState(); }
             }
             else
-                UpdateConsole("Couldn't convert " + ThePak.CurrentUsedItem, Color.FromArgb(255, 244, 66, 66), "Error");
+                new UpdateMyState("Couldn't convert " + ThePak.CurrentUsedItem, "Error").ChangeProcessState();
         }
 
-        /// <summary>
-        /// todo: overwrite existing extracted font
-        /// </summary>
-        /// <param name="file"></param>
-        private void ConvertToTtf(string file)
-        {
-            if (File.Exists(Path.ChangeExtension(file, ".ttf"))) File.Delete(Path.ChangeExtension(file, ".ttf"));
-
-            File.Move(file, Path.ChangeExtension(file, ".ttf"));
-            UpdateConsole(ThePak.CurrentUsedItem + " successfully converted to a font", Color.FromArgb(255, 66, 244, 66), "Success");
-        }
         private void uPluginConvertToJson(string file)
         {
             if (File.Exists(Path.ChangeExtension(file, ".json"))) File.Delete(Path.ChangeExtension(file, ".json"));
@@ -1483,7 +1399,7 @@ namespace FModel
             {
                 scintilla1.Text = File.ReadAllText(Path.ChangeExtension(file, ".json"));
             }));
-            UpdateConsole(ThePak.CurrentUsedItem + " successfully converter to JSON", Color.FromArgb(255, 66, 244, 66), "Success");
+            new UpdateMyState(ThePak.CurrentUsedItem + " successfully converter to JSON", "Success").ChangeProcessState();
         }
 
         //EVENTS
@@ -1499,17 +1415,17 @@ namespace FModel
             StopWatch.Stop();
             if (e.Cancelled)
             {
-                UpdateConsole("Canceled!", Color.FromArgb(255, 244, 66, 66), "Error");
+                new UpdateMyState("Canceled!", "Error").ChangeProcessState();
             }
             else if (e.Error != null)
             {
-                UpdateConsole(e.Error.Message, Color.FromArgb(255, 244, 66, 66), "Error");
+                new UpdateMyState(e.Error.Message, "Error").ChangeProcessState();
             }
             else
             {
                 TimeSpan ts = StopWatch.Elapsed;
                 string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                UpdateConsole("Time elapsed: " + elapsedTime, Color.FromArgb(255, 66, 244, 66), "Success");
+                new UpdateMyState("Time elapsed: " + elapsedTime, "Success").ChangeProcessState();
             }
 
             SelectedItemsArray = null;
@@ -1586,8 +1502,8 @@ namespace FModel
                 if (saveTheDialog.ShowDialog() == DialogResult.OK)
                 {
                     pictureBox1.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
-                    AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                    AppendText(" successfully saved", Color.Black, true);
+                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                    new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
                 }
             }
         }
@@ -1771,7 +1687,7 @@ namespace FModel
                     path = isName ? Path.GetFileNameWithoutExtension(path) : Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
 
                 Clipboard.SetText(path);
-                AppendText(path + " Copied!", Color.Green, true);
+                new UpdateMyConsole(path + " Copied!", Color.Green, true).AppendToConsole();
             }
         }
 
@@ -1793,13 +1709,13 @@ namespace FModel
                     File.WriteAllText(saveTheDialog.FileName, scintilla1.Text);
                     if (File.Exists(saveTheDialog.FileName))
                     {
-                        AppendText(ThePak.CurrentUsedItem, Color.DarkRed);
-                        AppendText(" successfully saved", Color.Black, true);
+                        new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                        new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
                     }
                     else
                     {
-                        AppendText("Fail to save ", Color.Black);
-                        AppendText(ThePak.CurrentUsedItem, Color.DarkRed, true);
+                        new UpdateMyConsole("Fail to save ", Color.Black).AppendToConsole();
+                        new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed, true).AppendToConsole();
                     }
                 }
             }

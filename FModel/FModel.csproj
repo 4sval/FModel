@@ -142,10 +142,11 @@
       <DependentUpon>TweetForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Methods\AESManager\DynamicKeysManager.cs" />
-    <Compile Include="Methods\BackPAKs\DynamicPAKs.cs" />
-    <Compile Include="Methods\BackPAKs\Parser\AccessCodeParser.cs" />
-    <Compile Include="Methods\BackPAKs\Parser\AESKeyParser.cs" />
-    <Compile Include="Methods\BackPAKs\Parser\TokenParser.cs" />
+    <Compile Include="Methods\DynamicKeys\AddToUI.cs" />
+    <Compile Include="Methods\DynamicKeys\Keychain.cs" />
+    <Compile Include="Methods\DynamicKeys\Parser\AccessCodeParser.cs" />
+    <Compile Include="Methods\DynamicKeys\Parser\AESKeyParser.cs" />
+    <Compile Include="Methods\DynamicKeys\Parser\TokenParser.cs" />
     <Compile Include="Methods\ChallengeGenerator\BundleDesign.cs" />
     <Compile Include="Methods\ChallengeGenerator\BundleInfos.cs" />
     <Compile Include="Methods\ChallengeGenerator\DrawingRewards.cs" />

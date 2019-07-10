@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Text;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace FModel
@@ -68,6 +69,14 @@ namespace FModel
             float ScaleFontSize = PreferedFont.Size * ScaleRatio;
 
             return new Font(PreferedFont.FontFamily, ScaleFontSize);
+        }
+
+        public static void ConvertToTtf(string file)
+        {
+            if (File.Exists(Path.ChangeExtension(file, ".ttf"))) File.Delete(Path.ChangeExtension(file, ".ttf"));
+
+            File.Move(file, Path.ChangeExtension(file, ".ttf"));
+            new UpdateMyState(ThePak.CurrentUsedItem + " successfully converted to a font", "Success").ChangeProcessState();
         }
     }
 }

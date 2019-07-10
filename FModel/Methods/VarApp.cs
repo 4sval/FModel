@@ -1,9 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 
 namespace FModel
 {
+    class UpdateMyConsole
+    {
+        private string _textToDisplay;
+        private Color _displayedColor;
+        private bool _newLine;
+        private HorizontalAlignment _hAlign;
+        public UpdateMyConsole(string textToDisplay, Color displayedColor, bool newLine = false, HorizontalAlignment hAlign = HorizontalAlignment.Left)
+        {
+            _textToDisplay = textToDisplay;
+            _displayedColor = displayedColor;
+            _newLine = newLine;
+            _hAlign = hAlign;
+        }
+
+        public void AppendToConsole()
+        {
+            App.MainFormToUse.AppendTextToConsole(_textToDisplay, _displayedColor, _newLine, _hAlign);
+        }
+    }
+    class UpdateMyState
+    {
+        private string _textToDisplay;
+        private string _stateText;
+        public UpdateMyState(string textToDisplay, string stateText)
+        {
+            _textToDisplay = textToDisplay;
+            _stateText = stateText;
+        }
+
+        public void ChangeProcessState()
+        {
+            App.MainFormToUse.UpdateProcessState(_textToDisplay, _stateText);
+        }
+    }
+
     static class ThePak
     {
         public static List<PaksEntry> mainPaksList { get; set; }
@@ -59,6 +96,7 @@ namespace FModel
 
     static class App
     {
+        public static MainWindow MainFormToUse = null;
         public static string DefaultOutputPath { get; set; }
     }
 
@@ -71,6 +109,7 @@ namespace FModel
         public static bool DifferenceFileExists = false;
         public static string currentSelectedNodePartialPath { get; set; }
     }
+
     public struct BundleInfoEntry: IEquatable<BundleInfoEntry>
     {
         internal BundleInfoEntry(string QuestDescription, long QuestCount, string RewardId, string RewardQuantity)
