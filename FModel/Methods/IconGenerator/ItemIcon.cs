@@ -211,7 +211,6 @@ namespace FModel
         {
             try
             {
-                ThePak.CurrentUsedItem = catName;
                 string catalogFilePath = (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
                     ? catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName)
                     : catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
@@ -226,6 +225,7 @@ namespace FModel
                         {
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
+                                ThePak.CurrentUsedItem = catName;
                                 string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
                                 var featuredId = FeaturedParser.FromJson(parsedJson);
                                 for (int i = 0; i < featuredId.Length; i++)
