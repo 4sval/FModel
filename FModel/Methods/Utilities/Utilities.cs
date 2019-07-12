@@ -164,7 +164,7 @@ namespace FModel
                     if (!string.IsNullOrEmpty(key) && pak == toolstripmenuitem.Text)
                     {
                         toolstripmenuitem.Enabled = true;
-                        toolstripmenuitem.BackColor = Color.FromArgb(50, 50, 92, 219);
+                        toolstripmenuitem.BackColor = Color.FromArgb(100, 50, 92, 219);
                     }
                 }
             }

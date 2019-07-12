@@ -168,10 +168,10 @@ namespace FModel
             }
 
             await Task.Run(() => {
+                Utilities.SetOutputFolder();
                 FillWithPaKs();
                 AddToUI.checkAndAddDynamicKeys();
                 Utilities.colorMyPaks(loadOneToolStripMenuItem);
-                Utilities.SetOutputFolder();
                 Utilities.SetFolderPermission(App.DefaultOutputPath);
                 Utilities.JohnWickCheck();
                 Utilities.CreateDefaultFolders();
