@@ -1,11 +1,12 @@
 using csharp_wick;
 using FModel.Parser.Items;
+using FModel.Parser.LocResParser;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
+using System.Linq;
 using System.IO;
 
 namespace FModel
@@ -13,6 +14,7 @@ namespace FModel
     static class DrawText
     {
         private static string CosmeticSource { get; set; }
+        private static string CosmeticSet { get; set; }
         private static string ShortDescription { get; set; }
         private static string CosmeticId { get; set; }
         private static string MaxStackSize { get; set; }
@@ -22,16 +24,17 @@ namespace FModel
         private static string HeroType { get; set; }
         private static string DefenderType { get; set; }
         private static string MinToMax { get; set; }
-        private static JObject jo { get; set; }
+        private static JObject wStatsjo { get; set; }
+        private static JObject cSetsjo { get; set; }
 
         public static void DrawTexts(ItemsIdParser theItem, Graphics myGraphic, string mode)
         {
             using (myGraphic)
             {
+                SetTexts(theItem);
+
                 DrawDisplayName(theItem, myGraphic);
                 DrawDescription(theItem, myGraphic);
-
-                SetTexts(theItem);
 
                 switch (mode)
                 {
@@ -81,6 +84,7 @@ namespace FModel
         private static void SetTexts(ItemsIdParser theItem)
         {
             CosmeticSource = "";
+            CosmeticSet = "";
             ShortDescription = "";
             CosmeticId = "";
             MaxStackSize = "";
@@ -115,6 +119,14 @@ namespace FModel
                         ShortDescription = theItem.ShortDescription != null ? theItem.ShortDescription.SourceString : "";
                         break;
                 }
+            }
+            catch (Exception)
+            {
+                //avoid generator to stop when a string isn't found
+            }
+            try
+            {
+                CosmeticSet = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Set."))];
             }
             catch (Exception)
             {
@@ -261,8 +273,100 @@ namespace FModel
                 //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new Rectangle(5, 455, 512, 42));
 
                 string text = SearchResource.getTextByKey(theItem.Description.Key, theItem.Description.SourceString);
+                if (!string.IsNullOrEmpty(CosmeticSet))
+                {
+                    string theSet = DrawCosmeticSet(CosmeticSet);
+                    if (!string.IsNullOrEmpty(theSet))
+                    {
+                        text += theSet;
+                    }
+                }
                 myGraphic.DrawString(text, new Font("Arial", 9), new SolidBrush(Color.White), new RectangleF(5, 455, 512, 42), FontUtilities.rightString);
             }
+        }
+
+        private static string DrawCosmeticSet(string setName)
+        {
+            if (cSetsjo == null)
+            {
+                string oldKey = JohnWick.MyKey; //get the old key
+                string oldGuid = ThePak.CurrentUsedPakGuid; //get the old guid
+                JohnWick.MyKey = Settings.Default.AESKey; //set the main key to extract
+                ThePak.CurrentUsedPakGuid = "0-0-0-0"; //fake the guid -> writeFile need this guid to get the mountPoint, otherwise it crashes
+
+                string extractedCosmeticsSetsPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["CosmeticSets"], "CosmeticSets");
+
+                JohnWick.MyKey = oldKey; //set the old key
+                ThePak.CurrentUsedPakGuid = oldGuid; //set the old guid
+
+                if (extractedCosmeticsSetsPath != null)
+                {
+                    if (extractedCosmeticsSetsPath.Contains(".uasset") || extractedCosmeticsSetsPath.Contains(".uexp") || extractedCosmeticsSetsPath.Contains(".ubulk"))
+                    {
+                        JohnWick.MyAsset = new PakAsset(extractedCosmeticsSetsPath.Substring(0, extractedCosmeticsSetsPath.LastIndexOf('.')));
+                        try
+                        {
+                            if (JohnWick.MyAsset.GetSerialized() != null)
+                            {
+                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString().TrimStart('[').TrimEnd(']');
+                                cSetsjo = JObject.Parse(parsedJson);
+                                return searchSetName(setName);
+                            }
+                            else { return ""; }
+                        }
+                        catch (JsonSerializationException)
+                        {
+                            return "";
+                            //do not crash when JsonSerialization does weird stuff
+                        }
+                    }
+                    else { return ""; }
+                }
+                else { return ""; }
+            }
+            else { return searchSetName(setName); }
+        }
+        private static string searchSetName(string setName)
+        {
+            string toReturn = "";
+
+            JToken setToken = cSetsjo.FindTokens(setName).FirstOrDefault();
+            Parser.CosmeticSetsParser.CosmeticSetsParser cSetsParsed = Parser.CosmeticSetsParser.CosmeticSetsParser.FromJson(setToken.ToString());
+
+            switch (Settings.Default.IconLanguage)
+            {
+                case "French":
+                case "German":
+                case "Italian":
+                case "Spanish":
+                case "Spanish (LA)":
+                case "Arabic":
+                case "Japanese":
+                case "Korean":
+                case "Polish":
+                case "Portuguese (Brazil)":
+                case "Russian":
+                case "Turkish":
+                case "Chinese (S)":
+                case "Traditional Chinese":
+                    JToken setNameTokenLocalized = SearchResource.jo.FindTokens("CosmeticSets").FirstOrDefault();
+                    string parsedJson = JToken.Parse(setNameTokenLocalized.ToString()).ToString().TrimStart('[').TrimEnd(']');
+                    JToken setNameToken = JObject.Parse(parsedJson).FindTokens(cSetsParsed.DisplayName.Key).FirstOrDefault();
+                    string translatedName = setNameToken == null ? cSetsParsed.DisplayName.SourceString : setNameToken.ToString();
+
+                    JToken setDescriptionToken = SearchResource.jo.FindTokens("Fort.Cosmetics").FirstOrDefault();
+                    LocResParser dTokenParsed = LocResParser.FromJson(setDescriptionToken.ToString());
+                    if (dTokenParsed.CosmeticItemDescriptionSetMembershipNotRich != null)
+                    {
+                        toReturn = string.Format(dTokenParsed.CosmeticItemDescriptionSetMembershipNotRich, translatedName);
+                    }
+                    break;
+                default:
+                    toReturn = string.Format("\nPart of the {0} set.", cSetsParsed.DisplayName.SourceString);
+                    break;
+            }
+
+            return toReturn;
         }
 
         /// <summary>
@@ -316,7 +420,7 @@ namespace FModel
         /// <param name="myGraphic"></param>
         private static void DrawWeaponStat(string weaponName, Graphics myGraphic)
         {
-            if (jo == null)
+            if (wStatsjo == null)
             {
                 ItemIcon.ItemIconPath = string.Empty;
                 string extractedWeaponsStatPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["AthenaRangedWeapons"], "AthenaRangedWeapons");
@@ -330,7 +434,7 @@ namespace FModel
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
                                 string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString().TrimStart('[').TrimEnd(']');
-                                jo = JObject.Parse(parsedJson);
+                                wStatsjo = JObject.Parse(parsedJson);
                                 loopingLol(weaponName, myGraphic);
                             }
                         }
@@ -345,7 +449,7 @@ namespace FModel
         }
         private static void loopingLol(string weaponName, Graphics myGraphic)
         {
-            foreach (JToken token in jo.FindTokens(weaponName))
+            foreach (JToken token in wStatsjo.FindTokens(weaponName))
             {
                 Parser.Weapons.WeaponStatParser statParsed = Parser.Weapons.WeaponStatParser.FromJson(token.ToString());
 

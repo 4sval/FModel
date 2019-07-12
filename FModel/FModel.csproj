@@ -204,6 +204,7 @@
     <Compile Include="Parser\Banners\BannersParser.cs" />
     <Compile Include="Parser\Challenges\ChallengeBundleIdParser.cs" />
     <Compile Include="Parser\Featured\FeaturedParser.cs" />
+    <Compile Include="Parser\Items\CosmeticSetsParser.cs" />
     <Compile Include="Parser\Items\ItemIDParser.cs" />
     <Compile Include="Parser\LocRes\LocResParser.cs" />
     <Compile Include="Parser\Meshes\MeshesParser.cs" />
@@ -270,6 +271,8 @@
     <Content Include="DLLs\csharp-wick.dll" />
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
+    <None Include="Resources\wTemplateF.png" />
+    <None Include="Resources\wTemplate.png" />
     <None Include="Resources\T512.png" />
     <None Include="Resources\U512.png" />
     <None Include="Resources\R512.png" />
@@ -297,8 +300,6 @@
     <None Include="Resources\T-Icon-Animated-64.png" />
     <None Include="Resources\T-Icon-Adaptive-64.png" />
     <None Include="Resources\FModel_Logo.png" />
-    <None Include="Resources\wTemplateF.png" />
-    <None Include="Resources\wTemplate.png" />
     <None Include="Resources\unknown512.png" />
     <None Include="Resources\properties_16xLG.png" />
     <None Include="Resources\StatusAnnotations_Information_16xLG_color.png" />

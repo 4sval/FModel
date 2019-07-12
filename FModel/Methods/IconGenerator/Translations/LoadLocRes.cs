@@ -1,3 +1,5 @@
+using System.Drawing;
+
 namespace FModel
 {
     static class LoadLocRes
@@ -63,20 +65,33 @@ namespace FModel
         /// <returns></returns>
         private static string getMyLocRes(string selectedLanguage)
         {
-            if (ThePak.AllpaksDictionary != null && ThePak.AllpaksDictionary["Game_BR.locres"] != null)
+            if (ThePak.AllpaksDictionary != null)
             {
-                string oldKey = JohnWick.MyKey; //get the old key
-                string oldGuid = ThePak.CurrentUsedPakGuid; //get the old guid
+                if (ThePak.AllpaksDictionary.ContainsKey("Game_BR.locres"))
+                {
+                    string oldKey = JohnWick.MyKey; //get the old key
+                    string oldGuid = ThePak.CurrentUsedPakGuid; //get the old guid
 
-                JohnWick.MyKey = Properties.Settings.Default.AESKey; //set the main key to extract
-                ThePak.CurrentUsedPakGuid = "0-0-0-0"; //fake the guid -> writeFile need this guid to get the mountPoint, otherwise it crashes
+                    JohnWick.MyKey = Properties.Settings.Default.AESKey; //set the main key to extract
+                    ThePak.CurrentUsedPakGuid = "0-0-0-0"; //fake the guid -> writeFile need this guid to get the mountPoint, otherwise it crashes
 
-                string locResPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["Game_BR.locres"], "Game_BR.locres");
+                    string locResPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["Game_BR.locres"], "Game_BR.locres");
 
-                JohnWick.MyKey = oldKey; //set the old key
-                ThePak.CurrentUsedPakGuid = oldGuid; //set the old guid
+                    JohnWick.MyKey = oldKey; //set the old key
+                    ThePak.CurrentUsedPakGuid = oldGuid; //set the old guid
 
-                return LocResSerializer.StringFinder(locResPath.Replace("zh-Hant", selectedLanguage));
+                    return LocResSerializer.StringFinder(locResPath.Replace("zh-Hant", selectedLanguage));
+                }
+                else
+                {
+                    new UpdateMyConsole("[FModel] Localization File Not Found - Icon Language set to English", Color.DarkRed, true).AppendToConsole();
+                    new UpdateMyConsole("", Color.Black, true).AppendToConsole();
+
+                    Properties.Settings.Default.IconLanguage = "English";
+                    Properties.Settings.Default.Save();
+
+                    return "";
+                }
             }
             else { return ""; }
         }

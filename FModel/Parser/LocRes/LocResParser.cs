@@ -25,6 +25,9 @@ namespace FModel.Parser.LocResParser
 
         [JsonProperty("CompletionRewardFormat")]
         public string CompletionRewardFormat { get; set; }
+
+        [JsonProperty("CosmeticItemDescription_SetMembership_NotRich")]
+        public string CosmeticItemDescriptionSetMembershipNotRich { get; set; }
     }
 
     public partial class LocResParser
