@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -166,7 +166,52 @@ namespace FModel.Forms
                     {
                         for (int i = 0; i < _myInfos.Count; i++)
                         {
-                            if (Utilities.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text))
+                            string[] searchTextMultiple = textBox1.Text.Trim().Split(' ');
+                            if (searchTextMultiple.Length > 1)
+                            {
+                                bool checkSearch = false;
+                                for (int s = 0; s < searchTextMultiple.Length; ++s)
+                                {
+                                    checkSearch = Utilities.CaseInsensitiveContains(_myInfos[i].FileName, searchTextMultiple[s]);
+                                    if (!checkSearch)
+                                        break;
+                                }
+
+                                if (checkSearch)
+                                {
+                                    if (_myInfos[i].FileName.Contains(".uasset") || _myInfos[i].FileName.Contains(".uexp") || _myInfos[i].FileName.Contains(".ubulk"))
+                                    {
+                                        if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal))))
+                                        {
+                                            _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.CurrentUsedPak);
+
+                                            _fileName = _myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal));
+                                            _myFilteredInfos.Add(new FileInfoFilter
+                                            {
+                                                FileName = _fileName,
+                                                PakFile = ThePak.CurrentUsedPak,
+                                            });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName))
+                                        {
+                                            _myFilteredInfosDict.Add(_myInfos[i].FileName, ThePak.CurrentUsedPak);
+
+                                            _fileName = _myInfos[i].FileName;
+                                            _myFilteredInfos.Add(new FileInfoFilter
+                                            {
+                                                FileName = _fileName,
+                                                PakFile = ThePak.CurrentUsedPak,
+                                            });
+                                        }
+                                    }
+
+                                    ShowItemsVirtualFiltered(_myFilteredInfos);
+                                }
+                            }
+                            else if (Utilities.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text))
                             {
                                 if (_myInfos[i].FileName.Contains(".uasset") || _myInfos[i].FileName.Contains(".uexp") || _myInfos[i].FileName.Contains(".ubulk"))
                                 {
@@ -212,7 +257,52 @@ namespace FModel.Forms
                     {
                         for (int i = 0; i < _myInfos.Count; i++)
                         {
-                            if (Utilities.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text))
+                            string[] searchTextMultiple = textBox1.Text.Trim().Split(' ');
+                            if (searchTextMultiple.Length > 1)
+                            {
+                                bool checkSearch = false;
+                                for (int s = 0; s < searchTextMultiple.Length; ++s)
+                                {
+                                    checkSearch = Utilities.CaseInsensitiveContains(_myInfos[i].FileName, searchTextMultiple[s]);
+                                    if (!checkSearch)
+                                        break;
+                                }
+
+                                if (checkSearch)
+                                {
+                                    if (_myInfos[i].FileName.Contains(".uasset") || _myInfos[i].FileName.Contains(".uexp") || _myInfos[i].FileName.Contains(".ubulk"))
+                                    {
+                                        if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal))))
+                                        {
+                                            _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)]);
+
+                                            _fileName = _myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal));
+                                            _myFilteredInfos.Add(new FileInfoFilter
+                                            {
+                                                FileName = _fileName,
+                                                PakFile = ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)],
+                                            });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName))
+                                        {
+                                            _myFilteredInfosDict.Add(_myInfos[i].FileName, ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)]);
+
+                                            _fileName = _myInfos[i].FileName;
+                                            _myFilteredInfos.Add(new FileInfoFilter
+                                            {
+                                                FileName = _fileName,
+                                                PakFile = ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)],
+                                            });
+                                        }
+                                    }
+
+                                    ShowItemsVirtualFiltered(_myFilteredInfos);
+                                }
+                            }
+                            else if (Utilities.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text))
                             {
                                 if (_myInfos[i].FileName.Contains(".uasset") || _myInfos[i].FileName.Contains(".uexp") || _myInfos[i].FileName.Contains(".ubulk"))
                                 {
