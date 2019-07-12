@@ -160,125 +160,64 @@ namespace FModel.Forms
 
             if (MainWindow.PakAsTxt != null)
             {
-                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                bool IsAllPaks = (ThePak.CurrentUsedPakGuid == null || ThePak.CurrentUsedPakGuid == "0-0-0-0");
+
+                if (!string.IsNullOrEmpty(textBox1.Text) && textBox1.Text.Length > 2)
                 {
-                    if (!string.IsNullOrEmpty(textBox1.Text) && textBox1.Text.Length > 2)
+                    for (int i = 0; i < _myInfos.Count; i++)
                     {
-                        for (int i = 0; i < _myInfos.Count; i++)
+                        bool checkSearch = false;
+                        string[] searchTextMultiple = textBox1.Text.Trim().Split(' ');
+                        if (searchTextMultiple.Length > 1)
                         {
-                            bool checkSearch = false;
-                            string[] searchTextMultiple = textBox1.Text.Trim().Split(' ');
-                            if (searchTextMultiple.Length > 1)
+                            for (int s = 0; s < searchTextMultiple.Length; ++s)
                             {
-                                for (int s = 0; s < searchTextMultiple.Length; ++s)
+                                checkSearch = Utilities.CaseInsensitiveContains(_myInfos[i].FileName, searchTextMultiple[s]);
+                                if (!checkSearch)
+                                    break;
+                            }
+                        }
+                        else
+                            checkSearch = Utilities.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text);
+
+                        if (checkSearch)
+                        {
+                            if (_myInfos[i].FileName.Contains(".uasset") || _myInfos[i].FileName.Contains(".uexp") || _myInfos[i].FileName.Contains(".ubulk"))
+                            {
+                                if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal))))
                                 {
-                                    checkSearch = Utilities.CaseInsensitiveContains(_myInfos[i].FileName, searchTextMultiple[s]);
-                                    if (!checkSearch)
-                                        break;
+                                    _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), !IsAllPaks ? ThePak.CurrentUsedPak : ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)]);
+
+                                    _fileName = _myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal));
+                                    _myFilteredInfos.Add(new FileInfoFilter
+                                    {
+                                        FileName = _fileName,
+                                        PakFile = !IsAllPaks ? ThePak.CurrentUsedPak : ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)],
+                                    });
                                 }
                             }
                             else
-                                checkSearch = Utilities.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text);
-
-                            if (checkSearch)
                             {
-                                if (_myInfos[i].FileName.Contains(".uasset") || _myInfos[i].FileName.Contains(".uexp") || _myInfos[i].FileName.Contains(".ubulk"))
+                                if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName))
                                 {
-                                    if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal))))
+                                    _myFilteredInfosDict.Add(_myInfos[i].FileName, !IsAllPaks ? ThePak.CurrentUsedPak : ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)]);
+
+                                    _fileName = _myInfos[i].FileName;
+                                    _myFilteredInfos.Add(new FileInfoFilter
                                     {
-                                        _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.CurrentUsedPak);
-
-                                        _fileName = _myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal));
-                                        _myFilteredInfos.Add(new FileInfoFilter
-                                        {
-                                            FileName = _fileName,
-                                            PakFile = ThePak.CurrentUsedPak,
-                                        });
-                                    }
+                                        FileName = _fileName,
+                                        PakFile = !IsAllPaks ? ThePak.CurrentUsedPak : ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)],
+                                    });
                                 }
-                                else
-                                {
-                                    if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName))
-                                    {
-                                        _myFilteredInfosDict.Add(_myInfos[i].FileName, ThePak.CurrentUsedPak);
-
-                                        _fileName = _myInfos[i].FileName;
-                                        _myFilteredInfos.Add(new FileInfoFilter
-                                        {
-                                            FileName = _fileName,
-                                            PakFile = ThePak.CurrentUsedPak,
-                                        });
-                                    }
-                                }
-
-                                ShowItemsVirtualFiltered(_myFilteredInfos);
                             }
+
+                            ShowItemsVirtualFiltered(_myFilteredInfos);
                         }
-                    }
-                    else
-                    {
-                        ShowItemsVirtual(_myInfos);
                     }
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(textBox1.Text) && textBox1.Text.Length > 2)
-                    {
-                        for (int i = 0; i < _myInfos.Count; i++)
-                        {
-                            bool checkSearch = false;
-                            string[] searchTextMultiple = textBox1.Text.Trim().Split(' ');
-                            if (searchTextMultiple.Length > 1)
-                            {
-                                for (int s = 0; s < searchTextMultiple.Length; ++s)
-                                {
-                                    checkSearch = Utilities.CaseInsensitiveContains(_myInfos[i].FileName, searchTextMultiple[s]);
-                                    if (!checkSearch)
-                                        break;
-                                }
-                            }
-                            else
-                                checkSearch = Utilities.CaseInsensitiveContains(_myInfos[i].FileName, textBox1.Text);
-
-                            if (checkSearch)
-                            {
-                                if (_myInfos[i].FileName.Contains(".uasset") || _myInfos[i].FileName.Contains(".uexp") || _myInfos[i].FileName.Contains(".ubulk"))
-                                {
-                                    if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal))))
-                                    {
-                                        _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)]);
-
-                                        _fileName = _myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal));
-                                        _myFilteredInfos.Add(new FileInfoFilter
-                                        {
-                                            FileName = _fileName,
-                                            PakFile = ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)],
-                                        });
-                                    }
-                                }
-                                else
-                                {
-                                    if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName))
-                                    {
-                                        _myFilteredInfosDict.Add(_myInfos[i].FileName, ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)]);
-
-                                        _fileName = _myInfos[i].FileName;
-                                        _myFilteredInfos.Add(new FileInfoFilter
-                                        {
-                                            FileName = _fileName,
-                                            PakFile = ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)],
-                                        });
-                                    }
-                                }
-
-                                ShowItemsVirtualFiltered(_myFilteredInfos);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        ShowItemsVirtual(_myInfos);
-                    }
+                    ShowItemsVirtual(_myInfos);
                 }
             }
 
