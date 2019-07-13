@@ -289,15 +289,7 @@ namespace FModel
         {
             if (cSetsjo == null)
             {
-                string oldKey = JohnWick.MyKey; //get the old key
-                string oldGuid = ThePak.CurrentUsedPakGuid; //get the old guid
-                JohnWick.MyKey = Settings.Default.AESKey; //set the main key to extract
-                ThePak.CurrentUsedPakGuid = "0-0-0-0"; //fake the guid -> writeFile need this guid to get the mountPoint, otherwise it crashes
-
                 string extractedCosmeticsSetsPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["CosmeticSets"], "CosmeticSets");
-
-                JohnWick.MyKey = oldKey; //set the old key
-                ThePak.CurrentUsedPakGuid = oldGuid; //set the old guid
 
                 if (extractedCosmeticsSetsPath != null)
                 {

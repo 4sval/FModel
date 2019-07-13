@@ -24,16 +24,9 @@ namespace FModel
         /// <param name="currentItem"></param>
         /// <param name="DynamicPak"></param>
         /// <returns> the mount point as string, used to create subfolders when extracting or create the tree when loading all paks </returns>
-        private static string GetMountPointFromDict(string currentItem, bool DynamicPak = false)
+        private static string GetMountPointFromDict(string currentItem)
         {
-            if (DynamicPak)
-            {
-                return ThePak.PaksMountPoint[ThePak.CurrentUsedPak];
-            }
-            else
-            {
-                return ThePak.PaksMountPoint[ThePak.AllpaksDictionary[currentItem]];
-            }
+            return ThePak.PaksMountPoint[ThePak.AllpaksDictionary[currentItem]];
         }
 
         /// <summary>
@@ -45,20 +38,10 @@ namespace FModel
         /// <returns> the path to this brand new created file </returns>
         private static string WriteFile(string currentItem, string myResults, byte[] data)
         {
-            if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-            {
-                Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem, true) + myResults.Substring(0, myResults.LastIndexOf("/", StringComparison.Ordinal)));
-                File.WriteAllBytes(App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem, true) + myResults, data);
+            Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem) + myResults.Substring(0, myResults.LastIndexOf("/", StringComparison.Ordinal)));
+            File.WriteAllBytes(App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem) + myResults, data);
 
-                return App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem, true) + myResults;
-            }
-            else
-            {
-                Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem) + myResults.Substring(0, myResults.LastIndexOf("/", StringComparison.Ordinal)));
-                File.WriteAllBytes(App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem) + myResults, data);
-
-                return App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem) + myResults;
-            }
+            return App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem) + myResults;
         }
 
         /// <summary>
@@ -71,6 +54,19 @@ namespace FModel
         /// <returns> the path of the last created file (usually the uexp file but we don't care about the extension, so it's fine) </returns>
         public static string ExtractAsset(string currentPak, string currentItem)
         {
+            ThePak.CurrentUsedPak = currentPak;
+            ThePak.CurrentUsedPakGuid = ThePak.dynamicPaksList.Where(x => x.thePak == currentPak).Select(x => x.thePakGuid).FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(ThePak.CurrentUsedPakGuid) && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+            {
+                MyKey = DynamicKeysManager.AESEntries.Where(x => x.thePak == currentPak).Select(x => x.theKey).FirstOrDefault();
+            }
+            else
+            {
+                ThePak.CurrentUsedPakGuid = "0-0-0-0";
+                MyKey = Settings.Default.AESKey;
+            }
+
             if (currentPak != currentPakToCheck || myArray == null)
             {
                 MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, MyKey);
@@ -109,10 +105,7 @@ namespace FModel
         /// <returns> the path to the png image </returns>
         public static string AssetToTexture2D(string AssetName)
         {
-            string textureFilePath = (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                    ? ExtractAsset(ThePak.CurrentUsedPak, AssetName)
-                    : ExtractAsset(ThePak.AllpaksDictionary[AssetName], AssetName);
-
+            string textureFilePath = ExtractAsset(ThePak.AllpaksDictionary[AssetName], AssetName);
             string TexturePath = string.Empty;
             if (!string.IsNullOrEmpty(textureFilePath))
             {

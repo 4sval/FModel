@@ -271,6 +271,9 @@
     <Content Include="DLLs\csharp-wick.dll" />
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
+    <None Include="Resources\FModel%281%29.ico" />
+    <None Include="Resources\FModel.ico" />
+    <None Include="Resources\FModel_Logo.png" />
     <None Include="Resources\wTemplateF.png" />
     <None Include="Resources\wTemplate.png" />
     <None Include="Resources\T512.png" />
@@ -299,7 +302,6 @@
     <None Include="Resources\T-Icon-Traversal-64.png" />
     <None Include="Resources\T-Icon-Animated-64.png" />
     <None Include="Resources\T-Icon-Adaptive-64.png" />
-    <None Include="Resources\FModel_Logo.png" />
     <None Include="Resources\unknown512.png" />
     <None Include="Resources\properties_16xLG.png" />
     <None Include="Resources\StatusAnnotations_Information_16xLG_color.png" />

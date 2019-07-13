@@ -68,16 +68,7 @@ namespace FModel
         {
             try
             {
-                string questFilePath;
-                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                {
-                    questFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, questFile);
-                }
-                else
-                {
-                    questFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[questFile], questFile);
-                }
-
+                string questFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[questFile], questFile);
                 if (questFilePath != null)
                 {
                     if (questFilePath.Contains(".uasset") || questFilePath.Contains(".uexp") || questFilePath.Contains(".ubulk"))

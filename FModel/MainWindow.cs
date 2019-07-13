@@ -302,7 +302,6 @@ namespace FModel
                 {
                     bMainKeyWorking = true;
 
-                    JohnWick.MyKey = Settings.Default.AESKey;
                     string mountPoint = JohnWick.MyExtractor.GetMountPoint();
                     ThePak.PaksMountPoint.Add(ThePak.mainPaksList[i].thePak, mountPoint.Substring(9));
 
@@ -339,47 +338,69 @@ namespace FModel
             }
             if (bMainKeyWorking) { LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage); }
 
-            if (theSinglePak != null) //IMPORTANT: IT STILLS LOAD THE DICTIONARY -> IT'S GONNA BE USEFUL FOR TRANSLATIONS
+            for (int i = 0; i < ThePak.dynamicPaksList.Count; i++)
             {
-                ThePak.CurrentUsedPak = theSinglePak.ClickedItem.Text;
-                ThePak.CurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
+                string pakName = DynamicKeysManager.AESEntries.Where(x => x.thePak == ThePak.dynamicPaksList[i].thePak).Select(x => x.thePak).FirstOrDefault();
+                string pakKey = DynamicKeysManager.AESEntries.Where(x => x.thePak == ThePak.dynamicPaksList[i].thePak).Select(x => x.theKey).FirstOrDefault();
 
-                if (ThePak.CurrentUsedPakGuid != "0-0-0-0") //LOADING DYNAMIC PAK
+                if (!string.IsNullOrEmpty(pakName) && !string.IsNullOrEmpty(pakKey))
                 {
-                    if (DynamicKeysManager.AESEntries != null)
+                    try
                     {
-                        foreach (AESEntry s in DynamicKeysManager.AESEntries)
+                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
+                    }
+                    catch (Exception)
+                    {
+                        new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole();
+                        JohnWick.MyExtractor.Dispose();
+                        continue;
+                    }
+
+                    string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                    if (CurrentUsedPakLines != null)
+                    {
+                        string mountPoint = JohnWick.MyExtractor.GetMountPoint();
+                        ThePak.PaksMountPoint.Add(ThePak.dynamicPaksList[i].thePak, mountPoint.Substring(9));
+
+                        for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                         {
-                            if (s.thePak == ThePak.CurrentUsedPak && s.theKey.Length > 2)
+                            CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
+
+                            string CurrentUsedPakFileName = CurrentUsedPakLines[ii].Substring(CurrentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
+                            if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
                             {
-                                try
+                                if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal))))
                                 {
-                                    JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak, s.theKey);
-
-                                    PakAsTxt = JohnWick.MyExtractor.GetFileList().ToArray();
-                                    if (PakAsTxt != null)
-                                    {
-                                        JohnWick.MyKey = s.theKey;
-                                        string mountPoint = JohnWick.MyExtractor.GetMountPoint();
-                                        ThePak.PaksMountPoint.Add(ThePak.CurrentUsedPak, mountPoint.Substring(9));
-
-                                        for (int i = 0; i < PakAsTxt.Length; i++)
-                                        {
-                                            PakAsTxt[i] = mountPoint.Substring(6) + PakAsTxt[i];
-                                        }
-                                    }
-                                    JohnWick.MyExtractor.Dispose();
-                                }
-                                catch (Exception)
-                                {
-                                    JohnWick.MyExtractor.Dispose();
-                                    return;
+                                    ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.dynamicPaksList[i].thePak);
                                 }
                             }
+                            else
+                            {
+                                if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName))
+                                {
+                                    ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName, ThePak.dynamicPaksList[i].thePak);
+                                }
+                            }
+
+                            if (loadAllPaKs)
+                            {
+                                sb.Append(CurrentUsedPakLines[ii] + "\n");
+                            }
+                        }
+
+                        if (loadAllPaKs) { new UpdateMyState(".PAK mount point: " + mountPoint.Substring(9), "Waiting").ChangeProcessState(); }
+                        if (theSinglePak != null && ThePak.dynamicPaksList[i].thePak == theSinglePak.ClickedItem.Text)
+                        {
+                            ThePak.CurrentUsedPak = pakName;
+                            ThePak.CurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
+
+                            PakAsTxt = CurrentUsedPakLines;
                         }
                     }
+                    JohnWick.MyExtractor.Dispose();
                 }
             }
+
             if (loadAllPaKs)
             {
                 File.WriteAllText(App.DefaultOutputPath + "\\FortnitePAKs.txt", sb.ToString()); //File will always exist
@@ -1034,10 +1055,7 @@ namespace FModel
 
                 ThePak.CurrentUsedItem = SelectedItemsArray[i];
 
-                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                    Checking.ExtractedFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, ThePak.CurrentUsedItem);
-                else
-                    Checking.ExtractedFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[ThePak.CurrentUsedItem], ThePak.CurrentUsedItem);
+                Checking.ExtractedFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[ThePak.CurrentUsedItem], ThePak.CurrentUsedItem);
 
                 if (Checking.ExtractedFilePath != null)
                 {
@@ -1058,7 +1076,7 @@ namespace FModel
                     }
                     if (Checking.ExtractedFilePath.Contains(".locres") && !Checking.ExtractedFilePath.Contains("EngineOverrides"))
                         SerializeLocRes();
-                    if (Checking.ExtractedFilePath.Contains(".uplugin"))
+                    if (Checking.ExtractedFilePath.Contains(".uplugin") || Checking.ExtractedFilePath.Contains(".uproject"))
                         uPluginConvertToJson(Checking.ExtractedFilePath);
                 }
                 else { throw new ArgumentException("Error while extracting " + ThePak.CurrentUsedItem); }

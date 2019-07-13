@@ -55,12 +55,7 @@ namespace FModel
         {
             if (theItem.HeroDefinition != null)
             {
-                string heroFilePath;
-                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                    heroFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, theItem.HeroDefinition);
-                else
-                    heroFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[theItem.HeroDefinition], theItem.HeroDefinition);
-
+                string heroFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[theItem.HeroDefinition], theItem.HeroDefinition);
                 if (heroFilePath != null)
                 {
                     if (heroFilePath.Contains(".uasset") || heroFilePath.Contains(".uexp") || heroFilePath.Contains(".ubulk"))
@@ -106,16 +101,7 @@ namespace FModel
                     theItem.WeaponDefinition = "WID_Harvest_Pickaxe_WuKong";
                 }
 
-                string weaponFilePath;
-                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                {
-                    weaponFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, theItem.WeaponDefinition);
-                }
-                else
-                {
-                    weaponFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[theItem.WeaponDefinition], theItem.WeaponDefinition);
-                }
-
+                string weaponFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[theItem.WeaponDefinition], theItem.WeaponDefinition);
                 if (weaponFilePath != null)
                 {
                     if (weaponFilePath.Contains(".uasset") || weaponFilePath.Contains(".uexp") || weaponFilePath.Contains(".ubulk"))
@@ -211,10 +197,7 @@ namespace FModel
         {
             try
             {
-                string catalogFilePath = (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-                    ? catalogFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, catName)
-                    : catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
-
+                string catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
                 if (!string.IsNullOrEmpty(catalogFilePath))
                 {
                     Checking.WasFeatured = true;
@@ -249,10 +232,6 @@ namespace FModel
                                             break;
                                     }
                                 }
-
-                                // There is no featured image (as legends pack, shadow pack...)
-                                if (string.IsNullOrEmpty(ItemIconPath))
-                                    GetItemIcon(theItem);
                             }
                         }
                         catch (JsonSerializationException)
@@ -278,16 +257,7 @@ namespace FModel
         /// <param name="toDrawOn"></param>
         public static void GetAmmoData(string ammoFile, Graphics toDrawOn)
         {
-            string ammoFilePath;
-            if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
-            {
-                ammoFilePath = JohnWick.ExtractAsset(ThePak.CurrentUsedPak, ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
-            }
-            else
-            {
-                ammoFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[ammoFile.Substring(ammoFile.LastIndexOf('.') + 1)], ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
-            }
-
+            string ammoFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[ammoFile.Substring(ammoFile.LastIndexOf('.') + 1)], ammoFile.Substring(ammoFile.LastIndexOf('.') + 1));
             if (ammoFilePath != null)
             {
                 if (ammoFilePath.Contains(".uasset") || ammoFilePath.Contains(".uexp") || ammoFilePath.Contains(".ubulk"))

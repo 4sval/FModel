@@ -157,9 +157,6 @@
   <data name="wTemplateF" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\wTemplateF.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FModel" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\FModel.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="FModel_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FModel_Logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -222,5 +219,8 @@
   </data>
   <data name="E512" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\E512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FModel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FModel.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

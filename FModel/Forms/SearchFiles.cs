@@ -36,71 +36,34 @@ namespace FModel.Forms
 
             if (MainWindow.PakAsTxt != null)
             {
-                if (ThePak.CurrentUsedPakGuid != null && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+                for (int i = 0; i < MainWindow.PakAsTxt.Length; i++)
                 {
-                    for (int i = 0; i < MainWindow.PakAsTxt.Length; i++)
+                    if (MainWindow.PakAsTxt[i].Contains(".uasset") || MainWindow.PakAsTxt[i].Contains(".uexp") || MainWindow.PakAsTxt[i].Contains(".ubulk"))
                     {
-                        if (MainWindow.PakAsTxt[i].Contains(".uasset") || MainWindow.PakAsTxt[i].Contains(".uexp") || MainWindow.PakAsTxt[i].Contains(".ubulk"))
+                        if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal))))
                         {
-                            if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal))))
-                            {
-                                _myInfosDict.Add(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), ThePak.CurrentUsedPak);
+                            _myInfosDict.Add(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.PakAsTxt[i])]);
 
-                                _fileName = MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal));
-                                _myInfos.Add(new FileInfo
-                                {
-                                    FileName = _fileName,
-                                    PakFile = ThePak.CurrentUsedPak,
-                                });
-                            }
-                        }
-                        else
-                        {
-                            if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i]))
+                            _fileName = MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal));
+                            _myInfos.Add(new FileInfo
                             {
-                                _myInfosDict.Add(MainWindow.PakAsTxt[i], ThePak.CurrentUsedPak);
-
-                                _fileName = MainWindow.PakAsTxt[i];
-                                _myInfos.Add(new FileInfo
-                                {
-                                    FileName = _fileName,
-                                    PakFile = ThePak.CurrentUsedPak,
-                                });
-                            }
+                                FileName = _fileName,
+                                PakFile = ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.PakAsTxt[i])],
+                            });
                         }
                     }
-                }
-                else
-                {
-                    for (int i = 0; i < MainWindow.PakAsTxt.Length; i++)
+                    else
                     {
-                        if (MainWindow.PakAsTxt[i].Contains(".uasset") || MainWindow.PakAsTxt[i].Contains(".uexp") || MainWindow.PakAsTxt[i].Contains(".ubulk"))
+                        if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i]))
                         {
-                            if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal))))
-                            {
-                                _myInfosDict.Add(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.PakAsTxt[i])]);
+                            _myInfosDict.Add(MainWindow.PakAsTxt[i], ThePak.AllpaksDictionary[Path.GetFileName(MainWindow.PakAsTxt[i])]);
 
-                                _fileName = MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal));
-                                _myInfos.Add(new FileInfo
-                                {
-                                    FileName = _fileName,
-                                    PakFile = ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.PakAsTxt[i])],
-                                });
-                            }
-                        }
-                        else
-                        {
-                            if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i]))
+                            _fileName = MainWindow.PakAsTxt[i];
+                            _myInfos.Add(new FileInfo
                             {
-                                _myInfosDict.Add(MainWindow.PakAsTxt[i], ThePak.AllpaksDictionary[Path.GetFileName(MainWindow.PakAsTxt[i])]);
-
-                                _fileName = MainWindow.PakAsTxt[i];
-                                _myInfos.Add(new FileInfo
-                                {
-                                    FileName = _fileName,
-                                    PakFile = ThePak.AllpaksDictionary[Path.GetFileName(MainWindow.PakAsTxt[i])],
-                                });
-                            }
+                                FileName = _fileName,
+                                PakFile = ThePak.AllpaksDictionary[Path.GetFileName(MainWindow.PakAsTxt[i])],
+                            });
                         }
                     }
                 }

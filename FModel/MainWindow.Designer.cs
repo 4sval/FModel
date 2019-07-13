@@ -46,8 +46,9 @@ namespace FModel
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copySelectedFilePathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.copySelectedFilePathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoSaveImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,7 +85,6 @@ namespace FModel
             this.saveAsJSONToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractFolderContentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -163,26 +163,26 @@ namespace FModel
             // loadOneToolStripMenuItem
             // 
             this.loadOneToolStripMenuItem.Name = "loadOneToolStripMenuItem";
-            this.loadOneToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadOneToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.loadOneToolStripMenuItem.Text = "Load One PAK";
             this.loadOneToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.loadOneToolStripMenuItem_DropDownItemClicked);
             // 
             // loadAllToolStripMenuItem
             // 
             this.loadAllToolStripMenuItem.Name = "loadAllToolStripMenuItem";
-            this.loadAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadAllToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.loadAllToolStripMenuItem.Text = "Load All PAKs";
             this.loadAllToolStripMenuItem.Click += new System.EventHandler(this.loadAllToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(159, 6);
             // 
             // backupPAKsToolStripMenuItem
             // 
             this.backupPAKsToolStripMenuItem.Name = "backupPAKsToolStripMenuItem";
-            this.backupPAKsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.backupPAKsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.backupPAKsToolStripMenuItem.Text = "Backup PAKs";
             this.backupPAKsToolStripMenuItem.Click += new System.EventHandler(this.backupPAKsToolStripMenuItem_Click);
             // 
@@ -190,7 +190,7 @@ namespace FModel
             // 
             this.differenceModeToolStripMenuItem.CheckOnClick = true;
             this.differenceModeToolStripMenuItem.Name = "differenceModeToolStripMenuItem";
-            this.differenceModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.differenceModeToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.differenceModeToolStripMenuItem.Text = "Difference Mode";
             this.differenceModeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.differenceModeToolStripMenuItem_CheckedChanged);
             // 
@@ -199,21 +199,21 @@ namespace FModel
             this.updateModeToolStripMenuItem.CheckOnClick = true;
             this.updateModeToolStripMenuItem.Enabled = false;
             this.updateModeToolStripMenuItem.Name = "updateModeToolStripMenuItem";
-            this.updateModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.updateModeToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.updateModeToolStripMenuItem.Text = "Update Mode";
             this.updateModeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.updateModeToolStripMenuItem_CheckedChanged);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(159, 6);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Image = global::FModel.Properties.Resources.properties_16xLG;
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -236,13 +236,6 @@ namespace FModel
             this.searchToolStripMenuItem.Text = "Search";
             this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
             // 
-            // copySelectedFilePathToolStripMenuItem
-            // 
-            this.copySelectedFilePathToolStripMenuItem.Name = "copySelectedFilePathToolStripMenuItem";
-            this.copySelectedFilePathToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.copySelectedFilePathToolStripMenuItem.Text = "Copy Selected File Path";
-            this.copySelectedFilePathToolStripMenuItem.Click += new System.EventHandler(this.CopySelectedFilePathToolStripMenuItem_Click);
-            // 
             // saveAsJSONToolStripMenuItem
             // 
             this.saveAsJSONToolStripMenuItem.Name = "saveAsJSONToolStripMenuItem";
@@ -250,6 +243,18 @@ namespace FModel
             this.saveAsJSONToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.saveAsJSONToolStripMenuItem.Text = "Save as JSON";
             this.saveAsJSONToolStripMenuItem.Click += new System.EventHandler(this.SaveAsJSONToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(194, 6);
+            // 
+            // copySelectedFilePathToolStripMenuItem
+            // 
+            this.copySelectedFilePathToolStripMenuItem.Name = "copySelectedFilePathToolStripMenuItem";
+            this.copySelectedFilePathToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.copySelectedFilePathToolStripMenuItem.Text = "Copy Selected File Path";
+            this.copySelectedFilePathToolStripMenuItem.Click += new System.EventHandler(this.CopySelectedFilePathToolStripMenuItem_Click);
             // 
             // imageToolStripMenuItem
             // 
@@ -315,7 +320,7 @@ namespace FModel
             // 
             this.aboutFModelToolStripMenuItem.Image = global::FModel.Properties.Resources.StatusAnnotations_Information_16xLG_color;
             this.aboutFModelToolStripMenuItem.Name = "aboutFModelToolStripMenuItem";
-            this.aboutFModelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutFModelToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.aboutFModelToolStripMenuItem.Text = "About FModel";
             this.aboutFModelToolStripMenuItem.Click += new System.EventHandler(this.aboutFModelToolStripMenuItem_Click);
             // 
@@ -589,11 +594,6 @@ namespace FModel
             this.extractFolderContentsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.extractFolderContentsToolStripMenuItem.Text = "Extract Folder Contents";
             this.extractFolderContentsToolStripMenuItem.Click += new System.EventHandler(this.ExtractFolderContentsToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(194, 6);
             // 
             // MainWindow
             // 
