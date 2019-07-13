@@ -123,8 +123,6 @@ namespace FModel.Forms
 
             if (MainWindow.PakAsTxt != null)
             {
-                bool IsAllPaks = (ThePak.CurrentUsedPakGuid == null || ThePak.CurrentUsedPakGuid == "0-0-0-0");
-
                 if (!string.IsNullOrEmpty(textBox1.Text) && textBox1.Text.Length > 2)
                 {
                     for (int i = 0; i < _myInfos.Count; i++)
@@ -149,13 +147,13 @@ namespace FModel.Forms
                             {
                                 if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal))))
                                 {
-                                    _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), !IsAllPaks ? ThePak.CurrentUsedPak : ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)]);
+                                    _myFilteredInfosDict.Add(_myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)]);
 
                                     _fileName = _myInfos[i].FileName.Substring(0, _myInfos[i].FileName.LastIndexOf(".", StringComparison.Ordinal));
                                     _myFilteredInfos.Add(new FileInfoFilter
                                     {
                                         FileName = _fileName,
-                                        PakFile = !IsAllPaks ? ThePak.CurrentUsedPak : ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)],
+                                        PakFile = ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(_myInfos[i].FileName)],
                                     });
                                 }
                             }
@@ -163,13 +161,13 @@ namespace FModel.Forms
                             {
                                 if (!_myFilteredInfosDict.ContainsKey(_myInfos[i].FileName))
                                 {
-                                    _myFilteredInfosDict.Add(_myInfos[i].FileName, !IsAllPaks ? ThePak.CurrentUsedPak : ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)]);
+                                    _myFilteredInfosDict.Add(_myInfos[i].FileName, ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)]);
 
                                     _fileName = _myInfos[i].FileName;
                                     _myFilteredInfos.Add(new FileInfoFilter
                                     {
                                         FileName = _fileName,
-                                        PakFile = !IsAllPaks ? ThePak.CurrentUsedPak : ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)],
+                                        PakFile = ThePak.AllpaksDictionary[Path.GetFileName(_myInfos[i].FileName)],
                                     });
                                 }
                             }

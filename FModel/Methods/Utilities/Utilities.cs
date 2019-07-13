@@ -169,5 +169,22 @@ namespace FModel
                 }
             }
         }
+
+        /// <summary>
+        /// something to expand nodes to a given level
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <param name="level"></param>
+        public static void ExpandToLevel(TreeNodeCollection nodes, int level)
+        {
+            if (level > 0)
+            {
+                foreach (TreeNode node in nodes)
+                {
+                    node.Expand();
+                    ExpandToLevel(node.Nodes, level - 1);
+                }
+            }
+        }
     }
 }

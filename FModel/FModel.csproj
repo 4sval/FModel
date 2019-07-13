@@ -126,7 +126,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Converter\UnrealEngineDataToOGG.cs" />
+    <Compile Include="Methods\Converter\UnrealEngineDataToOGG.cs" />
     <Compile Include="Custom\JsonExtensions.cs" />
     <Compile Include="Custom\TypeAssistant.cs" />
     <Compile Include="Forms\AESManager.cs">
@@ -263,9 +263,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="csharp_wick.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="oo2core_5_win64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="DLLs\csharp-wick.dll" />

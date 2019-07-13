@@ -45,8 +45,6 @@ namespace FModel
     {
         public static List<PaksEntry> mainPaksList { get; set; }
         public static List<PaksEntry> dynamicPaksList { get; set; }
-        public static string CurrentUsedPak { get; set; }
-        public static string CurrentUsedPakGuid { get; set; }
         public static string CurrentUsedItem { get; set; }
 
         public static Dictionary<string, string> PaksMountPoint { get; set; }

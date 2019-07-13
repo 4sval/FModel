@@ -276,9 +276,8 @@ namespace FModel
         //METHODS
         private void RegisterPaKsinDict(ToolStripItemClickedEventArgs theSinglePak = null, bool loadAllPaKs = false)
         {
+            PakExtractor extractor = null;
             StringBuilder sb = new StringBuilder();
-            ThePak.CurrentUsedPak = null;
-            ThePak.CurrentUsedPakGuid = null;
             bool bMainKeyWorking = false;
 
             for (int i = 0; i < ThePak.mainPaksList.Count; i++)
@@ -287,22 +286,22 @@ namespace FModel
                 {
                     if (!string.IsNullOrWhiteSpace(Settings.Default.AESKey))
                     {
-                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
+                        extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
                     }
-                    else { JohnWick.MyExtractor.Dispose(); break; }
+                    else { extractor.Dispose(); break; }
                 }
                 catch (Exception)
                 {
-                    JohnWick.MyExtractor.Dispose();
+                    extractor.Dispose();
                     break;
                 }
 
-                string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                string[] CurrentUsedPakLines = extractor.GetFileList().ToArray();
                 if (CurrentUsedPakLines != null)
                 {
                     bMainKeyWorking = true;
 
-                    string mountPoint = JohnWick.MyExtractor.GetMountPoint();
+                    string mountPoint = extractor.GetMountPoint();
                     ThePak.PaksMountPoint.Add(ThePak.mainPaksList[i].thePak, mountPoint.Substring(9));
 
                     for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
@@ -334,7 +333,7 @@ namespace FModel
                     if (loadAllPaKs) { new UpdateMyState(".PAK mount point: " + mountPoint.Substring(9), "Waiting").ChangeProcessState(); }
                     if (theSinglePak != null && ThePak.mainPaksList[i].thePak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
                 }
-                JohnWick.MyExtractor.Dispose();
+                extractor.Dispose();
             }
             if (bMainKeyWorking) { LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage); }
 
@@ -347,24 +346,24 @@ namespace FModel
                 {
                     try
                     {
-                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
+                        extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
                     }
                     catch (Exception)
                     {
                         new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole();
-                        JohnWick.MyExtractor.Dispose();
+                        extractor.Dispose();
                         continue;
                     }
 
-                    string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                    string[] CurrentUsedPakLines = extractor.GetFileList().ToArray();
                     if (CurrentUsedPakLines != null)
                     {
-                        string mountPoint = JohnWick.MyExtractor.GetMountPoint();
+                        string mountPoint = extractor.GetMountPoint();
                         ThePak.PaksMountPoint.Add(ThePak.dynamicPaksList[i].thePak, mountPoint.Substring(9));
 
                         for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                         {
-                            CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
+                            CurrentUsedPakLines[ii] = mountPoint.Substring(6) + CurrentUsedPakLines[ii];
 
                             string CurrentUsedPakFileName = CurrentUsedPakLines[ii].Substring(CurrentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
                             if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
@@ -389,15 +388,9 @@ namespace FModel
                         }
 
                         if (loadAllPaKs) { new UpdateMyState(".PAK mount point: " + mountPoint.Substring(9), "Waiting").ChangeProcessState(); }
-                        if (theSinglePak != null && ThePak.dynamicPaksList[i].thePak == theSinglePak.ClickedItem.Text)
-                        {
-                            ThePak.CurrentUsedPak = pakName;
-                            ThePak.CurrentUsedPakGuid = ThePak.ReadPakGuid(Settings.Default.PAKsPath + "\\" + ThePak.CurrentUsedPak);
-
-                            PakAsTxt = CurrentUsedPakLines;
-                        }
+                        if (theSinglePak != null && ThePak.dynamicPaksList[i].thePak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
                     }
-                    JohnWick.MyExtractor.Dispose();
+                    extractor.Dispose();
                 }
             }
 
@@ -540,6 +533,7 @@ namespace FModel
                         {
                             TreeParsePath(treeView1.Nodes, PakAsTxt[i].Replace(PakAsTxt[i].Split('/').Last(), ""));
                         }
+                        Utilities.ExpandToLevel(treeView1.Nodes, 2);
                         treeView1.EndUpdate();
                     }));
                     new UpdateMyState(Settings.Default.PAKsPath + "\\" + selectedPak.ClickedItem.Text, "Success").ChangeProcessState();
@@ -569,6 +563,7 @@ namespace FModel
                         {
                             TreeParsePath(treeView1.Nodes, PakAsTxt[i].Replace(PakAsTxt[i].Split('/').Last(), ""));
                         }
+                        Utilities.ExpandToLevel(treeView1.Nodes, 2);
                         treeView1.EndUpdate();
                     }));
                     new UpdateMyState(Settings.Default.PAKsPath, "Success").ChangeProcessState();
@@ -600,6 +595,7 @@ namespace FModel
                         {
                             TreeParsePath(treeView1.Nodes, PakAsTxt[i].Replace(PakAsTxt[i].Split('/').Last(), ""));
                         }
+                        Utilities.ExpandToLevel(treeView1.Nodes, 2);
                         treeView1.EndUpdate();
                     }));
 
@@ -610,33 +606,35 @@ namespace FModel
         }
         private void CreateBackupList()
         {
+            PakExtractor extractor = null;
             StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < ThePak.mainPaksList.Count; i++)
             {
                 try
                 {
-                    JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
+                    extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
                 }
                 catch (Exception)
                 {
                     new UpdateMyConsole("0x" + Settings.Default.AESKey + " doesn't work with the main paks.", Color.Red, true).AppendToConsole();
-                    JohnWick.MyExtractor.Dispose();
+                    extractor.Dispose();
                     break;
                 }
 
-                string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                string[] CurrentUsedPakLines = extractor.GetFileList().ToArray();
                 if (CurrentUsedPakLines != null)
                 {
+                    string mountPoint = extractor.GetMountPoint();
                     for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                     {
-                        CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
+                        CurrentUsedPakLines[ii] = mountPoint.Substring(6) + CurrentUsedPakLines[ii];
 
                         sb.Append(CurrentUsedPakLines[ii] + "\n");
                     }
-                    new UpdateMyState(".PAK mount point: " + JohnWick.MyExtractor.GetMountPoint().Substring(9), "Waiting").ChangeProcessState();
+                    new UpdateMyState(".PAK mount point: " + mountPoint.Substring(9), "Waiting").ChangeProcessState();
                 }
-                JohnWick.MyExtractor.Dispose();
+                extractor.Dispose();
             }
 
             for (int i = 0; i < ThePak.dynamicPaksList.Count; i++)
@@ -648,28 +646,29 @@ namespace FModel
                 {
                     try
                     {
-                        JohnWick.MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
+                        extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
                     }
                     catch (Exception)
                     {
                         new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole();
-                        JohnWick.MyExtractor.Dispose();
+                        extractor.Dispose();
                         continue;
                     }
 
-                    string[] CurrentUsedPakLines = JohnWick.MyExtractor.GetFileList().ToArray();
+                    string[] CurrentUsedPakLines = extractor.GetFileList().ToArray();
                     if (CurrentUsedPakLines != null)
                     {
+                        string mountPoint = extractor.GetMountPoint();
                         for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                         {
-                            CurrentUsedPakLines[ii] = JohnWick.MyExtractor.GetMountPoint().Substring(6) + CurrentUsedPakLines[ii];
+                            CurrentUsedPakLines[ii] = mountPoint.Substring(6) + CurrentUsedPakLines[ii];
 
                             sb.Append(CurrentUsedPakLines[ii] + "\n");
                         }
                         new UpdateMyConsole("Backing up ", Color.Black).AppendToConsole();
                         new UpdateMyConsole(ThePak.dynamicPaksList[i].thePak, Color.DarkRed, true).AppendToConsole();
                     }
-                    JohnWick.MyExtractor.Dispose();
+                    extractor.Dispose();
                 }
             }
 

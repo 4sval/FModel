@@ -12,8 +12,7 @@ namespace FModel
     static class JohnWick
     {
         public static PakAsset MyAsset;
-        public static PakExtractor MyExtractor;
-        public static string MyKey;
+        private static PakExtractor _myExtractor;
         public static string[] myArray { get; set; }
         private static string currentPakToCheck { get; set; }
 
@@ -54,34 +53,21 @@ namespace FModel
         /// <returns> the path of the last created file (usually the uexp file but we don't care about the extension, so it's fine) </returns>
         public static string ExtractAsset(string currentPak, string currentItem)
         {
-            ThePak.CurrentUsedPak = currentPak;
-            ThePak.CurrentUsedPakGuid = ThePak.dynamicPaksList.Where(x => x.thePak == currentPak).Select(x => x.thePakGuid).FirstOrDefault();
-
-            if (!string.IsNullOrEmpty(ThePak.CurrentUsedPakGuid) && ThePak.CurrentUsedPakGuid != "0-0-0-0")
+            string pakGuid = ThePak.dynamicPaksList.Where(x => x.thePak == currentPak).Select(x => x.thePakGuid).FirstOrDefault();
+            string myKey = string.Empty;
+            if (!string.IsNullOrEmpty(pakGuid) && pakGuid != "0-0-0-0")
             {
-                MyKey = DynamicKeysManager.AESEntries.Where(x => x.thePak == currentPak).Select(x => x.theKey).FirstOrDefault();
+                myKey = DynamicKeysManager.AESEntries.Where(x => x.thePak == currentPak).Select(x => x.theKey).FirstOrDefault();
             }
-            else
-            {
-                ThePak.CurrentUsedPakGuid = "0-0-0-0";
-                MyKey = Settings.Default.AESKey;
-            }
+            else { myKey = Settings.Default.AESKey; }
 
             if (currentPak != currentPakToCheck || myArray == null)
             {
-                MyExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, MyKey);
-                myArray = MyExtractor.GetFileList().ToArray();
+                _myExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, myKey);
+                myArray = _myExtractor.GetFileList().ToArray();
             }
 
-            string[] results;
-            if (currentItem.Contains("."))
-            {
-                results = Array.FindAll(myArray, s => s.Contains("/" + currentItem));
-            }
-            else
-            {
-                results = Array.FindAll(myArray, s => s.Contains("/" + currentItem + "."));
-            }
+            string[] results = currentItem.Contains(".") ? Array.FindAll(myArray, s => s.Contains("/" + currentItem)) : Array.FindAll(myArray, s => s.Contains("/" + currentItem + "."));
 
             string AssetPath = string.Empty;
             for (int i = 0; i < results.Length; i++)
@@ -89,7 +75,7 @@ namespace FModel
                 int index = Array.IndexOf(myArray, results[i]);
 
                 uint y = (uint)index;
-                byte[] b = MyExtractor.GetData(y);
+                byte[] b = _myExtractor.GetData(y);
 
                 AssetPath = WriteFile(currentItem, results[i], b).Replace("/", "\\");
             }
