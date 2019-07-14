@@ -232,6 +232,10 @@ namespace FModel
                                             break;
                                     }
                                 }
+
+                                // There is no featured image (as legends pack, shadow pack...)
+                                if (string.IsNullOrEmpty(ItemIconPath) || ItemIconPath.Contains("T_Placeholder_Item_Outfit"))
+                                    GetItemIcon(theItem);
                             }
                         }
                         catch (JsonSerializationException)
