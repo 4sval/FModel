@@ -234,7 +234,7 @@ namespace FModel
                                 }
 
                                 // There is no featured image (as legends pack, shadow pack...)
-                                if (string.IsNullOrEmpty(ItemIconPath) || ItemIconPath.Contains("T_Placeholder_Item_Outfit"))
+                                if (string.IsNullOrEmpty(ItemIconPath) || ItemIconPath.Contains("Athena\\Prototype\\Textures\\"))
                                     GetItemIcon(theItem);
                             }
                         }
