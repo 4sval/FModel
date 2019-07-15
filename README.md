@@ -14,7 +14,7 @@
 [![](https://img.shields.io/badge/Release-2.4.2.1-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/latest)
 ### How To Use
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder.
-![](https://i.imgur.com/OvjYMyX.gif)
+![](https://i.imgur.com/9AUVUVU.gif)
 
 **2.** Restart the executable, go to the AES Manager and add your AES Keys, click **Load** and select your .PAK file
 - It will parse all Assets contained in the selected .PAK file with their respective path
@@ -40,7 +40,7 @@
 
 **3.** Click `Load Difference`
 
-![](https://i.imgur.com/khTcpJG.gif)
+![](https://i.imgur.com/36icHam.gif)
 
 ### Update Mode
 **1.** Enable Difference Mode, then Update Mode

@@ -29,7 +29,6 @@ namespace FModel
     {
         #region to refactor
         private static Stopwatch StopWatch { get; set; }
-        public static string[] PakAsTxt { get; set; }
         private static Dictionary<string, string> _diffToExtract { get; set; }
         private static List<string> _itemsToDisplay { get; set; }
         public static string[] SelectedItemsArray { get; set; }
@@ -274,139 +273,6 @@ namespace FModel
 
         #region PAKLIST & FILL TREE
         //METHODS
-        private void RegisterPaKsinDict(ToolStripItemClickedEventArgs theSinglePak = null, bool loadAllPaKs = false)
-        {
-            PakExtractor extractor = null;
-            StringBuilder sb = new StringBuilder();
-            bool bMainKeyWorking = false;
-
-            for (int i = 0; i < ThePak.mainPaksList.Count; i++)
-            {
-                try
-                {
-                    if (!string.IsNullOrWhiteSpace(Settings.Default.AESKey))
-                    {
-                        extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
-                    }
-                    else { extractor.Dispose(); break; }
-                }
-                catch (Exception)
-                {
-                    extractor.Dispose();
-                    break;
-                }
-
-                string[] CurrentUsedPakLines = extractor.GetFileList().ToArray();
-                if (CurrentUsedPakLines != null)
-                {
-                    bMainKeyWorking = true;
-
-                    string mountPoint = extractor.GetMountPoint();
-                    ThePak.PaksMountPoint.Add(ThePak.mainPaksList[i].thePak, mountPoint.Substring(9));
-
-                    for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
-                    {
-                        CurrentUsedPakLines[ii] = mountPoint.Substring(6) + CurrentUsedPakLines[ii];
-
-                        string CurrentUsedPakFileName = CurrentUsedPakLines[ii].Substring(CurrentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
-                        if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
-                        {
-                            if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal))))
-                            {
-                                ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.mainPaksList[i].thePak);
-                            }
-                        }
-                        else
-                        {
-                            if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName))
-                            {
-                                ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName, ThePak.mainPaksList[i].thePak);
-                            }
-                        }
-
-                        if (loadAllPaKs)
-                        {
-                            sb.Append(CurrentUsedPakLines[ii] + "\n");
-                        }
-                    }
-
-                    if (loadAllPaKs) { new UpdateMyState(".PAK mount point: " + mountPoint.Substring(9), "Waiting").ChangeProcessState(); }
-                    if (theSinglePak != null && ThePak.mainPaksList[i].thePak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
-                }
-                extractor.Dispose();
-            }
-            if (bMainKeyWorking) { LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage); }
-
-            for (int i = 0; i < ThePak.dynamicPaksList.Count; i++)
-            {
-                string pakName = DynamicKeysManager.AESEntries.Where(x => x.thePak == ThePak.dynamicPaksList[i].thePak).Select(x => x.thePak).FirstOrDefault();
-                string pakKey = DynamicKeysManager.AESEntries.Where(x => x.thePak == ThePak.dynamicPaksList[i].thePak).Select(x => x.theKey).FirstOrDefault();
-
-                if (!string.IsNullOrEmpty(pakName) && !string.IsNullOrEmpty(pakKey))
-                {
-                    try
-                    {
-                        extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
-                    }
-                    catch (Exception)
-                    {
-                        new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole();
-                        extractor.Dispose();
-                        continue;
-                    }
-
-                    string[] CurrentUsedPakLines = extractor.GetFileList().ToArray();
-                    if (CurrentUsedPakLines != null)
-                    {
-                        string mountPoint = extractor.GetMountPoint();
-                        ThePak.PaksMountPoint.Add(ThePak.dynamicPaksList[i].thePak, mountPoint.Substring(9));
-
-                        for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
-                        {
-                            CurrentUsedPakLines[ii] = mountPoint.Substring(6) + CurrentUsedPakLines[ii];
-
-                            string CurrentUsedPakFileName = CurrentUsedPakLines[ii].Substring(CurrentUsedPakLines[ii].LastIndexOf("/", StringComparison.Ordinal) + 1);
-                            if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
-                            {
-                                if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal))))
-                                {
-                                    ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName.Substring(0, CurrentUsedPakFileName.LastIndexOf(".", StringComparison.Ordinal)), ThePak.dynamicPaksList[i].thePak);
-                                }
-                            }
-                            else
-                            {
-                                if (!ThePak.AllpaksDictionary.ContainsKey(CurrentUsedPakFileName))
-                                {
-                                    ThePak.AllpaksDictionary.Add(CurrentUsedPakFileName, ThePak.dynamicPaksList[i].thePak);
-                                }
-                            }
-
-                            if (loadAllPaKs)
-                            {
-                                sb.Append(CurrentUsedPakLines[ii] + "\n");
-                            }
-                        }
-
-                        if (loadAllPaKs) { new UpdateMyState(".PAK mount point: " + mountPoint.Substring(9), "Waiting").ChangeProcessState(); }
-                        if (theSinglePak != null && ThePak.dynamicPaksList[i].thePak == theSinglePak.ClickedItem.Text) { PakAsTxt = CurrentUsedPakLines; }
-                    }
-                    extractor.Dispose();
-                }
-            }
-
-            if (loadAllPaKs)
-            {
-                File.WriteAllText(App.DefaultOutputPath + "\\FortnitePAKs.txt", sb.ToString()); //File will always exist
-            }
-
-            new UpdateMyState("Building tree, please wait...", "Loading").ChangeProcessState();
-        }
-
-        /// <summary>
-        /// https://social.msdn.microsoft.com/Forums/en-US/c75c1804-6933-40ba-b17a-0e36ae8bcbb5/how-to-create-a-tree-view-with-full-paths?forum=csharplanguage
-        /// </summary>
-        /// <param name="nodeList"></param>
-        /// <param name="path"></param>
         private void TreeParsePath(TreeNodeCollection nodeList, string path)
         {
             TreeNode node;
@@ -447,7 +313,7 @@ namespace FModel
         }
         private void ComparePaKs()
         {
-            PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\FortnitePAKs.txt");
+            PakHelper.PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\FortnitePAKs.txt");
             File.Delete(App.DefaultOutputPath + "\\FortnitePAKs.txt");
 
             //ASK DIFFERENCE FILE AND COMPARE
@@ -465,8 +331,8 @@ namespace FModel
                         if (!linesA[i].StartsWith("../"))
                             linesA[i] = "../" + linesA[i];
 
-                    IEnumerable<String> onlyB = PakAsTxt.Except(linesA);
-                    IEnumerable<String> removed = linesA.Except(PakAsTxt);
+                    IEnumerable<String> onlyB = PakHelper.PakAsTxt.Except(linesA);
+                    IEnumerable<String> removed = linesA.Except(PakHelper.PakAsTxt);
 
                     File.WriteAllLines(App.DefaultOutputPath + "\\Result.txt", onlyB);
                     File.WriteAllLines(App.DefaultOutputPath + "\\Removed.txt", removed);
@@ -505,7 +371,7 @@ namespace FModel
 
             if (File.Exists(App.DefaultOutputPath + "\\Result.txt"))
             {
-                PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\Result.txt");
+                PakHelper.PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\Result.txt");
                 File.Delete(App.DefaultOutputPath + "\\Result.txt");
                 Checking.DifferenceFileExists = true;
             }
@@ -515,23 +381,23 @@ namespace FModel
             ThePak.AllpaksDictionary = new Dictionary<string, string>();
             _diffToExtract = new Dictionary<string, string>();
             ThePak.PaksMountPoint = new Dictionary<string, string>();
-            PakAsTxt = null;
+            PakHelper.PakAsTxt = null;
 
             if (selectedPak != null)
             {
                 new UpdateMyState(Settings.Default.PAKsPath + "\\" + selectedPak.ClickedItem.Text, "Loading").ChangeProcessState();
 
                 //ADD TO DICTIONNARY
-                RegisterPaKsinDict(selectedPak);
+                PakHelper.RegisterPaKsinDict(selectedPak);
 
-                if (PakAsTxt != null)
+                if (PakHelper.PakAsTxt != null)
                 {
                     Invoke(new Action(() =>
                     {
                         treeView1.BeginUpdate();
-                        for (int i = 0; i < PakAsTxt.Length; i++)
+                        for (int i = 0; i < PakHelper.PakAsTxt.Length; i++)
                         {
-                            TreeParsePath(treeView1.Nodes, PakAsTxt[i].Replace(PakAsTxt[i].Split('/').Last(), ""));
+                            TreeParsePath(treeView1.Nodes, PakHelper.PakAsTxt[i].Replace(PakHelper.PakAsTxt[i].Split('/').Last(), ""));
                         }
                         Utilities.ExpandToLevel(treeView1.Nodes, 2);
                         treeView1.EndUpdate();
@@ -544,7 +410,7 @@ namespace FModel
             if (loadAllPaKs)
             {
                 //ADD TO DICTIONNARY
-                RegisterPaKsinDict(null, true);
+                PakHelper.RegisterPaKsinDict(null, true);
 
                 if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0) //File will always exist so we check the file size instead
                 {
@@ -553,15 +419,15 @@ namespace FModel
                 }
                 else
                 {
-                    PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\FortnitePAKs.txt");
+                    PakHelper.PakAsTxt = File.ReadAllLines(App.DefaultOutputPath + "\\FortnitePAKs.txt");
                     File.Delete(App.DefaultOutputPath + "\\FortnitePAKs.txt");
 
                     Invoke(new Action(() =>
                     {
                         treeView1.BeginUpdate();
-                        for (int i = 0; i < PakAsTxt.Length; i++)
+                        for (int i = 0; i < PakHelper.PakAsTxt.Length; i++)
                         {
-                            TreeParsePath(treeView1.Nodes, PakAsTxt[i].Replace(PakAsTxt[i].Split('/').Last(), ""));
+                            TreeParsePath(treeView1.Nodes, PakHelper.PakAsTxt[i].Replace(PakHelper.PakAsTxt[i].Split('/').Last(), ""));
                         }
                         Utilities.ExpandToLevel(treeView1.Nodes, 2);
                         treeView1.EndUpdate();
@@ -572,7 +438,7 @@ namespace FModel
             if (getDiff)
             {
                 //ADD TO DICTIONNARY
-                RegisterPaKsinDict(null, true);
+                PakHelper.RegisterPaKsinDict(null, true);
 
                 if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0)
                 {
@@ -584,16 +450,16 @@ namespace FModel
                     ComparePaKs();
                     if (updateMode && Checking.DifferenceFileExists)
                     {
-                        UmFilter(PakAsTxt, _diffToExtract);
+                        UmFilter(PakHelper.PakAsTxt, _diffToExtract);
                         Checking.UmWorking = true;
                     }
 
                     Invoke(new Action(() =>
                     {
                         treeView1.BeginUpdate();
-                        for (int i = 0; i < PakAsTxt.Length; i++)
+                        for (int i = 0; i < PakHelper.PakAsTxt.Length; i++)
                         {
-                            TreeParsePath(treeView1.Nodes, PakAsTxt[i].Replace(PakAsTxt[i].Split('/').Last(), ""));
+                            TreeParsePath(treeView1.Nodes, PakHelper.PakAsTxt[i].Replace(PakHelper.PakAsTxt[i].Split('/').Last(), ""));
                         }
                         Utilities.ExpandToLevel(treeView1.Nodes, 2);
                         treeView1.EndUpdate();
@@ -900,7 +766,7 @@ namespace FModel
                 return;
             }
 
-            var dirfiles = PakAsTxt.Where(x => x.StartsWith(full) && !x.Replace(full, "").Contains("/"));
+            var dirfiles = PakHelper.PakAsTxt.Where(x => x.StartsWith(full) && !x.Replace(full, "").Contains("/"));
             var enumerable = dirfiles as string[] ?? dirfiles.ToArray();
             if (!enumerable.Any())
             {
@@ -1598,7 +1464,7 @@ namespace FModel
                         return;
                     }
 
-                    var dirfiles = PakAsTxt.Where(x => x.StartsWith(full) && !x.Replace(full, "").Contains("/"));
+                    var dirfiles = PakHelper.PakAsTxt.Where(x => x.StartsWith(full) && !x.Replace(full, "").Contains("/"));
                     var enumerable = dirfiles as string[] ?? dirfiles.ToArray();
                     if (!enumerable.Any())
                     {
@@ -1775,15 +1641,15 @@ namespace FModel
         {
             _diffToExtract = new Dictionary<string, string>();
 
-            for (int i = 0; i < PakAsTxt.Length; i++)
+            for (int i = 0; i < PakHelper.PakAsTxt.Length; i++)
             {
-                if (PakAsTxt[i].Contains(Checking.currentSelectedNodePartialPath.Replace("\\", "/")))
+                if (PakHelper.PakAsTxt[i].Contains(Checking.currentSelectedNodePartialPath.Replace("\\", "/")))
                 {
-                    string filename = Path.GetFileName(PakAsTxt[i]);
+                    string filename = Path.GetFileName(PakHelper.PakAsTxt[i]);
                     if (filename.Contains(".uasset") || filename.Contains(".uexp") || filename.Contains(".ubulk"))
                     {
                         if (!_diffToExtract.ContainsKey(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal))))
-                            _diffToExtract.Add(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal)), PakAsTxt[i]);
+                            _diffToExtract.Add(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal)), PakHelper.PakAsTxt[i]);
                     }
                 }
             }

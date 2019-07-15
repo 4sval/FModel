@@ -303,12 +303,12 @@ namespace FModel
 
         /// <summary>
         /// Draw a watermark on an Item Icon
-        /// Keep in mind the update mode use different settings than the normal mode, hence there's 2 if statement
+        /// Keep in mind the update mode use different settings than the normal mode, hence there's 2 if statements
         /// </summary>
         /// <param name="toDrawOn"></param>
         public static void DrawWatermark(Graphics toDrawOn)
         {
-            if (Checking.UmWorking == false && (Settings.Default.isWatermark && !string.IsNullOrEmpty(Settings.Default.wFilename)))
+            if (!Checking.UmWorking && (Settings.Default.isWatermark && !string.IsNullOrEmpty(Settings.Default.wFilename)))
             {
                 Image watermark = Image.FromFile(Settings.Default.wFilename);
                 if (watermark != null)

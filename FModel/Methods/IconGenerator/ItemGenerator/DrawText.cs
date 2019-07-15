@@ -256,16 +256,20 @@ namespace FModel
 
                 string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString);
 
-                if (Settings.Default.rarityNew)
-                {
-                    Font goodFont = FontUtilities.FindFont(myGraphic, text, new Rectangle(5, 405, 512, 55).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35));
-                    myGraphic.DrawString(text, goodFont, new SolidBrush(Color.White), new Point(522, 405), FontUtilities.rightString);
-                }
-                else
-                {
-                    Font goodFont = FontUtilities.FindFont(myGraphic, text, new Rectangle(5, 395, 512, 49).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35));
-                    myGraphic.DrawString(text, goodFont, new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
-                }
+                Font goodFont = FontUtilities.FindFont(
+                    myGraphic,
+                    text,
+                    Settings.Default.rarityNew ? new Rectangle(5, 405, 512, 55).Size : new Rectangle(5, 395, 512, 49).Size,
+                    new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35)
+                    );
+
+                myGraphic.DrawString(
+                    text,
+                    goodFont,
+                    new SolidBrush(Color.White),
+                    Settings.Default.rarityNew ? new Point(522, 405) : new Point(522 / 2, 395),
+                    Settings.Default.rarityNew ? FontUtilities.rightString : FontUtilities.centeredString
+                    );
             }
         }
 
@@ -290,14 +294,13 @@ namespace FModel
                     }
                 }
 
-                if (Settings.Default.rarityNew)
-                {
-                    myGraphic.DrawString(text, new Font("Arial", 9), new SolidBrush(Color.White), new RectangleF(5, 455, 512, 42), FontUtilities.rightString);
-                }
-                else
-                {
-                    myGraphic.DrawString(text, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
-                }
+                myGraphic.DrawString(
+                    text,
+                    new Font("Arial", Settings.Default.rarityNew ? 9 : 10),
+                    new SolidBrush(Color.White),
+                    new RectangleF(5, Settings.Default.rarityNew ? 455 : 441, 512, Settings.Default.rarityNew ? 42 : 49),
+                    Settings.Default.rarityNew ? FontUtilities.rightString : FontUtilities.centeredStringLine
+                    );
             }
         }
 

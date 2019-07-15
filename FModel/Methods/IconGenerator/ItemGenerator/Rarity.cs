@@ -62,7 +62,7 @@ namespace FModel
         {
             if (specialMode == "ammo")
             {
-                return Resources.C512;
+                return Settings.Default.rarityNew ? Resources.C512 : Resources.C512v1;
             }
             else
             {

@@ -18,10 +18,8 @@ namespace FModel
 
         /// <summary>
         /// Normal pak file: using AllpaksDictionary, it tells you the pak name depending on currentItem. Using this pak name and PaksMountPoint we get the mount point
-        /// Dynamic pak file: It's made so we already know the name of the pak, so we just use PaksMountPoint to get the mount point
         /// </summary>
         /// <param name="currentItem"></param>
-        /// <param name="DynamicPak"></param>
         /// <returns> the mount point as string, used to create subfolders when extracting or create the tree when loading all paks </returns>
         private static string GetMountPointFromDict(string currentItem)
         {

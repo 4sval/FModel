@@ -34,35 +34,35 @@ namespace FModel.Forms
             FilesToSearch = false;
             _myInfosDict = new Dictionary<string, string>();
 
-            if (MainWindow.PakAsTxt != null)
+            if (PakHelper.PakAsTxt != null)
             {
-                for (int i = 0; i < MainWindow.PakAsTxt.Length; i++)
+                for (int i = 0; i < PakHelper.PakAsTxt.Length; i++)
                 {
-                    if (MainWindow.PakAsTxt[i].Contains(".uasset") || MainWindow.PakAsTxt[i].Contains(".uexp") || MainWindow.PakAsTxt[i].Contains(".ubulk"))
+                    if (PakHelper.PakAsTxt[i].Contains(".uasset") || PakHelper.PakAsTxt[i].Contains(".uexp") || PakHelper.PakAsTxt[i].Contains(".ubulk"))
                     {
-                        if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal))))
+                        if (!_myInfosDict.ContainsKey(PakHelper.PakAsTxt[i].Substring(0, PakHelper.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal))))
                         {
-                            _myInfosDict.Add(MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.PakAsTxt[i])]);
+                            _myInfosDict.Add(PakHelper.PakAsTxt[i].Substring(0, PakHelper.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal)), ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(PakHelper.PakAsTxt[i])]);
 
-                            _fileName = MainWindow.PakAsTxt[i].Substring(0, MainWindow.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal));
+                            _fileName = PakHelper.PakAsTxt[i].Substring(0, PakHelper.PakAsTxt[i].LastIndexOf(".", StringComparison.Ordinal));
                             _myInfos.Add(new FileInfo
                             {
                                 FileName = _fileName,
-                                PakFile = ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(MainWindow.PakAsTxt[i])],
+                                PakFile = ThePak.AllpaksDictionary[Path.GetFileNameWithoutExtension(PakHelper.PakAsTxt[i])],
                             });
                         }
                     }
                     else
                     {
-                        if (!_myInfosDict.ContainsKey(MainWindow.PakAsTxt[i]))
+                        if (!_myInfosDict.ContainsKey(PakHelper.PakAsTxt[i]))
                         {
-                            _myInfosDict.Add(MainWindow.PakAsTxt[i], ThePak.AllpaksDictionary[Path.GetFileName(MainWindow.PakAsTxt[i])]);
+                            _myInfosDict.Add(PakHelper.PakAsTxt[i], ThePak.AllpaksDictionary[Path.GetFileName(PakHelper.PakAsTxt[i])]);
 
-                            _fileName = MainWindow.PakAsTxt[i];
+                            _fileName = PakHelper.PakAsTxt[i];
                             _myInfos.Add(new FileInfo
                             {
                                 FileName = _fileName,
-                                PakFile = ThePak.AllpaksDictionary[Path.GetFileName(MainWindow.PakAsTxt[i])],
+                                PakFile = ThePak.AllpaksDictionary[Path.GetFileName(PakHelper.PakAsTxt[i])],
                             });
                         }
                     }
@@ -121,7 +121,7 @@ namespace FModel.Forms
             listView1.VirtualListSize = 0;
             listView1.Invalidate();
 
-            if (MainWindow.PakAsTxt != null)
+            if (PakHelper.PakAsTxt != null)
             {
                 if (!string.IsNullOrEmpty(textBox1.Text) && textBox1.Text.Length > 2)
                 {

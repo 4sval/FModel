@@ -142,22 +142,23 @@
       <DependentUpon>TweetForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Methods\AESManager\DynamicKeysManager.cs" />
-    <Compile Include="Methods\DynamicKeys\AddToUI.cs" />
-    <Compile Include="Methods\DynamicKeys\Keychain.cs" />
-    <Compile Include="Methods\ChallengeGenerator\BundleDesign.cs" />
-    <Compile Include="Methods\ChallengeGenerator\BundleInfos.cs" />
-    <Compile Include="Methods\ChallengeGenerator\DrawingRewards.cs" />
+    <Compile Include="Methods\AESManager\DynamicKeys\AddToUI.cs" />
+    <Compile Include="Methods\AESManager\DynamicKeys\Keychain.cs" />
+    <Compile Include="Methods\IconGenerator\ChallengeGenerator\BundleDesign.cs" />
+    <Compile Include="Methods\IconGenerator\ChallengeGenerator\BundleInfos.cs" />
+    <Compile Include="Methods\IconGenerator\ChallengeGenerator\DrawingRewards.cs" />
     <Compile Include="Methods\DLLImport.cs" />
-    <Compile Include="Methods\IconGenerator\DrawText.cs" />
+    <Compile Include="Methods\IconGenerator\ItemGenerator\DrawText.cs" />
     <Compile Include="Methods\IconGenerator\Translations\LoadLocRes.cs" />
     <Compile Include="Methods\IconGenerator\Translations\SearchResource.cs" />
     <Compile Include="Methods\ImagesMerger\ImagesMerger.cs" />
+    <Compile Include="Methods\PakHelper\PakHelper.cs" />
     <Compile Include="Methods\Serializer\AssetReader.cs" />
     <Compile Include="Methods\Serializer\LocRes\LocResSerializer.cs" />
     <Compile Include="Methods\Scintilla\MyScintilla.cs" />
     <Compile Include="Methods\Utilities\FontUtilities.cs" />
-    <Compile Include="Methods\IconGenerator\ItemIcon.cs" />
-    <Compile Include="Methods\IconGenerator\Rarity.cs" />
+    <Compile Include="Methods\IconGenerator\ItemGenerator\ItemIcon.cs" />
+    <Compile Include="Methods\IconGenerator\ItemGenerator\Rarity.cs" />
     <Compile Include="Forms\About.cs">
       <SubType>Form</SubType>
     </Compile>

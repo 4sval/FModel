@@ -58,8 +58,7 @@ namespace FModel
         }
 
         /// <summary>
-        /// 1. if loading a dynamic pak we have to switch between keys because the translation file is the main paks hence string oldKey is there
-        /// 2. smh if loading a dynamic pak, the guid isn't reset when registering, the temp solution is to fake the guid
+        /// 
         /// </summary>
         /// <param name="selectedLanguage"></param>
         /// <returns></returns>

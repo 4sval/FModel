@@ -1,5 +1,4 @@
-﻿using FModel.Properties;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,8 +12,8 @@ namespace FModel
         private static List<AESEntry> _oldKeysList = null;
 
         /// <summary>
-        /// ask the keychain api for all dynamic keys and their guids
-        /// if an API guid match a local guid, the key is saved and the pak can be opened with this key
+        /// ask the keychain api for all dynamic keys
+        /// if an API pak name match a local pak name, the key is saved and the pak can be opened with this key
         /// </summary>
         public static void checkAndAddDynamicKeys()
         {
@@ -29,44 +28,55 @@ namespace FModel
                 _oldKeysList = DynamicKeysManager.AESEntries;
             }
 
-            JObject myObject = JObject.Parse(GetKeysFromKeychain());
-            if (myObject != null)
+            string data = GetKeysFromKeychain();
+            if (!string.IsNullOrEmpty(data))
             {
-                DynamicKeysManager.AESEntries = new List<AESEntry>();
-                foreach (PaksEntry item in ThePak.dynamicPaksList)
+                JObject myObject = JObject.Parse(data);
+                if (myObject != null)
                 {
-                    if (myObject.ToString().Contains(item.thePak))
+                    DynamicKeysManager.AESEntries = new List<AESEntry>();
+                    foreach (PaksEntry item in ThePak.dynamicPaksList)
                     {
-                        JToken token = myObject.FindTokens(item.thePak).FirstOrDefault();
-
-                        bool pakAlreadyExist = DynamicKeysManager.AESEntries.Where(i => i.thePak == item.thePak).Any();
-
-                        if (!pakAlreadyExist)
+                        if (myObject.ToString().Contains(item.thePak))
                         {
+                            JToken token = myObject.FindTokens(item.thePak).FirstOrDefault();
+
                             DynamicKeysManager.serialize(token.ToString().ToUpper().Substring(2), item.thePak);
 
                             displayNewPaks(item.thePak);
                         }
                     }
+                    new UpdateMyConsole("", Color.Green, true).AppendToConsole();
                 }
-                new UpdateMyConsole("", Color.Green, true).AppendToConsole();
             }
 
             DynamicKeysManager.deserialize();
         }
 
         /// <summary>
-        /// just set the array to be the keys from the api
+        /// return the dynamic keys part from Ben API
         /// </summary>
         /// <returns></returns>
         private static string GetKeysFromKeychain()
         {
-            if (DLLImport.IsInternetAvailable())
+            try
             {
-                JToken dynamicPaks = JObject.Parse(Keychain.GetEndpoint("http://benbotfn.tk:8080/api/aes")).FindTokens("additionalKeys").FirstOrDefault();
-                return JToken.Parse(dynamicPaks.ToString()).ToString().TrimStart('[').TrimEnd(']');
+                if (DLLImport.IsInternetAvailable())
+                {
+                    JToken dynamicPaks = JObject.Parse(Keychain.GetEndpoint("http://benbotfn.tk:8080/api/aes")).FindTokens("additionalKeys").FirstOrDefault();
+                    return JToken.Parse(dynamicPaks.ToString()).ToString().TrimStart('[').TrimEnd(']');
+                }
+                else
+                {
+                    new UpdateMyConsole("Your internet connection is currently unavailable, can't check for dynamic keys at the moment.", Color.Red, true).AppendToConsole();
+                    return null;
+                }
             }
-            else { return null; }
+            catch (Exception)
+            {
+                new UpdateMyConsole("Error while checking for dynamic keys", Color.Red, true).AppendToConsole();
+                return null;
+            }
         }
 
         /// <summary>
