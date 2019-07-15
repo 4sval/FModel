@@ -61,6 +61,36 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Adaptive64 {
+            get {
+                object obj = ResourceManager.GetObject("Adaptive64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Animated64 {
+            get {
+                object obj = ResourceManager.GetObject("Animated64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BattlePoints {
+            get {
+                object obj = ResourceManager.GetObject("BattlePoints", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
         internal static byte[] BurbankBigCondensed_Black {
@@ -103,6 +133,16 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap C512v1 {
+            get {
+                object obj = ResourceManager.GetObject("C512v1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Challenges_Slider {
             get {
                 object obj = ResourceManager.GetObject("Challenges_Slider", resourceCulture);
@@ -136,6 +176,16 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap E512 {
             get {
                 object obj = ResourceManager.GetObject("E512", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap E512v1 {
+            get {
+                object obj = ResourceManager.GetObject("E512v1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,9 +233,29 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ItemsMTX {
+            get {
+                object obj = ResourceManager.GetObject("ItemsMTX", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap L512 {
             get {
                 object obj = ResourceManager.GetObject("L512", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap L512v1 {
+            get {
+                object obj = ResourceManager.GetObject("L512v1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -213,9 +283,39 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap M512v1 {
+            get {
+                object obj = ResourceManager.GetObject("M512v1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Marvel512 {
             get {
                 object obj = ResourceManager.GetObject("Marvel512", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Marvel512v1 {
+            get {
+                object obj = ResourceManager.GetObject("Marvel512v1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Pets64 {
+            get {
+                object obj = ResourceManager.GetObject("Pets64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -233,9 +333,29 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Quests64 {
+            get {
+                object obj = ResourceManager.GetObject("Quests64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap R512 {
             get {
                 object obj = ResourceManager.GetObject("R512", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap R512v1 {
+            get {
+                object obj = ResourceManager.GetObject("R512v1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -253,6 +373,16 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap SeasonalXP {
+            get {
+                object obj = ResourceManager.GetObject("SeasonalXP", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap StatusAnnotations_Information_16xLG_color {
             get {
                 object obj = ResourceManager.GetObject("StatusAnnotations_Information_16xLG_color", resourceCulture);
@@ -263,99 +393,29 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap T_FNBR_BattlePoints_L {
-            get {
-                object obj = ResourceManager.GetObject("T_FNBR_BattlePoints_L", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap T_FNBR_SeasonalXP_L {
-            get {
-                object obj = ResourceManager.GetObject("T_FNBR_SeasonalXP_L", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap T_Icon_Adaptive_64 {
-            get {
-                object obj = ResourceManager.GetObject("T_Icon_Adaptive_64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap T_Icon_Animated_64 {
-            get {
-                object obj = ResourceManager.GetObject("T_Icon_Animated_64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap T_Icon_Pets_64 {
-            get {
-                object obj = ResourceManager.GetObject("T_Icon_Pets_64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap T_Icon_Quests_64 {
-            get {
-                object obj = ResourceManager.GetObject("T_Icon_Quests_64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap T_Icon_Traversal_64 {
-            get {
-                object obj = ResourceManager.GetObject("T_Icon_Traversal_64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap T_Icon_Variant_64 {
-            get {
-                object obj = ResourceManager.GetObject("T_Icon_Variant_64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap T_Items_MTX_L {
-            get {
-                object obj = ResourceManager.GetObject("T_Items_MTX_L", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap T512 {
             get {
                 object obj = ResourceManager.GetObject("T512", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap T512v1 {
+            get {
+                object obj = ResourceManager.GetObject("T512v1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Traversal64 {
+            get {
+                object obj = ResourceManager.GetObject("Traversal64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -383,9 +443,29 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap U512v1 {
+            get {
+                object obj = ResourceManager.GetObject("U512v1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap unknown512 {
             get {
                 object obj = ResourceManager.GetObject("unknown512", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Variant64 {
+            get {
+                object obj = ResourceManager.GetObject("Variant64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -406,6 +486,26 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap wTemplateF {
             get {
                 object obj = ResourceManager.GetObject("wTemplateF", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap wTemplateFv1 {
+            get {
+                object obj = ResourceManager.GetObject("wTemplateFv1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap wTemplatev1 {
+            get {
+                object obj = ResourceManager.GetObject("wTemplatev1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

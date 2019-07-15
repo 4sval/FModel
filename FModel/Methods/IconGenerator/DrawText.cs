@@ -223,17 +223,17 @@ namespace FModel
             if (CosmeticUff != null)
             {
                 if (CosmeticUff.Contains("Animated"))
-                    imageLogo = Resources.T_Icon_Animated_64;
+                    imageLogo = Resources.Animated64;
                 else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem.ExportType != "AthenaPetCarrierItemDefinition")
-                    imageLogo = Resources.T_Icon_Quests_64;
+                    imageLogo = Resources.Quests64;
                 else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem.ExportType == "AthenaPetCarrierItemDefinition")
-                    imageLogo = Resources.T_Icon_Pets_64;
+                    imageLogo = Resources.Pets64;
                 else if (CosmeticUff.Contains("HasVariants"))
-                    imageLogo = Resources.T_Icon_Variant_64;
+                    imageLogo = Resources.Variant64;
                 else if (CosmeticUff.Contains("Reactive"))
-                    imageLogo = Resources.T_Icon_Adaptive_64;
+                    imageLogo = Resources.Adaptive64;
                 else if (CosmeticUff.Contains("Traversal"))
-                    imageLogo = Resources.T_Icon_Traversal_64;
+                    imageLogo = Resources.Traversal64;
             }
 
             if (imageLogo != null)
@@ -256,8 +256,16 @@ namespace FModel
 
                 string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString);
 
-                Font goodFont = FontUtilities.FindFont(myGraphic, text, new Rectangle(5, 405, 512, 55).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35));
-                myGraphic.DrawString(text, goodFont, new SolidBrush(Color.White), new Point(522, 405), FontUtilities.rightString);
+                if (Settings.Default.rarityNew)
+                {
+                    Font goodFont = FontUtilities.FindFont(myGraphic, text, new Rectangle(5, 405, 512, 55).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35));
+                    myGraphic.DrawString(text, goodFont, new SolidBrush(Color.White), new Point(522, 405), FontUtilities.rightString);
+                }
+                else
+                {
+                    Font goodFont = FontUtilities.FindFont(myGraphic, text, new Rectangle(5, 395, 512, 49).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35));
+                    myGraphic.DrawString(text, goodFont, new SolidBrush(Color.White), new Point(522 / 2, 395), FontUtilities.centeredString);
+                }
             }
         }
 
@@ -281,7 +289,15 @@ namespace FModel
                         text += theSet;
                     }
                 }
-                myGraphic.DrawString(text, new Font("Arial", 9), new SolidBrush(Color.White), new RectangleF(5, 455, 512, 42), FontUtilities.rightString);
+
+                if (Settings.Default.rarityNew)
+                {
+                    myGraphic.DrawString(text, new Font("Arial", 9), new SolidBrush(Color.White), new RectangleF(5, 455, 512, 42), FontUtilities.rightString);
+                }
+                else
+                {
+                    myGraphic.DrawString(text, new Font("Arial", 10), new SolidBrush(Color.White), new RectangleF(5, 441, 512, 49), FontUtilities.centeredStringLine);
+                }
             }
         }
 

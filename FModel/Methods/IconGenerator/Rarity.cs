@@ -16,20 +16,20 @@ namespace FModel
             switch (theItem.Rarity)
             {
                 case "EFortRarity::Transcendent":
-                    return Resources.T512;
+                    return Settings.Default.rarityNew ? Resources.T512 : Resources.T512v1;
                 case "EFortRarity::Mythic":
-                    return Resources.M512;
+                    return Settings.Default.rarityNew ? Resources.M512 : Resources.M512v1;
                 case "EFortRarity::Legendary":
-                    return Resources.L512;
+                    return Settings.Default.rarityNew ? Resources.L512 : Resources.L512v1;
                 case "EFortRarity::Epic":
                 case "EFortRarity::Quality":
-                    return Resources.E512;
+                    return Settings.Default.rarityNew ? Resources.E512 : Resources.E512v1;
                 case "EFortRarity::Rare":
-                    return Resources.R512;
+                    return Settings.Default.rarityNew ? Resources.R512 : Resources.R512v1;
                 case "EFortRarity::Common":
-                    return Resources.C512;
+                    return Settings.Default.rarityNew ? Resources.C512 : Resources.C512v1;
                 default:
-                    return Resources.U512;
+                    return Settings.Default.rarityNew ? Resources.U512 : Resources.U512v1;
             }
         }
 
@@ -43,7 +43,7 @@ namespace FModel
         {
             if (theItem.Series == "MarvelSeries")
             {
-                return Resources.Marvel512;
+                return Settings.Default.rarityNew ? Resources.Marvel512 : Resources.Marvel512v1;
             }
             else
             {

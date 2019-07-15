@@ -38,6 +38,7 @@ namespace FModel.Forms
             this.label1 = new System.Windows.Forms.Label();
             this.OKButton = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
@@ -152,6 +153,7 @@ namespace FModel.Forms
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.checkBox1);
             this.groupBox4.Controls.Add(this.comboBox1);
             this.groupBox4.Controls.Add(this.label10);
             this.groupBox4.Controls.Add(this.button2);
@@ -170,6 +172,17 @@ namespace FModel.Forms
             this.groupBox4.TabIndex = 16;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Icon Creation";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(244, 47);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(139, 17);
+            this.checkBox1.TabIndex = 30;
+            this.checkBox1.Text = "New Rarity Background";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
             // 
             // comboBox1
             // 
@@ -321,7 +334,6 @@ namespace FModel.Forms
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Merger";
-            this.groupBox1.Enter += new System.EventHandler(this.GroupBox1_Enter);
             // 
             // checkBoxSaveAsMergeImages
             // 
@@ -386,7 +398,6 @@ namespace FModel.Forms
             this.groupBox6.TabIndex = 19;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Challenges";
-            this.groupBox6.Enter += new System.EventHandler(this.GroupBox6_Enter);
             // 
             // checkBox2
             // 
@@ -483,5 +494,6 @@ namespace FModel.Forms
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.CheckBox checkBox_tryToOpen;
         private System.Windows.Forms.CheckBox checkBoxSaveAsMergeImages;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

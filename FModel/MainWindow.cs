@@ -1204,14 +1204,18 @@ namespace FModel
 
             ItemIcon.DrawWatermark(g);
 
-            GraphicsPath p = new GraphicsPath();
-            p.StartFigure();
-            p.AddLine(4, 438, 517, 383);
-            p.AddLine(517, 383, 517, 383 + 134);
-            p.AddLine(4, 383 + 134, 4, 383 + 134);
-            p.AddLine(4, 383 + 134, 4, 438);
-            p.CloseFigure();
-            g.FillPath(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), p);
+            if (Settings.Default.rarityNew)
+            {
+                GraphicsPath p = new GraphicsPath();
+                p.StartFigure();
+                p.AddLine(4, 438, 517, 383);
+                p.AddLine(517, 383, 517, 383 + 134);
+                p.AddLine(4, 383 + 134, 4, 383 + 134);
+                p.AddLine(4, 383 + 134, 4, 438);
+                p.CloseFigure();
+                g.FillPath(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), p);
+            }
+            else { g.FillRectangle(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), new Rectangle(5, 383, 512, 134)); }
 
             DrawText.DrawTexts(theItem, g, specialMode);
 

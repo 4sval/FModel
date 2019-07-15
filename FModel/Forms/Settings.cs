@@ -19,6 +19,8 @@ namespace FModel.Forms
             textBox2.Text = Properties.Settings.Default.PAKsPath;
             textBox1.Text = Properties.Settings.Default.ExtractOutput;
 
+            checkBox1.Checked = Properties.Settings.Default.rarityNew;
+
             textBox6.Text = Properties.Settings.Default.challengesWatermark;
             checkBox2.Checked = Properties.Settings.Default.challengesDebug;
             if (string.IsNullOrWhiteSpace(textBox6.Text))
@@ -48,7 +50,15 @@ namespace FModel.Forms
             {
                 filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.wFilename);
 
-                Bitmap bmp = new Bitmap(checkBox8.Checked ? Resources.wTemplateF : Resources.wTemplate);
+                Bitmap bmp = null;
+                if (Properties.Settings.Default.loadFeaturedImage)
+                {
+                    bmp = new Bitmap(Properties.Settings.Default.rarityNew ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1));
+                }
+                else
+                {
+                    bmp = new Bitmap(Properties.Settings.Default.rarityNew ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1));
+                }
                 Graphics g = Graphics.FromImage(bmp);
 
                 Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -89,6 +99,8 @@ namespace FModel.Forms
             Properties.Settings.Default.challengesWatermark = textBox6.Text;
 
             Properties.Settings.Default.tryToOpenAssets     = checkBox_tryToOpen.Checked;
+
+            Properties.Settings.Default.rarityNew           = checkBox1.Checked;
 
             //MERGER
             Properties.Settings.Default.mergerFileName      = textBox3.Text;
@@ -187,7 +199,7 @@ namespace FModel.Forms
         {
             if (!checkBox8.Checked)
             {
-                Bitmap bmp = new Bitmap(Resources.wTemplate);
+                Bitmap bmp = checkBox1.Checked ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1);
                 Graphics g = Graphics.FromImage(bmp);
                 if (File.Exists(Properties.Settings.Default.wFilename))
                 {
@@ -199,7 +211,7 @@ namespace FModel.Forms
             }
             if (checkBox8.Checked)
             {
-                Bitmap bmp = new Bitmap(Resources.wTemplateF);
+                Bitmap bmp = checkBox1.Checked ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1);
                 Graphics g = Graphics.FromImage(bmp);
                 if (File.Exists(Properties.Settings.Default.wFilename))
                 {
@@ -224,14 +236,32 @@ namespace FModel.Forms
             }
         }
 
-        private void GroupBox6_Enter(object sender, EventArgs e)
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
         {
-
-        }
-
-        private void GroupBox1_Enter(object sender, EventArgs e)
-        {
-
+            if (!checkBox1.Checked)
+            {
+                Bitmap bmp = checkBox8.Checked ? new Bitmap(Resources.wTemplateFv1) : new Bitmap(Resources.wTemplatev1);
+                Graphics g = Graphics.FromImage(bmp);
+                if (File.Exists(Properties.Settings.Default.wFilename))
+                {
+                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                }
+                wPictureBox.Image = bmp;
+            }
+            if (checkBox1.Checked)
+            {
+                Bitmap bmp = checkBox8.Checked ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplate);
+                Graphics g = Graphics.FromImage(bmp);
+                if (File.Exists(Properties.Settings.Default.wFilename))
+                {
+                    Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                }
+                wPictureBox.Image = bmp;
+            }
         }
     }
 }

@@ -174,7 +174,7 @@ namespace FModel
             {
                 case "athenabattlestar":
                 {
-                    rewardIcon = Resources.T_FNBR_BattlePoints_L;
+                    rewardIcon = Resources.BattlePoints;
                     BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
 
                     graphicsPath = new GraphicsPath();
@@ -183,7 +183,7 @@ namespace FModel
                 }
                 case "AthenaSeasonalXP":
                 {
-                    rewardIcon = Resources.T_FNBR_SeasonalXP_L;
+                    rewardIcon = Resources.SeasonalXP;
                     BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
 
                     graphicsPath = new GraphicsPath();
@@ -192,7 +192,7 @@ namespace FModel
                 }
                 case "MtxGiveaway":
                 {
-                    rewardIcon = Resources.T_Items_MTX_L;
+                    rewardIcon = Resources.ItemsMTX;
                     BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
 
                     graphicsPath = new GraphicsPath();

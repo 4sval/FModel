@@ -160,22 +160,22 @@
   <data name="FModel_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FModel_Logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="T_Icon_Adaptive_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Adaptive64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-Icon-Adaptive-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="T_Icon_Animated_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Animated64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-Icon-Animated-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="T_Icon_Traversal_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Traversal64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-Icon-Traversal-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="T_Icon_Variant_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Variant64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-Icon-Variant-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="T_Icon_Quests_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Quests64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-Icon-Quests-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="T_Icon_Pets_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Pets64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-Icon-Pets-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Marvel512" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -187,13 +187,13 @@
   <data name="BurbankBigCondensed_Bold" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BurbankBigCondensed-Bold.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="T_FNBR_BattlePoints_L" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="BattlePoints" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-FNBR-BattlePoints-L.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="T_FNBR_SeasonalXP_L" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="SeasonalXP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-FNBR-SeasonalXP-L.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="T_Items_MTX_L" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="ItemsMTX" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-Items-MTX-L.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Challenges_Slider" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -222,5 +222,35 @@
   </data>
   <data name="FModel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FModel.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="C512v1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\C512v1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="E512v1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\E512v1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="L512v1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\L512v1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="M512v1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\M512v1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Marvel512v1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Marvel512v1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="R512v1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\R512v1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T512v1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T512v1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="U512v1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\U512v1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wTemplateFv1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wTemplateFv1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wTemplatev1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wTemplatev1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
