@@ -481,30 +481,6 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string eEmail {
-            get {
-                return ((string)(this["eEmail"]));
-            }
-            set {
-                this["eEmail"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ePassword {
-            get {
-                return ((string)(this["ePassword"]));
-            }
-            set {
-                this["ePassword"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("English")]
         public string IconLanguage {
             get {
@@ -584,30 +560,6 @@ namespace FModel.Properties {
             }
             set {
                 this["UMCTGalleries"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ExchangeToken {
-            get {
-                return ((string)(this["ExchangeToken"]));
-            }
-            set {
-                this["ExchangeToken"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public long TokenExpiration {
-            get {
-                return ((long)(this["TokenExpiration"]));
-            }
-            set {
-                this["TokenExpiration"] = value;
             }
         }
         

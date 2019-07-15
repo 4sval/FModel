@@ -19,9 +19,6 @@ namespace FModel.Forms
             textBox2.Text = Properties.Settings.Default.PAKsPath;
             textBox1.Text = Properties.Settings.Default.ExtractOutput;
 
-            textBox4.Text = Properties.Settings.Default.eEmail;
-            textBox5.Text = Properties.Settings.Default.ePassword;
-
             textBox6.Text = Properties.Settings.Default.challengesWatermark;
             checkBox2.Checked = Properties.Settings.Default.challengesDebug;
             if (string.IsNullOrWhiteSpace(textBox6.Text))
@@ -87,9 +84,6 @@ namespace FModel.Forms
             {
                 MessageBox.Show(@"Please, restart FModel to apply your new output path", @"FModel Output Path Changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-            Properties.Settings.Default.eEmail              = textBox4.Text;
-            Properties.Settings.Default.ePassword           = textBox5.Text;
 
             Properties.Settings.Default.challengesDebug     = checkBox2.Checked;
             Properties.Settings.Default.challengesWatermark = textBox6.Text;
@@ -230,10 +224,14 @@ namespace FModel.Forms
             }
         }
 
-        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        private void GroupBox6_Enter(object sender, EventArgs e)
         {
-            textBox4.UseSystemPasswordChar = !checkBox1.Checked;
-            textBox5.UseSystemPasswordChar = !checkBox1.Checked;
+
+        }
+
+        private void GroupBox1_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

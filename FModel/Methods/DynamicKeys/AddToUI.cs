@@ -1,5 +1,5 @@
-﻿using FModel.Methods.BackupPAKs.Parser.AESKeyParser;
-using FModel.Properties;
+﻿using FModel.Properties;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,7 +11,6 @@ namespace FModel
     static class AddToUI
     {
         private static List<AESEntry> _oldKeysList = null;
-        private static string[] _KeysFromTheApi = null;
 
         /// <summary>
         /// ask the keychain api for all dynamic keys and their guids
@@ -30,28 +29,24 @@ namespace FModel
                 _oldKeysList = DynamicKeysManager.AESEntries;
             }
 
-            _KeysFromTheApi = GetKeysFromKeychain();
-            if (_KeysFromTheApi != null)
+            JObject myObject = JObject.Parse(GetKeysFromKeychain());
+            if (myObject != null)
             {
                 DynamicKeysManager.AESEntries = new List<AESEntry>();
-                foreach (string myString in _KeysFromTheApi)
+                foreach (PaksEntry item in ThePak.dynamicPaksList)
                 {
-                    string[] parts = myString.Split(':');
-                    string apiGuid = Keychain.getPakGuidFromKeychain(parts);
-
-                    string actualPakGuid = ThePak.dynamicPaksList.Where(i => i.thePakGuid == apiGuid).Select(i => i.thePakGuid).FirstOrDefault();
-                    string actualPakName = ThePak.dynamicPaksList.Where(i => i.thePakGuid == apiGuid).Select(i => i.thePak).FirstOrDefault();
-
-                    bool pakAlreadyExist = DynamicKeysManager.AESEntries.Where(i => i.thePak == actualPakName).Any();
-
-                    if (!string.IsNullOrEmpty(actualPakGuid) && !pakAlreadyExist)
+                    if (myObject.ToString().Contains(item.thePak))
                     {
-                        byte[] bytes = Convert.FromBase64String(parts[1]);
-                        string aeskey = BitConverter.ToString(bytes).Replace("-", "");
+                        JToken token = myObject.FindTokens(item.thePak).FirstOrDefault();
 
-                        DynamicKeysManager.serialize(aeskey.ToUpper(), actualPakName);
+                        bool pakAlreadyExist = DynamicKeysManager.AESEntries.Where(i => i.thePak == item.thePak).Any();
 
-                        displayNewPaks(actualPakName);
+                        if (!pakAlreadyExist)
+                        {
+                            DynamicKeysManager.serialize(token.ToString().ToUpper().Substring(2), item.thePak);
+
+                            displayNewPaks(item.thePak);
+                        }
                     }
                 }
                 new UpdateMyConsole("", Color.Green, true).AppendToConsole();
@@ -64,22 +59,12 @@ namespace FModel
         /// just set the array to be the keys from the api
         /// </summary>
         /// <returns></returns>
-        private static string[] GetKeysFromKeychain()
+        private static string GetKeysFromKeychain()
         {
-            if (DLLImport.IsInternetAvailable() && (!string.IsNullOrWhiteSpace(Settings.Default.eEmail) && !string.IsNullOrWhiteSpace(Settings.Default.ePassword)))
+            if (DLLImport.IsInternetAvailable())
             {
-                string myContent = Keychain.GetEndpoint("https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/storefront/v2/keychain", true);
-
-                if (myContent.Contains("\"errorCode\": \"errors.com.epicgames.common.authentication.authentication_failed\""))
-                {
-                    new UpdateMyConsole("[EPIC] Authentication Failed.", Color.Red, true).AppendToConsole();
-                    return null;
-                }
-                else
-                {
-                    new UpdateMyConsole("[EPIC] Authentication Success.", Color.CornflowerBlue, true).AppendToConsole();
-                    return AesKeyParser.FromJson(myContent);
-                }
+                JToken dynamicPaks = JObject.Parse(Keychain.GetEndpoint("http://benbotfn.tk:8080/api/aes")).FindTokens("additionalKeys").FirstOrDefault();
+                return JToken.Parse(dynamicPaks.ToString()).ToString().TrimStart('[').TrimEnd(']');
             }
             else { return null; }
         }

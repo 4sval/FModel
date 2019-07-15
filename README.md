@@ -93,3 +93,7 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) if you
   - [x] Load all paks
   - [x] Load only difference between 2 paks version
   - [x] Custom watermark option on icons
+
+## Removal
+Contact me with an authorized, genuine email if you work for Epic Games and would like this removed.
+asval.contactme@gmail.com

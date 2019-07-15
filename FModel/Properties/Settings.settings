@@ -116,12 +116,6 @@
     <Setting Name="createIconForSTWCardPacks" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="eEmail" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="ePassword" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="IconLanguage" Type="System.String" Scope="User">
       <Value Profile="(Default)">English</Value>
     </Setting>
@@ -142,12 +136,6 @@
     </Setting>
     <Setting Name="UMCTGalleries" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="ExchangeToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="TokenExpiration" Type="System.Int64" Scope="User">
-      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="tConsKey" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
