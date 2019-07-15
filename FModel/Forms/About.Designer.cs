@@ -121,10 +121,10 @@ namespace FModel.Forms
             this.linkLabel3.AutoSize = true;
             this.linkLabel3.Location = new System.Drawing.Point(260, 98);
             this.linkLabel3.Name = "linkLabel3";
-            this.linkLabel3.Size = new System.Drawing.Size(61, 13);
+            this.linkLabel3.Size = new System.Drawing.Size(67, 13);
             this.linkLabel3.TabIndex = 12;
             this.linkLabel3.TabStop = true;
-            this.linkLabel3.Text = "How to use";
+            this.linkLabel3.Text = "How To Use";
             this.linkLabel3.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel3_LinkClicked);
             // 
             // About

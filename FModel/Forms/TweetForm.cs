@@ -62,7 +62,14 @@ namespace FModel.Forms
             Dictionary<string, Stream> myDict = new Dictionary<string, Stream>();
             if (pictureBox1.Image != null)
             {
-                myDict.Add(Path.GetFileNameWithoutExtension(ImagePath), new FileStream(ImagePath, FileMode.Open, FileAccess.Read, FileShare.Read));
+                if (new System.IO.FileInfo(ImagePath).Length < 5000000)
+                {
+                    myDict.Add(Path.GetFileNameWithoutExtension(ImagePath), new FileStream(ImagePath, FileMode.Open, FileAccess.Read, FileShare.Read));
+                }
+                else
+                {
+                    throw new ArgumentException("File size can't be larger than 5mb.");
+                }
             }
 
 #pragma warning disable CS0618

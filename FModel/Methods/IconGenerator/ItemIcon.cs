@@ -179,7 +179,6 @@ namespace FModel
                 case "DA_Featured_Pickaxe_ID_027_Scavenger":
                 case "DA_Featured_Pickaxe_ID_028_Space":
                 case "DA_Featured_Pickaxe_ID_029_Assassin":
-                case "DA_Featured_EID_Dunk":
                     GetItemIcon(theItem);
                     break;
                 default:
