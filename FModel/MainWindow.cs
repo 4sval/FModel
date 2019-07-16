@@ -36,6 +36,9 @@ namespace FModel
 
         public MainWindow()
         {
+            // Check if watermark exists
+            Utilities.CheckWatermark();
+
             InitializeComponent();
             App.MainFormToUse = this;
 
@@ -551,6 +554,9 @@ namespace FModel
         }
         private void UpdateModeExtractSave()
         {
+            // Check if watermark exists
+            Utilities.CheckWatermark();
+
             CreatePakList(null, false, true, true);
 
             Invoke(new Action(() =>
@@ -1331,6 +1337,9 @@ namespace FModel
 
         private void ExtractProcess()
         {
+            // Check if watermark exists
+            Utilities.CheckWatermark();
+
             scintilla1.Text = "";
             pictureBox1.Image = null;
             ExtractButton.Enabled = false;

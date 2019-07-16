@@ -10,6 +10,9 @@ namespace FModel.Forms
     {
         public UpdateModeSettings()
         {
+            // Check if watermark exists
+            Utilities.CheckWatermark();
+
             InitializeComponent();
 
             //ICON CREATION

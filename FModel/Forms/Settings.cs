@@ -14,6 +14,9 @@ namespace FModel.Forms
 
         public Settings()
         {
+            // Check if watermark exists
+            Utilities.CheckWatermark();
+
             InitializeComponent();
 
             textBox2.Text = Properties.Settings.Default.PAKsPath;
@@ -35,6 +38,9 @@ namespace FModel.Forms
             textBox3.Text                       = Properties.Settings.Default.mergerFileName;
             checkBoxSaveAsMergeImages.Checked   = Properties.Settings.Default.mergerImagesSaveAs;
             imgsPerRow.Value                    = Properties.Settings.Default.mergerImagesRow;
+
+            // Check if watermark exists
+            Utilities.CheckWatermark();
 
             //WATERMARK
             button1.Enabled     = Properties.Settings.Default.isWatermark;

@@ -186,5 +186,22 @@ namespace FModel
                 }
             }
         }
+
+        public static void CheckWatermark()
+        {
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename) &&
+                !File.Exists(Properties.Settings.Default.wFilename))
+            {
+                Properties.Settings.Default.wFilename = string.Empty;
+                Properties.Settings.Default.isWatermark = false;
+            }
+
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename) &&
+                !File.Exists(Properties.Settings.Default.UMFilename))
+            {
+                Properties.Settings.Default.UMFilename = string.Empty;
+                Properties.Settings.Default.UMWatermark = false;
+            }
+        }
     }
 }

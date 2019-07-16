@@ -24,7 +24,7 @@ namespace FModel.Forms
 
         private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/iAmAsval/FModel#how-to-use");
+            System.Diagnostics.Process.Start("https://github.com/iAmAsval/FModel/blob/master/README.md#how-to-use");
         }
     }
 }
