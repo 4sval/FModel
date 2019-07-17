@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -84,23 +85,23 @@ namespace FModel
                                     string oldQuest = string.Empty;
                                     long oldCount = 0;
 
+                                    //fortbyte check
+                                    bool isFortbyte = false;
+                                    Parser.Quests.Reward assetTypeToken = null;
+                                    if (questParser[x].Rewards != null) //this caused a null exception for some challenges (most of them in the Styles folder)
+                                    {
+                                        assetTypeToken = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name == "Token").FirstOrDefault();
+                                        if (assetTypeToken != null)
+                                        {
+                                            isFortbyte = assetTypeToken.ItemPrimaryAssetId.PrimaryAssetName == "AthenaFortbyte";
+                                        }
+                                    }
+
                                     for (int p = 0; p < questParser[x].Objectives.Length; p++)
                                     {
                                         long newCount = questParser[x].Objectives[p].Count;
                                         if (questParser[x].ObjectiveCompletionCount > 0)
                                             newCount = questParser[x].ObjectiveCompletionCount;
-
-                                        //fortbyte check
-                                        bool isFortbyte = false;
-                                        Parser.Quests.Reward assetTypeToken = null;
-                                        if (questParser[x].Rewards != null) //this caused a null exception for some challenges (most of them in the Styles folder)
-                                        {
-                                            assetTypeToken = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name == "Token").FirstOrDefault();
-                                            if (assetTypeToken != null)
-                                            {
-                                                isFortbyte = assetTypeToken.ItemPrimaryAssetId.PrimaryAssetName == "AthenaFortbyte";
-                                            }
-                                        }
 
                                         // In the game "Description" has priority over "Objectives.Description"
                                         string descriptionKey = questParser[x].Objectives[p].Description.Key;

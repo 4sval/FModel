@@ -36,11 +36,10 @@ namespace FModel
                     {
                         _extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
                     }
-                    else { _extractor.Dispose(); break; }
+                    else { break; }
                 }
                 catch (Exception)
                 {
-                    _extractor.Dispose();
                     break;
                 }
 
@@ -68,7 +67,6 @@ namespace FModel
                     catch (Exception)
                     {
                         new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole();
-                        _extractor.Dispose();
                         continue;
                     }
 

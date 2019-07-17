@@ -61,7 +61,7 @@ Also if you find this project useful, feel free to give it a :star: thank you :k
  1. Read, Search, Extract, Serialize
  2. Icon Creation for various BR/STW Cosmetics or Challenges with language support
  3. Icon Merger
- 4. Fortnite Api Authentication to automatically get Keys for Dynamic PAKs
+ 4. Automatic detection for Dynamic PAKs Keys
  5. Twitter Api Authentication to send Tweets from within FModel
 ### What i'm using
   - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - *C# Bind*

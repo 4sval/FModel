@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System;
 using Newtonsoft.Json.Linq;
 using FModel.Parser.LocResParser;
+using System.Diagnostics;
 
 namespace FModel
 {
@@ -65,13 +66,30 @@ namespace FModel
                 toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
 
                 //image
-                string textureFile = Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
-                Image challengeIcon;
-                using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                if (myBundle.DisplayStyle.DisplayImage != null)
                 {
-                    challengeIcon = new Bitmap(bmpTemp);
+                    string textureFile = Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
+                    Image challengeIcon;
+                    using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                    {
+                        challengeIcon = new Bitmap(bmpTemp);
+                    }
+                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
                 }
-                toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
+                else if (myBundle.LargePreviewImage != null)
+                {
+                    string textureFile = Path.GetFileName(myBundle.LargePreviewImage.AssetPathName).Substring(0, Path.GetFileName(myBundle.LargePreviewImage.AssetPathName).LastIndexOf('.'));
+                    Image challengeIcon;
+                    using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                    {
+                        challengeIcon = new Bitmap(bmpTemp);
+                    }
+                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
+                }
+                else
+                {
+                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(Resources.unknown512, 282, 282), new Point(40, 0));
+                }
 
                 //fill the rest
                 toDrawOn.FillRectangle(new SolidBrush(ControlPaint.Dark(BundleInfos.getSecondaryColor(myBundle), (float)0.1)), new Rectangle(0, 271, myBitmap.Width, myBitmap.Height));

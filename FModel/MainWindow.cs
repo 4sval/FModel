@@ -145,7 +145,7 @@ namespace FModel
                             AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
                         }
                     }
-                    else { new UpdateMyConsole("[FModel]" + Path.GetFileName(arCurrentUsedPak) + " is locked by another process.", Color.Red, true).AppendToConsole(); }
+                    else { new UpdateMyConsole("[FModel] " + Path.GetFileName(arCurrentUsedPak) + " is locked by another process.", Color.Red, true).AppendToConsole(); }
                 }
             }
         }
@@ -1016,6 +1016,10 @@ namespace FModel
                     {
                         CreateItemIcon(itemId[i], "ammo");
                     }
+                    else if (itemId[i].ExportType == "FortBannerTokenType")
+                    {
+                        CreateItemIcon(itemId[i], "athIteDef"); //athIteDef because there's a cosmetic source
+                    }
                     else if (questJson != null && (Settings.Default.createIconForSTWHeroes && (itemId[i].ExportType == "FortHeroType" && (questJson.Contains("ItemDefinition") || questJson.Contains("TestDefsSkydive") || questJson.Contains("GameplayPrototypes"))))) //Contains x not to trigger HID from BR
                     {
                         CreateItemIcon(itemId[i], "stwHeroes");
@@ -1134,7 +1138,7 @@ namespace FModel
                 BundleDesign.drawBackground(bmp, bundleParser);
             }
 
-            if (BundleInfos.BundleData[0].rewardItemId != null && string.Equals(BundleInfos.BundleData[0].rewardItemId, "AthenaFortbyte", StringComparison.CurrentCultureIgnoreCase))
+            if (BundleInfos.BundleData.Count > 0 && BundleInfos.BundleData[0].rewardItemId != null && string.Equals(BundleInfos.BundleData[0].rewardItemId, "AthenaFortbyte", StringComparison.CurrentCultureIgnoreCase))
                 isFortbyte = true;
 
             // Fortbytes: Sort by number
@@ -1398,7 +1402,7 @@ namespace FModel
                 if (saveTheDialog.ShowDialog() == DialogResult.OK)
                 {
                     pictureBox1.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
-                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                    new UpdateMyConsole(Path.GetFileNameWithoutExtension(saveTheDialog.FileName), Color.DarkRed).AppendToConsole();
                     new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
                 }
             }

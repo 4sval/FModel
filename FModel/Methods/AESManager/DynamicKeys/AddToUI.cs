@@ -43,7 +43,11 @@ namespace FModel
 
                             DynamicKeysManager.serialize(token.ToString().ToUpper().Substring(2), item.thePak);
 
-                            displayNewPaks(item.thePak);
+                            displayNewPaks(token.ToString().ToUpper().Substring(2), item.thePak);
+                        }
+                        else
+                        {
+                            DynamicKeysManager.serialize("", item.thePak);
                         }
                     }
                     new UpdateMyConsole("", Color.Green, true).AppendToConsole();
@@ -84,12 +88,12 @@ namespace FModel
         /// if pakname not found that means the key is brand new and has to be added but in this case we just "print" it as a FYI to the user
         /// </summary>
         /// <param name="pakName"> the pak name </param>
-        private static void displayNewPaks(string pakName)
+        private static void displayNewPaks(string pakKey, string pakName)
         {
             if (_oldKeysList != null)
             {
                 //display new paks that can be opened
-                bool wasThereBeforeStartup = _oldKeysList.Where(i => i.thePak == pakName).Any();
+                bool wasThereBeforeStartup = _oldKeysList.Where(i => i.theKey == pakKey).Any();
                 if (!wasThereBeforeStartup)
                 {
                     new UpdateMyConsole(pakName, Color.Firebrick).AppendToConsole();

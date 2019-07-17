@@ -52,6 +52,7 @@ namespace FModel.Forms
                 tweetText = richTextBox1.Text;
             }));
 
+            Properties.Settings.Default.Save();
             if (service == null)
             {
                 service = new TwitterService(Properties.Settings.Default.tConsKey, Properties.Settings.Default.tConsSecret);
