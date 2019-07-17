@@ -29,7 +29,7 @@ namespace FModel
 
         public static void DrawTexts(ItemsIdParser theItem, Graphics myGraphic, string mode)
         {
-            bool isSTW = (mode == "stwHeroes" || mode == "stwDefenders");
+            bool isSTW = (mode.Equals("stwHeroes") || mode.Equals("stwDefenders"));
 
             using (myGraphic)
             {

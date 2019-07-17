@@ -1680,5 +1680,11 @@ namespace FModel
             }
         }
         #endregion
+
+        private void openExtractionFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.ExtractOutput))
+                System.Diagnostics.Process.Start(@"" + Properties.Settings.Default.ExtractOutput);
+        }
     }
 }
