@@ -29,12 +29,14 @@ namespace FModel
 
         public static void DrawTexts(ItemsIdParser theItem, Graphics myGraphic, string mode)
         {
+            bool isSTW = (mode == "stwHeroes" || mode == "stwDefenders");
+
             using (myGraphic)
             {
-                SetTexts(theItem);
+                SetTexts(theItem, isSTW);
 
-                DrawDisplayName(theItem, myGraphic);
-                DrawDescription(theItem, myGraphic);
+                DrawDisplayName(theItem, myGraphic, isSTW);
+                DrawDescription(theItem, myGraphic, isSTW);
 
                 switch (mode)
                 {
@@ -81,7 +83,7 @@ namespace FModel
         /// todo: find a better way to handle errors
         /// </summary>
         /// <param name="theItem"></param>
-        private static void SetTexts(ItemsIdParser theItem)
+        private static void SetTexts(ItemsIdParser theItem, bool isSTW = false)
         {
             CosmeticSource = "";
             CosmeticSet = "";
@@ -113,7 +115,7 @@ namespace FModel
                     case "Turkish":
                     case "Chinese (S)":
                     case "Traditional Chinese":
-                        ShortDescription = theItem.ShortDescription != null ? SearchResource.getTextByKey(theItem.ShortDescription.Key, theItem.ShortDescription.SourceString) : "";
+                        ShortDescription = theItem.ShortDescription != null ? SearchResource.getTextByKey(theItem.ShortDescription.Key, theItem.ShortDescription.SourceString, isSTW) : "";
                         break;
                     default:
                         ShortDescription = theItem.ShortDescription != null ? theItem.ShortDescription.SourceString : "";
@@ -248,13 +250,13 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawDisplayName(ItemsIdParser theItem, Graphics myGraphic)
+        private static void DrawDisplayName(ItemsIdParser theItem, Graphics myGraphic, bool isSTW = false)
         {
             if (theItem.DisplayName != null)
             {
                 //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(5, 405, 512, 55));
 
-                string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString);
+                string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString, isSTW);
 
                 Font goodFont = FontUtilities.FindFont(
                     myGraphic,
@@ -278,13 +280,13 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawDescription(ItemsIdParser theItem, Graphics myGraphic)
+        private static void DrawDescription(ItemsIdParser theItem, Graphics myGraphic, bool isSTW = false)
         {
             if (theItem.Description != null)
             {
                 //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new Rectangle(5, 455, 512, 42));
 
-                string text = SearchResource.getTextByKey(theItem.Description.Key, theItem.Description.SourceString);
+                string text = SearchResource.getTextByKey(theItem.Description.Key, theItem.Description.SourceString, isSTW);
                 if (!string.IsNullOrEmpty(CosmeticSet))
                 {
                     string theSet = DrawCosmeticSet(CosmeticSet);
