@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -113,6 +112,7 @@ namespace FModel
                                         }
 
                                         string newQuest = SearchResource.getTextByKey(descriptionKey, descriptionSource);
+                                        if (string.IsNullOrEmpty(newQuest)) { newQuest = " "; }
                                         if (newQuest != oldQuest && newCount != oldCount)
                                         {
                                             if (questParser[x].Rewards != null && !isFortbyte)

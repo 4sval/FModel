@@ -1138,7 +1138,7 @@ namespace FModel
                 BundleDesign.drawBackground(bmp, bundleParser);
             }
 
-            if (BundleInfos.BundleData.Count > 0 && BundleInfos.BundleData[0].rewardItemId != null && string.Equals(BundleInfos.BundleData[0].rewardItemId, "AthenaFortbyte", StringComparison.CurrentCultureIgnoreCase))
+            if (BundleInfos.BundleData[0].rewardItemId != null && string.Equals(BundleInfos.BundleData[0].rewardItemId, "AthenaFortbyte", StringComparison.CurrentCultureIgnoreCase))
                 isFortbyte = true;
 
             // Fortbytes: Sort by number

@@ -8,7 +8,6 @@ using System.Windows.Forms;
 using System;
 using Newtonsoft.Json.Linq;
 using FModel.Parser.LocResParser;
-using System.Diagnostics;
 
 namespace FModel
 {
