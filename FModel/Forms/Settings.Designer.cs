@@ -41,7 +41,6 @@ namespace FModel.Forms
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
             this.checkBox8 = new System.Windows.Forms.CheckBox();
             this.checkBox7 = new System.Windows.Forms.CheckBox();
             this.filenameLabel = new System.Windows.Forms.Label();
@@ -156,7 +155,6 @@ namespace FModel.Forms
             this.groupBox4.Controls.Add(this.checkBox1);
             this.groupBox4.Controls.Add(this.comboBox1);
             this.groupBox4.Controls.Add(this.label10);
-            this.groupBox4.Controls.Add(this.button2);
             this.groupBox4.Controls.Add(this.checkBox8);
             this.groupBox4.Controls.Add(this.checkBox7);
             this.groupBox4.Controls.Add(this.filenameLabel);
@@ -176,7 +174,7 @@ namespace FModel.Forms
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(244, 47);
+            this.checkBox1.Location = new System.Drawing.Point(244, 54);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(139, 17);
             this.checkBox1.TabIndex = 30;
@@ -204,7 +202,7 @@ namespace FModel.Forms
             "Turkish",
             "Chinese (S)",
             "Traditional Chinese"});
-            this.comboBox1.Location = new System.Drawing.Point(70, 161);
+            this.comboBox1.Location = new System.Drawing.Point(70, 19);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(309, 21);
             this.comboBox1.TabIndex = 29;
@@ -212,26 +210,16 @@ namespace FModel.Forms
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 164);
+            this.label10.Location = new System.Drawing.Point(6, 22);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(58, 13);
             this.label10.TabIndex = 28;
             this.label10.Text = "Language:";
             // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(6, 19);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(377, 22);
-            this.button2.TabIndex = 27;
-            this.button2.Text = "Manage Assets";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
             // checkBox8
             // 
             this.checkBox8.AutoSize = true;
-            this.checkBox8.Location = new System.Drawing.Point(6, 47);
+            this.checkBox8.Location = new System.Drawing.Point(6, 54);
             this.checkBox8.Name = "checkBox8";
             this.checkBox8.Size = new System.Drawing.Size(177, 17);
             this.checkBox8.TabIndex = 26;
@@ -242,7 +230,7 @@ namespace FModel.Forms
             // checkBox7
             // 
             this.checkBox7.AutoSize = true;
-            this.checkBox7.Location = new System.Drawing.Point(6, 75);
+            this.checkBox7.Location = new System.Drawing.Point(6, 90);
             this.checkBox7.Name = "checkBox7";
             this.checkBox7.Size = new System.Drawing.Size(15, 14);
             this.checkBox7.TabIndex = 25;
@@ -253,7 +241,7 @@ namespace FModel.Forms
             // 
             this.filenameLabel.AutoEllipsis = true;
             this.filenameLabel.AutoSize = true;
-            this.filenameLabel.Location = new System.Drawing.Point(115, 76);
+            this.filenameLabel.Location = new System.Drawing.Point(115, 91);
             this.filenameLabel.MaximumSize = new System.Drawing.Size(260, 13);
             this.filenameLabel.Name = "filenameLabel";
             this.filenameLabel.Size = new System.Drawing.Size(60, 13);
@@ -262,7 +250,7 @@ namespace FModel.Forms
             // 
             // trackBar1
             // 
-            this.trackBar1.Location = new System.Drawing.Point(54, 128);
+            this.trackBar1.Location = new System.Drawing.Point(58, 144);
             this.trackBar1.Maximum = 100;
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(325, 45);
@@ -273,7 +261,7 @@ namespace FModel.Forms
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(18, 99);
+            this.label9.Location = new System.Drawing.Point(22, 115);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(30, 13);
             this.label9.TabIndex = 23;
@@ -281,7 +269,7 @@ namespace FModel.Forms
             // 
             // trackBar2
             // 
-            this.trackBar2.Location = new System.Drawing.Point(54, 99);
+            this.trackBar2.Location = new System.Drawing.Point(58, 115);
             this.trackBar2.Maximum = 1000;
             this.trackBar2.Minimum = 1;
             this.trackBar2.Name = "trackBar2";
@@ -295,7 +283,7 @@ namespace FModel.Forms
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(2, 131);
+            this.label8.Location = new System.Drawing.Point(6, 147);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(46, 13);
             this.label8.TabIndex = 21;
@@ -303,7 +291,7 @@ namespace FModel.Forms
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(27, 69);
+            this.button1.Location = new System.Drawing.Point(27, 84);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(82, 24);
             this.button1.TabIndex = 19;
@@ -485,7 +473,6 @@ namespace FModel.Forms
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.GroupBox groupBox6;

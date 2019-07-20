@@ -4,68 +4,51 @@ namespace FModel
 {
     static class LoadLocRes
     {
-        public static string myLocRes { get; set; }
-        public static string myLocResSTW { get; set; }
-
         public static void LoadMySelectedLocRes(string selectedLanguage)
         {
             switch (selectedLanguage)
             {
                 case "French":
-                    myLocRes = getMyLocRes("fr");
-                    myLocResSTW = getMyLocRes("fr", true);
+                    getMyLocRes("fr");
                     break;
                 case "German":
-                    myLocRes = getMyLocRes("de");
-                    myLocResSTW = getMyLocRes("de", true);
+                    getMyLocRes("de");
                     break;
                 case "Italian":
-                    myLocRes = getMyLocRes("it");
-                    myLocResSTW = getMyLocRes("it", true);
+                    getMyLocRes("it");
                     break;
                 case "Spanish":
-                    myLocRes = getMyLocRes("es");
-                    myLocResSTW = getMyLocRes("es", true);
+                    getMyLocRes("es");
                     break;
                 case "Spanish (LA)":
-                    myLocRes = getMyLocRes("es-419");
-                    myLocResSTW = getMyLocRes("es-419", true);
+                    getMyLocRes("es-419");
                     break;
                 case "Arabic":
-                    myLocRes = getMyLocRes("ar");
-                    myLocResSTW = getMyLocRes("ar", true);
+                    getMyLocRes("ar");
                     break;
                 case "Japanese":
-                    myLocRes = getMyLocRes("ja");
-                    myLocResSTW = getMyLocRes("ja", true);
+                    getMyLocRes("ja");
                     break;
                 case "Korean":
-                    myLocRes = getMyLocRes("ko");
-                    myLocResSTW = getMyLocRes("ko", true);
+                    getMyLocRes("ko");
                     break;
                 case "Polish":
-                    myLocRes = getMyLocRes("pl");
-                    myLocResSTW = getMyLocRes("pl", true);
+                    getMyLocRes("pl");
                     break;
                 case "Portuguese (Brazil)":
-                    myLocRes = getMyLocRes("pt-BR");
-                    myLocResSTW = getMyLocRes("pt-BR", true);
+                    getMyLocRes("pt-BR");
                     break;
                 case "Russian":
-                    myLocRes = getMyLocRes("ru");
-                    myLocResSTW = getMyLocRes("ru", true);
+                    getMyLocRes("ru");
                     break;
                 case "Turkish":
-                    myLocRes = getMyLocRes("tr");
-                    myLocResSTW = getMyLocRes("tr", true);
+                    getMyLocRes("tr");
                     break;
                 case "Chinese (S)":
-                    myLocRes = getMyLocRes("zh-CN");
-                    myLocResSTW = getMyLocRes("zh-CN", true);
+                    getMyLocRes("zh-CN");
                     break;
                 case "Traditional Chinese":
-                    myLocRes = getMyLocRes("zh-Hant");
-                    myLocResSTW = getMyLocRes("zh-Hant", true);
+                    getMyLocRes("zh-Hant");
                     break;
                 default:
                     break;
@@ -77,28 +60,40 @@ namespace FModel
         /// </summary>
         /// <param name="selectedLanguage"></param>
         /// <returns></returns>
-        private static string getMyLocRes(string selectedLanguage, bool isSTW = false)
+        private static void getMyLocRes(string selectedLanguage)
         {
             if (ThePak.AllpaksDictionary != null)
             {
-                if (ThePak.AllpaksDictionary.ContainsKey(isSTW ? "Game_StW.locres" : "Game_BR.locres"))
+                if (ThePak.AllpaksDictionary.ContainsKey("Game_BR.locres"))
                 {
-                    string locResPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[isSTW ? "Game_StW.locres" : "Game_BR.locres"], isSTW ? "Game_StW.locres" : "Game_BR.locres");
+                    string locResPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["Game_BR.locres"], "Game_BR.locres");
 
-                    return LocResSerializer.StringFinder(locResPath.Replace("zh-Hant", selectedLanguage));
+                    LocResSerializer.setLocRes(locResPath.Replace("zh-Hant", selectedLanguage));
                 }
                 else
                 {
-                    new UpdateMyConsole("[FModel] "+ (isSTW ? "STW" : "BR")  +" Localization File Not Found - Icon Language set to English", Color.DarkRed, true).AppendToConsole();
+                    new UpdateMyConsole("[FModel] BR Localization File Not Found - Icon Language set to English", Color.DarkRed, true).AppendToConsole();
                     new UpdateMyConsole("", Color.Black, true).AppendToConsole();
 
                     Properties.Settings.Default.IconLanguage = "English";
                     Properties.Settings.Default.Save();
+                }
 
-                    return "";
+                if (ThePak.AllpaksDictionary.ContainsKey("Game_StW.locres"))
+                {
+                    string locResPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["Game_StW.locres"], "Game_StW.locres");
+
+                    LocResSerializer.setLocRes(locResPath.Replace("zh-Hant", selectedLanguage), true);
+                }
+                else
+                {
+                    new UpdateMyConsole("[FModel] STW Localization File Not Found - Icon Language set to English", Color.DarkRed, true).AppendToConsole();
+                    new UpdateMyConsole("", Color.Black, true).AppendToConsole();
+
+                    Properties.Settings.Default.IconLanguage = "English";
+                    Properties.Settings.Default.Save();
                 }
             }
-            else { return ""; }
         }
     }
 }

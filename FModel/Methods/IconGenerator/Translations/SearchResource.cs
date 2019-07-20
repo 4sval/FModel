@@ -1,65 +1,42 @@
-using Newtonsoft.Json.Linq;
-using FModel.Parser.LocResParser;
+using System.Collections.Generic;
 
 namespace FModel
 {
     static class SearchResource
     {
-        private static string parsedJsonToCheck { get; set; }
-        private static string parsedSTWJsonToCheck { get; set; }
-        public static JObject jo { get; set; }
-        private static string oldLanguage = Properties.Settings.Default.IconLanguage;
-        private static bool isSTWCheck { get; set; }
-
         /// <summary>
-        /// for most (if not all) of our translations there's no namespace so we just have to find the key in the string
-        /// once found, we only take the part between this key and we parse to get out LocResText
-        /// To improve speed, we check if the language has change or if JObject has never been loaded
+        /// because idk, i made my serializer in a weird way
+        /// if a namespace is empty the key become the namespace and the new key is "LocResText"
+        /// i could change the serializer but it's gonna break a lot of things and i don't wanna take time to fix them
         /// </summary>
+        /// <param name="theNamespace"></param>
         /// <param name="theKey"></param>
         /// <returns></returns>
-        public static string getTranslatedText(string theKey, bool isSTW)
+        public static string getTranslatedText(string theNamespace, string theKey)
         {
-            string toReturn = string.Empty;
-            string newLanguage = Properties.Settings.Default.IconLanguage;
-
-            if (isSTW)
+            try
             {
-                if (parsedSTWJsonToCheck == null || newLanguage != oldLanguage || isSTWCheck != isSTW)
+                if (!string.Equals(theNamespace, "LocResText"))
                 {
-                    parsedSTWJsonToCheck = JToken.Parse(LoadLocRes.myLocResSTW).ToString().TrimStart('[').TrimEnd(']');
-                    jo = JObject.Parse(parsedSTWJsonToCheck);
+                    return LocResSerializer.LocResDict[theNamespace][theKey];
+                }
+                else
+                {
+                    return LocResSerializer.LocResDict[theKey][theNamespace];
                 }
             }
-            else
+            catch (KeyNotFoundException)
             {
-                if (parsedJsonToCheck == null || newLanguage != oldLanguage || isSTWCheck != isSTW)
-                {
-                    parsedJsonToCheck = JToken.Parse(LoadLocRes.myLocRes).ToString().TrimStart('[').TrimEnd(']');
-                    jo = JObject.Parse(parsedJsonToCheck);
-                }
+                return string.Empty;
             }
-
-            foreach (JToken token in jo.FindTokens(theKey))
-            {
-                LocResParser LocResParse = LocResParser.FromJson(token.ToString());
-                if (LocResParse.LocResText != null)
-                {
-                    toReturn = LocResParse.LocResText;
-                }
-            }
-
-            isSTWCheck = isSTW;
-            oldLanguage = newLanguage;
-            return toReturn;
         }
 
-        public static string getTextByKey(string key, string defaultText, bool isSTW = false)
+        public static string getTextByKey(string key, string defaultText, string namespac = null)
         {
             string text = defaultText;
-            if (LoadLocRes.myLocRes != null && Properties.Settings.Default.IconLanguage != "English")
+            if (LocResSerializer.LocResDict != null && Properties.Settings.Default.IconLanguage != "English")
             {
-                text = getTranslatedText(key, isSTW);
+                text = getTranslatedText(namespac == null ? "LocResText" : namespac, key);
                 if (string.IsNullOrEmpty(text))
                     text = defaultText;
             }

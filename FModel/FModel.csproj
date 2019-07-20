@@ -81,8 +81,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoUpdater.NET, Version=1.5.3.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autoupdater.NET.Official.1.5.3\lib\net40\AutoUpdater.NET.dll</HintPath>
+    <Reference Include="AutoUpdater.NET, Version=1.5.4.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autoupdater.NET.Official.1.5.4\lib\net40\AutoUpdater.NET.dll</HintPath>
     </Reference>
     <Reference Include="csharp-wick, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -91,8 +91,8 @@
     <Reference Include="Hammock.ClientProfile, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c148cfba29ed1a4d, processorArchitecture=MSIL">
       <HintPath>..\packages\TweetMoaSharp.6.0.0\lib\4.5\Hammock.ClientProfile.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.11.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.11.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.11.10.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.11.10\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -171,12 +171,6 @@
     <Compile Include="Forms\SearchFiles.Designer.cs">
       <DependentUpon>SearchFiles.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\IconGeneratorAssets.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\IconGeneratorAssets.Designer.cs">
-      <DependentUpon>IconGeneratorAssets.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -204,7 +198,6 @@
     <Compile Include="Parser\Featured\FeaturedParser.cs" />
     <Compile Include="Parser\Items\CosmeticSetsParser.cs" />
     <Compile Include="Parser\Items\ItemIDParser.cs" />
-    <Compile Include="Parser\LocRes\LocResParser.cs" />
     <Compile Include="Parser\Meshes\MeshesParser.cs" />
     <Compile Include="Parser\Quests\QuestParser.cs" />
     <Compile Include="Parser\RenderMat\RenderSwitchMaterial.cs" />
@@ -219,9 +212,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SearchFiles.resx">
       <DependentUpon>SearchFiles.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\IconGeneratorAssets.resx">
-      <DependentUpon>IconGeneratorAssets.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>

@@ -229,19 +229,6 @@ namespace FModel.Forms
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            var assetsForm = new IconGeneratorAssets();
-            if (Application.OpenForms[assetsForm.Name] == null)
-            {
-                assetsForm.Show();
-            }
-            else
-            {
-                Application.OpenForms[assetsForm.Name].Focus();
-            }
-        }
-
         private void CheckBox1_CheckedChanged(object sender, EventArgs e)
         {
             if (!checkBox1.Checked)

@@ -1,6 +1,5 @@
 using csharp_wick;
 using FModel.Parser.Items;
-using FModel.Parser.LocResParser;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,6 +7,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.IO;
+using System.Collections.Generic;
 
 namespace FModel
 {
@@ -24,19 +24,17 @@ namespace FModel
         private static string HeroType { get; set; }
         private static string DefenderType { get; set; }
         private static string MinToMax { get; set; }
-        private static JObject wStatsjo { get; set; }
         private static JObject cSetsjo { get; set; }
+        private static JObject weaponStats { get; set; }
 
         public static void DrawTexts(ItemsIdParser theItem, Graphics myGraphic, string mode)
         {
-            bool isSTW = (mode.Equals("stwHeroes") || mode.Equals("stwDefenders"));
-
             using (myGraphic)
             {
-                SetTexts(theItem, isSTW);
+                SetTexts(theItem);
 
-                DrawDisplayName(theItem, myGraphic, isSTW);
-                DrawDescription(theItem, myGraphic, isSTW);
+                DrawDisplayName(theItem, myGraphic);
+                DrawDescription(theItem, myGraphic);
 
                 switch (mode)
                 {
@@ -72,7 +70,14 @@ namespace FModel
                 if (theItem.AmmoData != null && theItem.AmmoData.AssetPathName.Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
                 {
                     ItemIcon.GetAmmoData(theItem.AmmoData.AssetPathName, myGraphic);
-                    DrawWeaponStat(WeaponRowName, myGraphic);
+                    try
+                    {
+                        DrawWeaponStat(WeaponRowName, myGraphic);
+                    }
+                    catch (Exception)
+                    {
+                        //stw weapons
+                    }
                 }
 
                 DrawCosmeticUff(theItem, myGraphic);
@@ -83,7 +88,7 @@ namespace FModel
         /// todo: find a better way to handle errors
         /// </summary>
         /// <param name="theItem"></param>
-        private static void SetTexts(ItemsIdParser theItem, bool isSTW = false)
+        private static void SetTexts(ItemsIdParser theItem)
         {
             CosmeticSource = "";
             CosmeticSet = "";
@@ -115,7 +120,7 @@ namespace FModel
                     case "Turkish":
                     case "Chinese (S)":
                     case "Traditional Chinese":
-                        ShortDescription = theItem.ShortDescription != null ? SearchResource.getTextByKey(theItem.ShortDescription.Key, theItem.ShortDescription.SourceString, isSTW) : "";
+                        ShortDescription = theItem.ShortDescription != null ? SearchResource.getTextByKey(theItem.ShortDescription.Key, theItem.ShortDescription.SourceString) : "";
                         break;
                     default:
                         ShortDescription = theItem.ShortDescription != null ? theItem.ShortDescription.SourceString : "";
@@ -250,13 +255,13 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawDisplayName(ItemsIdParser theItem, Graphics myGraphic, bool isSTW = false)
+        private static void DrawDisplayName(ItemsIdParser theItem, Graphics myGraphic)
         {
             if (theItem.DisplayName != null)
             {
                 //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(5, 405, 512, 55));
 
-                string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString, isSTW);
+                string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString);
 
                 Font goodFont = FontUtilities.FindFont(
                     myGraphic,
@@ -280,13 +285,13 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawDescription(ItemsIdParser theItem, Graphics myGraphic, bool isSTW = false)
+        private static void DrawDescription(ItemsIdParser theItem, Graphics myGraphic)
         {
             if (theItem.Description != null)
             {
                 //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new Rectangle(5, 455, 512, 42));
 
-                string text = SearchResource.getTextByKey(theItem.Description.Key, theItem.Description.SourceString, isSTW);
+                string text = SearchResource.getTextByKey(theItem.Description.Key, theItem.Description.SourceString);
                 if (!string.IsNullOrEmpty(CosmeticSet))
                 {
                     string theSet = DrawCosmeticSet(CosmeticSet);
@@ -341,7 +346,7 @@ namespace FModel
         }
         private static string searchSetName(string setName)
         {
-            string toReturn = "";
+            string toReturn = string.Empty;
 
             JToken setToken = cSetsjo.FindTokens(setName).FirstOrDefault();
             Parser.CosmeticSetsParser.CosmeticSetsParser cSetsParsed = Parser.CosmeticSetsParser.CosmeticSetsParser.FromJson(setToken.ToString());
@@ -362,17 +367,9 @@ namespace FModel
                 case "Turkish":
                 case "Chinese (S)":
                 case "Traditional Chinese":
-                    JToken setNameTokenLocalized = SearchResource.jo.FindTokens("CosmeticSets").FirstOrDefault();
-                    string parsedJson = JToken.Parse(setNameTokenLocalized.ToString()).ToString().TrimStart('[').TrimEnd(']');
-                    JToken setNameToken = JObject.Parse(parsedJson).FindTokens(cSetsParsed.DisplayName.Key).FirstOrDefault();
-                    string translatedName = setNameToken == null ? cSetsParsed.DisplayName.SourceString : setNameToken.ToString();
+                    string translatedName = SearchResource.getTextByKey(cSetsParsed.DisplayName.Key, cSetsParsed.DisplayName.SourceString, cSetsParsed.DisplayName.Namespace);
 
-                    JToken setDescriptionToken = SearchResource.jo.FindTokens("Fort.Cosmetics").FirstOrDefault();
-                    LocResParser dTokenParsed = LocResParser.FromJson(setDescriptionToken.ToString());
-                    if (dTokenParsed.CosmeticItemDescriptionSetMembershipNotRich != null)
-                    {
-                        toReturn = string.Format(dTokenParsed.CosmeticItemDescriptionSetMembershipNotRich, translatedName);
-                    }
+                    toReturn = string.Format(SearchResource.getTextByKey("CosmeticItemDescription_SetMembership_NotRich", cSetsParsed.DisplayName.SourceString, "Fort.Cosmetics"), translatedName);
                     break;
                 default:
                     toReturn = string.Format("\nPart of the {0} set.", cSetsParsed.DisplayName.SourceString);
@@ -433,7 +430,7 @@ namespace FModel
         /// <param name="myGraphic"></param>
         private static void DrawWeaponStat(string weaponName, Graphics myGraphic)
         {
-            if (wStatsjo == null)
+            if (weaponStats == null)
             {
                 ItemIcon.ItemIconPath = string.Empty;
                 string extractedWeaponsStatPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["AthenaRangedWeapons"], "AthenaRangedWeapons");
@@ -446,8 +443,7 @@ namespace FModel
                         {
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
-                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString().TrimStart('[').TrimEnd(']');
-                                wStatsjo = JObject.Parse(parsedJson);
+                                weaponStats = JObject.Parse(JohnWick.MyAsset.GetSerialized().ToString().TrimStart('[').TrimEnd(']'));
                                 loopingLol(weaponName, myGraphic);
                             }
                         }
@@ -462,24 +458,24 @@ namespace FModel
         }
         private static void loopingLol(string weaponName, Graphics myGraphic)
         {
-            foreach (JToken token in wStatsjo.FindTokens(weaponName))
-            {
-                Parser.Weapons.WeaponStatParser statParsed = Parser.Weapons.WeaponStatParser.FromJson(token.ToString());
+            IEnumerable<JProperty> myStats = weaponStats.Value<JObject>(weaponName).Properties();
 
-                Image bulletImage = Resources.dmg64;
-                myGraphic.DrawImage(ImageUtilities.ResizeImage(bulletImage, 15, 15), new Point(5, 502));
-                DrawToLeft("     " + statParsed.DmgPb, myGraphic); //damage per bullet
+            string damagePerBullet = myStats.Where(x => x.Name == "DmgPB").Select(x => x.Value).FirstOrDefault().ToString();
+            Image bulletImage = Resources.dmg64;
+            myGraphic.DrawImage(ImageUtilities.ResizeImage(bulletImage, 15, 15), new Point(5, 502));
+            DrawToLeft("     " + damagePerBullet, myGraphic); //damage per bullet
 
-                Image clipSizeImage = Resources.clipSize64;
-                myGraphic.DrawImage(ImageUtilities.ResizeImage(clipSizeImage, 15, 15), new Point(52, 502));
-                myGraphic.DrawString("      " + statParsed.ClipSize, new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(50, 503));
+            string clipSize = myStats.Where(x => x.Name == "ClipSize").Select(x => x.Value).FirstOrDefault().ToString();
+            Image clipSizeImage = Resources.clipSize64;
+            myGraphic.DrawImage(ImageUtilities.ResizeImage(clipSizeImage, 15, 15), new Point(52, 502));
+            myGraphic.DrawString("      " + clipSize, new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(50, 503));
 
-                Image reload = Resources.reload64;
-                myGraphic.DrawImage(ImageUtilities.ResizeImage(reload, 15, 15), new Point(50 + (statParsed.ClipSize.ToString().Length * 7) + 47, 502)); //50=clipsize text position | for each clipsize letter we add 7 to x | 47=difference between 2 icons
-                myGraphic.DrawString(statParsed.ReloadTime + " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds"), new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(64 + (statParsed.ClipSize.ToString().Length * 7) + 47, 503)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
+            string reloadTime = myStats.Where(x => x.Name == "ReloadTime").Select(x => x.Value).FirstOrDefault().ToString();
+            Image reload = Resources.reload64;
+            myGraphic.DrawImage(ImageUtilities.ResizeImage(reload, 15, 15), new Point(50 + (clipSize.Length * 7) + 47, 502)); //50=clipsize text position | for each clipsize letter we add 7 to x | 47=difference between 2 icons
+            myGraphic.DrawString(reloadTime + " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds"), new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(64 + (clipSize.Length * 7) + 47, 503)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
 
-                DrawToRight(weaponName, myGraphic);
-            }
+            DrawToRight(weaponName, myGraphic);
         }
 
         /// <summary>

@@ -29,6 +29,9 @@ namespace FModel.Parser.CosmeticSetsParser
 
     public partial class Description
     {
+        [JsonProperty("namespace")]
+        public string Namespace { get; set; }
+
         [JsonProperty("key")]
         public string Key { get; set; }
 

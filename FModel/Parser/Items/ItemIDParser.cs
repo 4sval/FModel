@@ -69,6 +69,9 @@ namespace FModel.Parser.Items
 
     public partial class FTextInfos
     {
+        [JsonProperty("namespace")]
+        public string Namespace { get; set; }
+
         [JsonProperty("key")]
         public string Key { get; set; }
 

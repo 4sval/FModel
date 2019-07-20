@@ -78,6 +78,8 @@ namespace FModel
                         {
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
+                                new UpdateMyState("Parsing " + questFile + "...", "Waiting").ChangeProcessState();
+
                                 QuestParser[] questParser = QuestParser.FromJson(JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString());
                                 for (int x = 0; x < questParser.Length; x++)
                                 {

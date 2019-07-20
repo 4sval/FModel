@@ -78,7 +78,7 @@ namespace FModel
             }
             catch (Exception)
             {
-                new UpdateMyConsole("Error while checking for dynamic keys", Color.Red, true).AppendToConsole();
+                new UpdateMyConsole("[BenBot API] Error while checking for dynamic keys", Color.Red, true).AppendToConsole();
                 return null;
             }
         }

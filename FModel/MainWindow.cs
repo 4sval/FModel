@@ -996,53 +996,79 @@ namespace FModel
                 new UpdateMyState("Parsing " + ThePak.CurrentUsedItem + "...", "Waiting").ChangeProcessState();
                 for (int i = 0; i < itemId.Length; i++)
                 {
-                    if (Settings.Default.createIconForCosmetics && itemId[i].ExportType.Contains("Athena") && itemId[i].ExportType.Contains("Item") && itemId[i].ExportType.Contains("Definition"))
+                    switch (itemId[i].ExportType)
                     {
-                        CreateItemIcon(itemId[i], "athIteDef");
+                        case "AthenaBackpackItemDefinition":
+                        case "AthenaBattleBusItemDefinition":
+                        case "AthenaCharacterItemDefinition":
+                        case "AthenaConsumableEmoteItemDefinition":
+                        case "AthenaSkyDiveContrailItemDefinition":
+                        case "AthenaDanceItemDefinition":
+                        case "AthenaEmojiItemDefinition":
+                        case "AthenaGliderItemDefinition":
+                        case "AthenaItemWrapDefinition":
+                        case "AthenaLoadingScreenItemDefinition":
+                        case "AthenaMusicPackItemDefinition":
+                        case "AthenaPetCarrierItemDefinition":
+                        case "AthenaPickaxeItemDefinition":
+                        case "AthenaSprayItemDefinition":
+                        case "AthenaToyItemDefinition":
+                        case "AthenaVictoryPoseItemDefinition":
+                        case "FortBannerTokenType":
+                        case "AthenaGadgetItemDefinition":
+                            CreateItemIcon(itemId[i], "athIteDef");
+                            break;
+                        case "FortWeaponRangedItemDefinition":
+                        case "FortWeaponMeleeItemDefinition":
+                        case "FortIngredientItemDefinition":
+                            CreateItemIcon(itemId[i], "consAndWeap");
+                            break;
+                        case "FortVariantTokenType":
+                            CreateItemIcon(itemId[i], "variant");
+                            break;
+                        case "FortAmmoItemDefinition":
+                            CreateItemIcon(itemId[i], "ammo");
+                            break;
+                        case "FortHeroType":
+                            CreateItemIcon(itemId[i], "stwHeroes");
+                            break;
+                        case "FortDefenderItemDefinition":
+                            CreateItemIcon(itemId[i], "stwDefenders");
+                            break;
+                        case "FortContextTrapItemDefinition":
+                        case "FortTrapItemDefinition":
+                        case "FortCardPackItemDefinition":
+                        case "FortPlaysetGrenadeItemDefinition":
+                        case "FortConsumableAccountItemDefinition":
+                        case "FortBadgeItemDefinition":
+                        case "FortCurrencyItemDefinition":
+                        case "FortConversionControlItemDefinition":
+                        case "FortHomebaseNodeItemDefinition":
+                        case "FortPersonalVehicleItemDefinition":
+                        case "FortCampaignHeroLoadoutItemDefinition":
+                        case "FortNeverPersistItemDefinition":
+                        case "FortPersistentResourceItemDefinition":
+                        case "FortResourceItemDefinition":
+                        case "FortGadgetItemDefinition":
+                        case "FortStatItemDefinition":
+                        case "FortTokenType":
+                        case "FortDailyRewardScheduleTokenDefinition":
+                        case "FortWorkerType":
+                        case "FortConditionalResourceItemDefinition":
+                        case "FortAwardItemDefinition":
+                        case "FortChallengeBundleScheduleDefinition":
+                            CreateItemIcon(itemId[i]);
+                            break;
+                        case "FortChallengeBundleItemDefinition":
+                            CreateBundleChallengesIcon(itemId[i], parsedJson, questJson);
+                            break;
+                        case "Texture2D":
+                            ConvertTexture2D();
+                            break;
+                        case "SoundWave":
+                            ConvertSoundWave();
+                            break;
                     }
-                    else if (Settings.Default.createIconForConsumablesWeapons && (itemId[i].ExportType == "FortWeaponRangedItemDefinition" || itemId[i].ExportType == "FortWeaponMeleeItemDefinition"))
-                    {
-                        CreateItemIcon(itemId[i], "consAndWeap");
-                    }
-                    else if (Settings.Default.createIconForTraps && (itemId[i].ExportType == "FortTrapItemDefinition" || itemId[i].ExportType == "FortContextTrapItemDefinition"))
-                    {
-                        CreateItemIcon(itemId[i]);
-                    }
-                    else if (Settings.Default.createIconForVariants && (itemId[i].ExportType == "FortVariantTokenType"))
-                    {
-                        CreateItemIcon(itemId[i], "variant");
-                    }
-                    else if (Settings.Default.createIconForAmmo && (itemId[i].ExportType == "FortAmmoItemDefinition"))
-                    {
-                        CreateItemIcon(itemId[i], "ammo");
-                    }
-                    else if (itemId[i].ExportType == "FortBannerTokenType")
-                    {
-                        CreateItemIcon(itemId[i], "athIteDef"); //athIteDef because there's a cosmetic source
-                    }
-                    else if (questJson != null && (Settings.Default.createIconForSTWHeroes && (itemId[i].ExportType == "FortHeroType" && (questJson.Contains("ItemDefinition") || questJson.Contains("TestDefsSkydive") || questJson.Contains("GameplayPrototypes"))))) //Contains x not to trigger HID from BR
-                    {
-                        CreateItemIcon(itemId[i], "stwHeroes");
-                    }
-                    else if (Settings.Default.createIconForSTWDefenders && (itemId[i].ExportType == "FortDefenderItemDefinition"))
-                    {
-                        CreateItemIcon(itemId[i], "stwDefenders");
-                    }
-                    else if (Settings.Default.createIconForSTWCardPacks && (itemId[i].ExportType == "FortCardPackItemDefinition"))
-                    {
-                        CreateItemIcon(itemId[i]);
-                    }
-                    else if (Settings.Default.createIconForCreativeGalleries && (itemId[i].ExportType == "FortPlaysetGrenadeItemDefinition"))
-                    {
-                        CreateItemIcon(itemId[i]);
-                    }
-                    else if (itemId[i].ExportType == "FortChallengeBundleItemDefinition")
-                    {
-                        CreateBundleChallengesIcon(itemId[i], parsedJson, questJson);
-                    }
-                    else if (itemId[i].ExportType == "Texture2D") { ConvertTexture2D(); }
-                    else if (itemId[i].ExportType == "SoundWave") { ConvertSoundWave(); }
-                    else { new UpdateMyState(ThePak.CurrentUsedItem + " successfully extracted", "Success").ChangeProcessState(); }
                 }
             }
             catch (Exception ex)
@@ -1122,21 +1148,17 @@ namespace FModel
         {
             ChallengeBundleIdParser bundleParser = ChallengeBundleIdParser.FromJson(theParsedJson).FirstOrDefault();
             BundleInfos.getBundleData(bundleParser);
-            Bitmap bmp = null;
             bool isFortbyte = false;
 
-            if (Settings.Default.createIconForChallenges)
-            {
-                bmp = new Bitmap(2500, 15000);
-                BundleDesign.BundlePath = extractedBundlePath;
-                BundleDesign.theY = 275;
-                BundleDesign.toDrawOn = Graphics.FromImage(bmp);
-                BundleDesign.toDrawOn.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-                BundleDesign.toDrawOn.SmoothingMode = SmoothingMode.HighQuality;
-                BundleDesign.myItem = theItem;
+            Bitmap bmp = new Bitmap(2500, 15000);
+            BundleDesign.BundlePath = extractedBundlePath;
+            BundleDesign.theY = 275;
+            BundleDesign.toDrawOn = Graphics.FromImage(bmp);
+            BundleDesign.toDrawOn.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            BundleDesign.toDrawOn.SmoothingMode = SmoothingMode.HighQuality;
+            BundleDesign.myItem = theItem;
 
-                BundleDesign.drawBackground(bmp, bundleParser);
-            }
+            BundleDesign.drawBackground(bmp, bundleParser);
 
             if (BundleInfos.BundleData[0].rewardItemId != null && string.Equals(BundleInfos.BundleData[0].rewardItemId, "AthenaFortbyte", StringComparison.CurrentCultureIgnoreCase))
                 isFortbyte = true;
@@ -1156,49 +1178,43 @@ namespace FModel
                 new UpdateMyConsole("\t\tCount: " + BundleInfos.BundleData[i].questCount, Color.DarkRed).AppendToConsole();
                 new UpdateMyConsole("\t\t" + BundleInfos.BundleData[i].rewardItemId + ":" + BundleInfos.BundleData[i].rewardItemQuantity, Color.DarkGreen, true).AppendToConsole();
 
-                if (Settings.Default.createIconForChallenges)
+                BundleDesign.theY += 140;
+
+                //in case you wanna make some changes
+                //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(107, BundleDesign.theY + 7, 2000, 93)); //rectangle that resize the font -> used for "Font goodFont = "
+                //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Blue)), new Rectangle(107, BundleDesign.theY + 7, 2000, 75)); //rectangle the font needs to be fit with
+
+                //draw quest description
+                Font goodFont = FontUtilities.FindFont(BundleDesign.toDrawOn, BundleInfos.BundleData[i].questDescr, new Rectangle(107, BundleDesign.theY + 7, 2000, 93).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 50)); //size in "new Font()" is never check
+                BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, goodFont, new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
+
+                //draw slider + quest count
+                Image slider = Resources.Challenges_Slider;
+                BundleDesign.toDrawOn.DrawImage(slider, new Point(108, BundleDesign.theY + 86));
+                BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questCount.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, BundleDesign.theY + 87));
+
+                //draw quest reward
+                DrawingRewards.getRewards(BundleInfos.BundleData[i].rewardItemId, BundleInfos.BundleData[i].rewardItemQuantity);
+
+                if (i != 0)
                 {
-                    BundleDesign.theY += 140;
-
-                    //in case you wanna make some changes
-                    //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(107, BundleDesign.theY + 7, 2000, 93)); //rectangle that resize the font -> used for "Font goodFont = "
-                    //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Blue)), new Rectangle(107, BundleDesign.theY + 7, 2000, 75)); //rectangle the font needs to be fit with
-                    
-                    //draw quest description
-                    Font goodFont = FontUtilities.FindFont(BundleDesign.toDrawOn, BundleInfos.BundleData[i].questDescr, new Rectangle(107, BundleDesign.theY + 7, 2000, 93).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 50)); //size in "new Font()" is never check
-                    BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, goodFont, new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
-
-                    //draw slider + quest count
-                    Image slider = Resources.Challenges_Slider;
-                    BundleDesign.toDrawOn.DrawImage(slider, new Point(108, BundleDesign.theY + 86));
-                    BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questCount.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, BundleDesign.theY + 87));
-
-                    //draw quest reward
-                    DrawingRewards.getRewards(BundleInfos.BundleData[i].rewardItemId, BundleInfos.BundleData[i].rewardItemQuantity);
-
-                    if (i != 0)
-                    {
-                        //draw separator
-                        BundleDesign.toDrawOn.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, BundleDesign.theY - 10, 2410, BundleDesign.theY - 10);
-                    }
+                    //draw separator
+                    BundleDesign.toDrawOn.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, BundleDesign.theY - 10, 2410, BundleDesign.theY - 10);
                 }
             }
             new UpdateMyConsole("", Color.Black, true).AppendToConsole();
 
-            if (Settings.Default.createIconForChallenges)
+            BundleDesign.drawCompletionReward(bundleParser);
+            BundleDesign.drawWatermark(bmp);
+
+            //cut if too long and return the bitmap
+            using (Bitmap bmp2 = bmp)
             {
-                BundleDesign.drawCompletionReward(bundleParser);
-                BundleDesign.drawWatermark(bmp);
+                var newImg = bmp2.Clone(
+                    new Rectangle { X = 0, Y = 0, Width = bmp.Width, Height = BundleDesign.theY + 280 },
+                    bmp2.PixelFormat);
 
-                //cut if too long and return the bitmap
-                using (Bitmap bmp2 = bmp)
-                {
-                    var newImg = bmp2.Clone(
-                        new Rectangle { X = 0, Y = 0, Width = bmp.Width, Height = BundleDesign.theY + 280 },
-                        bmp2.PixelFormat);
-
-                    pictureBox1.Image = newImg;
-                }
+                pictureBox1.Image = newImg;
             }
 
             new UpdateMyState(theItem.DisplayName.SourceString, "Success").ChangeProcessState();
@@ -1233,7 +1249,8 @@ namespace FModel
                 string filePath = App.DefaultOutputPath + "\\Extracted\\" + treeviewPath + "\\" + listBox1.SelectedItem;
                 if (File.Exists(filePath))
                 {
-                    scintilla1.Text = LocResSerializer.StringFinder(filePath);
+                    LocResSerializer.setLocRes(filePath);
+                    scintilla1.Text = JsonConvert.SerializeObject(LocResSerializer.LocResDict, Formatting.Indented);
                 }
                 else { throw new FileNotFoundException("Error while searching " + listBox1.SelectedItem); }
             }));
@@ -1337,6 +1354,13 @@ namespace FModel
         private void ExtractButton_Click(object sender, EventArgs e)
         {
             ExtractProcess();
+        }
+        private void ListBox1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listBox1.SelectedItem != null && SelectedItemsArray == null)
+            {
+                ExtractProcess();
+            }
         }
 
         private void ExtractProcess()
@@ -1620,6 +1644,12 @@ namespace FModel
                 }
             }
         }
+
+        private void openExtractionFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Settings.Default.ExtractOutput))
+                Process.Start(@"" + Settings.Default.ExtractOutput);
+        }
         #endregion
 
         #region RIGHT CLICK
@@ -1680,11 +1710,5 @@ namespace FModel
             }
         }
         #endregion
-
-        private void openExtractionFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.ExtractOutput))
-                System.Diagnostics.Process.Start(@"" + Properties.Settings.Default.ExtractOutput);
-        }
     }
 }

@@ -49,66 +49,6 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool createIconForCosmetics {
-            get {
-                return ((bool)(this["createIconForCosmetics"]));
-            }
-            set {
-                this["createIconForCosmetics"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool createIconForVariants {
-            get {
-                return ((bool)(this["createIconForVariants"]));
-            }
-            set {
-                this["createIconForVariants"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool createIconForConsumablesWeapons {
-            get {
-                return ((bool)(this["createIconForConsumablesWeapons"]));
-            }
-            set {
-                this["createIconForConsumablesWeapons"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool createIconForTraps {
-            get {
-                return ((bool)(this["createIconForTraps"]));
-            }
-            set {
-                this["createIconForTraps"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool createIconForChallenges {
-            get {
-                return ((bool)(this["createIconForChallenges"]));
-            }
-            set {
-                this["createIconForChallenges"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool loadFeaturedImage {
             get {
@@ -433,54 +373,6 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool createIconForAmmo {
-            get {
-                return ((bool)(this["createIconForAmmo"]));
-            }
-            set {
-                this["createIconForAmmo"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool createIconForSTWDefenders {
-            get {
-                return ((bool)(this["createIconForSTWDefenders"]));
-            }
-            set {
-                this["createIconForSTWDefenders"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool createIconForSTWHeroes {
-            get {
-                return ((bool)(this["createIconForSTWHeroes"]));
-            }
-            set {
-                this["createIconForSTWHeroes"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool createIconForSTWCardPacks {
-            get {
-                return ((bool)(this["createIconForSTWCardPacks"]));
-            }
-            set {
-                this["createIconForSTWCardPacks"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("English")]
         public string IconLanguage {
             get {
@@ -512,18 +404,6 @@ namespace FModel.Properties {
             }
             set {
                 this["challengesWatermark"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool createIconForCreativeGalleries {
-            get {
-                return ((bool)(this["createIconForCreativeGalleries"]));
-            }
-            set {
-                this["createIconForCreativeGalleries"] = value;
             }
         }
         

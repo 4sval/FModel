@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,42 +15,42 @@ namespace FModel
      * */
     static class LocResSerializer
     {
-        private static byte[] LocResMagic = { 0x0E, 0x14, 0x74, 0x75, 0x67, 0x4A, 0x03, 0xFC, 0x4A, 0x15, 0x90, 0x9D, 0xC3, 0x37, 0x7F, 0x1B };
-        private static long LocalizedStringArrayOffset { get; set; }
-        private static string[] LocalizedStringArray { get; set; }
-        private static string NamespacesString { get; set; }
-        private static string myKey { get; set; }
-        private static Dictionary<string, Dictionary<string, string>> LocResDict { get; set; }
+        private static byte[] _locResMagic = { 0x0E, 0x14, 0x74, 0x75, 0x67, 0x4A, 0x03, 0xFC, 0x4A, 0x15, 0x90, 0x9D, 0xC3, 0x37, 0x7F, 0x1B };
+        private static long _localizedStringArrayOffset { get; set; }
+        private static string[] _localizedStringArray { get; set; }
+        private static string _namespacesString { get; set; }
+        private static string _myKey { get; set; }
+        public static Dictionary<string, Dictionary<string, string>> LocResDict { get; set; }
 
-        public static string StringFinder(string filepath)
+        public static void setLocRes(string filepath, bool addToCurrent = false)
         {
-            LocResDict = new Dictionary<string, Dictionary<string, string>>();
-            myKey = "LocResText";
-            NamespacesString = "";
-            LocalizedStringArrayOffset = -1;
+            if (!addToCurrent) { LocResDict = new Dictionary<string, Dictionary<string, string>>(); }
+            _myKey = "LocResText";
+            _namespacesString = "";
+            _localizedStringArrayOffset = -1;
 
             using (BinaryReader reader = new BinaryReader(File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Encoding.GetEncoding(1252)))
             {
                 byte[] MagicNumber = reader.ReadBytes(16);
-                if (MagicNumber.SequenceEqual(LocResMagic))
+                if (MagicNumber.SequenceEqual(_locResMagic))
                 {
                     byte VersionNumber = reader.ReadByte();
                     if (VersionNumber == 2) //optimized
                     {
-                        LocalizedStringArrayOffset = reader.ReadInt64();
-                        if (LocalizedStringArrayOffset != -1)
+                        _localizedStringArrayOffset = reader.ReadInt64();
+                        if (_localizedStringArrayOffset != -1)
                         {
                             long CurrentFileOffset = reader.BaseStream.Position;
 
-                            reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
+                            reader.BaseStream.Seek(_localizedStringArrayOffset, SeekOrigin.Begin);
                             int arrayLength = reader.ReadInt32();
 
-                            reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
+                            reader.BaseStream.Seek(_localizedStringArrayOffset, SeekOrigin.Begin);
 
-                            LocalizedStringArray = new string[arrayLength];
-                            for (int i = 0; i < LocalizedStringArray.Length; i++)
+                            _localizedStringArray = new string[arrayLength];
+                            for (int i = 0; i < _localizedStringArray.Length; i++)
                             {
-                                LocalizedStringArray[i] = AssetReader.readCleanString(reader);
+                                _localizedStringArray[i] = AssetReader.readCleanString(reader);
                             }
 
                             reader.BaseStream.Seek(CurrentFileOffset, SeekOrigin.Begin);
@@ -68,37 +69,35 @@ namespace FModel
                 }
                 else { throw new ArgumentException("Wrong LocResMagic number."); }
             }
-
-            return JsonConvert.SerializeObject(LocResDict, Formatting.Indented);
         }
 
         private static void readNamespaces(BinaryReader br)
         {
-            if (br.BaseStream.Position > LocalizedStringArrayOffset) { return; }
+            if (br.BaseStream.Position > _localizedStringArrayOffset) { return; }
 
             int stringLength = br.ReadInt32();
             if (stringLength > 0)
             {
-                NamespacesString = Encoding.GetEncoding(1252).GetString(br.ReadBytes(stringLength)).TrimEnd('\0');
+                _namespacesString = Encoding.GetEncoding(1252).GetString(br.ReadBytes(stringLength)).TrimEnd('\0');
             }
             else if (stringLength == 0)
             {
-                NamespacesString = "";
+                _namespacesString = "";
             }
             else
             {
                 byte[] data = br.ReadBytes((-1 - stringLength) * 2);
                 br.ReadBytes(2);
-                NamespacesString = Encoding.Unicode.GetString(data);
+                _namespacesString = Encoding.Unicode.GetString(data);
             }
 
             br.ReadInt32();
             int stringIndex = br.ReadInt32();
-            if (stringIndex > LocalizedStringArray.Length || stringIndex < 0)
+            if (stringIndex > _localizedStringArray.Length || stringIndex < 0)
             {
-                if (!LocResDict.ContainsKey(NamespacesString))
+                if (!LocResDict.ContainsKey(_namespacesString))
                 {
-                    LocResDict[NamespacesString] = new Dictionary<string, string>();
+                    LocResDict[_namespacesString] = new Dictionary<string, string>();
                 }
 
                 long newOffset = br.BaseStream.Position - 8;
@@ -107,20 +106,20 @@ namespace FModel
                 int KeyCount = br.ReadInt32();
                 for (int i = 0; i < KeyCount; i++)
                 {
-                    myKey = AssetReader.readCleanString(br);
+                    _myKey = AssetReader.readCleanString(br);
 
                     br.ReadInt32();
                     stringIndex = br.ReadInt32();
 
-                    LocResDict[NamespacesString][myKey] = LocalizedStringArray[stringIndex];
+                    LocResDict[_namespacesString][_myKey] = _localizedStringArray[stringIndex];
                 }
             }
             else
             {
-                if (!LocResDict.ContainsKey(NamespacesString))
+                if (!LocResDict.ContainsKey(_namespacesString))
                 {
-                    LocResDict[NamespacesString] = new Dictionary<string, string>();
-                    LocResDict[NamespacesString][myKey] = LocalizedStringArray[stringIndex];
+                    LocResDict[_namespacesString] = new Dictionary<string, string>();
+                    LocResDict[_namespacesString][_myKey] = _localizedStringArray[stringIndex];
                 }
             }
         }

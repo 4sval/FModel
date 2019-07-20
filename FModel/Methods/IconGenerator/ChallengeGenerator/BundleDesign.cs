@@ -6,8 +6,6 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
 using System;
-using Newtonsoft.Json.Linq;
-using FModel.Parser.LocResParser;
 
 namespace FModel
 {
@@ -40,7 +38,8 @@ namespace FModel
         /// <param name="myBundle"></param>
         public static void drawBackground(Bitmap myBitmap, ChallengeBundleIdParser myBundle)
         {
-            if (Settings.Default.createIconForChallenges && myBundle.DisplayStyle != null)
+            new UpdateMyState("Drawing...", "Waiting").ChangeProcessState();
+            if (myBundle.DisplayStyle != null)
             {
                 //main header
                 toDrawOn.FillRectangle(new SolidBrush(BundleInfos.getSecondaryColor(myBundle)), new Rectangle(0, 0, myBitmap.Width, 281));
@@ -57,7 +56,15 @@ namespace FModel
                 GraphicsPath p = new GraphicsPath();
                 Pen myPen = new Pen(ControlPaint.Light(BundleInfos.getSecondaryColor(myBundle), (float)0.2), 3);
                 myPen.LineJoin = LineJoin.Round; //needed to avoid spikes
-                p.AddString(BundleInfos.getLastFolder(BundlePath), Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], (int)FontStyle.Regular, 55, new Point(342, 40), FontUtilities.leftString);
+                p.AddString(
+                    Utilities.CaseInsensitiveContains(BundleInfos.getLastFolder(BundlePath), "SEASON", StringComparison.CurrentCultureIgnoreCase) ?
+                    SearchResource.getTextByKey("15EB9C4A494F597285CC5CA2EAA571E1", "SEASON") + " " + BundleInfos.getLastFolder(BundlePath).Substring(BundleInfos.getLastFolder(BundlePath).Length - 1) :
+                    BundleInfos.getLastFolder(BundlePath),
+                    Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1],
+                    (int)FontStyle.Regular, 55,
+                    new Point(342, 40),
+                    FontUtilities.leftString
+                    );
                 toDrawOn.DrawPath(myPen, p);
                 toDrawOn.FillPath(new SolidBrush(ControlPaint.Dark(BundleInfos.getSecondaryColor(myBundle), (float)0.05)), p);
 
@@ -112,7 +119,13 @@ namespace FModel
                 toDrawOn.FillRectangle(new SolidBrush(ControlPaint.Dark(myBaseColor, (float)0.1)), new Rectangle(0, 271, myBitmap.Width, myBitmap.Height));
 
                 //last folder
-                toDrawOn.DrawString(BundleInfos.getLastFolder(BundlePath), new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 42), new SolidBrush(ControlPaint.Dark(myBaseColor, (float)0.05)), new Point(40, 40));
+                toDrawOn.DrawString(Utilities.CaseInsensitiveContains(BundleInfos.getLastFolder(BundlePath), "SEASON", StringComparison.CurrentCultureIgnoreCase) ?
+                    SearchResource.getTextByKey("15EB9C4A494F597285CC5CA2EAA571E1", "SEASON") + " " + BundleInfos.getLastFolder(BundlePath).Substring(BundleInfos.getLastFolder(BundlePath).Length - 1) :
+                    BundleInfos.getLastFolder(BundlePath),
+                    new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 42),
+                    new SolidBrush(ControlPaint.Dark(myBaseColor, (float)0.05)),
+                    new Point(40, 40)
+                    );
 
                 //name
                 toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(25, 70));
@@ -192,32 +205,24 @@ namespace FModel
                 case "Turkish":
                 case "Chinese (S)":
                 case "Traditional Chinese":
-                    foreach (JToken token in SearchResource.jo.FindTokens("AthenaChallengeDetailsEntry")) //no need to check if we need a new SearchResource.jo
+                    all = SearchResource.getTextByKey("CompletionRewardFormat_All", "Complete ALL CHALLENGES to earn the reward item", "AthenaChallengeDetailsEntry");
+                    any = SearchResource.getTextByKey("CompletionRewardFormat", "Complete ANY " + count + " CHALLENGES to earn the reward item", "AthenaChallengeDetailsEntry");
+
+                    HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+                    doc.LoadHtml(all);
+                    if (doc.DocumentNode.InnerText.Contains(" {0}")) //avoid white space
                     {
-                        LocResParser LocResParse = LocResParser.FromJson(token.ToString());
-                        if (LocResParse.CompletionRewardFormatAll != null)
-                        {
-                            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
-                            doc.LoadHtml(LocResParse.CompletionRewardFormatAll);
-
-                            if (doc.DocumentNode.InnerText.Contains(" {0}")) //avoid white space
-                            {
-                                all = doc.DocumentNode.InnerText.Replace(" {0}", string.Empty);
-                            }
-                            else { all = doc.DocumentNode.InnerText.Replace("{0}", string.Empty); }
-                        }
-                        if (LocResParse.CompletionRewardFormat != null)
-                        {
-                            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
-                            doc.LoadHtml(LocResParse.CompletionRewardFormat);
-
-                            if (doc.DocumentNode.InnerText.Contains("{QuestNumber}")) //russian
-                            {
-                                any = doc.DocumentNode.InnerText.Replace("{QuestNumber}", count);
-                            }
-                            else { any = string.Format(doc.DocumentNode.InnerText, count); }
-                        }
+                        all = doc.DocumentNode.InnerText.Replace(" {0}", string.Empty);
                     }
+                    else { all = doc.DocumentNode.InnerText.Replace("{0}", string.Empty); }
+
+                    doc = new HtmlAgilityPack.HtmlDocument();
+                    doc.LoadHtml(any);
+                    if (doc.DocumentNode.InnerText.Contains("{QuestNumber}")) //russian
+                    {
+                        any = doc.DocumentNode.InnerText.Replace("{QuestNumber}", count);
+                    }
+                    else { any = string.Format(doc.DocumentNode.InnerText, count); }
                     break;
                 default:
                     break;
