@@ -1191,7 +1191,7 @@ namespace FModel
                 //draw slider + quest count
                 Image slider = Resources.Challenges_Slider;
                 BundleDesign.toDrawOn.DrawImage(slider, new Point(108, BundleDesign.theY + 86));
-                BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questCount.ToString(), new Font(FontUtilities.pfc.Families[0], 20), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(968, BundleDesign.theY + 87));
+                BundleDesign.toDrawOn.DrawString("0 / " + BundleInfos.BundleData[i].questCount.ToString(), new Font(FontUtilities.pfc.Families[0], 25), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(978, BundleDesign.theY + 88));
 
                 //draw quest reward
                 DrawingRewards.getRewards(BundleInfos.BundleData[i].rewardItemId, BundleInfos.BundleData[i].rewardItemQuantity);
