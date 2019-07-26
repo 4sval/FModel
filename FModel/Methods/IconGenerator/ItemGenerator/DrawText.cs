@@ -439,7 +439,7 @@ namespace FModel
                 JToken assetPathName = largePreviewImage["asset_path_name"];
                 if (assetPathName != null)
                 {
-                    string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.') + 1);
+                    string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
 
                     ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                     if (File.Exists(ItemIcon.ItemIconPath))
