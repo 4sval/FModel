@@ -81,7 +81,9 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) if you
 
 ## TODO
   - [ ] Code refactoring
-  - [ ] Schematics icon with weapon icon and ingredients
+  - [ ] Special Schematics icon design with weapon icon and ingredients
+  - [ ] New Heroes icon design with perks and more
+  - [ ] New Defenders icon design with useful infos
   - [x] Translation support
   - [x] AES Manager
   - [x] Display support for .locres files

@@ -969,6 +969,7 @@ namespace FModel
                     case "FortConditionalResourceItemDefinition":
                     case "FortAwardItemDefinition":
                     case "FortChallengeBundleScheduleDefinition":
+                    case "FortAbilityKit":
                         CreateItemIcon(AssetArray[0]);
                         break;
                     case "FortChallengeBundleItemDefinition":

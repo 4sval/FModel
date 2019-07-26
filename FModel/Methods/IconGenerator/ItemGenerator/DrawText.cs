@@ -309,25 +309,48 @@ namespace FModel
             JToken description = theItem["Description"];
             if (description != null)
             {
-                JToken key = description["key"];
-                JToken sourceString = description["source_string"];
-                if (key != null && sourceString != null)
+                string descriptionText = string.Empty;
+
+                if (theItem["export_type"].Value<string>().Equals("FortAbilityKit"))
                 {
-                    //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new Rectangle(5, 455, 512, 42));
-
-                    string text = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
-
-                    if (!string.IsNullOrEmpty(CosmeticSet))
+                    JArray descriptionArray = theItem["Description"].Value<JArray>();
+                    foreach (JToken token in descriptionArray)
                     {
-                        string theSet = DrawCosmeticSet(CosmeticSet);
-                        if (!string.IsNullOrEmpty(theSet))
+                        JToken key = token["key"];
+                        JToken sourceString = token["source_string"];
+                        if (key != null && sourceString != null)
                         {
-                            text += theSet;
+                            string text = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
+                            descriptionText += text;
                         }
                     }
+                }
+                else
+                {
+                    JToken key = description["key"];
+                    JToken sourceString = description["source_string"];
+                    if (key != null && sourceString != null)
+                    {
+                        //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new Rectangle(5, 455, 512, 42));
 
+                        string text = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
+                        descriptionText = text;
+
+                        if (!string.IsNullOrEmpty(CosmeticSet))
+                        {
+                            string theSet = DrawCosmeticSet(CosmeticSet);
+                            if (!string.IsNullOrEmpty(theSet))
+                            {
+                                descriptionText += theSet;
+                            }
+                        }
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(descriptionText))
+                {
                     myGraphic.DrawString(
-                        text,
+                        descriptionText,
                         new Font("Arial", Settings.Default.rarityNew ? 9 : 10),
                         new SolidBrush(Color.White),
                         new RectangleF(5, Settings.Default.rarityNew ? 455 : 441, 512, Settings.Default.rarityNew ? 42 : 49),

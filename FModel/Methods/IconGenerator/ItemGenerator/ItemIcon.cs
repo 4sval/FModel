@@ -148,6 +148,7 @@ namespace FModel
         {
             JToken largePreviewImage = theItem["LargePreviewImage"];
             JToken smallPreviewImage = theItem["SmallPreviewImage"];
+            JToken iconBrush = theItem["IconBrush"];
             if (largePreviewImage != null)
             {
                 JToken assetPathName = largePreviewImage["asset_path_name"];
@@ -164,6 +165,16 @@ namespace FModel
                 if (assetPathName != null)
                 {
                     string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
+
+                    ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                }
+            }
+            else if (iconBrush != null)
+            {
+                JToken resourceObject = iconBrush["ResourceObject"];
+                if (resourceObject != null)
+                {
+                    string textureFile = resourceObject.Value<string>();
 
                     ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                 }
