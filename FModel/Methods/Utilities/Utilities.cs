@@ -77,21 +77,6 @@ namespace FModel
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        public static void JohnWickCheck()
-        {
-            if (File.Exists(App.DefaultOutputPath + "\\john-wick-parse-modded.exe")) //2.0-
-            {
-                File.Delete(App.DefaultOutputPath + "\\john-wick-parse-modded.exe");
-            }
-            if (File.Exists(App.DefaultOutputPath + "\\john-wick-parse_custom.exe")) //2.0+
-            {
-                File.Delete(App.DefaultOutputPath + "\\john-wick-parse_custom.exe");
-            }
-        }
-
-        /// <summary>
         /// this should tell me if i can read the file, to avoid crash when a pak is being written by the launcher
         /// </summary>
         /// <param name="file"></param>

@@ -1,13 +1,10 @@
 using csharp_wick;
-using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Drawing;
 using System.Linq;
 using System.IO;
-using System.Collections.Generic;
 
 namespace FModel
 {
@@ -19,15 +16,17 @@ namespace FModel
         private static string CosmeticId { get; set; }
         private static string MaxStackSize { get; set; }
         private static string ItemAction { get; set; }
+        private static string WeaponDataTable { get; set; }
         private static string WeaponRowName { get; set; }
         private static string CosmeticUff { get; set; }
         private static string HeroType { get; set; }
         private static string DefenderType { get; set; }
         private static string MinToMax { get; set; }
-        private static JObject cSetsjo { get; set; }
-        private static JObject weaponStats { get; set; }
+        private static JArray cosmeticsSetsArray { get; set; }
+        private static JArray weaponsStatsArray { get; set; }
+        private static string weaponStatsFilename { get; set; }
 
-        public static void DrawTexts(ItemsIdParser theItem, Graphics myGraphic, string mode)
+        public static void DrawTexts(JToken theItem, Graphics myGraphic, string mode)
         {
             using (myGraphic)
             {
@@ -63,20 +62,21 @@ namespace FModel
                         break;
                 }
 
-                if (theItem.ExportType == "AthenaItemWrapDefinition" && Checking.WasFeatured && ItemIcon.ItemIconPath.Contains("WeaponRenders"))
+                JToken exportToken = theItem["export_type"];
+                if (exportToken != null && exportToken.Value<string>().Equals("AthenaItemWrapDefinition") && Checking.WasFeatured && ItemIcon.ItemIconPath.Contains("WeaponRenders"))
                 {
                     DrawAdditionalImage(theItem, myGraphic);
                 }
-                if (theItem.AmmoData != null && theItem.AmmoData.AssetPathName.Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
+
+                JToken ammoToken = theItem["AmmoData"];
+                if (ammoToken != null)
                 {
-                    ItemIcon.GetAmmoData(theItem.AmmoData.AssetPathName, myGraphic);
-                    try
+                    JToken assetPathName = ammoToken["asset_path_name"];
+                    if (assetPathName != null && assetPathName.Value<string>().Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
                     {
-                        DrawWeaponStat(WeaponRowName, myGraphic);
-                    }
-                    catch (Exception)
-                    {
-                        //stw weapons
+                        ItemIcon.GetAmmoData(assetPathName.Value<string>(), myGraphic);
+
+                        DrawWeaponStat(WeaponDataTable, WeaponRowName, myGraphic);
                     }
                 }
 
@@ -88,7 +88,7 @@ namespace FModel
         /// todo: find a better way to handle errors
         /// </summary>
         /// <param name="theItem"></param>
-        private static void SetTexts(ItemsIdParser theItem)
+        private static void SetTexts(JToken theItem)
         {
             CosmeticSource = "";
             CosmeticSet = "";
@@ -96,14 +96,19 @@ namespace FModel
             CosmeticId = "";
             MaxStackSize = "";
             ItemAction = "";
+            WeaponDataTable = "";
             WeaponRowName = "";
             CosmeticUff = "";
             HeroType = "";
             DefenderType = "";
             MinToMax = "";
 
-            try
+            JToken shortDescription = theItem["ShortDescription"];
+            if (shortDescription != null)
             {
+                JToken key = shortDescription["key"];
+                JToken sourceString = shortDescription["source_string"];
+
                 switch (Settings.Default.IconLanguage)
                 {
                     case "French":
@@ -120,99 +125,107 @@ namespace FModel
                     case "Turkish":
                     case "Chinese (S)":
                     case "Traditional Chinese":
-                        ShortDescription = theItem.ShortDescription != null ? SearchResource.getTextByKey(theItem.ShortDescription.Key, theItem.ShortDescription.SourceString) : "";
+                        if (key != null && sourceString != null)
+                        {
+                            ShortDescription = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
+                        }
                         break;
                     default:
-                        ShortDescription = theItem.ShortDescription != null ? theItem.ShortDescription.SourceString : "";
+                        if (sourceString != null)
+                        {
+                            ShortDescription = sourceString.Value<string>();
+                        }
                         break;
                 }
             }
-            catch (Exception)
+
+            JToken gameplayTags = theItem["GameplayTags"];
+            if (gameplayTags != null)
             {
-                //avoid generator to stop when a string isn't found
-            }
-            try
-            {
-                CosmeticSet = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Set."))];
-            }
-            catch (Exception)
-            {
-                //avoid generator to stop when a string isn't found
-            }
-            try
-            {
-                CosmeticSource = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.Source."))].Substring(17);
-            }
-            catch (Exception)
-            {
-                //avoid generator to stop when a string isn't found
-            }
-            try
-            {
-                CosmeticId = theItem.CosmeticItem;
-            }
-            catch (Exception)
-            {
-                //avoid generator to stop when a string isn't found
-            }
-            try
-            {
-                MaxStackSize = "Max Stack Size: " + theItem.MaxStackSize;
-            }
-            catch (Exception)
-            {
-                //avoid generator to stop when a string isn't found
-            }
-            try
-            {
-                ItemAction = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Athena.ItemAction."))].Substring(18);
-            }
-            catch (Exception)
-            {
-                //avoid generator to stop when a string isn't found
-            }
-            try
-            {
-                if (theItem.WeaponStatHandle != null && theItem.WeaponStatHandle.RowName != "Harvest_Pickaxe_Athena_C_T01" && theItem.WeaponStatHandle.RowName != "Edged_Sword_Athena_C_T01")
+                JToken gameplayTagsTwo = gameplayTags["gameplay_tags"];
+                if (gameplayTagsTwo != null)
                 {
-                    WeaponRowName = theItem.WeaponStatHandle.RowName;
+                    JArray gameplayTagsArray = gameplayTagsTwo.Value<JArray>();
+
+                    JToken cosmeticSet = gameplayTagsArray.Children<JToken>().FirstOrDefault(x => x.ToString().StartsWith("Cosmetics.Set."));
+                    if (cosmeticSet != null)
+                    {
+                        CosmeticSet = gameplayTagsArray[gameplayTagsArray.IndexOf(cosmeticSet)].Value<string>();
+                    }
+
+                    JToken cosmeticSource = gameplayTagsArray.Children<JToken>().FirstOrDefault(x => x.ToString().StartsWith("Cosmetics.Source."));
+                    if (cosmeticSource != null)
+                    {
+                        CosmeticSource = cosmeticSource.Value<string>().Substring(17);
+                    }
+
+                    JToken athenaItemAction = gameplayTagsArray.Children<JToken>().FirstOrDefault(x => x.ToString().StartsWith("Athena.ItemAction."));
+                    if (athenaItemAction != null)
+                    {
+                        ItemAction = athenaItemAction.Value<string>().Substring(18);
+                    }
+
+                    JToken userFacingFlags = gameplayTagsArray.Children<JToken>().FirstOrDefault(x => x.ToString().StartsWith("Cosmetics.UserFacingFlags."));
+                    if (userFacingFlags != null)
+                    {
+                        CosmeticUff = userFacingFlags.Value<string>();
+                    }
+
+                    JToken defenderType = gameplayTagsArray.Children<JToken>().FirstOrDefault(x => x.ToString().StartsWith("NPC.CharacterType.Survivor.Defender."));
+                    if (defenderType != null)
+                    {
+                        DefenderType = defenderType.Value<string>().Substring(36);
+                    }
                 }
             }
-            catch (Exception)
+            
+            JToken cosmeticId = theItem["cosmetic_item"];
+            if (cosmeticId != null)
             {
-                //avoid generator to stop when a string isn't found
+                CosmeticId = cosmeticId.Value<string>();
             }
-            try
+
+            JToken maxStackSize = theItem["MaxStackSize"];
+            if (maxStackSize != null)
             {
-                CosmeticUff = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("Cosmetics.UserFacingFlags."))];
+                MaxStackSize = "Max Stack Size: " + maxStackSize.Value<string>();
             }
-            catch (Exception)
+
+            JToken weaponStatHandle = theItem["WeaponStatHandle"];
+            if (weaponStatHandle != null)
             {
-                //avoid generator to stop when a string isn't found
+                JToken dataTable = weaponStatHandle["DataTable"];
+                if (dataTable != null)
+                {
+                    WeaponDataTable = dataTable.Value<string>();
+                }
+
+                JToken rowName = weaponStatHandle["RowName"];
+                if (rowName != null)
+                {
+                    WeaponRowName = rowName.Value<string>();
+                }
             }
-            try
+
+            JToken attributeInitKey = theItem["AttributeInitKey"];
+            if (attributeInitKey != null)
             {
-                HeroType = theItem.AttributeInitKey != null ? theItem.AttributeInitKey.AttributeInitCategory : "";
+                JToken attributeInitCategory = attributeInitKey["AttributeInitCategory"];
+                if (attributeInitCategory != null)
+                {
+                    HeroType = attributeInitCategory.Value<string>();
+                }
             }
-            catch (Exception)
+
+            JToken minLevel = theItem["MinLevel"];
+            JToken maxLevel = theItem["MaxLevel"];
+            if (maxLevel != null)
             {
-                //avoid generator to stop when a string isn't found
-            }
-            try
-            {
-                DefenderType = theItem.GameplayTags.GameplayTagsGameplayTags[Array.FindIndex(theItem.GameplayTags.GameplayTagsGameplayTags, x => x.StartsWith("NPC.CharacterType.Survivor.Defender."))].Substring(36);
-            }
-            catch (Exception)
-            {
-                //avoid generator to stop when a string isn't found
-            }
-            try
-            {
-                MinToMax = "   " + theItem.MinLevel + " to " + theItem.MaxLevel;
-            }
-            catch (Exception)
-            {
-                //avoid generator to stop when a string isn't found
+                MinToMax = "    0 to " + maxLevel.Value<string>();
+                if (minLevel != null)
+                {
+                    MinToMax = "    " + minLevel.Value<string>() + " to " + maxLevel.Value<string>();
+                }
             }
         }
 
@@ -222,7 +235,7 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawCosmeticUff(ItemsIdParser theItem, Graphics myGraphic)
+        private static void DrawCosmeticUff(JToken theItem, Graphics myGraphic)
         {
             Image imageLogo = null;
             Point pointCoords = new Point(6, 6);
@@ -231,9 +244,9 @@ namespace FModel
             {
                 if (CosmeticUff.Contains("Animated"))
                     imageLogo = Resources.Animated64;
-                else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem.ExportType != "AthenaPetCarrierItemDefinition")
+                else if (CosmeticUff.Contains("HasUpgradeQuests") && !theItem["export_type"].Value<string>().Equals("AthenaPetCarrierItemDefinition"))
                     imageLogo = Resources.Quests64;
-                else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem.ExportType == "AthenaPetCarrierItemDefinition")
+                else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem["export_type"].Value<string>().Equals("AthenaPetCarrierItemDefinition"))
                     imageLogo = Resources.Pets64;
                 else if (CosmeticUff.Contains("HasVariants"))
                     imageLogo = Resources.Variant64;
@@ -255,28 +268,34 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawDisplayName(ItemsIdParser theItem, Graphics myGraphic)
+        private static void DrawDisplayName(JToken theItem, Graphics myGraphic)
         {
-            if (theItem.DisplayName != null)
+            JToken displayName = theItem["DisplayName"];
+            if (displayName != null)
             {
-                //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(5, 405, 512, 55));
+                JToken key = displayName["key"];
+                JToken sourceString = displayName["source_string"];
+                if (key != null && sourceString != null)
+                {
+                    //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(5, 405, 512, 55));
 
-                string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString);
+                    string text = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
 
-                Font goodFont = FontUtilities.FindFont(
-                    myGraphic,
-                    text,
-                    Settings.Default.rarityNew ? new Rectangle(5, 405, 512, 55).Size : new Rectangle(5, 395, 512, 49).Size,
-                    new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35)
-                    );
+                    Font goodFont = FontUtilities.FindFont(
+                        myGraphic,
+                        text,
+                        Settings.Default.rarityNew ? new Rectangle(5, 405, 512, 55).Size : new Rectangle(5, 395, 512, 49).Size,
+                        new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35)
+                        );
 
-                myGraphic.DrawString(
-                    text,
-                    goodFont,
-                    new SolidBrush(Color.White),
-                    Settings.Default.rarityNew ? new Point(522, 405) : new Point(522 / 2, 395),
-                    Settings.Default.rarityNew ? FontUtilities.rightString : FontUtilities.centeredString
-                    );
+                    myGraphic.DrawString(
+                        text,
+                        goodFont,
+                        new SolidBrush(Color.White),
+                        Settings.Default.rarityNew ? new Point(522, 405) : new Point(522 / 2, 395),
+                        Settings.Default.rarityNew ? FontUtilities.rightString : FontUtilities.centeredString
+                        );
+                }
             }
         }
 
@@ -285,35 +304,42 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawDescription(ItemsIdParser theItem, Graphics myGraphic)
+        private static void DrawDescription(JToken theItem, Graphics myGraphic)
         {
-            if (theItem.Description != null)
+            JToken description = theItem["Description"];
+            if (description != null)
             {
-                //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new Rectangle(5, 455, 512, 42));
-
-                string text = SearchResource.getTextByKey(theItem.Description.Key, theItem.Description.SourceString);
-                if (!string.IsNullOrEmpty(CosmeticSet))
+                JToken key = description["key"];
+                JToken sourceString = description["source_string"];
+                if (key != null && sourceString != null)
                 {
-                    string theSet = DrawCosmeticSet(CosmeticSet);
-                    if (!string.IsNullOrEmpty(theSet))
-                    {
-                        text += theSet;
-                    }
-                }
+                    //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new Rectangle(5, 455, 512, 42));
 
-                myGraphic.DrawString(
-                    text,
-                    new Font("Arial", Settings.Default.rarityNew ? 9 : 10),
-                    new SolidBrush(Color.White),
-                    new RectangleF(5, Settings.Default.rarityNew ? 455 : 441, 512, Settings.Default.rarityNew ? 42 : 49),
-                    Settings.Default.rarityNew ? FontUtilities.rightString : FontUtilities.centeredStringLine
-                    );
+                    string text = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
+
+                    if (!string.IsNullOrEmpty(CosmeticSet))
+                    {
+                        string theSet = DrawCosmeticSet(CosmeticSet);
+                        if (!string.IsNullOrEmpty(theSet))
+                        {
+                            text += theSet;
+                        }
+                    }
+
+                    myGraphic.DrawString(
+                        text,
+                        new Font("Arial", Settings.Default.rarityNew ? 9 : 10),
+                        new SolidBrush(Color.White),
+                        new RectangleF(5, Settings.Default.rarityNew ? 455 : 441, 512, Settings.Default.rarityNew ? 42 : 49),
+                        Settings.Default.rarityNew ? FontUtilities.rightString : FontUtilities.centeredStringLine
+                        );
+                }
             }
         }
 
         private static string DrawCosmeticSet(string setName)
         {
-            if (cSetsjo == null)
+            if (cosmeticsSetsArray == null)
             {
                 string extractedCosmeticsSetsPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["CosmeticSets"], "CosmeticSets");
 
@@ -326,8 +352,8 @@ namespace FModel
                         {
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
-                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString().TrimStart('[').TrimEnd(']');
-                                cSetsjo = JObject.Parse(parsedJson);
+                                dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                                cosmeticsSetsArray = JArray.FromObject(AssetData);
                                 return searchSetName(setName);
                             }
                             else { return ""; }
@@ -346,37 +372,37 @@ namespace FModel
         }
         private static string searchSetName(string setName)
         {
-            string toReturn = string.Empty;
-
-            JToken setToken = cSetsjo.FindTokens(setName).FirstOrDefault();
-            Parser.CosmeticSetsParser.CosmeticSetsParser cSetsParsed = Parser.CosmeticSetsParser.CosmeticSetsParser.FromJson(setToken.ToString());
-
-            switch (Settings.Default.IconLanguage)
+            JToken setToken = cosmeticsSetsArray[0][setName];
+            if (setToken != null)
             {
-                case "French":
-                case "German":
-                case "Italian":
-                case "Spanish":
-                case "Spanish (LA)":
-                case "Arabic":
-                case "Japanese":
-                case "Korean":
-                case "Polish":
-                case "Portuguese (Brazil)":
-                case "Russian":
-                case "Turkish":
-                case "Chinese (S)":
-                case "Traditional Chinese":
-                    string translatedName = SearchResource.getTextByKey(cSetsParsed.DisplayName.Key, cSetsParsed.DisplayName.SourceString, cSetsParsed.DisplayName.Namespace);
+                string toReturn = string.Empty;
+                switch (Settings.Default.IconLanguage)
+                {
+                    case "French":
+                    case "German":
+                    case "Italian":
+                    case "Spanish":
+                    case "Spanish (LA)":
+                    case "Arabic":
+                    case "Japanese":
+                    case "Korean":
+                    case "Polish":
+                    case "Portuguese (Brazil)":
+                    case "Russian":
+                    case "Turkish":
+                    case "Chinese (S)":
+                    case "Traditional Chinese":
+                        string translatedName = SearchResource.getTextByKey(setToken["DisplayName"]["key"].Value<string>(), setToken["DisplayName"]["source_string"].Value<string>(), setToken["DisplayName"]["namespace"].Value<string>());
 
-                    toReturn = string.Format(SearchResource.getTextByKey("CosmeticItemDescription_SetMembership_NotRich", cSetsParsed.DisplayName.SourceString, "Fort.Cosmetics"), translatedName);
-                    break;
-                default:
-                    toReturn = string.Format("\nPart of the {0} set.", cSetsParsed.DisplayName.SourceString);
-                    break;
+                        toReturn = string.Format(SearchResource.getTextByKey("CosmeticItemDescription_SetMembership_NotRich", setToken["DisplayName"]["source_string"].Value<string>(), "Fort.Cosmetics"), translatedName);
+                        break;
+                    default:
+                        toReturn = string.Format("\nPart of the {0} set.", setToken["DisplayName"]["source_string"].Value<string>());
+                        break;
+                }
+                return toReturn;
             }
-
-            return toReturn;
+            else { return ""; }
         }
 
         /// <summary>
@@ -405,20 +431,27 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawAdditionalImage(ItemsIdParser theItem, Graphics myGraphic)
+        private static void DrawAdditionalImage(JToken theItem, Graphics myGraphic)
         {
-            string wrapAddImg = theItem.LargePreviewImage.AssetPathName.Substring(theItem.LargePreviewImage.AssetPathName.LastIndexOf(".", StringComparison.Ordinal) + 1);
-
-            ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(wrapAddImg);
-
-            if (File.Exists(ItemIcon.ItemIconPath))
+            JToken largePreviewImage = theItem["LargePreviewImage"];
+            if (largePreviewImage != null)
             {
-                Image itemIcon;
-                using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
+                JToken assetPathName = largePreviewImage["asset_path_name"];
+                if (assetPathName != null)
                 {
-                    itemIcon = new Bitmap(bmpTemp);
+                    string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.') + 1);
+
+                    ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                    if (File.Exists(ItemIcon.ItemIconPath))
+                    {
+                        Image itemIcon;
+                        using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
+                        {
+                            itemIcon = new Bitmap(bmpTemp);
+                        }
+                        myGraphic.DrawImage(ImageUtilities.ResizeImage(itemIcon, 122, 122), new Point(275, 272));
+                    }
                 }
-                myGraphic.DrawImage(ImageUtilities.ResizeImage(itemIcon, 122, 122), new Point(275, 272));
             }
         }
 
@@ -428,12 +461,12 @@ namespace FModel
         /// </summary>
         /// <param name="weaponName"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawWeaponStat(string weaponName, Graphics myGraphic)
+        private static void DrawWeaponStat(string filename, string weaponName, Graphics myGraphic)
         {
-            if (weaponStats == null)
+            if (weaponsStatsArray == null || !weaponStatsFilename.Equals(filename))
             {
                 ItemIcon.ItemIconPath = string.Empty;
-                string extractedWeaponsStatPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["AthenaRangedWeapons"], "AthenaRangedWeapons");
+                string extractedWeaponsStatPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[filename], filename);
                 if (extractedWeaponsStatPath != null)
                 {
                     if (extractedWeaponsStatPath.Contains(".uasset") || extractedWeaponsStatPath.Contains(".uexp") || extractedWeaponsStatPath.Contains(".ubulk"))
@@ -443,7 +476,9 @@ namespace FModel
                         {
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
-                                weaponStats = JObject.Parse(JohnWick.MyAsset.GetSerialized().ToString().TrimStart('[').TrimEnd(']'));
+                                dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                                weaponsStatsArray = JArray.FromObject(AssetData);
+                                weaponStatsFilename = filename;
                                 loopingLol(weaponName, myGraphic);
                             }
                         }
@@ -458,24 +493,36 @@ namespace FModel
         }
         private static void loopingLol(string weaponName, Graphics myGraphic)
         {
-            IEnumerable<JProperty> myStats = weaponStats.Value<JObject>(weaponName).Properties();
+            JToken weaponToken = weaponsStatsArray[0][weaponName];
+            if (weaponToken != null)
+            {
+                JToken dmgPb = weaponToken["DmgPB"];
+                if (dmgPb != null)
+                {
+                    Image bulletImage = Resources.dmg64;
+                    myGraphic.DrawImage(ImageUtilities.ResizeImage(bulletImage, 15, 15), new Point(5, 502));
+                    DrawToLeft("     " + dmgPb.Value<string>(), myGraphic); //damage per bullet
+                }
 
-            string damagePerBullet = myStats.Where(x => x.Name == "DmgPB").Select(x => x.Value).FirstOrDefault().ToString();
-            Image bulletImage = Resources.dmg64;
-            myGraphic.DrawImage(ImageUtilities.ResizeImage(bulletImage, 15, 15), new Point(5, 502));
-            DrawToLeft("     " + damagePerBullet, myGraphic); //damage per bullet
+                JToken clipSize = weaponToken["ClipSize"];
+                if (clipSize != null)
+                {
+                    Image clipSizeImage = Resources.clipSize64;
+                    myGraphic.DrawImage(ImageUtilities.ResizeImage(clipSizeImage, 15, 15), new Point(52, 502));
+                    myGraphic.DrawString("      " + clipSize.Value<string>(), new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(50, 503));
+                }
+                else { clipSize = ""; }
 
-            string clipSize = myStats.Where(x => x.Name == "ClipSize").Select(x => x.Value).FirstOrDefault().ToString();
-            Image clipSizeImage = Resources.clipSize64;
-            myGraphic.DrawImage(ImageUtilities.ResizeImage(clipSizeImage, 15, 15), new Point(52, 502));
-            myGraphic.DrawString("      " + clipSize, new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(50, 503));
+                JToken reloadTime = weaponToken["ReloadTime"];
+                if (reloadTime != null)
+                {
+                    Image reload = Resources.reload64;
+                    myGraphic.DrawImage(ImageUtilities.ResizeImage(reload, 15, 15), new Point(50 + (clipSize.Value<string>().Length * 7) + 47, 502)); //50=clipsize text position | for each clipsize letter we add 7 to x | 47=difference between 2 icons
+                    myGraphic.DrawString(reloadTime + " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds"), new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(64 + (clipSize.Value<string>().Length * 7) + 47, 503)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
+                }
 
-            string reloadTime = myStats.Where(x => x.Name == "ReloadTime").Select(x => x.Value).FirstOrDefault().ToString();
-            Image reload = Resources.reload64;
-            myGraphic.DrawImage(ImageUtilities.ResizeImage(reload, 15, 15), new Point(50 + (clipSize.Length * 7) + 47, 502)); //50=clipsize text position | for each clipsize letter we add 7 to x | 47=difference between 2 icons
-            myGraphic.DrawString(reloadTime + " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds"), new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(64 + (clipSize.Length * 7) + 47, 503)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
-
-            DrawToRight(weaponName, myGraphic);
+                DrawToRight(weaponName, myGraphic);
+            }
         }
 
         /// <summary>
@@ -485,10 +532,13 @@ namespace FModel
         /// <param name="myGraphic"></param>
         private static void DrawPower(Graphics myGraphic)
         {
-            Image bolt = Resources.LBolt64;
-            myGraphic.DrawImage(ImageUtilities.ResizeImage(bolt, 15, 15), new Point(5, 501));
+            if (!string.IsNullOrEmpty(MinToMax))
+            {
+                Image bolt = Resources.LBolt64;
+                myGraphic.DrawImage(ImageUtilities.ResizeImage(bolt, 15, 15), new Point(5, 501));
 
-            DrawToLeft(MinToMax, myGraphic);
+                DrawToLeft(MinToMax, myGraphic);
+            }
         }
     }
 }

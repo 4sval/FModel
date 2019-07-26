@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -8,6 +9,8 @@ namespace FModel.Forms
 {
     public partial class UpdateModeSettings : Form
     {
+        private static string _oldLanguage;
+
         public UpdateModeSettings()
         {
             // Check if watermark exists
@@ -15,12 +18,15 @@ namespace FModel.Forms
 
             InitializeComponent();
 
-            //ICON CREATION
-            checkBox2.Checked = Properties.Settings.Default.UMCosmetics;
-            checkBox5.Checked = Properties.Settings.Default.UMVariants;
-            checkBox3.Checked = Properties.Settings.Default.UMConsumablesWeapons;
-            checkBox4.Checked = Properties.Settings.Default.UMTraps;
-            checkBox6.Checked = Properties.Settings.Default.UMChallenges;
+            checkBox1.Checked = Properties.Settings.Default.rarityNew;
+
+            //WATERMARK
+            button1.Enabled = Properties.Settings.Default.UMWatermark;
+            checkBox7.Checked = Properties.Settings.Default.UMWatermark;
+            trackBar1.Enabled = Properties.Settings.Default.UMWatermark;
+            trackBar2.Enabled = Properties.Settings.Default.UMWatermark;
+            trackBar1.Value = Properties.Settings.Default.UMOpacity;
+            trackBar2.Value = Properties.Settings.Default.UMSize;
 
             //FEATURED
             checkBox8.Checked = Properties.Settings.Default.UMFeatured;
@@ -28,7 +34,15 @@ namespace FModel.Forms
             {
                 filenameLabel.Text = @"File Name: " + Path.GetFileName(Properties.Settings.Default.UMFilename);
 
-                Bitmap bmp = new Bitmap(checkBox8.Checked ? Resources.wTemplateF : Resources.wTemplate);
+                Bitmap bmp = null;
+                if (Properties.Settings.Default.UMFeatured)
+                {
+                    bmp = new Bitmap(Properties.Settings.Default.rarityNew ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1));
+                }
+                else
+                {
+                    bmp = new Bitmap(Properties.Settings.Default.rarityNew ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1));
+                }
                 Graphics g = Graphics.FromImage(bmp);
 
                 Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -38,47 +52,52 @@ namespace FModel.Forms
                 wPictureBox.Image = bmp;
             }
 
-            //WATERMARK
-            button1.Enabled = Properties.Settings.Default.UMWatermark;
-            trackBar1.Enabled = Properties.Settings.Default.UMWatermark;
-            trackBar2.Enabled = Properties.Settings.Default.UMWatermark;
-            trackBar2.Value = Properties.Settings.Default.UMSize;
-            trackBar1.Value = Properties.Settings.Default.UMOpacity;
-            checkBox7.Checked = Properties.Settings.Default.UMWatermark;
-
-            //TEXTURES
-            checkBox9.Checked = Properties.Settings.Default.UMTCosmeticsVariants;
-            checkBox14.Checked = Properties.Settings.Default.UMTLoading;
-            checkBox1.Checked = Properties.Settings.Default.UMTWeapons;
-            checkBox10.Checked = Properties.Settings.Default.UMTBanners;
-            checkBox11.Checked = Properties.Settings.Default.UMTFeaturedIMGs;
-            checkBox12.Checked = Properties.Settings.Default.UMTAthena;
-            checkBox13.Checked = Properties.Settings.Default.UMTDevices;
-            checkBox15.Checked = Properties.Settings.Default.UMTVehicles;
-            checkBoxUMCTGalleries.Checked = Properties.Settings.Default.UMCTGalleries;
+            _oldLanguage = Properties.Settings.Default.IconLanguage;
+            comboBox1.SelectedIndex = comboBox1.FindStringExact(Properties.Settings.Default.IconLanguage);
         }
 
         private void optionsOKButton_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.UMCosmetics             = checkBox2.Checked;
-            Properties.Settings.Default.UMVariants              = checkBox5.Checked;
-            Properties.Settings.Default.UMConsumablesWeapons    = checkBox3.Checked;
-            Properties.Settings.Default.UMTraps                 = checkBox4.Checked;
-            Properties.Settings.Default.UMChallenges            = checkBox6.Checked;
+            RegisterSettings.updateModeListParameters = new List<string>();
+
             Properties.Settings.Default.UMFeatured              = checkBox8.Checked;
             Properties.Settings.Default.UMWatermark             = checkBox7.Checked;
-            Properties.Settings.Default.UMTCosmeticsVariants    = checkBox9.Checked;
-            Properties.Settings.Default.UMTLoading              = checkBox14.Checked;
-            Properties.Settings.Default.UMTWeapons              = checkBox1.Checked;
-            Properties.Settings.Default.UMTBanners              = checkBox10.Checked;
-            Properties.Settings.Default.UMTFeaturedIMGs         = checkBox11.Checked;
-            Properties.Settings.Default.UMTAthena               = checkBox12.Checked;
-            Properties.Settings.Default.UMTDevices              = checkBox13.Checked;
-            Properties.Settings.Default.UMTVehicles             = checkBox15.Checked;
-            Properties.Settings.Default.UMCTGalleries           = checkBoxUMCTGalleries.Checked;
+            Properties.Settings.Default.rarityNew               = checkBox1.Checked;
 
             Properties.Settings.Default.UMSize                  = trackBar2.Value;
             Properties.Settings.Default.UMOpacity               = trackBar1.Value;
+
+            //PARAMETERS
+            if (checkedListBox1.GetItemCheckState(0) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/Cosmetics/"); }
+            if (checkedListBox1.GetItemCheckState(1) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/CosmeticVariantTokens/"); }
+            if (checkedListBox1.GetItemCheckState(2) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/BannerToken/"); }
+            if (checkedListBox1.GetItemCheckState(3) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/ChallengeBundles/"); }
+            if (checkedListBox1.GetItemCheckState(4) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/Consumables/"); }
+            if (checkedListBox1.GetItemCheckState(5) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/Gameplay/"); }
+            if (checkedListBox1.GetItemCheckState(6) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/Traps/"); }
+            if (checkedListBox1.GetItemCheckState(7) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/Weapons/"); }
+            if (checkedListBox1.GetItemCheckState(8) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Heroes/"); }
+            if (checkedListBox1.GetItemCheckState(9) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Defenders/"); }
+            if (checkedListBox1.GetItemCheckState(10) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Workers/"); }
+            if (checkedListBox1.GetItemCheckState(11) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Traps/"); }
+            if (checkedListBox1.GetItemCheckState(12) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Weapons/"); }
+            if (checkedListBox1.GetItemCheckState(13) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Ingredients/"); }
+            if (checkedListBox1.GetItemCheckState(14) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/PersistentResources/"); }
+            if (checkedListBox1.GetItemCheckState(15) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/CardPacks/"); }
+            if (checkedListBox1.GetItemCheckState(16) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Tokens/"); }
+
+            if (checkedListBox2.GetItemCheckState(0) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/2dAssets/"); }
+            if (checkedListBox2.GetItemCheckState(1) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/UI/Foundation/Textures/BattleRoyale/FeaturedItems/"); }
+            if (checkedListBox2.GetItemCheckState(2) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/UI/Foundation/Textures/Icons/"); }
+            if (checkedListBox2.GetItemCheckState(3) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/UI/Foundation/Textures/Banner/"); }
+            if (checkedListBox2.GetItemCheckState(4) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/UI/Foundation/Textures/LoadingScreens/"); }
+
+            //LOCRES
+            Properties.Settings.Default.IconLanguage = comboBox1.SelectedItem.ToString();
+            if (comboBox1.SelectedItem.ToString() != _oldLanguage)
+            {
+                LoadLocRes.LoadMySelectedLocRes(Properties.Settings.Default.IconLanguage);
+            }
 
             Properties.Settings.Default.Save();
             Close();
@@ -155,48 +174,58 @@ namespace FModel.Forms
 
         private void checkBox8_CheckedChanged(object sender, EventArgs e)
         {
-            Bitmap bmp = new Bitmap(checkBox8.Checked ? Resources.wTemplateF : Resources.wTemplate);
-            Graphics g = Graphics.FromImage(bmp);
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
+            if (!checkBox8.Checked)
             {
-                Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                Bitmap bmp = checkBox1.Checked ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1);
+                Graphics g = Graphics.FromImage(bmp);
+                if (File.Exists(Properties.Settings.Default.UMFilename))
+                {
+                    Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                }
+                wPictureBox.Image = bmp;
             }
-
-            wPictureBox.Image = bmp;
+            if (checkBox8.Checked)
+            {
+                Bitmap bmp = checkBox1.Checked ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1);
+                Graphics g = Graphics.FromImage(bmp);
+                if (File.Exists(Properties.Settings.Default.UMFilename))
+                {
+                    Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                }
+                wPictureBox.Image = bmp;
+            }
         }
 
-        #region MOVE PANEL
-        //CONSUMABLES & WEAPONS
-        private void checkBox3_MouseEnter(object sender, EventArgs e)
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
         {
-            panel1.Visible = true;
+            if (!checkBox1.Checked)
+            {
+                Bitmap bmp = checkBox8.Checked ? new Bitmap(Resources.wTemplateFv1) : new Bitmap(Resources.wTemplatev1);
+                Graphics g = Graphics.FromImage(bmp);
+                if (File.Exists(Properties.Settings.Default.UMFilename))
+                {
+                    Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                }
+                wPictureBox.Image = bmp;
+            }
+            if (checkBox1.Checked)
+            {
+                Bitmap bmp = checkBox8.Checked ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplate);
+                Graphics g = Graphics.FromImage(bmp);
+                if (File.Exists(Properties.Settings.Default.UMFilename))
+                {
+                    Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
+                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
+                }
+                wPictureBox.Image = bmp;
+            }
         }
-        private void checkBox3_MouseLeave(object sender, EventArgs e)
-        {
-            panel1.Visible = false;
-        }
-        private void checkBox3_MouseMove(object sender, MouseEventArgs e)
-        {
-            panel1.Left = e.X + 40;
-            panel1.Top = e.Y + 5;
-        }
-
-        //2D ASSETS
-        private void checkBox10_MouseEnter(object sender, EventArgs e)
-        {
-            panel2.Visible = true;
-        }
-        private void checkBox10_MouseLeave(object sender, EventArgs e)
-        {
-            panel2.Visible = false;
-        }
-        private void checkBox10_MouseMove(object sender, MouseEventArgs e)
-        {
-            panel2.Left = e.X + 225;
-            panel2.Top = e.Y + 225;
-        }
-        #endregion
     }
 }

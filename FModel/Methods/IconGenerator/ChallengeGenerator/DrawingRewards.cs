@@ -1,5 +1,4 @@
 using csharp_wick;
-using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -66,13 +65,12 @@ namespace FModel
                         {
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
-                                var itemId = ItemsIdParser.FromJson(JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString());
-                                for (int i = 0; i < itemId.Length; i++)
-                                {
-                                    ItemIcon.SearchAthIteDefIcon(itemId[i]);
+                                dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                                JArray AssetArray = JArray.FromObject(AssetData);
 
-                                    drawIcon(item);
-                                }
+                                ItemIcon.SearchAthIteDefIcon(AssetArray[0]);
+
+                                drawIcon(item);
                             }
                         }
                         catch (JsonSerializationException)
@@ -104,30 +102,34 @@ namespace FModel
                     {
                         if (JohnWick.MyAsset.GetSerialized() != null)
                         {
-                            string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString().TrimStart('[').TrimEnd(']');
-                            JObject jo = JObject.Parse(parsedJson);
-                            foreach (JToken token in jo.FindTokens(bannerName))
+                            dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                            JArray AssetArray = JArray.FromObject(AssetData);
+
+                            JToken bannerToken = ((JObject)AssetArray[0]).GetValue(bannerName, StringComparison.InvariantCultureIgnoreCase);
+                            if (bannerToken != null)
                             {
-                                var bannerId = Parser.Banners.BannersParser.FromJson(token.ToString());
-
-                                if (bannerId.LargeImage != null)
+                                JToken largeImage = bannerToken["LargeImage"];
+                                JToken smallImage = bannerToken["SmallImage"];
+                                if (largeImage != null)
                                 {
-                                    string textureFile = Path.GetFileName(bannerId.LargeImage.AssetPathName)
-                                        ?.Substring(0,
-                                            Path.GetFileName(bannerId.LargeImage.AssetPathName).LastIndexOf('.'));
-
-                                    ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                                    JToken assetPathName = largeImage["asset_path_name"];
+                                    if (assetPathName != null)
+                                    {
+                                        string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
+                                        ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                                        drawIcon(bannerName);
+                                    }
                                 }
-                                else if (bannerId.SmallImage != null)
+                                else if (smallImage != null)
                                 {
-                                    string textureFile = Path.GetFileName(bannerId.SmallImage.AssetPathName)
-                                        ?.Substring(0,
-                                            Path.GetFileName(bannerId.SmallImage.AssetPathName).LastIndexOf('.'));
-
-                                    ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                                    JToken assetPathName = smallImage["asset_path_name"];
+                                    if (assetPathName != null)
+                                    {
+                                        string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
+                                        ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                                        drawIcon(bannerName);
+                                    }
                                 }
-
-                                drawIcon(bannerName);
                             }
                         }
                     }

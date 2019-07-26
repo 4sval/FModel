@@ -1,5 +1,5 @@
-﻿using FModel.Parser.Items;
-using FModel.Properties;
+﻿using FModel.Properties;
+using Newtonsoft.Json.Linq;
 using System.Drawing;
 
 namespace FModel
@@ -11,9 +11,10 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <returns> the resource image depending on the rarity </returns>
-        private static Image GetRarityImage(ItemsIdParser theItem)
+        private static Image GetRarityImage(JToken theItem)
         {
-            switch (theItem.Rarity)
+            JToken raritiesToken = theItem["Rarity"];
+            switch (raritiesToken != null ? raritiesToken.Value<string>() : "")
             {
                 case "EFortRarity::Transcendent":
                     return Settings.Default.rarityNew ? Resources.T512 : Resources.T512v1;
@@ -39,9 +40,9 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <returns> the resource image depending on the series </returns>
-        private static Image GetSeriesImage(ItemsIdParser theItem)
+        private static Image GetSeriesImage(JToken theItem, string theSeries)
         {
-            if (theItem.Series == "MarvelSeries")
+            if (theSeries.Equals("MarvelSeries"))
             {
                 return Settings.Default.rarityNew ? Resources.Marvel512 : Resources.Marvel512v1;
             }
@@ -58,7 +59,7 @@ namespace FModel
         /// <param name="theItem"></param>
         /// <param name="specialMode"></param>
         /// <returns> the resource image depending on specialMode </returns>
-        private static Image GetSpecialModeImage(ItemsIdParser theItem, string specialMode)
+        private static Image GetSpecialModeImage(JToken theItem, string specialMode)
         {
             if (specialMode == "ammo")
             {
@@ -76,13 +77,13 @@ namespace FModel
         /// <param name="theItem"></param>
         /// <param name="toDrawOn"></param>
         /// <param name="specialMode"></param>
-        public static void DrawRarity(ItemsIdParser theItem, Graphics toDrawOn, string specialMode = null)
+        public static void DrawRarity(JToken theItem, Graphics toDrawOn, string specialMode = null)
         {
             Image rarityBg;
-
-            if (theItem.Series != null)
+            JToken seriesToken = theItem["Series"];
+            if (!string.IsNullOrEmpty(seriesToken != null ? seriesToken.Value<string>() : ""))
             {
-                rarityBg = GetSeriesImage(theItem);
+                rarityBg = GetSeriesImage(theItem, seriesToken.Value<string>());
             }
             else if (specialMode != null)
             {
@@ -92,7 +93,6 @@ namespace FModel
             {
                 rarityBg = GetRarityImage(theItem);
             }
-
             toDrawOn.DrawImage(rarityBg, new Point(0, 0));
         }
     }

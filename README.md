@@ -61,7 +61,7 @@ Also if you find this project useful, feel free to give it a :star: thank you :k
  1. Read, Search, Extract, Serialize
  2. Icon Creation for various BR/STW Cosmetics or Challenges with language support
  3. Icon Merger
- 4. Automatic detection for Dynamic PAKs Keys
+ 4. Automatic Key detection for Dynamic PAKs
  5. Twitter Api Authentication to send Tweets from within FModel
 ### What i'm using
   - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - *C# Bind*
@@ -81,6 +81,7 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) if you
 
 ## TODO
   - [ ] Code refactoring
+  - [ ] Schematics icon with weapon icon and ingredients
   - [x] Translation support
   - [x] AES Manager
   - [x] Display support for .locres files

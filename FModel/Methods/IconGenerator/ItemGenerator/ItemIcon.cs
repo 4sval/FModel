@@ -1,10 +1,7 @@
 using csharp_wick;
-using FModel.Parser.Featured;
-using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -21,7 +18,7 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="featured"></param>
-        public static void GetItemIcon(ItemsIdParser theItem, bool featured = false)
+        public static void GetItemIcon(JToken theItem, bool featured = false)
         {
             if (!featured)
             {
@@ -30,12 +27,17 @@ namespace FModel
             }
             else
             {
-                if (theItem.DisplayAssetPath != null && theItem.DisplayAssetPath.AssetPathName.Contains("/Game/Catalog/DisplayAssets/"))
+                JToken displayAssetPathToken = theItem["DisplayAssetPath"];
+                if (displayAssetPathToken != null)
                 {
-                    string catalogName = theItem.DisplayAssetPath.AssetPathName;
-                    SearchFeaturedIcon(theItem, catalogName.Substring(catalogName.LastIndexOf('.') + 1));
+                    JToken displayAssetPathNameToken = displayAssetPathToken["asset_path_name"];
+                    if (displayAssetPathNameToken != null && displayAssetPathNameToken.Value<string>().Contains("/Game/Catalog/DisplayAssets/"))
+                    {
+                        string catalogName = displayAssetPathNameToken.Value<string>();
+                        SearchFeaturedIcon(theItem, catalogName.Substring(catalogName.LastIndexOf('.') + 1));
+                    }
                 }
-                else if (theItem.DisplayAssetPath == null)
+                else if (displayAssetPathToken == null)
                 {
                     SearchFeaturedIcon(theItem, "DA_Featured_" + ThePak.CurrentUsedItem);
                 }
@@ -51,11 +53,13 @@ namespace FModel
         /// if no HeroDefinition and WeaponDefinition move to SearchLargeSmallIcon
         /// </summary>
         /// <param name="theItem"></param>
-        public static void SearchAthIteDefIcon(ItemsIdParser theItem)
+        public static void SearchAthIteDefIcon(JToken theItem)
         {
-            if (theItem.HeroDefinition != null)
+            JToken heroDefinition = theItem["HeroDefinition"];
+            JToken weaponDefinition = theItem["WeaponDefinition"];
+            if (heroDefinition != null)
             {
-                string heroFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[theItem.HeroDefinition], theItem.HeroDefinition);
+                string heroFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[heroDefinition.Value<string>()], heroDefinition.Value<string>());
                 if (heroFilePath != null)
                 {
                     if (heroFilePath.Contains(".uasset") || heroFilePath.Contains(".uexp") || heroFilePath.Contains(".ubulk"))
@@ -65,17 +69,16 @@ namespace FModel
                         {
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
-                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                                var itemId = ItemsIdParser.FromJson(parsedJson);
-                                for (int i = 0; i < itemId.Length; i++)
-                                {
-                                    if (itemId[i].LargePreviewImage != null)
-                                    {
-                                        string textureFile = Path.GetFileName(itemId[i].LargePreviewImage.AssetPathName)
-                                            ?.Substring(0,
-                                                Path.GetFileName(itemId[i].LargePreviewImage.AssetPathName)
-                                                    .LastIndexOf('.'));
+                                dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                                JArray AssetArray = JArray.FromObject(AssetData);
 
+                                JToken largePreviewImage = AssetArray[0]["LargePreviewImage"];
+                                if (largePreviewImage != null)
+                                {
+                                    JToken assetPathName = largePreviewImage["asset_path_name"];
+                                    if (assetPathName != null)
+                                    {
+                                        string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
 
                                         ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                     }
@@ -89,19 +92,19 @@ namespace FModel
                     }
                 }
             }
-            else if (theItem.WeaponDefinition != null)
+            else if (weaponDefinition != null)
             {
                 //MANUAL FIX
-                if (theItem.WeaponDefinition == "WID_Harvest_Pickaxe_NutCracker")
+                if (weaponDefinition.Value<string>().Equals("WID_Harvest_Pickaxe_NutCracker"))
                 {
-                    theItem.WeaponDefinition = "WID_Harvest_Pickaxe_Nutcracker";
+                    weaponDefinition = "WID_Harvest_Pickaxe_Nutcracker";
                 }
-                if (theItem.WeaponDefinition == "WID_Harvest_Pickaxe_Wukong")
+                if (weaponDefinition.Value<string>().Equals("WID_Harvest_Pickaxe_Wukong"))
                 {
-                    theItem.WeaponDefinition = "WID_Harvest_Pickaxe_WuKong";
+                    weaponDefinition = "WID_Harvest_Pickaxe_WuKong";
                 }
 
-                string weaponFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[theItem.WeaponDefinition], theItem.WeaponDefinition);
+                string weaponFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[weaponDefinition.Value<string>()], weaponDefinition.Value<string>());
                 if (weaponFilePath != null)
                 {
                     if (weaponFilePath.Contains(".uasset") || weaponFilePath.Contains(".uexp") || weaponFilePath.Contains(".ubulk"))
@@ -111,16 +114,16 @@ namespace FModel
                         {
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
-                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                                var itemId = ItemsIdParser.FromJson(parsedJson);
-                                for (int i = 0; i < itemId.Length; i++)
+                                dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                                JArray AssetArray = JArray.FromObject(AssetData);
+
+                                JToken largePreviewImage = AssetArray[0]["LargePreviewImage"];
+                                if (largePreviewImage != null)
                                 {
-                                    if (itemId[i].LargePreviewImage != null)
+                                    JToken assetPathName = largePreviewImage["asset_path_name"];
+                                    if (assetPathName != null)
                                     {
-                                        string textureFile = Path.GetFileName(itemId[i].LargePreviewImage.AssetPathName)
-                                            ?.Substring(0,
-                                                Path.GetFileName(itemId[i].LargePreviewImage.AssetPathName)
-                                                    .LastIndexOf('.'));
+                                        string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
 
                                         ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                     }
@@ -141,21 +144,29 @@ namespace FModel
         /// convert Large or Small image to a png image
         /// </summary>
         /// <param name="theItem"></param>
-        private static void SearchLargeSmallIcon(ItemsIdParser theItem)
+        private static void SearchLargeSmallIcon(JToken theItem)
         {
-            if (theItem.LargePreviewImage != null)
+            JToken largePreviewImage = theItem["LargePreviewImage"];
+            JToken smallPreviewImage = theItem["SmallPreviewImage"];
+            if (largePreviewImage != null)
             {
-                string textureFile = Path.GetFileName(theItem.LargePreviewImage.AssetPathName)?.Substring(0,
-                    Path.GetFileName(theItem.LargePreviewImage.AssetPathName).LastIndexOf('.'));
+                JToken assetPathName = largePreviewImage["asset_path_name"];
+                if (assetPathName != null)
+                {
+                    string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
 
-                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                    ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                }
             }
-            else if (theItem.SmallPreviewImage != null)
+            else if (smallPreviewImage != null)
             {
-                string textureFile = Path.GetFileName(theItem.SmallPreviewImage.AssetPathName)?.Substring(0,
-                    Path.GetFileName(theItem.SmallPreviewImage.AssetPathName).LastIndexOf('.'));
+                JToken assetPathName = smallPreviewImage["asset_path_name"];
+                if (assetPathName != null)
+                {
+                    string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
 
-                ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                    ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                }
             }
         }
 
@@ -165,7 +176,7 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="catName"></param>
-        public static void SearchFeaturedIcon(ItemsIdParser theItem, string catName)
+        public static void SearchFeaturedIcon(JToken theItem, string catName)
         {
             switch (catName)
             {
@@ -192,7 +203,7 @@ namespace FModel
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="catName"></param>
-        private static void GetFeaturedItemIcon(ItemsIdParser theItem, string catName)
+        private static void GetFeaturedItemIcon(JToken theItem, string catName)
         {
             try
             {
@@ -208,28 +219,38 @@ namespace FModel
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
                                 ThePak.CurrentUsedItem = catName;
-                                string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                                var featuredId = FeaturedParser.FromJson(parsedJson);
-                                for (int i = 0; i < featuredId.Length; i++)
+                                dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                                JArray AssetArray = JArray.FromObject(AssetData);
+
+                                switch (catName)
                                 {
-                                    switch (catName)
-                                    {
-                                        case "DA_Featured_Glider_ID_070_DarkViking":
-                                        case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
-                                            if (featuredId[i].TileImage != null)
+                                    case "DA_Featured_Glider_ID_070_DarkViking":
+                                    case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
+                                        JToken tileImage = AssetArray[0]["TileImage"];
+                                        if (tileImage != null)
+                                        {
+                                            JToken resourceObject = tileImage["ResourceObject"];
+                                            if (resourceObject != null)
                                             {
-                                                string textureFile = featuredId[i].TileImage.ResourceObject;
+                                                string textureFile = resourceObject.Value<string>();
+
                                                 ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                             }
-                                            break;
-                                        default:
-                                            if (featuredId[i].DetailsImage != null)
+                                        }
+                                        break;
+                                    default:
+                                        JToken detailsImage = AssetArray[0]["DetailsImage"];
+                                        if (detailsImage != null)
+                                        {
+                                            JToken resourceObject = detailsImage["ResourceObject"];
+                                            if (resourceObject != null)
                                             {
-                                                string textureFile = featuredId[i].DetailsImage.ResourceObject;
+                                                string textureFile = resourceObject.Value<string>();
+
                                                 ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
                                             }
-                                            break;
-                                    }
+                                        }
+                                        break;
                                 }
 
                                 // There is no featured image (as legends pack, shadow pack...)
@@ -270,26 +291,24 @@ namespace FModel
                     {
                         if (JohnWick.MyAsset.GetSerialized() != null)
                         {
-                            string parsedJson = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                            var ammoId = ItemsIdParser.FromJson(parsedJson);
-                            for (int i = 0; i < ammoId.Length; i++)
-                            {
-                                SearchLargeSmallIcon(ammoId[i]);
+                            dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                            JArray AssetArray = JArray.FromObject(AssetData);
 
-                                if (File.Exists(ItemIconPath))
+                            SearchLargeSmallIcon(AssetArray[0]);
+
+                            if (File.Exists(ItemIconPath))
+                            {
+                                Image itemIcon;
+                                using (var bmpTemp = new Bitmap(ItemIconPath))
                                 {
-                                    Image itemIcon;
-                                    using (var bmpTemp = new Bitmap(ItemIconPath))
-                                    {
-                                        itemIcon = new Bitmap(bmpTemp);
-                                    }
-                                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 64, 64), new Point(6, 6));
+                                    itemIcon = new Bitmap(bmpTemp);
                                 }
-                                else
-                                {
-                                    Image itemIcon = Resources.unknown512;
-                                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 64, 64), new Point(6, 6));
-                                }
+                                toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 64, 64), new Point(6, 6));
+                            }
+                            else
+                            {
+                                Image itemIcon = Resources.unknown512;
+                                toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 64, 64), new Point(6, 6));
                             }
                         }
                     }

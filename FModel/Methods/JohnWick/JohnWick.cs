@@ -1,5 +1,4 @@
 using csharp_wick;
-using FModel.Parser.RenderMat;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -93,7 +92,7 @@ namespace FModel
             string TexturePath = string.Empty;
             if (!string.IsNullOrEmpty(textureFilePath))
             {
-                if ((textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_") || textureFilePath.Contains("M_UI_ChallengeTile_PCB") || textureFilePath.Contains("Wraps\\FeaturedMaterials\\") || textureFilePath.Contains("M-Wraps-StreetDemon")))
+                if (textureFilePath.Contains("MI_UI_FeaturedRenderSwitch_") || textureFilePath.Contains("M_UI_ChallengeTile_PCB") || textureFilePath.Contains("Wraps\\FeaturedMaterials\\") || textureFilePath.Contains("M-Wraps-StreetDemon"))
                     return GetRenderSwitchMaterialTexture(textureFilePath);
                 else
                 {
@@ -121,15 +120,38 @@ namespace FModel
                 {
                     if (MyAsset.GetSerialized() != null)
                     {
-                        string parsedRsmJson = JToken.Parse(MyAsset.GetSerialized()).ToString();
-                        var rsmid = RenderSwitchMaterial.FromJson(parsedRsmJson);
-                        for (int i = 0; i < rsmid.Length; i++)
-                        {
-                            if (rsmid[i].TextureParameterValues.FirstOrDefault()?.ParameterValue != null)
-                            {
-                                string textureFile = rsmid[i].TextureParameterValues.FirstOrDefault()?.ParameterValue;
+                        dynamic AssetData = JsonConvert.DeserializeObject(MyAsset.GetSerialized());
+                        JArray AssetArray = JArray.FromObject(AssetData);
 
-                                TexturePath = AssetToTexture2D(textureFile);
+                        JToken textureParameterValues = AssetArray[0]["TextureParameterValues"];
+                        if (textureParameterValues != null)
+                        {
+                            JArray textureParameterValuesArray = textureParameterValues.Value<JArray>();
+                            foreach (JToken token in textureParameterValuesArray)
+                            {
+                                JToken parameterInfo = token["ParameterInfo"];
+                                if (parameterInfo != null)
+                                {
+                                    JToken name = parameterInfo["Name"];
+                                    if (name != null && name.Value<string>().Equals("TextureB"))
+                                    {
+                                        JToken parameterValue = token["ParameterValue"];
+                                        if (parameterValue != null)
+                                        {
+                                            string textureFile = parameterValue.Value<string>();
+                                            TexturePath = AssetToTexture2D(textureFile);
+                                        }
+                                    }
+                                    else if (name != null && name.Value<string>().Contains("Texture"))
+                                    {
+                                        JToken parameterValue = token["ParameterValue"];
+                                        if (parameterValue != null)
+                                        {
+                                            string textureFile = parameterValue.Value<string>();
+                                            TexturePath = AssetToTexture2D(textureFile);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

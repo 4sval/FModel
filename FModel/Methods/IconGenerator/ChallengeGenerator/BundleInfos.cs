@@ -1,7 +1,4 @@
 using csharp_wick;
-using FModel.Parser.Challenges;
-using FModel.Parser.Items;
-using FModel.Parser.Quests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -15,26 +12,74 @@ namespace FModel
     static class BundleInfos
     {
         public static List<BundleInfoEntry> BundleData { get; set; }
-        public static Color getSecondaryColor(ChallengeBundleIdParser myBundle)
+        public static Color getSecondaryColor(JToken myBundle)
         {
-            int Red = (int)(myBundle.DisplayStyle.SecondaryColor.R * 255);
-            int Green = (int)(myBundle.DisplayStyle.SecondaryColor.G * 255);
-            int Blue = (int)(myBundle.DisplayStyle.SecondaryColor.B * 255);
+            int Red = 0;
+            int Green = 0;
+            int Blue = 0;
+
+            JToken displayStyle = myBundle["DisplayStyle"];
+            if (displayStyle != null)
+            {
+                JToken secondaryColor = displayStyle["SecondaryColor"];
+                if (secondaryColor != null)
+                {
+                    JToken r = secondaryColor["r"];
+                    JToken g = secondaryColor["g"];
+                    JToken b = secondaryColor["b"];
+                    if (r != null && g != null && b != null)
+                    {
+                        Red = (int)(r.Value<double>() * 255);
+                        Green = (int)(g.Value<double>() * 255);
+                        Blue = (int)(b.Value<double>() * 255);
+                    }
+                }
+            }
 
             if (Red + Green + Blue <= 75 || getLastFolder(BundleDesign.BundlePath) == "LTM") { return getAccentColor(myBundle); }
             else { return Color.FromArgb(255, Red, Green, Blue); }
         }
-        public static Color getAccentColor(ChallengeBundleIdParser myBundle)
+        public static Color getAccentColor(JToken myBundle)
         {
-            int Red = (int)(myBundle.DisplayStyle.AccentColor.R * 255);
-            int Green = (int)(myBundle.DisplayStyle.AccentColor.G * 255);
-            int Blue = (int)(myBundle.DisplayStyle.AccentColor.B * 255);
+            int Red = 0;
+            int Green = 0;
+            int Blue = 0;
+
+            JToken displayStyle = myBundle["DisplayStyle"];
+            if (displayStyle != null)
+            {
+                JToken accentColor = displayStyle["AccentColor"];
+                if (accentColor != null)
+                {
+                    JToken r = accentColor["r"];
+                    JToken g = accentColor["g"];
+                    JToken b = accentColor["b"];
+                    if (r != null && g != null && b != null)
+                    {
+                        Red = (int)(r.Value<double>() * 255);
+                        Green = (int)(g.Value<double>() * 255);
+                        Blue = (int)(b.Value<double>() * 255);
+                    }
+                }
+            }
 
             return Color.FromArgb(255, Red, Green, Blue);
         }
-        public static string getBundleDisplayName(ItemsIdParser theItem)
+        public static string getBundleDisplayName(JToken theItem)
         {
-            string text = SearchResource.getTextByKey(theItem.DisplayName.Key, theItem.DisplayName.SourceString);
+            string text = string.Empty;
+
+            JToken displayName = theItem["DisplayName"];
+            if (displayName != null)
+            {
+                JToken key = displayName["key"];
+                JToken sourceString = displayName["source_string"];
+                if (key != null && sourceString != null)
+                {
+                    text = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
+                }
+            }
+
             return text.ToUpper();
         }
         public static string getLastFolder(string pathToExtractedBundle)
@@ -48,14 +93,27 @@ namespace FModel
         /// foreach questfile to getQuestData()
         /// </summary>
         /// <param name="myBundle"></param>
-        public static void getBundleData(ChallengeBundleIdParser myBundle)
+        public static void getBundleData(JToken myBundle)
         {
             BundleData = new List<BundleInfoEntry>();
 
-            for (int i = 0; i < myBundle.QuestInfos.Length; i++)
+            JToken questInfos = myBundle["QuestInfos"];
+            if (questInfos != null)
             {
-                string questName = Path.GetFileName(myBundle.QuestInfos[i].QuestDefinition.AssetPathName).Substring(0, Path.GetFileName(myBundle.QuestInfos[i].QuestDefinition.AssetPathName).LastIndexOf(".", StringComparison.Ordinal));
-                getQuestData(questName);
+                JArray questInfosArray = questInfos.Value<JArray>();
+                foreach (JToken token in questInfosArray)
+                {
+                    JToken questDefinition = token["QuestDefinition"];
+                    if (questDefinition != null)
+                    {
+                        JToken assetPathName = questDefinition["asset_path_name"];
+                        if (assetPathName != null)
+                        {
+                            string questName = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf(".", StringComparison.Ordinal));
+                            getQuestData(questName);
+                        }
+                    }
+                }
             }
         }
 
@@ -80,83 +138,121 @@ namespace FModel
                             {
                                 new UpdateMyState("Parsing " + questFile + "...", "Waiting").ChangeProcessState();
 
-                                QuestParser[] questParser = QuestParser.FromJson(JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString());
-                                for (int x = 0; x < questParser.Length; x++)
-                                {
-                                    string oldQuest = string.Empty;
-                                    long oldCount = 0;
+                                dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                                JArray AssetArray = JArray.FromObject(AssetData);
 
-                                    //fortbyte check
-                                    bool isFortbyte = false;
-                                    Parser.Quests.Reward assetTypeToken = null;
-                                    if (questParser[x].Rewards != null) //this caused a null exception for some challenges (most of them in the Styles folder)
+                                //fortbyte check
+                                JToken rewards = AssetArray[0]["Rewards"];
+                                JToken assetTypeToken = null;
+                                bool isFortbyte = false;
+                                if (rewards != null)
+                                {
+                                    JArray rewardsArray = rewards.Value<JArray>();
+                                    assetTypeToken = rewardsArray.Where(item => item["ItemPrimaryAssetId"]["PrimaryAssetType"]["Name"].Value<string>().Equals("Token")).FirstOrDefault();
+                                    if (assetTypeToken != null)
                                     {
-                                        assetTypeToken = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name == "Token").FirstOrDefault();
-                                        if (assetTypeToken != null)
+                                        isFortbyte = rewardsArray.Any(item => item["ItemPrimaryAssetId"]["PrimaryAssetName"].Value<string>().Equals("AthenaFortbyte"));
+                                    }
+                                }
+
+                                JToken objectives = AssetArray[0]["Objectives"];
+                                if (objectives != null)
+                                {
+                                    long questCount = 0;
+                                    string descriptionKey = string.Empty;
+                                    string descriptionSource = string.Empty;
+
+                                    JArray objectivesArray = objectives.Value<JArray>();
+                                    foreach (JToken token in objectivesArray)
+                                    {
+                                        //quest count
+                                        JToken count = token["Count"];
+                                        if (count != null)
                                         {
-                                            isFortbyte = assetTypeToken.ItemPrimaryAssetId.PrimaryAssetName == "AthenaFortbyte";
+                                            questCount = count.Value<long>();
+                                            JToken objectiveCompletionCount = AssetArray[0]["ObjectiveCompletionCount"];
+                                            if (objectiveCompletionCount != null && objectiveCompletionCount.Value<long>() > 0)
+                                            {
+                                                questCount = objectiveCompletionCount.Value<long>();
+                                            }
+                                        }
+
+                                        //quest description
+                                        JToken description = token["Description"];
+                                        if (description != null)
+                                        {
+                                            descriptionKey = description["key"].Value<string>();
+                                            descriptionSource = description["source_string"].Value<string>();
+                                        }
+                                        JToken descriptionMain = AssetArray[0]["Description"];
+                                        if (descriptionMain != null)
+                                        {
+                                            descriptionKey = descriptionMain["key"].Value<string>();
+                                            descriptionSource = descriptionMain["source_string"].Value<string>();
                                         }
                                     }
 
-                                    for (int p = 0; p < questParser[x].Objectives.Length; p++)
+                                    string questDescription = SearchResource.getTextByKey(descriptionKey, descriptionSource);
+                                    if (string.IsNullOrEmpty(questDescription)) { questDescription = " "; }
+
+                                    if (rewards != null && !isFortbyte)
                                     {
-                                        long newCount = questParser[x].Objectives[p].Count;
-                                        if (questParser[x].ObjectiveCompletionCount > 0)
-                                            newCount = questParser[x].ObjectiveCompletionCount;
-
-                                        // In the game "Description" has priority over "Objectives.Description"
-                                        string descriptionKey = questParser[x].Objectives[p].Description.Key;
-                                        string descriptionSource = questParser[x].Objectives[p].Description.SourceString;
-                                        if (questParser[x].Description != null)
+                                        //quest rewards
+                                        JArray rewardsArray = rewards.Value<JArray>();
+                                        try
                                         {
-                                            descriptionKey = questParser[x].Description.Key;
-                                            descriptionSource = questParser[x].Description.SourceString;
+                                            string rewardId = rewardsArray.Where(item => !item["ItemPrimaryAssetId"]["PrimaryAssetType"]["Name"].Value<string>().Equals("Quest") && !item["ItemPrimaryAssetId"]["PrimaryAssetType"]["Name"].Value<string>().Equals("Token")).FirstOrDefault()["ItemPrimaryAssetId"]["PrimaryAssetName"].Value<string>();
+                                            string rewardQuantity = rewardsArray.Where(item => !item["ItemPrimaryAssetId"]["PrimaryAssetType"]["Name"].Value<string>().Equals("Quest") && !item["ItemPrimaryAssetId"]["PrimaryAssetType"]["Name"].Value<string>().Equals("Token")).FirstOrDefault()["Quantity"].Value<string>();
+
+                                            BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, rewardId, rewardQuantity);
+                                            bool isAlreadyAdded = BundleData.Any(item => item.questDescr.Equals(currentData.questDescr, StringComparison.InvariantCultureIgnoreCase) && item.questCount == currentData.questCount);
+                                            if (!isAlreadyAdded) { BundleData.Add(currentData); }
                                         }
-
-                                        string newQuest = SearchResource.getTextByKey(descriptionKey, descriptionSource);
-                                        if (string.IsNullOrEmpty(newQuest)) { newQuest = " "; }
-                                        if (newQuest != oldQuest && newCount != oldCount)
+                                        catch (NullReferenceException)
                                         {
-                                            if (questParser[x].Rewards != null && !isFortbyte)
+                                            JToken hiddenRewards = AssetArray[0]["HiddenRewards"];
+                                            if (hiddenRewards != null)
                                             {
-                                                try
-                                                {
-                                                    string rewardId = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest").Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token").FirstOrDefault().ItemPrimaryAssetId.PrimaryAssetName;
-                                                    string rewardQuantity = questParser[x].Rewards.Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Quest").Where(item => item.ItemPrimaryAssetId.PrimaryAssetType.Name != "Token").FirstOrDefault().Quantity.ToString();
+                                                string rewardId = hiddenRewards[0]["TemplateId"].Value<string>();
+                                                string rewardQuantity = hiddenRewards[0]["Quantity"].Value<string>();
 
-                                                    BundleData.Add(new BundleInfoEntry(newQuest, newCount, rewardId, rewardQuantity));
-                                                }
-                                                catch (NullReferenceException)
-                                                {
-                                                    if (questParser[x].HiddenRewards != null)
-                                                    {
-                                                        string rewardId = questParser[x].HiddenRewards.FirstOrDefault().TemplateId;
-                                                        string rewardQuantity = questParser[x].HiddenRewards.FirstOrDefault().Quantity.ToString();
-
-                                                        BundleData.Add(new BundleInfoEntry(newQuest, newCount, rewardId, rewardQuantity));
-                                                    }
-                                                }
-
-                                                //get stage
-                                                for (int k = 0; k < questParser[x].Rewards.Length; k++)
-                                                {
-                                                    string qAssetType = questParser[x].Rewards[k].ItemPrimaryAssetId.PrimaryAssetType.Name;
-                                                    string qAssetName = questParser[x].Rewards[k].ItemPrimaryAssetId.PrimaryAssetName;
-
-                                                    if (qAssetType == "Quest")
-                                                    {
-                                                        getQuestData(qAssetName);
-                                                    }
-                                                }
+                                                BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, rewardId, rewardQuantity);
+                                                bool isAlreadyAdded = BundleData.Any(item => item.questDescr.Equals(currentData.questDescr, StringComparison.InvariantCultureIgnoreCase) && item.questCount == currentData.questCount);
+                                                if (!isAlreadyAdded) { BundleData.Add(currentData); }
                                             }
-                                            else if (isFortbyte && assetTypeToken != null)
-                                                BundleData.Add(new BundleInfoEntry(newQuest, newCount, assetTypeToken.ItemPrimaryAssetId.PrimaryAssetName, questParser[x].Weight > 0 ? questParser[x].Weight.ToString() : "01"));
-                                            else
-                                                BundleData.Add(new BundleInfoEntry(newQuest, newCount, "", ""));
-
-                                            oldQuest = newQuest;
-                                            oldCount = newCount;
                                         }
+
+                                        //quest stage
+                                        foreach (JToken token in rewardsArray)
+                                        {
+                                            string qAssetType = token["ItemPrimaryAssetId"]["PrimaryAssetType"]["Name"].Value<string>();
+                                            string qAssetName = token["ItemPrimaryAssetId"]["PrimaryAssetName"].Value<string>();
+
+                                            if (qAssetType == "Quest")
+                                            {
+                                                getQuestData(qAssetName);
+                                            }
+                                        }
+                                    }
+                                    else if (isFortbyte && assetTypeToken != null)
+                                    {
+                                        //thank you Quest_BR_S9_Fortbyte_04
+                                        JToken weight = AssetArray[0]["Weight"];
+                                        JToken weightToUse = null;
+                                        if (weight != null)
+                                        {
+                                            weightToUse = weight;
+                                        }
+
+                                        BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, assetTypeToken["ItemPrimaryAssetId"]["PrimaryAssetName"].Value<string>(), weightToUse == null ? "01" : weightToUse.Value<string>());
+                                        bool isAlreadyAdded = BundleData.Any(item => item.questDescr.Equals(currentData.questDescr, StringComparison.InvariantCultureIgnoreCase) && item.questCount == currentData.questCount);
+                                        if (!isAlreadyAdded) { BundleData.Add(currentData); }
+                                    }
+                                    else
+                                    {
+                                        BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, "", "");
+                                        bool isAlreadyAdded = BundleData.Any(item => item.questDescr.Equals(currentData.questDescr, StringComparison.InvariantCultureIgnoreCase) && item.questCount == currentData.questCount);
+                                        if (!isAlreadyAdded) { BundleData.Add(currentData); }
                                     }
                                 }
                             }
@@ -170,8 +266,7 @@ namespace FModel
             }
             catch (KeyNotFoundException)
             {
-                //do not stop when questFile doesn't exist
-                //Console.WriteLine("Can't extract " + questFile);
+                new UpdateMyConsole("[FModel] Can't extract " + questFile, Color.Red, true);
             }
         }
     }

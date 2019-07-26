@@ -1,11 +1,10 @@
-using FModel.Parser.Challenges;
-using FModel.Parser.Items;
 using FModel.Properties;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
 using System;
+using Newtonsoft.Json.Linq;
 
 namespace FModel
 {
@@ -14,7 +13,7 @@ namespace FModel
         public static string BundlePath { get; set; }
         public static int theY { get; set; }
         public static Graphics toDrawOn { get; set; }
-        public static ItemsIdParser myItem { get; set; }
+        public static JToken myItem { get; set; }
 
         /// <summary>
         /// get a random color in case DisplayStyle doesn't exist in drawBackground()
@@ -36,10 +35,12 @@ namespace FModel
         /// </summary>
         /// <param name="myBitmap"></param>
         /// <param name="myBundle"></param>
-        public static void drawBackground(Bitmap myBitmap, ChallengeBundleIdParser myBundle)
+        public static void drawBackground(Bitmap myBitmap, JToken myBundle)
         {
             new UpdateMyState("Drawing...", "Waiting").ChangeProcessState();
-            if (myBundle.DisplayStyle != null)
+
+            JToken displayStyle = myBundle["DisplayStyle"];
+            if (displayStyle != null)
             {
                 //main header
                 toDrawOn.FillRectangle(new SolidBrush(BundleInfos.getSecondaryColor(myBundle)), new Rectangle(0, 0, myBitmap.Width, 281));
@@ -72,25 +73,35 @@ namespace FModel
                 toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
 
                 //image
-                if (myBundle.DisplayStyle.DisplayImage != null)
+                JToken displayImage = displayStyle["DisplayImage"];
+                JToken largePreviewImage = myBundle["LargePreviewImage"];
+                if (displayImage != null)
                 {
-                    string textureFile = Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).Substring(0, Path.GetFileName(myBundle.DisplayStyle.DisplayImage.AssetPathName).LastIndexOf('.'));
-                    Image challengeIcon;
-                    using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                    JToken assetPathName = displayImage["asset_path_name"];
+                    if (assetPathName != null)
                     {
-                        challengeIcon = new Bitmap(bmpTemp);
+                        string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
+                        Image challengeIcon;
+                        using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                        {
+                            challengeIcon = new Bitmap(bmpTemp);
+                        }
+                        toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
                     }
-                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
                 }
-                else if (myBundle.LargePreviewImage != null)
+                else if (largePreviewImage != null)
                 {
-                    string textureFile = Path.GetFileName(myBundle.LargePreviewImage.AssetPathName).Substring(0, Path.GetFileName(myBundle.LargePreviewImage.AssetPathName).LastIndexOf('.'));
-                    Image challengeIcon;
-                    using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                    JToken assetPathName = largePreviewImage["asset_path_name"];
+                    if (assetPathName != null)
                     {
-                        challengeIcon = new Bitmap(bmpTemp);
+                        string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
+                        Image challengeIcon;
+                        using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                        {
+                            challengeIcon = new Bitmap(bmpTemp);
+                        }
+                        toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
                     }
-                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
                 }
                 else
                 {
@@ -139,45 +150,67 @@ namespace FModel
         /// ignoring these 2 should give us an item id, we draw this item
         /// </summary>
         /// <param name="myBundle"></param>
-        public static void drawCompletionReward(ChallengeBundleIdParser myBundle)
+        public static void drawCompletionReward(JToken myBundle)
         {
-            if (myBundle.BundleCompletionRewards != null)
+            JToken bundleCompletionRewards = myBundle["BundleCompletionRewards"];
+            if (bundleCompletionRewards != null)
             {
                 theY += 100;
-                for (int x = 0; x < myBundle.BundleCompletionRewards.Length; x++)
+                JArray bundleCompletionRewardsArray = bundleCompletionRewards.Value<JArray>();
+                foreach (JToken token in bundleCompletionRewardsArray)
                 {
-                    for (int i = 0; i < myBundle.BundleCompletionRewards[x].Rewards.Length; i++)
+                    string compCount = string.Empty;
+                    JToken completionCount = token["CompletionCount"];
+                    if (completionCount != null)
                     {
-                        string compCount = myBundle.BundleCompletionRewards[x].CompletionCount.ToString();
-                        string itemQuantity = myBundle.BundleCompletionRewards[x].Rewards[i].Quantity.ToString();
+                        compCount = completionCount.Value<string>();
+                    }
 
-                        if (myBundle.BundleCompletionRewards[x].Rewards[i].ItemDefinition.AssetPathName == "None")
+                    JToken rewards = token["Rewards"];
+                    if (rewards != null)
+                    {
+                        JArray rewardsArray = rewards.Value<JArray>();
+                        for (int i = 0; i < rewardsArray.Count; i++)
                         {
-                            theY += 140;
-
-                            DrawingRewards.getRewards(myBundle.BundleCompletionRewards[x].Rewards[i].TemplateId, itemQuantity);
-
-                            drawCompletionText(compCount);
-                        }
-                        else
-                        {
-                            string rewardId = Path.GetFileName(myBundle.BundleCompletionRewards[x].Rewards[i].ItemDefinition.AssetPathName.Substring(0, myBundle.BundleCompletionRewards[x].Rewards[i].ItemDefinition.AssetPathName.LastIndexOf(".", StringComparison.Ordinal)));
-
-                            if (rewardId != "AthenaBattlePass_WeeklyChallenge_Token" && rewardId != "AthenaBattlePass_WeeklyBundle_Token")
+                            string itemQuantity = string.Empty;
+                            JToken quantity = rewardsArray[i]["Quantity"];
+                            if (quantity != null)
                             {
-                                theY += 140;
+                                itemQuantity = quantity.Value<string>();
+                            }
 
-                                try //needed for rare cases where the icon is in /Content/icon.uasset and atm idk why but i can't extract
+                            JToken itemDefinition = rewardsArray[i]["ItemDefinition"];
+                            if (itemDefinition != null)
+                            {
+                                JToken assetPathName = itemDefinition["asset_path_name"];
+                                if (assetPathName != null)
                                 {
-                                    if (rewardId.Contains("Fortbyte_WeeklyChallengesComplete_")) { drawForbyteReward(); }
-                                    else { DrawingRewards.getRewards(rewardId, itemQuantity); }
-                                }
-                                catch (Exception)
-                                {
-                                    drawUnknownReward();
-                                }
+                                    if (assetPathName.Value<string>().Equals("None"))
+                                    {
+                                        theY += 140;
+                                        DrawingRewards.getRewards(rewardsArray[i]["TemplateId"].Value<string>(), itemQuantity);
+                                        drawCompletionText(compCount);
+                                    }
+                                    else
+                                    {
+                                        string rewardId = Path.GetFileName(assetPathName.Value<string>().Substring(0, assetPathName.Value<string>().LastIndexOf(".", StringComparison.Ordinal)));
 
-                                drawCompletionText(compCount);
+                                        if (!rewardId.Equals("AthenaBattlePass_WeeklyChallenge_Token") && !rewardId.Equals("AthenaBattlePass_WeeklyBundle_Token"))
+                                        {
+                                            theY += 140;
+                                            try //needed for rare cases where the icon is in /Content/icon.uasset and atm idk why but i can't extract
+                                            {
+                                                if (rewardId.Contains("Fortbyte_WeeklyChallengesComplete_")) { drawForbyteReward(); }
+                                                else { DrawingRewards.getRewards(rewardId, itemQuantity); }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                drawUnknownReward();
+                                            }
+                                            drawCompletionText(compCount);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -245,7 +278,7 @@ namespace FModel
 
             if (text.Contains("{Bundle_Name}"))
             {
-                text = text.Replace("{Bundle_Name}", SearchResource.getTextByKey(myItem.DisplayName.Key, myItem.DisplayName.SourceString));
+                text = text.Replace("{Bundle_Name}", SearchResource.getTextByKey(myItem["DisplayName"]["key"].Value<string>(), myItem["DisplayName"]["source_string"].Value<string>()));
             }
             if (text.Contains("{Date}"))
             {

@@ -14,8 +14,6 @@ using AutoUpdaterDotNET;
 using csharp_wick;
 using FModel.Converter;
 using FModel.Forms;
-using FModel.Parser.Challenges;
-using FModel.Parser.Items;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,12 +25,9 @@ namespace FModel
 {
     public partial class MainWindow : Form
     {
-        #region to refactor
-        private static Stopwatch StopWatch { get; set; }
-        private static Dictionary<string, string> _diffToExtract { get; set; }
+        private static Stopwatch _stopWatch { get; set; }
         private static List<string> _itemsToDisplay { get; set; }
-        public static string[] SelectedItemsArray { get; set; }
-        #endregion
+        private static string[] _selectedItemsArray { get; set; }
 
         public MainWindow()
         {
@@ -175,7 +170,6 @@ namespace FModel
                 AddToUI.checkAndAddDynamicKeys();
                 Utilities.colorMyPaks(loadOneToolStripMenuItem);
                 Utilities.SetFolderPermission(App.DefaultOutputPath);
-                Utilities.JohnWickCheck();
                 Utilities.CreateDefaultFolders();
                 FontUtilities.SetFont();
             });
@@ -382,7 +376,7 @@ namespace FModel
         private void CreatePakList(ToolStripItemClickedEventArgs selectedPak = null, bool loadAllPaKs = false, bool getDiff = false, bool updateMode = false)
         {
             ThePak.AllpaksDictionary = new Dictionary<string, string>();
-            _diffToExtract = new Dictionary<string, string>();
+            RegisterSettings.updateModeDictionary = new Dictionary<string, string>();
             ThePak.PaksMountPoint = new Dictionary<string, string>();
             PakHelper.PakAsTxt = null;
 
@@ -453,7 +447,7 @@ namespace FModel
                     ComparePaKs();
                     if (updateMode && Checking.DifferenceFileExists)
                     {
-                        UmFilter(PakHelper.PakAsTxt, _diffToExtract);
+                        RegisterSettings.UpdateModeAddToDict(PakHelper.PakAsTxt);
                         Checking.UmWorking = true;
                     }
 
@@ -570,77 +564,6 @@ namespace FModel
                 backgroundWorker2.RunWorkerAsync();
             }
         }
-        private void UmFilter(String[] theFile, Dictionary<string, string> diffToExtract)
-        {
-            List<string> searchResults = new List<string>();
-
-            if (Settings.Default.UMCosmetics)
-                searchResults.Add("Athena/Items/Cosmetics/");
-            if (Settings.Default.UMVariants)
-                searchResults.Add("Athena/Items/CosmeticVariantTokens/");
-            if (Settings.Default.UMConsumablesWeapons)
-            {
-                searchResults.Add("AGID_");
-                searchResults.Add("WID_");
-            }
-            if (Settings.Default.UMTraps)
-                searchResults.Add("Athena/Items/Traps/");
-            if (Settings.Default.UMChallenges)
-                searchResults.Add("Athena/Items/ChallengeBundles/");
-
-            if (Settings.Default.UMTCosmeticsVariants)
-            {
-                searchResults.Add("UI/Foundation/Textures/Icons/Backpacks/");
-                searchResults.Add("UI/Foundation/Textures/Icons/Emotes/");
-                searchResults.Add("UI/Foundation/Textures/Icons/Heroes/Athena/Soldier/");
-                searchResults.Add("UI/Foundation/Textures/Icons/Heroes/Variants/");
-                searchResults.Add("UI/Foundation/Textures/Icons/Skydiving/");
-                searchResults.Add("UI/Foundation/Textures/Icons/Pets/");
-                searchResults.Add("UI/Foundation/Textures/Icons/Wraps/");
-            }
-            if (Settings.Default.UMTLoading)
-            {
-                searchResults.Add("FortniteGame/Content/2dAssets/Loadingscreens/");
-                searchResults.Add("UI/Foundation/Textures/LoadingScreens/");
-            }
-            if (Settings.Default.UMTWeapons)
-                searchResults.Add("UI/Foundation/Textures/Icons/Weapons/Items/");
-            if (Settings.Default.UMTBanners)
-            {
-                searchResults.Add("FortniteGame/Content/2dAssets/Banners/");
-                searchResults.Add("UI/Foundation/Textures/Banner/");
-                searchResults.Add("FortniteGame/Content/2dAssets/Sprays/");
-                searchResults.Add("FortniteGame/Content/2dAssets/Emoji/");
-                searchResults.Add("FortniteGame/Content/2dAssets/Music/");
-                searchResults.Add("FortniteGame/Content/2dAssets/Toys/");
-            }
-            if (Settings.Default.UMTFeaturedIMGs)
-                searchResults.Add("UI/Foundation/Textures/BattleRoyale/");
-            if (Settings.Default.UMTAthena)
-                searchResults.Add("UI/Foundation/Textures/Icons/Athena/");
-            if (Settings.Default.UMTAthena)
-                searchResults.Add("UI/Foundation/Textures/Icons/Athena/");
-            if (Settings.Default.UMTDevices)
-                searchResults.Add("UI/Foundation/Textures/Icons/Devices/");
-            if (Settings.Default.UMTVehicles)
-                searchResults.Add("UI/Foundation/Textures/Icons/Vehicles/");
-            if (Settings.Default.UMCTGalleries)
-                searchResults.Add("Athena/Items/Consumables/PlaysetGrenade/PlaysetGrenadeInstances/");
-
-            for (int i = 0; i < theFile.Length; i++)
-            {
-                bool b = searchResults.Any(s => theFile[i].Contains(s));
-                if (b)
-                {
-                    string filename = theFile[i].Substring(theFile[i].LastIndexOf("/", StringComparison.Ordinal) + 1);
-                    if (filename.Contains(".uasset") || filename.Contains(".uexp") || filename.Contains(".ubulk"))
-                    {
-                        if (!diffToExtract.ContainsKey(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal))))
-                            diffToExtract.Add(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal)), theFile[i]);
-                    }
-                }
-            }
-        }
 
         //EVENTS
         private async void loadOneToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -700,14 +623,14 @@ namespace FModel
         //UPDATE MODE
         private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
         {
-            StopWatch = new Stopwatch();
-            StopWatch.Start();
+            _stopWatch = new Stopwatch();
+            _stopWatch.Start();
             Utilities.CreateDefaultFolders();
             RegisterInArray(e, true);
         }
         private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            StopWatch.Stop();
+            _stopWatch.Stop();
             if (e.Cancelled)
             {
                 new UpdateMyState("Canceled!", "Error").ChangeProcessState();
@@ -722,12 +645,12 @@ namespace FModel
             }
             else
             {
-                TimeSpan ts = StopWatch.Elapsed;
+                TimeSpan ts = _stopWatch.Elapsed;
                 string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
                 new UpdateMyState("Time elapsed: " + elapsedTime, "Success").ChangeProcessState();
             }
 
-            SelectedItemsArray = null;
+            _selectedItemsArray = null;
             Checking.UmWorking = false;
             Invoke(new Action(() =>
             {
@@ -861,7 +784,7 @@ namespace FModel
         }
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listBox1.SelectedItem != null && SelectedItemsArray == null)
+            if (listBox1.SelectedItem != null && _selectedItemsArray == null)
             {
                 ExtractButton.Enabled = true;
             }
@@ -888,10 +811,10 @@ namespace FModel
             {
                 Invoke(new Action(() =>
                 {
-                    SelectedItemsArray = new string[_diffToExtract.Count];
-                    for (int i = 0; i < _diffToExtract.Count; i++) //ADD DICT ITEM TO ARRAY
+                    _selectedItemsArray = new string[RegisterSettings.updateModeDictionary.Count];
+                    for (int i = 0; i < RegisterSettings.updateModeDictionary.Count; i++) //ADD DICT ITEM TO ARRAY
                     {
-                        SelectedItemsArray[i] = _diffToExtract.Keys.ElementAt(i);
+                        _selectedItemsArray[i] = RegisterSettings.updateModeDictionary.Keys.ElementAt(i);
                     }
                 }));
             }
@@ -899,10 +822,10 @@ namespace FModel
             {
                 Invoke(new Action(() =>
                 {
-                    SelectedItemsArray = new string[listBox1.SelectedItems.Count];
+                    _selectedItemsArray = new string[listBox1.SelectedItems.Count];
                     for (int i = 0; i < listBox1.SelectedItems.Count; i++) //ADD SELECTED ITEM TO ARRAY
                     {
-                        SelectedItemsArray[i] = listBox1.SelectedItems[i].ToString();
+                        _selectedItemsArray[i] = listBox1.SelectedItems[i].ToString();
                     }
                 }));
             }
@@ -911,7 +834,7 @@ namespace FModel
         }
         private void ExtractAndSerializeItems(DoWorkEventArgs e)
         {
-            for (int i = 0; i < SelectedItemsArray.Length; i++)
+            for (int i = 0; i < _selectedItemsArray.Length; i++)
             {
                 if (backgroundWorker1.CancellationPending && backgroundWorker1.IsBusy)
                 {
@@ -924,7 +847,7 @@ namespace FModel
                     return;
                 }
 
-                ThePak.CurrentUsedItem = SelectedItemsArray[i];
+                ThePak.CurrentUsedItem = _selectedItemsArray[i];
 
                 Checking.ExtractedFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[ThePak.CurrentUsedItem], ThePak.CurrentUsedItem);
 
@@ -976,99 +899,89 @@ namespace FModel
             }
             else { throw new ArgumentException("Can't serialize this file"); }
         }
-        private void NavigateThroughJson(PakAsset theAsset, string questJson = null)
+        private void NavigateThroughJson(PakAsset theAsset, string theAssetExtractedPath = null)
         {
             try
             {
-                string parsedJson = string.Empty;
-
-                try
-                {
-                    parsedJson = JToken.Parse(theAsset.GetSerialized()).ToString();
-                }
-                catch (JsonReaderException)
-                {
-                    return;
-                }
-
-                ItemsIdParser[] itemId = ItemsIdParser.FromJson(parsedJson);
+                dynamic AssetData = JsonConvert.DeserializeObject(theAsset.GetSerialized());
+                JArray AssetArray = JArray.FromObject(AssetData);
 
                 new UpdateMyState("Parsing " + ThePak.CurrentUsedItem + "...", "Waiting").ChangeProcessState();
-                for (int i = 0; i < itemId.Length; i++)
+                JToken exportToken = AssetArray[0]["export_type"];
+                switch (exportToken != null ? exportToken.Value<string>() : "")
                 {
-                    switch (itemId[i].ExportType)
-                    {
-                        case "AthenaBackpackItemDefinition":
-                        case "AthenaBattleBusItemDefinition":
-                        case "AthenaCharacterItemDefinition":
-                        case "AthenaConsumableEmoteItemDefinition":
-                        case "AthenaSkyDiveContrailItemDefinition":
-                        case "AthenaDanceItemDefinition":
-                        case "AthenaEmojiItemDefinition":
-                        case "AthenaGliderItemDefinition":
-                        case "AthenaItemWrapDefinition":
-                        case "AthenaLoadingScreenItemDefinition":
-                        case "AthenaMusicPackItemDefinition":
-                        case "AthenaPetCarrierItemDefinition":
-                        case "AthenaPickaxeItemDefinition":
-                        case "AthenaSprayItemDefinition":
-                        case "AthenaToyItemDefinition":
-                        case "AthenaVictoryPoseItemDefinition":
-                        case "FortBannerTokenType":
-                        case "AthenaGadgetItemDefinition":
-                            CreateItemIcon(itemId[i], "athIteDef");
-                            break;
-                        case "FortWeaponRangedItemDefinition":
-                        case "FortWeaponMeleeItemDefinition":
-                        case "FortIngredientItemDefinition":
-                            CreateItemIcon(itemId[i], "consAndWeap");
-                            break;
-                        case "FortVariantTokenType":
-                            CreateItemIcon(itemId[i], "variant");
-                            break;
-                        case "FortAmmoItemDefinition":
-                            CreateItemIcon(itemId[i], "ammo");
-                            break;
-                        case "FortHeroType":
-                            CreateItemIcon(itemId[i], "stwHeroes");
-                            break;
-                        case "FortDefenderItemDefinition":
-                            CreateItemIcon(itemId[i], "stwDefenders");
-                            break;
-                        case "FortContextTrapItemDefinition":
-                        case "FortTrapItemDefinition":
-                        case "FortCardPackItemDefinition":
-                        case "FortPlaysetGrenadeItemDefinition":
-                        case "FortConsumableAccountItemDefinition":
-                        case "FortBadgeItemDefinition":
-                        case "FortCurrencyItemDefinition":
-                        case "FortConversionControlItemDefinition":
-                        case "FortHomebaseNodeItemDefinition":
-                        case "FortPersonalVehicleItemDefinition":
-                        case "FortCampaignHeroLoadoutItemDefinition":
-                        case "FortNeverPersistItemDefinition":
-                        case "FortPersistentResourceItemDefinition":
-                        case "FortResourceItemDefinition":
-                        case "FortGadgetItemDefinition":
-                        case "FortStatItemDefinition":
-                        case "FortTokenType":
-                        case "FortDailyRewardScheduleTokenDefinition":
-                        case "FortWorkerType":
-                        case "FortConditionalResourceItemDefinition":
-                        case "FortAwardItemDefinition":
-                        case "FortChallengeBundleScheduleDefinition":
-                            CreateItemIcon(itemId[i]);
-                            break;
-                        case "FortChallengeBundleItemDefinition":
-                            CreateBundleChallengesIcon(itemId[i], parsedJson, questJson);
-                            break;
-                        case "Texture2D":
-                            ConvertTexture2D();
-                            break;
-                        case "SoundWave":
-                            ConvertSoundWave();
-                            break;
-                    }
+                    case "AthenaBackpackItemDefinition":
+                    case "AthenaBattleBusItemDefinition":
+                    case "AthenaCharacterItemDefinition":
+                    case "AthenaConsumableEmoteItemDefinition":
+                    case "AthenaSkyDiveContrailItemDefinition":
+                    case "AthenaDanceItemDefinition":
+                    case "AthenaEmojiItemDefinition":
+                    case "AthenaGliderItemDefinition":
+                    case "AthenaItemWrapDefinition":
+                    case "AthenaLoadingScreenItemDefinition":
+                    case "AthenaMusicPackItemDefinition":
+                    case "AthenaPetCarrierItemDefinition":
+                    case "AthenaPickaxeItemDefinition":
+                    case "AthenaSprayItemDefinition":
+                    case "AthenaToyItemDefinition":
+                    case "AthenaVictoryPoseItemDefinition":
+                    case "FortBannerTokenType":
+                    case "AthenaGadgetItemDefinition":
+                        CreateItemIcon(AssetArray[0], "athIteDef");
+                        break;
+                    case "FortWeaponRangedItemDefinition":
+                    case "FortWeaponMeleeItemDefinition":
+                    case "FortIngredientItemDefinition":
+                        CreateItemIcon(AssetArray[0], "consAndWeap");
+                        break;
+                    case "FortVariantTokenType":
+                        CreateItemIcon(AssetArray[0], "variant");
+                        break;
+                    case "FortAmmoItemDefinition":
+                        CreateItemIcon(AssetArray[0], "ammo");
+                        break;
+                    case "FortHeroType":
+                        CreateItemIcon(AssetArray[0], "stwHeroes");
+                        break;
+                    case "FortDefenderItemDefinition":
+                        CreateItemIcon(AssetArray[0], "stwDefenders");
+                        break;
+                    case "FortContextTrapItemDefinition":
+                    case "FortTrapItemDefinition":
+                    case "FortCardPackItemDefinition":
+                    case "FortPlaysetGrenadeItemDefinition":
+                    case "FortConsumableAccountItemDefinition":
+                    case "FortBadgeItemDefinition":
+                    case "FortCurrencyItemDefinition":
+                    case "FortConversionControlItemDefinition":
+                    case "FortHomebaseNodeItemDefinition":
+                    case "FortPersonalVehicleItemDefinition":
+                    case "FortCampaignHeroLoadoutItemDefinition":
+                    case "FortNeverPersistItemDefinition":
+                    case "FortPersistentResourceItemDefinition":
+                    case "FortResourceItemDefinition":
+                    case "FortGadgetItemDefinition":
+                    case "FortStatItemDefinition":
+                    case "FortTokenType":
+                    case "FortDailyRewardScheduleTokenDefinition":
+                    case "FortWorkerType":
+                    case "FortConditionalResourceItemDefinition":
+                    case "FortAwardItemDefinition":
+                    case "FortChallengeBundleScheduleDefinition":
+                        CreateItemIcon(AssetArray[0]);
+                        break;
+                    case "FortChallengeBundleItemDefinition":
+                        CreateBundleChallengesIcon(AssetArray[0], theAssetExtractedPath);
+                        break;
+                    case "Texture2D":
+                        ConvertTexture2D();
+                        break;
+                    case "SoundWave":
+                        ConvertSoundWave();
+                        break;
+                    default:
+                        break;
                 }
             }
             catch (Exception ex)
@@ -1076,7 +989,7 @@ namespace FModel
                 throw new ArgumentException(ex.Message);
             }
         }
-        private void CreateItemIcon(ItemsIdParser theItem, string specialMode = null)
+        private void CreateItemIcon(JToken theItem, string specialMode = null)
         {
             new UpdateMyState(ThePak.CurrentUsedItem + " is an Item Definition", "Success").ChangeProcessState();
 
@@ -1144,10 +1057,9 @@ namespace FModel
         /// <param name="theParsedJson"> to parse from this instead of calling MyAsset.GetSerialized() again </param>
         /// <param name="extractedBundlePath"> needed for the LastFolder </param>
         /// <returns> the bundle image ready to be displayed in pictureBox1 </returns>
-        private void CreateBundleChallengesIcon(ItemsIdParser theItem, string theParsedJson, string extractedBundlePath)
+        private void CreateBundleChallengesIcon(JToken theItem, string extractedBundlePath)
         {
-            ChallengeBundleIdParser bundleParser = ChallengeBundleIdParser.FromJson(theParsedJson).FirstOrDefault();
-            BundleInfos.getBundleData(bundleParser);
+            BundleInfos.getBundleData(theItem);
             bool isFortbyte = false;
 
             Bitmap bmp = new Bitmap(2500, 15000);
@@ -1158,7 +1070,7 @@ namespace FModel
             BundleDesign.toDrawOn.SmoothingMode = SmoothingMode.HighQuality;
             BundleDesign.myItem = theItem;
 
-            BundleDesign.drawBackground(bmp, bundleParser);
+            BundleDesign.drawBackground(bmp, theItem);
 
             if (BundleInfos.BundleData[0].rewardItemId != null && string.Equals(BundleInfos.BundleData[0].rewardItemId, "AthenaFortbyte", StringComparison.CurrentCultureIgnoreCase))
                 isFortbyte = true;
@@ -1204,7 +1116,7 @@ namespace FModel
             }
             new UpdateMyConsole("", Color.Black, true).AppendToConsole();
 
-            BundleDesign.drawCompletionReward(bundleParser);
+            BundleDesign.drawCompletionReward(theItem);
             BundleDesign.drawWatermark(bmp);
 
             //cut if too long and return the bitmap
@@ -1217,7 +1129,6 @@ namespace FModel
                 pictureBox1.Image = newImg;
             }
 
-            new UpdateMyState(theItem.DisplayName.SourceString, "Success").ChangeProcessState();
             if (autoSaveImagesToolStripMenuItem.Checked || Checking.UmWorking)
             {
                 Invoke(new Action(() =>
@@ -1319,14 +1230,14 @@ namespace FModel
         //EVENTS
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            StopWatch = new Stopwatch();
-            StopWatch.Start();
+            _stopWatch = new Stopwatch();
+            _stopWatch.Start();
             Utilities.CreateDefaultFolders();
             RegisterInArray(e);
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            StopWatch.Stop();
+            _stopWatch.Stop();
             if (e.Cancelled)
             {
                 new UpdateMyState("Canceled!", "Error").ChangeProcessState();
@@ -1337,12 +1248,12 @@ namespace FModel
             }
             else
             {
-                TimeSpan ts = StopWatch.Elapsed;
+                TimeSpan ts = _stopWatch.Elapsed;
                 string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
                 new UpdateMyState("Time elapsed: " + elapsedTime, "Success").ChangeProcessState();
             }
 
-            SelectedItemsArray = null;
+            _selectedItemsArray = null;
             Invoke(new Action(() =>
             {
                 StopButton.Enabled = false;
@@ -1357,7 +1268,7 @@ namespace FModel
         }
         private void ListBox1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (listBox1.SelectedItem != null && SelectedItemsArray == null)
+            if (listBox1.SelectedItem != null && _selectedItemsArray == null)
             {
                 ExtractProcess();
             }
@@ -1682,7 +1593,7 @@ namespace FModel
 
         private void ExtractFolderContentsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _diffToExtract = new Dictionary<string, string>();
+            RegisterSettings.updateModeDictionary = new Dictionary<string, string>();
 
             for (int i = 0; i < PakHelper.PakAsTxt.Length; i++)
             {
@@ -1691,8 +1602,8 @@ namespace FModel
                     string filename = Path.GetFileName(PakHelper.PakAsTxt[i]);
                     if (filename.Contains(".uasset") || filename.Contains(".uexp") || filename.Contains(".ubulk"))
                     {
-                        if (!_diffToExtract.ContainsKey(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal))))
-                            _diffToExtract.Add(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal)), PakHelper.PakAsTxt[i]);
+                        if (!RegisterSettings.updateModeDictionary.ContainsKey(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal))))
+                            RegisterSettings.updateModeDictionary.Add(filename.Substring(0, filename.LastIndexOf(".", StringComparison.Ordinal)), PakHelper.PakAsTxt[i]);
                     }
                 }
             }

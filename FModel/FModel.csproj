@@ -156,6 +156,7 @@
     <Compile Include="Methods\Serializer\AssetReader.cs" />
     <Compile Include="Methods\Serializer\LocRes\LocResSerializer.cs" />
     <Compile Include="Methods\Scintilla\MyScintilla.cs" />
+    <Compile Include="Methods\UpdateMode\RegisterSettings.cs" />
     <Compile Include="Methods\Utilities\FontUtilities.cs" />
     <Compile Include="Methods\IconGenerator\ItemGenerator\ItemIcon.cs" />
     <Compile Include="Methods\IconGenerator\ItemGenerator\Rarity.cs" />
@@ -193,15 +194,6 @@
     <Compile Include="Methods\JohnWick\JohnWick.cs" />
     <Compile Include="Methods\Utilities\Utilities.cs" />
     <Compile Include="Methods\VarApp.cs" />
-    <Compile Include="Parser\Banners\BannersParser.cs" />
-    <Compile Include="Parser\Challenges\ChallengeBundleIdParser.cs" />
-    <Compile Include="Parser\Featured\FeaturedParser.cs" />
-    <Compile Include="Parser\Items\CosmeticSetsParser.cs" />
-    <Compile Include="Parser\Items\ItemIDParser.cs" />
-    <Compile Include="Parser\Meshes\MeshesParser.cs" />
-    <Compile Include="Parser\Quests\QuestParser.cs" />
-    <Compile Include="Parser\RenderMat\RenderSwitchMaterial.cs" />
-    <Compile Include="Parser\Weapons\WeaponStatParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\About.resx">
@@ -256,6 +248,7 @@
     <Content Include="DLLs\csharp-wick.dll" />
     <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
     <Content Include="FModel.ico" />
+    <None Include="Resources\LBolt64.png" />
     <None Include="Resources\wTemplatev1.png" />
     <None Include="Resources\wTemplateFv1.png" />
     <None Include="Resources\U512v1.png" />
@@ -283,7 +276,6 @@
     <None Include="Resources\BurbankBigCondensed-Black-vJapanese.otf" />
     <None Include="Resources\reload64.png" />
     <None Include="Resources\clipSize64.png" />
-    <None Include="Resources\LBolt64.png" />
     <None Include="Resources\dmg64.png" />
     <None Include="Resources\Challenges_Slider.png" />
     <None Include="Resources\T-Items-MTX-L.png" />

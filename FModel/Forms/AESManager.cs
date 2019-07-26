@@ -52,8 +52,9 @@ namespace FModel.Forms
 
         private void OKButton_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(textBox2.Text))
+            if (!string.IsNullOrWhiteSpace(textBox2.Text) && textBox2.Text.StartsWith("0x"))
             {
+                if (textBox2.Text.Contains(" ")) { textBox2.Text = textBox2.Text.Replace(" ", string.Empty); }
                 Properties.Settings.Default.AESKey = textBox2.Text.Substring(2).ToUpper();
             }
             else { Properties.Settings.Default.AESKey = ""; }
