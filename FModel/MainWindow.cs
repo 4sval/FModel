@@ -376,8 +376,10 @@ namespace FModel
         private void CreatePakList(ToolStripItemClickedEventArgs selectedPak = null, bool loadAllPaKs = false, bool getDiff = false, bool updateMode = false)
         {
             ThePak.AllpaksDictionary = new Dictionary<string, string>();
-            RegisterSettings.updateModeDictionary = new Dictionary<string, string>();
             ThePak.PaksMountPoint = new Dictionary<string, string>();
+            ThePak.PaksExtractorDictionary = new Dictionary<string, PakExtractor>();
+            ThePak.PaksFileArrayDictionary = new Dictionary<PakExtractor, string[]>();
+            RegisterSettings.updateModeDictionary = new Dictionary<string, string>();
             PakHelper.PakAsTxt = null;
 
             if (selectedPak != null)
@@ -569,7 +571,6 @@ namespace FModel
         private async void loadOneToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             await Task.Run(() => {
-                JohnWick.myArray = null;
                 Invoke(new Action(() =>
                 {
                     scintilla1.Text = "";
@@ -584,7 +585,6 @@ namespace FModel
         }
         private async void loadAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            JohnWick.myArray = null;
             Invoke(new Action(() =>
             {
                 scintilla1.Text = "";
@@ -975,6 +975,9 @@ namespace FModel
                     case "FortChallengeBundleItemDefinition":
                         CreateBundleChallengesIcon(AssetArray[0], theAssetExtractedPath);
                         break;
+                    case "FortSchematicItemDefinition":
+                        CreateSchematicIcon(AssetArray[0]);
+                        break;
                     case "Texture2D":
                         ConvertTexture2D();
                         break;
@@ -1144,6 +1147,59 @@ namespace FModel
                 }
             }
             BundleDesign.toDrawOn.Dispose(); //actually this is the most useful thing in this method
+        }
+
+        private void CreateSchematicIcon(JToken theItem)
+        {
+            SchematicIconDesign.toDrawOn = SchematicIconDesign.createGraphic(522, 822);
+            JToken craftedItem = SchematicItemInfos.getSchematicRecipeResult(theItem);
+            Rarity.DrawRarity(craftedItem, SchematicIconDesign.toDrawOn);
+
+            ItemIcon.ItemIconPath = string.Empty;
+            ItemIcon.GetItemIcon(craftedItem, Settings.Default.loadFeaturedImage);
+            if (File.Exists(ItemIcon.ItemIconPath))
+            {
+                Image itemIcon;
+                using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
+                {
+                    itemIcon = new Bitmap(bmpTemp);
+                }
+                SchematicIconDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 512, 512), new Point(5, 5));
+            }
+            else
+            {
+                Image itemIcon = Resources.unknown512;
+                SchematicIconDesign.toDrawOn.DrawImage(itemIcon, new Point(0, 0));
+            }
+
+            if (Settings.Default.rarityNew)
+            {
+                GraphicsPath p = new GraphicsPath();
+                p.StartFigure();
+                p.AddLine(4, 438, 517, 383);
+                p.AddLine(517, 383, 517, 383 + 134);
+                p.AddLine(4, 383 + 134, 4, 383 + 134);
+                p.AddLine(4, 383 + 134, 4, 438);
+                p.CloseFigure();
+                SchematicIconDesign.toDrawOn.FillPath(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), p);
+            }
+            else { SchematicIconDesign.toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), new Rectangle(5, 383, 512, 134)); }
+
+            DrawText.DrawTexts(craftedItem, SchematicIconDesign.toDrawOn, "");
+
+            if (autoSaveImagesToolStripMenuItem.Checked || Checking.UmWorking)
+            {
+                SchematicIconDesign.schematicBitmap.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
+
+                if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
+                {
+                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                    new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
+                }
+            }
+
+            pictureBox1.Image = SchematicIconDesign.schematicBitmap;
+            SchematicIconDesign.toDrawOn.Dispose();
         }
 
         /// <summary>

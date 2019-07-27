@@ -48,9 +48,10 @@ namespace FModel
                 if (CurrentUsedPakLines != null)
                 {
                     bMainKeyWorking = true;
+                    ThePak.PaksExtractorDictionary.Add(ThePak.mainPaksList[i].thePak, _extractor);
+                    ThePak.PaksFileArrayDictionary.Add(_extractor, CurrentUsedPakLines);
                     RegisterInDict(ThePak.mainPaksList[i].thePak, CurrentUsedPakLines, theSinglePak, loadAllPaKs);
                 }
-                _extractor.Dispose();
             }
             if (bMainKeyWorking) { LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage); }
 
@@ -75,9 +76,10 @@ namespace FModel
                     string[] CurrentUsedPakLines = _extractor.GetFileList().ToArray();
                     if (CurrentUsedPakLines != null)
                     {
+                        ThePak.PaksExtractorDictionary.Add(ThePak.dynamicPaksList[i].thePak, _extractor);
+                        ThePak.PaksFileArrayDictionary.Add(_extractor, CurrentUsedPakLines);
                         RegisterInDict(ThePak.dynamicPaksList[i].thePak, CurrentUsedPakLines, theSinglePak, loadAllPaKs);
                     }
-                    _extractor.Dispose();
                 }
             }
 

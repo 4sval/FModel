@@ -11,9 +11,6 @@ namespace FModel
     static class JohnWick
     {
         public static PakAsset MyAsset;
-        private static PakExtractor _myExtractor;
-        public static string[] myArray { get; set; }
-        private static string currentPakToCheck { get; set; }
 
         /// <summary>
         /// Normal pak file: using AllpaksDictionary, it tells you the pak name depending on currentItem. Using this pak name and PaksMountPoint we get the mount point
@@ -58,26 +55,22 @@ namespace FModel
             }
             else { myKey = Settings.Default.AESKey; }
 
-            if (currentPak != currentPakToCheck || myArray == null)
-            {
-                _myExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + currentPak, myKey);
-                myArray = _myExtractor.GetFileList().ToArray();
-            }
+            PakExtractor pakExtractor = ThePak.PaksExtractorDictionary[currentPak];
+            string[] pakFiles = ThePak.PaksFileArrayDictionary[pakExtractor];
 
-            string[] results = currentItem.Contains(".") ? Array.FindAll(myArray, s => s.Contains("/" + currentItem)) : Array.FindAll(myArray, s => s.Contains("/" + currentItem + "."));
+            string[] results = currentItem.Contains(".") ? Array.FindAll(pakFiles, s => s.Contains("/" + currentItem)) : Array.FindAll(pakFiles, s => s.Contains("/" + currentItem + "."));
 
             string AssetPath = string.Empty;
             for (int i = 0; i < results.Length; i++)
             {
-                int index = Array.IndexOf(myArray, results[i]);
+                int index = Array.IndexOf(pakFiles, results[i]);
 
                 uint y = (uint)index;
-                byte[] b = _myExtractor.GetData(y);
+                byte[] b = pakExtractor.GetData(y);
 
                 AssetPath = WriteFile(currentItem, results[i], b).Replace("/", "\\");
             }
 
-            currentPakToCheck = currentPak;
             return AssetPath;
         }
 

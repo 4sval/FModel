@@ -149,6 +149,8 @@
     <Compile Include="Methods\IconGenerator\ChallengeGenerator\DrawingRewards.cs" />
     <Compile Include="Methods\DLLImport.cs" />
     <Compile Include="Methods\IconGenerator\ItemGenerator\DrawText.cs" />
+    <Compile Include="Methods\IconGenerator\SchematicGenerator\SchematicIconDesign.cs" />
+    <Compile Include="Methods\IconGenerator\SchematicGenerator\SchematicItemInfos.cs" />
     <Compile Include="Methods\IconGenerator\Translations\LoadLocRes.cs" />
     <Compile Include="Methods\IconGenerator\Translations\SearchResource.cs" />
     <Compile Include="Methods\ImagesMerger\ImagesMerger.cs" />
