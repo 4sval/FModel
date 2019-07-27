@@ -325,8 +325,8 @@ namespace FModel
                 {
                     String[] linesA = File.ReadAllLines(theDialog.FileName);
                     for (int i = 0; i < linesA.Length; i++)
-                        if (!linesA[i].StartsWith("../"))
-                            linesA[i] = "../" + linesA[i];
+                        if (linesA[i].StartsWith("../"))
+                            linesA[i] = linesA[i].Substring(3);
 
                     IEnumerable<String> onlyB = PakHelper.PakAsTxt.Except(linesA);
                     IEnumerable<String> removed = linesA.Except(PakHelper.PakAsTxt);
@@ -376,7 +376,6 @@ namespace FModel
         private void CreatePakList(ToolStripItemClickedEventArgs selectedPak = null, bool loadAllPaKs = false, bool getDiff = false, bool updateMode = false)
         {
             ThePak.AllpaksDictionary = new Dictionary<string, string>();
-            ThePak.PaksMountPoint = new Dictionary<string, string>();
             ThePak.PaksExtractorDictionary = new Dictionary<string, PakExtractor>();
             ThePak.PaksFileArrayDictionary = new Dictionary<PakExtractor, string[]>();
             RegisterSettings.updateModeDictionary = new Dictionary<string, string>();
@@ -428,7 +427,7 @@ namespace FModel
                         {
                             TreeParsePath(treeView1.Nodes, PakHelper.PakAsTxt[i].Replace(PakHelper.PakAsTxt[i].Split('/').Last(), ""));
                         }
-                        Utilities.ExpandToLevel(treeView1.Nodes, 2);
+                        Utilities.ExpandToLevel(treeView1.Nodes, 1);
                         treeView1.EndUpdate();
                     }));
                     new UpdateMyState(Settings.Default.PAKsPath, "Success").ChangeProcessState();
@@ -460,7 +459,7 @@ namespace FModel
                         {
                             TreeParsePath(treeView1.Nodes, PakHelper.PakAsTxt[i].Replace(PakHelper.PakAsTxt[i].Split('/').Last(), ""));
                         }
-                        Utilities.ExpandToLevel(treeView1.Nodes, 2);
+                        Utilities.ExpandToLevel(treeView1.Nodes, 1);
                         treeView1.EndUpdate();
                     }));
 
@@ -493,7 +492,7 @@ namespace FModel
                     string mountPoint = extractor.GetMountPoint();
                     for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                     {
-                        CurrentUsedPakLines[ii] = mountPoint.Substring(6) + CurrentUsedPakLines[ii];
+                        CurrentUsedPakLines[ii] = mountPoint.Substring(9) + CurrentUsedPakLines[ii];
 
                         sb.Append(CurrentUsedPakLines[ii] + "\n");
                     }
@@ -526,7 +525,7 @@ namespace FModel
                         string mountPoint = extractor.GetMountPoint();
                         for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
                         {
-                            CurrentUsedPakLines[ii] = mountPoint.Substring(6) + CurrentUsedPakLines[ii];
+                            CurrentUsedPakLines[ii] = mountPoint.Substring(9) + CurrentUsedPakLines[ii];
 
                             sb.Append(CurrentUsedPakLines[ii] + "\n");
                         }
@@ -990,7 +989,14 @@ namespace FModel
             }
             catch (Exception ex)
             {
-                throw new ArgumentException(ex.Message);
+                if (Checking.UmWorking)
+                {
+                    new UpdateMyConsole(ex.Message, Color.Red, true).AppendToConsole();
+                }
+                else
+                {
+                    throw new ArgumentException(ex.Message);
+                }
             }
         }
         private void CreateItemIcon(JToken theItem, string specialMode = null)

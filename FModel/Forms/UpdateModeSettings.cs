@@ -68,29 +68,29 @@ namespace FModel.Forms
             Properties.Settings.Default.UMOpacity               = trackBar1.Value;
 
             //PARAMETERS
-            if (checkedListBox1.GetItemCheckState(0) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/Cosmetics/"); }
-            if (checkedListBox1.GetItemCheckState(1) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/CosmeticVariantTokens/"); }
-            if (checkedListBox1.GetItemCheckState(2) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/BannerToken/"); }
-            if (checkedListBox1.GetItemCheckState(3) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/ChallengeBundles/"); }
-            if (checkedListBox1.GetItemCheckState(4) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/Consumables/"); }
-            if (checkedListBox1.GetItemCheckState(5) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/Gameplay/"); }
-            if (checkedListBox1.GetItemCheckState(6) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/Traps/"); }
-            if (checkedListBox1.GetItemCheckState(7) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Athena/Items/Weapons/"); }
-            if (checkedListBox1.GetItemCheckState(8) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Heroes/"); }
-            if (checkedListBox1.GetItemCheckState(9) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Defenders/"); }
-            if (checkedListBox1.GetItemCheckState(10) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Workers/"); }
-            if (checkedListBox1.GetItemCheckState(11) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Traps/"); }
-            if (checkedListBox1.GetItemCheckState(12) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Weapons/"); }
-            if (checkedListBox1.GetItemCheckState(13) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Ingredients/"); }
-            if (checkedListBox1.GetItemCheckState(14) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/PersistentResources/"); }
-            if (checkedListBox1.GetItemCheckState(15) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/CardPacks/"); }
-            if (checkedListBox1.GetItemCheckState(16) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/Items/Tokens/"); }
+            if (checkedListBox1.GetItemCheckState(0) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Athena/Items/Cosmetics/"); }
+            if (checkedListBox1.GetItemCheckState(1) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Athena/Items/CosmeticVariantTokens/"); }
+            if (checkedListBox1.GetItemCheckState(2) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Athena/Items/BannerToken/"); }
+            if (checkedListBox1.GetItemCheckState(3) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Athena/Items/ChallengeBundles/"); }
+            if (checkedListBox1.GetItemCheckState(4) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Athena/Items/Consumables/"); }
+            if (checkedListBox1.GetItemCheckState(5) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Athena/Items/Gameplay/"); }
+            if (checkedListBox1.GetItemCheckState(6) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Athena/Items/Traps/"); }
+            if (checkedListBox1.GetItemCheckState(7) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Athena/Items/Weapons/"); }
+            if (checkedListBox1.GetItemCheckState(8) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Heroes/"); }
+            if (checkedListBox1.GetItemCheckState(9) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Defenders/"); }
+            if (checkedListBox1.GetItemCheckState(10) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Workers/"); }
+            if (checkedListBox1.GetItemCheckState(11) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Traps/"); }
+            if (checkedListBox1.GetItemCheckState(12) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Weapons/"); }
+            if (checkedListBox1.GetItemCheckState(13) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Ingredients/"); }
+            if (checkedListBox1.GetItemCheckState(14) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/PersistentResources/"); }
+            if (checkedListBox1.GetItemCheckState(15) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/CardPacks/"); }
+            if (checkedListBox1.GetItemCheckState(16) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Tokens/"); }
 
-            if (checkedListBox2.GetItemCheckState(0) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/2dAssets/"); }
-            if (checkedListBox2.GetItemCheckState(1) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/UI/Foundation/Textures/BattleRoyale/FeaturedItems/"); }
-            if (checkedListBox2.GetItemCheckState(2) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/UI/Foundation/Textures/Icons/"); }
-            if (checkedListBox2.GetItemCheckState(3) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/UI/Foundation/Textures/Banner/"); }
-            if (checkedListBox2.GetItemCheckState(4) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("../FortniteGame/Content/UI/Foundation/Textures/LoadingScreens/"); }
+            if (checkedListBox2.GetItemCheckState(0) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/2dAssets/"); }
+            if (checkedListBox2.GetItemCheckState(1) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/UI/Foundation/Textures/BattleRoyale/FeaturedItems/"); }
+            if (checkedListBox2.GetItemCheckState(2) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/UI/Foundation/Textures/Icons/"); }
+            if (checkedListBox2.GetItemCheckState(3) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/UI/Foundation/Textures/Banner/"); }
+            if (checkedListBox2.GetItemCheckState(4) == CheckState.Checked) { RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/UI/Foundation/Textures/LoadingScreens/"); }
 
             //LOCRES
             Properties.Settings.Default.IconLanguage = comboBox1.SelectedItem.ToString();

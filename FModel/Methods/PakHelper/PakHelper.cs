@@ -12,7 +12,6 @@ namespace FModel
     static class PakHelper
     {
         public static string[] PakAsTxt { get; set; }
-        private static PakExtractor _extractor { get; set; }
         private static StringBuilder _sb { get; set; }
 
         /// <summary>
@@ -24,39 +23,43 @@ namespace FModel
         /// <param name="loadAllPaKs"></param>
         public static void RegisterPaKsinDict(ToolStripItemClickedEventArgs theSinglePak = null, bool loadAllPaKs = false)
         {
-            _extractor = null;
             _sb = new StringBuilder();
             bool bMainKeyWorking = false;
 
             for (int i = 0; i < ThePak.mainPaksList.Count; i++)
             {
+                PakExtractor theExtractor = null;
                 try
                 {
                     if (!string.IsNullOrWhiteSpace(Settings.Default.AESKey))
                     {
-                        _extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
+                        theExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
                     }
-                    else { if (_extractor != null) { _extractor.Dispose(); } break; }
+                    else { if (theExtractor != null) { theExtractor.Dispose(); } break; }
                 }
                 catch (Exception)
                 {
-                    if (_extractor != null) { _extractor.Dispose(); }
+                    if (theExtractor != null) { theExtractor.Dispose(); }
                     break;
                 }
 
-                string[] CurrentUsedPakLines = _extractor.GetFileList().ToArray();
+                string[] CurrentUsedPakLines = theExtractor.GetFileList().ToArray();
                 if (CurrentUsedPakLines != null)
                 {
                     bMainKeyWorking = true;
-                    ThePak.PaksExtractorDictionary.Add(ThePak.mainPaksList[i].thePak, _extractor);
-                    ThePak.PaksFileArrayDictionary.Add(_extractor, CurrentUsedPakLines);
-                    RegisterInDict(ThePak.mainPaksList[i].thePak, CurrentUsedPakLines, theSinglePak, loadAllPaKs);
+                    string mountPoint = theExtractor.GetMountPoint();
+
+                    ThePak.PaksExtractorDictionary.Add(ThePak.mainPaksList[i].thePak, theExtractor);
+                    ThePak.PaksFileArrayDictionary.Add(theExtractor, CurrentUsedPakLines); //in RegisterInDict we add the mount point to CurrentUsedPakLines
+
+                    RegisterInDict(ThePak.mainPaksList[i].thePak, CurrentUsedPakLines, mountPoint, theSinglePak, loadAllPaKs);
                 }
             }
             if (bMainKeyWorking) { LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage); }
 
             for (int i = 0; i < ThePak.dynamicPaksList.Count; i++)
             {
+                PakExtractor theExtractor = null;
                 string pakName = DynamicKeysManager.AESEntries.Where(x => x.thePak == ThePak.dynamicPaksList[i].thePak).Select(x => x.thePak).FirstOrDefault();
                 string pakKey = DynamicKeysManager.AESEntries.Where(x => x.thePak == ThePak.dynamicPaksList[i].thePak).Select(x => x.theKey).FirstOrDefault();
 
@@ -64,21 +67,24 @@ namespace FModel
                 {
                     try
                     {
-                        _extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
+                        theExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
                     }
                     catch (Exception)
                     {
                         new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole();
-                        if (_extractor != null) { _extractor.Dispose(); }
+                        if (theExtractor != null) { theExtractor.Dispose(); }
                         continue;
                     }
 
-                    string[] CurrentUsedPakLines = _extractor.GetFileList().ToArray();
+                    string[] CurrentUsedPakLines = theExtractor.GetFileList().ToArray();
                     if (CurrentUsedPakLines != null)
                     {
-                        ThePak.PaksExtractorDictionary.Add(ThePak.dynamicPaksList[i].thePak, _extractor);
-                        ThePak.PaksFileArrayDictionary.Add(_extractor, CurrentUsedPakLines);
-                        RegisterInDict(ThePak.dynamicPaksList[i].thePak, CurrentUsedPakLines, theSinglePak, loadAllPaKs);
+                        string mountPoint = theExtractor.GetMountPoint();
+
+                        ThePak.PaksExtractorDictionary.Add(ThePak.dynamicPaksList[i].thePak, theExtractor);
+                        ThePak.PaksFileArrayDictionary.Add(theExtractor, CurrentUsedPakLines); //in RegisterInDict we add the mount point to CurrentUsedPakLines
+
+                        RegisterInDict(ThePak.dynamicPaksList[i].thePak, CurrentUsedPakLines, mountPoint, theSinglePak, loadAllPaKs);
                     }
                 }
             }
@@ -99,14 +105,11 @@ namespace FModel
         /// <param name="thePakLines"></param>
         /// <param name="theSinglePak"></param>
         /// <param name="weLoadAll"></param>
-        private static void RegisterInDict(string thePakName, string[] thePakLines, ToolStripItemClickedEventArgs theSinglePak = null, bool weLoadAll = false)
+        private static void RegisterInDict(string thePakName, string[] thePakLines, string mountPoint, ToolStripItemClickedEventArgs theSinglePak = null, bool weLoadAll = false)
         {
-            string mountPoint = _extractor.GetMountPoint();
-            ThePak.PaksMountPoint.Add(thePakName, mountPoint.Substring(9));
-
             for (int i = 0; i < thePakLines.Length; i++)
             {
-                thePakLines[i] = mountPoint.Substring(6) + thePakLines[i];
+                thePakLines[i] = mountPoint.Substring(9) + thePakLines[i];
 
                 string CurrentUsedPakFileName = thePakLines[i].Substring(thePakLines[i].LastIndexOf("/", StringComparison.Ordinal) + 1);
                 if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
