@@ -283,6 +283,7 @@ namespace FModel.Forms
             // 
             this.checkedListBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkedListBox2.CheckOnClick = true;
             this.checkedListBox2.FormattingEnabled = true;
             this.checkedListBox2.Items.AddRange(new object[] {
             "[BR] 2D Assets",
@@ -305,7 +306,7 @@ namespace FModel.Forms
             this.groupBox1.TabIndex = 24;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Icon Creation                                                                    " +
-    "   Texure";
+    "   Texture";
             // 
             // UpdateModeSettings
             // 
