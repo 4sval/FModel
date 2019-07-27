@@ -53,6 +53,8 @@
 
 ## DOCUMENTATION
 ### Important
+PLEASE FOR THE LOVE OF GOD IF YOU DON'T KNOW SHIT ABOUT FORTNITE GAME FILES, DON'T USE IT... I don't wanna spend my time trying to explain what you don't know if you're only gonna use the program once in your life, k thx.
+
 If issues occur when compiling the source code, make sure that the software is being built for x64.
 
 If somehow FModel crashed due to permissions, please either disable Windows Defender or add and exception for FModel.exe.
