@@ -1,4 +1,4 @@
-﻿# FModel
+﻿﻿# FModel
 [![](https://img.shields.io/github/downloads/iAmAsval/FModel/total.svg?color=green&label=Total%20Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases)
 [![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=2.4.2.2&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel//releases/latest)
 [![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
@@ -13,7 +13,10 @@
 ### Download
 [![](https://img.shields.io/badge/Release-2.4.2.2-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/latest)
 ### How To Use
+><p align="center"><a href="https://www.youtube.com/watch?v=rWlux5vg9Xs">Video Tutorial by FireMonkey</a></p>
+
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder.
+
 ![](https://i.imgur.com/9AUVUVU.gif)
 
 **2.** Restart the executable, go to the AES Manager and add your AES Keys, click **Load** and select your .PAK file

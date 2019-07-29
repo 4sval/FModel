@@ -49,6 +49,8 @@ namespace FModel
             this.saveAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.copySelectedFilePathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.openExtractionFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoSaveImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,8 +87,8 @@ namespace FModel
             this.saveAsJSONToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractFolderContentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openExtractionFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.autoSaveAsJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -223,7 +225,9 @@ namespace FModel
             // 
             this.filesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.searchToolStripMenuItem,
+            this.toolStripSeparator7,
             this.saveAsJSONToolStripMenuItem,
+            this.autoSaveAsJSONToolStripMenuItem,
             this.toolStripSeparator5,
             this.copySelectedFilePathToolStripMenuItem,
             this.toolStripSeparator6,
@@ -259,6 +263,18 @@ namespace FModel
             this.copySelectedFilePathToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.copySelectedFilePathToolStripMenuItem.Text = "Copy Selected File Path";
             this.copySelectedFilePathToolStripMenuItem.Click += new System.EventHandler(this.CopySelectedFilePathToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(194, 6);
+            // 
+            // openExtractionFolderToolStripMenuItem
+            // 
+            this.openExtractionFolderToolStripMenuItem.Name = "openExtractionFolderToolStripMenuItem";
+            this.openExtractionFolderToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.openExtractionFolderToolStripMenuItem.Text = "Open Extraction Folder";
+            this.openExtractionFolderToolStripMenuItem.Click += new System.EventHandler(this.openExtractionFolderToolStripMenuItem_Click);
             // 
             // imageToolStripMenuItem
             // 
@@ -309,7 +325,7 @@ namespace FModel
             this.tweetToolStripMenuItem.Name = "tweetToolStripMenuItem";
             this.tweetToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
             this.tweetToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.tweetToolStripMenuItem.Text = "Tweet";
+            this.tweetToolStripMenuItem.Text = "[BETA] Tweet";
             this.tweetToolStripMenuItem.Click += new System.EventHandler(this.TweetToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
@@ -600,17 +616,17 @@ namespace FModel
             this.extractFolderContentsToolStripMenuItem.Text = "Extract Folder Contents";
             this.extractFolderContentsToolStripMenuItem.Click += new System.EventHandler(this.ExtractFolderContentsToolStripMenuItem_Click);
             // 
-            // openExtractionFolderToolStripMenuItem
+            // toolStripSeparator7
             // 
-            this.openExtractionFolderToolStripMenuItem.Name = "openExtractionFolderToolStripMenuItem";
-            this.openExtractionFolderToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.openExtractionFolderToolStripMenuItem.Text = "Open Extraction Folder";
-            this.openExtractionFolderToolStripMenuItem.Click += new System.EventHandler(this.openExtractionFolderToolStripMenuItem_Click);
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(194, 6);
             // 
-            // toolStripSeparator6
+            // autoSaveAsJSONToolStripMenuItem
             // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(194, 6);
+            this.autoSaveAsJSONToolStripMenuItem.CheckOnClick = true;
+            this.autoSaveAsJSONToolStripMenuItem.Name = "autoSaveAsJSONToolStripMenuItem";
+            this.autoSaveAsJSONToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.autoSaveAsJSONToolStripMenuItem.Text = "Auto Save as JSON";
             // 
             // MainWindow
             // 
@@ -704,6 +720,8 @@ namespace FModel
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem openExtractionFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripMenuItem autoSaveAsJSONToolStripMenuItem;
     }
 }
 

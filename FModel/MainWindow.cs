@@ -397,7 +397,7 @@ namespace FModel
                         {
                             TreeParsePath(treeView1.Nodes, PakHelper.PakAsTxt[i].Replace(PakHelper.PakAsTxt[i].Split('/').Last(), ""));
                         }
-                        Utilities.ExpandToLevel(treeView1.Nodes, 2);
+                        Utilities.ExpandToLevel(treeView1.Nodes, 1);
                         treeView1.EndUpdate();
                     }));
                     new UpdateMyState(Settings.Default.PAKsPath + "\\" + selectedPak.ClickedItem.Text, "Success").ChangeProcessState();
@@ -651,6 +651,7 @@ namespace FModel
 
             _selectedItemsArray = null;
             Checking.UmWorking = false;
+            GC.Collect();
             Invoke(new Action(() =>
             {
                 updateModeToolStripMenuItem.Checked = false;
@@ -1044,18 +1045,10 @@ namespace FModel
 
             DrawText.DrawTexts(theItem, g, specialMode);
 
-            if (autoSaveImagesToolStripMenuItem.Checked || Checking.UmWorking)
-            {
-                bmp.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
-
-                if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
-                {
-                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
-                    new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
-                }
-            }
-
             pictureBox1.Image = bmp;
+
+            AutoSaveImage();
+            AutoSaveAsJSON();
             g.Dispose();
         }
 
@@ -1139,72 +1132,20 @@ namespace FModel
                 pictureBox1.Image = newImg;
             }
 
-            if (autoSaveImagesToolStripMenuItem.Checked || Checking.UmWorking)
-            {
-                Invoke(new Action(() =>
-                {
-                    pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
-                }));
-
-                if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
-                {
-                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
-                    new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
-                }
-            }
+            AutoSaveImage();
+            AutoSaveAsJSON();
             BundleDesign.toDrawOn.Dispose(); //actually this is the most useful thing in this method
         }
 
         private void CreateSchematicIcon(JToken theItem)
         {
-            SchematicIconDesign.toDrawOn = SchematicIconDesign.createGraphic(522, 822);
-            JToken craftedItem = SchematicItemInfos.getSchematicRecipeResult(theItem);
-            Rarity.DrawRarity(craftedItem, SchematicIconDesign.toDrawOn);
-
-            ItemIcon.ItemIconPath = string.Empty;
-            ItemIcon.GetItemIcon(craftedItem, Settings.Default.loadFeaturedImage);
-            if (File.Exists(ItemIcon.ItemIconPath))
-            {
-                Image itemIcon;
-                using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
-                {
-                    itemIcon = new Bitmap(bmpTemp);
-                }
-                SchematicIconDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 512, 512), new Point(5, 5));
-            }
-            else
-            {
-                Image itemIcon = Resources.unknown512;
-                SchematicIconDesign.toDrawOn.DrawImage(itemIcon, new Point(0, 0));
-            }
-
-            if (Settings.Default.rarityNew)
-            {
-                GraphicsPath p = new GraphicsPath();
-                p.StartFigure();
-                p.AddLine(4, 438, 517, 383);
-                p.AddLine(517, 383, 517, 383 + 134);
-                p.AddLine(4, 383 + 134, 4, 383 + 134);
-                p.AddLine(4, 383 + 134, 4, 438);
-                p.CloseFigure();
-                SchematicIconDesign.toDrawOn.FillPath(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), p);
-            }
-            else { SchematicIconDesign.toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), new Rectangle(5, 383, 512, 134)); }
-
-            DrawText.DrawTexts(craftedItem, SchematicIconDesign.toDrawOn, "");
-
-            if (autoSaveImagesToolStripMenuItem.Checked || Checking.UmWorking)
-            {
-                SchematicIconDesign.schematicBitmap.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
-
-                if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
-                {
-                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
-                    new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
-                }
-            }
+            SchematicIconDesign.createItemDefinitionIcon(theItem);
+            SchematicIconDesign.createIngredientIcon();
 
             pictureBox1.Image = SchematicIconDesign.schematicBitmap;
+
+            AutoSaveImage();
+            AutoSaveAsJSON();
             SchematicIconDesign.toDrawOn.Dispose();
         }
 
@@ -1317,6 +1258,7 @@ namespace FModel
             }
 
             _selectedItemsArray = null;
+            GC.Collect();
             Invoke(new Action(() =>
             {
                 StopButton.Enabled = false;
@@ -1615,6 +1557,50 @@ namespace FModel
                         new UpdateMyConsole("Fail to save ", Color.Black).AppendToConsole();
                         new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed, true).AppendToConsole();
                     }
+                }
+            }
+        }
+        private void AutoSaveAsJSON()
+        {
+            if (autoSaveAsJSONToolStripMenuItem.Checked)
+            {
+                string text = string.Empty;
+                Invoke(new Action(() =>
+                {
+                    text = scintilla1.Text;
+                }));
+
+                if (!string.IsNullOrEmpty(text))
+                {
+                    string filename = ThePak.CurrentUsedItem.Contains('.') ? ThePak.CurrentUsedItem.Substring(0, ThePak.CurrentUsedItem.LastIndexOf('.')) : ThePak.CurrentUsedItem;
+                    File.WriteAllText(App.DefaultOutputPath + "\\Saved_JSON\\" + filename + ".json", text);
+
+                    if (File.Exists(App.DefaultOutputPath + "\\Saved_JSON\\" + filename + ".json"))
+                    {
+                        new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                        new UpdateMyConsole("'s properties successfully saved", Color.Black, true).AppendToConsole();
+                    }
+                    else
+                    {
+                        new UpdateMyConsole("Fail to save ", Color.Black).AppendToConsole();
+                        new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed, true).AppendToConsole();
+                    }
+                }
+            }
+        }
+        private void AutoSaveImage()
+        {
+            if (autoSaveImagesToolStripMenuItem.Checked || Checking.UmWorking)
+            {
+                Invoke(new Action(() =>
+                {
+                    pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
+                }));
+
+                if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
+                {
+                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                    new UpdateMyConsole("'s image successfully saved", Color.Black, true).AppendToConsole();
                 }
             }
         }

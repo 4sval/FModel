@@ -60,6 +60,8 @@ namespace FModel
                 AssetPath = WriteFile(results[i], b).Replace("/", "\\");
             }
 
+            pakExtractor = null;
+            pakFiles = null;
             return AssetPath;
         }
 

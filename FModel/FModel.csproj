@@ -150,6 +150,7 @@
     <Compile Include="Methods\DLLImport.cs" />
     <Compile Include="Methods\IconGenerator\ItemGenerator\DrawText.cs" />
     <Compile Include="Methods\IconGenerator\SchematicGenerator\SchematicIconDesign.cs" />
+    <Compile Include="Methods\IconGenerator\SchematicGenerator\SchematicInfoEntry.cs" />
     <Compile Include="Methods\IconGenerator\SchematicGenerator\SchematicItemInfos.cs" />
     <Compile Include="Methods\IconGenerator\Translations\LoadLocRes.cs" />
     <Compile Include="Methods\IconGenerator\Translations\SearchResource.cs" />
@@ -261,7 +262,6 @@
     <None Include="Resources\L512v1.png" />
     <None Include="Resources\E512v1.png" />
     <None Include="Resources\C512v1.png" />
-    <None Include="Resources\FModel%281%29.ico" />
     <None Include="Resources\FModel.ico" />
     <None Include="Resources\FModel_Logo.png" />
     <None Include="Resources\wTemplateF.png" />

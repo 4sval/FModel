@@ -54,6 +54,7 @@ namespace FModel
 
                     RegisterInDict(ThePak.mainPaksList[i].thePak, CurrentUsedPakLines, mountPoint, theSinglePak, loadAllPaKs);
                 }
+                CurrentUsedPakLines = null;
             }
             if (bMainKeyWorking) { LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage); }
 
@@ -86,6 +87,7 @@ namespace FModel
 
                         RegisterInDict(ThePak.dynamicPaksList[i].thePak, CurrentUsedPakLines, mountPoint, theSinglePak, loadAllPaKs);
                     }
+                    CurrentUsedPakLines = null;
                 }
             }
 
@@ -95,6 +97,7 @@ namespace FModel
             }
 
             new UpdateMyState("Building tree, please wait...", "Loading").ChangeProcessState();
+            GC.Collect();
         }
 
         /// <summary>
