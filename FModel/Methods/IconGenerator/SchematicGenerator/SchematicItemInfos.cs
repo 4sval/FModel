@@ -51,6 +51,7 @@ namespace FModel
                     }
                 }
             }
+            else { throw new ArgumentException("Not enough informations to create an icon about this schematic - Missing: \"CraftingRecipe\""); }
 
             return toReturn;
         }
@@ -105,7 +106,6 @@ namespace FModel
                     JToken quantity = token["Quantity"];
                     if (primaryAssetName != null && quantity != null)
                     {
-                        System.Diagnostics.Debug.WriteLine("\"" + primaryAssetName.Value<string>() + "\"\t\t" + quantity.Value<string>());
                         SchematicInfoEntry currentEntry = new SchematicInfoEntry(primaryAssetName.Value<string>(), quantity.Value<string>());
                         bool isAlreadyAdded = schematicInfoList.Any(item => item.theIngredientItemDefinition.Equals(currentEntry.theIngredientItemDefinition, StringComparison.InvariantCultureIgnoreCase) && item.theIngredientQuantity == currentEntry.theIngredientQuantity);
                         if (!isAlreadyAdded) { schematicInfoList.Add(currentEntry); }

@@ -28,60 +28,57 @@ namespace FModel
 
         public static void DrawTexts(JToken theItem, Graphics myGraphic, string mode)
         {
-            using (myGraphic)
+            SetTexts(theItem);
+
+            DrawDisplayName(theItem, myGraphic);
+            DrawDescription(theItem, myGraphic);
+
+            switch (mode)
             {
-                SetTexts(theItem);
-
-                DrawDisplayName(theItem, myGraphic);
-                DrawDescription(theItem, myGraphic);
-
-                switch (mode)
-                {
-                    case "athIteDef":
-                        DrawToLeft(ShortDescription, myGraphic);
-                        DrawToRight(CosmeticSource, myGraphic);
-                        break;
-                    case "consAndWeap":
-                        DrawToRight(ItemAction, myGraphic);
-                        if (Checking.ExtractedFilePath.Contains("Items\\Consumables\\"))
-                        {
-                            DrawToLeft(MaxStackSize, myGraphic);
-                        }
-                        break;
-                    case "variant":
-                        DrawToLeft(ShortDescription, myGraphic);
-                        DrawToRight(CosmeticId, myGraphic);
-                        break;
-                    case "stwHeroes":
-                        DrawToRight(HeroType, myGraphic);
-                        DrawPower(myGraphic);
-                        break;
-                    case "stwDefenders":
-                        DrawToRight(DefenderType, myGraphic);
-                        DrawPower(myGraphic);
-                        break;
-                }
-
-                JToken exportToken = theItem["export_type"];
-                if (exportToken != null && exportToken.Value<string>().Equals("AthenaItemWrapDefinition") && Checking.WasFeatured && ItemIcon.ItemIconPath.Contains("WeaponRenders"))
-                {
-                    DrawAdditionalImage(theItem, myGraphic);
-                }
-
-                JToken ammoToken = theItem["AmmoData"];
-                if (ammoToken != null)
-                {
-                    JToken assetPathName = ammoToken["asset_path_name"];
-                    if (assetPathName != null && assetPathName.Value<string>().Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
+                case "athIteDef":
+                    DrawToLeft(ShortDescription, myGraphic);
+                    DrawToRight(CosmeticSource, myGraphic);
+                    break;
+                case "consAndWeap":
+                    DrawToRight(ItemAction, myGraphic);
+                    if (Checking.ExtractedFilePath.Contains("Items\\Consumables\\"))
                     {
-                        ItemIcon.GetAmmoData(assetPathName.Value<string>(), myGraphic);
-
-                        DrawWeaponStat(WeaponDataTable, WeaponRowName, myGraphic);
+                        DrawToLeft(MaxStackSize, myGraphic);
                     }
-                }
-
-                DrawCosmeticUff(theItem, myGraphic);
+                    break;
+                case "variant":
+                    DrawToLeft(ShortDescription, myGraphic);
+                    DrawToRight(CosmeticId, myGraphic);
+                    break;
+                case "stwHeroes":
+                    DrawToRight(HeroType, myGraphic);
+                    DrawPower(myGraphic);
+                    break;
+                case "stwDefenders":
+                    DrawToRight(DefenderType, myGraphic);
+                    DrawPower(myGraphic);
+                    break;
             }
+
+            JToken exportToken = theItem["export_type"];
+            if (exportToken != null && exportToken.Value<string>().Equals("AthenaItemWrapDefinition") && Checking.WasFeatured && ItemIcon.ItemIconPath.Contains("WeaponRenders"))
+            {
+                DrawAdditionalImage(theItem, myGraphic);
+            }
+
+            JToken ammoToken = theItem["AmmoData"];
+            if (ammoToken != null)
+            {
+                JToken assetPathName = ammoToken["asset_path_name"];
+                if (assetPathName != null && assetPathName.Value<string>().Contains("Ammo")) //TO AVOID TRIGGERING CONSUMABLES, NAME SHOULD CONTAIN "AMMO"
+                {
+                    ItemIcon.GetAmmoData(assetPathName.Value<string>(), myGraphic);
+
+                    DrawWeaponStat(WeaponDataTable, WeaponRowName, myGraphic);
+                }
+            }
+
+            DrawCosmeticUff(theItem, myGraphic);
         }
 
         /// <summary>
@@ -541,7 +538,7 @@ namespace FModel
                 {
                     Image reload = Resources.reload64;
                     myGraphic.DrawImage(ImageUtilities.ResizeImage(reload, 15, 15), new Point(50 + (clipSize.Value<string>().Length * 7) + 47, 502)); //50=clipsize text position | for each clipsize letter we add 7 to x | 47=difference between 2 icons
-                    myGraphic.DrawString(reloadTime + " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds"), new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(64 + (clipSize.Value<string>().Length * 7) + 47, 503)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
+                    myGraphic.DrawString(reloadTime.Value<string>() + " " + SearchResource.getTextByKey("6BA53D764BA5CC13E821D2A807A72365", "seconds"), new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(64 + (clipSize.Value<string>().Length * 7) + 47, 503)); //64=50+icon size (-1 because that wasn't perfectly at the position i wanted)
                 }
 
                 DrawToRight(weaponName, myGraphic);
