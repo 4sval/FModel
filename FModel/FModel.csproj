@@ -146,6 +146,7 @@
     <Compile Include="Methods\AESManager\DynamicKeys\Keychain.cs" />
     <Compile Include="Methods\IconGenerator\ChallengeGenerator\BundleDesign.cs" />
     <Compile Include="Methods\IconGenerator\ChallengeGenerator\BundleInfos.cs" />
+    <Compile Include="Methods\IconGenerator\ChallengeGenerator\ChallengeInfoEntry.cs" />
     <Compile Include="Methods\IconGenerator\ChallengeGenerator\DrawingRewards.cs" />
     <Compile Include="Methods\DLLImport.cs" />
     <Compile Include="Methods\IconGenerator\ItemGenerator\DrawText.cs" />

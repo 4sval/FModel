@@ -148,19 +148,19 @@ namespace FModel.Forms
         {
             if (comboBox1.SelectedIndex == 0)
             {
-                Properties.Settings.Default.tConsKey = textBox5.Text;
+                Properties.Settings.Default.tConsKey = textBox5.Text.Replace(" ", string.Empty);
             }
             if (comboBox1.SelectedIndex == 1)
             {
-                Properties.Settings.Default.tConsSecret = textBox5.Text;
+                Properties.Settings.Default.tConsSecret = textBox5.Text.Replace(" ", string.Empty);
             }
             if (comboBox1.SelectedIndex == 2)
             {
-                Properties.Settings.Default.tToken = textBox5.Text;
+                Properties.Settings.Default.tToken = textBox5.Text.Replace(" ", string.Empty);
             }
             if (comboBox1.SelectedIndex == 3)
             {
-                Properties.Settings.Default.tTokenSecret = textBox5.Text;
+                Properties.Settings.Default.tTokenSecret = textBox5.Text.Replace(" ", string.Empty);
             }
 
             Properties.Settings.Default.Save();

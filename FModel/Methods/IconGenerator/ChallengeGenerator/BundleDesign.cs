@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FModel
 {
+    //TODO: REFACTOR + NEW DESIGN
     static class BundleDesign
     {
         public static string BundlePath { get; set; }
@@ -42,74 +43,124 @@ namespace FModel
             JToken displayStyle = myBundle["DisplayStyle"];
             if (displayStyle != null)
             {
-                //main header
-                toDrawOn.FillRectangle(new SolidBrush(BundleInfos.getSecondaryColor(myBundle)), new Rectangle(0, 0, myBitmap.Width, 281));
-
-                //gradient at left and right main header
-                LinearGradientBrush linGrBrush_left = new LinearGradientBrush(new Point(0, 282 / 2), new Point(282, 282 / 2),
-                    ControlPaint.Light(BundleInfos.getSecondaryColor(myBundle), (float)0.3), BundleInfos.getSecondaryColor(myBundle));
-                toDrawOn.FillRectangle(linGrBrush_left, new Rectangle(0, 0, 282, 282));
-                LinearGradientBrush linGrBrush_right = new LinearGradientBrush(new Point(2500, 282 / 2), new Point(1500, 282 / 2),
-                    ControlPaint.Light(BundleInfos.getSecondaryColor(myBundle), (float)0.3), BundleInfos.getSecondaryColor(myBundle));
-                toDrawOn.FillRectangle(linGrBrush_right, new Rectangle(1500, 0, 1000, 282));
-
-                //last folder with border
-                GraphicsPath p = new GraphicsPath();
-                Pen myPen = new Pen(ControlPaint.Light(BundleInfos.getSecondaryColor(myBundle), (float)0.2), 3);
-                myPen.LineJoin = LineJoin.Round; //needed to avoid spikes
-                p.AddString(
-                    Utilities.CaseInsensitiveContains(BundleInfos.getLastFolder(BundlePath), "SEASON", StringComparison.CurrentCultureIgnoreCase) ?
-                    SearchResource.getTextByKey("15EB9C4A494F597285CC5CA2EAA571E1", "SEASON") + " " + BundleInfos.getLastFolder(BundlePath).Substring(BundleInfos.getLastFolder(BundlePath).Length - 1) :
-                    BundleInfos.getLastFolder(BundlePath),
-                    Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1],
-                    (int)FontStyle.Regular, 55,
-                    new Point(342, 40),
-                    FontUtilities.leftString
-                    );
-                toDrawOn.DrawPath(myPen, p);
-                toDrawOn.FillPath(new SolidBrush(ControlPaint.Dark(BundleInfos.getSecondaryColor(myBundle), (float)0.05)), p);
-
-                //name
-                toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+                Color headerColor = BundleInfos.getSecondaryColor(myBundle);
 
                 //image
+                JToken customBackground = displayStyle["CustomBackground"];
                 JToken displayImage = displayStyle["DisplayImage"];
                 JToken largePreviewImage = myBundle["LargePreviewImage"];
-                if (displayImage != null)
+                if (customBackground != null && !ThePak.CurrentUsedItem.Equals("QuestBundle_S10_SeasonX"))
                 {
-                    JToken assetPathName = displayImage["asset_path_name"];
+                    JToken assetPathName = customBackground["asset_path_name"];
                     if (assetPathName != null)
                     {
                         string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
                         Image challengeIcon;
-                        using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                        using (Bitmap bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
                         {
                             challengeIcon = new Bitmap(bmpTemp);
                         }
-                        toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
+                        toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, challengeIcon.Width * 3, challengeIcon.Height * 3), new Point(0, challengeIcon.Height - (challengeIcon.Height * 3)));
+                        toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(150, headerColor.R, headerColor.G, headerColor.B)), new Rectangle(0, 0, myBitmap.Width, 256));
+
+                        GraphicsPath gp = new GraphicsPath();
+                        gp.StartFigure();
+                        gp.AddLine(0, 256, myBitmap.Width, 256);
+                        gp.AddLine(myBitmap.Width, 256, myBitmap.Width, 241);
+                        gp.AddLine(myBitmap.Width, 241, myBitmap.Width / 2 + 25, 236);
+                        gp.AddLine(myBitmap.Width / 2 + 25, 236, myBitmap.Width / 2 + 35, 249);
+                        gp.AddLine(myBitmap.Width / 2 + 35, 249, 0, 241);
+                        gp.CloseFigure();
+
+                        toDrawOn.FillPath(new SolidBrush(ControlPaint.Light(headerColor)), gp);
                     }
-                }
-                else if (largePreviewImage != null)
-                {
-                    JToken assetPathName = largePreviewImage["asset_path_name"];
-                    if (assetPathName != null)
-                    {
-                        string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
-                        Image challengeIcon;
-                        using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
-                        {
-                            challengeIcon = new Bitmap(bmpTemp);
-                        }
-                        toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
-                    }
+
+                    //last folder with border
+                    GraphicsPath p = new GraphicsPath();
+                    Pen myPen = new Pen(ControlPaint.Light(headerColor, (float)0.2), 3);
+                    myPen.LineJoin = LineJoin.Round; //needed to avoid spikes
+                    p.AddString(
+                        BundleInfos.getLastFolder(BundlePath),
+                        Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1],
+                        (int)FontStyle.Regular, 55,
+                        new Point(50, 30),
+                        FontUtilities.leftString
+                        );
+                    toDrawOn.DrawPath(myPen, p);
+                    toDrawOn.FillPath(new SolidBrush(ControlPaint.Dark(headerColor, (float)0.05)), p);
+
+                    //name
+                    toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(35, 55));
+
+                    //fill the rest
+                    toDrawOn.FillRectangle(new SolidBrush(ControlPaint.Dark(BundleInfos.getSecondaryColor(myBundle), (float)0.1)), new Rectangle(0, 256, myBitmap.Width, myBitmap.Height));
                 }
                 else
                 {
-                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(Resources.unknown512, 282, 282), new Point(40, 0));
-                }
+                    //main header
+                    toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 281));
 
-                //fill the rest
-                toDrawOn.FillRectangle(new SolidBrush(ControlPaint.Dark(BundleInfos.getSecondaryColor(myBundle), (float)0.1)), new Rectangle(0, 271, myBitmap.Width, myBitmap.Height));
+                    //gradient at left and right main header
+                    LinearGradientBrush linGrBrush_left = new LinearGradientBrush(new Point(0, 282 / 2), new Point(282, 282 / 2),
+                        ControlPaint.Light(headerColor, (float)0.3), headerColor);
+                    toDrawOn.FillRectangle(linGrBrush_left, new Rectangle(0, 0, 282, 282));
+                    LinearGradientBrush linGrBrush_right = new LinearGradientBrush(new Point(2500, 282 / 2), new Point(1500, 282 / 2),
+                        ControlPaint.Light(headerColor, (float)0.3), headerColor);
+                    toDrawOn.FillRectangle(linGrBrush_right, new Rectangle(1500, 0, 1000, 282));
+
+                    //last folder with border
+                    GraphicsPath p = new GraphicsPath();
+                    Pen myPen = new Pen(ControlPaint.Light(headerColor, (float)0.2), 3);
+                    myPen.LineJoin = LineJoin.Round; //needed to avoid spikes
+                    p.AddString(
+                        BundleInfos.getLastFolder(BundlePath),
+                        Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1],
+                        (int)FontStyle.Regular, 55,
+                        new Point(342, 40),
+                        FontUtilities.leftString
+                        );
+                    toDrawOn.DrawPath(myPen, p);
+                    toDrawOn.FillPath(new SolidBrush(ControlPaint.Dark(headerColor, (float)0.05)), p);
+
+                    //name
+                    toDrawOn.DrawString(BundleInfos.getBundleDisplayName(myItem), new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 115), new SolidBrush(Color.White), new Point(325, 70));
+
+                    if (displayImage != null)
+                    {
+                        JToken assetPathName = displayImage["asset_path_name"];
+                        if (assetPathName != null)
+                        {
+                            string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
+                            Image challengeIcon;
+                            using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                            {
+                                challengeIcon = new Bitmap(bmpTemp);
+                            }
+                            toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
+                        }
+                    }
+                    else if (largePreviewImage != null)
+                    {
+                        JToken assetPathName = largePreviewImage["asset_path_name"];
+                        if (assetPathName != null)
+                        {
+                            string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
+                            Image challengeIcon;
+                            using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                            {
+                                challengeIcon = new Bitmap(bmpTemp);
+                            }
+                            toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 282, 282), new Point(40, 0));
+                        }
+                    }
+                    else
+                    {
+                        toDrawOn.DrawImage(ImageUtilities.ResizeImage(Resources.unknown512, 282, 282), new Point(40, 0));
+                    }
+
+                    //fill the rest
+                    toDrawOn.FillRectangle(new SolidBrush(ControlPaint.Dark(BundleInfos.getSecondaryColor(myBundle), (float)0.1)), new Rectangle(0, 271, myBitmap.Width, myBitmap.Height));
+                }
             }
             else
             {
@@ -130,8 +181,7 @@ namespace FModel
                 toDrawOn.FillRectangle(new SolidBrush(ControlPaint.Dark(myBaseColor, (float)0.1)), new Rectangle(0, 271, myBitmap.Width, myBitmap.Height));
 
                 //last folder
-                toDrawOn.DrawString(Utilities.CaseInsensitiveContains(BundleInfos.getLastFolder(BundlePath), "SEASON", StringComparison.CurrentCultureIgnoreCase) ?
-                    SearchResource.getTextByKey("15EB9C4A494F597285CC5CA2EAA571E1", "SEASON") + " " + BundleInfos.getLastFolder(BundlePath).Substring(BundleInfos.getLastFolder(BundlePath).Length - 1) :
+                toDrawOn.DrawString(
                     BundleInfos.getLastFolder(BundlePath),
                     new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 42),
                     new SolidBrush(ControlPaint.Dark(myBaseColor, (float)0.05)),
@@ -195,7 +245,7 @@ namespace FModel
                                     {
                                         string rewardId = Path.GetFileName(assetPathName.Value<string>().Substring(0, assetPathName.Value<string>().LastIndexOf(".", StringComparison.Ordinal)));
 
-                                        if (!rewardId.Equals("AthenaBattlePass_WeeklyChallenge_Token") && !rewardId.Equals("AthenaBattlePass_WeeklyBundle_Token"))
+                                        if (!assetPathName.Value<string>().Contains("/Game/Items/Tokens/") && !rewardId.Contains("Quest_BR_"))
                                         {
                                             theY += 140;
                                             try //needed for rare cases where the icon is in /Content/icon.uasset and atm idk why but i can't extract

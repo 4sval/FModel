@@ -882,20 +882,24 @@ namespace FModel
             {
                 new UpdateMyState(ThePak.CurrentUsedItem + " successfully serialized", "Success").ChangeProcessState();
 
-                Invoke(new Action(() =>
+                try
                 {
-                    try
+                    string parsedData = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
+                    Invoke(new Action(() =>
                     {
-                        scintilla1.Text = JToken.Parse(JohnWick.MyAsset.GetSerialized()).ToString();
-                    }
-                    catch (JsonReaderException)
-                    {
-                        new UpdateMyConsole(ThePak.CurrentUsedItem + " ", Color.Red).AppendToConsole();
-                        new UpdateMyConsole(".JSON file can't be displayed", Color.Black, true).AppendToConsole();
-                    }
-                }));
-
-                NavigateThroughJson(JohnWick.MyAsset, Checking.ExtractedFilePath);
+                        scintilla1.Text = parsedData;
+                    }));
+                }
+                catch (JsonReaderException)
+                {
+                    new UpdateMyConsole(ThePak.CurrentUsedItem + " ", Color.Red).AppendToConsole();
+                    new UpdateMyConsole(".JSON file can't be displayed", Color.Black, true).AppendToConsole();
+                }
+                finally
+                {
+                    AutoSaveAsJSON();
+                    NavigateThroughJson(JohnWick.MyAsset, Checking.ExtractedFilePath);
+                }
             }
             else { throw new ArgumentException("Can't serialize this file"); }
         }
@@ -1048,7 +1052,6 @@ namespace FModel
             pictureBox1.Image = bmp;
 
             AutoSaveImage();
-            AutoSaveAsJSON();
             g.Dispose();
         }
 
@@ -1133,7 +1136,6 @@ namespace FModel
             }
 
             AutoSaveImage();
-            AutoSaveAsJSON();
             BundleDesign.toDrawOn.Dispose(); //actually this is the most useful thing in this method
         }
 
@@ -1145,7 +1147,6 @@ namespace FModel
             pictureBox1.Image = SchematicIconDesign.schematicBitmap;
 
             AutoSaveImage();
-            AutoSaveAsJSON();
             SchematicIconDesign.toDrawOn.Dispose();
         }
 

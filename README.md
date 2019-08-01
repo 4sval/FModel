@@ -1,7 +1,7 @@
 ﻿# FModel
 
 [![](https://img.shields.io/github/downloads/iAmAsval/FModel/total.svg?color=green&label=Total%20Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases)
-[![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=2.4.2.2&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel//releases/latest)
+[![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=2.4.3&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel//releases/latest)
 [![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
 [![](https://img.shields.io/badge/Discord-Need%20Help%3F-7289da.svg?logo=discord)](https://discord.gg/JmWvXKb)
@@ -12,7 +12,7 @@
 ### Prerequisites
 [.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471)
 ### Download
-[![](https://img.shields.io/badge/Release-2.4.2.2-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/latest)
+[![](https://img.shields.io/badge/Release-2.4.3-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/latest)
 ### How To Use
 ><p align="center"><a href="https://www.youtube.com/watch?v=rWlux5vg9Xs">Video Tutorial by FireMonkey</a></p>
 
@@ -72,7 +72,6 @@ Also if you find this project useful, feel free to give it a :star: thank you :k
 ### What i'm using
   - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - *C# Bind*
   - [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
-  - [JSON Parser](https://app.quicktype.io/)
   - [ScintillaNET](https://www.nuget.org/packages/jacobslusser.ScintillaNET)
   - [Find & Replace for ScintillaNET](https://www.nuget.org/packages/snt.ScintillaNet.FindReplaceDialog/)
   - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
@@ -87,7 +86,6 @@ I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) if you
 
 ## TODO
   - [ ] Code refactoring
-  - [ ] Special Schematics icon design with weapon icon and ingredients
   - [ ] New Heroes icon design with perks and more
   - [ ] New Defenders icon design with useful infos
   - [x] Translation support

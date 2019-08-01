@@ -69,14 +69,14 @@ namespace FModel
             }
 
             int numperrow = Settings.Default.mergerImagesRow;
-            var w = 530 * numperrow;
-            if (mySelectedImages.Count * 530 < 530 * numperrow)
+            var w = 527 * numperrow;
+            if (mySelectedImages.Count * 527 < 527 * numperrow)
             {
-                w = mySelectedImages.Count * 530;
+                w = mySelectedImages.Count * 527;
             }
 
-            int h = int.Parse(Math.Ceiling(double.Parse(mySelectedImages.Count.ToString()) / numperrow).ToString(CultureInfo.InvariantCulture)) * 530;
-            Bitmap bmp = new Bitmap(w - 8, h - 8);
+            int h = int.Parse(Math.Ceiling(double.Parse(mySelectedImages.Count.ToString()) / numperrow).ToString(CultureInfo.InvariantCulture)) * 527;
+            Bitmap bmp = new Bitmap(w - 5, h - 5);
 
             var num = 1;
             var curW = 0;
@@ -90,12 +90,12 @@ namespace FModel
                     if (num % numperrow == 0)
                     {
                         curW = 0;
-                        curH += 530;
+                        curH += 527;
                         num += 1;
                     }
                     else
                     {
-                        curW += 530;
+                        curW += 527;
                         num += 1;
                     }
                 }
@@ -105,26 +105,27 @@ namespace FModel
                 mergeFileName += ".png";
 
             bmp.Save(App.DefaultOutputPath + "\\" + mergeFileName, ImageFormat.Png);
+            bmp.Dispose();
 
-            OpenMerged(bmp);
+            OpenMerged(App.DefaultOutputPath + "\\" + mergeFileName);
         }
 
         /// <summary>
         /// if bitmap exist, open a new form in fullscreen and display the bitmap in a picturebox
         /// </summary>
         /// <param name="mergedImage"></param>
-        private static void OpenMerged(Bitmap mergedImage)
+        private static void OpenMerged(string mergedImagePath)
         {
-            if (mergedImage != null)
+            if (File.Exists(mergedImagePath))
             {
                 var newForm = new Form();
                 PictureBox pb = new PictureBox();
                 pb.Dock = DockStyle.Fill;
-                pb.Image = mergedImage;
+                pb.Image = Image.FromFile(mergedImagePath);
                 pb.SizeMode = PictureBoxSizeMode.Zoom;
 
                 newForm.WindowState = FormWindowState.Maximized;
-                newForm.Size = mergedImage.Size;
+                newForm.Size = pb.Image.Size;
                 newForm.Icon = Resources.FModel;
                 newForm.Text = App.DefaultOutputPath + @"\" + Settings.Default.mergerFileName + @".png";
                 newForm.StartPosition = FormStartPosition.CenterScreen;

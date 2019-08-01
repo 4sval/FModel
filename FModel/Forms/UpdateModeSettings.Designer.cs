@@ -268,6 +268,7 @@ namespace FModel.Forms
             "[STW] Heroes",
             "[STW] Defenders",
             "[STW] Workers",
+            "[STW] Schematics",
             "[STW] Traps",
             "[STW] Weapons",
             "[STW] Ingredients",

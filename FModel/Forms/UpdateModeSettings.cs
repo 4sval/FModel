@@ -88,12 +88,13 @@ namespace FModel.Forms
             if (checkedListBox1.GetItemCheckState(8) == CheckState.Checked) { sb.Append("STWHeros,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Heroes/"); }
             if (checkedListBox1.GetItemCheckState(9) == CheckState.Checked) { sb.Append("STWDefenders,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Defenders/"); }
             if (checkedListBox1.GetItemCheckState(10) == CheckState.Checked) { sb.Append("STWWorkers,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Workers/"); }
-            if (checkedListBox1.GetItemCheckState(11) == CheckState.Checked) { sb.Append("STWTraps,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Traps/"); }
-            if (checkedListBox1.GetItemCheckState(12) == CheckState.Checked) { sb.Append("STWWeapons,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Weapons/"); }
-            if (checkedListBox1.GetItemCheckState(13) == CheckState.Checked) { sb.Append("STWIngredients,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Ingredients/"); }
-            if (checkedListBox1.GetItemCheckState(14) == CheckState.Checked) { sb.Append("STWResources,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/PersistentResources/"); }
-            if (checkedListBox1.GetItemCheckState(15) == CheckState.Checked) { sb.Append("STWCardpacks,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/CardPacks/"); }
-            if (checkedListBox1.GetItemCheckState(16) == CheckState.Checked) { sb.Append("Tokens,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Tokens/"); }
+            if (checkedListBox1.GetItemCheckState(11) == CheckState.Checked) { sb.Append("STWSchematics,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Schematics/"); }
+            if (checkedListBox1.GetItemCheckState(12) == CheckState.Checked) { sb.Append("STWTraps,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Traps/"); }
+            if (checkedListBox1.GetItemCheckState(13) == CheckState.Checked) { sb.Append("STWWeapons,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Weapons/"); }
+            if (checkedListBox1.GetItemCheckState(14) == CheckState.Checked) { sb.Append("STWIngredients,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Ingredients/"); }
+            if (checkedListBox1.GetItemCheckState(15) == CheckState.Checked) { sb.Append("STWResources,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/PersistentResources/"); }
+            if (checkedListBox1.GetItemCheckState(16) == CheckState.Checked) { sb.Append("STWCardpacks,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/CardPacks/"); }
+            if (checkedListBox1.GetItemCheckState(17) == CheckState.Checked) { sb.Append("Tokens,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/Items/Tokens/"); }
 
             if (checkedListBox2.GetItemCheckState(0) == CheckState.Checked) { sb.Append("T2DAssets,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/2dAssets/"); }
             if (checkedListBox2.GetItemCheckState(1) == CheckState.Checked) { sb.Append("TFeatured,"); RegisterSettings.updateModeListParameters.Add("FortniteGame/Content/UI/Foundation/Textures/BattleRoyale/FeaturedItems/"); }
@@ -153,23 +154,26 @@ namespace FModel.Forms
                     case "STWWorkers":
                         checkedListBox1.SetItemChecked(10, true);
                         break;
-                    case "STWTraps":
+                    case "STWSchematics":
                         checkedListBox1.SetItemChecked(11, true);
                         break;
-                    case "STWWeapons":
+                    case "STWTraps":
                         checkedListBox1.SetItemChecked(12, true);
                         break;
-                    case "STWIngredients":
+                    case "STWWeapons":
                         checkedListBox1.SetItemChecked(13, true);
                         break;
-                    case "STWResources":
+                    case "STWIngredients":
                         checkedListBox1.SetItemChecked(14, true);
                         break;
-                    case "STWCardpacks":
+                    case "STWResources":
                         checkedListBox1.SetItemChecked(15, true);
                         break;
-                    case "Tokens":
+                    case "STWCardpacks":
                         checkedListBox1.SetItemChecked(16, true);
+                        break;
+                    case "Tokens":
+                        checkedListBox1.SetItemChecked(17, true);
                         break;
                     case "T2DAssets":
                         checkedListBox2.SetItemChecked(0, true);
