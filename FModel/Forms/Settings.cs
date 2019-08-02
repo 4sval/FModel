@@ -1,16 +1,22 @@
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
 using FModel.Properties;
 
 namespace FModel.Forms
 {
+    //refactor asap
     public partial class Settings : Form
     {
         private static string _paKsPathBefore;
         private static string _outputPathBefore;
         private static string _oldLanguage;
+        private static Color headerColor;
+        private static Bitmap bmp;
+        private static Graphics g;
 
         public Settings()
         {
@@ -25,7 +31,6 @@ namespace FModel.Forms
             checkBox1.Checked = Properties.Settings.Default.rarityNew;
 
             textBox6.Text = Properties.Settings.Default.challengesWatermark;
-            checkBox2.Checked = Properties.Settings.Default.challengesDebug;
             if (string.IsNullOrWhiteSpace(textBox6.Text))
             {
                 textBox6.Text = "{Bundle_Name} Generated using FModel & JohnWickParse - {Date}";
@@ -49,6 +54,16 @@ namespace FModel.Forms
             trackBar2.Enabled   = Properties.Settings.Default.isWatermark;
             trackBar1.Value     = Properties.Settings.Default.wOpacity;
             trackBar2.Value     = Properties.Settings.Default.wSize;
+
+            button3.Enabled = Properties.Settings.Default.isChallengesTheme;
+            button4.Enabled = Properties.Settings.Default.isChallengesTheme;
+            checkBox2.Checked = Properties.Settings.Default.isChallengesTheme;
+            trackBar3.Enabled = Properties.Settings.Default.isChallengesTheme;
+            trackBar3.Value = Properties.Settings.Default.challengesOpacity;
+            string[] colorParts = Properties.Settings.Default.challengesColors.Split(',');
+            headerColor = Color.FromArgb(255, Int32.Parse(colorParts[0]), Int32.Parse(colorParts[1]), Int32.Parse(colorParts[2]));
+            if (File.Exists(Properties.Settings.Default.challengesBannerFileName)) { drawChallengeTemplate(headerColor, true); }
+            else { pictureBox1.Image = Resources.cTemplate; }
 
             //FEATURED
             checkBox8.Checked = Properties.Settings.Default.loadFeaturedImage;
@@ -101,8 +116,10 @@ namespace FModel.Forms
                 MessageBox.Show(@"Please, restart FModel to apply your new output path", @"FModel Output Path Changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
-            Properties.Settings.Default.challengesDebug     = checkBox2.Checked;
             Properties.Settings.Default.challengesWatermark = textBox6.Text;
+            Properties.Settings.Default.isChallengesTheme = checkBox2.Checked;
+            Properties.Settings.Default.challengesOpacity = trackBar3.Value;
+            Properties.Settings.Default.challengesColors = headerColor.R + "," + headerColor.G + "," + headerColor.B;
 
             Properties.Settings.Default.tryToOpenAssets     = checkBox_tryToOpen.Checked;
 
@@ -129,6 +146,7 @@ namespace FModel.Forms
             }
 
             Properties.Settings.Default.Save(); //SAVE
+            bmp.Dispose();
             Close();
         }
 
@@ -255,6 +273,182 @@ namespace FModel.Forms
                 }
                 wPictureBox.Image = bmp;
             }
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            if (pictureBox1.Image != null)
+            {
+                var newForm = new Form();
+
+                PictureBox pb = new PictureBox();
+                pb.Dock = DockStyle.Fill;
+                pb.Image = pictureBox1.Image;
+                pb.SizeMode = PictureBoxSizeMode.Zoom;
+
+                newForm.Size = pictureBox1.Image.Size;
+                newForm.Icon = Resources.FModel;
+                newForm.Text = ThePak.CurrentUsedItem;
+                newForm.StartPosition = FormStartPosition.CenterScreen;
+                newForm.Controls.Add(pb);
+                newForm.Show();
+            }
+        }
+
+        private void CheckBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            button3.Enabled = checkBox2.Checked;
+            button4.Enabled = checkBox2.Checked;
+            trackBar3.Enabled = checkBox2.Checked;
+
+            if (!checkBox2.Checked)
+            {
+                pictureBox1.Image = Resources.cTemplate;
+            }
+            else { drawChallengeTemplate(headerColor, File.Exists(Properties.Settings.Default.challengesBannerFileName)); }
+        }
+
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            ColorDialog MyDialog = new ColorDialog();
+            MyDialog.FullOpen = true;
+            MyDialog.AnyColor = true;
+
+            if (MyDialog.ShowDialog() == DialogResult.OK)
+            {
+                headerColor = MyDialog.Color;
+                drawChallengeTemplate(headerColor, File.Exists(Properties.Settings.Default.challengesBannerFileName));
+            }
+            MyDialog.Dispose();
+        }
+
+        private void drawChallengeTemplate(Color headerColor, bool isBanner = false)
+        {
+            bmp = new Bitmap(1024, 410);
+            g = Graphics.FromImage(bmp);
+            g.TextRenderingHint = TextRenderingHint.AntiAlias;
+            g.SmoothingMode = SmoothingMode.HighQuality;
+
+            #region header
+            if (isBanner)
+            {
+                if (File.Exists(Properties.Settings.Default.challengesBannerFileName))
+                {
+                    g.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, bmp.Width, 256));
+
+                    Image banner = Image.FromFile(Properties.Settings.Default.challengesBannerFileName);
+                    var opacityImage = ImageUtilities.SetImageOpacity(banner, (float)trackBar3.Value / 1000);
+                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, 1024, 256), 0, 0);
+                }
+            }
+            else
+            {
+                g.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, bmp.Width, 256));
+            }
+
+            GraphicsPath gp = new GraphicsPath();
+            gp.StartFigure();
+            gp.AddLine(0, 256, bmp.Width, 256);
+            gp.AddLine(bmp.Width, 256, bmp.Width, 241);
+            gp.AddLine(bmp.Width, 241, bmp.Width / 2 + 25, 236);
+            gp.AddLine(bmp.Width / 2 + 25, 236, bmp.Width / 2 + 35, 249);
+            gp.AddLine(bmp.Width / 2 + 35, 249, 0, 241);
+            gp.CloseFigure();
+            g.FillPath(new SolidBrush(ControlPaint.Light(headerColor)), gp);
+
+            GraphicsPath p = new GraphicsPath();
+            Pen myPen = new Pen(ControlPaint.Light(headerColor, (float)0.2), 3);
+            myPen.LineJoin = LineJoin.Round; //needed to avoid spikes
+            p.AddString(
+                "{LAST FOLDER HERE}",
+                Properties.Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1],
+                (int)FontStyle.Regular, 30,
+                new Point(30, 70),
+                FontUtilities.leftString
+                );
+            g.DrawPath(myPen, p);
+            g.FillPath(new SolidBrush(ControlPaint.Dark(headerColor, (float)0.05)), p);
+
+            g.DrawString("{BUNDLE DISPLAY NAME HERE}", new Font(Properties.Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 40), new SolidBrush(Color.White), new Point(25, 105));
+
+            g.FillRectangle(new SolidBrush(ControlPaint.Dark(headerColor, (float)0.1)), new Rectangle(0, 256, bmp.Width, bmp.Height));
+            #endregion
+
+            #region quest background
+            int theY = 290;
+            g.FillRectangle(new SolidBrush(Color.FromArgb(50, headerColor.R, headerColor.G, headerColor.B)), new Rectangle(25, theY, bmp.Width - 50, 70));
+
+            gp = new GraphicsPath();
+            gp.StartFigure();
+            gp.AddLine(32, theY + 5, 29, theY + 67);
+            gp.AddLine(29, theY + 67, bmp.Width - 160, theY + 62);
+            gp.AddLine(bmp.Width - 160, theY + 62, bmp.Width - 150, theY + 4);
+            gp.CloseFigure();
+            g.FillPath(new SolidBrush(Color.FromArgb(50, headerColor.R, headerColor.G, headerColor.B)), gp);
+
+            g.FillRectangle(new SolidBrush(headerColor), new Rectangle(60, theY + 47, 500, 7));
+
+            gp = new GraphicsPath();
+            gp.StartFigure();
+            gp.AddLine(39, theY + 35, 45, theY + 32);
+            gp.AddLine(45, theY + 32, 48, theY + 37);
+            gp.AddLine(48, theY + 37, 42, theY + 40);
+            gp.CloseFigure();
+            g.FillPath(new SolidBrush(headerColor), gp);
+            #endregion
+
+            #region watermark
+            string text = textBox6.Text;
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                text = "{Bundle_Name} Generated using FModel & JohnWickParse - {Date}";
+            }
+
+            if (text.Contains("{Bundle_Name}"))
+            {
+                text = text.Replace("{Bundle_Name}", "{BUNDLE DISPLAY NAME HERE}");
+            }
+            if (text.Contains("{Date}"))
+            {
+                text = text.Replace("{Date}", DateTime.Now.ToString("dd/MM/yyyy"));
+            }
+
+            g.DrawString(text, new Font(FontUtilities.pfc.Families[0], 15), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(bmp.Width - 10, 210), FontUtilities.rightString);
+            #endregion
+
+            pictureBox1.Image = bmp;
+        }
+
+        private void Button3_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog theDialog = new OpenFileDialog();
+            theDialog.Title = @"Choose your banner";
+            theDialog.Multiselect = false;
+            theDialog.Filter = @"PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|DDS Files (*.dds)|*.dds|All Files (*.*)|*.*";
+
+            if (theDialog.ShowDialog() == DialogResult.OK)
+            {
+                Properties.Settings.Default.challengesBannerFileName = theDialog.FileName;
+                Properties.Settings.Default.Save();
+
+                drawChallengeTemplate(headerColor, File.Exists(Properties.Settings.Default.challengesBannerFileName));
+            }
+        }
+
+        private void TrackBar3_ValueChanged(object sender, EventArgs e)
+        {
+            drawChallengeTemplate(headerColor, File.Exists(Properties.Settings.Default.challengesBannerFileName));
+            pictureBox1.Refresh();
+        }
+
+        private void TextBox6_TextChanged(object sender, EventArgs e)
+        {
+            drawChallengeTemplate(headerColor, File.Exists(Properties.Settings.Default.challengesBannerFileName));
+        }
+
+        private void Settings_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            bmp.Dispose();
         }
     }
 }

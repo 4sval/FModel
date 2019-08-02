@@ -229,18 +229,6 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool challengesDebug {
-            get {
-                return ((bool)(this["challengesDebug"]));
-            }
-            set {
-                this["challengesDebug"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string challengesWatermark {
             get {
@@ -344,6 +332,54 @@ namespace FModel.Properties {
             }
             set {
                 this["UMParameters"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isChallengesTheme {
+            get {
+                return ((bool)(this["isChallengesTheme"]));
+            }
+            set {
+                this["isChallengesTheme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string challengesBannerFileName {
+            get {
+                return ((string)(this["challengesBannerFileName"]));
+            }
+            set {
+                this["challengesBannerFileName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int challengesOpacity {
+            get {
+                return ((int)(this["challengesOpacity"]));
+            }
+            set {
+                this["challengesOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50,50,50")]
+        public string challengesColors {
+            get {
+                return ((string)(this["challengesColors"]));
+            }
+            set {
+                this["challengesColors"] = value;
             }
         }
     }

@@ -53,9 +53,6 @@
     <Setting Name="IconLanguage" Type="System.String" Scope="User">
       <Value Profile="(Default)">English</Value>
     </Setting>
-    <Setting Name="challengesDebug" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="challengesWatermark" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -82,6 +79,18 @@
     </Setting>
     <Setting Name="UMParameters" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="isChallengesTheme" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="challengesBannerFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="challengesOpacity" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="challengesColors" Type="System.String" Scope="User">
+      <Value Profile="(Default)">50,50,50</Value>
     </Setting>
   </Settings>
 </SettingsFile>

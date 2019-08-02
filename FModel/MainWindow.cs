@@ -165,13 +165,13 @@ namespace FModel
             }
 
             await Task.Run(() => {
+                FontUtilities.SetFont();
                 Utilities.SetOutputFolder();
                 FillWithPaKs();
                 AddToUI.checkAndAddDynamicKeys();
                 Utilities.colorMyPaks(loadOneToolStripMenuItem);
                 Utilities.SetFolderPermission(App.DefaultOutputPath);
                 Utilities.CreateDefaultFolders();
-                FontUtilities.SetFont();
             });
 
             MyScintilla.SetScintillaStyle(scintilla1);

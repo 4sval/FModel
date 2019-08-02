@@ -187,6 +187,13 @@ namespace FModel
                 Properties.Settings.Default.UMFilename = string.Empty;
                 Properties.Settings.Default.UMWatermark = false;
             }
+
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.challengesBannerFileName) &&
+                !File.Exists(Properties.Settings.Default.challengesBannerFileName))
+            {
+                Properties.Settings.Default.challengesBannerFileName = string.Empty;
+                Properties.Settings.Default.isChallengesTheme = false;
+            }
         }
     }
 }

@@ -143,6 +143,16 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cTemplate {
+            get {
+                object obj = ResourceManager.GetObject("cTemplate", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap dmg64 {
             get {
                 object obj = ResourceManager.GetObject("dmg64", resourceCulture);

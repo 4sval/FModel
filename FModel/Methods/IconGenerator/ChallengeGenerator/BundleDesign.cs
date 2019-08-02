@@ -14,7 +14,7 @@ namespace FModel
         public static int theY { get; set; }
         public static Graphics toDrawOn { get; set; }
         public static JToken myItem { get; set; }
-        public static Color headerColor { get; set; }
+        private static Color headerColor { get; set; }
 
         /// <summary>
         /// get a random color in case DisplayStyle doesn't exist in drawBackground()
@@ -52,7 +52,15 @@ namespace FModel
             JToken displayStyle = myBundle["DisplayStyle"];
             if (displayStyle != null)
             {
-                headerColor = BundleInfos.getSecondaryColor(myBundle);
+                if (Settings.Default.isChallengesTheme)
+                {
+                    string[] colorParts = Settings.Default.challengesColors.Split(',');
+                    headerColor = Color.FromArgb(255, Int32.Parse(colorParts[0]), Int32.Parse(colorParts[1]), Int32.Parse(colorParts[2]));
+                }
+                else
+                {
+                    headerColor = BundleInfos.getSecondaryColor(myBundle);
+                }
 
                 JToken customBackground = displayStyle["CustomBackground"];
                 JToken displayImage = displayStyle["DisplayImage"];
@@ -70,8 +78,22 @@ namespace FModel
                             {
                                 challengeIcon = new Bitmap(bmpTemp);
                             }
-                            toDrawOn.DrawImage(challengeIcon, new Point(0, 0));
-                            toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(175, headerColor.R, headerColor.G, headerColor.B)), new Rectangle(0, 0, myBitmap.Width, 256));
+
+                            toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 256));
+                            if (Settings.Default.isChallengesTheme)
+                            {
+                                if (File.Exists(Settings.Default.challengesBannerFileName))
+                                {
+                                    Image banner = Image.FromFile(Settings.Default.challengesBannerFileName);
+                                    var opacityImage = ImageUtilities.SetImageOpacity(banner, (float)Settings.Default.challengesOpacity / 1000);
+                                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 1024, 256), 0, 0);
+                                }
+                            }
+                            else
+                            {
+                                var opacityImage = ImageUtilities.SetImageOpacity(challengeIcon, (float)0.3);
+                                toDrawOn.DrawImage(opacityImage, new Point(0, 0));
+                            }
                         }
                     }
                 }
@@ -88,14 +110,59 @@ namespace FModel
                             {
                                 challengeIcon = new Bitmap(bmpTemp);
                             }
+
                             toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 256));
+                            if (Settings.Default.isChallengesTheme)
+                            {
+                                if (File.Exists(Settings.Default.challengesBannerFileName))
+                                {
+                                    Image banner = Image.FromFile(Settings.Default.challengesBannerFileName);
+                                    var opacityImage = ImageUtilities.SetImageOpacity(banner, (float)Settings.Default.challengesOpacity / 1000);
+                                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 1024, 256), 0, 0);
+                                }
+                            }
+
                             toDrawOn.DrawImage(ImageUtilities.ResizeImage(challengeIcon, 256, 256), new Point(0, 0));
                         }
                     }
-                    else { toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 256)); }
+                    else
+                    {
+                        toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 256));
+                        if (Settings.Default.isChallengesTheme)
+                        {
+                            if (File.Exists(Settings.Default.challengesBannerFileName))
+                            {
+                                Image banner = Image.FromFile(Settings.Default.challengesBannerFileName);
+                                var opacityImage = ImageUtilities.SetImageOpacity(banner, (float)Settings.Default.challengesOpacity / 1000);
+                                toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 1024, 256), 0, 0);
+                            }
+                        }
+                    }
                 }
             }
-            else { headerColor = getRandomColor(); toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 256)); }
+            else
+            {
+                if (Settings.Default.isChallengesTheme)
+                {
+                    string[] colorParts = Settings.Default.challengesColors.Split(',');
+                    headerColor = Color.FromArgb(255, Int32.Parse(colorParts[0]), Int32.Parse(colorParts[1]), Int32.Parse(colorParts[2]));
+                }
+                else
+                {
+                    headerColor = getRandomColor();
+                }
+
+                toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 256));
+                if (Settings.Default.isChallengesTheme)
+                {
+                    if (File.Exists(Settings.Default.challengesBannerFileName))
+                    {
+                        Image banner = Image.FromFile(Settings.Default.challengesBannerFileName);
+                        var opacityImage = ImageUtilities.SetImageOpacity(banner, (float)Settings.Default.challengesOpacity / 1000);
+                        toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 1024, 256), 0, 0);
+                    }
+                }
+            }
 
             GraphicsPath gp = new GraphicsPath();
             gp.StartFigure();
@@ -160,7 +227,7 @@ namespace FModel
             JToken bundleCompletionRewards = myBundle["BundleCompletionRewards"];
             if (bundleCompletionRewards != null)
             {
-                theY += 50;
+                theY += 35;
                 JArray bundleCompletionRewardsArray = bundleCompletionRewards.Value<JArray>();
                 foreach (JToken token in bundleCompletionRewardsArray)
                 {

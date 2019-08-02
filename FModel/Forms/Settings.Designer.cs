@@ -57,7 +57,14 @@ namespace FModel.Forms
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.trackBar3 = new System.Windows.Forms.TrackBar();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
@@ -69,6 +76,8 @@ namespace FModel.Forms
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imgsPerRow)).BeginInit();
             this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox3
@@ -140,9 +149,9 @@ namespace FModel.Forms
             // 
             // OKButton
             // 
-            this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OKButton.Location = new System.Drawing.Point(475, 434);
+            this.OKButton.Location = new System.Drawing.Point(475, 546);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(97, 21);
             this.OKButton.TabIndex = 15;
@@ -301,7 +310,7 @@ namespace FModel.Forms
             // 
             // wPictureBox
             // 
-            this.wPictureBox.Image = global::FModel.Properties.Resources.wTemplate;
+            this.wPictureBox.Image = global::FModel.Properties.Resources.wTemplatev1;
             this.wPictureBox.Location = new System.Drawing.Point(389, 19);
             this.wPictureBox.Name = "wPictureBox";
             this.wPictureBox.Size = new System.Drawing.Size(165, 165);
@@ -311,12 +320,13 @@ namespace FModel.Forms
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox1.Controls.Add(this.checkBoxSaveAsMergeImages);
             this.groupBox1.Controls.Add(this.imgsPerRow);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.textBox3);
             this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Location = new System.Drawing.Point(12, 375);
+            this.groupBox1.Location = new System.Drawing.Point(12, 487);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(560, 49);
             this.groupBox1.TabIndex = 17;
@@ -377,32 +387,114 @@ namespace FModel.Forms
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.button3);
+            this.groupBox6.Controls.Add(this.button2);
+            this.groupBox6.Controls.Add(this.label7);
+            this.groupBox6.Controls.Add(this.button4);
             this.groupBox6.Controls.Add(this.checkBox2);
+            this.groupBox6.Controls.Add(this.label6);
+            this.groupBox6.Controls.Add(this.trackBar3);
+            this.groupBox6.Controls.Add(this.pictureBox1);
             this.groupBox6.Controls.Add(this.textBox6);
             this.groupBox6.Controls.Add(this.label12);
             this.groupBox6.Location = new System.Drawing.Point(12, 323);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(560, 46);
+            this.groupBox6.Size = new System.Drawing.Size(560, 158);
             this.groupBox6.TabIndex = 19;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Challenges";
+            this.groupBox6.Text = "Challenges Theme";
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(102, 129);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(94, 23);
+            this.button3.TabIndex = 26;
+            this.button3.Text = "Choose Banner";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.Button3_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(199, 129);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(93, 23);
+            this.button2.TabIndex = 11;
+            this.button2.Text = "Open Image";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.ForeColor = System.Drawing.Color.Red;
+            this.label7.Location = new System.Drawing.Point(89, 113);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(117, 13);
+            this.label7.TabIndex = 33;
+            this.label7.Text = "Banner Size: 1024x256";
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(6, 129);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(93, 23);
+            this.button4.TabIndex = 31;
+            this.button4.Text = "Pick Color";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.Button4_Click);
             // 
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(448, 21);
+            this.checkBox2.Location = new System.Drawing.Point(6, 52);
             this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(105, 17);
-            this.checkBox2.TabIndex = 27;
-            this.checkBox2.Text = "Draw Reward ID";
+            this.checkBox2.Size = new System.Drawing.Size(97, 17);
+            this.checkBox2.TabIndex = 30;
+            this.checkBox2.Text = "Custom Theme";
             this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.CheckBox2_CheckedChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 82);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(46, 13);
+            this.label6.TabIndex = 28;
+            this.label6.Text = "Opacity:";
+            // 
+            // trackBar3
+            // 
+            this.trackBar3.Location = new System.Drawing.Point(58, 82);
+            this.trackBar3.Maximum = 1000;
+            this.trackBar3.Minimum = 1;
+            this.trackBar3.Name = "trackBar3";
+            this.trackBar3.Size = new System.Drawing.Size(234, 45);
+            this.trackBar3.TabIndex = 27;
+            this.trackBar3.TickFrequency = 25;
+            this.trackBar3.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.trackBar3.Value = 1;
+            this.trackBar3.ValueChanged += new System.EventHandler(this.TrackBar3_ValueChanged);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Image = global::FModel.Properties.Resources.cTemplate;
+            this.pictureBox1.Location = new System.Drawing.Point(298, 45);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(256, 107);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 10;
+            this.pictureBox1.TabStop = false;
             // 
             // textBox6
             // 
             this.textBox6.Location = new System.Drawing.Point(74, 19);
             this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(359, 20);
+            this.textBox6.Size = new System.Drawing.Size(480, 20);
             this.textBox6.TabIndex = 8;
+            this.textBox6.TextChanged += new System.EventHandler(this.TextBox6_TextChanged);
             // 
             // label12
             // 
@@ -417,7 +509,7 @@ namespace FModel.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 467);
+            this.ClientSize = new System.Drawing.Size(584, 579);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox4);
@@ -431,6 +523,7 @@ namespace FModel.Forms
             this.Name = "Settings";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FModel Settings";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Settings_FormClosing);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -445,6 +538,8 @@ namespace FModel.Forms
             ((System.ComponentModel.ISupportInitialize)(this.imgsPerRow)).EndInit();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -476,11 +571,18 @@ namespace FModel.Forms
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.CheckBox checkBox_tryToOpen;
         private System.Windows.Forms.CheckBox checkBoxSaveAsMergeImages;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TrackBar trackBar3;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label label7;
     }
 }
