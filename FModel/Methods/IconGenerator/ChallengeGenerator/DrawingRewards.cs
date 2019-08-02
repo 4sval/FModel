@@ -31,13 +31,13 @@ namespace FModel
                         DrawRewardIcon(parts[1]);
                 }
                 else if (IsRewardType(itemToExtract, "athenabattlestar"))
-                    drawRewards("athenabattlestar", itemQuantity);
+                    drawRewards(itemToExtract, "athenabattlestar", itemQuantity);
                 else if (IsRewardType(itemToExtract, "AthenaSeasonalXP"))
-                    drawRewards("AthenaSeasonalXP", itemQuantity);
+                    drawRewards(itemToExtract, "AthenaSeasonalXP", itemQuantity);
                 else if (IsRewardType(itemToExtract, "MtxGiveaway"))
-                    drawRewards("MtxGiveaway", itemQuantity);
+                    drawRewards(itemToExtract, "MtxGiveaway", itemQuantity);
                 else if (IsRewardType(itemToExtract, "AthenaFortbyte"))
-                    drawRewards("AthenaFortbyte", itemQuantity);
+                    drawRewards(itemToExtract, "AthenaFortbyte", itemQuantity);
                 else
                     DrawRewardIcon(itemToExtract);
             }
@@ -146,12 +146,6 @@ namespace FModel
             Image itemIcon = null;
             if (File.Exists(ItemIcon.ItemIconPath))
             {
-                if (Settings.Default.challengesDebug)
-                {
-                    //draw quest reward id
-                    BundleDesign.toDrawOn.DrawString(itemId, new Font("Courier New", 12), new SolidBrush(Color.White), new RectangleF(2110, BundleDesign.theY + 30, 190, 60), FontUtilities.centeredStringLine);
-                }
-
                 using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
                 {
                     itemIcon = new Bitmap(bmpTemp);
@@ -162,56 +156,79 @@ namespace FModel
 
             if (itemIcon != null)
             {
-                BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 110, 110), new Point(2300, BundleDesign.theY + 6));
+                BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 64, 64), new Point(902, BundleDesign.theY + 3));
                 itemIcon.Dispose();
             }
         }
 
-        private static void drawRewards(string type, string quantity)
+        private static void drawRewards(string itemId, string type, string quantity)
         {
-            Image rewardIcon            = null;
-            GraphicsPath graphicsPath   = null;
+            string value = ThePak.AllpaksDictionary.Where(x => string.Equals(x.Key, itemId, StringComparison.CurrentCultureIgnoreCase)).Select(d => d.Key).FirstOrDefault();
+            if (value != null)
+            {
+                string extractedIconPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[value], value);
+                if (extractedIconPath != null)
+                {
+                    if (extractedIconPath.Contains(".uasset") || extractedIconPath.Contains(".uexp") || extractedIconPath.Contains(".ubulk"))
+                    {
+                        JohnWick.MyAsset = new PakAsset(extractedIconPath.Substring(0, extractedIconPath.LastIndexOf('.')));
+                        try
+                        {
+                            if (JohnWick.MyAsset.GetSerialized() != null)
+                            {
+                                dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                                JArray AssetArray = JArray.FromObject(AssetData);
 
+                                ItemIcon.ItemIconPath = string.Empty;
+                                ItemIcon.SearchAthIteDefIcon(AssetArray[0]);
+                                if (File.Exists(ItemIcon.ItemIconPath))
+                                {
+                                    Image itemIcon;
+                                    using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
+                                    {
+                                        itemIcon = new Bitmap(bmpTemp);
+                                    }
+                                    BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 48, 48), new Point(947, BundleDesign.theY + 12));
+                                }
+                            }
+                        }
+                        catch (JsonSerializationException)
+                        {
+                            //do not crash when JsonSerialization does weird stuff
+                        }
+                    }
+                }
+            }
+
+            GraphicsPath graphicsPath   = null;
             switch (type)
             {
                 case "athenabattlestar":
                 {
-                    rewardIcon = Resources.BattlePoints;
-                    BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
-
                     graphicsPath = new GraphicsPath();
                     drawPathAndFill(graphicsPath, quantity, Color.FromArgb(255, 143, 74, 32), Color.FromArgb(255, 255, 219, 103));
                     break;
                 }
                 case "AthenaSeasonalXP":
                 {
-                    rewardIcon = Resources.SeasonalXP;
-                    BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
-
                     graphicsPath = new GraphicsPath();
                     drawPathAndFill(graphicsPath, quantity, Color.FromArgb(255, 81, 131, 15), Color.FromArgb(255, 230, 253, 177));
                     break;
                 }
                 case "MtxGiveaway":
                 {
-                    rewardIcon = Resources.ItemsMTX;
-                    BundleDesign.toDrawOn.DrawImage(ImageUtilities.ResizeImage(rewardIcon, 75, 75), new Point(2325, BundleDesign.theY + 22));
-
                     graphicsPath = new GraphicsPath();
                     drawPathAndFill(graphicsPath, quantity, Color.FromArgb(255, 100, 160, 175), Color.FromArgb(255, 220, 230, 255));
                     break;
                 }
                 case "AthenaFortbyte":
                 {
-                    BundleDesign.toDrawOn.DrawString("#" + Int32.Parse(quantity).ToString("D2"), new Font(FontUtilities.pfc.Families[1], 50), new SolidBrush(Color.White), new Point(2325, BundleDesign.theY + 22));
+                    BundleDesign.toDrawOn.DrawString("#" + Int32.Parse(quantity).ToString("D2"), new Font(FontUtilities.pfc.Families[1], 40), new SolidBrush(Color.White), new Point(975, BundleDesign.theY + 5), FontUtilities.rightString);
                     break;
                 }
                 default:
                     break;
             }
-
-            if (rewardIcon != null)
-                rewardIcon = null;
 
             if (graphicsPath != null)
                 graphicsPath.Dispose();
@@ -231,9 +248,9 @@ namespace FModel
         /// <param name="filled"></param>
         private static void drawPathAndFill(GraphicsPath p, string quantity, Color border, Color filled)
         {
-            Pen myPen = new Pen(border, 5);
+            Pen myPen = new Pen(border, 3);
             myPen.LineJoin = LineJoin.Round; //needed to avoid spikes
-            p.AddString(quantity, FontUtilities.pfc.Families[1], (int)FontStyle.Regular, 60, new Point(2322, BundleDesign.theY + 25), FontUtilities.rightString);
+            p.AddString(quantity, FontUtilities.pfc.Families[1], (int)FontStyle.Regular, 27, new Point(945, BundleDesign.theY + 20), FontUtilities.rightString);
             BundleDesign.toDrawOn.DrawPath(myPen, p);
 
             BundleDesign.toDrawOn.FillPath(new SolidBrush(filled), p);

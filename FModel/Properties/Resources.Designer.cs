@@ -81,16 +81,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap BattlePoints {
-            get {
-                object obj = ResourceManager.GetObject("BattlePoints", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
         internal static byte[] BurbankBigCondensed_Black {
@@ -136,16 +126,6 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap C512v1 {
             get {
                 object obj = ResourceManager.GetObject("C512v1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Challenges_Slider {
-            get {
-                object obj = ResourceManager.GetObject("Challenges_Slider", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -226,16 +206,6 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap folder_Closed_16xLG {
             get {
                 object obj = ResourceManager.GetObject("folder_Closed_16xLG", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ItemsMTX {
-            get {
-                object obj = ResourceManager.GetObject("ItemsMTX", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -366,16 +336,6 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap reload64 {
             get {
                 object obj = ResourceManager.GetObject("reload64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap SeasonalXP {
-            get {
-                object obj = ResourceManager.GetObject("SeasonalXP", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

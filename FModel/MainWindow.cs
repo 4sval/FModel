@@ -1068,9 +1068,9 @@ namespace FModel
             BundleInfos.getBundleData(theItem);
             bool isFortbyte = false;
 
-            Bitmap bmp = new Bitmap(2500, 15000);
+            Bitmap bmp = new Bitmap(1024, 10000);
             BundleDesign.BundlePath = extractedBundlePath;
-            BundleDesign.theY = 275;
+            BundleDesign.theY = 200;
             BundleDesign.toDrawOn = Graphics.FromImage(bmp);
             BundleDesign.toDrawOn.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
             BundleDesign.toDrawOn.SmoothingMode = SmoothingMode.HighQuality;
@@ -1096,40 +1096,30 @@ namespace FModel
                 new UpdateMyConsole("\t\tCount: " + BundleInfos.BundleData[i].questCount, Color.DarkRed).AppendToConsole();
                 new UpdateMyConsole("\t\t" + BundleInfos.BundleData[i].rewardItemId + ":" + BundleInfos.BundleData[i].rewardItemQuantity, Color.DarkGreen, true).AppendToConsole();
 
-                BundleDesign.theY += 140;
-
-                //in case you wanna make some changes
-                //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(107, BundleDesign.theY + 7, 2000, 93)); //rectangle that resize the font -> used for "Font goodFont = "
-                //BundleDesign.toDrawOn.DrawRectangle(new Pen(new SolidBrush(Color.Blue)), new Rectangle(107, BundleDesign.theY + 7, 2000, 75)); //rectangle the font needs to be fit with
+                BundleDesign.theY += 90;
 
                 //draw quest description
-                Font goodFont = FontUtilities.FindFont(BundleDesign.toDrawOn, BundleInfos.BundleData[i].questDescr, new Rectangle(107, BundleDesign.theY + 7, 2000, 93).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 50)); //size in "new Font()" is never check
-                BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, goodFont, new SolidBrush(Color.White), new Point(100, BundleDesign.theY));
+                BundleDesign.drawQuestBackground(bmp);
+                Font goodFont = FontUtilities.FindFont(BundleDesign.toDrawOn, BundleInfos.BundleData[i].questDescr, new Rectangle(57, BundleDesign.theY + 7, bmp.Width - 227, 38).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 30)); //size in "new Font()" is never check
+                BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questDescr, goodFont, new SolidBrush(Color.White), new Point(55, BundleDesign.theY + 10));
 
-                //draw slider + quest count
-                Image slider = Resources.Challenges_Slider;
-                BundleDesign.toDrawOn.DrawImage(slider, new Point(108, BundleDesign.theY + 86));
-                BundleDesign.toDrawOn.DrawString("0 / " + BundleInfos.BundleData[i].questCount.ToString(), new Font(FontUtilities.pfc.Families[0], 25), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(978, BundleDesign.theY + 88));
+                //draw quest count
+                BundleDesign.toDrawOn.DrawString("0 /", new Font(FontUtilities.pfc.Families[1], 12), new SolidBrush(Color.FromArgb(255, 255, 255, 255)), new Point(565, BundleDesign.theY + 42));
+                BundleDesign.toDrawOn.DrawString(BundleInfos.BundleData[i].questCount.ToString(), new Font(FontUtilities.pfc.Families[1], 12), new SolidBrush(Color.FromArgb(200, 255, 255, 255)), new Point(587, BundleDesign.theY + 42));
 
                 //draw quest reward
                 DrawingRewards.getRewards(BundleInfos.BundleData[i].rewardItemId, BundleInfos.BundleData[i].rewardItemQuantity);
-
-                if (i != 0)
-                {
-                    //draw separator
-                    BundleDesign.toDrawOn.DrawLine(new Pen(Color.FromArgb(30, 255, 255, 255)), 100, BundleDesign.theY - 10, 2410, BundleDesign.theY - 10);
-                }
             }
             new UpdateMyConsole("", Color.Black, true).AppendToConsole();
 
-            BundleDesign.drawCompletionReward(theItem);
+            BundleDesign.drawCompletionReward(bmp, theItem);
             BundleDesign.drawWatermark(bmp);
 
             //cut if too long and return the bitmap
             using (Bitmap bmp2 = bmp)
             {
                 var newImg = bmp2.Clone(
-                    new Rectangle { X = 0, Y = 0, Width = bmp.Width, Height = BundleDesign.theY + 280 },
+                    new Rectangle { X = 0, Y = 0, Width = bmp.Width, Height = BundleDesign.theY + 105 },
                     bmp2.PixelFormat);
 
                 pictureBox1.Image = newImg;

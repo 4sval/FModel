@@ -282,7 +282,7 @@ namespace FModel
                         myGraphic,
                         text,
                         Settings.Default.rarityNew ? new Rectangle(5, 405, 512, 55).Size : new Rectangle(5, 395, 512, 49).Size,
-                        new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[0], 35)
+                        new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : Settings.Default.IconLanguage == "Russian" ? FontUtilities.pfc.Families[1] : FontUtilities.pfc.Families[0], 35)
                         );
 
                     myGraphic.DrawString(
@@ -442,7 +442,7 @@ namespace FModel
         /// <param name="myGraphic"></param>
         private static void DrawToLeft(string text, Graphics myGraphic)
         {
-            myGraphic.DrawString(text, new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(5, 503));
+            myGraphic.DrawString(text, new Font(Settings.Default.IconLanguage == "Russian" ? FontUtilities.pfc.Families[1] : FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(5, Settings.Default.IconLanguage == "Russian" ? 500 : 503));
         }
 
         /// <summary>
