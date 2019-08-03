@@ -15,10 +15,10 @@ namespace FModel.Forms
 
         public UpdateModeSettings()
         {
+            InitializeComponent();
+
             // Check if watermark exists
             Utilities.CheckWatermark();
-
-            InitializeComponent();
 
             if (!string.IsNullOrEmpty(Properties.Settings.Default.UMParameters))
             {

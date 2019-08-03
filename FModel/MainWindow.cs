@@ -19,7 +19,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Image = System.Drawing.Image;
 using Settings = FModel.Properties.Settings;
-using System.Text;
 
 namespace FModel
 {
@@ -31,11 +30,11 @@ namespace FModel
 
         public MainWindow()
         {
-            // Check if watermark exists
-            Utilities.CheckWatermark();
-
             InitializeComponent();
             App.MainFormToUse = this;
+
+            // Check if watermark exists
+            Utilities.CheckWatermark();
 
             //FModel version
             toolStripStatusLabel1.Text += @" " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
@@ -468,86 +467,7 @@ namespace FModel
                 }
             }
         }
-        private void CreateBackupList()
-        {
-            PakExtractor extractor = null;
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < ThePak.mainPaksList.Count; i++)
-            {
-                try
-                {
-                    extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
-                }
-                catch (Exception)
-                {
-                    new UpdateMyConsole("0x" + Settings.Default.AESKey + " doesn't work with the main paks.", Color.Red, true).AppendToConsole();
-                    extractor.Dispose();
-                    break;
-                }
-
-                string[] CurrentUsedPakLines = extractor.GetFileList().ToArray();
-                if (CurrentUsedPakLines != null)
-                {
-                    string mountPoint = extractor.GetMountPoint();
-                    for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
-                    {
-                        CurrentUsedPakLines[ii] = mountPoint.Substring(9) + CurrentUsedPakLines[ii];
-
-                        sb.Append(CurrentUsedPakLines[ii] + "\n");
-                    }
-                    new UpdateMyState(".PAK mount point: " + mountPoint.Substring(9), "Waiting").ChangeProcessState();
-                }
-                extractor.Dispose();
-            }
-
-            for (int i = 0; i < ThePak.dynamicPaksList.Count; i++)
-            {
-                string pakName = DynamicKeysManager.AESEntries.Where(x => x.thePak == ThePak.dynamicPaksList[i].thePak).Select(x => x.thePak).FirstOrDefault();
-                string pakKey = DynamicKeysManager.AESEntries.Where(x => x.thePak == ThePak.dynamicPaksList[i].thePak).Select(x => x.theKey).FirstOrDefault();
-
-                if (!string.IsNullOrEmpty(pakName) && !string.IsNullOrEmpty(pakKey))
-                {
-                    try
-                    {
-                        extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
-                    }
-                    catch (Exception)
-                    {
-                        new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole();
-                        extractor.Dispose();
-                        continue;
-                    }
-
-                    string[] CurrentUsedPakLines = extractor.GetFileList().ToArray();
-                    if (CurrentUsedPakLines != null)
-                    {
-                        string mountPoint = extractor.GetMountPoint();
-                        for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
-                        {
-                            CurrentUsedPakLines[ii] = mountPoint.Substring(9) + CurrentUsedPakLines[ii];
-
-                            sb.Append(CurrentUsedPakLines[ii] + "\n");
-                        }
-                        new UpdateMyConsole("Backing up ", Color.Black).AppendToConsole();
-                        new UpdateMyConsole(ThePak.dynamicPaksList[i].thePak, Color.DarkRed, true).AppendToConsole();
-                    }
-                    extractor.Dispose();
-                }
-            }
-
-            File.WriteAllText(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName, sb.ToString()); //File will always exist so we check the file size instead
-            if (new System.IO.FileInfo(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName).Length > 0)
-            {
-                new UpdateMyState("\\Backup" + Checking.BackupFileName + " successfully created", "Success").ChangeProcessState();
-            }
-            else
-            {
-                File.Delete(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName);
-                new UpdateMyState("Can't create " + Checking.BackupFileName.Substring(1), "Error").ChangeProcessState();
-            }
-        }
-        private void UpdateModeExtractSave()
+        private void UpdateModeHereWeGooooo()
         {
             // Check if watermark exists
             Utilities.CheckWatermark();
@@ -608,14 +528,14 @@ namespace FModel
             if (differenceModeToolStripMenuItem.Checked && updateModeToolStripMenuItem.Checked)
             {
                 await Task.Run(() => {
-                    UpdateModeExtractSave();
+                    UpdateModeHereWeGooooo();
                 });
             }
         }
         private async void backupPAKsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             await Task.Run(() => {
-                CreateBackupList();
+                CreateBackup.CreateBackupList();
             });
         }
 
@@ -664,18 +584,6 @@ namespace FModel
 
         #region FILL LISTBOX & FILTER
         //METHODS
-        public static IEnumerable<TItem> GetAncestors<TItem>(TItem item, Func<TItem, TItem> getParentFunc)
-        {
-            if (getParentFunc == null)
-            {
-                throw new ArgumentNullException("getParentFunc");
-            }
-            if (ReferenceEquals(item, null)) yield break;
-            for (TItem curItem = getParentFunc(item); !ReferenceEquals(curItem, null); curItem = getParentFunc(curItem))
-            {
-                yield return curItem;
-            }
-        }
         private void GetFilesAndFill(TreeNodeMouseClickEventArgs selectedNode)
         {
             List<string> itemsNotToDisplay = new List<string>();
@@ -687,7 +595,7 @@ namespace FModel
                 FilterTextBox.Text = string.Empty;
             }));
 
-            var all = GetAncestors(selectedNode.Node, x => x.Parent).ToList();
+            var all = Utilities.GetAncestors(selectedNode.Node, x => x.Parent).ToList();
             all.Reverse();
             var full = string.Join("/", all.Select(x => x.Text)) + "/" + selectedNode.Node.Text + "/";
             if (string.IsNullOrEmpty(full))
@@ -1400,7 +1308,7 @@ namespace FModel
                         FilterTextBox.Text = string.Empty;
                     }));
 
-                    var all = GetAncestors(node, x => x.Parent).ToList();
+                    var all = Utilities.GetAncestors(node, x => x.Parent).ToList();
                     all.Reverse();
                     var full = string.Join("/", all.Select(x => x.Text)) + "/" + node.Text + "/";
                     if (string.IsNullOrEmpty(full))

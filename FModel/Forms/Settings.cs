@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
+using Cyotek.Windows.Forms;
 using FModel.Properties;
 
 namespace FModel.Forms
@@ -20,10 +21,10 @@ namespace FModel.Forms
 
         public Settings()
         {
+            InitializeComponent();
+
             // Check if watermark exists
             Utilities.CheckWatermark();
-
-            InitializeComponent();
 
             textBox2.Text = Properties.Settings.Default.PAKsPath;
             textBox1.Text = Properties.Settings.Default.ExtractOutput;
@@ -55,6 +56,7 @@ namespace FModel.Forms
             trackBar1.Value     = Properties.Settings.Default.wOpacity;
             trackBar2.Value     = Properties.Settings.Default.wSize;
 
+            //CHALLENGES
             button3.Enabled = Properties.Settings.Default.isChallengesTheme;
             button4.Enabled = Properties.Settings.Default.isChallengesTheme;
             checkBox2.Checked = Properties.Settings.Default.isChallengesTheme;
@@ -116,6 +118,7 @@ namespace FModel.Forms
                 MessageBox.Show(@"Please, restart FModel to apply your new output path", @"FModel Output Path Changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
+            //CHALLENGES
             Properties.Settings.Default.challengesWatermark = textBox6.Text;
             Properties.Settings.Default.isChallengesTheme = checkBox2.Checked;
             Properties.Settings.Default.challengesOpacity = trackBar3.Value;
@@ -310,9 +313,7 @@ namespace FModel.Forms
 
         private void Button4_Click(object sender, EventArgs e)
         {
-            ColorDialog MyDialog = new ColorDialog();
-            MyDialog.FullOpen = true;
-            MyDialog.AnyColor = true;
+            ColorPickerDialog MyDialog = new ColorPickerDialog();
 
             if (MyDialog.ShowDialog() == DialogResult.OK)
             {

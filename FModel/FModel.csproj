@@ -88,11 +88,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\csharp-wick.dll</HintPath>
     </Reference>
+    <Reference Include="Cyotek.Windows.Forms.ColorPicker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=58daa28b0b2de221, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cyotek.Windows.Forms.ColorPicker.1.7.2\lib\net35\Cyotek.Windows.Forms.ColorPicker.dll</HintPath>
+    </Reference>
     <Reference Include="Hammock.ClientProfile, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c148cfba29ed1a4d, processorArchitecture=MSIL">
       <HintPath>..\packages\TweetMoaSharp.6.0.0\lib\4.5\Hammock.ClientProfile.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.11.10.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.11.10\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.11.12.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.11.12\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -156,6 +159,7 @@
     <Compile Include="Methods\IconGenerator\Translations\LoadLocRes.cs" />
     <Compile Include="Methods\IconGenerator\Translations\SearchResource.cs" />
     <Compile Include="Methods\ImagesMerger\ImagesMerger.cs" />
+    <Compile Include="Methods\PakHelper\CreateBackup.cs" />
     <Compile Include="Methods\PakHelper\PakHelper.cs" />
     <Compile Include="Methods\Serializer\AssetReader.cs" />
     <Compile Include="Methods\Serializer\LocRes\LocResSerializer.cs" />

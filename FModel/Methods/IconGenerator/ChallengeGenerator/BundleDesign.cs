@@ -79,7 +79,7 @@ namespace FModel
                                 challengeIcon = new Bitmap(bmpTemp);
                             }
 
-                            toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 256));
+                            toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(-1, -1, myBitmap.Width + 1, 257));
                             if (Settings.Default.isChallengesTheme)
                             {
                                 if (File.Exists(Settings.Default.challengesBannerFileName))
@@ -111,7 +111,7 @@ namespace FModel
                                 challengeIcon = new Bitmap(bmpTemp);
                             }
 
-                            toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 256));
+                            toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(-1, -1, myBitmap.Width + 1, 257));
                             if (Settings.Default.isChallengesTheme)
                             {
                                 if (File.Exists(Settings.Default.challengesBannerFileName))
@@ -127,7 +127,7 @@ namespace FModel
                     }
                     else
                     {
-                        toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 256));
+                        toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(-1, -1, myBitmap.Width + 1, 257));
                         if (Settings.Default.isChallengesTheme)
                         {
                             if (File.Exists(Settings.Default.challengesBannerFileName))
@@ -152,7 +152,7 @@ namespace FModel
                     headerColor = getRandomColor();
                 }
 
-                toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(0, 0, myBitmap.Width, 256));
+                toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(-1, -1, myBitmap.Width + 1, 257));
                 if (Settings.Default.isChallengesTheme)
                 {
                     if (File.Exists(Settings.Default.challengesBannerFileName))
@@ -189,7 +189,7 @@ namespace FModel
 
             toDrawOn.DrawString(bundleDisplayName, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 40), new SolidBrush(Color.White), new Point(isSXBanner || displayStyle == null ? 25 : 260, 105));
 
-            toDrawOn.FillRectangle(new SolidBrush(ControlPaint.Dark(headerColor, (float)0.1)), new Rectangle(0, 256, myBitmap.Width, myBitmap.Height));
+            toDrawOn.FillRectangle(new SolidBrush(ControlPaint.Dark(headerColor, (float)0.1)), new Rectangle(-1, 255, myBitmap.Width + 1, myBitmap.Height));
         }
 
         public static void drawQuestBackground(Bitmap myBitmap, bool noCompletion = true)

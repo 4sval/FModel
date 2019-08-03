@@ -7,6 +7,7 @@ using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace FModel
 {
@@ -179,6 +180,7 @@ namespace FModel
             {
                 Properties.Settings.Default.wFilename = string.Empty;
                 Properties.Settings.Default.isWatermark = false;
+                new UpdateMyConsole("Watermark file not found, watermarking disabled.", Color.Red, true).AppendToConsole();
             }
 
             if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename) &&
@@ -186,6 +188,7 @@ namespace FModel
             {
                 Properties.Settings.Default.UMFilename = string.Empty;
                 Properties.Settings.Default.UMWatermark = false;
+                new UpdateMyConsole("Watermark file not found, watermarking in Update Mode disabled.", Color.Red, true).AppendToConsole();
             }
 
             if (!string.IsNullOrEmpty(Properties.Settings.Default.challengesBannerFileName) &&
@@ -193,6 +196,22 @@ namespace FModel
             {
                 Properties.Settings.Default.challengesBannerFileName = string.Empty;
                 Properties.Settings.Default.isChallengesTheme = false;
+                new UpdateMyConsole("Banner file not found, challenges custom theme disabled.", Color.Red, true).AppendToConsole();
+            }
+
+            Properties.Settings.Default.Save();
+        }
+
+        public static IEnumerable<TItem> GetAncestors<TItem>(TItem item, Func<TItem, TItem> getParentFunc)
+        {
+            if (getParentFunc == null)
+            {
+                throw new ArgumentNullException("getParentFunc");
+            }
+            if (ReferenceEquals(item, null)) yield break;
+            for (TItem curItem = getParentFunc(item); !ReferenceEquals(curItem, null); curItem = getParentFunc(curItem))
+            {
+                yield return curItem;
             }
         }
     }
