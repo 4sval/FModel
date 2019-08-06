@@ -1,6 +1,8 @@
 ﻿using csharp_wick;
 using FModel.Properties;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -10,6 +12,8 @@ namespace FModel
 {
     static class CreateBackup
     {
+        public static List<BackupFilesEntry> backupFilesList { get; set; }
+
         public static void CreateBackupList()
         {
             PakExtractor extractor = null;
@@ -79,7 +83,7 @@ namespace FModel
             }
 
             File.WriteAllText(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName, sb.ToString()); //File will always exist so we check the file size instead
-            if (new System.IO.FileInfo(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName).Length > 0)
+            if (new FileInfo(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName).Length > 0)
             {
                 new UpdateMyState("\\Backup" + Checking.BackupFileName + " successfully created", "Success").ChangeProcessState();
             }
@@ -87,6 +91,35 @@ namespace FModel
             {
                 File.Delete(App.DefaultOutputPath + "\\Backup" + Checking.BackupFileName);
                 new UpdateMyState("Can't create " + Checking.BackupFileName.Substring(1), "Error").ChangeProcessState();
+            }
+        }
+
+        public static void GetFilesFromDropbox()
+        {
+            try
+            {
+                if (DLLImport.IsInternetAvailable())
+                {
+                    string backupFiles = Keychain.GetEndpoint("https://dl.dropbox.com/s/lngkoq2ucd9di2n/FModel_Backups.json?dl=0");
+                    backupFilesList = new List<BackupFilesEntry>();
+
+                    if (!string.IsNullOrEmpty(backupFiles))
+                    {
+                        JArray array = JArray.Parse(backupFiles);
+                        foreach (JProperty prop in array.Children<JObject>().Properties())
+                        {
+                            backupFilesList.Add(new BackupFilesEntry(prop.Name, prop.Value.Value<string>()));
+                        }
+                    }
+                }
+                else
+                {
+                    new UpdateMyConsole("Your internet connection is currently unavailable, can't check for backup files at the moment.", Color.Red, true).AppendToConsole();
+                }
+            }
+            catch (Exception)
+            {
+                new UpdateMyConsole("[FModel] Error while checking for backup files", Color.Red, true).AppendToConsole();
             }
         }
     }

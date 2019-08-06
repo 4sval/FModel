@@ -227,7 +227,9 @@ namespace FModel
             JToken bundleCompletionRewards = myBundle["BundleCompletionRewards"];
             if (bundleCompletionRewards != null)
             {
+                new UpdateMyState("Drawing Completion Rewards...", "Waiting").ChangeProcessState();
                 theY += 35;
+
                 JArray bundleCompletionRewardsArray = bundleCompletionRewards.Value<JArray>();
                 foreach (JToken token in bundleCompletionRewardsArray)
                 {
@@ -267,7 +269,7 @@ namespace FModel
                                     {
                                         string rewardId = Path.GetFileName(assetPathName.Value<string>().Substring(0, assetPathName.Value<string>().LastIndexOf(".", StringComparison.Ordinal)));
 
-                                        if (!assetPathName.Value<string>().Contains("/Game/Items/Tokens/") && !rewardId.Contains("Quest_BR_")) //no fortbyte for weekly challenges
+                                        if (!assetPathName.Value<string>().Contains("/Game/Items/Tokens/") && !rewardId.Contains("Quest_BR_")) //no more fortbyte for weekly challenges
                                         {
                                             theY += 90;
                                             drawCompletionText(myBitmap, compCount);

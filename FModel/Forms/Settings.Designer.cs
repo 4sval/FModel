@@ -428,11 +428,11 @@ namespace FModel.Forms
             // 
             this.label7.AutoSize = true;
             this.label7.ForeColor = System.Drawing.Color.Red;
-            this.label7.Location = new System.Drawing.Point(89, 113);
+            this.label7.Location = new System.Drawing.Point(106, 113);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(117, 13);
+            this.label7.Size = new System.Drawing.Size(86, 13);
             this.label7.TabIndex = 33;
-            this.label7.Text = "Banner Size: 1024x256";
+            this.label7.Text = "4:1 Aspect Ratio";
             // 
             // button4
             // 

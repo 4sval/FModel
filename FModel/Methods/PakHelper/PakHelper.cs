@@ -70,9 +70,11 @@ namespace FModel
                     {
                         theExtractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole();
+                        if (string.Equals(ex.Message, "Extraction failed")) { new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole(); }
+                        else { new UpdateMyConsole("Message: " + ex.Message + "\nSource: " + ex.Source + "\nTarget: " + ex.TargetSite, Color.Red, true).AppendToConsole(); }
+
                         if (theExtractor != null) { theExtractor.Dispose(); }
                         continue;
                     }

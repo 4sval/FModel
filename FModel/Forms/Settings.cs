@@ -34,7 +34,7 @@ namespace FModel.Forms
             textBox6.Text = Properties.Settings.Default.challengesWatermark;
             if (string.IsNullOrWhiteSpace(textBox6.Text))
             {
-                textBox6.Text = "{Bundle_Name} Generated using FModel & JohnWickParse - {Date}";
+                textBox6.Text = "@UseTheWatermarkBecauseWhyNot - {Date}";
             }
             else { textBox6.Text = Properties.Settings.Default.challengesWatermark; }
 
@@ -291,7 +291,7 @@ namespace FModel.Forms
 
                 newForm.Size = pictureBox1.Image.Size;
                 newForm.Icon = Resources.FModel;
-                newForm.Text = ThePak.CurrentUsedItem;
+                newForm.Text = "Challenges Design Template";
                 newForm.StartPosition = FormStartPosition.CenterScreen;
                 newForm.Controls.Add(pb);
                 newForm.Show();

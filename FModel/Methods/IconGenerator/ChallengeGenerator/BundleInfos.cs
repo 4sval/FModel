@@ -181,14 +181,24 @@ namespace FModel
                                         JToken description = token["Description"];
                                         if (description != null)
                                         {
-                                            descriptionKey = description["key"].Value<string>();
-                                            descriptionSource = description["source_string"].Value<string>();
+                                            JToken key = description["key"];
+                                            JToken sourceString = description["source_string"];
+                                            if (key != null && sourceString != null)
+                                            {
+                                                descriptionKey = key.Value<string>();
+                                                descriptionSource = sourceString.Value<string>();
+                                            }
                                         }
                                         JToken descriptionMain = AssetArray[0]["Description"];
                                         if (descriptionMain != null)
                                         {
-                                            descriptionKey = descriptionMain["key"].Value<string>();
-                                            descriptionSource = descriptionMain["source_string"].Value<string>();
+                                            JToken key = descriptionMain["key"];
+                                            JToken sourceString = descriptionMain["source_string"];
+                                            if (key != null && sourceString != null)
+                                            {
+                                                descriptionKey = key.Value<string>();
+                                                descriptionSource = sourceString.Value<string>();
+                                            }
                                         }
                                     }
 

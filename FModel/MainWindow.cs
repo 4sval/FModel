@@ -17,6 +17,7 @@ using FModel.Forms;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RestSharp;
 using Image = System.Drawing.Image;
 using Settings = FModel.Properties.Settings;
 
@@ -102,6 +103,19 @@ namespace FModel
                 loadOneToolStripMenuItem.DropDownItems.Add(thePak);
             }));
         }
+        private void AddBackupFiles()
+        {
+            if (CreateBackup.backupFilesList != null && CreateBackup.backupFilesList.Count > 0)
+            {
+                foreach (var item in CreateBackup.backupFilesList)
+                {
+                    Invoke(new Action(() =>
+                    {
+                        downloadBackupsToolStripMenuItem.DropDownItems.Add(item.bFileName);
+                    }));
+                }
+            }
+        }
 
         /// <summary>
         /// check if path exists
@@ -169,6 +183,8 @@ namespace FModel
                 FillWithPaKs();
                 AddToUI.checkAndAddDynamicKeys();
                 Utilities.colorMyPaks(loadOneToolStripMenuItem);
+                CreateBackup.GetFilesFromDropbox();
+                AddBackupFiles();
                 Utilities.SetFolderPermission(App.DefaultOutputPath);
                 Utilities.CreateDefaultFolders();
             });
@@ -536,6 +552,35 @@ namespace FModel
         {
             await Task.Run(() => {
                 CreateBackup.CreateBackupList();
+            });
+        }
+        private async void DownloadBackupsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            await Task.Run(() => {
+                if (CreateBackup.backupFilesList != null && CreateBackup.backupFilesList.Count > 0)
+                {
+                    string filename = CreateBackup.backupFilesList.Where(x => string.Equals(x.bFileName, e.ClickedItem.Text)).Select(x => x.bFileName).FirstOrDefault();
+                    string downloadLink = CreateBackup.backupFilesList.Where(x => string.Equals(x.bFileName, e.ClickedItem.Text)).Select(x => x.bFileDownload).FirstOrDefault();
+                    if (!string.IsNullOrEmpty(downloadLink))
+                    {
+                        new UpdateMyState("Downloading " + filename, "Waiting").ChangeProcessState();
+
+                        RestClient EndpointClient = new RestClient(downloadLink);
+                        RestRequest EndpointRequest = new RestRequest(Method.GET);
+                        string content = EndpointClient.Execute(EndpointRequest).Content;
+
+                        File.WriteAllText(App.DefaultOutputPath + "\\Backup\\" + filename, content);
+                        if (new System.IO.FileInfo(App.DefaultOutputPath + "\\Backup\\" + filename).Length > 0)
+                        {
+                            new UpdateMyState("\\Backup\\" + filename + " successfully downloaded", "Success").ChangeProcessState();
+                        }
+                        else
+                        {
+                            File.Delete(App.DefaultOutputPath + "\\Backup\\" + filename);
+                            new UpdateMyState("Can't download " + filename, "Error").ChangeProcessState();
+                        }
+                    }
+                }
             });
         }
 
