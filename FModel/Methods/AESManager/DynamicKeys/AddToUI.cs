@@ -67,7 +67,10 @@ namespace FModel
             {
                 if (DLLImport.IsInternetAvailable())
                 {
-                    JToken dynamicPaks = JObject.Parse(Keychain.GetEndpoint("http://benbotfn.tk:8080/api/aes")).FindTokens("additionalKeys").FirstOrDefault();
+                    string data = Keychain.GetEndpoint("http://benbotfn.tk:8080/api/aes");
+                    if (string.IsNullOrEmpty(data)) { new UpdateMyConsole("[BenBot API] API Down or Rate Limit Exceeded", Color.Red, true).AppendToConsole(); return null; }
+
+                    JToken dynamicPaks = JObject.Parse(data).FindTokens("additionalKeys").FirstOrDefault();
                     return JToken.Parse(dynamicPaks.ToString()).ToString().TrimStart('[').TrimEnd(']');
                 }
                 else

@@ -354,5 +354,24 @@ namespace FModel
 
             toDrawOn.DrawString(text, new Font(FontUtilities.pfc.Families[0], 15), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width - 10, 210), FontUtilities.rightString);
         }
+
+        public static void drawPrestigeSeparator()
+        {
+            string texture = JohnWick.AssetToTexture2D("T-FNBR-MissionIcon-L");
+            if (File.Exists(texture))
+            {
+                Image itemIcon;
+                using (var bmpTemp = new Bitmap(texture))
+                {
+                    itemIcon = new Bitmap(bmpTemp);
+                }
+
+                toDrawOn.FillRectangle(new SolidBrush(Color.FromArgb(100, headerColor.R, headerColor.G, headerColor.B)), new Rectangle(25, theY, 50, 35));
+
+                toDrawOn.DrawImage(ImageUtilities.ResizeImage(itemIcon, 32, 32), new Point(50 - 15, theY + 2));
+
+                theY += 40;
+            }
+        }
     }
 }

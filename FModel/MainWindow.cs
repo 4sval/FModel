@@ -1043,6 +1043,7 @@ namespace FModel
                 });
             }
 
+            bool isSeparatorAlreadyAdded = false;
             for (int i = 0; i < BundleInfos.BundleData.Count; i++)
             {
                 new UpdateMyConsole(BundleInfos.BundleData[i].questDescr, Color.SteelBlue).AppendToConsole();
@@ -1050,6 +1051,12 @@ namespace FModel
                 new UpdateMyConsole("\t\t" + BundleInfos.BundleData[i].rewardItemId + ":" + BundleInfos.BundleData[i].rewardItemQuantity, Color.DarkGreen, true).AppendToConsole();
 
                 BundleDesign.theY += 90;
+
+                if (!string.IsNullOrEmpty(BundleInfos.BundleData[i].questUnlockType) && !isSeparatorAlreadyAdded)
+                {
+                    BundleDesign.drawPrestigeSeparator();
+                    isSeparatorAlreadyAdded = true;
+                }
 
                 //draw quest description
                 BundleDesign.drawQuestBackground(bmp);

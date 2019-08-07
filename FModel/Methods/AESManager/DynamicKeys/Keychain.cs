@@ -16,10 +16,9 @@ namespace FModel
             RestClient EndpointClient = new RestClient(url);
             RestRequest EndpointRequest = new RestRequest(Method.GET);
 
-            var response = EndpointClient.Execute(EndpointRequest);
-            string content = JToken.Parse(response.Content).ToString(Newtonsoft.Json.Formatting.Indented);
+            string response = EndpointClient.Execute(EndpointRequest).Content;
 
-            return content;
+            return response;
         }
     }
 }

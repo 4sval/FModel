@@ -110,7 +110,7 @@ namespace FModel
                         if (assetPathName != null)
                         {
                             string questName = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf(".", StringComparison.Ordinal));
-                            getQuestData(questName);
+                            getQuestData(questName, token);
                         }
                     }
                 }
@@ -122,7 +122,7 @@ namespace FModel
         /// loop if stage exist
         /// </summary>
         /// <param name="questFile"></param>
-        private static void getQuestData(string questFile)
+        private static void getQuestData(string questFile, JToken questInfo)
         {
             try
             {
@@ -137,6 +137,14 @@ namespace FModel
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
                                 new UpdateMyState("Parsing " + questFile + "...", "Waiting").ChangeProcessState();
+
+                                //prestige challenge check
+                                JToken questUnlockType = questInfo["QuestUnlockType"];
+                                string unlockType = string.Empty;
+                                if (questUnlockType != null && questUnlockType.Value<string>().Equals("EChallengeBundleQuestUnlockType::BundleLevelup"))
+                                {
+                                    unlockType = questUnlockType.Value<string>();
+                                }
 
                                 dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
                                 JArray AssetArray = JArray.FromObject(AssetData);
@@ -214,7 +222,7 @@ namespace FModel
                                             string rewardId = rewardsArray.Where(item => !item["ItemPrimaryAssetId"]["PrimaryAssetType"]["Name"].Value<string>().Equals("Quest") && !item["ItemPrimaryAssetId"]["PrimaryAssetType"]["Name"].Value<string>().Equals("Token")).FirstOrDefault()["ItemPrimaryAssetId"]["PrimaryAssetName"].Value<string>();
                                             string rewardQuantity = rewardsArray.Where(item => !item["ItemPrimaryAssetId"]["PrimaryAssetType"]["Name"].Value<string>().Equals("Quest") && !item["ItemPrimaryAssetId"]["PrimaryAssetType"]["Name"].Value<string>().Equals("Token")).FirstOrDefault()["Quantity"].Value<string>();
 
-                                            BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, rewardId, rewardQuantity);
+                                            BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, rewardId, rewardQuantity, unlockType);
                                             bool isAlreadyAdded = BundleData.Any(item => item.questDescr.Equals(currentData.questDescr, StringComparison.InvariantCultureIgnoreCase) && item.questCount == currentData.questCount);
                                             if (!isAlreadyAdded) { BundleData.Add(currentData); }
                                         }
@@ -226,7 +234,7 @@ namespace FModel
                                                 string rewardId = hiddenRewards[0]["TemplateId"].Value<string>();
                                                 string rewardQuantity = hiddenRewards[0]["Quantity"].Value<string>();
 
-                                                BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, rewardId, rewardQuantity);
+                                                BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, rewardId, rewardQuantity, unlockType);
                                                 bool isAlreadyAdded = BundleData.Any(item => item.questDescr.Equals(currentData.questDescr, StringComparison.InvariantCultureIgnoreCase) && item.questCount == currentData.questCount);
                                                 if (!isAlreadyAdded) { BundleData.Add(currentData); }
                                             }
@@ -240,7 +248,7 @@ namespace FModel
 
                                             if (qAssetType == "Quest")
                                             {
-                                                getQuestData(qAssetName);
+                                                getQuestData(qAssetName, questInfo);
                                             }
                                         }
                                     }
@@ -254,13 +262,13 @@ namespace FModel
                                             weightToUse = weight;
                                         }
 
-                                        BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, assetTypeToken["ItemPrimaryAssetId"]["PrimaryAssetName"].Value<string>(), weightToUse == null ? "01" : weightToUse.Value<string>());
+                                        BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, assetTypeToken["ItemPrimaryAssetId"]["PrimaryAssetName"].Value<string>(), weightToUse == null ? "01" : weightToUse.Value<string>(), unlockType);
                                         bool isAlreadyAdded = BundleData.Any(item => item.questDescr.Equals(currentData.questDescr, StringComparison.InvariantCultureIgnoreCase) && item.questCount == currentData.questCount);
                                         if (!isAlreadyAdded) { BundleData.Add(currentData); }
                                     }
                                     else
                                     {
-                                        BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, "", "");
+                                        BundleInfoEntry currentData = new BundleInfoEntry(questDescription, questCount, "", "", unlockType);
                                         bool isAlreadyAdded = BundleData.Any(item => item.questDescr.Equals(currentData.questDescr, StringComparison.InvariantCultureIgnoreCase) && item.questCount == currentData.questCount);
                                         if (!isAlreadyAdded) { BundleData.Add(currentData); }
                                     }

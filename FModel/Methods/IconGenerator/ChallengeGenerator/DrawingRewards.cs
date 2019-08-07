@@ -70,7 +70,7 @@ namespace FModel
 
                                 ItemIcon.SearchAthIteDefIcon(AssetArray[0]);
 
-                                drawIcon(item);
+                                drawIcon();
                             }
                         }
                         catch (JsonSerializationException)
@@ -117,7 +117,7 @@ namespace FModel
                                     {
                                         string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
                                         ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-                                        drawIcon(bannerName);
+                                        drawIcon();
                                     }
                                 }
                                 else if (smallImage != null)
@@ -127,7 +127,7 @@ namespace FModel
                                     {
                                         string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
                                         ItemIcon.ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
-                                        drawIcon(bannerName);
+                                        drawIcon();
                                     }
                                 }
                             }
@@ -141,7 +141,7 @@ namespace FModel
             }
         }
 
-        private static void drawIcon(string itemId)
+        private static void drawIcon()
         {
             Image itemIcon = null;
             if (File.Exists(ItemIcon.ItemIconPath))
