@@ -52,8 +52,6 @@ namespace FModel.Forms
             this.wPictureBox = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkBoxSaveAsMergeImages = new System.Windows.Forms.CheckBox();
-            this.imgsPerRow = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
@@ -74,7 +72,6 @@ namespace FModel.Forms
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.wPictureBox)).BeginInit();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.imgsPerRow)).BeginInit();
             this.groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -322,8 +319,6 @@ namespace FModel.Forms
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox1.Controls.Add(this.checkBoxSaveAsMergeImages);
-            this.groupBox1.Controls.Add(this.imgsPerRow);
-            this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.textBox3);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Location = new System.Drawing.Point(12, 487);
@@ -338,36 +333,12 @@ namespace FModel.Forms
             this.checkBoxSaveAsMergeImages.AutoSize = true;
             this.checkBoxSaveAsMergeImages.Checked = true;
             this.checkBoxSaveAsMergeImages.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxSaveAsMergeImages.Location = new System.Drawing.Point(434, 21);
+            this.checkBoxSaveAsMergeImages.Location = new System.Drawing.Point(298, 21);
             this.checkBoxSaveAsMergeImages.Name = "checkBoxSaveAsMergeImages";
             this.checkBoxSaveAsMergeImages.Size = new System.Drawing.Size(120, 17);
             this.checkBoxSaveAsMergeImages.TabIndex = 13;
             this.checkBoxSaveAsMergeImages.Text = "Enable \"Save as...\"";
             this.checkBoxSaveAsMergeImages.UseVisualStyleBackColor = true;
-            // 
-            // imgsPerRow
-            // 
-            this.imgsPerRow.Location = new System.Drawing.Point(375, 19);
-            this.imgsPerRow.Maximum = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            this.imgsPerRow.Name = "imgsPerRow";
-            this.imgsPerRow.ReadOnly = true;
-            this.imgsPerRow.Size = new System.Drawing.Size(44, 20);
-            this.imgsPerRow.TabIndex = 12;
-            this.imgsPerRow.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.imgsPerRow.ThousandsSeparator = true;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(281, 22);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(88, 13);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "Images Per Row:";
             // 
             // textBox3
             // 
@@ -535,7 +506,6 @@ namespace FModel.Forms
             ((System.ComponentModel.ISupportInitialize)(this.wPictureBox)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.imgsPerRow)).EndInit();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).EndInit();
@@ -564,8 +534,6 @@ namespace FModel.Forms
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.PictureBox wPictureBox;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.NumericUpDown imgsPerRow;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox comboBox1;

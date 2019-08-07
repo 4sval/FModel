@@ -129,6 +129,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\MergeImages.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MergeImages.Designer.cs">
+      <DependentUpon>MergeImages.cs</DependentUpon>
+    </Compile>
     <Compile Include="Methods\Converter\UnrealEngineDataToOGG.cs" />
     <Compile Include="Custom\JsonExtensions.cs" />
     <Compile Include="Custom\TypeAssistant.cs" />
@@ -210,6 +216,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AESManager.resx">
       <DependentUpon>AESManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MergeImages.resx">
+      <DependentUpon>MergeImages.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SearchFiles.resx">
       <DependentUpon>SearchFiles.cs</DependentUpon>

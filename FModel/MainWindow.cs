@@ -1300,7 +1300,13 @@ namespace FModel
         }
         private void mergeImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ImagesMerger.AskMergeImages();
+            MergeImages mergeImagesForm = new MergeImages();
+            if (Application.OpenForms[mergeImagesForm.Name] == null)
+            {
+                mergeImagesForm.Show();
+            }
+            else
+                Application.OpenForms[mergeImagesForm.Name].Focus();
         }
         private void TweetToolStripMenuItem_Click(object sender, EventArgs e)
         {
