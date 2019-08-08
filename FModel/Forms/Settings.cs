@@ -40,10 +40,6 @@ namespace FModel.Forms
 
             checkBox_tryToOpen.Checked = Properties.Settings.Default.tryToOpenAssets;
 
-            //MERGER
-            textBox3.Text                       = Properties.Settings.Default.mergerFileName;
-            checkBoxSaveAsMergeImages.Checked   = Properties.Settings.Default.mergerImagesSaveAs;
-
             // Check if watermark exists
             Utilities.CheckWatermark();
 
@@ -126,10 +122,6 @@ namespace FModel.Forms
             Properties.Settings.Default.tryToOpenAssets     = checkBox_tryToOpen.Checked;
 
             Properties.Settings.Default.rarityNew           = checkBox1.Checked;
-
-            //MERGER
-            Properties.Settings.Default.mergerFileName      = textBox3.Text;
-            Properties.Settings.Default.mergerImagesSaveAs  = checkBoxSaveAsMergeImages.Checked;
 
             //WATERMARK
             Properties.Settings.Default.isWatermark = checkBox7.Checked; 

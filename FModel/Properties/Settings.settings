@@ -23,12 +23,6 @@
     <Setting Name="isWatermark" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="mergerFileName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="mergerImagesRow" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
     <Setting Name="AESKey" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -58,9 +52,6 @@
     </Setting>
     <Setting Name="tryToOpenAssets" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="mergerImagesSaveAs" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="tConsKey" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

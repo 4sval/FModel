@@ -141,7 +141,7 @@ namespace FModel
                                 //prestige challenge check
                                 JToken questUnlockType = questInfo["QuestUnlockType"];
                                 string unlockType = string.Empty;
-                                if (questUnlockType != null && questUnlockType.Value<string>().Equals("EChallengeBundleQuestUnlockType::BundleLevelup"))
+                                if (questUnlockType != null)
                                 {
                                     unlockType = questUnlockType.Value<string>();
                                 }

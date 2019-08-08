@@ -110,30 +110,6 @@ namespace FModel.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string mergerFileName {
-            get {
-                return ((string)(this["mergerFileName"]));
-            }
-            set {
-                this["mergerFileName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int mergerImagesRow {
-            get {
-                return ((int)(this["mergerImagesRow"]));
-            }
-            set {
-                this["mergerImagesRow"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string AESKey {
             get {
                 return ((string)(this["AESKey"]));
@@ -248,18 +224,6 @@ namespace FModel.Properties {
             }
             set {
                 this["tryToOpenAssets"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool mergerImagesSaveAs {
-            get {
-                return ((bool)(this["mergerImagesSaveAs"]));
-            }
-            set {
-                this["mergerImagesSaveAs"] = value;
             }
         }
         

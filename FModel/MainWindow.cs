@@ -615,6 +615,7 @@ namespace FModel
             }
 
             _selectedItemsArray = null;
+            backgroundWorker2.Dispose();
             Checking.UmWorking = false;
             GC.Collect();
             Invoke(new Action(() =>
@@ -1028,6 +1029,9 @@ namespace FModel
             BundleDesign.toDrawOn.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
             BundleDesign.toDrawOn.SmoothingMode = SmoothingMode.HighQuality;
             BundleDesign.myItem = theItem;
+            BundleDesign.isBundleLevelup = false;
+            BundleDesign.isGrantWithBundle = false;
+            BundleDesign.isRequiresBattlePass = false;
 
             BundleDesign.drawBackground(bmp, theItem);
 
@@ -1043,7 +1047,6 @@ namespace FModel
                 });
             }
 
-            bool isSeparatorAlreadyAdded = false;
             for (int i = 0; i < BundleInfos.BundleData.Count; i++)
             {
                 new UpdateMyConsole(BundleInfos.BundleData[i].questDescr, Color.SteelBlue).AppendToConsole();
@@ -1052,10 +1055,9 @@ namespace FModel
 
                 BundleDesign.theY += 90;
 
-                if (!string.IsNullOrEmpty(BundleInfos.BundleData[i].questUnlockType) && !isSeparatorAlreadyAdded)
+                if (!string.IsNullOrEmpty(BundleInfos.BundleData[i].questUnlockType))
                 {
-                    BundleDesign.drawPrestigeSeparator();
-                    isSeparatorAlreadyAdded = true;
+                    BundleDesign.drawSeparator(BundleInfos.BundleData[i].questUnlockType);
                 }
 
                 //draw quest description
@@ -1209,6 +1211,7 @@ namespace FModel
             }
 
             _selectedItemsArray = null;
+            backgroundWorker1.Dispose();
             GC.Collect();
             Invoke(new Action(() =>
             {

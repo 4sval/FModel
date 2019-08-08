@@ -164,7 +164,6 @@
     <Compile Include="Methods\IconGenerator\SchematicGenerator\SchematicItemInfos.cs" />
     <Compile Include="Methods\IconGenerator\Translations\LoadLocRes.cs" />
     <Compile Include="Methods\IconGenerator\Translations\SearchResource.cs" />
-    <Compile Include="Methods\ImagesMerger\ImagesMerger.cs" />
     <Compile Include="Methods\PakHelper\BackupFilesEntry.cs" />
     <Compile Include="Methods\PakHelper\CreateBackup.cs" />
     <Compile Include="Methods\PakHelper\PakHelper.cs" />

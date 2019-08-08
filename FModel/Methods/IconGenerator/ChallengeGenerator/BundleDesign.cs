@@ -15,6 +15,9 @@ namespace FModel
         public static Graphics toDrawOn { get; set; }
         public static JToken myItem { get; set; }
         private static Color headerColor { get; set; }
+        public static bool isBundleLevelup { get; set; }
+        public static bool isRequiresBattlePass { get; set; }
+        public static bool isGrantWithBundle { get; set; }
 
         /// <summary>
         /// get a random color in case DisplayStyle doesn't exist in drawBackground()
@@ -355,9 +358,25 @@ namespace FModel
             toDrawOn.DrawString(text, new Font(FontUtilities.pfc.Families[0], 15), new SolidBrush(Color.FromArgb(150, 255, 255, 255)), new Point(myBitmap.Width - 10, 210), FontUtilities.rightString);
         }
 
-        public static void drawPrestigeSeparator()
+        public static void drawSeparator(string unlockType)
         {
-            string texture = JohnWick.AssetToTexture2D("T-FNBR-MissionIcon-L");
+            switch (unlockType)
+            {
+                case "EChallengeBundleQuestUnlockType::BundleLevelup":
+                    if (!isBundleLevelup) { drawIconSeparator("T-FNBR-MissionIcon-L"); isBundleLevelup = true; }
+                    break;
+                case "EChallengeBundleQuestUnlockType::RequiresBattlePass":
+                    if (!isRequiresBattlePass) { drawIconSeparator("T-FNBR-BattlePass-L"); isRequiresBattlePass = true; }
+                    break;
+                /*case "EChallengeBundleQuestUnlockType::GrantWithBundle": //GrantWithBundle doesn't mean free or paid battle pass so idk i just leave this here
+                    if (!isGrantWithBundle) { drawPrestigeSeparator("T-FNBR-BattlePassChallenge-Silver-L"); isGrantWithBundle = true; }
+                    break;*/
+            }
+        }
+
+        private static void drawIconSeparator(string iconName)
+        {
+            string texture = JohnWick.AssetToTexture2D(iconName);
             if (File.Exists(texture))
             {
                 Image itemIcon;
