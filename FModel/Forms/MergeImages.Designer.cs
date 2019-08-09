@@ -35,6 +35,8 @@ namespace FModel.Forms
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button7 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button5 = new System.Windows.Forms.Button();
@@ -68,7 +70,7 @@ namespace FModel.Forms
             // button2
             // 
             this.button2.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button2.Location = new System.Drawing.Point(459, 309);
+            this.button2.Location = new System.Drawing.Point(515, 309);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(100, 23);
             this.button2.TabIndex = 2;
@@ -99,21 +101,43 @@ namespace FModel.Forms
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button7);
+            this.groupBox1.Controls.Add(this.button6);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.listBox1);
             this.groupBox1.Controls.Add(this.button3);
             this.groupBox1.Controls.Add(this.button4);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(263, 320);
+            this.groupBox1.Size = new System.Drawing.Size(319, 320);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Settings";
             // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(262, 153);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(51, 23);
+            this.button7.TabIndex = 6;
+            this.button7.Text = "Down";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(262, 113);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(51, 23);
+            this.button6.TabIndex = 5;
+            this.button6.Text = "Up";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
             // trackBar1
             // 
             this.trackBar1.LargeChange = 0;
-            this.trackBar1.Location = new System.Drawing.Point(281, 268);
+            this.trackBar1.Location = new System.Drawing.Point(337, 268);
             this.trackBar1.Maximum = 20;
             this.trackBar1.Minimum = 1;
             this.trackBar1.Name = "trackBar1";
@@ -126,7 +150,7 @@ namespace FModel.Forms
             // pictureBox1
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(281, 18);
+            this.pictureBox1.Location = new System.Drawing.Point(337, 18);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(278, 244);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -136,7 +160,7 @@ namespace FModel.Forms
             // button5
             // 
             this.button5.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button5.Location = new System.Drawing.Point(353, 309);
+            this.button5.Location = new System.Drawing.Point(409, 309);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(100, 23);
             this.button5.TabIndex = 10;
@@ -155,7 +179,7 @@ namespace FModel.Forms
             // 
             this.progressBar1.Location = new System.Drawing.Point(12, 338);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(547, 16);
+            this.progressBar1.Size = new System.Drawing.Size(603, 16);
             this.progressBar1.Step = 1;
             this.progressBar1.TabIndex = 11;
             // 
@@ -163,7 +187,7 @@ namespace FModel.Forms
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(281, 314);
+            this.label1.Location = new System.Drawing.Point(337, 314);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(68, 13);
             this.label1.TabIndex = 12;
@@ -173,7 +197,7 @@ namespace FModel.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(571, 364);
+            this.ClientSize = new System.Drawing.Size(636, 364);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.button5);
@@ -210,5 +234,7 @@ namespace FModel.Forms
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button button6;
     }
 }

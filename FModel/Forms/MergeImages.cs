@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Windows.Forms;
 using System.Web.UI.WebControls;
+using Button = System.Windows.Forms.Button;
 using Image = System.Drawing.Image;
 using System.Drawing;
 using System.Globalization;
@@ -17,10 +18,12 @@ namespace FModel.Forms
         private static List<Image> selectedImages { get; set; }
         private static Bitmap bmp { get; set; }
         private static Timer _scrollingTimer = null;
+        private static List<Control> allControls { get; set; }
 
         public MergeImages()
         {
             InitializeComponent();
+            AddAllControls();
         }
 
         private void MergeImages_Load(object sender, EventArgs e)
@@ -40,10 +43,7 @@ namespace FModel.Forms
             {
                 AddFiles(theDialog.FileNames);
 
-                if (backgroundWorker1.IsBusy != true)
-                {
-                    backgroundWorker1.RunWorkerAsync();
-                }
+                ReloadImages();
             }
         }
         private void AddFiles(string[] files)
@@ -126,10 +126,7 @@ namespace FModel.Forms
                     listBox1.Items.RemoveAt(listBox1.SelectedIndices[i]);
                 }
 
-                if (backgroundWorker1.IsBusy != true)
-                {
-                    backgroundWorker1.RunWorkerAsync();
-                }
+                ReloadImages();
             }
         }
 
@@ -182,6 +179,15 @@ namespace FModel.Forms
 
             GC.Collect();
             backgroundWorker1.Dispose();
+
+            if (allControls.Count > 0)
+            {
+                foreach (Control control in allControls)
+                {
+                    if (control != null)
+                        control.Enabled = true;
+                }
+            }
         }
 
         private void BackgroundWorker1_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
@@ -207,10 +213,7 @@ namespace FModel.Forms
                         // scrolling has stopped so we are good to go ahead and do stuff
                         _scrollingTimer.Stop();
 
-                        if (backgroundWorker1.IsBusy != true)
-                        {
-                            backgroundWorker1.RunWorkerAsync();
-                        }
+                        ReloadImages();
 
                         _scrollingTimer.Dispose();
                         _scrollingTimer = null;
@@ -222,6 +225,99 @@ namespace FModel.Forms
                     }
                 };
                 _scrollingTimer.Start();
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            // Up
+            bool reloadImage = false;
+            listBox1.BeginUpdate();
+            int[] indices = listBox1.SelectedIndices.Cast<int>().ToArray();
+            if (indices.Length > 0 && indices[0] > 0)
+            {
+                for (int i = 0; i < listBox1.Items.Count; ++i)
+                {
+                    if (indices.Contains(i))
+                    {
+                        object moveItem = listBox1.Items[i];
+                        listBox1.Items.Remove(moveItem);
+                        listBox1.Items.Insert(i - 1, moveItem);
+                        listBox1.SetSelected(i - 1, true);
+
+                        reloadImage = true;
+                    }
+                }
+            }
+
+            listBox1.EndUpdate();
+
+            if (reloadImage)
+                ReloadImages();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            // Down
+            bool reloadImage = false;
+            listBox1.BeginUpdate();
+            int[] indices = listBox1.SelectedIndices.Cast<int>().ToArray();
+            if (indices.Length > 0 && indices[indices.Length - 1] < listBox1.Items.Count - 1)
+            {
+                for (int i = listBox1.Items.Count - 1; i > -1; --i)
+                {
+                    if (indices.Contains(i))
+                    {
+                        object itemTemp = listBox1.Items[i];
+                        listBox1.Items.Remove(itemTemp);
+                        listBox1.Items.Insert(i + 1, itemTemp);
+                        listBox1.SetSelected(i + 1, true);
+                        reloadImage = true;
+                    }
+                }
+            }
+
+            listBox1.EndUpdate();
+
+            if (reloadImage)
+                ReloadImages();
+        }
+
+        private void ReloadImages()
+        {
+            if (allControls.Count > 0)
+            {
+                foreach (Control control in allControls)
+                {
+                    if (control != null)
+                        control.Enabled = false;
+                }
+            }
+
+            if (backgroundWorker1.IsBusy != true)
+                backgroundWorker1.RunWorkerAsync();
+        }
+
+        private void AddAllControls()
+        {
+            allControls = new List<Control>();
+
+            if (Controls.Count > 0)
+            {
+                foreach (Control control in Controls)
+                {
+                    if (!allControls.Contains(control))
+                        allControls.Add(control);
+                }
+            }
+
+            if (groupBox1.Controls.Count > 0)
+            {
+                foreach (Control control in groupBox1.Controls)
+                {
+                    if (!allControls.Contains(control))
+                        allControls.Add(control);
+                }
             }
         }
     }
