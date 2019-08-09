@@ -281,7 +281,7 @@ namespace FModel
                     Font goodFont = FontUtilities.FindFont(
                         myGraphic,
                         text,
-                        Settings.Default.rarityNew ? new Rectangle(5, 405, 512, 55).Size : new Rectangle(5, 395, 512, 49).Size,
+                        string.Equals(Settings.Default.rarityDesign, "Flat") ? new Rectangle(5, 405, 512, 55).Size : new Rectangle(5, 395, 512, 49).Size,
                         new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : Settings.Default.IconLanguage == "Russian" || Settings.Default.IconLanguage == "Chinese (S)" ? FontUtilities.pfc.Families[1] : FontUtilities.pfc.Families[0], 35)
                         );
 
@@ -289,8 +289,8 @@ namespace FModel
                         text,
                         goodFont,
                         new SolidBrush(Color.White),
-                        Settings.Default.rarityNew ? new Point(522, 405) : new Point(522 / 2, 395),
-                        Settings.Default.rarityNew ? FontUtilities.rightString : FontUtilities.centeredString
+                        string.Equals(Settings.Default.rarityDesign, "Flat") ? new Point(522, 405) : new Point(522 / 2, 395),
+                        string.Equals(Settings.Default.rarityDesign, "Flat") ? FontUtilities.rightString : FontUtilities.centeredString
                         );
                 }
             }
@@ -348,10 +348,10 @@ namespace FModel
                 {
                     myGraphic.DrawString(
                         descriptionText,
-                        new Font("Arial", Settings.Default.rarityNew ? 9 : 10),
+                        new Font("Arial", string.Equals(Settings.Default.rarityDesign, "Flat") ? 9 : 10),
                         new SolidBrush(Color.White),
-                        new RectangleF(5, Settings.Default.rarityNew ? 455 : 441, 512, Settings.Default.rarityNew ? 42 : 49),
-                        Settings.Default.rarityNew ? FontUtilities.rightString : FontUtilities.centeredStringLine
+                        new RectangleF(5, string.Equals(Settings.Default.rarityDesign, "Flat") ? 455 : 441, 512, string.Equals(Settings.Default.rarityDesign, "Flat") ? 42 : 49),
+                        string.Equals(Settings.Default.rarityDesign, "Flat") ? FontUtilities.rightString : FontUtilities.centeredStringLine
                         );
                 }
             }

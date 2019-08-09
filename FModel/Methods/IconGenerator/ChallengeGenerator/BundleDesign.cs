@@ -331,7 +331,8 @@ namespace FModel
             }
 
             drawQuestBackground(myBitmap, false);
-            toDrawOn.DrawString(count == "-1" ? all : any, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 25), new SolidBrush(Color.White), new Point(55, theY + 15));
+            Font goodFont = FontUtilities.FindFont(toDrawOn, count == "-1" ? all : any, new Rectangle(57, theY + 7, myBitmap.Width - 227, 45).Size, new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : FontUtilities.pfc.Families[1], 30)); //size in "new Font()" is never check
+            toDrawOn.DrawString(count == "-1" ? all : any, goodFont, new SolidBrush(Color.White), new Point(55, theY + 15));
         }
 
         /// <summary>

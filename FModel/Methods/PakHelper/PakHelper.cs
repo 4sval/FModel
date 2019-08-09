@@ -73,7 +73,7 @@ namespace FModel
                     catch (Exception ex)
                     {
                         if (string.Equals(ex.Message, "Extraction failed")) { new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole(); }
-                        else { new UpdateMyConsole("Message: " + ex.Message + "\nSource: " + ex.Source + "\nTarget: " + ex.TargetSite, Color.Red, true).AppendToConsole(); }
+                        else { new UpdateMyConsole("Message: " + ex.Message + "\nSource: " + ex.Source + "\nTarget: " + ex.TargetSite + "\n\nContact me: @AsvalFN on Twitter", Color.Red, true).AppendToConsole(); return; }
 
                         if (theExtractor != null) { theExtractor.Dispose(); }
                         continue;

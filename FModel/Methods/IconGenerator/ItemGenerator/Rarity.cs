@@ -17,20 +17,20 @@ namespace FModel
             switch (raritiesToken != null ? raritiesToken.Value<string>() : "")
             {
                 case "EFortRarity::Transcendent":
-                    return Settings.Default.rarityNew ? Resources.T512 : Resources.T512v1;
+                    return string.Equals(Settings.Default.rarityDesign, "Flat") ? Resources.T512 : Resources.T512v1;
                 case "EFortRarity::Mythic":
-                    return Settings.Default.rarityNew ? Resources.M512 : Resources.M512v1;
+                    return string.Equals(Settings.Default.rarityDesign, "Flat") ? Resources.M512 : Resources.M512v1;
                 case "EFortRarity::Legendary":
-                    return Settings.Default.rarityNew ? Resources.L512 : Resources.L512v1;
+                    return string.Equals(Settings.Default.rarityDesign, "Flat") ? Resources.L512 : Resources.L512v1;
                 case "EFortRarity::Epic":
                 case "EFortRarity::Quality":
-                    return Settings.Default.rarityNew ? Resources.E512 : Resources.E512v1;
+                    return string.Equals(Settings.Default.rarityDesign, "Flat") ? Resources.E512 : Resources.E512v1;
                 case "EFortRarity::Rare":
-                    return Settings.Default.rarityNew ? Resources.R512 : Resources.R512v1;
+                    return string.Equals(Settings.Default.rarityDesign, "Flat") ? Resources.R512 : Resources.R512v1;
                 case "EFortRarity::Common":
-                    return Settings.Default.rarityNew ? Resources.C512 : Resources.C512v1;
+                    return string.Equals(Settings.Default.rarityDesign, "Flat") ? Resources.C512 : Resources.C512v1;
                 default:
-                    return Settings.Default.rarityNew ? Resources.U512 : Resources.U512v1;
+                    return string.Equals(Settings.Default.rarityDesign, "Flat") ? Resources.U512 : Resources.U512v1;
             }
         }
 
@@ -44,7 +44,7 @@ namespace FModel
         {
             if (theSeries.Equals("MarvelSeries"))
             {
-                return Settings.Default.rarityNew ? Resources.Marvel512 : Resources.Marvel512v1;
+                return string.Equals(Settings.Default.rarityDesign, "Flat") ? Resources.Marvel512 : Resources.Marvel512v1;
             }
             else
             {
@@ -63,7 +63,7 @@ namespace FModel
         {
             if (specialMode == "ammo")
             {
-                return Settings.Default.rarityNew ? Resources.C512 : Resources.C512v1;
+                return string.Equals(Settings.Default.rarityDesign, "Flat") ? Resources.C512 : Resources.C512v1;
             }
             else
             {

@@ -988,7 +988,7 @@ namespace FModel
 
             ItemIcon.DrawWatermark(g);
 
-            if (Settings.Default.rarityNew)
+            if (string.Equals(Settings.Default.rarityDesign, "Flat"))
             {
                 GraphicsPath p = new GraphicsPath();
                 p.StartFigure();

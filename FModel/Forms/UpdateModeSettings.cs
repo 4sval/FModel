@@ -26,7 +26,7 @@ namespace FModel.Forms
                 setCheckListBoxItemChecked(parameters);
             }
 
-            checkBox1.Checked = Properties.Settings.Default.rarityNew;
+            comboBox2.SelectedIndex = comboBox2.FindStringExact(Properties.Settings.Default.rarityDesign);
 
             //WATERMARK
             button1.Enabled = Properties.Settings.Default.UMWatermark;
@@ -45,11 +45,11 @@ namespace FModel.Forms
                 Bitmap bmp = null;
                 if (Properties.Settings.Default.UMFeatured)
                 {
-                    bmp = new Bitmap(Properties.Settings.Default.rarityNew ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1));
+                    bmp = new Bitmap(string.Equals(Properties.Settings.Default.rarityDesign, "Flat") ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1));
                 }
                 else
                 {
-                    bmp = new Bitmap(Properties.Settings.Default.rarityNew ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1));
+                    bmp = new Bitmap(string.Equals(Properties.Settings.Default.rarityDesign, "Flat") ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1));
                 }
                 Graphics g = Graphics.FromImage(bmp);
 
@@ -71,7 +71,7 @@ namespace FModel.Forms
 
             Properties.Settings.Default.UMFeatured              = checkBox8.Checked;
             Properties.Settings.Default.UMWatermark             = checkBox7.Checked;
-            Properties.Settings.Default.rarityNew               = checkBox1.Checked;
+            Properties.Settings.Default.rarityDesign            = comboBox2.SelectedItem.ToString();
 
             Properties.Settings.Default.UMSize                  = trackBar2.Value;
             Properties.Settings.Default.UMOpacity               = trackBar1.Value;
@@ -269,7 +269,7 @@ namespace FModel.Forms
         {
             if (!checkBox8.Checked)
             {
-                Bitmap bmp = checkBox1.Checked ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1);
+                Bitmap bmp = string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1);
                 Graphics g = Graphics.FromImage(bmp);
                 if (File.Exists(Properties.Settings.Default.UMFilename))
                 {
@@ -281,7 +281,7 @@ namespace FModel.Forms
             }
             if (checkBox8.Checked)
             {
-                Bitmap bmp = checkBox1.Checked ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1);
+                Bitmap bmp = string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1);
                 Graphics g = Graphics.FromImage(bmp);
                 if (File.Exists(Properties.Settings.Default.UMFilename))
                 {
@@ -293,9 +293,9 @@ namespace FModel.Forms
             }
         }
 
-        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        private void ComboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!checkBox1.Checked)
+            if (string.Equals(comboBox2.SelectedItem.ToString(), "Default"))
             {
                 Bitmap bmp = checkBox8.Checked ? new Bitmap(Resources.wTemplateFv1) : new Bitmap(Resources.wTemplatev1);
                 Graphics g = Graphics.FromImage(bmp);
@@ -307,7 +307,7 @@ namespace FModel.Forms
                 }
                 wPictureBox.Image = bmp;
             }
-            if (checkBox1.Checked)
+            if (string.Equals(comboBox2.SelectedItem.ToString(), "Flat"))
             {
                 Bitmap bmp = checkBox8.Checked ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplate);
                 Graphics g = Graphics.FromImage(bmp);

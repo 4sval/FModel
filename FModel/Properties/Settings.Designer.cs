@@ -277,18 +277,6 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool rarityNew {
-            get {
-                return ((bool)(this["rarityNew"]));
-            }
-            set {
-                this["rarityNew"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string UMParameters {
             get {
@@ -344,6 +332,18 @@ namespace FModel.Properties {
             }
             set {
                 this["challengesColors"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
+        public string rarityDesign {
+            get {
+                return ((string)(this["rarityDesign"]));
+            }
+            set {
+                this["rarityDesign"] = value;
             }
         }
     }

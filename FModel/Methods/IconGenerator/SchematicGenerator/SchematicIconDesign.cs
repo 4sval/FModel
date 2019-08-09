@@ -49,7 +49,7 @@ namespace FModel
                 toDrawOn.DrawImage(itemIcon, new Point(0, 0));
             }
 
-            if (Settings.Default.rarityNew)
+            if (string.Equals(Properties.Settings.Default.rarityDesign, "Flat"))
             {
                 GraphicsPath p = new GraphicsPath();
                 p.StartFigure();

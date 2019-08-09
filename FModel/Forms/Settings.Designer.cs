@@ -38,7 +38,6 @@ namespace FModel.Forms
             this.label1 = new System.Windows.Forms.Label();
             this.OKButton = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.checkBox8 = new System.Windows.Forms.CheckBox();
@@ -61,6 +60,8 @@ namespace FModel.Forms
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -143,7 +144,7 @@ namespace FModel.Forms
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OKButton.Location = new System.Drawing.Point(475, 493);
+            this.OKButton.Location = new System.Drawing.Point(475, 486);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(97, 21);
             this.OKButton.TabIndex = 15;
@@ -153,7 +154,8 @@ namespace FModel.Forms
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.checkBox1);
+            this.groupBox4.Controls.Add(this.comboBox2);
+            this.groupBox4.Controls.Add(this.label2);
             this.groupBox4.Controls.Add(this.comboBox1);
             this.groupBox4.Controls.Add(this.label10);
             this.groupBox4.Controls.Add(this.checkBox8);
@@ -167,21 +169,10 @@ namespace FModel.Forms
             this.groupBox4.Controls.Add(this.wPictureBox);
             this.groupBox4.Location = new System.Drawing.Point(12, 122);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(560, 195);
+            this.groupBox4.Size = new System.Drawing.Size(560, 190);
             this.groupBox4.TabIndex = 16;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Icon Creation";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(244, 54);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(139, 17);
-            this.checkBox1.TabIndex = 30;
-            this.checkBox1.Text = "New Rarity Background";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
             // 
             // comboBox1
             // 
@@ -220,7 +211,7 @@ namespace FModel.Forms
             // checkBox8
             // 
             this.checkBox8.AutoSize = true;
-            this.checkBox8.Location = new System.Drawing.Point(6, 54);
+            this.checkBox8.Location = new System.Drawing.Point(206, 167);
             this.checkBox8.Name = "checkBox8";
             this.checkBox8.Size = new System.Drawing.Size(177, 17);
             this.checkBox8.TabIndex = 26;
@@ -231,7 +222,7 @@ namespace FModel.Forms
             // checkBox7
             // 
             this.checkBox7.AutoSize = true;
-            this.checkBox7.Location = new System.Drawing.Point(6, 90);
+            this.checkBox7.Location = new System.Drawing.Point(6, 87);
             this.checkBox7.Name = "checkBox7";
             this.checkBox7.Size = new System.Drawing.Size(15, 14);
             this.checkBox7.TabIndex = 25;
@@ -242,7 +233,7 @@ namespace FModel.Forms
             // 
             this.filenameLabel.AutoEllipsis = true;
             this.filenameLabel.AutoSize = true;
-            this.filenameLabel.Location = new System.Drawing.Point(115, 91);
+            this.filenameLabel.Location = new System.Drawing.Point(115, 88);
             this.filenameLabel.MaximumSize = new System.Drawing.Size(260, 13);
             this.filenameLabel.Name = "filenameLabel";
             this.filenameLabel.Size = new System.Drawing.Size(60, 13);
@@ -251,7 +242,7 @@ namespace FModel.Forms
             // 
             // trackBar1
             // 
-            this.trackBar1.Location = new System.Drawing.Point(58, 144);
+            this.trackBar1.Location = new System.Drawing.Point(58, 141);
             this.trackBar1.Maximum = 100;
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(325, 45);
@@ -262,7 +253,7 @@ namespace FModel.Forms
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(22, 115);
+            this.label9.Location = new System.Drawing.Point(22, 112);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(30, 13);
             this.label9.TabIndex = 23;
@@ -270,7 +261,7 @@ namespace FModel.Forms
             // 
             // trackBar2
             // 
-            this.trackBar2.Location = new System.Drawing.Point(58, 115);
+            this.trackBar2.Location = new System.Drawing.Point(58, 112);
             this.trackBar2.Maximum = 1000;
             this.trackBar2.Minimum = 1;
             this.trackBar2.Name = "trackBar2";
@@ -284,7 +275,7 @@ namespace FModel.Forms
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 147);
+            this.label8.Location = new System.Drawing.Point(6, 144);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(46, 13);
             this.label8.TabIndex = 21;
@@ -292,7 +283,7 @@ namespace FModel.Forms
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(27, 84);
+            this.button1.Location = new System.Drawing.Point(27, 81);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(82, 24);
             this.button1.TabIndex = 19;
@@ -302,6 +293,7 @@ namespace FModel.Forms
             // 
             // wPictureBox
             // 
+            this.wPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.wPictureBox.Image = global::FModel.Properties.Resources.wTemplatev1;
             this.wPictureBox.Location = new System.Drawing.Point(389, 19);
             this.wPictureBox.Name = "wPictureBox";
@@ -322,7 +314,7 @@ namespace FModel.Forms
             this.groupBox6.Controls.Add(this.pictureBox1);
             this.groupBox6.Controls.Add(this.textBox6);
             this.groupBox6.Controls.Add(this.label12);
-            this.groupBox6.Location = new System.Drawing.Point(12, 323);
+            this.groupBox6.Location = new System.Drawing.Point(12, 318);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(560, 158);
             this.groupBox6.TabIndex = 19;
@@ -430,11 +422,33 @@ namespace FModel.Forms
             this.label12.TabIndex = 9;
             this.label12.Text = "Watermark:";
             // 
+            // comboBox2
+            // 
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "Default",
+            "Flat"});
+            this.comboBox2.Location = new System.Drawing.Point(85, 48);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(294, 21);
+            this.comboBox2.TabIndex = 31;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.ComboBox2_SelectedIndexChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 51);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(73, 13);
+            this.label2.TabIndex = 30;
+            this.label2.Text = "Rarity Design:";
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 526);
+            this.ClientSize = new System.Drawing.Size(584, 519);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.OKButton);
@@ -490,7 +504,6 @@ namespace FModel.Forms
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.CheckBox checkBox_tryToOpen;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.CheckBox checkBox2;
@@ -499,5 +512,7 @@ namespace FModel.Forms
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.Label label2;
     }
 }

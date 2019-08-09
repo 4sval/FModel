@@ -29,8 +29,6 @@ namespace FModel.Forms
             textBox2.Text = Properties.Settings.Default.PAKsPath;
             textBox1.Text = Properties.Settings.Default.ExtractOutput;
 
-            checkBox1.Checked = Properties.Settings.Default.rarityNew;
-
             textBox6.Text = Properties.Settings.Default.challengesWatermark;
             if (string.IsNullOrWhiteSpace(textBox6.Text))
             {
@@ -50,6 +48,8 @@ namespace FModel.Forms
             trackBar2.Enabled   = Properties.Settings.Default.isWatermark;
             trackBar1.Value     = Properties.Settings.Default.wOpacity;
             trackBar2.Value     = Properties.Settings.Default.wSize;
+
+            comboBox2.SelectedIndex = comboBox2.FindStringExact(Properties.Settings.Default.rarityDesign);
 
             //CHALLENGES
             button3.Enabled = Properties.Settings.Default.isChallengesTheme;
@@ -71,11 +71,11 @@ namespace FModel.Forms
                 Bitmap bmp = null;
                 if (Properties.Settings.Default.loadFeaturedImage)
                 {
-                    bmp = new Bitmap(Properties.Settings.Default.rarityNew ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1));
+                    bmp = new Bitmap(string.Equals(Properties.Settings.Default.rarityDesign, "Flat") ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1));
                 }
                 else
                 {
-                    bmp = new Bitmap(Properties.Settings.Default.rarityNew ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1));
+                    bmp = new Bitmap(string.Equals(Properties.Settings.Default.rarityDesign, "Flat") ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1));
                 }
                 Graphics g = Graphics.FromImage(bmp);
 
@@ -121,7 +121,7 @@ namespace FModel.Forms
 
             Properties.Settings.Default.tryToOpenAssets     = checkBox_tryToOpen.Checked;
 
-            Properties.Settings.Default.rarityNew           = checkBox1.Checked;
+            Properties.Settings.Default.rarityDesign = comboBox2.SelectedItem.ToString();
 
             //WATERMARK
             Properties.Settings.Default.isWatermark = checkBox7.Checked; 
@@ -216,7 +216,7 @@ namespace FModel.Forms
         {
             if (!checkBox8.Checked)
             {
-                Bitmap bmp = checkBox1.Checked ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1);
+                Bitmap bmp = string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1);
                 Graphics g = Graphics.FromImage(bmp);
                 if (File.Exists(Properties.Settings.Default.wFilename))
                 {
@@ -228,7 +228,7 @@ namespace FModel.Forms
             }
             if (checkBox8.Checked)
             {
-                Bitmap bmp = checkBox1.Checked ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1);
+                Bitmap bmp = string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1);
                 Graphics g = Graphics.FromImage(bmp);
                 if (File.Exists(Properties.Settings.Default.wFilename))
                 {
@@ -240,9 +240,9 @@ namespace FModel.Forms
             }
         }
 
-        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        private void ComboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!checkBox1.Checked)
+            if (string.Equals(comboBox2.SelectedItem.ToString(), "Default"))
             {
                 Bitmap bmp = checkBox8.Checked ? new Bitmap(Resources.wTemplateFv1) : new Bitmap(Resources.wTemplatev1);
                 Graphics g = Graphics.FromImage(bmp);
@@ -254,7 +254,7 @@ namespace FModel.Forms
                 }
                 wPictureBox.Image = bmp;
             }
-            if (checkBox1.Checked)
+            if (string.Equals(comboBox2.SelectedItem.ToString(), "Flat"))
             {
                 Bitmap bmp = checkBox8.Checked ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplate);
                 Graphics g = Graphics.FromImage(bmp);
