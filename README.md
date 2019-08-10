@@ -57,19 +57,21 @@
 
 ## DOCUMENTATION
 ### Important
-PLEASE FOR THE LOVE OF GOD IF YOU DON'T KNOW SHIT ABOUT FORTNITE GAME FILES, DON'T USE IT... I don't wanna spend my time trying to explain what you don't know if you're only gonna use the program once in your life, k thx.
+**PLEASE, IF YOU DON'T KNOW ANYTHING ABOUT FORTNITE GAME FILES/DATAMINING DON'T USE THIS PROGRAM. Asval and those who help make FModel a program have lives to live and can't explain to every single person how to work the program.**
+
+If you don't know how to compile code from the main page, download the newest release in the releases tab at the top of the site.
 
 If issues occur when compiling the source code, make sure that the software is being built for x64.
 
-If somehow FModel crashed due to permissions, please either disable Windows Defender or add and exception for FModel.exe.
+If somehow FModel crashed due to permissions, please either disable Windows Defender or add an exception for FModel.exe.
 Also if you find this project useful, feel free to give it a :star: thank you :kissing_heart:
 ### Features
  1. Read, Search, Extract, Serialize
  2. Icon Creation for various BR/STW Cosmetics or Challenges with language support
  3. Icon Merger
- 4. Automatic Key detection for Dynamic PAKs
- 5. Twitter Api Authentication to send Tweets from within FModel
-### What i'm using
+ 4. Automatic Key Detection for Dynamic PAKs
+ 5. Twitter API Authentication to send Tweets from within FModel
+### What I'm using
   - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - *C# Bind*
   - [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
   - [ScintillaNET](https://www.nuget.org/packages/jacobslusser.ScintillaNET)
@@ -81,9 +83,9 @@ Also if you find this project useful, feel free to give it a :star: thank you :k
 
 
 ### The History
-Basically i was bored and wanted to make something like [UModel](https://github.com/gildor2/UModel) but with a Fortnite Touch and more features.
+Basically, I was bored one day and wanted to make something like [UModel](https://github.com/gildor2/UModel) but with a Fortnite Touch and more features.
 
-I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) if you wanna use something made professionally.
+I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) if you want to use something made professionally.
 
 ## TODO
   - [ ] Code refactoring
