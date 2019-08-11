@@ -130,24 +130,6 @@
   <data name="properties_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\properties_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="C512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\C512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="L512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\L512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="M512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\M512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="R512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\R512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="T512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="U512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\U512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="unknown512" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\unknown512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -178,9 +160,6 @@
   <data name="Pets64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\T-Icon-Pets-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Marvel512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Marvel512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="BurbankBigCondensed_Black" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BurbankBigCondensed-Black.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -205,11 +184,17 @@
   <data name="Twitter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\twitter.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="E512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\E512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="FModel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FModel.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wTemplateFv1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wTemplateFv1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wTemplatev1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wTemplatev1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cTemplate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="C512v1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\C512v1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -234,14 +219,5 @@
   </data>
   <data name="U512v1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\U512v1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="wTemplateFv1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\wTemplateFv1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="wTemplatev1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\wTemplatev1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cTemplate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

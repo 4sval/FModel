@@ -2,9 +2,11 @@ using csharp_wick;
 using FModel.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace FModel
 {
@@ -216,9 +218,10 @@ namespace FModel
         /// <param name="catName"></param>
         private static void GetFeaturedItemIcon(JToken theItem, string catName)
         {
-            try
+            string value = ThePak.AllpaksDictionary.Where(x => string.Equals(x.Key, catName, StringComparison.CurrentCultureIgnoreCase)).Select(d => d.Key).FirstOrDefault();
+            if (value != null)
             {
-                string catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[catName], catName);
+                string catalogFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[value], value);
                 if (!string.IsNullOrEmpty(catalogFilePath))
                 {
                     Checking.WasFeatured = true;
@@ -229,11 +232,11 @@ namespace FModel
                         {
                             if (JohnWick.MyAsset.GetSerialized() != null)
                             {
-                                ThePak.CurrentUsedItem = catName;
+                                ThePak.CurrentUsedItem = value;
                                 dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
                                 JArray AssetArray = JArray.FromObject(AssetData);
 
-                                switch (catName)
+                                switch (value)
                                 {
                                     case "DA_Featured_Glider_ID_070_DarkViking":
                                     case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
@@ -275,13 +278,9 @@ namespace FModel
                         }
                     }
                 }
-                else
-                    GetItemIcon(theItem);
             }
-            catch (KeyNotFoundException)
-            {
+            else
                 GetItemIcon(theItem);
-            }
         }
 
         /// <summary>

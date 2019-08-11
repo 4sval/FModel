@@ -52,6 +52,7 @@ namespace FModel
         public static Dictionary<string, string> AllpaksDictionary { get; set; }
         public static Dictionary<string, PakExtractor> PaksExtractorDictionary { get; set; }
         public static Dictionary<PakExtractor, string[]> PaksFileArrayDictionary { get; set; }
+        public static Dictionary<string, string> PaksMountPoint { get; set; }
 
         /// <summary>
         /// read the GUID of a the param, it's basically just reading some bytes at the end of a pak file, but it's useful to tell if the pak is dynamically encrypted

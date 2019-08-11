@@ -37,24 +37,25 @@ namespace FModel
                     }
                     else { if (theExtractor != null) { theExtractor.Dispose(); } break; }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    if (!string.Equals(ex.Message, "Extraction failed")) { new UpdateMyConsole("Message: " + ex.Message + "\nSource: " + ex.Source + "\nTarget: " + ex.TargetSite + "\n\nContact me: @AsvalFN on Twitter or open an issue on GitHub", Color.Red, true).AppendToConsole(); return; }
+
                     if (theExtractor != null) { theExtractor.Dispose(); }
-                    break;
+                    break; //if one of the main pak file doesn't work, all the other doesn't work either
                 }
 
-                string[] CurrentUsedPakLines = theExtractor.GetFileList().ToArray();
-                if (CurrentUsedPakLines != null)
+                if (theExtractor.GetFileList().ToArray() != null)
                 {
                     bMainKeyWorking = true;
                     string mountPoint = theExtractor.GetMountPoint();
+                    ThePak.PaksMountPoint.Add(ThePak.mainPaksList[i].thePak, mountPoint.Substring(9));
 
                     ThePak.PaksExtractorDictionary.Add(ThePak.mainPaksList[i].thePak, theExtractor);
-                    ThePak.PaksFileArrayDictionary.Add(theExtractor, CurrentUsedPakLines); //in RegisterInDict we add the mount point to CurrentUsedPakLines
+                    ThePak.PaksFileArrayDictionary.Add(theExtractor, theExtractor.GetFileList().ToArray());
 
-                    RegisterInDict(ThePak.mainPaksList[i].thePak, CurrentUsedPakLines, mountPoint, theSinglePak, loadAllPaKs);
+                    RegisterInDict(ThePak.mainPaksList[i].thePak, theExtractor.GetFileList().ToArray(), mountPoint, theSinglePak, loadAllPaKs);
                 }
-                CurrentUsedPakLines = null;
             }
             if (bMainKeyWorking) { LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage); }
 
@@ -73,23 +74,22 @@ namespace FModel
                     catch (Exception ex)
                     {
                         if (string.Equals(ex.Message, "Extraction failed")) { new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole(); }
-                        else { new UpdateMyConsole("Message: " + ex.Message + "\nSource: " + ex.Source + "\nTarget: " + ex.TargetSite + "\n\nContact me: @AsvalFN on Twitter", Color.Red, true).AppendToConsole(); return; }
+                        else { new UpdateMyConsole("Message: " + ex.Message + "\nSource: " + ex.Source + "\nTarget: " + ex.TargetSite + "\n\nContact me: @AsvalFN on Twitter or open an issue on GitHub", Color.Red, true).AppendToConsole(); return; }
 
                         if (theExtractor != null) { theExtractor.Dispose(); }
                         continue;
                     }
 
-                    string[] CurrentUsedPakLines = theExtractor.GetFileList().ToArray();
-                    if (CurrentUsedPakLines != null)
+                    if (theExtractor.GetFileList().ToArray() != null)
                     {
                         string mountPoint = theExtractor.GetMountPoint();
+                        ThePak.PaksMountPoint.Add(ThePak.dynamicPaksList[i].thePak, mountPoint.Substring(9));
 
                         ThePak.PaksExtractorDictionary.Add(ThePak.dynamicPaksList[i].thePak, theExtractor);
-                        ThePak.PaksFileArrayDictionary.Add(theExtractor, CurrentUsedPakLines); //in RegisterInDict we add the mount point to CurrentUsedPakLines
+                        ThePak.PaksFileArrayDictionary.Add(theExtractor, theExtractor.GetFileList().ToArray());
 
-                        RegisterInDict(ThePak.dynamicPaksList[i].thePak, CurrentUsedPakLines, mountPoint, theSinglePak, loadAllPaKs);
+                        RegisterInDict(ThePak.dynamicPaksList[i].thePak, theExtractor.GetFileList().ToArray(), mountPoint, theSinglePak, loadAllPaKs);
                     }
-                    CurrentUsedPakLines = null;
                 }
             }
 

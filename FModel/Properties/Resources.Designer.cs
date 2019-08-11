@@ -113,16 +113,6 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap C512 {
-            get {
-                object obj = ResourceManager.GetObject("C512", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap C512v1 {
             get {
                 object obj = ResourceManager.GetObject("C512v1", resourceCulture);
@@ -156,16 +146,6 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap dmg64 {
             get {
                 object obj = ResourceManager.GetObject("dmg64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap E512 {
-            get {
-                object obj = ResourceManager.GetObject("E512", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -223,16 +203,6 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap L512 {
-            get {
-                object obj = ResourceManager.GetObject("L512", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap L512v1 {
             get {
                 object obj = ResourceManager.GetObject("L512v1", resourceCulture);
@@ -253,29 +223,9 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap M512 {
-            get {
-                object obj = ResourceManager.GetObject("M512", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap M512v1 {
             get {
                 object obj = ResourceManager.GetObject("M512v1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Marvel512 {
-            get {
-                object obj = ResourceManager.GetObject("Marvel512", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -323,16 +273,6 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap R512 {
-            get {
-                object obj = ResourceManager.GetObject("R512", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap R512v1 {
             get {
                 object obj = ResourceManager.GetObject("R512v1", resourceCulture);
@@ -356,16 +296,6 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap StatusAnnotations_Information_16xLG_color {
             get {
                 object obj = ResourceManager.GetObject("StatusAnnotations_Information_16xLG_color", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap T512 {
-            get {
-                object obj = ResourceManager.GetObject("T512", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -397,16 +327,6 @@ namespace FModel.Properties {
             get {
                 object obj = ResourceManager.GetObject("Twitter", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap U512 {
-            get {
-                object obj = ResourceManager.GetObject("U512", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

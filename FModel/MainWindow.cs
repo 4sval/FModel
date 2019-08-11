@@ -393,6 +393,7 @@ namespace FModel
             ThePak.AllpaksDictionary = new Dictionary<string, string>();
             ThePak.PaksExtractorDictionary = new Dictionary<string, PakExtractor>();
             ThePak.PaksFileArrayDictionary = new Dictionary<PakExtractor, string[]>();
+            ThePak.PaksMountPoint = new Dictionary<string, string>();
             RegisterSettings.updateModeDictionary = new Dictionary<string, string>();
             PakHelper.PakAsTxt = null;
 
