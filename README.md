@@ -1,7 +1,7 @@
 ﻿# FModel
 
 [![](https://img.shields.io/github/downloads/iAmAsval/FModel/total.svg?color=green&label=Total%20Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases)
-[![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=2.4.3&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel//releases/latest)
+[![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=2.4.4&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel//releases/latest)
 [![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
 [![](https://img.shields.io/badge/Discord-Need%20Help%3F-7289da.svg?logo=discord)](https://discord.gg/JmWvXKb)
@@ -12,13 +12,13 @@
 ### Prerequisites
 [.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471)
 ### Download
-[![](https://img.shields.io/badge/Release-2.4.3-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/latest)
+[![](https://img.shields.io/badge/Release-2.4.4-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/latest)
 ### How To Use
 ><p align="center"><a href="https://www.youtube.com/watch?v=rWlux5vg9Xs">Video Tutorial by FireMonkey</a></p>
 
 **1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder.
 
-![](https://i.imgur.com/9AUVUVU.gif)
+![](https://i.imgur.com/j0WJcDW.gif)
 
 **2.** Restart the executable, go to the AES Manager and add your AES Keys, click **Load** and select your .PAK file
 - It will parse all Assets contained in the selected .PAK file with their respective path
@@ -38,13 +38,13 @@
     - Try to convert the Asset to OTF
 
 ### Difference Mode
-**1.** Create a backup of your .PAK files before the update (**Load** -> **Backup PAKs**)
+**1.** Create a backup of your .PAK files before the update, or download one of those i made
 
 **2.** Enable Difference Mode
 
 **3.** Click `Load Difference`
 
-![](https://i.imgur.com/36icHam.gif)
+![](https://i.imgur.com/us68z5R.gif)
 
 ### Update Mode
 **1.** Enable Difference Mode, then Update Mode
@@ -53,18 +53,34 @@
 
 **3.** Click `Load And Extract Difference`
 
-[Demonstration](https://streamable.com/234bg)
+[Demonstration](https://streamable.com/c39oz)
 
 ## DOCUMENTATION
-### Important
-**PLEASE, IF YOU DON'T KNOW ANYTHING ABOUT FORTNITE GAME FILES/DATAMINING DON'T USE THIS PROGRAM. Asval and those who help make FModel a program have lives to live and can't explain to every single person how to work the program.**
+### Q&A
+_What's FModel?_
 
-If you don't know how to compile code from the main page, download the newest release in the releases tab at the top of the site.
+    - FModel is a Fortnite .PAK files explorer mainly known to create icons for different BR/STW items as well as all BR challenges
 
-If issues occur when compiling the source code, make sure that the software is being built for x64.
+_Where can i download FModel?_
+[Latest Version](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)
 
-If somehow FModel crashed due to permissions, please either disable Windows Defender or add an exception for FModel.exe.
-Also if you find this project useful, feel free to give it a :star: thank you :kissing_heart:
+_I'm sure the key is correct but opening the file with this key isn't working_
+
+    - First, make sure `C:\Windows\System32\vcruntime140.dll` isn't missing. If it's missing you can download it by installing [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads).
+    - If it's not missing you can open on issue on GitHub or contact us on Twitter @AsvalFN @MaikyMOficial @iFireMonkey
+
+_I can't compile the solution on Visual Studio_
+
+    - If issues occur when compiling the source code, make sure that the software is being built for x64.
+
+_Why FModel?_
+
+    - The name come from the popular Unreal Engine Viewer [UModel](https://github.com/gildor2/UModel)
+    - It wasn't made to be a competitor but more to complete what was missing exclusively on Fortnite
+    - Icon creation with languages support, an area to display the serialized asset, single pak file loader, and more).
+
+If you find this project useful, feel free to give it a :star: thank you :kissing_heart:
+
 ### Features
  1. Read, Search, Extract, Serialize
  2. Icon Creation for various BR/STW Cosmetics or Challenges with language support
@@ -80,12 +96,6 @@ Also if you find this project useful, feel free to give it a :star: thank you :k
   - [Cyotek ColorPicker](https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)
 ### Contributors
 <table><tr><td align="center"><a href="https://github.com/SirWaddles"><img src="https://avatars1.githubusercontent.com/u/769399?s=200&v=4" width="100px;" alt="Waddlesworth"/><br /><sub><b>Waddlesworth</b></sub></a><br><a href="https://github.com/SirWaddles" title="Github">🔧</a></td><td align="center"><a href="https://github.com/MaikyM"><img src="https://avatars3.githubusercontent.com/u/51415805?s=200&v=4" width="100px;" alt="Maiky M"/><br /><sub><b>Maiky M</b></sub></a><br /><a href="https://github.com/MaikyM" title="Github">🔧</a><a href="https://twitter.com/MaikyMOficial" title="Twitter">🐦</a></td><td align="center"><a href="https://github.com/AyeTSG"><img src="https://avatars1.githubusercontent.com/u/49595354?s=200&v=4" width="100px;" alt="AyeTSG"/><br><sub><b>AyeTSG</b></sub></a><br><a href="https://github.com/AyeTSG" title="Github">🔧</a><a href="https://twitter.com/AyeTSG" title="Twitter">🐦</a></td><td align="center"><a href="https://github.com/ItsFireMonkey"><img src="https://avatars2.githubusercontent.com/u/38590471?s=200&v=4" width="100px;" alt="FireMonkey"/><br /><sub><b>FireMonkey</b></sub></a><br><a href="https://github.com/ItsFireMonkey" title="Github">🔧</a><a href="https://twitter.com/iFireMonkey" title="Twitter">🐦</a></td></tr></table>
-
-
-### The History
-Basically, I was bored one day and wanted to make something like [UModel](https://github.com/gildor2/UModel) but with a Fortnite Touch and more features.
-
-I'd highly suggest you to use [UModel](https://github.com/gildor2/UModel) if you want to use something made professionally.
 
 ## TODO
   - [ ] Code refactoring

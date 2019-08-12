@@ -13,27 +13,17 @@ namespace FModel
         public static PakAsset MyAsset;
 
         /// <summary>
-        /// Normal pak file: using AllpaksDictionary, it tells you the pak name depending on currentItem. Using this pak name and PaksMountPoint we get the mount point
-        /// </summary>
-        /// <param name="currentItem"></param>
-        /// <returns> the mount point as string, used to create subfolders when extracting or create the tree when loading all paks </returns>
-        private static string GetMountPointFromDict(string currentItem)
-        {
-            return ThePak.PaksMountPoint[ThePak.AllpaksDictionary[currentItem]];
-        }
-
-        /// <summary>
         /// just the method to create subfolders using GetMountPointFromDict and write the file from myResults with its byte[] data
         /// </summary>
         /// <param name="myResults"></param>
         /// <param name="data"></param>
         /// <returns> the path to this brand new created file </returns>
-        private static string WriteFile(string currentItem, string myResults, byte[] data)
+        private static string WriteFile(string myResults, byte[] data)
         {
-            Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem) + myResults.Substring(0, myResults.LastIndexOf("/", StringComparison.Ordinal)));
-            File.WriteAllBytes(App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem) + myResults, data);
+            Directory.CreateDirectory(App.DefaultOutputPath + "\\Extracted\\" + myResults.Substring(0, myResults.LastIndexOf("/", StringComparison.Ordinal)));
+            File.WriteAllBytes(App.DefaultOutputPath + "\\Extracted\\" + myResults, data);
 
-            return App.DefaultOutputPath + "\\Extracted\\" + GetMountPointFromDict(currentItem) + myResults;
+            return App.DefaultOutputPath + "\\Extracted\\" + myResults;
         }
 
         /// <summary>
@@ -67,7 +57,7 @@ namespace FModel
                 uint y = (uint)index;
                 byte[] b = pakExtractor.GetData(y);
 
-                AssetPath = WriteFile(currentItem, results[i], b).Replace("/", "\\");
+                AssetPath = WriteFile(results[i], b).Replace("/", "\\");
             }
 
             pakExtractor = null;

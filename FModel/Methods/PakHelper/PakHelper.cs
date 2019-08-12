@@ -49,12 +49,12 @@ namespace FModel
                 {
                     bMainKeyWorking = true;
                     string mountPoint = theExtractor.GetMountPoint();
-                    ThePak.PaksMountPoint.Add(ThePak.mainPaksList[i].thePak, mountPoint.Substring(9));
+                    string[] fileListWithMountPoint = theExtractor.GetFileList().Select(s => s.Replace(s, mountPoint.Substring(9) + s)).ToArray();
 
                     ThePak.PaksExtractorDictionary.Add(ThePak.mainPaksList[i].thePak, theExtractor);
-                    ThePak.PaksFileArrayDictionary.Add(theExtractor, theExtractor.GetFileList().ToArray());
+                    ThePak.PaksFileArrayDictionary.Add(theExtractor, fileListWithMountPoint);
 
-                    RegisterInDict(ThePak.mainPaksList[i].thePak, theExtractor.GetFileList().ToArray(), mountPoint, theSinglePak, loadAllPaKs);
+                    RegisterInDict(ThePak.mainPaksList[i].thePak, fileListWithMountPoint, mountPoint, theSinglePak, loadAllPaKs);
                 }
             }
             if (bMainKeyWorking) { LoadLocRes.LoadMySelectedLocRes(Settings.Default.IconLanguage); }
@@ -83,12 +83,12 @@ namespace FModel
                     if (theExtractor.GetFileList().ToArray() != null)
                     {
                         string mountPoint = theExtractor.GetMountPoint();
-                        ThePak.PaksMountPoint.Add(ThePak.dynamicPaksList[i].thePak, mountPoint.Substring(9));
+                        string[] fileListWithMountPoint = theExtractor.GetFileList().Select(s => s.Replace(s, mountPoint.Substring(9) + s)).ToArray();
 
                         ThePak.PaksExtractorDictionary.Add(ThePak.dynamicPaksList[i].thePak, theExtractor);
-                        ThePak.PaksFileArrayDictionary.Add(theExtractor, theExtractor.GetFileList().ToArray());
+                        ThePak.PaksFileArrayDictionary.Add(theExtractor, fileListWithMountPoint);
 
-                        RegisterInDict(ThePak.dynamicPaksList[i].thePak, theExtractor.GetFileList().ToArray(), mountPoint, theSinglePak, loadAllPaKs);
+                        RegisterInDict(ThePak.dynamicPaksList[i].thePak, fileListWithMountPoint, mountPoint, theSinglePak, loadAllPaKs);
                     }
                 }
             }
@@ -114,8 +114,6 @@ namespace FModel
         {
             for (int i = 0; i < thePakLines.Length; i++)
             {
-                thePakLines[i] = mountPoint.Substring(9) + thePakLines[i];
-
                 string CurrentUsedPakFileName = thePakLines[i].Substring(thePakLines[i].LastIndexOf("/", StringComparison.Ordinal) + 1);
                 if (CurrentUsedPakFileName.Contains(".uasset") || CurrentUsedPakFileName.Contains(".uexp") || CurrentUsedPakFileName.Contains(".ubulk"))
                 {

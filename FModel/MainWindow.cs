@@ -393,7 +393,6 @@ namespace FModel
             ThePak.AllpaksDictionary = new Dictionary<string, string>();
             ThePak.PaksExtractorDictionary = new Dictionary<string, PakExtractor>();
             ThePak.PaksFileArrayDictionary = new Dictionary<PakExtractor, string[]>();
-            ThePak.PaksMountPoint = new Dictionary<string, string>();
             RegisterSettings.updateModeDictionary = new Dictionary<string, string>();
             PakHelper.PakAsTxt = null;
 
@@ -426,7 +425,11 @@ namespace FModel
                 //ADD TO DICTIONNARY
                 PakHelper.RegisterPaKsinDict(null, true);
 
-                if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0) //File will always exist so we check the file size instead
+                if (!File.Exists(App.DefaultOutputPath + "\\FortnitePAKs.txt"))
+                {
+                    new UpdateMyState("Error while registering pak files in the dictionary", "Error").ChangeProcessState();
+                }
+                else if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0) //File will always exist so we check the file size instead
                 {
                     File.Delete(App.DefaultOutputPath + "\\FortnitePAKs.txt");
                     new UpdateMyState("Can't read .PAK files with this key", "Error").ChangeProcessState();
@@ -454,7 +457,11 @@ namespace FModel
                 //ADD TO DICTIONNARY
                 PakHelper.RegisterPaKsinDict(null, true);
 
-                if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0)
+                if (!File.Exists(App.DefaultOutputPath + "\\FortnitePAKs.txt"))
+                {
+                    new UpdateMyState("Error while registering pak files in the dictionary", "Error").ChangeProcessState();
+                }
+                else if (new System.IO.FileInfo(App.DefaultOutputPath + "\\FortnitePAKs.txt").Length <= 0)
                 {
                     new UpdateMyState("Can't read .PAK files with this key", "Error").ChangeProcessState();
                 }

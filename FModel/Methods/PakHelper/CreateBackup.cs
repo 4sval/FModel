@@ -32,15 +32,14 @@ namespace FModel
                     break;
                 }
 
-                string[] CurrentUsedPakLines = extractor.GetFileList().ToArray();
-                if (CurrentUsedPakLines != null)
+                if (extractor.GetFileList().ToArray() != null)
                 {
                     string mountPoint = extractor.GetMountPoint();
-                    for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
-                    {
-                        CurrentUsedPakLines[ii] = mountPoint.Substring(9) + CurrentUsedPakLines[ii];
 
-                        sb.Append(CurrentUsedPakLines[ii] + "\n");
+                    string[] fileListWithMountPoint = extractor.GetFileList().Select(s => s.Replace(s, mountPoint.Substring(9) + s)).ToArray();
+                    for (int ii = 0; ii < fileListWithMountPoint.Length; ii++)
+                    {
+                        sb.Append(fileListWithMountPoint[ii] + "\n");
                     }
                     new UpdateMyState(".PAK mount point: " + mountPoint.Substring(9), "Waiting").ChangeProcessState();
                 }
@@ -65,15 +64,14 @@ namespace FModel
                         continue;
                     }
 
-                    string[] CurrentUsedPakLines = extractor.GetFileList().ToArray();
-                    if (CurrentUsedPakLines != null)
+                    if (extractor.GetFileList().ToArray() != null)
                     {
                         string mountPoint = extractor.GetMountPoint();
-                        for (int ii = 0; ii < CurrentUsedPakLines.Length; ii++)
-                        {
-                            CurrentUsedPakLines[ii] = mountPoint.Substring(9) + CurrentUsedPakLines[ii];
 
-                            sb.Append(CurrentUsedPakLines[ii] + "\n");
+                        string[] fileListWithMountPoint = extractor.GetFileList().Select(s => s.Replace(s, mountPoint.Substring(9) + s)).ToArray();
+                        for (int ii = 0; ii < fileListWithMountPoint.Length; ii++)
+                        {
+                            sb.Append(fileListWithMountPoint[ii] + "\n");
                         }
                         new UpdateMyConsole("Backing up ", Color.Black).AppendToConsole();
                         new UpdateMyConsole(ThePak.dynamicPaksList[i].thePak, Color.DarkRed, true).AppendToConsole();
