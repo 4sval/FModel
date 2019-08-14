@@ -34,7 +34,6 @@ namespace FModel.Forms
             {
                 textBox6.Text = "@UseTheWatermarkBecauseWhyNot - {Date}";
             }
-            else { textBox6.Text = Properties.Settings.Default.challengesWatermark; }
 
             checkBox_tryToOpen.Checked = Properties.Settings.Default.tryToOpenAssets;
 
@@ -55,12 +54,16 @@ namespace FModel.Forms
             button3.Enabled = Properties.Settings.Default.isChallengesTheme;
             button4.Enabled = Properties.Settings.Default.isChallengesTheme;
             checkBox2.Checked = Properties.Settings.Default.isChallengesTheme;
-            trackBar3.Enabled = Properties.Settings.Default.isChallengesTheme;
+            trackBar3.Enabled = File.Exists(Properties.Settings.Default.challengesBannerFileName);
+            button5.Enabled = File.Exists(Properties.Settings.Default.challengesBannerFileName);
             trackBar3.Value = Properties.Settings.Default.challengesOpacity;
             string[] colorParts = Properties.Settings.Default.challengesColors.Split(',');
             headerColor = Color.FromArgb(255, Int32.Parse(colorParts[0]), Int32.Parse(colorParts[1]), Int32.Parse(colorParts[2]));
-            if (File.Exists(Properties.Settings.Default.challengesBannerFileName)) { drawChallengeTemplate(headerColor, true); }
-            else { pictureBox1.Image = Resources.cTemplate; }
+            if (!checkBox2.Checked)
+            {
+                pictureBox1.Image = Resources.cTemplate;
+            }
+            else { drawChallengeTemplate(headerColor, File.Exists(Properties.Settings.Default.challengesBannerFileName)); }
 
             //FEATURED
             checkBox8.Checked = Properties.Settings.Default.loadFeaturedImage;
@@ -292,7 +295,7 @@ namespace FModel.Forms
         {
             button3.Enabled = checkBox2.Checked;
             button4.Enabled = checkBox2.Checked;
-            trackBar3.Enabled = checkBox2.Checked;
+            trackBar3.Enabled = File.Exists(Properties.Settings.Default.challengesBannerFileName);
 
             if (!checkBox2.Checked)
             {
@@ -423,6 +426,9 @@ namespace FModel.Forms
                 Properties.Settings.Default.Save();
 
                 drawChallengeTemplate(headerColor, File.Exists(Properties.Settings.Default.challengesBannerFileName));
+
+                trackBar3.Enabled = File.Exists(Properties.Settings.Default.challengesBannerFileName);
+                button5.Enabled = File.Exists(Properties.Settings.Default.challengesBannerFileName);
             }
         }
 
@@ -440,6 +446,17 @@ namespace FModel.Forms
         private void Settings_FormClosing(object sender, FormClosingEventArgs e)
         {
             bmp.Dispose();
+        }
+
+        private void Button5_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.challengesBannerFileName = "";
+            Properties.Settings.Default.Save();
+
+            drawChallengeTemplate(headerColor, File.Exists(Properties.Settings.Default.challengesBannerFileName));
+
+            trackBar3.Enabled = File.Exists(Properties.Settings.Default.challengesBannerFileName);
+            button5.Enabled = File.Exists(Properties.Settings.Default.challengesBannerFileName);
         }
     }
 }

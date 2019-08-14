@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System.Drawing;
 using System.Linq;
 using System.IO;
+using System.Collections.Generic;
 
 namespace FModel
 {
@@ -18,12 +19,13 @@ namespace FModel
         private static string ItemAction { get; set; }
         private static string WeaponDataTable { get; set; }
         private static string WeaponRowName { get; set; }
-        private static string CosmeticUff { get; set; }
+        private static string[] CosmeticUff { get; set; }
         private static string HeroType { get; set; }
         private static string DefenderType { get; set; }
         private static string MinToMax { get; set; }
         private static JArray cosmeticsSetsArray { get; set; }
         private static JArray weaponsStatsArray { get; set; }
+        private static JArray tertiaryCategoriesArray { get; set; }
         private static string weaponStatsFilename { get; set; }
 
         public static void DrawTexts(JToken theItem, Graphics myGraphic, string mode)
@@ -95,7 +97,7 @@ namespace FModel
             ItemAction = "";
             WeaponDataTable = "";
             WeaponRowName = "";
-            CosmeticUff = "";
+            CosmeticUff = null;
             HeroType = "";
             DefenderType = "";
             MinToMax = "";
@@ -162,10 +164,14 @@ namespace FModel
                         ItemAction = athenaItemAction.Value<string>().Substring(18);
                     }
 
-                    JToken userFacingFlags = gameplayTagsArray.Children<JToken>().FirstOrDefault(x => x.ToString().StartsWith("Cosmetics.UserFacingFlags."));
+                    IEnumerable<JToken> userFacingFlags = gameplayTagsArray.Children<JToken>().Where(x => x.ToString().StartsWith("Cosmetics.UserFacingFlags."));
                     if (userFacingFlags != null)
                     {
-                        CosmeticUff = userFacingFlags.Value<string>();
+                        CosmeticUff = new string[userFacingFlags.Count()];
+                        for (int i = 0; i < CosmeticUff.Length; i++)
+                        {
+                            CosmeticUff[i] = userFacingFlags.ElementAt(i).Value<string>().Substring("Cosmetics.UserFacingFlags.".Length);
+                        }
                     }
 
                     JToken defenderType = gameplayTagsArray.Children<JToken>().FirstOrDefault(x => x.ToString().StartsWith("NPC.CharacterType.Survivor.Defender."));
@@ -226,37 +232,136 @@ namespace FModel
             }
         }
 
+        private static void DrawCosmeticUff(JToken theItem, Graphics myGraphic)
+        {
+            if (tertiaryCategoriesArray == null)
+            {
+                string extractedCosmeticsSetsPath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary["ItemCategories"], "ItemCategories");
+                if (extractedCosmeticsSetsPath != null)
+                {
+                    if (extractedCosmeticsSetsPath.Contains(".uasset") || extractedCosmeticsSetsPath.Contains(".uexp") || extractedCosmeticsSetsPath.Contains(".ubulk"))
+                    {
+                        JohnWick.MyAsset = new PakAsset(extractedCosmeticsSetsPath.Substring(0, extractedCosmeticsSetsPath.LastIndexOf('.')));
+                        try
+                        {
+                            if (JohnWick.MyAsset.GetSerialized() != null)
+                            {
+                                dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                                JToken tertiaryCategories = AssetData[0]["TertiaryCategories"];
+                                if (tertiaryCategories != null)
+                                {
+                                    tertiaryCategoriesArray = tertiaryCategories.Value<JArray>();
+                                    DrawCosmeticUffFromArray(theItem, myGraphic);
+                                }
+                            }
+                        }
+                        catch (JsonSerializationException)
+                        {
+                            //do not crash when JsonSerialization does weird stuff
+                        }
+                    }
+                }
+            }
+            else { DrawCosmeticUffFromArray(theItem, myGraphic); }
+        }
         /// <summary>
         /// search for a known Cosmetics.UserFacingFlags, if found draw the uff icon
         /// Cosmetics.UserFacingFlags icons are basically the style icon or the animated/reactive/traversal icon
         /// </summary>
         /// <param name="theItem"></param>
         /// <param name="myGraphic"></param>
-        private static void DrawCosmeticUff(JToken theItem, Graphics myGraphic)
+        private static void DrawCosmeticUffFromArray(JToken theItem, Graphics myGraphic)
         {
-            Image imageLogo = null;
-            Point pointCoords = new Point(6, 6);
-
             if (CosmeticUff != null)
             {
-                if (CosmeticUff.Contains("Animated"))
-                    imageLogo = Resources.Animated64;
-                else if (CosmeticUff.Contains("HasUpgradeQuests") && !theItem["export_type"].Value<string>().Equals("AthenaPetCarrierItemDefinition"))
-                    imageLogo = Resources.Quests64;
-                else if (CosmeticUff.Contains("HasUpgradeQuests") && theItem["export_type"].Value<string>().Equals("AthenaPetCarrierItemDefinition"))
-                    imageLogo = Resources.Pets64;
-                else if (CosmeticUff.Contains("HasVariants"))
-                    imageLogo = Resources.Variant64;
-                else if (CosmeticUff.Contains("Reactive"))
-                    imageLogo = Resources.Adaptive64;
-                else if (CosmeticUff.Contains("Traversal"))
-                    imageLogo = Resources.Traversal64;
+                int xCoord = 6;
+                for (int x = 0; x < tertiaryCategoriesArray.Count; x++)
+                {
+                    JToken categoryName = tertiaryCategoriesArray[x]["CategoryName"];
+                    if (categoryName != null)
+                    {
+                        JToken text = categoryName["source_string"];
+                        if (text != null)
+                        {
+                            if (CosmeticUff.Any(target => target.Contains("Animated")) && string.Equals(text.Value<string>(), "Animated"))
+                            {
+                                Image imageLogo = getUffFromBrush(x);
+                                drawImageLogo(myGraphic, imageLogo, xCoord);
+                                xCoord += 28;
+                            }
+                            else if (CosmeticUff.Any(target => target.Contains("HasVariants")) && string.Equals(text.Value<string>(), "Unlockable Styles"))
+                            {
+                                Image imageLogo = getUffFromBrush(x);
+                                drawImageLogo(myGraphic, imageLogo, xCoord);
+                                xCoord += 28;
+                            }
+                            else if (CosmeticUff.Any(target => target.Contains("Reactive")) && string.Equals(text.Value<string>(), "Reactive"))
+                            {
+                                Image imageLogo = getUffFromBrush(x);
+                                drawImageLogo(myGraphic, imageLogo, xCoord);
+                                xCoord += 28;
+                            }
+                            else if (CosmeticUff.Any(target => target.Contains("Traversal")) && string.Equals(text.Value<string>(), "Traversal"))
+                            {
+                                Image imageLogo = getUffFromBrush(x);
+                                drawImageLogo(myGraphic, imageLogo, xCoord);
+                                xCoord += 28;
+                            }
+                            else if (CosmeticUff.Any(target => target.Contains("BuiltInEmote")) && string.Equals(text.Value<string>(), "Built-in"))
+                            {
+                                Image imageLogo = getUffFromBrush(x);
+                                drawImageLogo(myGraphic, imageLogo, xCoord);
+                                xCoord += 28;
+                            }
+                            else if (CosmeticUff.Any(target => target.Contains("HasUpgradeQuests")) && string.Equals(text.Value<string>(), "Unlockable Styles") && !theItem["export_type"].Value<string>().Equals("AthenaPetCarrierItemDefinition"))
+                            {
+                                Image imageLogo = Resources.Quests64;
+                                drawImageLogo(myGraphic, imageLogo, xCoord);
+                                xCoord += 28;
+                            }
+                            else if (CosmeticUff.Any(target => target.Contains("HasUpgradeQuests")) && string.Equals(text.Value<string>(), "Unlockable Styles") && theItem["export_type"].Value<string>().Equals("AthenaPetCarrierItemDefinition"))
+                            {
+                                Image imageLogo = Resources.Pets64;
+                                drawImageLogo(myGraphic, imageLogo, xCoord);
+                                xCoord += 28;
+                            }
+                        }
+                    }
+                }
             }
-
-            if (imageLogo != null)
+        }
+        private static Image getUffFromBrush(int index)
+        {
+            JToken categoryBrush = tertiaryCategoriesArray[index]["CategoryBrush"];
+            if (categoryBrush != null)
             {
-                myGraphic.DrawImage(ImageUtilities.ResizeImage(imageLogo, 28, 28), pointCoords);
-                imageLogo.Dispose();
+                JToken brush_XXS = categoryBrush["Brush_XXS"];
+                if (brush_XXS != null)
+                {
+                    JToken resourceObject = brush_XXS["ResourceObject"];
+                    if (resourceObject != null)
+                    {
+                        string texture = JohnWick.AssetToTexture2D(resourceObject.Value<string>());
+                        if (!string.IsNullOrEmpty(texture))
+                        {
+                            return Image.FromFile(texture);
+                        }
+                        else { return null; }
+                    }
+                    else { return null; }
+                }
+                else { return null; }
+            }
+            else { return null; }
+        }
+        private static void drawImageLogo(Graphics myGraphic, Image logo, int x)
+        {
+            if (logo != null)
+            {
+                Point pointCoords = new Point(x, 6);
+
+                myGraphic.DrawImage(ImageUtilities.ResizeImage(logo, 28, 28), pointCoords);
+                logo.Dispose();
             }
         }
 

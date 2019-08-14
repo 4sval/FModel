@@ -236,19 +236,19 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -290,10 +290,6 @@
     <None Include="Resources\BurbankBigCondensed-Bold.ttf" />
     <None Include="Resources\T-Icon-Pets-64.png" />
     <None Include="Resources\T-Icon-Quests-64.png" />
-    <None Include="Resources\T-Icon-Variant-64.png" />
-    <None Include="Resources\T-Icon-Traversal-64.png" />
-    <None Include="Resources\T-Icon-Animated-64.png" />
-    <None Include="Resources\T-Icon-Adaptive-64.png" />
     <None Include="Resources\unknown512.png" />
     <None Include="Resources\properties_16xLG.png" />
     <None Include="Resources\StatusAnnotations_Information_16xLG_color.png" />

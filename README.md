@@ -56,28 +56,28 @@
 [Demonstration](https://streamable.com/c39oz)
 
 ## DOCUMENTATION
-### Q&A
-_What's FModel?_
+### FAQ
+- _What's FModel?_
 
     - FModel is a Fortnite .PAK files explorer mainly known to create icons for different BR/STW items as well as all BR challenges
 
-_Where can i download FModel?_
-[Latest Version](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)
+- _Where can i download FModel?_
+    - [Latest Version](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)
 
-_I'm sure the key is correct but opening the file with this key isn't working_
+- _I'm sure the key is correct but opening the file with this key isn't working_
 
     - First, make sure `C:\Windows\System32\vcruntime140.dll` isn't missing. If it's missing you can download it by installing [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads).
     - If it's not missing you can open on issue on GitHub or contact us on Twitter @AsvalFN @MaikyMOficial @iFireMonkey
 
-_I can't compile the solution on Visual Studio_
+- _I can't compile the solution on Visual Studio_
 
     - If issues occur when compiling the source code, make sure that the software is being built for x64.
 
-_Why FModel?_
+- _Why FModel?_
 
     - The name come from the popular Unreal Engine Viewer [UModel](https://github.com/gildor2/UModel)
-    - It wasn't made to be a competitor but more to complete what was missing exclusively on Fortnite
-    - Icon creation with languages support, an area to display the serialized asset, single pak file loader, and more).
+    - It wasn't made to be a competitor but more to complete what was missing for Fortnite
+    - Icon creation with languages support, an area to display the serialized asset, single pak file loader, and more.
 
 If you find this project useful, feel free to give it a :star: thank you :kissing_heart:
 

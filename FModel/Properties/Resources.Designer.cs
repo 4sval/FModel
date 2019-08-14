@@ -61,26 +61,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Adaptive64 {
-            get {
-                object obj = ResourceManager.GetObject("Adaptive64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Animated64 {
-            get {
-                object obj = ResourceManager.GetObject("Animated64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
         internal static byte[] BurbankBigCondensed_Black {
@@ -311,16 +291,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Traversal64 {
-            get {
-                object obj = ResourceManager.GetObject("Traversal64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         /// </summary>
         internal static System.Drawing.Icon Twitter {
@@ -346,16 +316,6 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap unknown512 {
             get {
                 object obj = ResourceManager.GetObject("unknown512", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Variant64 {
-            get {
-                object obj = ResourceManager.GetObject("Variant64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

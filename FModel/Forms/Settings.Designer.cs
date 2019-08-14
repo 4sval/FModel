@@ -38,6 +38,8 @@ namespace FModel.Forms
             this.label1 = new System.Windows.Forms.Label();
             this.OKButton = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.checkBox8 = new System.Windows.Forms.CheckBox();
@@ -60,8 +62,7 @@ namespace FModel.Forms
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.button5 = new System.Windows.Forms.Button();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -173,6 +174,28 @@ namespace FModel.Forms
             this.groupBox4.TabIndex = 16;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Icon Creation";
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "Default",
+            "Flat"});
+            this.comboBox2.Location = new System.Drawing.Point(85, 48);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(294, 21);
+            this.comboBox2.TabIndex = 31;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.ComboBox2_SelectedIndexChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 51);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(73, 13);
+            this.label2.TabIndex = 30;
+            this.label2.Text = "Rarity Design:";
             // 
             // comboBox1
             // 
@@ -304,6 +327,7 @@ namespace FModel.Forms
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.button5);
             this.groupBox6.Controls.Add(this.button3);
             this.groupBox6.Controls.Add(this.button2);
             this.groupBox6.Controls.Add(this.label7);
@@ -422,27 +446,15 @@ namespace FModel.Forms
             this.label12.TabIndex = 9;
             this.label12.Text = "Watermark:";
             // 
-            // comboBox2
+            // button5
             // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
-            "Default",
-            "Flat"});
-            this.comboBox2.Location = new System.Drawing.Point(85, 48);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(294, 21);
-            this.comboBox2.TabIndex = 31;
-            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.ComboBox2_SelectedIndexChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 51);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 13);
-            this.label2.TabIndex = 30;
-            this.label2.Text = "Rarity Design:";
+            this.button5.Location = new System.Drawing.Point(168, 48);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(124, 23);
+            this.button5.TabIndex = 34;
+            this.button5.Text = "Delete Current Banner";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.Button5_Click);
             // 
             // Settings
             // 
@@ -514,5 +526,6 @@ namespace FModel.Forms
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button button5;
     }
 }
