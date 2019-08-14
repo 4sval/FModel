@@ -214,5 +214,11 @@ namespace FModel
                 yield return curItem;
             }
         }
+
+        public static Color ChangeLightness(this Color color, float coef)
+        {
+            return Color.FromArgb((int)(color.R * coef), (int)(color.G * coef),
+                (int)(color.B * coef));
+        }
     }
 }

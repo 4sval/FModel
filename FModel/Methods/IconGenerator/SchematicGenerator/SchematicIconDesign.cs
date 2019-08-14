@@ -111,20 +111,20 @@ namespace FModel
                 switch (rarity.Value<string>())
                 {
                     case "EFortRarity::Transcendent":
-                        rarityColor = Color.FromArgb(255, 155, 39, 69);
+                        rarityColor = Color.FromArgb(255, 213, 25, 68);
                         break;
                     case "EFortRarity::Mythic":
-                        rarityColor = Color.FromArgb(255, 170, 143, 47);
+                        rarityColor = Color.FromArgb(255, 186, 156, 54);
                         break;
                     case "EFortRarity::Legendary":
-                        rarityColor = Color.FromArgb(255, 170, 96, 47);
+                        rarityColor = Color.FromArgb(255, 192, 106, 56);
                         break;
                     case "EFortRarity::Epic":
                     case "EFortRarity::Quality":
-                        rarityColor = Color.FromArgb(255, 96, 47, 170);
+                        rarityColor = Color.FromArgb(255, 129, 56, 194);
                         break;
                     case "EFortRarity::Rare":
-                        rarityColor = Color.FromArgb(255, 55, 92, 163);
+                        rarityColor = Color.FromArgb(255, 54, 105, 187);
                         break;
                     case "EFortRarity::Common":
                         rarityColor = Color.FromArgb(255, 109, 109, 109);
@@ -135,7 +135,7 @@ namespace FModel
 
             toDrawOn.FillRectangle(new SolidBrush(rarityColor), new Rectangle(0, 522 + (75 * i), schematicBitmap.Width, 75));
             Pen pen = new Pen(ControlPaint.Light(rarityColor), 4);
-            pen.Alignment = PenAlignment.Inset; //<-- this
+            pen.Alignment = PenAlignment.Inset;
             toDrawOn.DrawRectangle(pen, new Rectangle(0, 522 + (75 * i), schematicBitmap.Width, 75));
         }
 

@@ -40,6 +40,8 @@ namespace FModel.Forms
             // Check if watermark exists
             Utilities.CheckWatermark();
 
+            comboBox2.SelectedIndex = comboBox2.FindStringExact(Properties.Settings.Default.rarityDesign);
+
             //WATERMARK
             button1.Enabled     = Properties.Settings.Default.isWatermark;
             checkBox7.Checked   = Properties.Settings.Default.isWatermark;
@@ -47,8 +49,6 @@ namespace FModel.Forms
             trackBar2.Enabled   = Properties.Settings.Default.isWatermark;
             trackBar1.Value     = Properties.Settings.Default.wOpacity;
             trackBar2.Value     = Properties.Settings.Default.wSize;
-
-            comboBox2.SelectedIndex = comboBox2.FindStringExact(Properties.Settings.Default.rarityDesign);
 
             //CHALLENGES
             button3.Enabled = Properties.Settings.Default.isChallengesTheme;
@@ -162,7 +162,15 @@ namespace FModel.Forms
 
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
                 {
-                    Bitmap bmp = new Bitmap(checkBox8.Checked ? Resources.wTemplateF : Resources.wTemplate);
+                    Bitmap bmp = null;
+                    if (Properties.Settings.Default.loadFeaturedImage)
+                    {
+                        bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1));
+                    }
+                    else
+                    {
+                        bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1));
+                    }
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -180,7 +188,15 @@ namespace FModel.Forms
         {
             if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
             {
-                Bitmap bmp = new Bitmap(checkBox8.Checked ? Resources.wTemplateF : Resources.wTemplate);
+                Bitmap bmp = null;
+                if (checkBox8.Checked)
+                {
+                    bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1));
+                }
+                else
+                {
+                    bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1));
+                }
                 Graphics g = Graphics.FromImage(bmp);
 
                 Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
@@ -195,7 +211,15 @@ namespace FModel.Forms
         {
             if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename))
             {
-                Bitmap bmp = new Bitmap(checkBox8.Checked ? Resources.wTemplateF : Resources.wTemplate);
+                Bitmap bmp = null;
+                if (checkBox8.Checked)
+                {
+                    bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1));
+                }
+                else
+                {
+                    bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1));
+                }
                 Graphics g = Graphics.FromImage(bmp);
 
                 Image watermark = Image.FromFile(Properties.Settings.Default.wFilename);
