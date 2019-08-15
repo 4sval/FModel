@@ -67,7 +67,7 @@
 - _I'm sure the key is correct but opening the file with this key isn't working_
 
     - First, make sure `C:\Windows\System32\vcruntime140.dll` isn't missing. If it's missing you can download it by installing [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads).
-    - If it's not missing you can open on issue on GitHub or contact us on Twitter @AsvalFN @MaikyMOficial @iFireMonkey
+    - If it's not missing you can open on issue on GitHub or contact us on Twitter [@AsvalFN](https://twitter.com/AsvalFN) [@MaikyMOficial](https://twitter.com/MaikyMOficial) [@iFireMonkey](https://twitter.com/iFireMonkey)
 
 - _I can't compile the solution on Visual Studio_
 
@@ -86,7 +86,6 @@ If you find this project useful, feel free to give it a :star: thank you :kissin
  2. Icon Creation for various BR/STW Cosmetics or Challenges with language support
  3. Icon Merger
  4. Automatic Key Detection for Dynamic PAKs
- 5. Twitter API Authentication to send Tweets from within FModel
 ### What I'm using
   - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - *C# Bind*
   - [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)

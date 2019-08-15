@@ -144,12 +144,6 @@
     <Compile Include="Forms\AESManager.Designer.cs">
       <DependentUpon>AESManager.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\TweetForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\TweetForm.Designer.cs">
-      <DependentUpon>TweetForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Methods\AESManager\DynamicKeysManager.cs" />
     <Compile Include="Methods\AESManager\DynamicKeys\AddToUI.cs" />
     <Compile Include="Methods\AESManager\DynamicKeys\Keychain.cs" />
@@ -224,9 +218,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\TweetForm.resx">
-      <DependentUpon>TweetForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\UpdateModeSettings.resx">
       <DependentUpon>UpdateModeSettings.cs</DependentUpon>

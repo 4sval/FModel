@@ -83,14 +83,11 @@ namespace FModel
                             }
 
                             toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(-1, -1, myBitmap.Width + 1, 257));
-                            if (Settings.Default.isChallengesTheme)
+                            if (Settings.Default.isChallengesTheme && File.Exists(Settings.Default.challengesBannerFileName))
                             {
-                                if (File.Exists(Settings.Default.challengesBannerFileName))
-                                {
-                                    Image banner = Image.FromFile(Settings.Default.challengesBannerFileName);
-                                    var opacityImage = ImageUtilities.SetImageOpacity(banner, (float)Settings.Default.challengesOpacity / 1000);
-                                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 1024, 256), 0, 0);
-                                }
+                                Image banner = Image.FromFile(Settings.Default.challengesBannerFileName);
+                                var opacityImage = ImageUtilities.SetImageOpacity(banner, (float)Settings.Default.challengesOpacity / 1000);
+                                toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 1024, 256), 0, 0);
                             }
                             else
                             {
@@ -310,21 +307,54 @@ namespace FModel
                     all = SearchResource.getTextByKey("CompletionRewardFormat_All", "Complete ALL CHALLENGES to earn the reward item", "AthenaChallengeDetailsEntry");
                     any = SearchResource.getTextByKey("CompletionRewardFormat", "Complete ANY " + count + " CHALLENGES to earn the reward item", "AthenaChallengeDetailsEntry");
 
+                    //because HtmlAgilityPack fail to detect the end of the tag when it's </>
+                    if (all.Contains("</>")) { all = all.Replace("</>", "</text>"); }
+                    if (any.Contains("</>")) { any = any.Replace("</>", "</text>"); }
+
                     HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
                     doc.LoadHtml(all);
                     if (doc.DocumentNode.InnerText.Contains(" {0}")) //avoid white space
                     {
-                        all = doc.DocumentNode.InnerText.Replace(" {0}", string.Empty);
+                        if (all.Contains("</text>"))
+                        {
+                            all = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
+                            all = all.Replace(" {0}", string.Empty);
+                        }
+                        else { all = doc.DocumentNode.InnerText.Replace(" {0}", string.Empty); }
                     }
-                    else { all = doc.DocumentNode.InnerText.Replace("{0}", string.Empty); }
+                    else
+                    {
+                        if (all.Contains("</text>"))
+                        {
+                            all = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
+                            all = all.Replace("{0}", string.Empty);
+                        }
+                        else { all = doc.DocumentNode.InnerText.Replace("{0}", string.Empty); }
+                    }
 
                     doc = new HtmlAgilityPack.HtmlDocument();
                     doc.LoadHtml(any);
                     if (doc.DocumentNode.InnerText.Contains("{QuestNumber}")) //russian
                     {
-                        any = doc.DocumentNode.InnerText.Replace("{QuestNumber}", count);
+                        if (any.Contains("</text>"))
+                        {
+                            any = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
+                            any = any.Replace("{QuestNumber}", count);
+                        }
+                        else { any = doc.DocumentNode.InnerText.Replace("{QuestNumber}", count); }
                     }
-                    else { any = string.Format(doc.DocumentNode.InnerText, count); }
+                    else
+                    {
+                        if (any.Contains("</text>"))
+                        {
+                            any = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
+                            any = string.Format(any, count);
+                        }
+                        else { any = string.Format(doc.DocumentNode.InnerText, count); }
+                    }
+
+                    if (all.Contains("  ")) { all = all.Replace("  ", " "); } //double space in Spanish (LA)               i.e. with QuestBundle_PirateParty
+                    if (any.Contains("  ")) { any = any.Replace("  ", " "); }
                     break;
                 default:
                     break;
