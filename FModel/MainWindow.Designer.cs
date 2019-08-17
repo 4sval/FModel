@@ -316,7 +316,7 @@ namespace FModel
             // saveImageToolStripMenuItem
             // 
             this.saveImageToolStripMenuItem.Name = "saveImageToolStripMenuItem";
-            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.saveImageToolStripMenuItem.Text = "Save Image";
             this.saveImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
             // 
@@ -324,18 +324,18 @@ namespace FModel
             // 
             this.autoSaveImagesToolStripMenuItem.CheckOnClick = true;
             this.autoSaveImagesToolStripMenuItem.Name = "autoSaveImagesToolStripMenuItem";
-            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.autoSaveImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.autoSaveImagesToolStripMenuItem.Text = "Auto Save Images";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(165, 6);
             // 
             // mergeImagesToolStripMenuItem
             // 
             this.mergeImagesToolStripMenuItem.Name = "mergeImagesToolStripMenuItem";
-            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mergeImagesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.mergeImagesToolStripMenuItem.Text = "Merge Images";
             this.mergeImagesToolStripMenuItem.Click += new System.EventHandler(this.mergeImagesToolStripMenuItem_Click);
             // 
@@ -518,10 +518,13 @@ namespace FModel
             // 
             // scintilla1
             // 
+            this.scintilla1.AutomaticFold = ((ScintillaNET.AutomaticFold)(((ScintillaNET.AutomaticFold.Show | ScintillaNET.AutomaticFold.Click) 
+            | ScintillaNET.AutomaticFold.Change)));
             this.scintilla1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.scintilla1.CaretPeriod = 400;
             this.scintilla1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.scintilla1.IndentationGuides = ScintillaNET.IndentView.Real;
+            this.scintilla1.Lexer = ScintillaNET.Lexer.Json;
             this.scintilla1.Location = new System.Drawing.Point(3, 3);
             this.scintilla1.Name = "scintilla1";
             this.scintilla1.ScrollWidth = 496;
