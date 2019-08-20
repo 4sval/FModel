@@ -33,8 +33,11 @@ namespace FModel
 
         public static string getTextByKey(string key, string defaultText, string namespac = null)
         {
+            if (Properties.Settings.Default.IconLanguage.Equals("English"))
+                return defaultText;
+
             string text = defaultText;
-            if (LocResSerializer.LocResDict != null && Properties.Settings.Default.IconLanguage != "English")
+            if (LocResSerializer.LocResDict != null)
             {
                 text = getTranslatedText(namespac == null ? "LocResText" : namespac, key);
                 if (string.IsNullOrEmpty(text))

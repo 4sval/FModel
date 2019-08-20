@@ -107,36 +107,11 @@ namespace FModel
             {
                 JToken key = shortDescription["key"];
                 JToken sourceString = shortDescription["source_string"];
-
-                switch (Settings.Default.IconLanguage)
-                {
-                    case "French":
-                    case "German":
-                    case "Italian":
-                    case "Spanish":
-                    case "Spanish (LA)":
-                    case "Arabic":
-                    case "Japanese":
-                    case "Korean":
-                    case "Polish":
-                    case "Portuguese (Brazil)":
-                    case "Russian":
-                    case "Turkish":
-                    case "Chinese (S)":
-                    case "Traditional Chinese":
-                        if (key != null && sourceString != null)
-                        {
-                            ShortDescription = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
-                        }
-                        break;
-                    default:
-                        if (sourceString != null)
-                        {
-                            ShortDescription = sourceString.Value<string>();
-                        }
-                        break;
-                }
+                ShortDescription = SearchResource.getTextByKey(key != null ? key.Value<string>() : "", sourceString != null ? sourceString.Value<string>() : "");
             }
+
+            if (theItem["export_type"] != null && theItem["export_type"].Value<string>().Equals("AthenaItemWrapDefinition"))
+                ShortDescription = SearchResource.getTextByKey("ItemWrapShortDescription", "Wrap", "Fort.Cosmetics");
 
             JToken gameplayTags = theItem["GameplayTags"];
             if (gameplayTags != null)
@@ -500,32 +475,14 @@ namespace FModel
             JToken setToken = cosmeticsSetsArray[0][setName];
             if (setToken != null)
             {
-                string toReturn = string.Empty;
-                switch (Settings.Default.IconLanguage)
+                if (!Settings.Default.IconLanguage.Equals("English"))
                 {
-                    case "French":
-                    case "German":
-                    case "Italian":
-                    case "Spanish":
-                    case "Spanish (LA)":
-                    case "Arabic":
-                    case "Japanese":
-                    case "Korean":
-                    case "Polish":
-                    case "Portuguese (Brazil)":
-                    case "Russian":
-                    case "Turkish":
-                    case "Chinese (S)":
-                    case "Traditional Chinese":
-                        string translatedName = SearchResource.getTextByKey(setToken["DisplayName"]["key"].Value<string>(), setToken["DisplayName"]["source_string"].Value<string>(), setToken["DisplayName"]["namespace"].Value<string>());
+                    string translatedName = SearchResource.getTextByKey(setToken["DisplayName"]["key"].Value<string>(), setToken["DisplayName"]["source_string"].Value<string>(), setToken["DisplayName"]["namespace"].Value<string>());
 
-                        toReturn = string.Format(SearchResource.getTextByKey("CosmeticItemDescription_SetMembership_NotRich", setToken["DisplayName"]["source_string"].Value<string>(), "Fort.Cosmetics"), translatedName);
-                        break;
-                    default:
-                        toReturn = string.Format("\nPart of the {0} set.", setToken["DisplayName"]["source_string"].Value<string>());
-                        break;
+                    return string.Format(SearchResource.getTextByKey("CosmeticItemDescription_SetMembership_NotRich", setToken["DisplayName"]["source_string"].Value<string>(), "Fort.Cosmetics"), translatedName);
                 }
-                return toReturn;
+                else
+                    return string.Format("\nPart of the {0} set.", setToken["DisplayName"]["source_string"].Value<string>());
             }
             else { return ""; }
         }

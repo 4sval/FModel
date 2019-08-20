@@ -288,76 +288,59 @@ namespace FModel
             string all = "Complete ALL CHALLENGES to earn the reward item";
             string any = "Complete ANY " + count + " CHALLENGES to earn the reward item";
 
-            switch (Settings.Default.IconLanguage)
+            if (!Settings.Default.IconLanguage.Equals("English"))
             {
-                case "French":
-                case "German":
-                case "Italian":
-                case "Spanish":
-                case "Spanish (LA)":
-                case "Arabic":
-                case "Japanese":
-                case "Korean":
-                case "Polish":
-                case "Portuguese (Brazil)":
-                case "Russian":
-                case "Turkish":
-                case "Chinese (S)":
-                case "Traditional Chinese":
-                    all = SearchResource.getTextByKey("CompletionRewardFormat_All", "Complete ALL CHALLENGES to earn the reward item", "AthenaChallengeDetailsEntry");
-                    any = SearchResource.getTextByKey("CompletionRewardFormat", "Complete ANY " + count + " CHALLENGES to earn the reward item", "AthenaChallengeDetailsEntry");
+                all = SearchResource.getTextByKey("CompletionRewardFormat_All", "Complete ALL CHALLENGES to earn the reward item", "AthenaChallengeDetailsEntry");
+                any = SearchResource.getTextByKey("CompletionRewardFormat", "Complete ANY " + count + " CHALLENGES to earn the reward item", "AthenaChallengeDetailsEntry");
 
-                    //because HtmlAgilityPack fail to detect the end of the tag when it's </>
-                    if (all.Contains("</>")) { all = all.Replace("</>", "</text>"); }
-                    if (any.Contains("</>")) { any = any.Replace("</>", "</text>"); }
+                //because HtmlAgilityPack fail to detect the end of the tag when it's </>
+                if (all.Contains("</>")) { all = all.Replace("</>", "</text>"); }
+                if (any.Contains("</>")) { any = any.Replace("</>", "</text>"); }
 
-                    HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
-                    doc.LoadHtml(all);
-                    if (doc.DocumentNode.InnerText.Contains(" {0}")) //avoid white space
+                HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+                doc.LoadHtml(all);
+                if (doc.DocumentNode.InnerText.Contains(" {0}")) //avoid white space
+                {
+                    if (all.Contains("</text>"))
                     {
-                        if (all.Contains("</text>"))
-                        {
-                            all = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
-                            all = all.Replace(" {0}", string.Empty);
-                        }
-                        else { all = doc.DocumentNode.InnerText.Replace(" {0}", string.Empty); }
+                        all = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
+                        all = all.Replace(" {0}", string.Empty);
                     }
-                    else
+                    else { all = doc.DocumentNode.InnerText.Replace(" {0}", string.Empty); }
+                }
+                else
+                {
+                    if (all.Contains("</text>"))
                     {
-                        if (all.Contains("</text>"))
-                        {
-                            all = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
-                            all = all.Replace("{0}", string.Empty);
-                        }
-                        else { all = doc.DocumentNode.InnerText.Replace("{0}", string.Empty); }
+                        all = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
+                        all = all.Replace("{0}", string.Empty);
                     }
+                    else { all = doc.DocumentNode.InnerText.Replace("{0}", string.Empty); }
+                }
 
-                    doc = new HtmlAgilityPack.HtmlDocument();
-                    doc.LoadHtml(any);
-                    if (doc.DocumentNode.InnerText.Contains("{QuestNumber}")) //russian
+                doc = new HtmlAgilityPack.HtmlDocument();
+                doc.LoadHtml(any);
+                if (doc.DocumentNode.InnerText.Contains("{QuestNumber}")) //russian
+                {
+                    if (any.Contains("</text>"))
                     {
-                        if (any.Contains("</text>"))
-                        {
-                            any = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
-                            any = any.Replace("{QuestNumber}", count);
-                        }
-                        else { any = doc.DocumentNode.InnerText.Replace("{QuestNumber}", count); }
+                        any = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
+                        any = any.Replace("{QuestNumber}", count);
                     }
-                    else
+                    else { any = doc.DocumentNode.InnerText.Replace("{QuestNumber}", count); }
+                }
+                else
+                {
+                    if (any.Contains("</text>"))
                     {
-                        if (any.Contains("</text>"))
-                        {
-                            any = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
-                            any = string.Format(any, count);
-                        }
-                        else { any = string.Format(doc.DocumentNode.InnerText, count); }
+                        any = doc.DocumentNode.InnerText.Replace(doc.DocumentNode.SelectSingleNode("text").InnerText, doc.DocumentNode.SelectSingleNode("text").InnerText.ToUpper());
+                        any = string.Format(any, count);
                     }
+                    else { any = string.Format(doc.DocumentNode.InnerText, count); }
+                }
 
-                    if (all.Contains("  ")) { all = all.Replace("  ", " "); } //double space in Spanish (LA)               i.e. with QuestBundle_PirateParty
-                    if (any.Contains("  ")) { any = any.Replace("  ", " "); }
-                    break;
-                default:
-                    break;
+                if (all.Contains("  ")) { all = all.Replace("  ", " "); } //double space in Spanish (LA)               i.e. with QuestBundle_PirateParty
+                if (any.Contains("  ")) { any = any.Replace("  ", " "); }
             }
 
             drawQuestBackground(myBitmap, false);
