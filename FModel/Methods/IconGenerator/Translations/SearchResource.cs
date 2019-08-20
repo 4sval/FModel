@@ -4,25 +4,17 @@ namespace FModel
 {
     static class SearchResource
     {
-        /// <summary>
-        /// because idk, i made my serializer in a weird way
-        /// if a namespace is empty the key become the namespace and the new key is "LocResText"
-        /// i could change the serializer but it's gonna break a lot of things and i don't wanna take time to fix them
-        /// </summary>
-        /// <param name="theNamespace"></param>
-        /// <param name="theKey"></param>
-        /// <returns></returns>
         public static string getTranslatedText(string theNamespace, string theKey)
         {
             try
             {
-                if (!string.Equals(theNamespace, "LocResText"))
+                if (string.IsNullOrEmpty(theNamespace))
                 {
-                    return LocResSerializer.LocResDict[theNamespace][theKey];
+                    return LocResSerializer.LocResDict[theKey];
                 }
                 else
                 {
-                    return LocResSerializer.LocResDict[theKey][theNamespace];
+                    return LocResSerializer.LocResDict[theNamespace][theKey];
                 }
             }
             catch (KeyNotFoundException)
@@ -39,7 +31,7 @@ namespace FModel
             string text = defaultText;
             if (LocResSerializer.LocResDict != null)
             {
-                text = getTranslatedText(namespac == null ? "LocResText" : namespac, key);
+                text = getTranslatedText(namespac, key);
                 if (string.IsNullOrEmpty(text))
                     text = defaultText;
             }

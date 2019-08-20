@@ -518,12 +518,20 @@ namespace FModel
                 {
                     scintilla1.Text = "";
                     pictureBox1.Image = null;
+                    loadOneToolStripMenuItem.Enabled = false;
+                    loadAllToolStripMenuItem.Enabled = false;
 
                     treeView1.Nodes.Clear(); //SMH HERE IT DOESN'T LAG
                     listBox1.Items.Clear();
                 }));
 
                 CreatePakList(e);
+
+                Invoke(new Action(() =>
+                {
+                    loadOneToolStripMenuItem.Enabled = true;
+                    loadAllToolStripMenuItem.Enabled = true;
+                }));
             });
         }
         private async void loadAllToolStripMenuItem_Click(object sender, EventArgs e)
@@ -532,6 +540,8 @@ namespace FModel
             {
                 scintilla1.Text = "";
                 pictureBox1.Image = null;
+                loadOneToolStripMenuItem.Enabled = false;
+                loadAllToolStripMenuItem.Enabled = false;
 
                 treeView1.Nodes.Clear(); //SMH HERE IT DOESN'T LAG
                 listBox1.Items.Clear();
@@ -555,6 +565,12 @@ namespace FModel
                     UpdateModeHereWeGooooo();
                 });
             }
+
+            Invoke(new Action(() =>
+            {
+                loadOneToolStripMenuItem.Enabled = true;
+                loadAllToolStripMenuItem.Enabled = true;
+            }));
         }
         private async void backupPAKsToolStripMenuItem_Click(object sender, EventArgs e)
         {

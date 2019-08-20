@@ -52,6 +52,7 @@ namespace FModel.Forms
             this.button1 = new System.Windows.Forms.Button();
             this.wPictureBox = new System.Windows.Forms.PictureBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
@@ -62,7 +63,6 @@ namespace FModel.Forms
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
-            this.button5 = new System.Windows.Forms.Button();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -345,6 +345,16 @@ namespace FModel.Forms
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Challenges Theme";
             // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(168, 48);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(124, 23);
+            this.button5.TabIndex = 34;
+            this.button5.Text = "Delete Current Banner";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.Button5_Click);
+            // 
             // button3
             // 
             this.button3.Location = new System.Drawing.Point(102, 129);
@@ -445,16 +455,6 @@ namespace FModel.Forms
             this.label12.Size = new System.Drawing.Size(62, 13);
             this.label12.TabIndex = 9;
             this.label12.Text = "Watermark:";
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(168, 48);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(124, 23);
-            this.button5.TabIndex = 34;
-            this.button5.Text = "Delete Current Banner";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.Button5_Click);
             // 
             // Settings
             // 

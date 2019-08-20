@@ -9,12 +9,17 @@ namespace FModel
     {
         private static void DrawBackground(Graphics toDrawOn, Color background, Color backgroundUpDown, Color border)
         {
+            Pen pen = null;
+            GraphicsPath p = null;
+            PathGradientBrush pthGrBrush = null;
+            Color[] colors = { backgroundUpDown };
+
             switch (Settings.Default.rarityDesign)
             {
                 case "Flat":
                     toDrawOn.FillRectangle(new SolidBrush(background), new Rectangle(-1, -1, 522, 522));
 
-                    GraphicsPath p = new GraphicsPath();
+                    p = new GraphicsPath();
                     p.StartFigure();
                     p.AddLine(4, 438, 517, 383);
                     p.AddLine(517, 383, 517, 383 + 134);
@@ -29,24 +34,23 @@ namespace FModel
                     p.CloseFigure();
                     toDrawOn.FillPath(new SolidBrush(Utilities.ChangeLightness(background, (float) 0.8)), p);
 
-                    Pen pen = new Pen(border, 5);
+                    pen = new Pen(border, 5);
                     pen.Alignment = PenAlignment.Inset;
                     toDrawOn.DrawRectangle(pen, new Rectangle(-1, -1, 522, 522));
                     break;
                 case "Default":
-                    GraphicsPath path = new GraphicsPath();
-                    path.AddEllipse(-266, -266, 1044, 1044);
+                    p = new GraphicsPath();
+                    p.AddEllipse(-266, -266, 1044, 1044);
 
-                    PathGradientBrush pthGrBrush = new PathGradientBrush(path);
+                    pthGrBrush = new PathGradientBrush(p);
                     pthGrBrush.CenterColor = background;
-                    Color[] colors = { backgroundUpDown };
                     pthGrBrush.SurroundColors = colors;
 
                     toDrawOn.FillEllipse(pthGrBrush, -266, -266, 1044, 1044);
 
-                    Pen pen2 = new Pen(border, 5);
-                    pen2.Alignment = PenAlignment.Inset;
-                    toDrawOn.DrawRectangle(pen2, new Rectangle(-1, -1, 522, 522));
+                    pen = new Pen(border, 5);
+                    pen.Alignment = PenAlignment.Inset;
+                    toDrawOn.DrawRectangle(pen, new Rectangle(-1, -1, 522, 522));
                     break;
             }
         }

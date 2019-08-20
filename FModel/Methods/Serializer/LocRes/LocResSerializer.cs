@@ -20,12 +20,12 @@ namespace FModel
         private static string[] _localizedStringArray { get; set; }
         private static string _namespacesString { get; set; }
         private static string _myKey { get; set; }
-        public static Dictionary<string, Dictionary<string, string>> LocResDict { get; set; }
+        public static Dictionary<string, dynamic> LocResDict { get; set; }
 
         public static void setLocRes(string filepath, bool addToCurrent = false)
         {
-            if (!addToCurrent) { LocResDict = new Dictionary<string, Dictionary<string, string>>(); }
-            _myKey = "LocResText";
+            if (!addToCurrent) { LocResDict = new Dictionary<string, dynamic>(); }
+            _myKey = "";
             _namespacesString = "";
             _localizedStringArrayOffset = -1;
 
@@ -119,7 +119,7 @@ namespace FModel
                 if (!LocResDict.ContainsKey(_namespacesString))
                 {
                     LocResDict[_namespacesString] = new Dictionary<string, string>();
-                    LocResDict[_namespacesString][_myKey] = _localizedStringArray[stringIndex];
+                    LocResDict[_namespacesString] = _localizedStringArray[stringIndex];
                 }
             }
         }

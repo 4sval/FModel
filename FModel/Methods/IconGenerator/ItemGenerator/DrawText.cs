@@ -354,22 +354,30 @@ namespace FModel
                 JToken sourceString = displayName["source_string"];
                 if (key != null && sourceString != null)
                 {
-                    //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(5, 405, 512, 55));
+                    //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new Rectangle(5, 385, 512, 59));
+
+                    Size rectSize = string.Equals(Settings.Default.rarityDesign, "Flat") ? new Rectangle(5, 405, 512, 55).Size : new Rectangle(5, 395, 512, 49).Size;
+                    Point textPoint = string.Equals(Settings.Default.rarityDesign, "Flat") ? new Point(522, 405) : new Point(522 / 2, 395);
+                    if (Settings.Default.IconLanguage == "Russian")
+                    {
+                        rectSize = string.Equals(Settings.Default.rarityDesign, "Flat") ? new Rectangle(5, 395, 512, 55).Size : new Rectangle(5, 385, 512, 59).Size;
+                        textPoint = string.Equals(Settings.Default.rarityDesign, "Flat") ? new Point(522, 405) : new Point(522 / 2, 390);
+                    }
 
                     string text = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
 
                     Font goodFont = FontUtilities.FindFont(
                         myGraphic,
-                        text,
-                        string.Equals(Settings.Default.rarityDesign, "Flat") ? new Rectangle(5, 405, 512, 55).Size : new Rectangle(5, 395, 512, 49).Size,
-                        new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : Settings.Default.IconLanguage == "Russian" || Settings.Default.IconLanguage == "Chinese (S)" ? FontUtilities.pfc.Families[1] : FontUtilities.pfc.Families[0], 35)
+                        Settings.Default.IconLanguage == "Russian" ? text.ToUpper() : text,
+                        rectSize,
+                        new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : Settings.Default.IconLanguage == "Russian" || Settings.Default.IconLanguage == "Chinese (S)" ? FontUtilities.pfc.Families[1] : FontUtilities.pfc.Families[0], Settings.Default.IconLanguage == "Russian" ? 45 : 35)
                         );
 
                     myGraphic.DrawString(
-                        text,
+                        Settings.Default.IconLanguage == "Russian" ? text.ToUpper() : text,
                         goodFont,
                         new SolidBrush(Color.White),
-                        string.Equals(Settings.Default.rarityDesign, "Flat") ? new Point(522, 405) : new Point(522 / 2, 395),
+                        textPoint,
                         string.Equals(Settings.Default.rarityDesign, "Flat") ? FontUtilities.rightString : FontUtilities.centeredString
                         );
                 }

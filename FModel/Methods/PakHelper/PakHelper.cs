@@ -40,6 +40,7 @@ namespace FModel
                 catch (Exception ex)
                 {
                     if (!string.Equals(ex.Message, "Extraction failed")) { new UpdateMyConsole("Message: " + ex.Message + "\nSource: " + ex.Source + "\nTarget: " + ex.TargetSite + "\n\nContact me: @AsvalFN on Twitter or open an issue on GitHub", Color.Red, true).AppendToConsole(); return; }
+                    else { new UpdateMyConsole("0x" + Settings.Default.AESKey + " doesn't work with the main pak files", Color.Red, true).AppendToConsole(); }
 
                     if (theExtractor != null) { theExtractor.Dispose(); }
                     break; //if one of the main pak file doesn't work, all the other doesn't work either

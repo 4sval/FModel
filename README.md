@@ -67,7 +67,7 @@
 - _I'm sure the key is correct but opening the file with this key isn't working_
 
     - First, make sure `C:\Windows\System32\vcruntime140.dll` isn't missing. If it's missing you can download it by installing [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads).
-    - If it's not missing you can open on issue on GitHub or contact us on Twitter [@AsvalFN](https://twitter.com/AsvalFN) [@MaikyMOficial](https://twitter.com/MaikyMOficial) [@iFireMonkey](https://twitter.com/iFireMonkey)
+    - If it's not missing you can open on issue on GitHub or contact us on Twitter [@AsvalFN](https://twitter.com/AsvalFN) [@MaikyMOficial](https://twitter.com/MaikyMOficial)
 
 - _I can't compile the solution on Visual Studio_
 
