@@ -36,21 +36,24 @@ namespace FModel
 
                     pen = new Pen(border, 5);
                     pen.Alignment = PenAlignment.Inset;
-                    toDrawOn.DrawRectangle(pen, new Rectangle(-1, -1, 522, 522));
+                    toDrawOn.DrawRectangle(pen, new Rectangle(-1, -1, 523, 523));
                     break;
                 case "Default":
+                    int circleSize = 750; // not that bad like that
+                    int circlePos = (522 - circleSize) / 2;
+
                     p = new GraphicsPath();
-                    p.AddEllipse(-266, -266, 1044, 1044);
+                    p.AddEllipse(circlePos, circlePos, circleSize, circleSize);
 
                     pthGrBrush = new PathGradientBrush(p);
                     pthGrBrush.CenterColor = background;
                     pthGrBrush.SurroundColors = colors;
 
-                    toDrawOn.FillEllipse(pthGrBrush, -266, -266, 1044, 1044);
+                    toDrawOn.FillEllipse(pthGrBrush, circlePos, circlePos, circleSize, circleSize);
 
                     pen = new Pen(border, 5);
                     pen.Alignment = PenAlignment.Inset;
-                    toDrawOn.DrawRectangle(pen, new Rectangle(-1, -1, 522, 522));
+                    toDrawOn.DrawRectangle(pen, new Rectangle(-1, -1, 523, 523));
                     break;
             }
         }

@@ -72,8 +72,10 @@ namespace FModel
                 }
                 else
                 {
-                    new UpdateMyConsole("[FModel] BR Localization File Not Found - Icon Language set to English", Color.DarkRed, true).AppendToConsole();
-                    new UpdateMyConsole("", Color.Black, true).AppendToConsole();
+                    new UpdateMyConsole("Game_BR.locres ", Color.Crimson).AppendToConsole();
+                    new UpdateMyConsole("not found", Color.Black, true).AppendToConsole();
+                    new UpdateMyConsole("Icon language set to ", Color.Black).AppendToConsole();
+                    new UpdateMyConsole("English", Color.CornflowerBlue, true).AppendToConsole();
 
                     Properties.Settings.Default.IconLanguage = "English";
                     Properties.Settings.Default.Save();
@@ -87,11 +89,8 @@ namespace FModel
                 }
                 else
                 {
-                    new UpdateMyConsole("[FModel] STW Localization File Not Found - Icon Language set to English", Color.DarkRed, true).AppendToConsole();
-                    new UpdateMyConsole("", Color.Black, true).AppendToConsole();
-
-                    Properties.Settings.Default.IconLanguage = "English";
-                    Properties.Settings.Default.Save();
+                    new UpdateMyConsole("Game_StW.locres ", Color.Crimson).AppendToConsole();
+                    new UpdateMyConsole("not found", Color.Black, true).AppendToConsole();
                 }
             }
         }

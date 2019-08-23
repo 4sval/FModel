@@ -153,7 +153,11 @@ namespace FModel
                             AddPaKs(Path.GetFileName(arCurrentUsedPak)); //add to toolstrip
                         }
                     }
-                    else { new UpdateMyConsole("[FModel] " + Path.GetFileName(arCurrentUsedPak) + " is locked by another process.", Color.Red, true).AppendToConsole(); }
+                    else
+                    {
+                        new UpdateMyConsole(Path.GetFileName(arCurrentUsedPak), Color.CornflowerBlue).AppendToConsole();
+                        new UpdateMyConsole(" is locked by another process.", Color.Black, true).AppendToConsole();
+                    }
                 }
             }
         }
@@ -161,6 +165,7 @@ namespace FModel
         //EVENTS
         private async void MainWindow_Load(object sender, EventArgs e)
         {
+            AutoUpdater.CheckForUpdateEvent += Utilities.AutoUpdaterOnCheckForUpdateEvent;
             AutoUpdater.Start("https://dl.dropbox.com/s/3kv2pukqu6tj1r0/FModel.xml?dl=0");
 
             DLLImport.SetTreeViewTheme(treeView1.Handle);
@@ -367,7 +372,7 @@ namespace FModel
                 {
                     Invoke(new Action(() =>
                     {
-                        new UpdateMyConsole("Items Removed/Renamed:", Color.Red, true).AppendToConsole();
+                        new UpdateMyConsole("Items Removed/Renamed:", Color.Crimson, true).AppendToConsole();
                         removedItems = removedItems.Distinct().ToList();
                         for (int ii = 0; ii < removedItems.Count; ii++)
                             new UpdateMyConsole("    - " + removedItems[ii], Color.Black, true).AppendToConsole();
@@ -376,7 +381,7 @@ namespace FModel
             }
             else
             {
-                new UpdateMyConsole("Canceled! ", Color.Red).AppendToConsole();
+                new UpdateMyConsole("Canceled! ", Color.Crimson).AppendToConsole();
                 new UpdateMyConsole("All pak files loaded...", Color.Black, true).AppendToConsole();
                 return;
             }
@@ -870,7 +875,7 @@ namespace FModel
                 }
                 catch (JsonReaderException)
                 {
-                    new UpdateMyConsole(ThePak.CurrentUsedItem + " ", Color.Red).AppendToConsole();
+                    new UpdateMyConsole(ThePak.CurrentUsedItem + " ", Color.Crimson).AppendToConsole();
                     new UpdateMyConsole(".JSON file can't be displayed", Color.Black, true).AppendToConsole();
                 }
                 finally
@@ -974,7 +979,7 @@ namespace FModel
             {
                 if (Checking.UmWorking)
                 {
-                    new UpdateMyConsole(ex.Message, Color.Red, true).AppendToConsole();
+                    new UpdateMyConsole(ex.Message, Color.Crimson, true).AppendToConsole();
                 }
                 else
                 {
@@ -1073,9 +1078,9 @@ namespace FModel
 
             for (int i = 0; i < BundleInfos.BundleData.Count; i++)
             {
-                new UpdateMyConsole(BundleInfos.BundleData[i].questDescr, Color.SteelBlue).AppendToConsole();
-                new UpdateMyConsole("\t\tCount: " + BundleInfos.BundleData[i].questCount, Color.DarkRed).AppendToConsole();
-                new UpdateMyConsole("\t\t" + BundleInfos.BundleData[i].rewardItemId + ":" + BundleInfos.BundleData[i].rewardItemQuantity, Color.DarkGreen, true).AppendToConsole();
+                new UpdateMyConsole(BundleInfos.BundleData[i].questDescr, Color.RoyalBlue).AppendToConsole();
+                new UpdateMyConsole("\t\tCount: " + BundleInfos.BundleData[i].questCount, Color.Goldenrod).AppendToConsole();
+                new UpdateMyConsole("\t\t" + BundleInfos.BundleData[i].rewardItemId + ":" + BundleInfos.BundleData[i].rewardItemQuantity, Color.Crimson, true).AppendToConsole();
 
                 BundleDesign.theY += 90;
 
@@ -1172,7 +1177,7 @@ namespace FModel
                 {
                     pictureBox1.Image.Save(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png", ImageFormat.Png);
                 }));
-                new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                new UpdateMyConsole(ThePak.CurrentUsedItem, Color.Crimson).AppendToConsole();
                 new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
             }
         }
@@ -1186,11 +1191,8 @@ namespace FModel
 
             if (File.Exists(soundPathConverted))
             {
-                if (Properties.Settings.Default.tryToOpenAssets)
-                {
-                    Utilities.OpenWithDefaultProgramAndNoFocus(soundPathConverted);
-                    new UpdateMyState("Opening " + ThePak.CurrentUsedItem + ".ogg", "Success").ChangeProcessState();
-                } else { new UpdateMyState("Extracted " + ThePak.CurrentUsedItem + ".ogg", "Success").ChangeProcessState(); }
+                new UpdateMyState("Opening " + ThePak.CurrentUsedItem + ".ogg", "Success").ChangeProcessState();
+                Utilities.OpenWithDefaultProgramAndNoFocus(soundPathConverted);
             }
             else
                 new UpdateMyState("Couldn't convert " + ThePak.CurrentUsedItem, "Error").ChangeProcessState();
@@ -1320,7 +1322,7 @@ namespace FModel
                 if (saveTheDialog.ShowDialog() == DialogResult.OK)
                 {
                     pictureBox1.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
-                    new UpdateMyConsole(Path.GetFileNameWithoutExtension(saveTheDialog.FileName), Color.DarkRed).AppendToConsole();
+                    new UpdateMyConsole(Path.GetFileNameWithoutExtension(saveTheDialog.FileName), Color.Crimson).AppendToConsole();
                     new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
                 }
             }
@@ -1499,7 +1501,8 @@ namespace FModel
                     path = isName ? Path.GetFileNameWithoutExtension(path) : Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
 
                 Clipboard.SetText(path);
-                new UpdateMyConsole(path + " Copied!", Color.Green, true).AppendToConsole();
+                new UpdateMyConsole(path, Color.CornflowerBlue).AppendToConsole();
+                new UpdateMyConsole(" Copied!", Color.Black, true).AppendToConsole();
             }
         }
 
@@ -1521,13 +1524,8 @@ namespace FModel
                     File.WriteAllText(saveTheDialog.FileName, scintilla1.Text);
                     if (File.Exists(saveTheDialog.FileName))
                     {
-                        new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                        new UpdateMyConsole(ThePak.CurrentUsedItem, Color.Crimson).AppendToConsole();
                         new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
-                    }
-                    else
-                    {
-                        new UpdateMyConsole("Fail to save ", Color.Black).AppendToConsole();
-                        new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed, true).AppendToConsole();
                     }
                 }
             }
@@ -1549,13 +1547,8 @@ namespace FModel
 
                     if (File.Exists(App.DefaultOutputPath + "\\Saved_JSON\\" + filename + ".json"))
                     {
-                        new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                        new UpdateMyConsole(ThePak.CurrentUsedItem, Color.Crimson).AppendToConsole();
                         new UpdateMyConsole("'s properties successfully saved", Color.Black, true).AppendToConsole();
-                    }
-                    else
-                    {
-                        new UpdateMyConsole("Fail to save ", Color.Black).AppendToConsole();
-                        new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed, true).AppendToConsole();
                     }
                 }
             }
@@ -1571,7 +1564,7 @@ namespace FModel
 
                 if (File.Exists(App.DefaultOutputPath + "\\Icons\\" + ThePak.CurrentUsedItem + ".png"))
                 {
-                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.DarkRed).AppendToConsole();
+                    new UpdateMyConsole(ThePak.CurrentUsedItem, Color.Crimson).AppendToConsole();
                     new UpdateMyConsole("'s image successfully saved", Color.Black, true).AppendToConsole();
                 }
             }

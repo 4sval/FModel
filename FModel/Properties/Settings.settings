@@ -50,9 +50,6 @@
     <Setting Name="challengesWatermark" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="tryToOpenAssets" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="UMParameters" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

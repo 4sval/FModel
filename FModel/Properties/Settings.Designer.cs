@@ -217,18 +217,6 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool tryToOpenAssets {
-            get {
-                return ((bool)(this["tryToOpenAssets"]));
-            }
-            set {
-                this["tryToOpenAssets"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string UMParameters {
             get {

@@ -35,8 +35,6 @@ namespace FModel.Forms
                 textBox6.Text = "@UseTheWatermarkBecauseWhyNot - {Date}";
             }
 
-            checkBox_tryToOpen.Checked = Properties.Settings.Default.tryToOpenAssets;
-
             // Check if watermark exists
             Utilities.CheckWatermark();
 
@@ -121,8 +119,6 @@ namespace FModel.Forms
             Properties.Settings.Default.isChallengesTheme = checkBox2.Checked;
             Properties.Settings.Default.challengesOpacity = trackBar3.Value;
             Properties.Settings.Default.challengesColors = headerColor.R + "," + headerColor.G + "," + headerColor.B;
-
-            Properties.Settings.Default.tryToOpenAssets     = checkBox_tryToOpen.Checked;
 
             Properties.Settings.Default.rarityDesign = comboBox2.SelectedItem.ToString();
 

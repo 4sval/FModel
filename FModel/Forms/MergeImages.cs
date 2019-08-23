@@ -111,7 +111,7 @@ namespace FModel.Forms
                 if (saveTheDialog.ShowDialog() == DialogResult.OK)
                 {
                     pictureBox1.Image.Save(saveTheDialog.FileName, ImageFormat.Png);
-                    new UpdateMyConsole(Path.GetFileNameWithoutExtension(saveTheDialog.FileName), Color.DarkRed).AppendToConsole();
+                    new UpdateMyConsole(Path.GetFileNameWithoutExtension(saveTheDialog.FileName), Color.Crimson).AppendToConsole();
                     new UpdateMyConsole(" successfully saved", Color.Black, true).AppendToConsole();
                 }
             }

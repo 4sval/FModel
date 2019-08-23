@@ -50,7 +50,6 @@ namespace FModel
                             DynamicKeysManager.serialize("", item.thePak);
                         }
                     }
-                    new UpdateMyConsole("", Color.Green, true).AppendToConsole();
                 }
             }
 
@@ -68,20 +67,20 @@ namespace FModel
                 if (DLLImport.IsInternetAvailable())
                 {
                     string data = Keychain.GetEndpoint("http://benbotfn.tk:8080/api/aes");
-                    if (string.IsNullOrEmpty(data)) { new UpdateMyConsole("[BenBot API] API Down or Rate Limit Exceeded", Color.Red, true).AppendToConsole(); return null; }
+                    if (string.IsNullOrEmpty(data)) { new UpdateMyConsole("API Down or Rate Limit Exceeded", Color.CornflowerBlue, true).AppendToConsole(); return null; }
 
                     JToken dynamicPaks = JObject.Parse(data).FindTokens("additionalKeys").FirstOrDefault();
                     return JToken.Parse(dynamicPaks.ToString()).ToString().TrimStart('[').TrimEnd(']');
                 }
                 else
                 {
-                    new UpdateMyConsole("Your internet connection is currently unavailable, can't check for dynamic keys at the moment.", Color.Red, true).AppendToConsole();
+                    new UpdateMyConsole("Your internet connection is currently unavailable, can't check for dynamic keys at the moment.", Color.CornflowerBlue, true).AppendToConsole();
                     return null;
                 }
             }
             catch (Exception)
             {
-                new UpdateMyConsole("[BenBot API] Error while checking for dynamic keys", Color.Red, true).AppendToConsole();
+                new UpdateMyConsole("Error while checking for dynamic keys", Color.Crimson, true).AppendToConsole();
                 return null;
             }
         }
@@ -99,14 +98,14 @@ namespace FModel
                 bool wasThereBeforeStartup = _oldKeysList.Where(i => i.theKey == pakKey).Any();
                 if (!wasThereBeforeStartup)
                 {
-                    new UpdateMyConsole(pakName, Color.Firebrick).AppendToConsole();
+                    new UpdateMyConsole(pakName, Color.CornflowerBlue).AppendToConsole();
                     new UpdateMyConsole(" can now be opened.", Color.Black, true).AppendToConsole();
                 }
             }
             else
             {
                 //display all paks that can be opened
-                new UpdateMyConsole(pakName, Color.Firebrick).AppendToConsole();
+                new UpdateMyConsole(pakName, Color.CornflowerBlue).AppendToConsole();
                 new UpdateMyConsole(" can be opened.", Color.Black, true).AppendToConsole();
             }
         }

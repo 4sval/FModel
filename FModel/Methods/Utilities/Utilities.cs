@@ -8,6 +8,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using AutoUpdaterDotNET;
 
 namespace FModel
 {
@@ -19,10 +20,17 @@ namespace FModel
         /// <param name="path"> path is the path to the converted sound file (in "Sounds" subfolder) </param>
         public static void OpenWithDefaultProgramAndNoFocus(string path)
         {
-            Process fileopener = new Process();
-            fileopener.StartInfo.FileName = "explorer";
-            fileopener.StartInfo.Arguments = "\"" + path + "\"";
-            fileopener.Start();
+            try
+            {
+                Process fileopener = new Process();
+                fileopener.StartInfo.FileName = "explorer";
+                fileopener.StartInfo.Arguments = "\"" + path + "\"";
+                fileopener.Start();
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException("Error while trying to open " + ThePak.CurrentUsedItem);
+            }
         }
 
         /// <summary>
@@ -175,31 +183,31 @@ namespace FModel
 
         public static void CheckWatermark()
         {
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.wFilename) &&
-                !File.Exists(Properties.Settings.Default.wFilename))
+            if (!string.IsNullOrEmpty(Settings.Default.wFilename) &&
+                !File.Exists(Settings.Default.wFilename))
             {
-                Properties.Settings.Default.wFilename = string.Empty;
-                Properties.Settings.Default.isWatermark = false;
-                new UpdateMyConsole("Watermark file not found, watermarking disabled.", Color.Red, true).AppendToConsole();
+                Settings.Default.wFilename = string.Empty;
+                Settings.Default.isWatermark = false;
+                new UpdateMyConsole("Watermark file not found, watermarking disabled.", Color.CornflowerBlue, true).AppendToConsole();
             }
 
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename) &&
-                !File.Exists(Properties.Settings.Default.UMFilename))
+            if (!string.IsNullOrEmpty(Settings.Default.UMFilename) &&
+                !File.Exists(Settings.Default.UMFilename))
             {
-                Properties.Settings.Default.UMFilename = string.Empty;
-                Properties.Settings.Default.UMWatermark = false;
-                new UpdateMyConsole("Watermark file not found, watermarking in Update Mode disabled.", Color.Red, true).AppendToConsole();
+                Settings.Default.UMFilename = string.Empty;
+                Settings.Default.UMWatermark = false;
+                new UpdateMyConsole("Watermark file not found, watermarking in Update Mode disabled.", Color.CornflowerBlue, true).AppendToConsole();
             }
 
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.challengesBannerFileName) &&
-                !File.Exists(Properties.Settings.Default.challengesBannerFileName))
+            if (!string.IsNullOrEmpty(Settings.Default.challengesBannerFileName) &&
+                !File.Exists(Settings.Default.challengesBannerFileName))
             {
-                Properties.Settings.Default.challengesBannerFileName = string.Empty;
-                Properties.Settings.Default.isChallengesTheme = false;
-                new UpdateMyConsole("Banner file not found, challenges custom theme disabled.", Color.Red, true).AppendToConsole();
+                Settings.Default.challengesBannerFileName = string.Empty;
+                Settings.Default.isChallengesTheme = false;
+                new UpdateMyConsole("Banner file not found, challenges custom theme disabled.", Color.CornflowerBlue, true).AppendToConsole();
             }
 
-            Properties.Settings.Default.Save();
+            Settings.Default.Save();
         }
 
         public static IEnumerable<TItem> GetAncestors<TItem>(TItem item, Func<TItem, TItem> getParentFunc)
@@ -219,6 +227,58 @@ namespace FModel
         {
             return Color.FromArgb((int)(color.R * coef), (int)(color.G * coef),
                 (int)(color.B * coef));
+        }
+
+        public static void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            if (args != null)
+            {
+                if (args.IsUpdateAvailable)
+                {
+                    DialogResult dialogResult;
+                    if (args.Mandatory)
+                    {
+                        dialogResult =
+                            MessageBox.Show(
+                                $@"There is new version {args.CurrentVersion} available. You are using version {args.InstalledVersion}. This is required update. Press Ok to begin updating the application.", @"Update Available",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        dialogResult =
+                            MessageBox.Show(
+                                $@"There is new version {args.CurrentVersion} available. You are using version {
+                                        args.InstalledVersion
+                                    }. Do you want to update the application now?", @"Update Available",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Information);
+                    }
+
+                    if (dialogResult.Equals(DialogResult.Yes) || dialogResult.Equals(DialogResult.OK))
+                    {
+                        try
+                        {
+                            Process.Start(args.ChangelogURL);
+                            if (AutoUpdater.DownloadUpdate())
+                            {
+                                Application.Exit();
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show(
+                        @"There is a problem reaching update server please check your internet connection and try again later.",
+                        @"Update check failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

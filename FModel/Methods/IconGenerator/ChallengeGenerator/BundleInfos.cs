@@ -284,7 +284,7 @@ namespace FModel
             }
             catch (KeyNotFoundException)
             {
-                new UpdateMyConsole("[FModel] Can't extract " + questFile, Color.Red, true);
+                new UpdateMyConsole("Can't extract " + questFile, Color.CornflowerBlue, true);
             }
         }
     }

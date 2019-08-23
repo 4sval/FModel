@@ -39,8 +39,8 @@ namespace FModel
                 }
                 catch (Exception ex)
                 {
-                    if (!string.Equals(ex.Message, "Extraction failed")) { new UpdateMyConsole("Message: " + ex.Message + "\nSource: " + ex.Source + "\nTarget: " + ex.TargetSite + "\n\nContact me: @AsvalFN on Twitter or open an issue on GitHub", Color.Red, true).AppendToConsole(); return; }
-                    else { new UpdateMyConsole("0x" + Settings.Default.AESKey + " doesn't work with the main pak files", Color.Red, true).AppendToConsole(); }
+                    if (string.Equals(ex.Message, "Extraction failed")) { DisplayError(); }
+                    else { DisplayEmergencyError(ex); return; }
 
                     if (theExtractor != null) { theExtractor.Dispose(); }
                     break; //if one of the main pak file doesn't work, all the other doesn't work either
@@ -74,8 +74,8 @@ namespace FModel
                     }
                     catch (Exception ex)
                     {
-                        if (string.Equals(ex.Message, "Extraction failed")) { new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole(); }
-                        else { new UpdateMyConsole("Message: " + ex.Message + "\nSource: " + ex.Source + "\nTarget: " + ex.TargetSite + "\n\nContact me: @AsvalFN on Twitter or open an issue on GitHub", Color.Red, true).AppendToConsole(); return; }
+                        if (string.Equals(ex.Message, "Extraction failed")) { DisplayError(pakName, pakKey); }
+                        else { DisplayEmergencyError(ex); return; }
 
                         if (theExtractor != null) { theExtractor.Dispose(); }
                         continue;
@@ -139,6 +139,34 @@ namespace FModel
 
             if (weLoadAll) { new UpdateMyState(".PAK mount point: " + mountPoint.Substring(9), "Waiting").ChangeProcessState(); }
             if (theSinglePak != null && thePakName == theSinglePak.ClickedItem.Text) { PakAsTxt = thePakLines; }
+        }
+
+        public static void DisplayError(string pak = null, string key = null)
+        {
+            if (string.IsNullOrEmpty(pak) && string.IsNullOrEmpty(key))
+            {
+                new UpdateMyConsole("0x" + Settings.Default.AESKey, Color.Crimson).AppendToConsole();
+                new UpdateMyConsole(" doesn't work with the main pak files", Color.Black, true).AppendToConsole();
+            }
+            else
+            {
+                new UpdateMyConsole("0x" + key, Color.Crimson).AppendToConsole();
+                new UpdateMyConsole(" doesn't work with ", Color.Black).AppendToConsole();
+                new UpdateMyConsole(pak, Color.Crimson, true).AppendToConsole();
+            }
+        }
+        public static void DisplayEmergencyError(Exception ex)
+        {
+            new UpdateMyConsole("Message: ", Color.Crimson).AppendToConsole();
+            new UpdateMyConsole(ex.Message, Color.Black, true).AppendToConsole();
+
+            new UpdateMyConsole("Source: ", Color.Crimson).AppendToConsole();
+            new UpdateMyConsole(ex.Source, Color.Black, true).AppendToConsole();
+
+            new UpdateMyConsole("Target: ", Color.Crimson).AppendToConsole();
+            new UpdateMyConsole(ex.TargetSite.ToString(), Color.Black, true).AppendToConsole();
+
+            new UpdateMyConsole("\nContact me: @AsvalFN on Twitter or open an issue on GitHub", Color.Crimson, true).AppendToConsole();
         }
     }
 }

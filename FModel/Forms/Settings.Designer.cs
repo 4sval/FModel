@@ -33,7 +33,6 @@ namespace FModel.Forms
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkBox_tryToOpen = new System.Windows.Forms.CheckBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.OKButton = new System.Windows.Forms.Button();
@@ -105,7 +104,6 @@ namespace FModel.Forms
             // groupBox2
             // 
             this.groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.groupBox2.Controls.Add(this.checkBox_tryToOpen);
             this.groupBox2.Controls.Add(this.textBox1);
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Location = new System.Drawing.Point(12, 67);
@@ -115,21 +113,11 @@ namespace FModel.Forms
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Extraction";
             // 
-            // checkBox_tryToOpen
-            // 
-            this.checkBox_tryToOpen.AutoSize = true;
-            this.checkBox_tryToOpen.Location = new System.Drawing.Point(397, 22);
-            this.checkBox_tryToOpen.Name = "checkBox_tryToOpen";
-            this.checkBox_tryToOpen.Size = new System.Drawing.Size(157, 17);
-            this.checkBox_tryToOpen.TabIndex = 8;
-            this.checkBox_tryToOpen.Text = "Try to open Extracted Asset";
-            this.checkBox_tryToOpen.UseVisualStyleBackColor = true;
-            // 
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(54, 19);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(337, 20);
+            this.textBox1.Size = new System.Drawing.Size(500, 20);
             this.textBox1.TabIndex = 2;
             // 
             // label1
@@ -515,7 +503,6 @@ namespace FModel.Forms
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.CheckBox checkBox_tryToOpen;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.CheckBox checkBox2;

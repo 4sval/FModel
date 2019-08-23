@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -226,6 +227,55 @@ namespace FModel.Forms
 
             FilesToSearch = true;
             Close();
+        }
+
+        private void ListView1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (listView1.Items.Count != 0 && listView1.SelectedItems != null && e.Button == MouseButtons.Right)
+            {
+                contextMenuStrip1.Show(Cursor.Position);
+            }
+        }
+
+        private void CopySelectedFile(bool isName = false, bool withExtension = true)
+        {
+            if (listView1.SelectedItems != null)
+            {
+                ListView.SelectedIndexCollection col = listView1.SelectedIndices;
+                string path = listView1.Items[col[0]].Text;
+
+                // if file uasset/uexp/ubulk
+                path = !path.Contains(".") ? (path.Replace("\\", "/") + ".uasset") : path.Replace("\\", "/");
+                if (isName)
+                    path = Path.GetFileName(path);
+
+                if (!withExtension)
+                    path = isName ? Path.GetFileNameWithoutExtension(path) : Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
+
+                Clipboard.SetText(path);
+                new UpdateMyConsole(path, Color.CornflowerBlue).AppendToConsole();
+                new UpdateMyConsole(" Copied!", Color.Black, true).AppendToConsole();
+            }
+        }
+
+        private void CopyFilePathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectedFile();
+        }
+
+        private void CopyFileNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectedFile(true);
+        }
+
+        private void CopyFilePathWithoutExtensionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectedFile(false, false);
+        }
+
+        private void CopyFileNameWithoutExtensionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectedFile(true, false);
         }
     }
 

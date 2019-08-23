@@ -25,11 +25,13 @@ namespace FModel
                 {
                     extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + ThePak.mainPaksList[i].thePak, Settings.Default.AESKey);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    new UpdateMyConsole("0x" + Settings.Default.AESKey + " doesn't work with the main paks.", Color.Red, true).AppendToConsole();
-                    extractor.Dispose();
-                    break;
+                    if (string.Equals(ex.Message, "Extraction failed")) { PakHelper.DisplayError(); }
+                    else { PakHelper.DisplayEmergencyError(ex); return; }
+
+                    if (extractor != null) { extractor.Dispose(); }
+                    break; //if one of the main pak file doesn't work, all the other doesn't work either
                 }
 
                 if (extractor.GetFileList().ToArray() != null)
@@ -57,10 +59,12 @@ namespace FModel
                     {
                         extractor = new PakExtractor(Settings.Default.PAKsPath + "\\" + pakName, pakKey);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        new UpdateMyConsole("0x" + pakKey + " doesn't work with " + ThePak.dynamicPaksList[i].thePak, Color.Red, true).AppendToConsole();
-                        extractor.Dispose();
+                        if (string.Equals(ex.Message, "Extraction failed")) { PakHelper.DisplayError(pakName, pakKey); }
+                        else { PakHelper.DisplayEmergencyError(ex); return; }
+
+                        if (extractor != null) { extractor.Dispose(); }
                         continue;
                     }
 
@@ -74,7 +78,7 @@ namespace FModel
                             sb.Append(fileListWithMountPoint[ii] + "\n");
                         }
                         new UpdateMyConsole("Backing up ", Color.Black).AppendToConsole();
-                        new UpdateMyConsole(ThePak.dynamicPaksList[i].thePak, Color.DarkRed, true).AppendToConsole();
+                        new UpdateMyConsole(ThePak.dynamicPaksList[i].thePak, Color.CornflowerBlue, true).AppendToConsole();
                     }
                     extractor.Dispose();
                 }
@@ -112,12 +116,12 @@ namespace FModel
                 }
                 else
                 {
-                    new UpdateMyConsole("Your internet connection is currently unavailable, can't check for backup files at the moment.", Color.Red, true).AppendToConsole();
+                    new UpdateMyConsole("Your internet connection is currently unavailable, can't check for backup files at the moment.", Color.CornflowerBlue, true).AppendToConsole();
                 }
             }
             catch (Exception)
             {
-                new UpdateMyConsole("[FModel] Error while checking for backup files", Color.Red, true).AppendToConsole();
+                new UpdateMyConsole("Error while checking for backup files", Color.Crimson, true).AppendToConsole();
             }
         }
     }
