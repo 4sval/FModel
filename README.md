@@ -27,7 +27,7 @@
 
 **4.** Clicking on **Extract** will extract the selected Asset to your `Documents` folder, it will also try to serialize it and will display information about it
 - if the Asset is an **_Item Definition_**:
-    - Try to create an [Icon](https://i.imgur.com/8hxXSsA.png) with **Name**, **Description**, **Rarity**, **Type**, **Cosmetic Source** and the **Cosmetic Set**
+    - Try to create an [Icon](https://i.imgur.com/h0FAEJx.png) with **Name**, **Description**, **Rarity**, **Type**, **Cosmetic Source** and the **Cosmetic Set**
 - if the Asset is a **_Bundle Of Challenges_**:
     - Try to create an [Icon](https://i.imgur.com/SzW11Kk.png) with all **Challenges' Description**, **Count**, **Reward** and more. You can also **add your own banner** and overwrite the default color **to make the icon more unique**
 - if the Asset is a **_Texture_**:
