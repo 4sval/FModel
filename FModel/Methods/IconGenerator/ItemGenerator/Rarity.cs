@@ -38,6 +38,7 @@ namespace FModel
                     pen.Alignment = PenAlignment.Inset;
                     toDrawOn.DrawRectangle(pen, new Rectangle(-1, -1, 523, 523));
                     break;
+                case "Minimalist":
                 case "Default":
                     int circleSize = 750; // not that bad like that
                     int circlePos = (522 - circleSize) / 2;

@@ -221,6 +221,66 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Template_D_F {
+            get {
+                object obj = ResourceManager.GetObject("Template_D_F", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Template_D_N {
+            get {
+                object obj = ResourceManager.GetObject("Template_D_N", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Template_F_F {
+            get {
+                object obj = ResourceManager.GetObject("Template_F_F", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Template_F_N {
+            get {
+                object obj = ResourceManager.GetObject("Template_F_N", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Template_M_F {
+            get {
+                object obj = ResourceManager.GetObject("Template_M_F", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Template_M_N {
+            get {
+                object obj = ResourceManager.GetObject("Template_M_N", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         /// </summary>
         internal static System.Drawing.Icon Twitter {
@@ -236,46 +296,6 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap unknown512 {
             get {
                 object obj = ResourceManager.GetObject("unknown512", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap wTemplate {
-            get {
-                object obj = ResourceManager.GetObject("wTemplate", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap wTemplateF {
-            get {
-                object obj = ResourceManager.GetObject("wTemplateF", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap wTemplateFv1 {
-            get {
-                object obj = ResourceManager.GetObject("wTemplateFv1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap wTemplatev1 {
-            get {
-                object obj = ResourceManager.GetObject("wTemplatev1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

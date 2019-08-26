@@ -358,7 +358,12 @@ namespace FModel
 
                     Size rectSize = string.Equals(Settings.Default.rarityDesign, "Flat") ? new Rectangle(5, 405, 512, 55).Size : new Rectangle(5, 395, 512, 49).Size;
                     Point textPoint = string.Equals(Settings.Default.rarityDesign, "Flat") ? new Point(522, 405) : new Point(522 / 2, 395);
-                    if (Settings.Default.IconLanguage == "Russian")
+                    if (string.Equals(Settings.Default.rarityDesign, "Minimalist"))
+                    {
+                        rectSize = string.Equals(Settings.Default.rarityDesign, "Flat") ? new Rectangle(5, 395, 512, 55).Size : string.Equals(Settings.Default.IconLanguage, "Russian") ? new Rectangle(5, 385, 512, 69).Size : new Rectangle(5, 385, 512, 59).Size;
+                        textPoint = string.Equals(Settings.Default.rarityDesign, "Flat") ? new Point(522, 405) : string.Equals(Settings.Default.IconLanguage, "Russian") ? new Point(522 / 2, 400) : new Point(522 / 2, 408);
+                    }
+                    else if (Settings.Default.IconLanguage == "Russian")
                     {
                         rectSize = string.Equals(Settings.Default.rarityDesign, "Flat") ? new Rectangle(5, 395, 512, 55).Size : new Rectangle(5, 385, 512, 59).Size;
                         textPoint = string.Equals(Settings.Default.rarityDesign, "Flat") ? new Point(522, 405) : new Point(522 / 2, 390);
@@ -366,15 +371,25 @@ namespace FModel
 
                     string text = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
 
+                    float size = 35;
+                    if (string.Equals(Settings.Default.rarityDesign, "Minimalist"))
+                    {
+                        size = string.Equals(Settings.Default.IconLanguage, "Russian") ? 55 : 45;
+                    }
+                    else if (string.Equals(Settings.Default.IconLanguage, "Russian"))
+                    {
+                        size = 45;
+                    }
+
                     Font goodFont = FontUtilities.FindFont(
                         myGraphic,
-                        Settings.Default.IconLanguage == "Russian" ? text.ToUpper() : text,
+                        Settings.Default.IconLanguage == "Russian" || string.Equals(Settings.Default.rarityDesign, "Minimalist") ? text.ToUpper() : text,
                         rectSize,
-                        new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : Settings.Default.IconLanguage == "Russian" || Settings.Default.IconLanguage == "Chinese (S)" ? FontUtilities.pfc.Families[1] : FontUtilities.pfc.Families[0], Settings.Default.IconLanguage == "Russian" ? 45 : 35)
+                        new Font(Settings.Default.IconLanguage == "Japanese" ? FontUtilities.pfc.Families[2] : Settings.Default.IconLanguage == "Russian" || Settings.Default.IconLanguage == "Chinese (S)" ? FontUtilities.pfc.Families[1] : FontUtilities.pfc.Families[0], size)
                         );
 
                     myGraphic.DrawString(
-                        Settings.Default.IconLanguage == "Russian" ? text.ToUpper() : text,
+                        Settings.Default.IconLanguage == "Russian" || string.Equals(Settings.Default.rarityDesign, "Minimalist") ? text.ToUpper() : text,
                         goodFont,
                         new SolidBrush(Color.White),
                         textPoint,
@@ -416,7 +431,7 @@ namespace FModel
                     JToken sourceString = description["source_string"];
                     if (key != null && sourceString != null)
                     {
-                        //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new Rectangle(5, 455, 512, 42));
+                        //myGraphic.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new Rectangle(5, 455, 512, 62));
 
                         string text = SearchResource.getTextByKey(key.Value<string>(), sourceString.Value<string>());
                         descriptionText = text;
@@ -436,9 +451,9 @@ namespace FModel
                 {
                     myGraphic.DrawString(
                         descriptionText,
-                        new Font("Arial", string.Equals(Settings.Default.rarityDesign, "Flat") ? 9 : 10),
+                        new Font("Arial", string.Equals(Settings.Default.rarityDesign, "Flat") ? 9 : string.Equals(Settings.Default.rarityDesign, "Minimalist") ? 12 : 10),
                         new SolidBrush(Color.White),
-                        new RectangleF(5, string.Equals(Settings.Default.rarityDesign, "Flat") ? 455 : 441, 512, string.Equals(Settings.Default.rarityDesign, "Flat") ? 42 : 49),
+                        new RectangleF(5, string.Equals(Settings.Default.rarityDesign, "Flat") || string.Equals(Settings.Default.rarityDesign, "Minimalist") ? 455 : 441, 512, string.Equals(Settings.Default.rarityDesign, "Flat") ? 42 : string.Equals(Settings.Default.rarityDesign, "Minimalist") ? 62 : 49),
                         string.Equals(Settings.Default.rarityDesign, "Flat") ? FontUtilities.rightString : FontUtilities.centeredStringLine
                         );
                 }
@@ -502,7 +517,10 @@ namespace FModel
         /// <param name="myGraphic"></param>
         private static void DrawToRight(string text, Graphics myGraphic)
         {
-            myGraphic.DrawString(text, new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(522 - 5, 503), FontUtilities.rightString);
+            if (!string.Equals(Settings.Default.rarityDesign, "Minimalist"))
+            {
+                myGraphic.DrawString(text, new Font(FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(522 - 5, 503), FontUtilities.rightString);
+            }
         }
 
         /// <summary>
@@ -512,7 +530,10 @@ namespace FModel
         /// <param name="myGraphic"></param>
         private static void DrawToLeft(string text, Graphics myGraphic)
         {
-            myGraphic.DrawString(text, new Font(Settings.Default.IconLanguage == "Russian" || Settings.Default.IconLanguage == "Chinese (S)" ? FontUtilities.pfc.Families[1] : FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(5, Settings.Default.IconLanguage == "Russian" || Settings.Default.IconLanguage == "Chinese (S)" ? 500 : 503));
+            if (!string.Equals(Settings.Default.rarityDesign, "Minimalist"))
+            {
+                myGraphic.DrawString(text, new Font(Settings.Default.IconLanguage == "Russian" || Settings.Default.IconLanguage == "Chinese (S)" ? FontUtilities.pfc.Families[1] : FontUtilities.pfc.Families[0], 11), new SolidBrush(Color.White), new Point(5, Settings.Default.IconLanguage == "Russian" || Settings.Default.IconLanguage == "Chinese (S)" ? 500 : 503));
+            }
         }
 
         /// <summary>

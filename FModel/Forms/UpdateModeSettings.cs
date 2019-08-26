@@ -45,11 +45,11 @@ namespace FModel.Forms
                 Bitmap bmp = null;
                 if (Properties.Settings.Default.UMFeatured)
                 {
-                    bmp = new Bitmap(string.Equals(Properties.Settings.Default.rarityDesign, "Flat") ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1));
+                    bmp = new Bitmap(string.Equals(Properties.Settings.Default.rarityDesign, "Flat") ? new Bitmap(Resources.Template_F_F) : string.Equals(Properties.Settings.Default.rarityDesign, "Minimalist") ? new Bitmap(Resources.Template_M_F) : new Bitmap(Resources.Template_D_F));
                 }
                 else
                 {
-                    bmp = new Bitmap(string.Equals(Properties.Settings.Default.rarityDesign, "Flat") ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1));
+                    bmp = new Bitmap(string.Equals(Properties.Settings.Default.rarityDesign, "Flat") ? new Bitmap(Resources.Template_F_N) : string.Equals(Properties.Settings.Default.rarityDesign, "Minimalist") ? new Bitmap(Resources.Template_M_N) : new Bitmap(Resources.Template_D_N));
                 }
                 Graphics g = Graphics.FromImage(bmp);
 
@@ -212,7 +212,15 @@ namespace FModel.Forms
 
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
                 {
-                    Bitmap bmp = new Bitmap(checkBox8.Checked ? Resources.wTemplateF : Resources.wTemplate);
+                    Bitmap bmp = null;
+                    if (Properties.Settings.Default.loadFeaturedImage)
+                    {
+                        bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.Template_F_F) : string.Equals(comboBox2.SelectedItem.ToString(), "Minimalist") ? new Bitmap(Resources.Template_M_F) : new Bitmap(Resources.Template_D_F));
+                    }
+                    else
+                    {
+                        bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.Template_F_N) : string.Equals(comboBox2.SelectedItem.ToString(), "Minimalist") ? new Bitmap(Resources.Template_M_N) : new Bitmap(Resources.Template_D_N));
+                    }
                     Graphics g = Graphics.FromImage(bmp);
 
                     Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -230,7 +238,15 @@ namespace FModel.Forms
         {
             if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
             {
-                Bitmap bmp = new Bitmap(checkBox8.Checked ? Resources.wTemplateF : Resources.wTemplate);
+                Bitmap bmp = null;
+                if (checkBox8.Checked)
+                {
+                    bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.Template_F_F) : string.Equals(comboBox2.SelectedItem.ToString(), "Minimalist") ? new Bitmap(Resources.Template_M_F) : new Bitmap(Resources.Template_D_F));
+                }
+                else
+                {
+                    bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.Template_F_N) : string.Equals(comboBox2.SelectedItem.ToString(), "Minimalist") ? new Bitmap(Resources.Template_M_N) : new Bitmap(Resources.Template_D_N));
+                }
                 Graphics g = Graphics.FromImage(bmp);
 
                 Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -245,7 +261,15 @@ namespace FModel.Forms
         {
             if (!string.IsNullOrEmpty(Properties.Settings.Default.UMFilename))
             {
-                Bitmap bmp = new Bitmap(checkBox8.Checked ? Resources.wTemplateF : Resources.wTemplate);
+                Bitmap bmp = null;
+                if (checkBox8.Checked)
+                {
+                    bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.Template_F_F) : string.Equals(comboBox2.SelectedItem.ToString(), "Minimalist") ? new Bitmap(Resources.Template_M_F) : new Bitmap(Resources.Template_D_F));
+                }
+                else
+                {
+                    bmp = new Bitmap(string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.Template_F_N) : string.Equals(comboBox2.SelectedItem.ToString(), "Minimalist") ? new Bitmap(Resources.Template_M_N) : new Bitmap(Resources.Template_D_N));
+                }
                 Graphics g = Graphics.FromImage(bmp);
 
                 Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
@@ -269,7 +293,7 @@ namespace FModel.Forms
         {
             if (!checkBox8.Checked)
             {
-                Bitmap bmp = string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplate) : new Bitmap(Resources.wTemplatev1);
+                Bitmap bmp = string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.Template_F_N) : string.Equals(comboBox2.SelectedItem.ToString(), "Minimalist") ? new Bitmap(Resources.Template_M_N) : new Bitmap(Resources.Template_D_N);
                 Graphics g = Graphics.FromImage(bmp);
                 if (File.Exists(Properties.Settings.Default.UMFilename))
                 {
@@ -281,7 +305,7 @@ namespace FModel.Forms
             }
             if (checkBox8.Checked)
             {
-                Bitmap bmp = string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplateFv1);
+                Bitmap bmp = string.Equals(comboBox2.SelectedItem.ToString(), "Flat") ? new Bitmap(Resources.Template_F_F) : string.Equals(comboBox2.SelectedItem.ToString(), "Minimalist") ? new Bitmap(Resources.Template_M_F) : new Bitmap(Resources.Template_D_F);
                 Graphics g = Graphics.FromImage(bmp);
                 if (File.Exists(Properties.Settings.Default.UMFilename))
                 {
@@ -295,30 +319,28 @@ namespace FModel.Forms
 
         private void ComboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (string.Equals(comboBox2.SelectedItem.ToString(), "Default"))
+            Bitmap bmp = null;
+            switch (comboBox2.SelectedItem.ToString())
             {
-                Bitmap bmp = checkBox8.Checked ? new Bitmap(Resources.wTemplateFv1) : new Bitmap(Resources.wTemplatev1);
-                Graphics g = Graphics.FromImage(bmp);
-                if (File.Exists(Properties.Settings.Default.UMFilename))
-                {
-                    Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
-                }
-                wPictureBox.Image = bmp;
+                case "Default":
+                    bmp = checkBox8.Checked ? new Bitmap(Resources.Template_D_F) : new Bitmap(Resources.Template_D_N);
+                    break;
+                case "Flat":
+                    bmp = checkBox8.Checked ? new Bitmap(Resources.Template_F_F) : new Bitmap(Resources.Template_F_N);
+                    break;
+                case "Minimalist":
+                    bmp = checkBox8.Checked ? new Bitmap(Resources.Template_M_F) : new Bitmap(Resources.Template_M_N);
+                    break;
             }
-            if (string.Equals(comboBox2.SelectedItem.ToString(), "Flat"))
+
+            Graphics g = Graphics.FromImage(bmp);
+            if (File.Exists(Properties.Settings.Default.UMFilename))
             {
-                Bitmap bmp = checkBox8.Checked ? new Bitmap(Resources.wTemplateF) : new Bitmap(Resources.wTemplate);
-                Graphics g = Graphics.FromImage(bmp);
-                if (File.Exists(Properties.Settings.Default.UMFilename))
-                {
-                    Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
-                    var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
-                    g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
-                }
-                wPictureBox.Image = bmp;
+                Image watermark = Image.FromFile(Properties.Settings.Default.UMFilename);
+                var opacityImage = ImageUtilities.SetImageOpacity(watermark, (float)trackBar1.Value / 100);
+                g.DrawImage(ImageUtilities.ResizeImage(opacityImage, trackBar2.Value, trackBar2.Value), (522 - trackBar2.Value) / 2, (522 - trackBar2.Value) / 2, trackBar2.Value, trackBar2.Value);
             }
+            wPictureBox.Image = bmp;
         }
     }
 }

@@ -177,7 +177,8 @@ namespace FModel.Forms
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
             "Default",
-            "Flat"});
+            "Flat",
+            "Minimalist"});
             this.comboBox2.Location = new System.Drawing.Point(85, 48);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(294, 21);
@@ -313,7 +314,7 @@ namespace FModel.Forms
             // wPictureBox
             // 
             this.wPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.wPictureBox.Image = global::FModel.Properties.Resources.wTemplatev1;
+            this.wPictureBox.Image = global::FModel.Properties.Resources.Template_D_N;
             this.wPictureBox.Location = new System.Drawing.Point(389, 19);
             this.wPictureBox.Name = "wPictureBox";
             this.wPictureBox.Size = new System.Drawing.Size(165, 165);
