@@ -1028,7 +1028,7 @@ namespace FModel
                 p.CloseFigure();
                 g.FillPath(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), p);
             }
-            else { g.FillRectangle(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), new Rectangle(5, string.Equals(Settings.Default.rarityDesign, "Minimalist") ? 393 : 383, 512, 134)); }
+            else { g.FillRectangle(new SolidBrush(Color.FromArgb(70, 0, 0, 50)), new Rectangle(5, string.Equals(Settings.Default.rarityDesign, "Minimalist") ? 393 : 383, 512, string.Equals(Settings.Default.rarityDesign, "Minimalist") ? 124 : 134)); }
 
             DrawText.DrawTexts(theItem, g, specialMode);
 
