@@ -95,45 +95,45 @@ namespace FModel
             }
             else if (weaponDefinition != null)
             {
-                //MANUAL FIX
-                if (weaponDefinition.Value<string>().Equals("WID_Harvest_Pickaxe_NutCracker"))
+                //STW PICKAXES MANUAL FIX
+                if (weaponDefinition.Value<string>().Equals("WID_Harvest_Pickaxe_STWCosmetic_Tier"))
                 {
-                    weaponDefinition = "WID_Harvest_Pickaxe_Nutcracker";
-                }
-                if (weaponDefinition.Value<string>().Equals("WID_Harvest_Pickaxe_Wukong"))
-                {
-                    weaponDefinition = "WID_Harvest_Pickaxe_WuKong";
+                    weaponDefinition = "WID_Harvest_Pickaxe_STWCosmetic_Tier_" + ThePak.CurrentUsedItem.Substring(ThePak.CurrentUsedItem.Length - 1);
                 }
 
-                string weaponFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[weaponDefinition.Value<string>()], weaponDefinition.Value<string>());
-                if (weaponFilePath != null)
+                string value = ThePak.AllpaksDictionary.Where(x => string.Equals(x.Key, weaponDefinition.Value<string>(), StringComparison.CurrentCultureIgnoreCase)).Select(d => d.Key).FirstOrDefault();
+                if (value != null)
                 {
-                    if (weaponFilePath.Contains(".uasset") || weaponFilePath.Contains(".uexp") || weaponFilePath.Contains(".ubulk"))
+                    string weaponFilePath = JohnWick.ExtractAsset(ThePak.AllpaksDictionary[value], value);
+                    if (weaponFilePath != null)
                     {
-                        JohnWick.MyAsset = new PakAsset(weaponFilePath.Substring(0, weaponFilePath.LastIndexOf('.')));
-                        try
+                        if (weaponFilePath.Contains(".uasset") || weaponFilePath.Contains(".uexp") || weaponFilePath.Contains(".ubulk"))
                         {
-                            if (JohnWick.MyAsset.GetSerialized() != null)
+                            JohnWick.MyAsset = new PakAsset(weaponFilePath.Substring(0, weaponFilePath.LastIndexOf('.')));
+                            try
                             {
-                                dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
-                                JArray AssetArray = JArray.FromObject(AssetData);
-
-                                JToken largePreviewImage = AssetArray[0]["LargePreviewImage"];
-                                if (largePreviewImage != null)
+                                if (JohnWick.MyAsset.GetSerialized() != null)
                                 {
-                                    JToken assetPathName = largePreviewImage["asset_path_name"];
-                                    if (assetPathName != null)
-                                    {
-                                        string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
+                                    dynamic AssetData = JsonConvert.DeserializeObject(JohnWick.MyAsset.GetSerialized());
+                                    JArray AssetArray = JArray.FromObject(AssetData);
 
-                                        ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                                    JToken largePreviewImage = AssetArray[0]["LargePreviewImage"];
+                                    if (largePreviewImage != null)
+                                    {
+                                        JToken assetPathName = largePreviewImage["asset_path_name"];
+                                        if (assetPathName != null)
+                                        {
+                                            string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
+
+                                            ItemIconPath = JohnWick.AssetToTexture2D(textureFile);
+                                        }
                                     }
                                 }
                             }
-                        }
-                        catch (JsonSerializationException)
-                        {
-                            //do not crash when JsonSerialization does weird stuff
+                            catch (JsonSerializationException)
+                            {
+                                //do not crash when JsonSerialization does weird stuff
+                            }
                         }
                     }
                 }
