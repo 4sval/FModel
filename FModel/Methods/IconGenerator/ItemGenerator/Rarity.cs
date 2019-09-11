@@ -65,6 +65,21 @@ namespace FModel
             {
                 DrawBackground(toDrawOn, Color.FromArgb(255, 203, 35, 45), Color.FromArgb(255, 127, 14, 29), Color.FromArgb(255, 255, 67, 61));
             }
+            else if (theSeries.Equals("CUBESeries"))
+            {
+                DrawBackground(toDrawOn, Color.FromArgb(255, 157, 0, 108), Color.FromArgb(255, 97, 0, 100), Color.FromArgb(255, 175, 27, 185));
+                string cubeBG = JohnWick.AssetToTexture2D("T-Cube-Background");
+                if (!string.IsNullOrEmpty(cubeBG))
+                {
+                    Image itemIcon;
+                    using (var bmpTemp = new Bitmap(cubeBG))
+                    {
+                        itemIcon = new Bitmap(bmpTemp);
+                    }
+                    Image opacityImage = ImageUtilities.SetImageOpacity(itemIcon, (float)0.2);
+                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 512, 512), new Point(5, 5));
+                }
+            }
             else
             {
                 DrawRarityBackground(theItem, toDrawOn);

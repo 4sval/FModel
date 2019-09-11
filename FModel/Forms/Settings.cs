@@ -87,6 +87,8 @@ namespace FModel.Forms
                 wPictureBox.Image = bmp;
             }
 
+            checkBox1.Checked = Properties.Settings.Default.openSound;
+
             _oldLanguage = Properties.Settings.Default.IconLanguage;
             comboBox1.SelectedIndex = comboBox1.FindStringExact(Properties.Settings.Default.IconLanguage);
 
@@ -136,6 +138,8 @@ namespace FModel.Forms
             {
                 LoadLocRes.LoadMySelectedLocRes(Properties.Settings.Default.IconLanguage);
             }
+
+            Properties.Settings.Default.openSound = checkBox1.Checked;
 
             Properties.Settings.Default.Save(); //SAVE
             bmp.Dispose();

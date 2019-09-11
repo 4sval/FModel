@@ -1049,6 +1049,7 @@ namespace FModel
         private void CreateBundleChallengesIcon(JToken theItem, string extractedBundlePath)
         {
             BundleInfos.getBundleData(theItem);
+            if (!BundleInfos.BundleData.Any()) { throw new ArgumentException("Not even one quest could be extracted, can't generate more about this bundle"); }
             bool isFortbyte = false;
 
             Bitmap bmp = new Bitmap(1024, 10000);
@@ -1186,13 +1187,16 @@ namespace FModel
             new UpdateMyState(ThePak.CurrentUsedItem + " is a Sound", "Success").ChangeProcessState();
 
             string soundPathToConvert = Checking.ExtractedFilePath.Substring(0, Checking.ExtractedFilePath.LastIndexOf('\\')) + "\\" + ThePak.CurrentUsedItem + ".uexp";
-            string soundPathConverted = UnrealEngineDataToOgg.ConvertToOgg(soundPathToConvert);
             new UpdateMyState("Converting " + ThePak.CurrentUsedItem, "Processing").ChangeProcessState();
+            string soundPathConverted = UnrealEngineDataToOgg.ConvertToOgg(soundPathToConvert);
 
             if (File.Exists(soundPathConverted))
             {
-                new UpdateMyState("Opening " + ThePak.CurrentUsedItem + ".ogg", "Success").ChangeProcessState();
-                Utilities.OpenWithDefaultProgramAndNoFocus(soundPathConverted);
+                if (Settings.Default.openSound)
+                {
+                    new UpdateMyState("Opening " + ThePak.CurrentUsedItem + ".ogg", "Success").ChangeProcessState();
+                    Utilities.OpenWithDefaultProgramAndNoFocus(soundPathConverted);
+                }
             }
             else
                 new UpdateMyState("Couldn't convert " + ThePak.CurrentUsedItem, "Error").ChangeProcessState();

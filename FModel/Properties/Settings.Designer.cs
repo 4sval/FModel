@@ -286,5 +286,17 @@ namespace FModel.Properties {
                 this["rarityDesign"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool openSound {
+            get {
+                return ((bool)(this["openSound"]));
+            }
+            set {
+                this["openSound"] = value;
+            }
+        }
     }
 }
