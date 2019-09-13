@@ -1,0 +1,145 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FModel"
+        xmlns:commands="clr-namespace:FModel.Commands"
+        xmlns:TreeViewModel="clr-namespace:FModel.Methods.TreeViewModel"
+        x:Class="FModel.MainWindow"
+        mc:Ignorable="d"
+        Title="FModel" 
+        Height="744" 
+        MinHeight="744"
+        Width="1207"
+        MinWidth="1207"
+        Style="{StaticResource {x:Type Window}}" 
+        WindowStartupLocation="CenterScreen" 
+        Icon="Logo.ico" 
+        Loaded="Window_Loaded"
+        >
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static commands:FModel_Commands.OpenSettings}" Executed="MI_Settings_Click"/>
+        <CommandBinding Command="{x:Static commands:FModel_Commands.OpenOutput}" Executed="MI_OpenOutputFolder_Click"/>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="F1" Command="{x:Static commands:FModel_Commands.OpenSettings}"/>
+        <KeyBinding Key="F3" Command="{x:Static commands:FModel_Commands.OpenOutput}"/>
+    </Window.InputBindings>
+    <Grid>
+        <Menu Height="25" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
+            <MenuItem Header="Load">
+                <MenuItem x:Name="MI_LoadOnePAK" Header="Load One PAK" IsEnabled="False"/>
+                <MenuItem x:Name="MI_LoadAllPAKs" Header="Load All PAKs" Padding="2,4,2,2" IsEnabled="False" Click="MI_LoadAllPAKs_Click"/>
+                <Separator/>
+                <MenuItem x:Name="MI_DownloadBackups" Header="Download Backups"/>
+                <MenuItem x:Name="MI_BackupPAKs" Header="Backup PAKs" Click="MI_BackupPAKs_Click" IsEnabled="False"/>
+                <Separator/>
+                <MenuItem Header="Difference Mode" IsCheckable="True"/>
+                <MenuItem Header="Update Mode" IsCheckable="True" IsEnabled="False"/>
+                <Separator/>
+                <MenuItem x:Name="MI_Settings" Header="Settings" InputGestureText="F1" Command="{x:Static commands:FModel_Commands.OpenSettings}">
+                    <MenuItem.Icon>
+                        <Image Source="/FModel;component/Resources/properties_16xLG.png" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Files">
+                <MenuItem x:Name="MI_Search" Header="Search" InputGestureText="F2"/>
+                <Separator/>
+                <MenuItem Header="Save as JSON"/>
+                <MenuItem Header="Auto Save as JSON" IsCheckable="True"/>
+                <Separator/>
+                <MenuItem Header="Open Output Folder" InputGestureText="F3" Command="{x:Static commands:FModel_Commands.OpenOutput}">
+                    <MenuItem.Icon>
+                        <Image Source="/FModel;component/Resources/folder_16x.png" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Image">
+                <MenuItem Header="Save Image"/>
+                <MenuItem Header="Auto Save Images" IsCheckable="True"/>
+                <Separator/>
+                <MenuItem Header="Merge Images" InputGestureText="F4"/>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem x:Name="MI_About" Header="About FModel" Click="MI_About_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/FModel;component/Resources/StatusAnnotations_Information_16xLG_color.png" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <StatusBar Height="22" Margin="0" VerticalAlignment="Bottom" Background="#FF1C2026" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="1">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0">
+                <TextBlock x:Name="FModelVersionLabel" Text="FModel "/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Center">
+                <TextBlock x:Name="PEventTextBlock" Text="Process Events"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Right">
+                <TextBlock x:Name="StateTextBlock" Text="State" Margin="0" Padding="5,0"/>
+            </StatusBarItem>
+        </StatusBar>
+        <Grid Margin="0,25,0,22">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="359*"/>
+                <ColumnDefinition Width="840*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Button x:Name="Button_Extract" Content="Extract" HorizontalAlignment="Right" Margin="0,0,10,6" Grid.Row="2" VerticalAlignment="Bottom" Width="80" Grid.Column="1" Height="19" IsEnabled="False"/>
+            <Button x:Name="Button_Stop" Content="Stop" HorizontalAlignment="Right" Margin="0,0,95,6" Grid.Row="2" VerticalAlignment="Bottom" Width="80" Grid.Column="1" Height="19" IsEnabled="False"/>
+            <Button x:Name="Button_OpenImage" Content="Open Image" HorizontalAlignment="Right" Margin="0,0,180,6" Grid.Row="2" VerticalAlignment="Bottom" Width="80" Grid.Column="1" Height="19" IsEnabled="False"/>
+            <Button x:Name="Button_AESManager" Content="AES Manager" HorizontalAlignment="Right" Margin="0,0,300,6" Grid.Row="2" VerticalAlignment="Bottom" Width="180" Grid.Column="1" Height="19" Click="Button_AESManager_Click"/>
+            <TextBox x:Name="FilterTextBox_Main" Height="19" Margin="40,0,0,6" Grid.Row="2" TextWrapping="NoWrap" VerticalAlignment="Bottom" Foreground="#FFEFEFEF"/>
+            <Label Content="Filter:" HorizontalAlignment="Left" Margin="2,0,0,3" Grid.Row="2" VerticalAlignment="Bottom" Height="25" Width="38" Padding="5,7,5,5"/>
+            <TreeView x:Name="TreeView_Main" TreeViewItem.Selected="NodeSelected" Margin="2,1,0,0" ItemsSource="{Binding ItemsView}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate DataType="{x:Type TreeViewModel:TreeViewModel}" ItemsSource="{Binding ItemsView}">
+                        <TextBlock Text="{Binding Value}"/>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+            <ListBox x:Name="ListBox_Main" Margin="2,1,0,2" Grid.Row="1" SelectionMode="Extended" SelectionChanged="ListBox_Main_SelectionChanged" MouseDoubleClick="ListBox_Main_MouseDoubleClick"/>
+            <RichTextBox x:Name="ConsoleBox_Main" Grid.Column="1" Margin="1,1,1,2" Grid.Row="1" Background="#FF252D36" Foreground="#FFEFEFEF" BorderBrush="#7F748198" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0" />
+                    </Style>
+                </RichTextBox.Resources>
+            </RichTextBox>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="523*"/>
+                    <ColumnDefinition Width="317*"/>
+                </Grid.ColumnDefinitions>
+                <Border BorderBrush="#7F748198" BorderThickness="1" Grid.Column="1" Margin="1,1,1,0" Background="#FF252D36">
+                    <Image x:Name="ImageBox_Main"/>
+                </Border>
+                <RichTextBox x:Name="AssetPropertiesBox_Main" Margin="1,1,0,0" Background="#FF252D36" Foreground="#FFEFEFEF" BorderBrush="#7F748198" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</Window>

@@ -1,0 +1,32 @@
+﻿<Window x:Class="FModel.Forms.FModel_Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FModel.Forms"
+        mc:Ignorable="d"
+        Title="Settings"
+        Height="558" 
+        Width="600"
+        Style="{StaticResource {x:Type Window}}" 
+        WindowStartupLocation="CenterScreen" 
+        Icon="/FModel;component/Logo.ico" 
+        ResizeMode="CanMinimize" Loaded="Window_Loaded"
+        >
+    <Grid>
+        <GroupBox Header=".PAK Files" HorizontalAlignment="Left" Height="48" Margin="10,10,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
+            <Grid>
+                <Label Content="Input:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0"/>
+                <TextBox x:Name="InputTextBox" Height="18" Margin="41,4,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Extraction" HorizontalAlignment="Left" Height="48" Margin="10,63,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
+            <Grid>
+                <Label Content="Output:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0"/>
+                <TextBox x:Name="OutputTextBox" Height="18" Margin="50,4,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
+            </Grid>
+        </GroupBox>
+        <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="80" Click="Button_Click"/>
+
+    </Grid>
+</Window>
