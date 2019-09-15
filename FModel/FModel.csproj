@@ -60,6 +60,9 @@
     <StartupObject>FModel.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=5.0.3.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvalonEdit.5.0.4\lib\Net40\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -115,6 +118,7 @@
     <Compile Include="Methods\PAKs\BackupPAKs.cs" />
     <Compile Include="Methods\PAKs\PAKsLoader.cs" />
     <Compile Include="Methods\PAKs\RegisterFromPath.cs" />
+    <Compile Include="Methods\SyntaxHighlighter\ResourceLoader.cs" />
     <Compile Include="Methods\TreeViewModel\PropertyChangedBase.cs" />
     <Compile Include="Methods\TreeViewModel\SortedTreeViewWindowViewModel.cs" />
     <Compile Include="Methods\TreeViewModel\TreeViewModel.cs" />
@@ -183,6 +187,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Methods\SyntaxHighlighter\Json.xshd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -218,6 +223,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Methods\Assets\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">

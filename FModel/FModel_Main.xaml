@@ -6,6 +6,8 @@
         xmlns:local="clr-namespace:FModel"
         xmlns:commands="clr-namespace:FModel.Commands"
         xmlns:TreeViewModel="clr-namespace:FModel.Methods.TreeViewModel"
+        xmlns:sn="http://scintillanet.codeplex.com"
+        xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
         x:Class="FModel.MainWindow"
         mc:Ignorable="d"
         Title="FModel" 
@@ -131,13 +133,9 @@
                 <Border BorderBrush="#7F748198" BorderThickness="1" Grid.Column="1" Margin="1,1,1,0" Background="#FF252D36">
                     <Image x:Name="ImageBox_Main"/>
                 </Border>
-                <RichTextBox x:Name="AssetPropertiesBox_Main" Margin="1,1,0,0" Background="#FF252D36" Foreground="#FFEFEFEF" BorderBrush="#7F748198" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
-                    <RichTextBox.Resources>
-                        <Style TargetType="{x:Type Paragraph}">
-                            <Setter Property="Margin" Value="0" />
-                        </Style>
-                    </RichTextBox.Resources>
-                </RichTextBox>
+                <Border BorderBrush="#7F748198" BorderThickness="1" Margin="1,1,0,0" Background="#FF252D36">
+                    <avalonedit:TextEditor x:Name="AssetPropertiesBox_Main" ShowLineNumbers="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" Foreground="#FFEFEFEF"/>
+                </Border>
             </Grid>
         </Grid>
 

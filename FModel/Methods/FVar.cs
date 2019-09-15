@@ -1,5 +1,6 @@
 ﻿using PakReader;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -84,7 +85,7 @@ namespace FModel.Methods
     static class AssetEntries
     {
         public static Dictionary<FPakEntry, PakReader.PakReader> AssetEntriesDict { get; set; }
-        public static List<AssetInfosEntry> AssetEntriesList { get; set; }
+        public static ConcurrentDictionary<string, PakPackage> AssetIndexes { get; set; }
     }
     public struct AssetInfosEntry : IEquatable<AssetInfosEntry>
     {

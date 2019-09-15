@@ -20,6 +20,7 @@ namespace FModel.Methods.PAKs
             FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
+            FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
 
             await Task.Run(() =>
             {
@@ -39,6 +40,7 @@ namespace FModel.Methods.PAKs
             FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
+            FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
 
             await Task.Run(() =>
             {
