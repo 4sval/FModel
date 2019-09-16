@@ -1,16 +1,12 @@
 ﻿using FModel.Forms;
 using FModel.Methods;
 using FModel.Methods.AESManager;
+using FModel.Methods.Assets;
 using FModel.Methods.BackupsManager;
 using FModel.Methods.PAKs;
 using FModel.Methods.SyntaxHighlighter;
 using FModel.Methods.TreeViewModel;
 using FModel.Methods.Utilities;
-using Newtonsoft.Json;
-using PakReader;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -58,6 +54,14 @@ namespace FModel
                 new AESManager().Show();
             }
             else { FormsUtility.GetOpenedWindow<Window>("AES Manager").Focus(); }
+        }
+        private void Button_Export_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBox_Main.SelectedIndex >= 0)
+            {
+                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
+                AssetsLoader.LoadSelectedAsset();
+            }
         }
         #endregion
 
@@ -113,82 +117,14 @@ namespace FModel
         #region LISTBOX EVENTS
         private void ListBox_Main_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Button_Extract.IsEnabled = ListBox_Main.SelectedIndex >= 0;
+            Button_Export.IsEnabled = ListBox_Main.SelectedIndex >= 0;
         }
-
-        //TEST
         private void ListBox_Main_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
+        {   
             if (ListBox_Main.SelectedIndex >= 0)
             {
-                string selectedAssetPath = FWindow.FCurrentAssetParentPath + "/" + ListBox_Main.SelectedItem;
-
-                PakReader.PakReader reader = AssetEntries.AssetEntriesDict
-                    .Where(x => string.Equals(x.Key.Name, Path.HasExtension(selectedAssetPath) ? selectedAssetPath : selectedAssetPath + ".uasset"))
-                    .Select(x => x.Value).FirstOrDefault();
-
-                if (reader != null)
-                {
-
-                    IEnumerable<FPakEntry> entriesList = reader.FileInfos
-                        .Where(x => x.Name.Contains(selectedAssetPath))
-                        .Select(x => x);
-
-                    List<Stream> AssetStreamList = new List<Stream>();
-                    foreach (FPakEntry entry in entriesList)
-                    {
-                        switch (Path.GetExtension(entry.Name.ToLowerInvariant()))
-                        {
-                            case ".ini":
-                                using (var s = reader.GetPackageStream(entry))
-                                using (var r = new StreamReader(s))
-                                    AssetPropertiesBox_Main.Text = r.ReadToEnd();
-                                break;
-                            case ".uproject":
-                            case ".uplugin":
-                            case ".upluginmanifest":
-                                using (var s = reader.GetPackageStream(entry))
-                                using (var r = new StreamReader(s))
-                                    AssetPropertiesBox_Main.Text = r.ReadToEnd();
-                                break;
-                            case ".png":
-                                using (var s = reader.GetPackageStream(entry))
-                                    ImageBox_Main.Source = ImagesUtility.GetImageSource(s);
-                                break;
-                            case ".locmeta":
-                                using (var s = reader.GetPackageStream(entry))
-                                    AssetPropertiesBox_Main.Text = JsonConvert.SerializeObject(new LocMetaFile(s), Formatting.Indented);
-                                break;
-                            case ".locres":
-                                using (var s = reader.GetPackageStream(entry))
-                                    AssetPropertiesBox_Main.Text = JsonConvert.SerializeObject(new LocResFile(s).Entries, Formatting.Indented);
-                                break;
-                            case ".udic":
-                                using (var s = reader.GetPackageStream(entry))
-                                using (var r = new BinaryReader(s))
-                                    AssetPropertiesBox_Main.Text = JsonConvert.SerializeObject(new UDicFile(r).Header, Formatting.Indented);
-                                break;
-                            case ".bin":
-                                if (string.Equals(entry.Name, "/FortniteGame/AssetRegistry.bin") || !entry.Name.Contains("AssetRegistry")) //MEMORY ISSUE
-                                    break;
-
-                                using (var s = reader.GetPackageStream(entry))
-                                    AssetPropertiesBox_Main.Text = JsonConvert.SerializeObject(new AssetRegistryFile(s), Formatting.Indented);
-                                break;
-                            default:
-                                AssetStreamList.Add(reader.GetPackageStream(entry));
-                                break;
-                        }
-                    }
-
-                    if (AssetStreamList.Any() && AssetStreamList.Count >= 2 && AssetStreamList.Count <= 3)
-                    {
-                        AssetPropertiesBox_Main.Text = 
-                            JsonConvert.SerializeObject(
-                                new AssetReader(AssetStreamList[0], AssetStreamList[1], AssetStreamList.Count == 3 ? AssetStreamList[2] : null),
-                                Formatting.Indented);
-                    }
-                }
+                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
+                AssetsLoader.LoadSelectedAsset();
             }
         }
         #endregion

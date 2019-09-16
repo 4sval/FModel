@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="Methods\AESManager\DynamicKeysChecker.cs" />
     <Compile Include="Methods\AESManager\KeysManager.cs" />
+    <Compile Include="Methods\Assets\AssetsLoader.cs" />
     <Compile Include="Methods\BackupsManager\RegisterDownloadedBackups.cs" />
     <Compile Include="Methods\FVar.cs" />
     <Compile Include="Methods\MessageBox\DarkMessageBox.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Methods\TreeViewModel\SortedTreeViewWindowViewModel.cs" />
     <Compile Include="Methods\TreeViewModel\TreeViewModel.cs" />
     <Compile Include="Methods\Utilities\AESUtility.cs" />
+    <Compile Include="Methods\Utilities\AssetsUtility.cs" />
     <Compile Include="Methods\Utilities\EndpointsUtility.cs" />
     <Compile Include="Methods\Utilities\FoldersUtility.cs" />
     <Compile Include="Methods\Utilities\FormsUtility.cs" />
@@ -224,9 +226,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Methods\Assets\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">
     <ItemGroup>

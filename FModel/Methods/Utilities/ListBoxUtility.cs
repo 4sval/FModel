@@ -48,7 +48,7 @@ namespace FModel.Methods.Utilities
                 });
             }
 
-            FWindow.FMain.Button_Extract.IsEnabled = FWindow.FMain.ListBox_Main.SelectedIndex >= 0;
+            FWindow.FMain.Button_Export.IsEnabled = FWindow.FMain.ListBox_Main.SelectedIndex >= 0;
         }
 
         private static void FillMeThisPls(List<IEnumerable<string>> FilesListWithoutPath)

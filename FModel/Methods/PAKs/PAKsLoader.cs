@@ -21,6 +21,7 @@ namespace FModel.Methods.PAKs
             FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
+            FWindow.FMain.ImageBox_Main.Source = null;
 
             await Task.Run(() =>
             {
@@ -41,6 +42,7 @@ namespace FModel.Methods.PAKs
             FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
+            FWindow.FMain.ImageBox_Main.Source = null;
 
             await Task.Run(() =>
             {

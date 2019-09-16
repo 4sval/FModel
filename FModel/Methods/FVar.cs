@@ -1,6 +1,5 @@
 ﻿using PakReader;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -11,6 +10,7 @@ namespace FModel.Methods
         public static MainWindow FMain = null;
         public static string FCurrentPAK { get; set; }
         public static string FCurrentAssetParentPath { get; set; }
+        public static string FCurrentAsset { get; set; }
     }
 
     #region PAKs
@@ -85,25 +85,6 @@ namespace FModel.Methods
     static class AssetEntries
     {
         public static Dictionary<FPakEntry, PakReader.PakReader> AssetEntriesDict { get; set; }
-        public static ConcurrentDictionary<string, PakPackage> AssetIndexes { get; set; }
-    }
-    public struct AssetInfosEntry : IEquatable<AssetInfosEntry>
-    {
-        public string TheAssetPath { get; set; }
-        public FPakEntry TheAssetEntry { get; set; }
-        public PakReader.PakReader TheAssetPakReader { get; set; }
-
-        internal AssetInfosEntry(string MyAssetPath, FPakEntry MyAssetEntry, PakReader.PakReader MyAssetPakReader)
-        {
-            TheAssetPath = MyAssetPath;
-            TheAssetEntry = MyAssetEntry;
-            TheAssetPakReader = MyAssetPakReader;
-        }
-
-        bool IEquatable<AssetInfosEntry>.Equals(AssetInfosEntry other)
-        {
-            throw new NotImplementedException();
-        }
     }
     #endregion
 
