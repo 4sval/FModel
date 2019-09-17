@@ -35,9 +35,13 @@ namespace FModel.Methods.Utilities
 
         public static AssetReader GetAssetReader(List<Stream> AssetStreamList)
         {
-            if (AssetStreamList.Any() && AssetStreamList.Count >= 2 && AssetStreamList.Count <= 3)
+            if (AssetStreamList.Any() && AssetStreamList.Count == 2)
             {
-                return new AssetReader(AssetStreamList[0], AssetStreamList[1], AssetStreamList.Count == 3 ? AssetStreamList[2] : null);
+                return new AssetReader(AssetStreamList[0], AssetStreamList[1]); //UASSET -> UEXP
+            }
+            else if (AssetStreamList.Any() && AssetStreamList.Count == 3)
+            {
+                return new AssetReader(AssetStreamList[0], AssetStreamList[2], AssetStreamList[1]); //UASSET -> UBULK -> UEXP
             }
             else { return null; }
         }

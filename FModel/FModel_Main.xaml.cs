@@ -55,6 +55,34 @@ namespace FModel
             }
             else { FormsUtility.GetOpenedWindow<Window>("AES Manager").Focus(); }
         }
+        private void Button_OpenImage_Click(object sender, RoutedEventArgs e)
+        {
+            if (ImageBox_Main.Source != null)
+            {
+                if (!FormsUtility.IsWindowOpen<Window>(FWindow.FCurrentAsset))
+                {
+                    Window win = new Window();
+                    win.Title = FWindow.FCurrentAsset;
+                    win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    win.Width = ImageBox_Main.Source.Width;
+                    win.Height = ImageBox_Main.Source.Height;
+
+                    DockPanel dockPanel = new DockPanel
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    };
+
+                    Image img = new Image();
+                    img.Source = ImageBox_Main.Source;
+                    dockPanel.Children.Add(img);
+
+                    win.Content = dockPanel;
+                    win.Show();
+                }
+                else { FormsUtility.GetOpenedWindow<Window>(FWindow.FCurrentAsset).Focus(); }
+            }
+        }
         private void Button_Export_Click(object sender, RoutedEventArgs e)
         {
             if (ListBox_Main.SelectedIndex >= 0)
@@ -117,7 +145,7 @@ namespace FModel
         #region LISTBOX EVENTS
         private void ListBox_Main_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Button_Export.IsEnabled = ListBox_Main.SelectedIndex >= 0;
+            Button_Extract.IsEnabled = ListBox_Main.SelectedIndex >= 0;
         }
         private void ListBox_Main_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {   

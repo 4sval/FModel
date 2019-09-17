@@ -6,7 +6,6 @@
         xmlns:local="clr-namespace:FModel"
         xmlns:commands="clr-namespace:FModel.Commands"
         xmlns:TreeViewModel="clr-namespace:FModel.Methods.TreeViewModel"
-        xmlns:sn="http://scintillanet.codeplex.com"
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
         x:Class="FModel.MainWindow"
         mc:Ignorable="d"
@@ -104,9 +103,9 @@
                 <RowDefinition/>
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
-            <Button x:Name="Button_Export" Content="Export" HorizontalAlignment="Right" Margin="0,0,10,6" Grid.Row="2" VerticalAlignment="Bottom" Width="80" Grid.Column="1" Height="19" IsEnabled="False" Click="Button_Export_Click"/>
+            <Button x:Name="Button_Extract" Content="Extract" HorizontalAlignment="Right" Margin="0,0,10,6" Grid.Row="2" VerticalAlignment="Bottom" Width="80" Grid.Column="1" Height="19" IsEnabled="False" Click="Button_Export_Click"/>
             <Button x:Name="Button_Stop" Content="Stop" HorizontalAlignment="Right" Margin="0,0,95,6" Grid.Row="2" VerticalAlignment="Bottom" Width="80" Grid.Column="1" Height="19" IsEnabled="False"/>
-            <Button x:Name="Button_OpenImage" Content="Open Image" HorizontalAlignment="Right" Margin="0,0,180,6" Grid.Row="2" VerticalAlignment="Bottom" Width="80" Grid.Column="1" Height="19" IsEnabled="False"/>
+            <Button x:Name="Button_OpenImage" Content="Open Image" HorizontalAlignment="Right" Margin="0,0,180,6" Grid.Row="2" VerticalAlignment="Bottom" Width="80" Grid.Column="1" Height="19" Click="Button_OpenImage_Click"/>
             <Button x:Name="Button_AESManager" Content="AES Manager" HorizontalAlignment="Right" Margin="0,0,300,6" Grid.Row="2" VerticalAlignment="Bottom" Width="180" Grid.Column="1" Height="19" Click="Button_AESManager_Click"/>
             <TextBox x:Name="FilterTextBox_Main" Height="19" Margin="40,0,0,6" Grid.Row="2" TextWrapping="NoWrap" VerticalAlignment="Bottom" Foreground="#FFEFEFEF"/>
             <Label Content="Filter:" HorizontalAlignment="Left" Margin="2,0,0,3" Grid.Row="2" VerticalAlignment="Bottom" Height="25" Width="38" Padding="5,7,5,5"/>

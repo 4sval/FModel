@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace FModel.Methods.Assets
 {
@@ -33,7 +32,6 @@ namespace FModel.Methods.Assets
                 IEnumerable<FPakEntry> entriesList = AssetsUtility.GetPakEntries(reader);
                 List<Stream> AssetStreamList = new List<Stream>();
                 string jsonData = string.Empty;
-                ImageSource imageData = null;
 
                 foreach (FPakEntry entry in entriesList)
                 {
@@ -76,26 +74,29 @@ namespace FModel.Methods.Assets
                 AssetReader ar = AssetsUtility.GetAssetReader(AssetStreamList);
                 if (ar != null)
                 {
+                    jsonData = JsonConvert.SerializeObject(ar.Exports, Formatting.Indented);
+
                     ExportObject eo = ar.Exports.Where(x => x is Texture2D).FirstOrDefault();
                     if (eo != null)
                     {
-                        SkiaSharp.SKImage image = ((Texture2D)eo).GetImage();
-                        using (var data = image.Encode())
-                        using (var stream = data.AsStream())
+                        FWindow.FMain.Dispatcher.InvokeAsync(() =>
                         {
-                            imageData = ImagesUtility.GetImageSource(stream);
-                        }
+                            SkiaSharp.SKImage image = ((Texture2D)eo).GetImage();
+                            if (image != null)
+                            {
+                                using (var data = image.Encode())
+                                using (var stream = data.AsStream())
+                                {
+                                    FWindow.FMain.ImageBox_Main.Source = ImagesUtility.GetImageSource(stream);
+                                }
+                            }
+                        });
                     }
-                    jsonData = JsonConvert.SerializeObject(ar.Exports, Formatting.Indented);
                 }
 
                 FWindow.FMain.Dispatcher.InvokeAsync(() =>
                 {
                     FWindow.FMain.AssetPropertiesBox_Main.Text = jsonData;
-
-                    /* THREAD ERROR
-                    FWindow.FMain.ImageBox_Main.Source = imageData;
-                    */
                 });
             }
         }
