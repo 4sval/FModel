@@ -76,10 +76,14 @@ namespace FModel
                         {
                             isSXBanner = true;
                             string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
-                            Image challengeIcon;
-                            using (Bitmap bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                            Image challengeIcon = Resources.unknown512;
+                            string textureAsset = JohnWick.AssetToTexture2D(textureFile);;
+                            if (!string.IsNullOrEmpty(textureAsset))
                             {
-                                challengeIcon = new Bitmap(bmpTemp);
+                                using (var bmpTemp = new Bitmap(textureAsset))
+                                {
+                                    challengeIcon = new Bitmap(bmpTemp);
+                                }
                             }
 
                             toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(-1, -1, myBitmap.Width + 1, 257));
@@ -105,10 +109,14 @@ namespace FModel
                         if (assetPathName != null)
                         {
                             string textureFile = Path.GetFileName(assetPathName.Value<string>()).Substring(0, Path.GetFileName(assetPathName.Value<string>()).LastIndexOf('.'));
-                            Image challengeIcon;
-                            using (var bmpTemp = new Bitmap(JohnWick.AssetToTexture2D(textureFile)))
+                            Image challengeIcon = Resources.unknown512;
+                            string textureAsset = JohnWick.AssetToTexture2D(textureFile);
+                            if (!string.IsNullOrEmpty(textureAsset))
                             {
-                                challengeIcon = new Bitmap(bmpTemp);
+                                using (var bmpTemp = new Bitmap(textureAsset))
+                                {
+                                    challengeIcon = new Bitmap(bmpTemp);
+                                }
                             }
 
                             toDrawOn.FillRectangle(new SolidBrush(headerColor), new Rectangle(-1, -1, myBitmap.Width + 1, 257));

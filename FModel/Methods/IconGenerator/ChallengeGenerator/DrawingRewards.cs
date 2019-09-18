@@ -79,7 +79,11 @@ namespace FModel
                         }
                     }
                 }
+                else
+                    drawIcon();
             }
+            else
+                drawIcon();
         }
 
         /// <summary>
@@ -144,7 +148,7 @@ namespace FModel
         private static void drawIcon()
         {
             Image itemIcon = null;
-            if (File.Exists(ItemIcon.ItemIconPath))
+            if (!string.IsNullOrEmpty(ItemIcon.ItemIconPath) && File.Exists(ItemIcon.ItemIconPath))
             {
                 using (var bmpTemp = new Bitmap(ItemIcon.ItemIconPath))
                 {

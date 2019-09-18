@@ -72,6 +72,9 @@ namespace FModel
         /// <returns> the path to the png image </returns>
         public static string AssetToTexture2D(string AssetName)
         {
+            if (!ThePak.AllpaksDictionary.ContainsKey(AssetName))
+                return string.Empty;
+
             string textureFilePath = ExtractAsset(ThePak.AllpaksDictionary[AssetName], AssetName);
             string TexturePath = string.Empty;
             if (!string.IsNullOrEmpty(textureFilePath))
