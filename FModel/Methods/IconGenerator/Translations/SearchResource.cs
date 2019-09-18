@@ -1,3 +1,5 @@
+using FModel.Methods.Serializer.LocRes;
+using FModel.Properties;
 using System.Collections.Generic;
 
 namespace FModel
@@ -8,13 +10,20 @@ namespace FModel
         {
             try
             {
-                if (string.IsNullOrEmpty(theNamespace))
+                if (HotfixedStrings.HotfixedStringsDict != null && HotfixedStrings.HotfixedStringsDict.ContainsKey(theKey))
                 {
-                    return LocResSerializer.LocResDict[theKey];
+                    return HotfixedStrings.HotfixedStringsDict[theKey][GetLanguageCode()];
                 }
                 else
                 {
-                    return LocResSerializer.LocResDict[theNamespace][theKey];
+                    if (string.IsNullOrEmpty(theNamespace))
+                    {
+                        return LocResSerializer.LocResDict[theKey];
+                    }
+                    else
+                    {
+                        return LocResSerializer.LocResDict[theNamespace][theKey];
+                    }
                 }
             }
             catch (KeyNotFoundException)
@@ -26,7 +35,16 @@ namespace FModel
         public static string getTextByKey(string key, string defaultText, string namespac = null)
         {
             if (Properties.Settings.Default.IconLanguage.Equals("English"))
-                return defaultText;
+            {
+                if (HotfixedStrings.HotfixedStringsDict != null && HotfixedStrings.HotfixedStringsDict.ContainsKey(key))
+                {
+                    return HotfixedStrings.HotfixedStringsDict[key][GetLanguageCode()];
+                }
+                else
+                {
+                    return defaultText;
+                }
+            }
 
             string text = defaultText;
             if (LocResSerializer.LocResDict != null)
@@ -37,6 +55,43 @@ namespace FModel
             }
 
             return text;
+        }
+
+        private static string GetLanguageCode()
+        {
+            switch (Settings.Default.IconLanguage)
+            {
+                case "French":
+                    return "fr";
+                case "German":
+                    return  "de";
+                case "Italian":
+                    return "it";
+                case "Spanish":
+                    return "es";
+                case "Spanish (LA)":
+                    return "es-419";
+                case "Arabic":
+                    return "ar";
+                case "Japanese":
+                    return "ja";
+                case "Korean":
+                    return "ko";
+                case "Polish":
+                    return "pl";
+                case "Portuguese (Brazil)":
+                    return "pt-BR";
+                case "Russian":
+                    return "ru";
+                case "Turkish":
+                    return "tr";
+                case "Chinese (S)":
+                    return "zh-CN";
+                case "Traditional Chinese":
+                    return "zh-Hant";
+                default:
+                    return "en";
+            }
         }
     }
 }

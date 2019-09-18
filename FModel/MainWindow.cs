@@ -192,6 +192,7 @@ namespace FModel
                 AddBackupFiles();
                 Utilities.SetFolderPermission(App.DefaultOutputPath);
                 Utilities.CreateDefaultFolders();
+                Methods.Serializer.LocRes.HotfixedStrings.setHotfixedStrings();
             });
 
             MyScintilla.SetScintillaStyle(scintilla1);

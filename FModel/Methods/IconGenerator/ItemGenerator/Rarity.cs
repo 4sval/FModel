@@ -80,6 +80,21 @@ namespace FModel
                     toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 512, 512), new Point(5, 5));
                 }
             }
+            else if (theSeries.Equals("DCUSeries"))
+            {
+                DrawBackground(toDrawOn, Color.FromArgb(255, 45, 68, 93), Color.FromArgb(255, 16, 25, 40), Color.FromArgb(255, 62, 94, 122));
+                string cubeBG = JohnWick.AssetToTexture2D("T-BlackMonday-Background");
+                if (!string.IsNullOrEmpty(cubeBG))
+                {
+                    Image itemIcon;
+                    using (var bmpTemp = new Bitmap(cubeBG))
+                    {
+                        itemIcon = new Bitmap(bmpTemp);
+                    }
+                    Image opacityImage = ImageUtilities.SetImageOpacity(itemIcon, (float)0.6);
+                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 512, 512), new Point(5, 5));
+                }
+            }
             else
             {
                 DrawRarityBackground(theItem, toDrawOn);
