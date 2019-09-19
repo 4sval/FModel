@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using FModel.Methods.Serializer.LocRes;
 
 namespace FModel
 {
@@ -503,6 +504,10 @@ namespace FModel
                     string translatedName = SearchResource.getTextByKey(setToken["DisplayName"]["key"].Value<string>(), setToken["DisplayName"]["source_string"].Value<string>(), setToken["DisplayName"]["namespace"].Value<string>());
 
                     return string.Format(SearchResource.getTextByKey("CosmeticItemDescription_SetMembership_NotRich", setToken["DisplayName"]["source_string"].Value<string>(), "Fort.Cosmetics"), translatedName);
+                }
+                else if (HotfixedStrings.HotfixedStringsDict != null && HotfixedStrings.HotfixedStringsDict.ContainsKey(setName + "_DisplayName"))
+                {
+                    return string.Format("\nPart of the {0} set.", HotfixedStrings.HotfixedStringsDict[setName + "_DisplayName"]["en"]);
                 }
                 else
                     return string.Format("\nPart of the {0} set.", setToken["DisplayName"]["source_string"].Value<string>());
