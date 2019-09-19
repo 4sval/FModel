@@ -12,19 +12,13 @@ namespace FModel
             {
                 if (HotfixedStrings.HotfixedStringsDict != null && HotfixedStrings.HotfixedStringsDict.ContainsKey(theKey))
                 {
-                    return HotfixedStrings.HotfixedStringsDict[theKey][GetLanguageCode()];
+                    if (HotfixedStrings.HotfixedStringsDict[theKey].ContainsKey(GetLanguageCode()))
+                        return HotfixedStrings.HotfixedStringsDict[theKey][GetLanguageCode()];
+                    else
+                        return string.IsNullOrEmpty(theNamespace) ? LocResSerializer.LocResDict[theKey] : LocResSerializer.LocResDict[theNamespace][theKey];
                 }
                 else
-                {
-                    if (string.IsNullOrEmpty(theNamespace))
-                    {
-                        return LocResSerializer.LocResDict[theKey];
-                    }
-                    else
-                    {
-                        return LocResSerializer.LocResDict[theNamespace][theKey];
-                    }
-                }
+                    return string.IsNullOrEmpty(theNamespace) ? LocResSerializer.LocResDict[theKey] : LocResSerializer.LocResDict[theNamespace][theKey];
             }
             catch (KeyNotFoundException)
             {
@@ -38,12 +32,12 @@ namespace FModel
             {
                 if (HotfixedStrings.HotfixedStringsDict != null && HotfixedStrings.HotfixedStringsDict.ContainsKey(key))
                 {
-                    return HotfixedStrings.HotfixedStringsDict[key][GetLanguageCode()];
+                    return HotfixedStrings.HotfixedStringsDict[key].ContainsKey(GetLanguageCode())
+                        ? HotfixedStrings.HotfixedStringsDict[key][GetLanguageCode()]
+                        : defaultText;
                 }
                 else
-                {
                     return defaultText;
-                }
             }
 
             string text = defaultText;
