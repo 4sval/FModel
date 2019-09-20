@@ -39,6 +39,11 @@ namespace FModel.Methods.AESManager
                     }
                 }
             }
+
+            FWindow.FMain.Dispatcher.InvokeAsync(() =>
+            {
+                PAKsUtility.DisableNonKeyedPAKs();
+            });
         }
 
         private static void AddDynamicKeysToAESManager(string GuidPart, string AESPart)

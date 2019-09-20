@@ -1,4 +1,5 @@
-﻿using FModel.Methods.Utilities;
+﻿using FModel.Methods.SyntaxHighlighter;
+using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using PakReader;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace FModel.Methods.Assets
         public static async void LoadSelectedAsset()
         {
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
+            FWindow.FMain.AssetPropertiesBox_Main.SyntaxHighlighting = ResourceLoader.LoadHighlightingDefinition("Json.xshd");
             FWindow.FMain.ImageBox_Main.Source = null;
 
             await Task.Run(() =>
@@ -30,7 +32,7 @@ namespace FModel.Methods.Assets
             if (reader != null)
             {
                 IEnumerable<FPakEntry> entriesList = AssetsUtility.GetPakEntries(reader);
-                List<Stream> AssetStreamList = new List<Stream>();
+                Stream[] AssetStreamArray = new Stream[3];
                 string jsonData = string.Empty;
 
                 foreach (FPakEntry entry in entriesList)
@@ -38,6 +40,14 @@ namespace FModel.Methods.Assets
                     switch (Path.GetExtension(entry.Name.ToLowerInvariant()))
                     {
                         case ".ini":
+                            FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                            {
+                                FWindow.FMain.AssetPropertiesBox_Main.SyntaxHighlighting = ResourceLoader.LoadHighlightingDefinition("Ini.xshd");
+                            });
+                            using (var s = reader.GetPackageStream(entry))
+                            using (var r = new StreamReader(s))
+                                jsonData = r.ReadToEnd();
+                            break;
                         case ".uproject":
                         case ".uplugin":
                         case ".upluginmanifest":
@@ -66,12 +76,19 @@ namespace FModel.Methods.Assets
                                 jsonData = JsonConvert.SerializeObject(new AssetRegistryFile(s), Formatting.Indented);
                             break;
                         default:
-                            AssetStreamList.Add(reader.GetPackageStream(entry));
+                            if (entry.Name.EndsWith(".uasset"))
+                                AssetStreamArray[0] = reader.GetPackageStream(entry);
+
+                            if (entry.Name.EndsWith(".uexp"))
+                                AssetStreamArray[1] = reader.GetPackageStream(entry);
+
+                            if (entry.Name.EndsWith(".ubulk"))
+                                AssetStreamArray[2] = reader.GetPackageStream(entry);
                             break;
                     }
                 }
 
-                AssetReader ar = AssetsUtility.GetAssetReader(AssetStreamList);
+                AssetReader ar = AssetsUtility.GetAssetReader(AssetStreamArray);
                 if (ar != null)
                 {
                     jsonData = JsonConvert.SerializeObject(ar.Exports, Formatting.Indented);

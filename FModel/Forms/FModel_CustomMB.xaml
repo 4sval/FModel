@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:FModel.Forms"
         mc:Ignorable="d"
         Style="{StaticResource {x:Type Window}}"
-        Title="" MinHeight="130" MaxWidth="470" MinWidth="154"
+        Title="" MinHeight="130" MinWidth="154"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" UseLayoutRounding="True"
         ResizeMode="NoResize" SizeToContent="WidthAndHeight"
         ShowInTaskbar="False" Topmost="True"
@@ -21,7 +21,7 @@
         <Grid Grid.Row="0" MinHeight="69">
             <DockPanel>
                 <Image Name="Image_MessageBox" Width="32" Height="32" HorizontalAlignment="Left" DockPanel.Dock="Left" Margin="30,0,0,0" Visibility="Collapsed"/>
-                <TextBlock Name="TextBlock_Message" TextWrapping="Wrap" MaxWidth="500" Width="Auto"
+                <TextBlock Name="TextBlock_Message" TextWrapping="Wrap" Width="Auto"
                        VerticalAlignment="Center" Margin="12,20,41,15" />
             </DockPanel>
         </Grid>

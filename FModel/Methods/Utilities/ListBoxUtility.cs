@@ -1,4 +1,5 @@
 ﻿using PakReader;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace FModel.Methods.Utilities
 {
     class ListBoxUtility
     {
+        private static List<IEnumerable<string>> FilesListWithoutPath { get; set; }
+
         public static async void PopulateListBox(TreeViewItem sItem)
         {
             FWindow.FMain.ListBox_Main.Items.Clear();
@@ -16,7 +19,7 @@ namespace FModel.Methods.Utilities
 
             FWindow.FCurrentAssetParentPath = TreeViewUtility.GetFullPath(sItem);
 
-            List<IEnumerable<string>> FilesListWithoutPath = new List<IEnumerable<string>>();
+            FilesListWithoutPath = new List<IEnumerable<string>>();
             if (!string.IsNullOrEmpty(FWindow.FCurrentPAK))
             {
                 IEnumerable<string> filesWithoutPath = PAKEntries.PAKToDisplay[FWindow.FCurrentPAK]
@@ -41,7 +44,7 @@ namespace FModel.Methods.Utilities
             {
                 await Task.Run(() =>
                 {
-                    FillMeThisPls(FilesListWithoutPath);
+                    FillMeThisPls();
                 }).ContinueWith(TheTask =>
                 {
                     TasksUtility.TaskCompleted(TheTask.Exception);
@@ -51,7 +54,7 @@ namespace FModel.Methods.Utilities
             FWindow.FMain.Button_Extract.IsEnabled = FWindow.FMain.ListBox_Main.SelectedIndex >= 0;
         }
 
-        private static void FillMeThisPls(List<IEnumerable<string>> FilesListWithoutPath)
+        private static void FillMeThisPls()
         {
             foreach (IEnumerable<string> filesFromOnePak in FilesListWithoutPath)
             {
@@ -72,6 +75,46 @@ namespace FModel.Methods.Utilities
                     });
                 }
             }
+        }
+
+        public static void FilterListBox()
+        {
+            FWindow.FMain.ListBox_Main.Items.Clear();
+            string FilterText = FWindow.FMain.FilterTextBox_Main.Text;
+
+            foreach (IEnumerable<string> filesFromOnePak in FilesListWithoutPath)
+            {
+                foreach (string file in filesFromOnePak.OrderBy(s => s))
+                {
+                    string name = file;
+                    if (name.EndsWith(".uasset") || name.EndsWith(".uexp") || name.EndsWith(".ubulk"))
+                    {
+                        name = name.Substring(0, name.LastIndexOf('.'));
+                    }
+
+                    if (!string.IsNullOrEmpty(FilterText))
+                    {
+                        if (CaseInsensitiveContains(name, FilterText))
+                        {
+                            if (!FWindow.FMain.ListBox_Main.Items.Contains(name))
+                            {
+                                FWindow.FMain.ListBox_Main.Items.Add(name);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!FWindow.FMain.ListBox_Main.Items.Contains(name))
+                        {
+                            FWindow.FMain.ListBox_Main.Items.Add(name);
+                        }
+                    }
+                }
+            }
+        }
+        private static bool CaseInsensitiveContains(string text, string value, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
+        {
+            return text.IndexOf(value, stringComparison) >= 0;
         }
     }
 }

@@ -33,15 +33,11 @@ namespace FModel.Methods.Utilities
                 .Select(x => x);
         }
 
-        public static AssetReader GetAssetReader(List<Stream> AssetStreamList)
+        public static AssetReader GetAssetReader(Stream[] AssetStreamList)
         {
-            if (AssetStreamList.Any() && AssetStreamList.Count == 2)
+            if (AssetStreamList[0] != null && AssetStreamList.Length >= 2 && AssetStreamList.Length <= 3)
             {
-                return new AssetReader(AssetStreamList[0], AssetStreamList[1]); //UASSET -> UEXP
-            }
-            else if (AssetStreamList.Any() && AssetStreamList.Count == 3)
-            {
-                return new AssetReader(AssetStreamList[0], AssetStreamList[2], AssetStreamList[1]); //UASSET -> UBULK -> UEXP
+                return new AssetReader(AssetStreamList[0], AssetStreamList[1], AssetStreamList[2] != null ? AssetStreamList[2]: null); //UASSET -> UEXP -> UBULK IF EXIST
             }
             else { return null; }
         }

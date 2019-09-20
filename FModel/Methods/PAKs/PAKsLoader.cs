@@ -18,6 +18,8 @@ namespace FModel.Methods.PAKs
         public static async void LoadOnePAK()
         {
             FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
+            FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
+            FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
             FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
@@ -35,10 +37,15 @@ namespace FModel.Methods.PAKs
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
             });
+
+            FWindow.FMain.MI_LoadOnePAK.IsEnabled = true;
+            FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
         }
         public static async void LoadAllPAKs()
         {
             FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
+            FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
+            FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
             FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
@@ -55,6 +62,9 @@ namespace FModel.Methods.PAKs
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
             });
+
+            FWindow.FMain.MI_LoadOnePAK.IsEnabled = true;
+            FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
         }
 
         private static void LoadPAKFiles(bool bAllPAKs = false)

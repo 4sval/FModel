@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="Methods\AESManager\DynamicKeysChecker.cs" />
     <Compile Include="Methods\AESManager\KeysManager.cs" />
+    <Compile Include="Methods\Assets\AssetInformations.cs" />
     <Compile Include="Methods\Assets\AssetsLoader.cs" />
     <Compile Include="Methods\BackupsManager\RegisterDownloadedBackups.cs" />
     <Compile Include="Methods\FVar.cs" />
@@ -190,6 +191,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Methods\SyntaxHighlighter\Json.xshd" />
+    <EmbeddedResource Include="Methods\SyntaxHighlighter\Ini.xshd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

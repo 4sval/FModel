@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Windows.Controls;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Utilities
 {
@@ -63,6 +66,43 @@ namespace FModel.Methods.Utilities
             }
 
             return false;
+        }
+
+        public static void DisableNonKeyedPAKs()
+        {
+            if (PAKEntries.PAKEntriesList != null && PAKEntries.PAKEntriesList.Any())
+            {
+                foreach (MenuItem MI_Pak in FWindow.FMain.MI_LoadOnePAK.Items)
+                {
+                    MI_Pak.IsEnabled = false;
+
+                    if (!string.IsNullOrEmpty(FProp.Default.FPak_MainAES))
+                    {
+                        foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => !x.bTheDynamicPAK))
+                        {
+                            if (string.Equals(Path.GetFileName(Pak.ThePAKPath), MI_Pak.Header))
+                            {
+                                MI_Pak.IsEnabled = true;
+                            }
+                        }
+                    }
+
+                    foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK))
+                    {
+                        if (AESEntries.AESEntriesList != null && AESEntries.AESEntriesList.Any())
+                        {
+                            AESInfosEntry AESFromManager = AESEntries.AESEntriesList.Where(x => string.Equals(x.ThePAKName, Path.GetFileNameWithoutExtension(Pak.ThePAKPath))).FirstOrDefault();
+                            if (!string.IsNullOrEmpty(AESFromManager.ThePAKKey))
+                            {
+                                if (string.Equals(AESFromManager.ThePAKName, Path.GetFileNameWithoutExtension(MI_Pak.Header.ToString())))
+                                {
+                                    MI_Pak.IsEnabled = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

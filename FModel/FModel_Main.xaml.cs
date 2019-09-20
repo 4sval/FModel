@@ -4,7 +4,6 @@ using FModel.Methods.AESManager;
 using FModel.Methods.Assets;
 using FModel.Methods.BackupsManager;
 using FModel.Methods.PAKs;
-using FModel.Methods.SyntaxHighlighter;
 using FModel.Methods.TreeViewModel;
 using FModel.Methods.Utilities;
 using System.Reflection;
@@ -30,9 +29,6 @@ namespace FModel
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             FModelVersionLabel.Text += Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
-
-            //TODO: INI VERSION + HYPERLINKS ARE TOO DARK
-            AssetPropertiesBox_Main.SyntaxHighlighting = ResourceLoader.LoadHighlightingDefinition("Json.xshd");
 
             await Task.Run(() => 
             {
@@ -153,6 +149,18 @@ namespace FModel
             {
                 FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
                 AssetsLoader.LoadSelectedAsset();
+            }
+        }
+        private void FilterTextBox_Main_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ListBoxUtility.FilterListBox();
+        }
+        private void RC_Properties_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBox_Main.SelectedIndex >= 0)
+            {
+                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
+                AssetInformations.OpenAssetInfos();
             }
         }
         #endregion

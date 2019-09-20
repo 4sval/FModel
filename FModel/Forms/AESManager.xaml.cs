@@ -32,6 +32,10 @@ namespace FModel.Forms
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             SetUserSettings();
+            FWindow.FMain.Dispatcher.InvokeAsync(() =>
+            {
+                PAKsUtility.DisableNonKeyedPAKs();
+            });
             Close();
         }
 

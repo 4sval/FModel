@@ -107,7 +107,7 @@
             <Button x:Name="Button_Stop" Content="Stop" HorizontalAlignment="Right" Margin="0,0,95,6" Grid.Row="2" VerticalAlignment="Bottom" Width="80" Grid.Column="1" Height="19" IsEnabled="False"/>
             <Button x:Name="Button_OpenImage" Content="Open Image" HorizontalAlignment="Right" Margin="0,0,180,6" Grid.Row="2" VerticalAlignment="Bottom" Width="80" Grid.Column="1" Height="19" Click="Button_OpenImage_Click"/>
             <Button x:Name="Button_AESManager" Content="AES Manager" HorizontalAlignment="Right" Margin="0,0,300,6" Grid.Row="2" VerticalAlignment="Bottom" Width="180" Grid.Column="1" Height="19" Click="Button_AESManager_Click"/>
-            <TextBox x:Name="FilterTextBox_Main" Height="19" Margin="40,0,0,6" Grid.Row="2" TextWrapping="NoWrap" VerticalAlignment="Bottom" Foreground="#FFEFEFEF"/>
+            <TextBox x:Name="FilterTextBox_Main" Height="19" Margin="40,0,0,6" Grid.Row="2" TextWrapping="NoWrap" VerticalAlignment="Bottom" Foreground="#FFEFEFEF" TextChanged="FilterTextBox_Main_TextChanged"/>
             <Label Content="Filter:" HorizontalAlignment="Left" Margin="2,0,0,3" Grid.Row="2" VerticalAlignment="Bottom" Height="25" Width="38" Padding="5,7,5,5"/>
             <TreeView x:Name="TreeView_Main" TreeViewItem.Selected="NodeSelected" Margin="2,1,0,0" ItemsSource="{Binding ItemsView}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
                 <TreeView.ItemTemplate>
@@ -116,7 +116,17 @@
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
-            <ListBox x:Name="ListBox_Main" Margin="2,1,0,2" Grid.Row="1" SelectionMode="Extended" SelectionChanged="ListBox_Main_SelectionChanged" MouseDoubleClick="ListBox_Main_MouseDoubleClick"/>
+            <ListBox x:Name="ListBox_Main" Margin="2,1,0,2" Grid.Row="1" SelectionMode="Extended" SelectionChanged="ListBox_Main_SelectionChanged" MouseDoubleClick="ListBox_Main_MouseDoubleClick">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem x:Name="RC_Properties" Header="Properties" Click="RC_Properties_Click">
+                            <MenuItem.Icon>
+                                <Image Source="/FModel;component/Resources/StatusAnnotations_Information_16xLG_color.png" Width="16" Height="16"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
             <RichTextBox x:Name="ConsoleBox_Main" Grid.Column="1" Margin="1,1,1,2" Grid.Row="1" Background="#FF252D36" Foreground="#FFEFEFEF" BorderBrush="#7F748198" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
