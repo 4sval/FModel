@@ -28,7 +28,7 @@ namespace FModel.Methods.PAKs
                             {
                                 PAKEntries.PAKEntriesList.Add(new PAKInfosEntry(Pak, PAKGuid, false));
                                 FWindow.FMain.Dispatcher.InvokeAsync(() =>
-                                {   
+                                {
                                     MenuItem MI_Pak = new MenuItem();
                                     MI_Pak.Header = Path.GetFileName(Pak);
                                     MI_Pak.Click += new RoutedEventHandler(FWindow.FMain.MI_Pak_Click);
@@ -49,7 +49,7 @@ namespace FModel.Methods.PAKs
                                 });
                             }
                         }
-                        else { new UpdateMyProcessEvents($"Unsupported .PAK Version for {Path.GetFileName(Pak)}", "Error").Update(); break; }
+                        else { new UpdateMyProcessEvents($"Unsupported .PAK Version for {Path.GetFileName(Pak)}", "Error").Update(); }
                     }
                     else
                     {

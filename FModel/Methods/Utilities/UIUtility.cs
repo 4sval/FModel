@@ -35,6 +35,7 @@ namespace FModel.Methods.Utilities
                 switch (_stateText)
                 {
                     case "Error":
+                    case "Yikes":
                         FWindow.FMain.StateTextBlock.Background = new SolidColorBrush(Color.FromRgb(244, 66, 66));
                         break;
                     case "Waiting":

@@ -17,13 +17,13 @@ namespace FModel.Methods.PAKs
 
         public static async void LoadOnePAK()
         {
-            FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
-            FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
+            FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.ImageBox_Main.Source = null;
+            FWindow.FMain.ListBox_Main.Items.Clear();
 
             await Task.Run(() =>
             {
@@ -43,13 +43,13 @@ namespace FModel.Methods.PAKs
         }
         public static async void LoadAllPAKs()
         {
-            FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
-            FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
+            FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.ImageBox_Main.Source = null;
+            FWindow.FMain.ListBox_Main.Items.Clear();
 
             await Task.Run(() =>
             {

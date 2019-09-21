@@ -40,7 +40,7 @@ namespace FModel.Methods.Utilities
                 }
             }
 
-            if (FilesListWithoutPath.Any())
+            if (FilesListWithoutPath != null && FilesListWithoutPath.Any())
             {
                 await Task.Run(() =>
                 {
@@ -77,39 +77,54 @@ namespace FModel.Methods.Utilities
             }
         }
 
-        public static void FilterListBox()
+        public static async void FilterListBox()
         {
             FWindow.FMain.ListBox_Main.Items.Clear();
             string FilterText = FWindow.FMain.FilterTextBox_Main.Text;
 
-            foreach (IEnumerable<string> filesFromOnePak in FilesListWithoutPath)
+            if (FilesListWithoutPath != null && FilesListWithoutPath.Any())
             {
-                foreach (string file in filesFromOnePak.OrderBy(s => s))
+                await Task.Run(() =>
                 {
-                    string name = file;
-                    if (name.EndsWith(".uasset") || name.EndsWith(".uexp") || name.EndsWith(".ubulk"))
+                    foreach (IEnumerable<string> filesFromOnePak in FilesListWithoutPath)
                     {
-                        name = name.Substring(0, name.LastIndexOf('.'));
-                    }
-
-                    if (!string.IsNullOrEmpty(FilterText))
-                    {
-                        if (CaseInsensitiveContains(name, FilterText))
+                        foreach (string file in filesFromOnePak.OrderBy(s => s))
                         {
-                            if (!FWindow.FMain.ListBox_Main.Items.Contains(name))
+                            string name = file;
+                            if (name.EndsWith(".uasset") || name.EndsWith(".uexp") || name.EndsWith(".ubulk"))
                             {
-                                FWindow.FMain.ListBox_Main.Items.Add(name);
+                                name = name.Substring(0, name.LastIndexOf('.'));
+                            }
+
+                            if (!string.IsNullOrEmpty(FilterText))
+                            {
+                                if (CaseInsensitiveContains(name, FilterText))
+                                {
+                                    FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                                    {
+                                        if (!FWindow.FMain.ListBox_Main.Items.Contains(name))
+                                        {
+                                            FWindow.FMain.ListBox_Main.Items.Add(name);
+                                        }
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                                {
+                                    if (!FWindow.FMain.ListBox_Main.Items.Contains(name))
+                                    {
+                                        FWindow.FMain.ListBox_Main.Items.Add(name);
+                                    }
+                                });
                             }
                         }
                     }
-                    else
-                    {
-                        if (!FWindow.FMain.ListBox_Main.Items.Contains(name))
-                        {
-                            FWindow.FMain.ListBox_Main.Items.Add(name);
-                        }
-                    }
-                }
+                }).ContinueWith(TheTask =>
+                {
+                    TasksUtility.TaskCompleted(TheTask.Exception);
+                });
             }
         }
         private static bool CaseInsensitiveContains(string text, string value, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)

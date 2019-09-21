@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Threading;
 
 namespace FModel.Methods.Utilities
 {
     class TasksUtility
     {
+        public static CancellationTokenSource CancellableTaskTokenSource { get; set; }
+
         public static void TaskCompleted(Exception ex)
         {
             if (ex != null)

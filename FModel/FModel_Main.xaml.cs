@@ -79,11 +79,22 @@ namespace FModel
                 else { FormsUtility.GetOpenedWindow<Window>(FWindow.FCurrentAsset).Focus(); }
             }
         }
-        private void Button_Export_Click(object sender, RoutedEventArgs e)
+        private void Button_Stop_Click(object sender, RoutedEventArgs e)
+        {
+            if (TasksUtility.CancellableTaskTokenSource != null)
+            {
+                TasksUtility.CancellableTaskTokenSource.Cancel();
+                if (TasksUtility.CancellableTaskTokenSource.IsCancellationRequested)
+                {
+                    new UpdateMyProcessEvents("Canceled!", "Yikes").Update();
+                }
+                else { new UpdateMyProcessEvents("This is odd!\tCanceled but not requested. You should never see this tbh", "Yikes").Update(); }
+            }
+        }
+        private void Button_Extract_Click(object sender, RoutedEventArgs e)
         {
             if (ListBox_Main.SelectedIndex >= 0)
             {
-                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
                 AssetsLoader.LoadSelectedAsset();
             }
         }
