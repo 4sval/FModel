@@ -58,6 +58,8 @@ namespace FModel
                 byte[] b = pakExtractor.GetData(y);
 
                 AssetPath = WriteFile(results[i], b).Replace("/", "\\");
+                
+                if (results[i].Contains("EID_BlackMondayFemale_6HO4L")) break;
             }
 
             pakExtractor = null;
