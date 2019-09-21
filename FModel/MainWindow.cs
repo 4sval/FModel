@@ -747,9 +747,9 @@ namespace FModel
         //EVENTS
         private async void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            Checking.currentSelectedNodePartialPath = e.Node.FullPath + "\\";
             if (e.Node != null && e.Button == MouseButtons.Right)
             {
-                Checking.currentSelectedNodePartialPath = e.Node.FullPath + "\\";
                 extractFolderContentsToolStripMenuItem.Text = "Extract " + e.Node.Text + " Folder Contents";
                 contextMenuStrip2.Show(Cursor.Position);
             }

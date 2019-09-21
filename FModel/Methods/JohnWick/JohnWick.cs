@@ -52,14 +52,14 @@ namespace FModel
             string AssetPath = string.Empty;
             for (int i = 0; i < results.Length; i++)
             {
+                if (results[i].Contains("DisplayAssets/EID_BlackMondayFemale_6HO4L.uasset")) break;
+
                 int index = Array.IndexOf(pakFiles, results[i]);
 
                 uint y = (uint)index;
                 byte[] b = pakExtractor.GetData(y);
 
                 AssetPath = WriteFile(results[i], b).Replace("/", "\\");
-                
-                if (results[i].Contains("EID_BlackMondayFemale_6HO4L")) break;
             }
 
             pakExtractor = null;
