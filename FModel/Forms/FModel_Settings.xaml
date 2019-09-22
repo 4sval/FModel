@@ -26,6 +26,35 @@
                 <TextBox x:Name="OutputTextBox" Height="18" Margin="50,4,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
             </Grid>
         </GroupBox>
+        <GroupBox Header="Icon Creator" HorizontalAlignment="Left" Height="186" Margin="10,116,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
+            <Grid>
+                <Label Content="Language:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0"/>
+                <ComboBox x:Name="ComboBox_Language" HorizontalAlignment="Left" Margin="61,5,0,0" VerticalAlignment="Top" Width="332" BorderBrush="#7F748198" Background="#FF333C46">
+                    <ComboBoxItem Content="English"/>
+                    <ComboBoxItem Content="French"/>
+                    <ComboBoxItem Content="German"/>
+                    <ComboBoxItem Content="Italian"/>
+                    <ComboBoxItem Content="Spanish"/>
+                    <ComboBoxItem Content="Spanish (LA)"/>
+                    <ComboBoxItem Content="Arabic"/>
+                    <ComboBoxItem Content="Japanese"/>
+                    <ComboBoxItem Content="Korean"/>
+                    <ComboBoxItem Content="Polish"/>
+                    <ComboBoxItem Content="Portuguese (Brazil)"/>
+                    <ComboBoxItem Content="Russian"/>
+                    <ComboBoxItem Content="Turkish"/>
+                    <ComboBoxItem Content="Chinese (S)"/>
+                    <ComboBoxItem Content="Traditional Chinese"/>
+                </ComboBox>
+                <Label Content="Rarity Design:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,32,0,0"/>
+                <ComboBox x:Name="ComboBox_Design" HorizontalAlignment="Left" Margin="78,35,0,0" VerticalAlignment="Top" Width="315" BorderBrush="#7F748198" Background="#FF333C46" IsReadOnly="True">
+                    <ComboBoxItem Content="Default"/>
+                    <ComboBoxItem Content="Flat"/>
+                    <ComboBoxItem Content="Minimalist"/>
+                </ComboBox>
+                <Border BorderThickness="1" Background="#FF252D36" HorizontalAlignment="Right" Height="164" Margin="398,0,0,0" Width="164"/>
+            </Grid>
+        </GroupBox>
         <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="80" Click="Button_Click"/>
 
     </Grid>

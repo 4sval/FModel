@@ -2,6 +2,7 @@
 using FModel.Methods.Utilities;
 using PakReader;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows;
 
@@ -33,7 +34,7 @@ namespace FModel.Methods.Assets
                 foreach (FPakEntry entry in entriesList)
                 {
                     sb.Append(
-                        "\n- PAK File:\t" + reader.Name +
+                        "\n- PAK File:\t" + Path.GetFileName(reader.Name) +
                         "\n- Path:\t\t" + entry.Name +
                         "\n- Position:\t" + entry.Pos +
                         "\n- Size:\t\t" + entry.Size +

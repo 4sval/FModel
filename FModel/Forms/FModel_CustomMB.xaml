@@ -11,7 +11,7 @@
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" UseLayoutRounding="True"
         ResizeMode="NoResize" SizeToContent="WidthAndHeight"
         ShowInTaskbar="False" Topmost="True"
-        WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen"
+        WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" Height="52"
         >
     <Grid>
         <Grid.RowDefinitions>

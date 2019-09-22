@@ -1,4 +1,5 @@
-﻿using FModel.Forms;
+﻿using FindReplace;
+using FModel.Forms;
 using FModel.Methods;
 using FModel.Methods.AESManager;
 using FModel.Methods.Assets;
@@ -40,6 +41,11 @@ namespace FModel
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
             });
+
+            FindReplaceMgr FRM = AvalonEdit.SetFindReplaceDiag();
+            CommandBindings.Add(FRM.FindBinding);
+            CommandBindings.Add(FRM.ReplaceBinding);
+            CommandBindings.Add(FRM.FindNextBinding);
         }
 
         #region BUTTON EVENTS

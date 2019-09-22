@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FindReplace;
+using ICSharpCode.AvalonEdit;
+using System;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -78,6 +80,42 @@ namespace FModel.Methods.Utilities
                 catch (FormatException) { }
                 FWindow.FMain.ConsoleBox_Main.ScrollToEnd();
             });
+        }
+    }
+
+    class AvalonEdit
+    {
+        /// <summary>
+        /// Adapter for Avalonedit TextEditor
+        /// </summary>
+        public class TextEditorAdapter : IEditor
+        {
+            public TextEditorAdapter(TextEditor editor) { te = editor; }
+
+            TextEditor te;
+            public string Text { get { return te.Text; } }
+            public int SelectionStart { get { return te.SelectionStart; } }
+            public int SelectionLength { get { return te.SelectionLength; } }
+            public void BeginChange() { te.BeginChange(); }
+            public void EndChange() { te.EndChange(); }
+            public void Select(int start, int length)
+            {
+                te.Select(start, length);
+                var loc = te.Document.GetLocation(start);
+                te.ScrollTo(loc.Line, loc.Column);
+            }
+            public void Replace(int start, int length, string ReplaceWith) { te.Document.Replace(start, length, ReplaceWith); }
+
+        }
+
+        public static FindReplaceMgr SetFindReplaceDiag()
+        {
+            FindReplaceMgr FRM = new FindReplaceMgr();
+            FRM.CurrentEditor = new TextEditorAdapter(FWindow.FMain.AssetPropertiesBox_Main);
+            FRM.ShowSearchIn = false;
+            FRM.OwnerWindow = FWindow.FMain;
+
+            return FRM;
         }
     }
 

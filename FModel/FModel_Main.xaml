@@ -17,8 +17,7 @@
         Style="{StaticResource {x:Type Window}}" 
         WindowStartupLocation="CenterScreen" 
         Icon="Logo.ico" 
-        Loaded="Window_Loaded"
-        >
+        Loaded="Window_Loaded">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static commands:FModel_Commands.OpenSettings}" Executed="MI_Settings_Click"/>
         <CommandBinding Command="{x:Static commands:FModel_Commands.OpenOutput}" Executed="MI_OpenOutputFolder_Click"/>

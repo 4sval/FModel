@@ -1,6 +1,9 @@
 ﻿using FModel.Methods.SyntaxHighlighter;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PakReader;
+using SkiaSharp;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +25,12 @@ namespace FModel.Methods.Utilities
                     .Where(x => string.Equals(x.Key.Name, Path.HasExtension(path) ? path : path + ".uasset"))
                     .Select(x => x.Value).FirstOrDefault();
         }
+        public static PakReader.PakReader GetPakReader(string assetPath)
+        {
+            return AssetEntries.AssetEntriesDict
+                    .Where(x => string.Equals(x.Key.Name, assetPath))
+                    .Select(x => x.Value).FirstOrDefault();
+        }
 
         /// <summary>
         /// catching the uasset uexp ubulk from the reader
@@ -33,6 +42,12 @@ namespace FModel.Methods.Utilities
             string path = GetSelectedAssetPath();
             return reader.FileInfos
                 .Where(x => x.Name.Contains(Path.HasExtension(path) ? path : path + "."))
+                .Select(x => x);
+        }
+        public static IEnumerable<FPakEntry> GetPakEntries(PakReader.PakReader reader, string assetPath)
+        {
+            return reader.FileInfos
+                .Where(x => x.Name.Contains(FoldersUtility.GetFullPathWithoutExtension(assetPath)))
                 .Select(x => x);
         }
 
@@ -130,6 +145,100 @@ namespace FModel.Methods.Utilities
             }
 
             return null;
+        }
+
+        public static SKImage GetSKImageFromPath(string AssetFullPath)
+        {
+            PakReader.PakReader reader = GetPakReader(AssetFullPath);
+            if (reader != null)
+            {
+                IEnumerable<FPakEntry> entriesList = GetPakEntries(reader, AssetFullPath);
+                Stream[] AssetStreamArray = new Stream[3];
+                foreach (FPakEntry entry in entriesList)
+                {
+                    switch (Path.GetExtension(entry.Name.ToLowerInvariant()))
+                    {
+                        case ".ini":
+                            break;
+                        case ".uproject":
+                        case ".uplugin":
+                        case ".upluginmanifest":
+                            break;
+                        case ".locmeta":
+                            break;
+                        case ".locres":
+                            break;
+                        case ".udic":
+                            break;
+                        case ".bin":
+                            break;
+                        default:
+                            if (entry.Name.EndsWith(".uasset"))
+                                AssetStreamArray[0] = reader.GetPackageStream(entry);
+
+                            if (entry.Name.EndsWith(".uexp"))
+                                AssetStreamArray[1] = reader.GetPackageStream(entry);
+
+                            if (entry.Name.EndsWith(".ubulk"))
+                                AssetStreamArray[2] = reader.GetPackageStream(entry);
+                            break;
+                    }
+                }
+
+                AssetReader ar = GetAssetReader(AssetStreamArray);
+                if (ar != null)
+                {
+                    ExportObject eo = ar.Exports.Where(x => x is Texture2D).FirstOrDefault();
+                    if (eo != null)
+                    {
+                        SKImage image = ((Texture2D)eo).GetImage();
+                        if (image != null)
+                        {
+                            return image;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public static bool IsValidJson(string strInput)
+        {
+            strInput = strInput.Trim();
+            if ((strInput.StartsWith("{") && strInput.EndsWith("}")) || //For object
+                (strInput.StartsWith("[") && strInput.EndsWith("]"))) //For array
+            {
+                try
+                {
+                    JToken obj = JToken.Parse(strInput);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static T GetPropertyTag<T>(JArray properties, string name)
+        {
+            return properties
+                .Where(x => string.Equals(x["name"].Value<string>(), name))
+                .Select(x => x["tag_data"].Value<T>())
+                .FirstOrDefault();
+        }
+
+        public static T GetPropertyTagImport<T>(JArray properties, string name)
+        {
+            return properties
+                .Where(x => string.Equals(x["name"].Value<string>(), name))
+                .Select(x => x["tag_data"]["import"].Value<T>())
+                .FirstOrDefault();
         }
     }
 }
