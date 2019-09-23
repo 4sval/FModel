@@ -1,5 +1,6 @@
 ﻿using FindReplace;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Folding;
 using System;
 using System.Windows;
 using System.Windows.Documents;
@@ -116,6 +117,14 @@ namespace FModel.Methods.Utilities
             FRM.OwnerWindow = FWindow.FMain;
 
             return FRM;
+        }
+
+        public static void SetAEConfig()
+        {
+            FindReplaceMgr FRM = SetFindReplaceDiag();
+            FWindow.FMain.CommandBindings.Add(FRM.FindBinding);
+            FWindow.FMain.CommandBindings.Add(FRM.ReplaceBinding);
+            FWindow.FMain.CommandBindings.Add(FRM.FindNextBinding);
         }
     }
 

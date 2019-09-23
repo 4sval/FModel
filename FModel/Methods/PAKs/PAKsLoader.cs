@@ -19,10 +19,10 @@ namespace FModel.Methods.PAKs
         {
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
-            FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
             FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.ImageBox_Main.Source = null;
+            ListBoxUtility.FilesListWithoutPath = null;
             FWindow.FMain.ListBox_Main.Items.Clear();
 
             await Task.Run(() =>
@@ -45,10 +45,10 @@ namespace FModel.Methods.PAKs
         {
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
-            FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
             FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.ImageBox_Main.Source = null;
+            ListBoxUtility.FilesListWithoutPath = null;
             FWindow.FMain.ListBox_Main.Items.Clear();
 
             await Task.Run(() =>

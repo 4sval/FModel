@@ -68,6 +68,38 @@ namespace FModel.Methods.Assets.IconCreator
             switch (FProp.Default.FRarity_Design)
             {
                 case "Flat":
+                    using (SKPaint paint = new SKPaint())
+                    {
+                        paint.IsAntialias = true;
+                        paint.FilterQuality = SKFilterQuality.High;
+
+                        SKRect rect = new SKRect(0, 0, 515, 515);
+
+                        paint.Style = SKPaintStyle.Fill;
+                        paint.Color = background;
+                        IconCreator.ICCanvas.DrawRect(rect, paint);
+
+                        paint.Color = backgroundUpDown.WithAlpha((byte)(0xFF * 0.55));
+                        SKPath path = new SKPath();
+                        path.MoveTo(0, 440);
+                        path.LineTo(515, 380);
+                        path.LineTo(515, 380 + 135);
+                        path.LineTo(0, 380 + 135);
+                        path.LineTo(0, 440);
+                        IconCreator.ICCanvas.DrawPath(path, paint);
+
+                        path = new SKPath();
+                        path.MoveTo(0, 0);
+                        path.LineTo(0, 35);
+                        path.LineTo(335, 0);
+                        IconCreator.ICCanvas.DrawPath(path, paint);
+
+                        paint.Style = SKPaintStyle.Stroke;
+                        paint.Shader = null;
+                        paint.Color = border;
+                        paint.StrokeWidth = 6;
+                        IconCreator.ICCanvas.DrawRect(rect, paint);
+                    }
                     break;
                 case "Default":
                 case "Minimalist":
@@ -76,7 +108,7 @@ namespace FModel.Methods.Assets.IconCreator
                         paint.IsAntialias = true;
                         paint.FilterQuality = SKFilterQuality.High;
 
-                        SKRect rect = new SKRect(0, 0, 518, 518);
+                        SKRect rect = new SKRect(0, 0, 515, 515);
 
                         paint.Style = SKPaintStyle.Fill;
                         paint.Shader = SKShader.CreateRadialGradient(
@@ -99,68 +131,22 @@ namespace FModel.Methods.Assets.IconCreator
 
         private static void DrawSerieImage(string AssetPath)
         {
-            PakReader.PakReader reader = AssetsUtility.GetPakReader(AssetPath);
-            if (reader != null)
+            using (Stream image = AssetsUtility.GetStreamImageFromPath(AssetPath))
             {
-                IEnumerable<FPakEntry> entriesList = AssetsUtility.GetPakEntries(reader, AssetPath);
-                Stream[] AssetStreamArray = new Stream[3];
-                foreach (FPakEntry entry in entriesList)
+                if (image != null)
                 {
-                    switch (Path.GetExtension(entry.Name.ToLowerInvariant()))
+                    using (SKPaint paint = new SKPaint())
                     {
-                        case ".ini":
-                            break;
-                        case ".uproject":
-                        case ".uplugin":
-                        case ".upluginmanifest":
-                            break;
-                        case ".locmeta":
-                            break;
-                        case ".locres":
-                            break;
-                        case ".udic":
-                            break;
-                        case ".bin":
-                            break;
-                        default:
-                            if (entry.Name.EndsWith(".uasset"))
-                                AssetStreamArray[0] = reader.GetPackageStream(entry);
+                        paint.IsAntialias = true;
+                        paint.FilterQuality = SKFilterQuality.High;
 
-                            if (entry.Name.EndsWith(".uexp"))
-                                AssetStreamArray[1] = reader.GetPackageStream(entry);
-
-                            if (entry.Name.EndsWith(".ubulk"))
-                                AssetStreamArray[2] = reader.GetPackageStream(entry);
-                            break;
-                    }
-                }
-
-                AssetReader ar = AssetsUtility.GetAssetReader(AssetStreamArray);
-                if (ar != null)
-                {
-                    ExportObject eo = ar.Exports.Where(x => x is Texture2D).FirstOrDefault();
-                    if (eo != null)
-                    {
-                        SKImage image = ((Texture2D)eo).GetImage();
-                        if (image != null)
-                        {
-                            using (var data = image.Encode())
-                            using (var stream = data.AsStream())
-                            {
-                                using (SKPaint paint = new SKPaint())
-                                {
-                                    paint.IsAntialias = true;
-                                    paint.FilterQuality = SKFilterQuality.High;
-
-                                    SKRect rect = new SKRect(3, 3, 512, 512);
-                                    paint.Color = paint.Color.WithAlpha((byte)(0xFF * 0.4));
-                                    IconCreator.ICCanvas.DrawBitmap(SKBitmap.Decode(stream), rect, paint);
-                                }
-                            }
-                        }
+                        SKRect rect = new SKRect(3, 3, 512, 512);
+                        paint.Color = paint.Color.WithAlpha((byte)(0xFF * 0.4));
+                        IconCreator.ICCanvas.DrawBitmap(SKBitmap.Decode(image), rect, paint);
                     }
                 }
             }
+            
         }
     }
 }

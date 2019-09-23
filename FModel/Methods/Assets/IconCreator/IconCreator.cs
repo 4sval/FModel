@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using System.IO;
+using System.Windows.Media;
 
 namespace FModel.Methods.Assets.IconCreator
 {
@@ -9,25 +10,22 @@ namespace FModel.Methods.Assets.IconCreator
     {
         public static SKCanvas ICCanvas { get; set; }
 
-        public static void DrawTest(JArray AssetProperties)
+        public static ImageSource DrawTest(JArray AssetProperties)
         {
-            FWindow.FMain.Dispatcher.InvokeAsync(() =>
+            SKImageInfo imageInfo = new SKImageInfo(515, 515);
+            using (SKSurface surface = SKSurface.Create(imageInfo))
             {
-                SKImageInfo imageInfo = new SKImageInfo(518, 518);
-                using (SKSurface surface = SKSurface.Create(imageInfo))
+                ICCanvas = surface.Canvas;
+
+                Rarity.DrawRarityBackground(AssetProperties);
+
+                using (SKImage image = surface.Snapshot())
+                using (SKData data = image.Encode(SKEncodedImageFormat.Png, 100))
+                using (MemoryStream mStream = new MemoryStream(data.ToArray()))
                 {
-                    ICCanvas = surface.Canvas;
-
-                    Rarity.DrawRarityBackground(AssetProperties);
-
-                    using (SKImage image = surface.Snapshot())
-                    using (SKData data = image.Encode(SKEncodedImageFormat.Png, 100))
-                    using (MemoryStream mStream = new MemoryStream(data.ToArray()))
-                    {
-                        FWindow.FMain.ImageBox_Main.Source = ImagesUtility.GetImageSource(mStream);
-                    }
+                    return ImagesUtility.GetImageSource(mStream);
                 }
-            });
+            }
         }
     }
 }

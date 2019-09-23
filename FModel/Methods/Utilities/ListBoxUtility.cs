@@ -10,20 +10,20 @@ namespace FModel.Methods.Utilities
 {
     class ListBoxUtility
     {
-        private static List<IEnumerable<string>> FilesListWithoutPath { get; set; }
+        public static List<IEnumerable<string>> FilesListWithoutPath { get; set; }
 
         public static async void PopulateListBox(TreeViewItem sItem)
         {
             FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
 
-            FWindow.FCurrentAssetParentPath = TreeViewUtility.GetFullPath(sItem);
+            string path = TreeViewUtility.GetFullPath(sItem);
 
             FilesListWithoutPath = new List<IEnumerable<string>>();
             if (!string.IsNullOrEmpty(FWindow.FCurrentPAK))
             {
                 IEnumerable<string> filesWithoutPath = PAKEntries.PAKToDisplay[FWindow.FCurrentPAK]
-                    .Where(x => x.Name.Contains(FWindow.FCurrentAssetParentPath + "/" + Path.GetFileName(x.Name)))
+                    .Where(x => x.Name.Contains(path + "/" + Path.GetFileName(x.Name)))
                     .Select(x => Path.GetFileName(x.Name));
 
                 if (filesWithoutPath != null) { FilesListWithoutPath.Add(filesWithoutPath); }
@@ -33,7 +33,7 @@ namespace FModel.Methods.Utilities
                 foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
                 {
                     IEnumerable<string> filesWithoutPath = PAKsFileInfos
-                        .Where(x => x.Name.Contains(FWindow.FCurrentAssetParentPath + "/" + Path.GetFileName(x.Name)))
+                        .Where(x => x.Name.Contains(path + "/" + Path.GetFileName(x.Name)))
                         .Select(x => Path.GetFileName(x.Name));
 
                     if (filesWithoutPath != null) { FilesListWithoutPath.Add(filesWithoutPath); }

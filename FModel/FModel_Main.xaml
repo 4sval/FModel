@@ -118,6 +118,13 @@
             <ListBox x:Name="ListBox_Main" Margin="2,1,0,2" Grid.Row="1" SelectionMode="Extended" SelectionChanged="ListBox_Main_SelectionChanged" MouseDoubleClick="ListBox_Main_MouseDoubleClick">
                 <ListBox.ContextMenu>
                     <ContextMenu>
+                        <MenuItem x:Name="RC_Extract" Header="Extract" Click="RC_Extract_Click"/>
+                        <MenuItem Header="Copy File">
+                            <MenuItem x:Name="RC_Copy_FPath" Header="Copy File Path" Click="RC_Copy_FPath_Click"/>
+                            <MenuItem x:Name="RC_Copy_FName" Header="Copy File Name" Click="RC_Copy_FName_Click"/>
+                            <MenuItem x:Name="RC_Copy_FPath_NoExt" Header="Copy File Path w/o Extension" Click="RC_Copy_FPath_NoExt_Click"/>
+                            <MenuItem x:Name="RC_Copy_FName_NoExt" Header="Copy File Name w/o Extension" Click="RC_Copy_FName_NoExt_Click"/>
+                        </MenuItem>
                         <MenuItem x:Name="RC_Properties" Header="Properties" Click="RC_Properties_Click">
                             <MenuItem.Icon>
                                 <Image Source="/FModel;component/Resources/StatusAnnotations_Information_16xLG_color.png" Width="16" Height="16"/>

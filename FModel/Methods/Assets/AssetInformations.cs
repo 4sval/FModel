@@ -25,11 +25,13 @@ namespace FModel.Methods.Assets
         private static string GetAssetInfos()
         {
             StringBuilder sb = new StringBuilder();
-            PakReader.PakReader reader = AssetsUtility.GetPakReader();
+
+            string fullPath = TreeViewUtility.GetFullPath(FWindow.TVItem) + "/" + FWindow.FCurrentAsset;
+            PakReader.PakReader reader = AssetsUtility.GetPakReader(fullPath);
 
             if (reader != null)
             {
-                IEnumerable<FPakEntry> entriesList = AssetsUtility.GetPakEntries(reader);
+                IEnumerable<FPakEntry> entriesList = AssetsUtility.GetPakEntries(reader, fullPath);
 
                 foreach (FPakEntry entry in entriesList)
                 {

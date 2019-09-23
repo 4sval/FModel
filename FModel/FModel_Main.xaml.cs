@@ -7,6 +7,7 @@ using FModel.Methods.BackupsManager;
 using FModel.Methods.PAKs;
 using FModel.Methods.TreeViewModel;
 using FModel.Methods.Utilities;
+using ICSharpCode.AvalonEdit.Folding;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -42,10 +43,7 @@ namespace FModel
                 TasksUtility.TaskCompleted(TheTask.Exception);
             });
 
-            FindReplaceMgr FRM = AvalonEdit.SetFindReplaceDiag();
-            CommandBindings.Add(FRM.FindBinding);
-            CommandBindings.Add(FRM.ReplaceBinding);
-            CommandBindings.Add(FRM.FindNextBinding);
+            AvalonEdit.SetAEConfig();
         }
 
         #region BUTTON EVENTS
@@ -101,6 +99,7 @@ namespace FModel
         {
             if (ListBox_Main.SelectedIndex >= 0)
             {
+                //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
                 AssetsLoader.LoadSelectedAsset();
             }
         }
@@ -149,6 +148,7 @@ namespace FModel
             TreeViewItem currContainer = e.OriginalSource as TreeViewItem;
             if (currContainer != null)
             {
+                FWindow.TVItem = currContainer;
                 ListBoxUtility.PopulateListBox(currContainer);
             }
 
@@ -164,13 +164,53 @@ namespace FModel
         {   
             if (ListBox_Main.SelectedIndex >= 0)
             {
-                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
+                //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
                 AssetsLoader.LoadSelectedAsset();
             }
         }
         private void FilterTextBox_Main_TextChanged(object sender, TextChangedEventArgs e)
         {
             ListBoxUtility.FilterListBox();
+        }
+        private void RC_Extract_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBox_Main.SelectedIndex >= 0)
+            {
+                //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
+                AssetsLoader.LoadSelectedAsset();
+            }
+        }
+        private void RC_Copy_FPath_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBox_Main.SelectedIndex >= 0)
+            {
+                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
+                Clipboard.SetText(AssetsUtility.GetAssetPathToCopy());
+            }
+        }
+        private void RC_Copy_FName_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBox_Main.SelectedIndex >= 0)
+            {
+                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
+                Clipboard.SetText(AssetsUtility.GetAssetPathToCopy(true));
+            }
+        }
+        private void RC_Copy_FPath_NoExt_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBox_Main.SelectedIndex >= 0)
+            {
+                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
+                Clipboard.SetText(AssetsUtility.GetAssetPathToCopy(false, false));
+            }
+        }
+        private void RC_Copy_FName_NoExt_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBox_Main.SelectedIndex >= 0)
+            {
+                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
+                Clipboard.SetText(AssetsUtility.GetAssetPathToCopy(true, false));
+            }
         }
         private void RC_Properties_Click(object sender, RoutedEventArgs e)
         {

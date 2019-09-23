@@ -8,42 +8,38 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace FModel.Methods.Utilities
 {
     class AssetsUtility
     {
-        public static string GetSelectedAssetPath()
+        public static string GetAssetPathToCopy(bool isName = false, bool withExtension = true)
         {
-            return FWindow.FCurrentAssetParentPath + "/" + FWindow.FCurrentAsset;
+            string treePath = TreeViewUtility.GetFullPath(FWindow.TVItem);
+            string path = treePath + "/" + FWindow.FCurrentAsset;
+
+            path = path.Contains(".") ? path : path + ".uasset";
+
+            if (isName)
+                path = Path.GetFileName(path);
+
+            if (!withExtension)
+                path = isName ? Path.GetFileNameWithoutExtension(path) : FoldersUtility.GetFullPathWithoutExtension(path);
+
+            new UpdateMyConsole(path, CColors.Blue).Append();
+            new UpdateMyConsole(" Copied!", CColors.White, true).Append();
+            return path;
+
         }
 
-        public static PakReader.PakReader GetPakReader()
-        {
-            string path = GetSelectedAssetPath();
-            return AssetEntries.AssetEntriesDict
-                    .Where(x => string.Equals(x.Key.Name, Path.HasExtension(path) ? path : path + ".uasset"))
-                    .Select(x => x.Value).FirstOrDefault();
-        }
         public static PakReader.PakReader GetPakReader(string assetPath)
         {
             return AssetEntries.AssetEntriesDict
-                    .Where(x => string.Equals(x.Key.Name, assetPath))
+                    .Where(x => string.Equals(x.Key.Name, Path.HasExtension(assetPath) ? assetPath : assetPath + ".uasset"))
                     .Select(x => x.Value).FirstOrDefault();
         }
 
-        /// <summary>
-        /// catching the uasset uexp ubulk from the reader
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <returns></returns>
-        public static IEnumerable<FPakEntry> GetPakEntries(PakReader.PakReader reader)
-        {
-            string path = GetSelectedAssetPath();
-            return reader.FileInfos
-                .Where(x => x.Name.Contains(Path.HasExtension(path) ? path : path + "."))
-                .Select(x => x);
-        }
         public static IEnumerable<FPakEntry> GetPakEntries(PakReader.PakReader reader, string assetPath)
         {
             return reader.FileInfos
@@ -116,10 +112,14 @@ namespace FModel.Methods.Utilities
             {
                 if (loadImageInBox)
                 {
-                    FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                    ImageSource image = GetTexture2D(ar);
+                    if (image != null)
                     {
-                        FWindow.FMain.ImageBox_Main.Source = GetTexture2D(ar);
-                    });
+                        FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                        {
+                            FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)image); //thread safe and fast af
+                        });
+                    }
                 }
 
                 return JsonConvert.SerializeObject(ar.Exports, Formatting.Indented);
@@ -133,7 +133,7 @@ namespace FModel.Methods.Utilities
             ExportObject eo = ar.Exports.Where(x => x is Texture2D).FirstOrDefault();
             if (eo != null)
             {
-                SkiaSharp.SKImage image = ((Texture2D)eo).GetImage();
+                SKImage image = ((Texture2D)eo).GetImage();
                 if (image != null)
                 {
                     using (var data = image.Encode())
@@ -147,7 +147,7 @@ namespace FModel.Methods.Utilities
             return null;
         }
 
-        public static SKImage GetSKImageFromPath(string AssetFullPath)
+        public static Stream GetStreamImageFromPath(string AssetFullPath)
         {
             PakReader.PakReader reader = GetPakReader(AssetFullPath);
             if (reader != null)
@@ -194,7 +194,7 @@ namespace FModel.Methods.Utilities
                         SKImage image = ((Texture2D)eo).GetImage();
                         if (image != null)
                         {
-                            return image;
+                            return image.Encode().AsStream();
                         }
                     }
                 }

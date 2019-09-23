@@ -2,14 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Windows.Controls;
 
 namespace FModel.Methods
 {
     static class FWindow
     {
         public static MainWindow FMain = null;
+        public static TreeViewItem TVItem { get; set; }
         public static string FCurrentPAK { get; set; }
-        public static string FCurrentAssetParentPath { get; set; }
         public static string FCurrentAsset { get; set; }
     }
 

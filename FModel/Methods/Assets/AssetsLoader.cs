@@ -3,10 +3,12 @@ using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Linq;
 
 namespace FModel.Methods.Assets
 {
@@ -20,17 +22,19 @@ namespace FModel.Methods.Assets
             FWindow.FMain.AssetPropertiesBox_Main.SyntaxHighlighting = ResourceLoader.LoadHighlightingDefinition("Json.xshd");
             FWindow.FMain.ImageBox_Main.Source = null;
 
-            IList selectedItems = FWindow.FMain.ListBox_Main.SelectedItems;
+            string[] selectedItems = FWindow.FMain.ListBox_Main.SelectedItems.OfType<string>().ToArray(); //store selected items, doesn't crash if user select another item while extracting
+            string treePath = TreeViewUtility.GetFullPath(FWindow.TVItem); //never change in the loop, in case user wanna see other folders while extracting
+
             TasksUtility.CancellableTaskTokenSource = new CancellationTokenSource();
             CancellationToken cToken = TasksUtility.CancellableTaskTokenSource.Token;
             await Task.Run(() =>
             {
-                foreach (object item in selectedItems)
+                foreach (string item in selectedItems)
                 {
                     cToken.ThrowIfCancellationRequested(); //if clicked on 'Stop' it breaks at the following item
+                    FWindow.FCurrentAsset = item;
 
-                    FWindow.FCurrentAsset = item.ToString();
-                    LoadAsset();
+                    LoadAsset(treePath + "/" + item);
                 }
 
             }, cToken).ContinueWith(TheTask =>
@@ -43,12 +47,12 @@ namespace FModel.Methods.Assets
             FWindow.FMain.Button_Stop.IsEnabled = false;
         }
 
-        private static void LoadAsset()
+        private static void LoadAsset(string assetPath)
         {
-            PakReader.PakReader reader = AssetsUtility.GetPakReader();
+            PakReader.PakReader reader = AssetsUtility.GetPakReader(assetPath);
             if (reader != null)
             {
-                IEnumerable<FPakEntry> entriesList = AssetsUtility.GetPakEntries(reader);
+                IEnumerable<FPakEntry> entriesList = AssetsUtility.GetPakEntries(reader, assetPath);
                 string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList, true);
                 FWindow.FMain.Dispatcher.InvokeAsync(() =>
                 {
@@ -89,7 +93,14 @@ namespace FModel.Methods.Assets
                         case "AthenaVictoryPoseItemDefinition":
                         case "FortBannerTokenType":
                         case "AthenaGadgetItemDefinition":
-                            IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
+                            ImageSource image = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
+                            if (image != null)
+                            {
+                                FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                                {
+                                    FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)image); //thread safe and fast af
+                                });
+                            }
                             break;
                         case "FortWeaponRangedItemDefinition":
                         case "FortWeaponMeleeItemDefinition":
