@@ -71,7 +71,8 @@ namespace FModel.Methods.PAKs
         {
             if (PAKEntries.PAKEntriesList != null && PAKEntries.PAKEntriesList.Any())
             {
-                AssetEntries.AssetEntriesDict = new Dictionary<FPakEntry, PakReader.PakReader>();
+                AssetEntries.ArraySearcher = new Dictionary<string, FPakEntry[]>();
+                AssetEntries.AssetEntriesDict = new Dictionary<string, PakReader.PakReader>();
 
                 //MAIN PAKs LOOP
                 foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => !x.bTheDynamicPAK))
@@ -96,10 +97,8 @@ namespace FModel.Methods.PAKs
                         if (bAllPAKs) { new UpdateMyProcessEvents($"{Path.GetFileNameWithoutExtension(Pak.ThePAKPath)} mount point: {reader.MountPoint}", "Loading").Update(); }
                         foreach (FPakEntry entry in reader.FileInfos)
                         {
-                            if (!AssetEntries.AssetEntriesDict.ContainsKey(entry))
-                            {
-                                AssetEntries.AssetEntriesDict.Add(entry, reader);
-                            }
+                            AssetEntries.AssetEntriesDict[entry.Name] = reader;
+                            AssetEntries.ArraySearcher[entry.Name] = reader.FileInfos;
                         }
                     }
                 }
@@ -139,10 +138,8 @@ namespace FModel.Methods.PAKs
                             if (bAllPAKs) { new UpdateMyProcessEvents($"{Path.GetFileNameWithoutExtension(Pak.ThePAKPath)} mount point: {reader.MountPoint}", "Loading").Update(); }
                             foreach (FPakEntry entry in reader.FileInfos)
                             {
-                                if (!AssetEntries.AssetEntriesDict.ContainsKey(entry))
-                                {
-                                    AssetEntries.AssetEntriesDict.Add(entry, reader);
-                                }
+                                AssetEntries.AssetEntriesDict[entry.Name] = reader;
+                                AssetEntries.ArraySearcher[entry.Name] = reader.FileInfos;
                             }
                         }
                     }

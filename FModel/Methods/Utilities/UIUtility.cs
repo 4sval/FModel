@@ -1,6 +1,5 @@
 ﻿using FindReplace;
 using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Folding;
 using System;
 using System.Windows;
 using System.Windows.Documents;

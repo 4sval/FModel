@@ -28,18 +28,16 @@ namespace FModel.Methods.Assets
 
             string fullPath = TreeViewUtility.GetFullPath(FWindow.TVItem) + "/" + FWindow.FCurrentAsset;
             PakReader.PakReader reader = AssetsUtility.GetPakReader(fullPath);
-
             if (reader != null)
             {
-                IEnumerable<FPakEntry> entriesList = AssetsUtility.GetPakEntries(reader, fullPath);
-
+                List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(fullPath);
                 foreach (FPakEntry entry in entriesList)
                 {
                     sb.Append(
                         "\n- PAK File:\t" + Path.GetFileName(reader.Name) +
                         "\n- Path:\t\t" + entry.Name +
                         "\n- Position:\t" + entry.Pos +
-                        "\n- Size:\t\t" + entry.Size +
+                        "\n- Size:\t\t" + AssetsUtility.GetReadableSize(entry.UncompressedSize) +
                         "\n- Encrypted:\t" + entry.Encrypted +
                         "\n"
                         );

@@ -85,7 +85,8 @@ namespace FModel.Methods
     #region ASSETS
     static class AssetEntries
     {
-        public static Dictionary<FPakEntry, PakReader.PakReader> AssetEntriesDict { get; set; }
+        public static Dictionary<string, PakReader.PakReader> AssetEntriesDict { get; set; }
+        public static Dictionary<string, FPakEntry[]> ArraySearcher { get; set; } //because smh searching through a dictionary is faster than through an array
     }
     #endregion
 

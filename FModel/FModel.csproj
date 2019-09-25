@@ -52,6 +52,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Logo.ico</ApplicationIcon>
@@ -65,9 +66,6 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PakReader, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PakReader.1.2.0\lib\netstandard2.0\PakReader.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp, Version=106.6.10.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.6.10\lib\net452\RestSharp.dll</HintPath>
@@ -114,6 +112,7 @@
     <Compile Include="Methods\AESManager\KeysManager.cs" />
     <Compile Include="Methods\Assets\AssetInformations.cs" />
     <Compile Include="Methods\Assets\AssetsLoader.cs" />
+    <Compile Include="Methods\Assets\IconCreator\AthenaID\IconImage.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconCreator.cs" />
     <Compile Include="Methods\Assets\IconCreator\Rarity.cs" />
     <Compile Include="Methods\BackupsManager\RegisterDownloadedBackups.cs" />
@@ -123,6 +122,19 @@
     </Compile>
     <Compile Include="Methods\FVar.cs" />
     <Compile Include="Methods\MessageBox\DarkMessageBox.cs" />
+    <Compile Include="Methods\PakReader\AESDecryptor.cs" />
+    <Compile Include="Methods\PakReader\AssetReader.cs" />
+    <Compile Include="Methods\PakReader\AssetRegReader.cs" />
+    <Compile Include="Methods\PakReader\DDSDecoder.cs" />
+    <Compile Include="Methods\PakReader\Extensions.cs" />
+    <Compile Include="Methods\PakReader\ImageExporter.cs" />
+    <Compile Include="Methods\PakReader\LocReader.cs" />
+    <Compile Include="Methods\PakReader\MeshExporter.cs" />
+    <Compile Include="Methods\PakReader\Objects.cs" />
+    <Compile Include="Methods\PakReader\PakIndex.cs" />
+    <Compile Include="Methods\PakReader\PakReader.cs" />
+    <Compile Include="Methods\PakReader\SigReader.cs" />
+    <Compile Include="Methods\PakReader\UDicReader.cs" />
     <Compile Include="Methods\PAKs\BackupPAKs.cs" />
     <Compile Include="Methods\PAKs\PAKsLoader.cs" />
     <Compile Include="Methods\PAKs\RegisterFromPath.cs" />
@@ -240,7 +252,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Methods\Assets\IconCreator\AmmoID\" />
-    <Folder Include="Methods\Assets\IconCreator\AthenaID\" />
     <Folder Include="Methods\Assets\IconCreator\ChallengeID\" />
     <Folder Include="Methods\Assets\IconCreator\DefenderID\" />
     <Folder Include="Methods\Assets\IconCreator\HeroID\" />

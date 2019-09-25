@@ -25,11 +25,11 @@ namespace FModel.Methods.Assets.IconCreator
                         break;
                     case "CUBESeries":
                         DrawBackground(SKColor.Parse("#9D006C"), SKColor.Parse("#610064"), SKColor.Parse("#AF1BB9"));
-                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T-Cube-Background.uasset");
+                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T-Cube-Background");
                         break;
                     case "DCUSeries":
                         DrawBackground(SKColor.Parse("#2D445D"), SKColor.Parse("#101928"), SKColor.Parse("#3E5E7A"));
-                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T-BlackMonday-Background.uasset");
+                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T-BlackMonday-Background");
                         break;
                 }
             }
@@ -79,7 +79,7 @@ namespace FModel.Methods.Assets.IconCreator
                         paint.Color = background;
                         IconCreator.ICCanvas.DrawRect(rect, paint);
 
-                        paint.Color = backgroundUpDown.WithAlpha((byte)(0xFF * 0.55));
+                        paint.Color = backgroundUpDown.WithAlpha((byte)(0xFF * 0.4));
                         SKPath path = new SKPath();
                         path.MoveTo(0, 440);
                         path.LineTo(515, 380);

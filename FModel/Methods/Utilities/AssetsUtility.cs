@@ -33,18 +33,77 @@ namespace FModel.Methods.Utilities
 
         }
 
-        public static PakReader.PakReader GetPakReader(string assetPath)
+        public static string GetReadableSize(long size)
         {
-            return AssetEntries.AssetEntriesDict
-                    .Where(x => string.Equals(x.Key.Name, Path.HasExtension(assetPath) ? assetPath : assetPath + ".uasset"))
-                    .Select(x => x.Value).FirstOrDefault();
+            long absolute_i = size < 0 ? -size : size;
+            string suffix;
+            double readable;
+            if (absolute_i >= 0x40000000)
+            {
+                suffix = "GB";
+                readable = size >> 20;
+            }
+            else if (absolute_i >= 0x100000)
+            {
+                suffix = "MB";
+                readable = size >> 10;
+            }
+            else if (absolute_i >= 0x400)
+            {
+                suffix = "KB";
+                readable = size;
+            }
+            else
+            {
+                return size.ToString("0 B");
+            }
+            readable = readable / 1024;
+            return readable.ToString("0.## ") + suffix;
         }
 
-        public static IEnumerable<FPakEntry> GetPakEntries(PakReader.PakReader reader, string assetPath)
+        public static PakReader.PakReader GetPakReader(string assetPath)
         {
-            return reader.FileInfos
-                .Where(x => x.Name.Contains(FoldersUtility.GetFullPathWithoutExtension(assetPath)))
-                .Select(x => x);
+            string trigger = Path.HasExtension(assetPath) ? assetPath : assetPath + ".uasset";
+            if (AssetEntries.AssetEntriesDict.ContainsKey(trigger))
+            {
+                return AssetEntries.AssetEntriesDict[trigger];
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// goes from all files in a pak -> to only the ones (uasset, uexp, ubulk) we need to loop to get an asset data
+        /// it's ugly but way better than before when it's about time
+        /// </summary>
+        /// <param name="assetPath"></param>
+        /// <returns></returns>
+        public static List<FPakEntry> GetPakEntries(string assetPath)
+        {
+            if (Path.HasExtension(assetPath))
+            {
+                if (AssetEntries.ArraySearcher.ContainsKey(assetPath))
+                {
+                    return AssetEntries.ArraySearcher[assetPath].Where(x => x.Name == assetPath).Select(x => x).ToList<FPakEntry>();
+                }
+            }
+            else
+            {
+                List<FPakEntry> toReturn = new List<FPakEntry>();
+                if (AssetEntries.ArraySearcher.ContainsKey(assetPath + ".uasset"))
+                {
+                    toReturn.Add(AssetEntries.ArraySearcher[assetPath + ".uasset"].Where(x => x.Name == assetPath + ".uasset").Select(x => x).FirstOrDefault());
+                }
+                if (AssetEntries.ArraySearcher.ContainsKey(assetPath + ".uexp"))
+                {
+                    toReturn.Add(AssetEntries.ArraySearcher[assetPath + ".uexp"].Where(x => x.Name == assetPath + ".uexp").Select(x => x).FirstOrDefault());
+                }
+                if (AssetEntries.ArraySearcher.ContainsKey(assetPath + ".ubulk"))
+                {
+                    toReturn.Add(AssetEntries.ArraySearcher[assetPath + ".ubulk"].Where(x => x.Name == assetPath + ".ubulk").Select(x => x).FirstOrDefault());
+                }
+                return toReturn;
+            }
+            return null;
         }
 
         public static AssetReader GetAssetReader(Stream[] AssetStreamList)
@@ -152,7 +211,7 @@ namespace FModel.Methods.Utilities
             PakReader.PakReader reader = GetPakReader(AssetFullPath);
             if (reader != null)
             {
-                IEnumerable<FPakEntry> entriesList = GetPakEntries(reader, AssetFullPath);
+                List<FPakEntry> entriesList = GetPakEntries(AssetFullPath);
                 Stream[] AssetStreamArray = new Stream[3];
                 foreach (FPakEntry entry in entriesList)
                 {

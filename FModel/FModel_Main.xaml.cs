@@ -1,5 +1,4 @@
-﻿using FindReplace;
-using FModel.Forms;
+﻿using FModel.Forms;
 using FModel.Methods;
 using FModel.Methods.AESManager;
 using FModel.Methods.Assets;
@@ -7,7 +6,6 @@ using FModel.Methods.BackupsManager;
 using FModel.Methods.PAKs;
 using FModel.Methods.TreeViewModel;
 using FModel.Methods.Utilities;
-using ICSharpCode.AvalonEdit.Folding;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -127,6 +125,13 @@ namespace FModel
                 new FModel_Settings().Show();
             }
             else { FormsUtility.GetOpenedWindow<Window>("Settings").Focus(); }
+        }
+        private void MI_Save_Image_Click(object sender, RoutedEventArgs e)
+        {
+            if (ImageBox_Main.Source != null)
+            {
+                ImagesUtility.SaveImageDialog();
+            }
         }
         private void MI_About_Click(object sender, RoutedEventArgs e)
         {

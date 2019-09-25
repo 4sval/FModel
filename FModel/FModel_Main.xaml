@@ -57,8 +57,8 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Image">
-                <MenuItem Header="Save Image"/>
-                <MenuItem Header="Auto Save Images" IsCheckable="True"/>
+                <MenuItem x:Name="MI_Save_Image" Header="Save Image" Click="MI_Save_Image_Click"/>
+                <MenuItem x:Name="MI_Auto_Save_Images" Header="Auto Save Images" IsCheckable="True"/>
                 <Separator/>
                 <MenuItem Header="Merge Images" InputGestureText="F4"/>
             </MenuItem>

@@ -53,7 +53,14 @@ namespace FModel.Methods.Utilities
 
         public static string GetFullPathWithoutExtension(string path)
         {
-            return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), System.IO.Path.GetFileNameWithoutExtension(path)).Replace("\\", "/");
+            return Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path)).Replace("\\", "/");
+        }
+
+        public static string FixFortnitePath(string path)
+        {
+            string fixedPath = path.Replace("Game", "FortniteGame/Content");
+            int sep = fixedPath.LastIndexOf('.');
+            return fixedPath.Substring(0, sep);
         }
     }
 }

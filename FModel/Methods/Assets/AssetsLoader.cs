@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Linq;
 
 namespace FModel.Methods.Assets
@@ -52,7 +51,7 @@ namespace FModel.Methods.Assets
             PakReader.PakReader reader = AssetsUtility.GetPakReader(assetPath);
             if (reader != null)
             {
-                IEnumerable<FPakEntry> entriesList = AssetsUtility.GetPakEntries(reader, assetPath);
+                List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(assetPath);
                 string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList, true);
                 FWindow.FMain.Dispatcher.InvokeAsync(() =>
                 {
@@ -94,13 +93,7 @@ namespace FModel.Methods.Assets
                         case "FortBannerTokenType":
                         case "AthenaGadgetItemDefinition":
                             ImageSource image = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                            if (image != null)
-                            {
-                                FWindow.FMain.Dispatcher.InvokeAsync(() =>
-                                {
-                                    FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)image); //thread safe and fast af
-                                });
-                            }
+                            ImagesUtility.LoadImageAfterExtraction(image);
                             break;
                         case "FortWeaponRangedItemDefinition":
                         case "FortWeaponMeleeItemDefinition":
