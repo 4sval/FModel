@@ -188,6 +188,7 @@ namespace PakReader
 
         internal static string read_fname(BinaryReader reader, FNameEntrySerialized[] name_map)
         {
+            //long index_pos = reader.BaseStream.Position;
             int name_index = reader.ReadInt32();
             reader.ReadInt32();
             return name_map[name_index].data;
@@ -335,6 +336,8 @@ namespace PakReader
                     return (FPropertyTagType.ByteProperty, (string)tag_data == "None" ? (object)reader.ReadByte() : read_fname(reader, name_map));
                 case "EnumProperty":
                     return (FPropertyTagType.EnumProperty, (string)tag_data == "None" ? null : read_fname(reader, name_map));
+                case "DelegateProperty":
+                    return (FPropertyTagType.DelegateProperty, new FScriptDelegate(reader, name_map));
                 case "SoftObjectProperty":
                     return (FPropertyTagType.SoftObjectProperty, new FSoftObjectPath(reader, name_map));
                 default:
@@ -575,6 +578,7 @@ namespace PakReader
 
         public struct FTexture2DMipMap
         {
+            [JsonIgnore]
             public FByteBulkData data;
             public int size_x;
             public int size_y;
@@ -1719,6 +1723,8 @@ namespace PakReader
                     return reader.ReadByte();
                 case "EnumProperty":
                     return read_fname(reader, name_map);
+                case "IntProperty":
+                    return reader.ReadInt32();
                 case "UInt32Property":
                     return reader.ReadUInt32();
                 case "StructProperty":
@@ -1727,6 +1733,8 @@ namespace PakReader
                     return read_fname(reader, name_map);
                 case "ObjectProperty":
                     return new FPackageIndex(reader, import_map);
+                case "SoftObjectProperty":
+                    return (FPropertyTagType.SoftObjectPropertyMap, new FGuid(reader));
                 case "StrProperty":
                     return read_string(reader);
                 case "TextProperty":
@@ -1755,7 +1763,9 @@ namespace PakReader
         MapProperty,
         ByteProperty,
         EnumProperty,
+        DelegateProperty,
         SoftObjectProperty,
+        SoftObjectPropertyMap,
     }
 
     public struct FPropertyTag
@@ -2117,6 +2127,30 @@ namespace PakReader
             pitch = reader.ReadSingle();
             yaw = reader.ReadSingle();
             roll = reader.ReadSingle();
+        }
+    }
+
+    public struct FScriptDelegate
+    {
+        public int obj;
+        public string name;
+
+        internal FScriptDelegate(BinaryReader reader, FNameEntrySerialized[] name_map)
+        {
+            obj = reader.ReadInt32();
+            name = read_fname(reader, name_map);
+        }
+    }
+
+    public struct FSoftObjectPathMap
+    {
+        public string asset_path_name;
+        public string sub_path_string;
+
+        internal FSoftObjectPathMap(BinaryReader reader, FNameEntrySerialized[] name_map)
+        {
+            asset_path_name = read_fname(reader, name_map);
+            sub_path_string = read_string(reader);
         }
     }
 

@@ -28,9 +28,14 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
             else
             {
                 JToken largePreviewImage = AssetProperties.Where(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage")).FirstOrDefault();
-                if (largePreviewImage != null)
+                JToken smallPreviewImage = AssetProperties.Where(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage")).FirstOrDefault();
+                if (largePreviewImage != null || smallPreviewImage != null)
                 {
-                    JToken assetPathName = largePreviewImage["tag_data"]["asset_path_name"];
+                    JToken assetPathName = 
+                        largePreviewImage != null ? largePreviewImage["tag_data"]["asset_path_name"] : 
+                        smallPreviewImage != null ? smallPreviewImage["tag_data"]["asset_path_name"] : 
+                        null;
+
                     if (assetPathName != null)
                     {
                         string texturePath = FoldersUtility.FixFortnitePath(assetPathName.Value<string>());
@@ -73,9 +78,14 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                     {
                         JArray pArray = AssetMainToken["properties"].Value<JArray>();
                         JToken largePreviewImage = pArray.Where(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage")).FirstOrDefault();
-                        if (largePreviewImage != null)
+                        JToken smallPreviewImage = pArray.Where(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage")).FirstOrDefault();
+                        if (largePreviewImage != null || smallPreviewImage != null)
                         {
-                            JToken assetPathName = largePreviewImage["tag_data"]["asset_path_name"];
+                            JToken assetPathName = 
+                                largePreviewImage != null ? largePreviewImage["tag_data"]["asset_path_name"] : 
+                                smallPreviewImage != null ? smallPreviewImage["tag_data"]["asset_path_name"] : 
+                                null;
+
                             if (assetPathName != null)
                             {
                                 string texturePath = FoldersUtility.FixFortnitePath(assetPathName.Value<string>());

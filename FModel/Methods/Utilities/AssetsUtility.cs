@@ -171,13 +171,24 @@ namespace FModel.Methods.Utilities
             {
                 if (loadImageInBox)
                 {
-                    ImageSource image = GetTexture2D(ar);
-                    if (image != null)
+                    ExportObject eo = ar.Exports.Where(x => x is Texture2D).FirstOrDefault();
+                    if (eo != null)
                     {
-                        FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                        Texture2D tex = (Texture2D)eo;
+                        SKImage image = tex.GetImage();
+                        if (image != null)
                         {
-                            FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)image); //thread safe and fast af
-                        });
+                            using (var data = image.Encode())
+                            using (var stream = data.AsStream())
+                            {
+                                ImageSource img = ImagesUtility.GetImageSource(stream);
+                                FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                                {
+                                    FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)img); //thread safe and fast af
+                                });
+                            }
+                        }
+                        return JsonConvert.SerializeObject(tex.textures, Formatting.Indented);
                     }
                 }
 
@@ -185,25 +196,6 @@ namespace FModel.Methods.Utilities
             }
 
             return string.Empty;
-        }
-
-        public static ImageSource GetTexture2D(AssetReader ar)
-        {
-            ExportObject eo = ar.Exports.Where(x => x is Texture2D).FirstOrDefault();
-            if (eo != null)
-            {
-                SKImage image = ((Texture2D)eo).GetImage();
-                if (image != null)
-                {
-                    using (var data = image.Encode())
-                    using (var stream = data.AsStream())
-                    {
-                        return ImagesUtility.GetImageSource(stream);
-                    }
-                }
-            }
-
-            return null;
         }
 
         public static Stream GetStreamImageFromPath(string AssetFullPath)

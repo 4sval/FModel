@@ -25,12 +25,13 @@ namespace FModel.Methods.Utilities
         {
             if (image != null)
             {
+                string name = FWindow.FCurrentAsset; //FCurrentAsset isn't upated inside Dispatcher.InvokeAsync so we put this in another string outside of the dispatcher
                 FWindow.FMain.Dispatcher.InvokeAsync(() =>
                 {
                     FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)image); //thread safe and fast af
 
                     if (FWindow.FMain.MI_Auto_Save_Images.IsChecked) //auto save images
-                        SaveImage(FProp.Default.FOutput_Path + "\\Icons\\" + FWindow.FCurrentAsset + ".png");
+                        SaveImage(FProp.Default.FOutput_Path + "\\Icons\\" + name + ".png");
                 });
             }
         }
