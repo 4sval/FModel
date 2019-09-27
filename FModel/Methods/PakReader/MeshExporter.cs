@@ -294,7 +294,7 @@ namespace PakReader
     struct VBone
     {
         public byte[] Name; // 64 length char array
-        public uint Flags;
+        //public uint Flags;
         public int NumChildren;
         public int ParentIndex; // 0 if this is the root bone.
         public VJointPosPsk BonePos;
@@ -302,7 +302,7 @@ namespace PakReader
         public void Write(BinaryWriter writer)
         {
             writer.Write(Name);
-            writer.Write(Flags);
+            //writer.Write(Flags);
             writer.Write(NumChildren);
             writer.Write(ParentIndex);
             BonePos.Write(writer);
@@ -313,14 +313,14 @@ namespace PakReader
     {
         public FQuat Orientation;
         public FVector Position;
-        public float Length;
+        //public float Length;
         public FVector Size;
 
         public void Write(BinaryWriter writer)
         {
             Orientation.Write(writer);
             Position.Write(writer);
-            writer.Write(Length);
+            //writer.Write(Length);
             Size.Write(writer);
         }
     }
@@ -398,21 +398,21 @@ namespace PakReader
     {
         public byte[] MaterialName; // 64 length char array
         public int TextureIndex;
-        public uint PolyFrags;
-        public int AuxMaterial;
-        public uint AuxFlags;
-        public int LodBias;
-        public int LodStyle;
+        //public uint PolyFrags;
+        //public int AuxMaterial;
+        //public uint AuxFlags;
+        //public int LodBias;
+        //public int LodStyle;
 
         public void Write(BinaryWriter writer)
         {
             writer.Write(MaterialName);
             writer.Write(TextureIndex);
-            writer.Write(PolyFrags);
-            writer.Write(AuxMaterial);
-            writer.Write(AuxFlags);
-            writer.Write(LodBias);
-            writer.Write(LodStyle);
+            //writer.Write(PolyFrags);
+            //writer.Write(AuxMaterial);
+            //writer.Write(AuxFlags);
+            //writer.Write(LodBias);
+            //writer.Write(LodStyle);
         }
     }
 
@@ -477,7 +477,7 @@ namespace PakReader
                 // get vertex count and determine vertex source
                 int VertexCount = SrcLod.VertexBufferGPUSkin.GetVertexCount();
 
-                bool bUseVerticesFromSections = false;
+                //bool bUseVerticesFromSections = false;
                 // if (VertexCount == 0 && SrcLod.Sections.Length > 0 && SrcLod.Sections[0].SoftVertices.Count > 0)
                 // above is used for editor assets, but there are no chunks for soft vertices
 
@@ -485,7 +485,7 @@ namespace PakReader
 
                 int chunkIndex = -1;
                 int lastChunkVertex = -1;
-                int chunkVertexIndex = 0;
+                //int chunkVertexIndex = 0;
 
                 ushort[] BoneMap = null;
 
@@ -497,7 +497,7 @@ namespace PakReader
                         FSkelMeshSection S = SrcLod.Sections[++chunkIndex];
                         lastChunkVertex = (int)(S.base_vertex_index + S.num_vertices);
                         BoneMap = S.bone_map;
-                        chunkVertexIndex = 0;
+                        //chunkVertexIndex = 0;
                     }
 
                     // get vertex from GPU skin
@@ -1150,9 +1150,9 @@ namespace PakReader
 
         public bool Equals(CPackedNormal other) => other.Data == Data;
 
-        public static bool operator ==(CPackedNormal a, CPackedNormal b) => a.Equals(b);
+        //public static bool operator ==(CPackedNormal a, CPackedNormal b) => a.Equals(b);
 
-        public static bool operator !=(CPackedNormal a, CPackedNormal b) => !a.Equals(b);
+        //public static bool operator !=(CPackedNormal a, CPackedNormal b) => !a.Equals(b);
 
         public void Pack(CVec3 Unpacked)
         {
@@ -1298,13 +1298,13 @@ namespace PakReader
                 % Hash.Length);
             
             // find point with the same position and normal
-            for (PointIndex = Hash[h]; PointIndex >= 0; PointIndex = HashNext[PointIndex])
+            /*for (PointIndex = Hash[h]; PointIndex >= 0; PointIndex = HashNext[PointIndex])
             {
                 if (Points[PointIndex] == Pos && Normals[PointIndex] == Normal && ExtraInfos[PointIndex] == ExtraInfo)
                 {
                     break;      // found it
                 }
-            }
+            }*/
 
             if (PointIndex == -1)
             {

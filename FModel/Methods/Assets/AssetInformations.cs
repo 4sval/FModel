@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace FModel.Methods.Assets
 {
-    class AssetInformations
+    static class AssetInformations
     {
         public static void OpenAssetInfos()
         {

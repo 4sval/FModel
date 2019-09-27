@@ -61,8 +61,7 @@ namespace FModel.Methods.Utilities
             }
             finally
             {
-                if (stream != null)
-                    stream.Close();
+                if (stream != null) { stream.Close(); }
             }
 
             return false;

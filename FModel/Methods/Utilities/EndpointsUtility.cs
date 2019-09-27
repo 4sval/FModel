@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace FModel.Methods.Utilities
 {
-    class EndpointsUtility
+    static class EndpointsUtility
     {
         public static string GetEndpoint(string url)
         {

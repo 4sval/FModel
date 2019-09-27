@@ -2,9 +2,9 @@
 
 namespace FModel.Commands
 {
-    class FModel_Commands
+    static class FModel_Commands
     {
-        public static RoutedUICommand OpenSettings = new RoutedUICommand("Open Settings Window", "OpenSettings", typeof(MainWindow));
-        public static RoutedUICommand OpenOutput = new RoutedUICommand("Open Output Folder", "OpenOutput", typeof(MainWindow));
+        public static readonly RoutedUICommand OpenSettings = new RoutedUICommand("Open Settings Window", "OpenSettings", typeof(MainWindow));
+        public static readonly RoutedUICommand OpenOutput = new RoutedUICommand("Open Output Folder", "OpenOutput", typeof(MainWindow));
     }
 }

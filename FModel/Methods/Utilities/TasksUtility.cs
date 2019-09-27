@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace FModel.Methods.Utilities
 {
-    class TasksUtility
+    static class TasksUtility
     {
         public static CancellationTokenSource CancellableTaskTokenSource { get; set; }
 

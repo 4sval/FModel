@@ -5,7 +5,7 @@ using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.AESManager
 {
-    class KeysManager
+    static class KeysManager
     {
         private static XmlSerializer serializer = new XmlSerializer(typeof(List<AESInfosEntry>));
         private static readonly string AESManager_PATH = FProp.Default.FOutput_Path + "\\FAESManager.xml";
@@ -14,7 +14,7 @@ namespace FModel.Methods.AESManager
         {
             Directory.CreateDirectory(Path.GetDirectoryName(AESManager_PATH));
 
-            AESEntries.AESEntriesList.Add(new AESInfosEntry()
+            AESEntries.AESEntriesList.Add(new AESInfosEntry
             {
                 ThePAKName = PAKName,
                 ThePAKKey = PAKKey

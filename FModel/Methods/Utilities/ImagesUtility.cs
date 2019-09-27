@@ -6,7 +6,7 @@ using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Utilities
 {
-    class ImagesUtility
+    static class ImagesUtility
     {
         public static ImageSource GetImageSource(Stream stream)
         {
@@ -31,7 +31,9 @@ namespace FModel.Methods.Utilities
                     FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)image); //thread safe and fast af
 
                     if (FWindow.FMain.MI_Auto_Save_Images.IsChecked) //auto save images
+                    {
                         SaveImage(FProp.Default.FOutput_Path + "\\Icons\\" + name + ".png");
+                    }
                 });
             }
         }
@@ -44,7 +46,9 @@ namespace FModel.Methods.Utilities
             saveFileDialog.InitialDirectory = FProp.Default.FOutput_Path + "\\Icons\\";
             saveFileDialog.Filter = "PNG Files (*.png)|*.png";
             if (saveFileDialog.ShowDialog() == true)
+            {
                 SaveImage(saveFileDialog.FileName);
+            }
         }
 
         public static void SaveImage(string path)

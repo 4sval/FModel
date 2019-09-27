@@ -8,11 +8,11 @@ using System.Windows.Controls;
 
 namespace FModel.Methods.Utilities
 {
-    class ListBoxUtility
+    static class ListBoxUtility
     {
         public static List<IEnumerable<string>> FilesListWithoutPath { get; set; }
 
-        public static async void PopulateListBox(TreeViewItem sItem)
+        public static async Task PopulateListBox(TreeViewItem sItem)
         {
             FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
@@ -77,7 +77,7 @@ namespace FModel.Methods.Utilities
             }
         }
 
-        public static async void FilterListBox()
+        public static async Task FilterListBox()
         {
             FWindow.FMain.ListBox_Main.Items.Clear();
             string FilterText = FWindow.FMain.FilterTextBox_Main.Text;

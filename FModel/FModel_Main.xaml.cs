@@ -93,30 +93,30 @@ namespace FModel
                 else { new UpdateMyProcessEvents("This is odd!\tCanceled but not requested. You should never see this tbh", "Yikes").Update(); }
             }
         }
-        private void Button_Extract_Click(object sender, RoutedEventArgs e)
+        private async void Button_Extract_Click(object sender, RoutedEventArgs e)
         {
             if (ListBox_Main.SelectedIndex >= 0)
             {
                 //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
-                AssetsLoader.LoadSelectedAsset();
+                await AssetsLoader.LoadSelectedAsset();
             }
         }
         #endregion
 
         #region MENU ITEM EVENTS
-        public void MI_Pak_Click(object sender, RoutedEventArgs e)
+        public async void MI_Pak_Click(object sender, RoutedEventArgs e)
         {
             FWindow.FCurrentPAK = (sender as MenuItem).Header.ToString();
-            PAKsLoader.LoadOnePAK();
+            await PAKsLoader.LoadOnePAK();
         }
-        private void MI_LoadAllPAKs_Click(object sender, RoutedEventArgs e)
+        private async void MI_LoadAllPAKs_Click(object sender, RoutedEventArgs e)
         {
             FWindow.FCurrentPAK = string.Empty;
-            PAKsLoader.LoadAllPAKs();
+            await PAKsLoader.LoadAllPAKs();
         }
-        private void MI_BackupPAKs_Click(object sender, RoutedEventArgs e)
+        private async void MI_BackupPAKs_Click(object sender, RoutedEventArgs e)
         {
-            BackupPAKs.CreateBackupFile();
+            await BackupPAKs.CreateBackupFile();
         }
         private void MI_Settings_Click(object sender, RoutedEventArgs e)
         {
@@ -148,13 +148,13 @@ namespace FModel
         #endregion
 
         #region TREEVIEW EVENTS
-        private void NodeSelected(object sender, RoutedEventArgs e)
+        private async void NodeSelected(object sender, RoutedEventArgs e)
         {
             TreeViewItem currContainer = e.OriginalSource as TreeViewItem;
             if (currContainer != null)
             {
                 FWindow.TVItem = currContainer;
-                ListBoxUtility.PopulateListBox(currContainer);
+                await ListBoxUtility.PopulateListBox(currContainer);
             }
 
         }
@@ -165,24 +165,24 @@ namespace FModel
         {
             Button_Extract.IsEnabled = ListBox_Main.SelectedIndex >= 0;
         }
-        private void ListBox_Main_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private async void ListBox_Main_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {   
             if (ListBox_Main.SelectedIndex >= 0)
             {
                 //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
-                AssetsLoader.LoadSelectedAsset();
+                await AssetsLoader.LoadSelectedAsset();
             }
         }
-        private void FilterTextBox_Main_TextChanged(object sender, TextChangedEventArgs e)
+        private async void FilterTextBox_Main_TextChanged(object sender, TextChangedEventArgs e)
         {
-            ListBoxUtility.FilterListBox();
+            await ListBoxUtility.FilterListBox();
         }
-        private void RC_Extract_Click(object sender, RoutedEventArgs e)
+        private async void RC_Extract_Click(object sender, RoutedEventArgs e)
         {
             if (ListBox_Main.SelectedIndex >= 0)
             {
                 //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
-                AssetsLoader.LoadSelectedAsset();
+                await AssetsLoader.LoadSelectedAsset();
             }
         }
         private void RC_Copy_FPath_Click(object sender, RoutedEventArgs e)

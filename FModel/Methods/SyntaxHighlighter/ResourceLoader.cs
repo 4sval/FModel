@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace FModel.Methods.SyntaxHighlighter
 {
-    class ResourceLoader
+    static class ResourceLoader
     {
         public static IHighlightingDefinition LoadHighlightingDefinition(string resourceName)
         {

@@ -10,18 +10,18 @@ namespace FModel.Methods.Utilities
 {
     class CColors
     {
-        public static string Blue = "#6495ED";
-        public static string Red = "#ED6464";
-        public static string White = "#EFEFEF";
-        public static string ChallengeDescription = "RoyalBlue";
-        public static string ChallengeCount = "Goldenrod";
-        public static string ChallengeReward = "Crimson";
+        public static readonly string Blue = "#6495ED";
+        public static readonly string Red = "#ED6464";
+        public static readonly string White = "#EFEFEF";
+        public static readonly string ChallengeDescription = "RoyalBlue";
+        public static readonly string ChallengeCount = "Goldenrod";
+        public static readonly string ChallengeReward = "Crimson";
     }
 
     class UpdateMyProcessEvents
     {
         private string _textToDisplay;
-        private string _stateText;
+        private readonly string _stateText;
         public UpdateMyProcessEvents(string textToDisplay, string stateText)
         {
             _textToDisplay = textToDisplay;
@@ -48,6 +48,8 @@ namespace FModel.Methods.Utilities
                     case "Success":
                         FWindow.FMain.StateTextBlock.Background = new SolidColorBrush(Color.FromRgb(0, 158, 63));
                         break;
+                    default:
+                        break;
                 }
             });
         }
@@ -55,9 +57,9 @@ namespace FModel.Methods.Utilities
 
     class UpdateMyConsole
     {
-        private string _textToDisplay;
-        private bool _newLine;
-        private string _displayedColor;
+        private readonly string _textToDisplay;
+        private readonly bool _newLine;
+        private readonly string _displayedColor;
         public UpdateMyConsole(string textToDisplay, string displayedColor, bool newLine = false)
         {
             _textToDisplay = textToDisplay;
@@ -77,7 +79,7 @@ namespace FModel.Methods.Utilities
                     tr.ApplyPropertyValue(TextElement.ForegroundProperty,
                         bc.ConvertFromString(_displayedColor));
                 }
-                catch (FormatException) { }
+                catch (FormatException) { /* */ }
                 FWindow.FMain.ConsoleBox_Main.ScrollToEnd();
             });
         }
@@ -92,7 +94,7 @@ namespace FModel.Methods.Utilities
         {
             public TextEditorAdapter(TextEditor editor) { te = editor; }
 
-            TextEditor te;
+            readonly TextEditor te;
             public string Text { get { return te.Text; } }
             public int SelectionStart { get { return te.SelectionStart; } }
             public int SelectionLength { get { return te.SelectionLength; } }
@@ -127,7 +129,7 @@ namespace FModel.Methods.Utilities
         }
     }
 
-    class UIHelper
+    static class UIHelper
     {
         public static void DisplayError(string pak = null, string key = null)
         {
@@ -159,7 +161,7 @@ namespace FModel.Methods.Utilities
         public static T FindChild<T>(DependencyObject parent, string childName) where T : DependencyObject
         {
             // Confirm parent and childName are valid. 
-            if (parent == null) return null;
+            if (parent == null) { return null; }
 
             T foundChild = null;
 
@@ -175,7 +177,7 @@ namespace FModel.Methods.Utilities
                     foundChild = FindChild<T>(child, childName);
 
                     // If the child is found, break so we do not overwrite the found child. 
-                    if (foundChild != null) break;
+                    if (foundChild != null) { break; }
                 }
                 else if (!string.IsNullOrEmpty(childName))
                 {

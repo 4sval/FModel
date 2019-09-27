@@ -2,11 +2,16 @@
 
 namespace FModel.Methods.Utilities
 {
-    class AESUtility
+    static class AESUtility
     {
+        public static bool IsOdd(int x)
+        {
+            return x % 2 != 0;
+        }
+
         public static byte[] StringToByteArray(string hex)
         {
-            if (hex.Length % 2 == 1) { throw new Exception("The binary key cannot have an odd number of digits"); }
+            if (IsOdd(hex.Length)) { throw new ArgumentException("The binary key cannot have an odd number of digits"); }
 
             byte[] arr = new byte[hex.Length >> 1];
             for (int i = 0; i < hex.Length >> 1; ++i)

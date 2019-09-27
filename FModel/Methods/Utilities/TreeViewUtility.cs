@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace FModel.Methods.Utilities
 {
-    class TreeViewUtility
+    static class TreeViewUtility
     {
         /// <summary>
         /// To get the full path of the TreeViewItem

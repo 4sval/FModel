@@ -7,10 +7,10 @@ using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.AESManager
 {
-    class DynamicKeysChecker
+    static class DynamicKeysChecker
     {
         private static readonly string AESManager_PATH = FProp.Default.FOutput_Path + "\\FAESManager.xml";
-        private static List<AESInfosEntry> _oldAESEntriesList = null;
+        private static List<AESInfosEntry> _oldAESEntriesList;
 
         public static void SetDynamicKeys()
         {
@@ -55,11 +55,11 @@ namespace FModel.Methods.AESManager
             {
                 string AESKey = BitConverter.ToString(Convert.FromBase64String(AESPart)).Replace("-", "");
 
-                KeysManager.Serialize(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), AESKey.ToUpper());
+                KeysManager.Serialize(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), AESKey.ToUpperInvariant());
 
                 if (_oldAESEntriesList != null)
                 {
-                    if (!_oldAESEntriesList.Where(x => string.Equals(x.ThePAKKey, AESKey.ToUpper())).Any())
+                    if (!_oldAESEntriesList.Where(x => string.Equals(x.ThePAKKey, AESKey.ToUpperInvariant())).Any())
                     {
                         new UpdateMyConsole(Path.GetFileName(Pak.ThePAKPath), CColors.Blue).Append();
                         new UpdateMyConsole(" can now be opened.", CColors.White, true).Append();

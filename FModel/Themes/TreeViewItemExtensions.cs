@@ -21,7 +21,7 @@ namespace DarkBlendTheme
 				
             while (!(parent is TreeViewItem || parent is TreeView))
             {
-				if (parent == null) return null;
+                if (parent == null) { return null; }
                 parent = VisualTreeHelper.GetParent(parent);
             }
             return parent as TreeViewItem;

@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 
 namespace FModel.Methods.Utilities
 {
-    class AssetsUtility
+    static class AssetsUtility
     {
         public static string GetAssetPathToCopy(bool isName = false, bool withExtension = true)
         {
@@ -21,11 +21,9 @@ namespace FModel.Methods.Utilities
 
             path = path.Contains(".") ? path : path + ".uasset";
 
-            if (isName)
-                path = Path.GetFileName(path);
+            if (isName) { path = Path.GetFileName(path); }
 
-            if (!withExtension)
-                path = isName ? Path.GetFileNameWithoutExtension(path) : FoldersUtility.GetFullPathWithoutExtension(path);
+            if (!withExtension) { path = isName ? Path.GetFileNameWithoutExtension(path) : FoldersUtility.GetFullPathWithoutExtension(path); }
 
             new UpdateMyConsole(path, CColors.Blue).Append();
             new UpdateMyConsole(" Copied!", CColors.White, true).Append();
@@ -149,19 +147,18 @@ namespace FModel.Methods.Utilities
                             return JsonConvert.SerializeObject(new UDicFile(r).Header, Formatting.Indented);
                     case ".bin":
                         if (string.Equals(entry.Name, "/FortniteGame/AssetRegistry.bin") || !entry.Name.Contains("AssetRegistry")) //MEMORY ISSUE
+                        {
                             break;
+                        }
 
                         using (var s = reader.GetPackageStream(entry))
                             return JsonConvert.SerializeObject(new AssetRegistryFile(s), Formatting.Indented);
                     default:
-                        if (entry.Name.EndsWith(".uasset"))
-                            AssetStreamArray[0] = reader.GetPackageStream(entry);
+                        if (entry.Name.EndsWith(".uasset")) { AssetStreamArray[0] = reader.GetPackageStream(entry); }
 
-                        if (entry.Name.EndsWith(".uexp"))
-                            AssetStreamArray[1] = reader.GetPackageStream(entry);
+                        if (entry.Name.EndsWith(".uexp")) { AssetStreamArray[1] = reader.GetPackageStream(entry); }
 
-                        if (entry.Name.EndsWith(".ubulk"))
-                            AssetStreamArray[2] = reader.GetPackageStream(entry);
+                        if (entry.Name.EndsWith(".ubulk")) { AssetStreamArray[2] = reader.GetPackageStream(entry); }
                         break;
                 }
             }

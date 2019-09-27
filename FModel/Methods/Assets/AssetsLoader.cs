@@ -11,9 +11,9 @@ using System.Linq;
 
 namespace FModel.Methods.Assets
 {
-    class AssetsLoader
+    static class AssetsLoader
     {
-        public static async void LoadSelectedAsset()
+        public static async Task LoadSelectedAsset()
         {
             FWindow.FMain.Button_Extract.IsEnabled = false;
             FWindow.FMain.Button_Stop.IsEnabled = true;
@@ -136,8 +136,6 @@ namespace FModel.Methods.Assets
                         case "FortSchematicItemDefinition":
                             break;
                         case "SoundWave":
-                            break;
-                        default:
                             break;
                     }
                 }

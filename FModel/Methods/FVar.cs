@@ -8,7 +8,7 @@ namespace FModel.Methods
 {
     static class FWindow
     {
-        public static MainWindow FMain = null;
+        public static MainWindow FMain;
         public static TreeViewItem TVItem { get; set; }
         public static string FCurrentPAK { get; set; }
         public static string FCurrentAsset { get; set; }

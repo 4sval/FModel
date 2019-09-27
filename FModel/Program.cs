@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace FModel
 {
-    class Program
+    static class Program
     {
         [STAThreadAttribute]
         public static void Main()

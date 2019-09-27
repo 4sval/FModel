@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace FModel.Methods.Assets.IconCreator.AthenaID
 {
-    class IconImage
+    static class IconImage
     {
         public static void DrawIconImage(JArray AssetProperties)
         {
@@ -27,28 +27,7 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
             }
             else
             {
-                JToken largePreviewImage = AssetProperties.Where(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage")).FirstOrDefault();
-                JToken smallPreviewImage = AssetProperties.Where(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage")).FirstOrDefault();
-                if (largePreviewImage != null || smallPreviewImage != null)
-                {
-                    JToken assetPathName = 
-                        largePreviewImage != null ? largePreviewImage["tag_data"]["asset_path_name"] : 
-                        smallPreviewImage != null ? smallPreviewImage["tag_data"]["asset_path_name"] : 
-                        null;
-
-                    if (assetPathName != null)
-                    {
-                        string texturePath = FoldersUtility.FixFortnitePath(assetPathName.Value<string>());
-                        using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
-                        {
-                            if (image != null)
-                            {
-                                SKRect rect = new SKRect(3, 3, 512, 512);
-                                IconCreator.ICCanvas.DrawBitmap(SKBitmap.Decode(image), rect);
-                            }
-                        }
-                    }
-                }
+                DrawLargeSmallImage(AssetProperties);
             }
         }
 
@@ -76,28 +55,32 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
 
                     if (AssetMainToken != null)
                     {
-                        JArray pArray = AssetMainToken["properties"].Value<JArray>();
-                        JToken largePreviewImage = pArray.Where(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage")).FirstOrDefault();
-                        JToken smallPreviewImage = pArray.Where(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage")).FirstOrDefault();
-                        if (largePreviewImage != null || smallPreviewImage != null)
-                        {
-                            JToken assetPathName = 
-                                largePreviewImage != null ? largePreviewImage["tag_data"]["asset_path_name"] : 
-                                smallPreviewImage != null ? smallPreviewImage["tag_data"]["asset_path_name"] : 
-                                null;
+                        JArray AssetProperties = AssetMainToken["properties"].Value<JArray>();
+                        DrawLargeSmallImage(AssetProperties);
+                    }
+                }
+            }
+        }
 
-                            if (assetPathName != null)
-                            {
-                                string texturePath = FoldersUtility.FixFortnitePath(assetPathName.Value<string>());
-                                using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
-                                {
-                                    if (image != null)
-                                    {
-                                        SKRect rect = new SKRect(3, 3, 512, 512);
-                                        IconCreator.ICCanvas.DrawBitmap(SKBitmap.Decode(image), rect);
-                                    }
-                                }
-                            }
+        private static void DrawLargeSmallImage(JArray propertiesArray)
+        {
+            JToken largePreviewImage = propertiesArray.Where(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage")).FirstOrDefault();
+            JToken smallPreviewImage = propertiesArray.Where(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage")).FirstOrDefault();
+            if (largePreviewImage != null || smallPreviewImage != null)
+            {
+                JToken assetPathName =
+                    largePreviewImage != null ? largePreviewImage["tag_data"]["asset_path_name"] :
+                    smallPreviewImage != null ? smallPreviewImage["tag_data"]["asset_path_name"] : null;
+
+                if (assetPathName != null)
+                {
+                    string texturePath = FoldersUtility.FixFortnitePath(assetPathName.Value<string>());
+                    using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
+                    {
+                        if (image != null)
+                        {
+                            SKRect rect = new SKRect(3, 3, 512, 512);
+                            IconCreator.ICCanvas.DrawBitmap(SKBitmap.Decode(image), rect);
                         }
                     }
                 }

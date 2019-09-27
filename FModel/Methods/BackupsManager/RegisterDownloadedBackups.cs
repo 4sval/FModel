@@ -9,7 +9,7 @@ using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.BackupsManager
 {
-    class RegisterDownloadedBackups
+    static class RegisterDownloadedBackups
     {
         private static List<BackupInfosEntry> BackupsFromDropbox { get; set; }
         private static readonly string OUTPUT_PATH = FProp.Default.FOutput_Path;
@@ -46,7 +46,7 @@ namespace FModel.Methods.BackupsManager
                         new UpdateMyProcessEvents($"Downloading {Backup.TheFileName}", "Waiting").Update();
 
                         RestClient EndpointClient = new RestClient(Backup.TheFileDownload);
-                        RestRequestAsyncHandle asyncHandle = EndpointClient.ExecuteAsync(new RestRequest(Method.GET), response => {
+                        EndpointClient.ExecuteAsync(new RestRequest(Method.GET), response => {
                             File.WriteAllText($"{OUTPUT_PATH}\\Backup\\{BackupFileName}", response.Content); //FILE WILL ALWAYS EXIST
                             if (new FileInfo($"{OUTPUT_PATH}\\Backup\\{BackupFileName}").Length > 0) //HENCE WE CHECK THE LENGTH
                             {

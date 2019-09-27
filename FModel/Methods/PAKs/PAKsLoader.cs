@@ -10,12 +10,12 @@ using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.PAKs
 {
-    class PAKsLoader
+    static class PAKsLoader
     {
         private static readonly string PAK_PATH = FProp.Default.FPak_Path;
         private static SortedTreeViewWindowViewModel srt { get; set; }
 
-        public static async void LoadOnePAK()
+        public static async Task LoadOnePAK()
         {
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
@@ -41,7 +41,7 @@ namespace FModel.Methods.PAKs
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = true;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
         }
-        public static async void LoadAllPAKs()
+        public static async Task LoadAllPAKs()
         {
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
@@ -117,7 +117,7 @@ namespace FModel.Methods.PAKs
                         }
                     }
 
-                    if (AESKey != null && !string.IsNullOrEmpty(AESFromManager))
+                    if (AESKey != null)
                     {
                         PakReader.PakReader reader = null;
                         try

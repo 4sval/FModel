@@ -24,30 +24,15 @@ namespace FModel.Methods.PAKs
                         if (PAKsUtility.GetPAKVersion(Pak) == 8)
                         {
                             string PAKGuid = PAKsUtility.GetPAKGuid(Pak);
-                            if (string.Equals(PAKGuid, "0-0-0-0")) //MAIN PAK FILES
+                            PAKEntries.PAKEntriesList.Add(new PAKInfosEntry(Pak, PAKGuid, string.Equals(PAKGuid, "0-0-0-0") ? false : true));
+                            FWindow.FMain.Dispatcher.InvokeAsync(() =>
                             {
-                                PAKEntries.PAKEntriesList.Add(new PAKInfosEntry(Pak, PAKGuid, false));
-                                FWindow.FMain.Dispatcher.InvokeAsync(() =>
-                                {
-                                    MenuItem MI_Pak = new MenuItem();
-                                    MI_Pak.Header = Path.GetFileName(Pak);
-                                    MI_Pak.Click += new RoutedEventHandler(FWindow.FMain.MI_Pak_Click);
+                                MenuItem MI_Pak = new MenuItem();
+                                MI_Pak.Header = Path.GetFileName(Pak);
+                                MI_Pak.Click += new RoutedEventHandler(FWindow.FMain.MI_Pak_Click);
 
-                                    FWindow.FMain.MI_LoadOnePAK.Items.Add(MI_Pak);
-                                });
-                            }
-                            else if (!string.Equals(PAKGuid, "0-0-0-0")) //DYNAMIC PAK FILES
-                            {
-                                PAKEntries.PAKEntriesList.Add(new PAKInfosEntry(Pak, PAKGuid, true));
-                                FWindow.FMain.Dispatcher.InvokeAsync(() =>
-                                {
-                                    MenuItem MI_Pak = new MenuItem();
-                                    MI_Pak.Header = Path.GetFileName(Pak);
-                                    MI_Pak.Click += new RoutedEventHandler(FWindow.FMain.MI_Pak_Click);
-
-                                    FWindow.FMain.MI_LoadOnePAK.Items.Add(MI_Pak);
-                                });
-                            }
+                                FWindow.FMain.MI_LoadOnePAK.Items.Add(MI_Pak);
+                            });
                         }
                         else { new UpdateMyProcessEvents($"Unsupported .PAK Version for {Path.GetFileName(Pak)}", "Error").Update(); }
                     }

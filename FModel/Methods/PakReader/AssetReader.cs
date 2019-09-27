@@ -2080,9 +2080,9 @@ namespace PakReader
 
         public bool Equals(FVector other) => other.X == X && other.Y == Y && other.Z == Z;
 
-        public static bool operator ==(FVector a, FVector b) => a.Equals(b);
+        //public static bool operator ==(FVector a, FVector b) => a.Equals(b);
 
-        public static bool operator !=(FVector a, FVector b) => !a.Equals(b);
+        //public static bool operator !=(FVector a, FVector b) => !a.Equals(b);
 
         public static implicit operator CVec3(FVector me) => new CVec3
         {

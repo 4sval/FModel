@@ -1,15 +1,12 @@
 ﻿using FModel.Methods.Utilities;
 using Newtonsoft.Json.Linq;
-using PakReader;
 using SkiaSharp;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets.IconCreator
 {
-    class Rarity
+    static class Rarity
     {
         public static void DrawRarityBackground(JArray AssetProperties)
         {
@@ -30,6 +27,8 @@ namespace FModel.Methods.Assets.IconCreator
                     case "DCUSeries":
                         DrawBackground(SKColor.Parse("#2D445D"), SKColor.Parse("#101928"), SKColor.Parse("#3E5E7A"));
                         DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T-BlackMonday-Background");
+                        break;
+                    default:
                         break;
                 }
             }
@@ -125,6 +124,8 @@ namespace FModel.Methods.Assets.IconCreator
                         paint.StrokeWidth = 6;
                         IconCreator.ICCanvas.DrawRect(rect, paint);
                     }
+                    break;
+                default:
                     break;
             }
         }

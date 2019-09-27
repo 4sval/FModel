@@ -23,7 +23,7 @@ namespace FModel.Methods.Utilities
             const string accellerator = "_";
 
             // If it already contains an accellerator, do nothing
-            if (input.Contains(accellerator)) return input;
+            if (input.Contains(accellerator)) { return input; }
 
             return accellerator + input;
         }

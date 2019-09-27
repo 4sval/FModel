@@ -9,11 +9,11 @@ using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.PAKs
 {
-    class BackupPAKs
+    static class BackupPAKs
     {
         private static readonly string OUTPUT_PATH = FProp.Default.FOutput_Path;
 
-        public static async void CreateBackupFile()
+        public static async Task CreateBackupFile()
         {
             await Task.Run(() =>
             {

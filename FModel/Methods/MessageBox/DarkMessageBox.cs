@@ -6,7 +6,7 @@ namespace FModel.Methods.MessageBox
     /// <summary>
     /// https://github.com/evanwon/WPFCustomMessageBox
     /// </summary>
-    class DarkMessageBox
+    static class DarkMessageBox
     {
         /// <summary>
         /// Displays a message box that has a message and returns a result.

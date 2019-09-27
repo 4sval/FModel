@@ -7,7 +7,7 @@ using System.Windows.Media;
 
 namespace FModel.Methods.Assets.IconCreator
 {
-    class IconCreator
+    static class IconCreator
     {
         public static SKCanvas ICCanvas { get; set; }
 
