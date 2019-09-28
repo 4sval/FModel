@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace FModel.Methods.Assets.IconCreator.AthenaID
+namespace FModel.Methods.Assets.IconCreator
 {
     static class IconImage
     {

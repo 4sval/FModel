@@ -61,6 +61,26 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une ressource localisée de type System.Byte[].
+        /// </summary>
+        internal static byte[] BurbankBigCondensed_Black {
+            get {
+                object obj = ResourceManager.GetObject("BurbankBigCondensed_Black", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Byte[].
+        /// </summary>
+        internal static byte[] BurbankBigCondensed_Bold {
+            get {
+                object obj = ResourceManager.GetObject("BurbankBigCondensed_Bold", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap folder_16x {

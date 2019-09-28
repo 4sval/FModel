@@ -1,5 +1,4 @@
-﻿using FModel.Methods.Assets.IconCreator.AthenaID;
-using FModel.Methods.Utilities;
+﻿using FModel.Methods.Utilities;
 using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using System.IO;
@@ -20,6 +19,7 @@ namespace FModel.Methods.Assets.IconCreator
 
                 Rarity.DrawRarityBackground(AssetProperties);
                 IconImage.DrawIconImage(AssetProperties);
+                IconText.DrawIconText(AssetProperties);
 
                 using (SKImage image = surface.Snapshot())
                 using (SKData data = image.Encode(SKEncodedImageFormat.Png, 100))

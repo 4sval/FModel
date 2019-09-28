@@ -24,6 +24,7 @@ namespace FModel.Methods.Utilities
             if (isName) { path = Path.GetFileName(path); }
 
             if (!withExtension) { path = isName ? Path.GetFileNameWithoutExtension(path) : FoldersUtility.GetFullPathWithoutExtension(path); }
+            if (path.StartsWith("/")) { path = path.Substring(1); }
 
             new UpdateMyConsole(path, CColors.Blue).Append();
             new UpdateMyConsole(" Copied!", CColors.White, true).Append();
@@ -286,6 +287,14 @@ namespace FModel.Methods.Utilities
             return properties
                 .Where(x => string.Equals(x["name"].Value<string>(), name))
                 .Select(x => x["tag_data"]["import"].Value<T>())
+                .FirstOrDefault();
+        }
+
+        public static T GetPropertyTagText<T>(JArray properties, string name, string tag_data)
+        {
+            return properties
+                .Where(x => string.Equals(x["name"].Value<string>(), name))
+                .Select(x => x["tag_data"][tag_data].Value<T>())
                 .FirstOrDefault();
         }
     }
