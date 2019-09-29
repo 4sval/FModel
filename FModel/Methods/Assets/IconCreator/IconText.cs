@@ -1,5 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using FModel.Methods.Utilities;
+using FModel.Properties;
+using Newtonsoft.Json.Linq;
 using SkiaSharp;
+using System.IO;
 using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets.IconCreator
@@ -9,6 +12,43 @@ namespace FModel.Methods.Assets.IconCreator
         public static void DrawIconText(JArray AssetProperties)
         {
             DrawTextBackground();
+
+            JToken nameToken = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "DisplayName", "source_string");
+            JToken descriptionToken = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "Description", "source_string");
+            using (SKPaint paint = new SKPaint())
+            {
+                paint.IsAntialias = true;
+                paint.FilterQuality = SKFilterQuality.High;
+                paint.TextAlign = SKTextAlign.Center;
+                paint.Color = SKColors.White;
+
+                SKRect rect = new SKRect(3, 3, 512, 512);
+
+                if (nameToken != null)
+                {
+                    paint.TextSize = 43;
+                    paint.Typeface = SKTypeface.FromStream(new MemoryStream(Resources.BurbankBigCondensed_Bold), 0);
+                    IconCreator.ICCanvas.DrawText(nameToken.Value<string>(), rect.MidX, 425, paint);
+                }
+
+                if (descriptionToken != null)
+                {
+                    paint.TextSize = 12;
+                    paint.Typeface = SKTypeface.FromFamilyName("Arial");
+                    TextsUtility.DrawText(IconCreator.ICCanvas, descriptionToken.Value<string>() + "\nPart of the FOV Slider set.", SKRect.Create(3, 438, 509, 59), paint);
+                }
+
+                paint.Style = SKPaintStyle.Stroke;
+                paint.StrokeWidth = 1;
+
+                paint.Color = SKColors.Red;
+                IconCreator.ICCanvas.DrawRect(SKRect.Create(3, 383, 509, 55), paint);
+                paint.Color = SKColors.Blue;
+                IconCreator.ICCanvas.DrawRect(SKRect.Create(3, 438, 509, 59), paint);
+                paint.Color = SKColors.Yellow;
+                IconCreator.ICCanvas.DrawRect(SKRect.Create(3, 497, 150, 15), paint);
+                IconCreator.ICCanvas.DrawRect(SKRect.Create(362, 497, 150, 15), paint);
+            }
         }
 
         private static void DrawTextBackground()

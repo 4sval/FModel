@@ -156,14 +156,14 @@ namespace PakReader
                 unsafe
                 {
                     fixed (ushort* dataPtr = &data[0])
-                        return new string((char*)dataPtr, 0, data.Length);
+                        return new string((char*)dataPtr, 0, data.Length).TrimEnd('\0');
                 }
             }
             else
             {
                 byte[] bytes = reader.ReadBytes(length);
                 if (bytes.Length == 0) return string.Empty;
-                var ret = Encoding.UTF8.GetString(bytes);
+                var ret = Encoding.UTF8.GetString(bytes).TrimEnd('\0');
                 if (ret.Length != length)
                 {
                     return ret;

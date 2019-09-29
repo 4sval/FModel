@@ -72,6 +72,7 @@ namespace FModel
                     };
 
                     Image img = new Image();
+                    img.UseLayoutRounding = true;
                     img.Source = ImageBox_Main.Source;
                     dockPanel.Children.Add(img);
 

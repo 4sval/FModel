@@ -16,7 +16,7 @@
         MinWidth="1207"
         Style="{StaticResource {x:Type Window}}" 
         WindowStartupLocation="CenterScreen" 
-        Icon="Logo.ico" 
+        Icon="Logo.ico"
         Loaded="Window_Loaded">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static commands:FModel_Commands.OpenSettings}" Executed="MI_Settings_Click"/>
@@ -146,7 +146,7 @@
                     <ColumnDefinition Width="317*"/>
                 </Grid.ColumnDefinitions>
                 <Border BorderBrush="#7F748198" BorderThickness="1" Grid.Column="1" Margin="1,1,1,0" Background="#FF252D36">
-                    <Image x:Name="ImageBox_Main"/>
+                    <Image x:Name="ImageBox_Main" UseLayoutRounding="True"/>
                 </Border>
                 <Border BorderBrush="#7F748198" BorderThickness="1" Margin="1,1,0,0" Background="#FF252D36">
                     <avalonedit:TextEditor x:Name="AssetPropertiesBox_Main" ShowLineNumbers="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" Foreground="#FFEFEFEF"/>
