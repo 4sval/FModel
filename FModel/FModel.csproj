@@ -17,6 +17,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -29,7 +30,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -116,6 +116,7 @@
     <Compile Include="Methods\Assets\IconCreator\IconCreator.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconImage.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconText.cs" />
+    <Compile Include="Methods\Assets\IconCreator\IconUserFacingFlags.cs" />
     <Compile Include="Methods\Assets\IconCreator\Rarity.cs" />
     <Compile Include="Methods\BackupsManager\RegisterDownloadedBackups.cs" />
     <Compile Include="Methods\FindReplace\FindReplace.cs" />

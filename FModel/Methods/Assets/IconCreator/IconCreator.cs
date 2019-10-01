@@ -1,33 +1,28 @@
-﻿using FModel.Methods.Utilities;
-using Newtonsoft.Json.Linq;
-using SkiaSharp;
-using System.IO;
+﻿using Newtonsoft.Json.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 namespace FModel.Methods.Assets.IconCreator
 {
     static class IconCreator
     {
-        public static SKCanvas ICCanvas { get; set; }
+        public static DrawingContext ICDrawingContext { get; set; }
+        public static double PPD { get; set; }
 
-        public static ImageSource DrawTest(JArray AssetProperties)
+        public static DrawingVisual DrawTest(JArray AssetProperties)
         {
-            SKImageInfo imageInfo = new SKImageInfo(515, 515);
-            using (SKSurface surface = SKSurface.Create(imageInfo))
+            DrawingVisual drawingVisual = new DrawingVisual();
+            PPD = VisualTreeHelper.GetDpi(drawingVisual).PixelsPerDip;
+            using (ICDrawingContext = drawingVisual.RenderOpen())
             {
-                ICCanvas = surface.Canvas;
+                //INITIALIZATION
+                ICDrawingContext.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), new Size(515, 515)));
 
                 Rarity.DrawRarityBackground(AssetProperties);
                 IconImage.DrawIconImage(AssetProperties);
                 IconText.DrawIconText(AssetProperties);
-
-                using (SKImage image = surface.Snapshot())
-                using (SKData data = image.Encode(SKEncodedImageFormat.Png, 100))
-                using (MemoryStream mStream = new MemoryStream(data.ToArray()))
-                {
-                    return ImagesUtility.GetImageSource(mStream);
-                }
             }
+            return drawingVisual;
         }
     }
 }

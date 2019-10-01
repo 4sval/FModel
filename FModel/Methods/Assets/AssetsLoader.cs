@@ -72,6 +72,7 @@ namespace FModel.Methods.Assets
                         AssetMainToken = AssetData;
                     }
 
+                    DrawingVisual VisualImage = null;
                     switch (AssetMainToken != null ? AssetMainToken["export_type"] != null ? AssetMainToken["export_type"].Value<string>() : string.Empty : string.Empty)
                     {
                         case "AthenaBackpackItemDefinition":
@@ -92,12 +93,12 @@ namespace FModel.Methods.Assets
                         case "AthenaVictoryPoseItemDefinition":
                         case "FortBannerTokenType":
                         case "AthenaGadgetItemDefinition":
-                            ImageSource image = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                            ImagesUtility.LoadImageAfterExtraction(image);
+                            VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
                             break;
                         case "FortWeaponRangedItemDefinition":
                         case "FortWeaponMeleeItemDefinition":
                         case "FortIngredientItemDefinition":
+                            VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
                             break;
                         case "FortVariantTokenType":
                             break;
@@ -137,7 +138,10 @@ namespace FModel.Methods.Assets
                             break;
                         case "SoundWave":
                             break;
+                        default:
+                            break;
                     }
+                    if (VisualImage != null) { ImagesUtility.LoadImageAfterExtraction(VisualImage); }
                 }
             }
         }

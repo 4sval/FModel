@@ -14,6 +14,7 @@ namespace FModel.Methods.Utilities
 
         public static async Task PopulateListBox(TreeViewItem sItem)
         {
+            FilesListWithoutPath = null;
             FWindow.FMain.ListBox_Main.Items.Clear();
             FWindow.FMain.FilterTextBox_Main.Text = string.Empty;
 

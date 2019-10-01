@@ -2,10 +2,11 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
-using SkiaSharp;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace FModel.Methods.Assets.IconCreator
 {
@@ -79,8 +80,16 @@ namespace FModel.Methods.Assets.IconCreator
                     {
                         if (image != null)
                         {
-                            SKRect rect = new SKRect(3, 3, 512, 512);
-                            IconCreator.ICCanvas.DrawBitmap(SKBitmap.Decode(image), rect);
+                            BitmapImage bmp = new BitmapImage();
+                            bmp.BeginInit();
+                            bmp.CacheOption = BitmapCacheOption.OnLoad;
+                            bmp.StreamSource = image;
+                            bmp.EndInit();
+
+                            if (bmp != null)
+                            {
+                                IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
+                            }
                         }
                     }
                 }

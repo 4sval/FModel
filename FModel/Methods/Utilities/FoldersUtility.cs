@@ -60,7 +60,7 @@ namespace FModel.Methods.Utilities
         {
             string fixedPath = path.Replace("Game", "FortniteGame/Content");
             int sep = fixedPath.LastIndexOf('.');
-            return fixedPath.Substring(0, sep);
+            return fixedPath.Substring(0, sep > 0 ? sep : fixedPath.Length);
         }
     }
 }

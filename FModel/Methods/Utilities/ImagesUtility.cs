@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -8,6 +9,11 @@ namespace FModel.Methods.Utilities
 {
     static class ImagesUtility
     {
+        public static Color ParseColorFromHex(string hex)
+        {
+            return (Color)ColorConverter.ConvertFromString(hex);
+        }
+
         public static ImageSource GetImageSource(Stream stream)
         {
             BitmapImage photo = new BitmapImage();
@@ -21,14 +27,50 @@ namespace FModel.Methods.Utilities
             return photo;
         }
 
-        public static void LoadImageAfterExtraction(ImageSource image)
+        public static BitmapSource CreateTransparency(BitmapSource source, int opacity)
+        {
+            if (source.Format != PixelFormats.Bgra32)
+            {
+                return source;
+            }
+
+            int bytesPerPixel = (source.Format.BitsPerPixel + 7) / 8;
+            int stride = bytesPerPixel * source.PixelWidth;
+            byte[] buffer = new byte[stride * source.PixelHeight];
+
+            source.CopyPixels(buffer, stride, 0);
+
+            for (int y = 0; y < source.PixelHeight; y++)
+            {
+                for (int x = 0; x < source.PixelWidth; x++)
+                {
+                    int i = stride * y + bytesPerPixel * x;
+                    byte b = buffer[i];
+                    byte g = buffer[i + 1];
+                    byte r = buffer[i + 2];
+                    byte a = buffer[i + 3] = Convert.ToByte(opacity);
+                }
+            }
+
+            return BitmapSource.Create(
+                source.PixelWidth, source.PixelHeight,
+                source.DpiX, source.DpiY,
+                source.Format, null, buffer, stride);
+        }
+
+        public static void LoadImageAfterExtraction(DrawingVisual image)
         {
             if (image != null)
             {
                 string name = FWindow.FCurrentAsset; //FCurrentAsset isn't upated inside Dispatcher.InvokeAsync so we put this in another string outside of the dispatcher
+
+                RenderTargetBitmap RTB = new RenderTargetBitmap(515, 515, 96, 96, PixelFormats.Pbgra32);
+                RTB.Render(image);
+                RTB.Freeze(); //We freeze to apply the RTB to our imagesource from the UI Thread
+
                 FWindow.FMain.Dispatcher.InvokeAsync(() =>
                 {
-                    FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)image); //thread safe and fast af
+                    FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create(RTB); //thread safe and fast af
 
                     if (FWindow.FMain.MI_Auto_Save_Images.IsChecked) //auto save images
                     {

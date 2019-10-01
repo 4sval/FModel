@@ -67,8 +67,7 @@ namespace FModel.Forms
         public static T GetEnumValueFromDescription<T>(string description)
         {
             var type = typeof(T);
-            if (!type.IsEnum)
-                throw new ArgumentException();
+            if (!type.IsEnum) { throw new ArgumentException(); }
             FieldInfo[] fields = type.GetFields();
             var field = fields
                             .SelectMany(f => f.GetCustomAttributes(

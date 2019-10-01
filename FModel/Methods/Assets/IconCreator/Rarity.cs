@@ -1,7 +1,9 @@
 ﻿using FModel.Methods.Utilities;
 using Newtonsoft.Json.Linq;
-using SkiaSharp;
 using System.IO;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets.IconCreator
@@ -18,14 +20,14 @@ namespace FModel.Methods.Assets.IconCreator
                 switch (serieToken.Value<string>())
                 {
                     case "MarvelSeries":
-                        DrawBackground(SKColor.Parse("#CB232D"), SKColor.Parse("#7F0E1D"), SKColor.Parse("#FF433D"));
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#CB232D"), ImagesUtility.ParseColorFromHex("#7F0E1D"), ImagesUtility.ParseColorFromHex("#FF433D"));
                         break;
                     case "CUBESeries":
-                        DrawBackground(SKColor.Parse("#9D006C"), SKColor.Parse("#610064"), SKColor.Parse("#AF1BB9"));
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#9D006C"), ImagesUtility.ParseColorFromHex("#610064"), ImagesUtility.ParseColorFromHex("#AF1BB9"));
                         DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T-Cube-Background");
                         break;
                     case "DCUSeries":
-                        DrawBackground(SKColor.Parse("#2D445D"), SKColor.Parse("#101928"), SKColor.Parse("#3E5E7A"));
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#2D445D"), ImagesUtility.ParseColorFromHex("#101928"), ImagesUtility.ParseColorFromHex("#3E5E7A"));
                         DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T-BlackMonday-Background");
                         break;
                     default:
@@ -37,93 +39,80 @@ namespace FModel.Methods.Assets.IconCreator
                 switch (rarityToken != null ? rarityToken.Value<string>() : string.Empty)
                 {
                     case "EFortRarity::Transcendent":
-                        DrawBackground(SKColor.Parse("#D51944"), SKColor.Parse("#86072D"), SKColor.Parse("#FF3F58"));
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#D51944"), ImagesUtility.ParseColorFromHex("#86072D"), ImagesUtility.ParseColorFromHex("#FF3F58"));
                         break;
                     case "EFortRarity::Mythic":
-                        DrawBackground(SKColor.Parse("#BA9C36"), SKColor.Parse("#73581A"), SKColor.Parse("#EED951"));
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#BA9C36"), ImagesUtility.ParseColorFromHex("#73581A"), ImagesUtility.ParseColorFromHex("#EED951"));
                         break;
                     case "EFortRarity::Legendary":
-                        DrawBackground(SKColor.Parse("#C06A38"), SKColor.Parse("#73331A"), SKColor.Parse("#EC9650"));
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#C06A38"), ImagesUtility.ParseColorFromHex("#73331A"), ImagesUtility.ParseColorFromHex("#EC9650"));
                         break;
                     case "EFortRarity::Epic":
                     case "EFortRarity::Quality":
-                        DrawBackground(SKColor.Parse("#8138C2"), SKColor.Parse("#421A73"), SKColor.Parse("#B251ED"));
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#8138C2"), ImagesUtility.ParseColorFromHex("#421A73"), ImagesUtility.ParseColorFromHex("#B251ED"));
                         break;
                     case "EFortRarity::Rare":
-                        DrawBackground(SKColor.Parse("#3669BB"), SKColor.Parse("#1A4473"), SKColor.Parse("#5180EE"));
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#3669BB"), ImagesUtility.ParseColorFromHex("#1A4473"), ImagesUtility.ParseColorFromHex("#5180EE"));
                         break;
                     case "EFortRarity::Common":
-                        DrawBackground(SKColor.Parse("#6D6D6D"), SKColor.Parse("#464646"), SKColor.Parse("#9E9E9E"));
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#6D6D6D"), ImagesUtility.ParseColorFromHex("#464646"), ImagesUtility.ParseColorFromHex("#9E9E9E"));
                         break;
                     default:
-                        DrawBackground(SKColor.Parse("#5EBC36"), SKColor.Parse("#3C731A"), SKColor.Parse("#74EF52"));
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#5EBC36"), ImagesUtility.ParseColorFromHex("#3C731A"), ImagesUtility.ParseColorFromHex("#74EF52"));
                         break;
                 }
             }
         }
 
-        private static void DrawBackground(SKColor background, SKColor backgroundUpDown, SKColor border)
+        private static void DrawBackground(Color background, Color backgroundUpDown, Color border)
         {
             switch (FProp.Default.FRarity_Design)
             {
                 case "Flat":
-                    using (SKPaint paint = new SKPaint())
+                    Point dStart = new Point(3, 440);
+                    LineSegment[] dSegments = new[]
                     {
-                        paint.IsAntialias = true;
-                        paint.FilterQuality = SKFilterQuality.High;
+                        new LineSegment(new Point(512, 380), true),
+                        new LineSegment(new Point(512, 380 + 132), true),
+                        new LineSegment(new Point(3, 380 + 132), true),
+                        new LineSegment(new Point(3, 440), true)
+                    };
+                    PathFigure dFigure = new PathFigure(dStart, dSegments, true);
+                    PathGeometry dGeo = new PathGeometry(new[] { dFigure });
 
-                        SKRect rect = new SKRect(0, 0, 515, 515);
+                    Point uStart = new Point(3, 3);
+                    LineSegment[] uSegments = new[]
+                    {
+                        new LineSegment(new Point(3, 33), true),
+                        new LineSegment(new Point(335, 3), true)
+                    };
+                    PathFigure uFigure = new PathFigure(uStart, uSegments, true);
+                    PathGeometry uGeo = new PathGeometry(new[] { uFigure });
 
-                        paint.Style = SKPaintStyle.Fill;
-                        paint.Color = background;
-                        IconCreator.ICCanvas.DrawRect(rect, paint);
 
-                        paint.Color = backgroundUpDown.WithAlpha((byte)(0xFF * 0.4));
-                        SKPath path = new SKPath();
-                        path.MoveTo(0, 440);
-                        path.LineTo(515, 380);
-                        path.LineTo(515, 380 + 135);
-                        path.LineTo(0, 380 + 135);
-                        path.LineTo(0, 440);
-                        IconCreator.ICCanvas.DrawPath(path, paint);
-
-                        path = new SKPath();
-                        path.MoveTo(0, 0);
-                        path.LineTo(0, 35);
-                        path.LineTo(335, 0);
-                        IconCreator.ICCanvas.DrawPath(path, paint);
-
-                        paint.Style = SKPaintStyle.Stroke;
-                        paint.Shader = null;
-                        paint.Color = border;
-                        paint.StrokeWidth = 6;
-                        IconCreator.ICCanvas.DrawRect(rect, paint);
-                    }
+                    //background + border
+                    IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(background), new Pen(new SolidColorBrush(border), 6), new Rect(0, 0, 515, 515));
+                    //up & down
+                    IconCreator.ICDrawingContext.DrawGeometry(new SolidColorBrush(Color.FromArgb(125, backgroundUpDown.R, backgroundUpDown.G, backgroundUpDown.B)), null, uGeo);
+                    IconCreator.ICDrawingContext.DrawGeometry(new SolidColorBrush(Color.FromArgb(125, backgroundUpDown.R, backgroundUpDown.G, backgroundUpDown.B)), null, dGeo);
                     break;
                 case "Default":
                 case "Minimalist":
-                    using (SKPaint paint = new SKPaint())
-                    {
-                        paint.IsAntialias = true;
-                        paint.FilterQuality = SKFilterQuality.High;
+                    RadialGradientBrush radialGradient = new RadialGradientBrush();
+                    radialGradient.GradientOrigin = new Point(0.5, 0.5);
+                    radialGradient.Center = new Point(0.5, 0.5);
 
-                        SKRect rect = new SKRect(0, 0, 515, 515);
+                    radialGradient.RadiusX = 0.5;
+                    radialGradient.RadiusY = 0.5;
 
-                        paint.Style = SKPaintStyle.Fill;
-                        paint.Shader = SKShader.CreateRadialGradient(
-                                            new SKPoint(rect.MidX, rect.MidY),
-                                            500, //offset where backgroundUpDown will stop and background will fill the rest
-                                            new SKColor[] { background, backgroundUpDown },
-                                            null,
-                                            SKShaderTileMode.Clamp);
-                        IconCreator.ICCanvas.DrawRect(rect, paint);
+                    radialGradient.GradientStops.Add(new GradientStop(background, 0.0));
+                    radialGradient.GradientStops.Add(new GradientStop(backgroundUpDown, 1.5));
 
-                        paint.Style = SKPaintStyle.Stroke;
-                        paint.Shader = null;
-                        paint.Color = border;
-                        paint.StrokeWidth = 6;
-                        IconCreator.ICCanvas.DrawRect(rect, paint);
-                    }
+                    // Freeze the brush (make it unmodifiable) for performance benefits.
+                    radialGradient.Freeze();
+
+                    //background + border
+                    IconCreator.ICDrawingContext.DrawRectangle(radialGradient, new Pen(new SolidColorBrush(border), 6), new Rect(0, 0, 515, 515));
                     break;
                 default:
                     break;
@@ -136,14 +125,15 @@ namespace FModel.Methods.Assets.IconCreator
             {
                 if (image != null)
                 {
-                    using (SKPaint paint = new SKPaint())
-                    {
-                        paint.IsAntialias = true;
-                        paint.FilterQuality = SKFilterQuality.High;
+                    BitmapImage bmp = new BitmapImage();
+                    bmp.BeginInit();
+                    bmp.CacheOption = BitmapCacheOption.OnLoad;
+                    bmp.StreamSource = image;
+                    bmp.EndInit();
 
-                        SKRect rect = new SKRect(3, 3, 512, 512);
-                        paint.Color = paint.Color.WithAlpha((byte)(0xFF * 0.4));
-                        IconCreator.ICCanvas.DrawBitmap(SKBitmap.Decode(image), rect, paint);
+                    if (bmp != null)
+                    {
+                        IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, 100), new Rect(3, 3, 509, 509));
                     }
                 }
             }

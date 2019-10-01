@@ -222,14 +222,11 @@ namespace FModel.Methods.Utilities
                         case ".bin":
                             break;
                         default:
-                            if (entry.Name.EndsWith(".uasset"))
-                                AssetStreamArray[0] = reader.GetPackageStream(entry);
+                            if (entry.Name.EndsWith(".uasset")) { AssetStreamArray[0] = reader.GetPackageStream(entry); }
 
-                            if (entry.Name.EndsWith(".uexp"))
-                                AssetStreamArray[1] = reader.GetPackageStream(entry);
+                            if (entry.Name.EndsWith(".uexp")) { AssetStreamArray[1] = reader.GetPackageStream(entry); }
 
-                            if (entry.Name.EndsWith(".ubulk"))
-                                AssetStreamArray[2] = reader.GetPackageStream(entry);
+                            if (entry.Name.EndsWith(".ubulk")) { AssetStreamArray[2] = reader.GetPackageStream(entry); }
                             break;
                     }
                 }
@@ -281,7 +278,6 @@ namespace FModel.Methods.Utilities
                 .Select(x => x["tag_data"].Value<T>())
                 .FirstOrDefault();
         }
-
         public static T GetPropertyTagImport<T>(JArray properties, string name)
         {
             return properties
@@ -289,12 +285,25 @@ namespace FModel.Methods.Utilities
                 .Select(x => x["tag_data"]["import"].Value<T>())
                 .FirstOrDefault();
         }
-
+        public static T GetPropertyTagOuterImport<T>(JArray properties, string name)
+        {
+            return properties
+                .Where(x => string.Equals(x["name"].Value<string>(), name))
+                .Select(x => x["tag_data"]["outer_import"].Value<T>())
+                .FirstOrDefault();
+        }
         public static T GetPropertyTagText<T>(JArray properties, string name, string tag_data)
         {
             return properties
                 .Where(x => string.Equals(x["name"].Value<string>(), name))
                 .Select(x => x["tag_data"][tag_data].Value<T>())
+                .FirstOrDefault();
+        }
+        public static T GetPropertyTagStruct<T>(JArray properties, string name, string struct_type)
+        {
+            return properties
+                .Where(x => string.Equals(x["name"].Value<string>(), name))
+                .Select(x => x["tag_data"]["struct_type"][struct_type].Value<T>())
                 .FirstOrDefault();
         }
     }

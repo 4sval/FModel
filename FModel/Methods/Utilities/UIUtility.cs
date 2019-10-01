@@ -8,7 +8,7 @@ using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Utilities
 {
-    class CColors
+    static class CColors
     {
         public static readonly string Blue = "#6495ED";
         public static readonly string Red = "#ED6464";
@@ -20,7 +20,7 @@ namespace FModel.Methods.Utilities
 
     class UpdateMyProcessEvents
     {
-        private string _textToDisplay;
+        private readonly string _textToDisplay;
         private readonly string _stateText;
         public UpdateMyProcessEvents(string textToDisplay, string stateText)
         {
@@ -85,7 +85,7 @@ namespace FModel.Methods.Utilities
         }
     }
 
-    class AvalonEdit
+    static class AvalonEdit
     {
         /// <summary>
         /// Adapter for Avalonedit TextEditor
