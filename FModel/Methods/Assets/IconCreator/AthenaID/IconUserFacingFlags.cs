@@ -7,7 +7,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace FModel.Methods.Assets.IconCreator
+namespace FModel.Methods.Assets.IconCreator.AthenaID
 {
     static class IconUserFacingFlags
     {
@@ -97,11 +97,8 @@ namespace FModel.Methods.Assets.IconCreator
                                         bmp.StreamSource = image;
                                         bmp.EndInit();
 
-                                        if (bmp != null)
-                                        {
-                                            xCoords += 25;
-                                            IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(xCoords, 4, 25, 25));
-                                        }
+                                        xCoords += 25;
+                                        IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(xCoords, 4, 25, 25));
                                     }
                                 }
                             }

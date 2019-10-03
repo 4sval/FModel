@@ -1,4 +1,5 @@
-﻿using FModel.Methods.Utilities;
+﻿using FModel.Methods.Assets.IconCreator.AthenaID;
+using FModel.Methods.Utilities;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Globalization;
@@ -141,16 +142,15 @@ namespace FModel.Methods.Assets.IconCreator
                     );
 
             Point textLocation = new Point();
-            switch (side)
+            if (string.Equals(side, "Right"))
             {
-                case "Right":
-                    formattedText.TextAlignment = TextAlignment.Right;
-                    textLocation = new Point(510, 513 - formattedText.Height);
-                    break;
-                case "Left":
-                    formattedText.TextAlignment = TextAlignment.Left;
-                    textLocation = new Point(5, 513 - formattedText.Height);
-                    break;
+                formattedText.TextAlignment = TextAlignment.Right;
+                textLocation = new Point(510, 513 - formattedText.Height);
+            }
+            else if (string.Equals(side, "Left"))
+            {
+                formattedText.TextAlignment = TextAlignment.Left;
+                textLocation = new Point(5, 513 - formattedText.Height);
             }
             IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
         }

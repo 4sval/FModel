@@ -21,6 +21,7 @@ namespace FModel.Forms
         public AESManager()
         {
             InitializeComponent();
+            this.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -53,13 +54,14 @@ namespace FModel.Forms
                     Label PakLabel = new Label();
                     PakLabel.Content = Path.GetFileNameWithoutExtension(Pak.ThePAKPath);
                     PakLabel.HorizontalAlignment = HorizontalAlignment.Left;
-                    PakLabel.Margin = new Thickness(2, yPos - 3, 0, 0);
+                    PakLabel.Margin = new Thickness(2, yPos - 2, 0, 0);
                     PakLabel.VerticalAlignment = VerticalAlignment.Top;
                     PakLabel.Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239));
 
                     TextBox PakTextBox = new TextBox();
-                    PakTextBox.Height = 18;
+                    PakTextBox.Height = 19;
                     PakTextBox.TextWrapping = TextWrapping.NoWrap;
+                    PakTextBox.AcceptsReturn = false;
                     PakTextBox.Margin = new Thickness(160, yPos, 5, 0);
                     PakTextBox.VerticalAlignment = VerticalAlignment.Top;
                     PakTextBox.Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239));

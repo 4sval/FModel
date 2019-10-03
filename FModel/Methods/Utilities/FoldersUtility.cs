@@ -43,12 +43,14 @@ namespace FModel.Methods.Utilities
         {
             //THIS WILL STAY FOR INITIAL LAUNCH ONLY
             //if (File.Exists(FProp.Default.FOutput_Path + "\\AESManager.xml")) { File.Delete(FProp.Default.FOutput_Path + "\\AESManager.xml"); }
+            //if (Directory.Exists(FProp.Default.FOutput_Path + "\\Extracted\\")) { Directory.Delete(FProp.Default.FOutput_Path + "\\Extracted\\", true); }
+            //if (Directory.Exists(FProp.Default.FOutput_Path + "\\Saved_JSON\\")) { Directory.Delete(FProp.Default.FOutput_Path + "\\Saved_JSON\\", true); }
 
-            Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Backup\\");
-            Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Extracted\\");
+            Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Backups\\");
+            Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Exports\\");
             Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Icons\\");
             Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Sounds\\");
-            Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Saved_JSON\\");
+            Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\JSONs\\");
         }
 
         public static string GetFullPathWithoutExtension(string path)

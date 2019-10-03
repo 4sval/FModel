@@ -45,10 +45,7 @@ namespace FModel.Methods.Utilities
                 for (int x = 0; x < source.PixelWidth; x++)
                 {
                     int i = stride * y + bytesPerPixel * x;
-                    byte b = buffer[i];
-                    byte g = buffer[i + 1];
-                    byte r = buffer[i + 2];
-                    byte a = buffer[i + 3] = Convert.ToByte(opacity);
+                    buffer[i + 3] = Convert.ToByte(opacity);
                 }
             }
 

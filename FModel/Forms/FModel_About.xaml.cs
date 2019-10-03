@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 
 namespace FModel.Forms
 {
@@ -10,6 +11,7 @@ namespace FModel.Forms
         public FModel_About()
         {
             InitializeComponent();
+            this.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
         }
     }
 }

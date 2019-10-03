@@ -1,7 +1,7 @@
 ﻿using FModel.Methods.Utilities;
-using System;
 using System.Drawing;
 using System.Windows;
+using System.Windows.Media;
 
 namespace FModel.Forms
 {
@@ -87,6 +87,7 @@ namespace FModel.Forms
         internal FModel_CustomMB(string message)
         {
             InitializeComponent();
+            this.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
 
             Message = message;
             Image_MessageBox.Visibility = System.Windows.Visibility.Collapsed;

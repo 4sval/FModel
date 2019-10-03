@@ -61,7 +61,7 @@ namespace FModel.Methods.Assets
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
                     dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
-                    JToken AssetMainToken = null;
+                    JToken AssetMainToken;
                     if (jsonData.StartsWith("[") && jsonData.EndsWith("]"))
                     {
                         JArray AssetArray = JArray.FromObject(AssetData);
@@ -71,77 +71,82 @@ namespace FModel.Methods.Assets
                     {
                         AssetMainToken = AssetData;
                     }
-
-                    DrawingVisual VisualImage = null;
-                    switch (AssetMainToken != null ? AssetMainToken["export_type"] != null ? AssetMainToken["export_type"].Value<string>() : string.Empty : string.Empty)
+                    else
                     {
-                        case "AthenaBackpackItemDefinition":
-                        case "AthenaBattleBusItemDefinition":
-                        case "AthenaCharacterItemDefinition":
-                        case "AthenaConsumableEmoteItemDefinition":
-                        case "AthenaSkyDiveContrailItemDefinition":
-                        case "AthenaDanceItemDefinition":
-                        case "AthenaEmojiItemDefinition":
-                        case "AthenaGliderItemDefinition":
-                        case "AthenaItemWrapDefinition":
-                        case "AthenaLoadingScreenItemDefinition":
-                        case "AthenaMusicPackItemDefinition":
-                        case "AthenaPetCarrierItemDefinition":
-                        case "AthenaPickaxeItemDefinition":
-                        case "AthenaSprayItemDefinition":
-                        case "AthenaToyItemDefinition":
-                        case "AthenaVictoryPoseItemDefinition":
-                        case "FortBannerTokenType":
-                        case "AthenaGadgetItemDefinition":
-                            VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                            break;
-                        case "FortWeaponRangedItemDefinition":
-                        case "FortWeaponMeleeItemDefinition":
-                        case "FortIngredientItemDefinition":
-                            VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                            break;
-                        case "FortVariantTokenType":
-                            break;
-                        case "FortAmmoItemDefinition":
-                            break;
-                        case "FortHeroType":
-                            break;
-                        case "FortDefenderItemDefinition":
-                            break;
-                        case "FortContextTrapItemDefinition":
-                        case "FortTrapItemDefinition":
-                        case "FortCardPackItemDefinition":
-                        case "FortPlaysetGrenadeItemDefinition":
-                        case "FortConsumableAccountItemDefinition":
-                        case "FortBadgeItemDefinition":
-                        case "FortCurrencyItemDefinition":
-                        case "FortConversionControlItemDefinition":
-                        case "FortHomebaseNodeItemDefinition":
-                        case "FortPersonalVehicleItemDefinition":
-                        case "FortCampaignHeroLoadoutItemDefinition":
-                        case "FortNeverPersistItemDefinition":
-                        case "FortPersistentResourceItemDefinition":
-                        case "FortResourceItemDefinition":
-                        case "FortGadgetItemDefinition":
-                        case "FortStatItemDefinition":
-                        case "FortTokenType":
-                        case "FortDailyRewardScheduleTokenDefinition":
-                        case "FortWorkerType":
-                        case "FortConditionalResourceItemDefinition":
-                        case "FortAwardItemDefinition":
-                        case "FortChallengeBundleScheduleDefinition":
-                        case "FortAbilityKit":
-                            break;
-                        case "FortChallengeBundleItemDefinition":
-                            break;
-                        case "FortSchematicItemDefinition":
-                            break;
-                        case "SoundWave":
-                            break;
-                        default:
-                            break;
+                        AssetMainToken = null;
                     }
-                    if (VisualImage != null) { ImagesUtility.LoadImageAfterExtraction(VisualImage); }
+
+                    if (AssetMainToken != null && AssetMainToken["export_type"] != null)
+                    {
+                        DrawingVisual VisualImage = null;
+                        switch (AssetMainToken["export_type"].Value<string>())
+                        {
+                            case "AthenaBackpackItemDefinition":
+                            case "AthenaBattleBusItemDefinition":
+                            case "AthenaCharacterItemDefinition":
+                            case "AthenaConsumableEmoteItemDefinition":
+                            case "AthenaSkyDiveContrailItemDefinition":
+                            case "AthenaDanceItemDefinition":
+                            case "AthenaEmojiItemDefinition":
+                            case "AthenaGliderItemDefinition":
+                            case "AthenaItemWrapDefinition":
+                            case "AthenaLoadingScreenItemDefinition":
+                            case "AthenaMusicPackItemDefinition":
+                            case "AthenaPetCarrierItemDefinition":
+                            case "AthenaPickaxeItemDefinition":
+                            case "AthenaSprayItemDefinition":
+                            case "AthenaToyItemDefinition":
+                            case "AthenaVictoryPoseItemDefinition":
+                            case "FortBannerTokenType":
+                            case "AthenaGadgetItemDefinition":
+                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
+                                break;
+                            case "FortWeaponRangedItemDefinition":
+                            case "FortWeaponMeleeItemDefinition":
+                            case "FortIngredientItemDefinition":
+                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
+                                break;
+                            case "FortVariantTokenType":
+                                break;
+                            case "FortAmmoItemDefinition":
+                                break;
+                            case "FortHeroType":
+                                break;
+                            case "FortDefenderItemDefinition":
+                                break;
+                            case "FortContextTrapItemDefinition":
+                            case "FortTrapItemDefinition":
+                            case "FortCardPackItemDefinition":
+                            case "FortPlaysetGrenadeItemDefinition":
+                            case "FortConsumableAccountItemDefinition":
+                            case "FortBadgeItemDefinition":
+                            case "FortCurrencyItemDefinition":
+                            case "FortConversionControlItemDefinition":
+                            case "FortHomebaseNodeItemDefinition":
+                            case "FortPersonalVehicleItemDefinition":
+                            case "FortCampaignHeroLoadoutItemDefinition":
+                            case "FortNeverPersistItemDefinition":
+                            case "FortPersistentResourceItemDefinition":
+                            case "FortResourceItemDefinition":
+                            case "FortGadgetItemDefinition":
+                            case "FortStatItemDefinition":
+                            case "FortTokenType":
+                            case "FortDailyRewardScheduleTokenDefinition":
+                            case "FortWorkerType":
+                            case "FortConditionalResourceItemDefinition":
+                            case "FortAwardItemDefinition":
+                            case "FortChallengeBundleScheduleDefinition":
+                            case "FortAbilityKit":
+                                break;
+                            case "FortChallengeBundleItemDefinition":
+                                break;
+                            case "FortSchematicItemDefinition":
+                                break;
+                            case "SoundWave":
+                                break;
+                        }
+                        if (VisualImage != null) { ImagesUtility.LoadImageAfterExtraction(VisualImage); }
+                    }
                 }
             }
         }

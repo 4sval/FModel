@@ -16,14 +16,14 @@
     <Grid>
         <GroupBox Header=".PAK Files" HorizontalAlignment="Left" Height="48" Margin="10,10,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
             <Grid>
-                <Label Content="Input:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0"/>
-                <TextBox x:Name="InputTextBox" Height="18" Margin="41,4,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
+                <Label Content="Input:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,1,0,0"/>
+                <TextBox x:Name="InputTextBox" Height="19" Margin="41,4,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Extraction" HorizontalAlignment="Left" Height="48" Margin="10,63,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
             <Grid>
-                <Label Content="Output:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0"/>
-                <TextBox x:Name="OutputTextBox" Height="18" Margin="50,4,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
+                <Label Content="Output:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,-1"/>
+                <TextBox x:Name="OutputTextBox" Height="19" Margin="50,4,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Icon Creator" HorizontalAlignment="Left" Height="186" Margin="10,116,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">

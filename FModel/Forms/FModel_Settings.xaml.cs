@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.ComponentModel;
 using System.Reflection;
 using System.Linq;
+using System.Windows.Media;
 
 namespace FModel.Forms
 {
@@ -17,6 +18,7 @@ namespace FModel.Forms
         public FModel_Settings()
         {
             InitializeComponent();
+            this.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
         }
 
         #region ENUMS

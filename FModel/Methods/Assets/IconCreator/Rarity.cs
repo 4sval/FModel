@@ -131,10 +131,7 @@ namespace FModel.Methods.Assets.IconCreator
                     bmp.StreamSource = image;
                     bmp.EndInit();
 
-                    if (bmp != null)
-                    {
-                        IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, 100), new Rect(3, 3, 509, 509));
-                    }
+                    IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, 100), new Rect(3, 3, 509, 509));
                 }
             }
             

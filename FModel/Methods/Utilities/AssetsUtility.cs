@@ -1,4 +1,5 @@
 ﻿using FModel.Methods.SyntaxHighlighter;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
@@ -9,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Utilities
 {
@@ -247,6 +249,61 @@ namespace FModel.Methods.Utilities
             }
 
             return null;
+        }
+
+        public static void ExportAssetData()
+        {
+            string fullPath = TreeViewUtility.GetFullPath(FWindow.TVItem) + "/" + FWindow.FCurrentAsset;
+            PakReader.PakReader reader = GetPakReader(fullPath);
+            if (reader != null)
+            {
+                List<FPakEntry> entriesList = GetPakEntries(fullPath);
+                foreach (FPakEntry entry in entriesList)
+                {
+                    string path = FProp.Default.FOutput_Path + "\\Exports\\" + entry.Name;
+                    string pWExt = FoldersUtility.GetFullPathWithoutExtension(entry.Name);
+                    string subfolders = pWExt.Substring(0, pWExt.LastIndexOf("/"));
+
+                    Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Exports\\" + subfolders);
+                    Stream stream = reader.GetPackageStream(entry);
+                    using (var fStream = File.OpenWrite(path))
+                    using (stream)
+                    {
+                        stream.CopyTo(fStream);
+                    }
+
+                    if (File.Exists(path))
+                    {
+                        new UpdateMyConsole(Path.GetFileName(path), CColors.Blue).Append();
+                        new UpdateMyConsole(" successfully exported", CColors.White, true).Append();
+                    }
+                    else //just in case
+                    {
+                        new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
+                        new UpdateMyConsole(Path.GetFileName(path), CColors.Blue, true).Append();
+                    }
+                }
+            }
+        }
+
+        public static void SaveAssetProperties()
+        {
+            string prop = FWindow.FMain.AssetPropertiesBox_Main.Text;
+            string path = FProp.Default.FOutput_Path + "\\JSONs\\" + FWindow.FCurrentAsset + ".json";
+            if (!string.IsNullOrEmpty(prop))
+            {
+                File.WriteAllText(path, prop);
+                if (File.Exists(path))
+                {
+                    new UpdateMyConsole(FWindow.FCurrentAsset, CColors.Blue).Append();
+                    new UpdateMyConsole("'s Json data successfully saved", CColors.White, true).Append();
+                }
+                else //just in case
+                {
+                    new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
+                    new UpdateMyConsole(FWindow.FCurrentAsset, CColors.Blue, true).Append();
+                }
+            }
         }
 
         public static bool IsValidJson(string strInput)

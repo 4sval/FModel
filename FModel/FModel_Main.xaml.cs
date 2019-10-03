@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace FModel
 {
@@ -23,6 +24,7 @@ namespace FModel
         public MainWindow()
         {
             InitializeComponent();
+            this.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
             FWindow.FMain = this;
         }
 
@@ -61,6 +63,7 @@ namespace FModel
                 {
                     Window win = new Window();
                     win.Title = FWindow.FCurrentAsset;
+                    win.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
                     win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     win.Width = ImageBox_Main.Source.Width;
                     win.Height = ImageBox_Main.Source.Height;
@@ -127,6 +130,22 @@ namespace FModel
             }
             else { FormsUtility.GetOpenedWindow<Window>("Settings").Focus(); }
         }
+        private void MI_ExportRaw_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBox_Main.SelectedIndex >= 0)
+            {
+                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
+                AssetsUtility.ExportAssetData();
+            }
+        }
+        private void MI_SaveJson_Click(object sender, RoutedEventArgs e)
+        {
+            AssetsUtility.SaveAssetProperties();
+        }
+        private void MI_OpenOutputFolder_Click(object sender, RoutedEventArgs e)
+        {
+            FoldersUtility.OpenOutputFolder();
+        }
         private void MI_Save_Image_Click(object sender, RoutedEventArgs e)
         {
             if (ImageBox_Main.Source != null)
@@ -141,10 +160,6 @@ namespace FModel
                 new FModel_About().Show();
             }
             else { FormsUtility.GetOpenedWindow<Window>("About").Focus(); }
-        }
-        private void MI_OpenOutputFolder_Click(object sender, RoutedEventArgs e)
-        {
-            FoldersUtility.OpenOutputFolder();
         }
         #endregion
 
@@ -185,6 +200,18 @@ namespace FModel
                 //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
                 await AssetsLoader.LoadSelectedAsset();
             }
+        }
+        private void RC_ExportData_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBox_Main.SelectedIndex >= 0)
+            {
+                FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString();
+                AssetsUtility.ExportAssetData();
+            }
+        }
+        private void RC_SaveData_Click(object sender, RoutedEventArgs e)
+        {
+            AssetsUtility.SaveAssetProperties();
         }
         private void RC_Copy_FPath_Click(object sender, RoutedEventArgs e)
         {

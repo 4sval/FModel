@@ -113,10 +113,10 @@
     <Compile Include="Methods\AESManager\KeysManager.cs" />
     <Compile Include="Methods\Assets\AssetInformations.cs" />
     <Compile Include="Methods\Assets\AssetsLoader.cs" />
+    <Compile Include="Methods\Assets\IconCreator\AthenaID\IconUserFacingFlags.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconCreator.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconImage.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconText.cs" />
-    <Compile Include="Methods\Assets\IconCreator\IconUserFacingFlags.cs" />
     <Compile Include="Methods\Assets\IconCreator\Rarity.cs" />
     <Compile Include="Methods\BackupsManager\RegisterDownloadedBackups.cs" />
     <Compile Include="Methods\FindReplace\FindReplace.cs" />
@@ -258,7 +258,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Methods\Assets\IconCreator\AmmoID\" />
-    <Folder Include="Methods\Assets\IconCreator\AthenaID\" />
     <Folder Include="Methods\Assets\IconCreator\ChallengeID\" />
     <Folder Include="Methods\Assets\IconCreator\DefenderID\" />
     <Folder Include="Methods\Assets\IconCreator\HeroID\" />
