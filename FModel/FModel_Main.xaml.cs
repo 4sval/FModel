@@ -179,11 +179,11 @@ namespace FModel
         #region LISTBOX EVENTS
         private void ListBox_Main_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Button_Extract.IsEnabled = ListBox_Main.SelectedIndex >= 0;
+            if (!AssetsLoader.isRunning) { Button_Extract.IsEnabled = ListBox_Main.SelectedIndex >= 0; }
         }
         private async void ListBox_Main_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {   
-            if (ListBox_Main.SelectedIndex >= 0)
+            if (!AssetsLoader.isRunning && ListBox_Main.SelectedIndex >= 0)
             {
                 //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
                 await AssetsLoader.LoadSelectedAsset();

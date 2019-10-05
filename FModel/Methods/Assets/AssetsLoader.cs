@@ -13,6 +13,8 @@ namespace FModel.Methods.Assets
 {
     static class AssetsLoader
     {
+        public static bool isRunning = false;
+
         public static async Task LoadSelectedAsset()
         {
             FWindow.FMain.Button_Extract.IsEnabled = false;
@@ -28,6 +30,7 @@ namespace FModel.Methods.Assets
             CancellationToken cToken = TasksUtility.CancellableTaskTokenSource.Token;
             await Task.Run(() =>
             {
+                isRunning = true;
                 foreach (string item in selectedItems)
                 {
                     cToken.ThrowIfCancellationRequested(); //if clicked on 'Stop' it breaks at the following item
@@ -40,6 +43,7 @@ namespace FModel.Methods.Assets
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
                 TasksUtility.CancellableTaskTokenSource.Dispose();
+                isRunning = false;
             });
 
             FWindow.FMain.Button_Extract.IsEnabled = true;
@@ -76,6 +80,7 @@ namespace FModel.Methods.Assets
                         AssetMainToken = null;
                     }
 
+                    
                     if (AssetMainToken != null && AssetMainToken["export_type"] != null)
                     {
                         DrawingVisual VisualImage = null;
@@ -147,8 +152,6 @@ namespace FModel.Methods.Assets
                                 break;
                             case "FortSchematicItemDefinition":
                                 VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                                break;
-                            case "SoundWave":
                                 break;
                         }
                         if (VisualImage != null) { ImagesUtility.LoadImageAfterExtraction(VisualImage); }

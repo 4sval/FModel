@@ -16,6 +16,36 @@ namespace FModel.Methods.Utilities
         }
 
         /// <summary>
+        /// open file with the default program
+        /// </summary>
+        /// <param name="path"></param>
+        public static void OpenWithDefaultProgram(string path)
+        {
+            if (Directory.Exists(Path.GetDirectoryName(path)))
+            {
+                try
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo
+                    {
+                        Arguments = "\"" + path + "\"",
+                        FileName = "explorer.exe"
+                    };
+                    Process.Start(startInfo);
+                }
+                catch (Exception)
+                {
+                    new UpdateMyConsole("Error while trying to open ", CColors.White).Append();
+                    new UpdateMyConsole(path, CColors.Red, true).Append();
+                }
+            }
+            else
+            {
+                new UpdateMyConsole(path, CColors.Blue).Append();
+                new UpdateMyConsole(" Directory does not exist!", CColors.White, true).Append();
+            }
+        }
+
+        /// <summary>
         /// at startup
         /// </summary>
         public static void LoadFolders()

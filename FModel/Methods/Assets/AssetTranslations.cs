@@ -96,11 +96,10 @@ namespace FModel.Methods.Assets
                 List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(LocResPath);
                 foreach (FPakEntry entry in entriesList)
                 {
-                    switch (Path.GetExtension(entry.Name.ToLowerInvariant()))
+                    if (string.Equals(Path.GetExtension(entry.Name.ToLowerInvariant()), ".locres"))
                     {
-                        case ".locres":
-                            using (var s = reader.GetPackageStream(entry))
-                                return new LocResFile(s).Entries;
+                        using (var s = reader.GetPackageStream(entry))
+                            return new LocResFile(s).Entries;
                     }
                 }
             }
@@ -123,7 +122,6 @@ namespace FModel.Methods.Assets
                             string txtNamespace = GetValueFromParam(line, "Namespace=\"", "\",");
                             string txtKey = GetValueFromParam(line, "Key=\"", "\",");
 
-                            int trIndex = line.IndexOf("LocalizedStrings=(") + "LocalizedStrings=(".Length;
                             string translations = GetValueFromParam(line, "LocalizedStrings=(", "))");
                             if (!translations.EndsWith(")")) { translations = translations + ")"; }
 
@@ -154,8 +152,8 @@ namespace FModel.Methods.Assets
 
         private static string GetValueFromParam(string fullLine, string startWith, string endWith)
         {
-            int startIndex = fullLine.IndexOf(startWith) + startWith.Length;
-            int endIndex = fullLine.Substring(startIndex).IndexOf(endWith);
+            int startIndex = fullLine.IndexOf(startWith, StringComparison.InvariantCultureIgnoreCase) + startWith.Length;
+            int endIndex = fullLine.Substring(startIndex).IndexOf(endWith, StringComparison.InvariantCultureIgnoreCase);
             return fullLine.Substring(startIndex, endIndex);
         }
 

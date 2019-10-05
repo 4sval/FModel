@@ -170,24 +170,41 @@ namespace FModel.Methods.Utilities
             {
                 if (loadImageInBox)
                 {
-                    ExportObject eo = ar.Exports.Where(x => x is Texture2D).FirstOrDefault();
-                    if (eo != null)
-                    {
-                        Texture2D tex = (Texture2D)eo;
-                        SKImage image = tex.GetImage();
-                        if (image != null)
+                    foreach (ExportObject eo in ar.Exports)
+                    {   
+                        switch (eo)
                         {
-                            using (var data = image.Encode())
-                            using (var stream = data.AsStream())
-                            {
-                                ImageSource img = ImagesUtility.GetImageSource(stream);
-                                FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                            case Texture2D texture:
+                                SKImage image = texture.GetImage();
+                                if (image != null)
                                 {
-                                    FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)img); //thread safe and fast af
-                                });
-                            }
+                                    using (var data = image.Encode())
+                                    using (var stream = data.AsStream())
+                                    {
+                                        ImageSource img = ImagesUtility.GetImageSource(stream);
+                                        FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                                        {
+                                            FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)img); //thread safe and fast af
+                                        });
+                                    }
+                                }
+                                return JsonConvert.SerializeObject(texture.textures, Formatting.Indented);
+                            case USoundWave sound:
+                                using (sound)
+                                {
+                                    byte[] s = readSound(sound);
+                                    if (s != null)
+                                    {
+                                        string path = FProp.Default.FOutput_Path + "\\Sounds\\" + FWindow.FCurrentAsset + ".ogg";
+                                        File.WriteAllBytes(path, s);
+                                        FoldersUtility.OpenWithDefaultProgram(path);
+                                    }
+
+                                    GC.Collect();
+                                    GC.WaitForPendingFinalizers();
+                                    return JsonConvert.SerializeObject(sound.base_object, Formatting.Indented);
+                                }
                         }
-                        return JsonConvert.SerializeObject(tex.textures, Formatting.Indented);
                     }
                 }
 
@@ -195,6 +212,32 @@ namespace FModel.Methods.Utilities
             }
 
             return string.Empty;
+        }
+
+        public static byte[] readSound(USoundWave sound)
+        {
+            if (!sound.bStreaming)
+            {
+                if (sound.bCooked && sound.compressedFormatData.Count > 0)
+                {
+                    FSoundFormatData data = sound.compressedFormatData[0];
+                    return data.data.data;
+                }
+                else if(sound.rawData.data != null)
+                {
+                    return sound.rawData.data;
+                }
+            }
+            else if (sound.bStreaming && sound.streamedAudioChunks != null && !string.IsNullOrEmpty(sound.format))
+            {
+                List<byte> bytes = new List<byte>();
+                foreach (FStreamedAudioChunk chunk in sound.streamedAudioChunks)
+                {
+                    chunk.data.data.ToList().ForEach(x => bytes.Add(x));
+                }
+                return bytes.ToArray();
+            }
+            return null;
         }
 
         public static Stream GetStreamImageFromPath(string AssetFullPath)
@@ -331,13 +374,6 @@ namespace FModel.Methods.Utilities
         {
             return properties
                 .Where(x => string.Equals(x["name"].Value<string>(), name))
-                .Select(x => x["tag_data"].Value<T>())
-                .FirstOrDefault();
-        }
-        public static T GetPropertyTagItem<T>(JArray properties, string name)
-        {
-            return properties
-                .Where(x => string.Equals(x["Item1"].Value<string>(), name))
                 .Select(x => x["tag_data"].Value<T>())
                 .FirstOrDefault();
         }
