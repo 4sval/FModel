@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Linq;
 using System.Windows.Media;
+using FModel.Methods.Assets;
+using FModel.Methods;
 
 namespace FModel.Forms
 {
@@ -115,7 +117,12 @@ namespace FModel.Forms
                 DarkMessageBox.Show("Please, restart FModel to apply your new output path", "FModel Output Path Changed", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
+            if (AssetEntries.AssetEntriesDict != null && !string.Equals(FProp.Default.FLanguage, ((ComboBoxItem)ComboBox_Language.SelectedItem).Content.ToString()))
+            {
+                AssetTranslations.SetAssetTranslation(((ComboBoxItem)ComboBox_Language.SelectedItem).Content.ToString());
+            }
             FProp.Default.FLanguage = ((ComboBoxItem)ComboBox_Language.SelectedItem).Content.ToString();
+
             FProp.Default.FRarity_Design = ((ComboBoxItem)ComboBox_Design.SelectedItem).Content.ToString();
 
             FProp.Default.Save();

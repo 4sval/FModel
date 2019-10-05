@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Windows;
 using System.Windows.Media;
 
@@ -22,6 +23,9 @@ namespace FModel.Methods.Assets.IconCreator
                 IconImage.DrawIconImage(AssetProperties);
                 IconText.DrawIconText(AssetProperties);
             }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
             return drawingVisual;
         }
     }

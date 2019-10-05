@@ -1,4 +1,5 @@
-﻿using FModel.Methods.TreeViewModel;
+﻿using FModel.Methods.Assets;
+using FModel.Methods.TreeViewModel;
 using FModel.Methods.Utilities;
 using PakReader;
 using System;
@@ -73,6 +74,7 @@ namespace FModel.Methods.PAKs
             {
                 AssetEntries.ArraySearcher = new Dictionary<string, FPakEntry[]>();
                 AssetEntries.AssetEntriesDict = new Dictionary<string, PakReader.PakReader>();
+                bool isMainKeyWorking = false;
 
                 //MAIN PAKs LOOP
                 foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => !x.bTheDynamicPAK))
@@ -92,6 +94,7 @@ namespace FModel.Methods.PAKs
 
                     if (reader != null)
                     {
+                        isMainKeyWorking = true;
                         PAKEntries.PAKToDisplay.Add(Path.GetFileName(Pak.ThePAKPath), reader.FileInfos);
 
                         if (bAllPAKs) { new UpdateMyProcessEvents($"{Path.GetFileNameWithoutExtension(Pak.ThePAKPath)} mount point: {reader.MountPoint}", "Loading").Update(); }
@@ -102,6 +105,7 @@ namespace FModel.Methods.PAKs
                         }
                     }
                 }
+                if (isMainKeyWorking) { AssetTranslations.SetAssetTranslation(FProp.Default.FLanguage); }
 
                 //DYNAMIC PAKs LOOP
                 foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK))

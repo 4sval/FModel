@@ -154,7 +154,7 @@
                     <Image x:Name="ImageBox_Main" UseLayoutRounding="True"/>
                 </Border>
                 <Border BorderBrush="#7F748198" BorderThickness="1" Margin="1,1,0,0" Background="#FF252D36">
-                    <avalonedit:TextEditor x:Name="AssetPropertiesBox_Main" ShowLineNumbers="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="False" Foreground="#FFEFEFEF"/>
+                    <avalonedit:TextEditor x:Name="AssetPropertiesBox_Main" ShowLineNumbers="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" Foreground="#FFEFEFEF"/>
                 </Border>
             </Grid>
         </Grid>

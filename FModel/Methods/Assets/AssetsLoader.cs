@@ -107,12 +107,16 @@ namespace FModel.Methods.Assets
                                 VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
                                 break;
                             case "FortVariantTokenType":
+                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
                                 break;
                             case "FortAmmoItemDefinition":
+                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
                                 break;
                             case "FortHeroType":
+                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
                                 break;
                             case "FortDefenderItemDefinition":
+                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
                                 break;
                             case "FortContextTrapItemDefinition":
                             case "FortTrapItemDefinition":
@@ -137,10 +141,12 @@ namespace FModel.Methods.Assets
                             case "FortAwardItemDefinition":
                             case "FortChallengeBundleScheduleDefinition":
                             case "FortAbilityKit":
+                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
                                 break;
                             case "FortChallengeBundleItemDefinition":
                                 break;
                             case "FortSchematicItemDefinition":
+                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
                                 break;
                             case "SoundWave":
                                 break;

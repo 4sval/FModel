@@ -1,5 +1,4 @@
 ﻿using FModel.Methods.SyntaxHighlighter;
-using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
@@ -262,7 +261,7 @@ namespace FModel.Methods.Utilities
                 {
                     string path = FProp.Default.FOutput_Path + "\\Exports\\" + entry.Name;
                     string pWExt = FoldersUtility.GetFullPathWithoutExtension(entry.Name);
-                    string subfolders = pWExt.Substring(0, pWExt.LastIndexOf("/"));
+                    string subfolders = pWExt.Substring(0, pWExt.LastIndexOf("/", StringComparison.InvariantCultureIgnoreCase));
 
                     Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Exports\\" + subfolders);
                     Stream stream = reader.GetPackageStream(entry);
@@ -332,6 +331,13 @@ namespace FModel.Methods.Utilities
         {
             return properties
                 .Where(x => string.Equals(x["name"].Value<string>(), name))
+                .Select(x => x["tag_data"].Value<T>())
+                .FirstOrDefault();
+        }
+        public static T GetPropertyTagItem<T>(JArray properties, string name)
+        {
+            return properties
+                .Where(x => string.Equals(x["Item1"].Value<string>(), name))
                 .Select(x => x["tag_data"].Value<T>())
                 .FirstOrDefault();
         }

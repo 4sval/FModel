@@ -23,7 +23,14 @@ namespace FModel.Methods.Assets.IconCreator
             }
             else if (weaponToken != null)
             {
-                string assetPath = "/FortniteGame/Content/Athena/Items/Weapons/" + weaponToken.Value<string>();
+                string weaponName = weaponToken.Value<string>();
+
+                if (weaponToken.Value<string>().Equals("WID_Harvest_Pickaxe_STWCosmetic_Tier")) //STW PICKAXES MANUAL FIX
+                {
+                    weaponName = "WID_Harvest_Pickaxe_STWCosmetic_Tier_" + FWindow.FCurrentAsset.Substring(FWindow.FCurrentAsset.Length - 1);
+                }
+
+                string assetPath = "/FortniteGame/Content/Athena/Items/Weapons/" + weaponName;
                 DrawImageFromTagData(assetPath);
             }
             else

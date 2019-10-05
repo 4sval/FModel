@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -56,11 +57,11 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                     if (categoryNameToken != null)
                     {
                         if (
-                            uFFTarget == "Animated  " && categoryNameToken.Value<string>() == "Animated" ||
-                            uFFTarget == "HasVariants" && categoryNameToken.Value<string>() == "Unlockable Styles" ||
-                            uFFTarget == "Reactive" && categoryNameToken.Value<string>() == "Reactive" ||
-                            uFFTarget == "Traversal" && categoryNameToken.Value<string>() == "Traversal" ||
-                            uFFTarget == "BuiltInEmote" && categoryNameToken.Value<string>() == "Built-in")
+                            uFFTarget.Contains("Animated") && categoryNameToken.Value<string>() == "Animated" ||
+                            (uFFTarget.Contains("HasVariants") || uFFTarget.Contains("HasUpgradeQuests")) && categoryNameToken.Value<string>() == "Unlockable Styles" ||
+                            uFFTarget.Contains("Reactive") && categoryNameToken.Value<string>() == "Reactive" ||
+                            uFFTarget.Contains("Traversal") && categoryNameToken.Value<string>() == "Traversal" ||
+                            uFFTarget.Contains("BuiltInEmote") && categoryNameToken.Value<string>() == "Built-in")
                         {
                             GetUFFImage(propertiesArray);
                         }

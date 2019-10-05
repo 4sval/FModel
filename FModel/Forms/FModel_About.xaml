@@ -12,6 +12,7 @@
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterScreen" 
         WindowStyle="ToolWindow"
+        ShowInTaskbar="False"
         >
     <Grid>
         <Image HorizontalAlignment="Left" Height="201" VerticalAlignment="Top" Width="201" Source="/FModel;component/Resources/Logo.png" Margin="10,10,0,0"/>
