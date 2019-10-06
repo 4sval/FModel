@@ -1,17 +1,20 @@
 ﻿using FModel.Methods.Utilities;
 using PakReader;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.PAKs
 {
     static class BackupPAKs
     {
-        private static readonly string OUTPUT_PATH = FProp.Default.FOutput_Path;
+        private static List<FPakEntry> BackupList;
+        public static XmlSerializer serializer = new XmlSerializer(typeof(List<FPakEntry>));
+        private static readonly string BACKUP_FILE_PATH = FProp.Default.FOutput_Path + "\\Backups\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".xml";
 
         public static async Task CreateBackupFile()
         {
@@ -28,7 +31,7 @@ namespace FModel.Methods.PAKs
         {
             if (PAKEntries.PAKEntriesList != null && PAKEntries.PAKEntriesList.Any())
             {
-                StringBuilder sb = new StringBuilder();
+                BackupList = new List<FPakEntry>();
                 foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList)
                 {
                     byte[] AESKey = null;
@@ -57,22 +60,26 @@ namespace FModel.Methods.PAKs
 
                             foreach (FPakEntry entry in reader.FileInfos)
                             {
-                                sb.Append(entry.Name.Substring(1) + "\n"); //SUBSTRING(1) TO REMOVE THE FIRST '/'
+                                BackupList.Add(entry);
                             }
                         }
                     }
                 }
 
-                string BackupFileName = $"FortniteGame_{DateTime.Now.ToString("MMddyyyy")}.txt";
-                File.WriteAllText($"{OUTPUT_PATH}\\Backup\\{BackupFileName}", sb.ToString()); //FILE WILL ALWAYS EXIST
-                if (new FileInfo($"{OUTPUT_PATH}\\Backup\\{BackupFileName}").Length > 0) //HENCE WE CHECK THE LENGTH
+                new UpdateMyProcessEvents($"Writing {Path.GetFileName(BACKUP_FILE_PATH)}", "Waiting").Update();
+                Directory.CreateDirectory(Path.GetDirectoryName(BACKUP_FILE_PATH));
+                using (var fileStream = new FileStream(BACKUP_FILE_PATH, FileMode.Create))
                 {
-                    new UpdateMyProcessEvents($"\\Backup\\{BackupFileName} successfully created", "Success").Update();
+                    serializer.Serialize(fileStream, BackupList);
+                }
+                if (new FileInfo(BACKUP_FILE_PATH).Length > 0) //HENCE WE CHECK THE LENGTH
+                {
+                    new UpdateMyProcessEvents($"\\Backups\\{Path.GetFileName(BACKUP_FILE_PATH)} successfully created", "Success").Update();
                 }
                 else
                 {
-                    File.Delete($"{OUTPUT_PATH}\\Backup\\{BackupFileName}"); //WE DELETE THE EMPTY FILE CREATED
-                    new UpdateMyProcessEvents($"Error while creating {BackupFileName}", "Error").Update();
+                    File.Delete(BACKUP_FILE_PATH); //WE DELETE THE EMPTY FILE CREATED
+                    new UpdateMyProcessEvents($"Error while creating {Path.GetFileName(BACKUP_FILE_PATH)}", "Error").Update();
                 }
             }
         }

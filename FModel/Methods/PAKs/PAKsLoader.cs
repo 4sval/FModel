@@ -1,6 +1,7 @@
 ﻿using FModel.Methods.Assets;
 using FModel.Methods.TreeViewModel;
 using FModel.Methods.Utilities;
+using Microsoft.Win32;
 using PakReader;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,30 @@ namespace FModel.Methods.PAKs
             });
 
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = true;
+            FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
+        }
+        public static async Task LoadDifference()
+        {
+            FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
+            FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
+            FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
+            FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
+            FWindow.FMain.ImageBox_Main.Source = null;
+            ListBoxUtility.FilesListWithoutPath = null;
+            FWindow.FMain.ListBox_Main.Items.Clear();
+
+            await Task.Run(() =>
+            {
+                PAKEntries.PAKToDisplay = new Dictionary<string, FPakEntry[]>();
+
+                LoadPAKFiles(true);
+                LoadBackupFile();
+
+            }).ContinueWith(TheTask =>
+            {
+                TasksUtility.TaskCompleted(TheTask.Exception);
+            });
+
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
         }
 
@@ -187,6 +212,64 @@ namespace FModel.Methods.PAKs
                 FWindow.FMain.ViewModel = srt;
             });
             new UpdateMyProcessEvents(!bAllPAKs ? PAK_PATH + "\\" + FWindow.FCurrentPAK : PAK_PATH, "Success").Update();
+        }
+
+        private static void LoadBackupFile()
+        {
+            OpenFileDialog openFiledialog = new OpenFileDialog();
+            openFiledialog.Title = "Choose your Backup File";
+            openFiledialog.InitialDirectory = FProp.Default.FOutput_Path + "\\Backups\\";
+            openFiledialog.Multiselect = false;
+            openFiledialog.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
+            if (openFiledialog.ShowDialog() == true)
+            {
+                new UpdateMyProcessEvents("Comparing Files", "Waiting").Update();
+
+                FPakEntry[] BackupEntries;
+                using (var fileStream = new FileStream(openFiledialog.FileName, FileMode.Open))
+                {
+                    BackupEntries = ((List<FPakEntry>)BackupPAKs.serializer.Deserialize(fileStream)).ToArray();
+                }
+
+                if (BackupEntries.Any())
+                {
+                    List<FPakEntry> LocalEntries = new List<FPakEntry>();
+                    foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
+                    {
+                        PAKsFileInfos.ToList().ForEach(x => LocalEntries.Add(x));
+                    }
+
+                    //FILTER WITH THE OVERRIDED EQUALS METHOD (CHECKING FILE NAME AND FILE UNCOMPRESSED SIZE)
+                    IEnumerable<FPakEntry> newAssets = LocalEntries.ToArray().Except(BackupEntries);
+
+                    //ADD TO TREE
+                    foreach (FPakEntry entry in newAssets)
+                    {
+                        FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                        {
+                            string onlyFolders = entry.Name.Substring(0, entry.Name.LastIndexOf('/'));
+                            TreeViewUtility.PopulateTreeView(srt, onlyFolders.Substring(1));
+                        });
+                    }
+
+                    //ONLY LOAD THE DIFFERENCE WHEN WE CLICK ON A FOLDER
+                    PAKEntries.PAKToDisplay.Clear();
+                    FWindow.FCurrentPAK = "ComparedPAK-WindowsClient.pak";
+                    PAKEntries.PAKToDisplay.Add("ComparedPAK-WindowsClient.pak", newAssets.ToArray());
+
+                    FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                    {
+                        FWindow.FMain.ViewModel = srt;
+                    });
+                    new UpdateMyProcessEvents("All PAK files have been compared successfully", "Success").Update();
+                }
+            }
+            else
+            {
+                new UpdateMyConsole("You change your mind pretty fast but it's fine ", CColors.White).Append();
+                new UpdateMyConsole("all paks have been loaded instead", CColors.Blue, true).Append();
+                FillTreeView(true);
+            }
         }
     }
 }

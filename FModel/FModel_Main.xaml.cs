@@ -116,7 +116,24 @@ namespace FModel
         private async void MI_LoadAllPAKs_Click(object sender, RoutedEventArgs e)
         {
             FWindow.FCurrentPAK = string.Empty;
-            await PAKsLoader.LoadAllPAKs();
+
+            //LOAD ALL
+            if (!MI_DifferenceMode.IsChecked && !MI_UpdateMode.IsChecked)
+            {
+                await PAKsLoader.LoadAllPAKs();
+            }
+            
+            //LOAD DIFF
+            if (MI_DifferenceMode.IsChecked && !MI_UpdateMode.IsChecked)
+            {
+                await PAKsLoader.LoadDifference();
+            }
+
+            //LOAD AND EXTRACT DIFF
+            if (MI_DifferenceMode.IsChecked && MI_UpdateMode.IsChecked)
+            {
+
+            }
         }
         private async void MI_BackupPAKs_Click(object sender, RoutedEventArgs e)
         {
@@ -160,6 +177,39 @@ namespace FModel
                 new FModel_About().Show();
             }
             else { FormsUtility.GetOpenedWindow<Window>("About").Focus(); }
+        }
+        private void MI_Change_Header(object sender, RoutedEventArgs e)
+        {
+            //DIFFERENCE MODE
+            if (MI_DifferenceMode.IsChecked)
+            {
+                MI_LoadOnePAK.IsEnabled = false;
+                MI_LoadAllPAKs.Header = "Load Difference";
+                MI_UpdateMode.IsEnabled = true;
+            }
+            if (!MI_DifferenceMode.IsChecked)
+            {
+                MI_LoadOnePAK.IsEnabled = true;
+                MI_UpdateMode.IsEnabled = false;
+                MI_UpdateMode.IsChecked = false;
+            }
+
+            //UPDATE MODE
+            if (MI_UpdateMode.IsChecked)
+            {
+                MI_LoadAllPAKs.Header = "Load And Extract Difference";
+                MI_UpdateMode.IsEnabled = true;
+            }
+            if (!MI_UpdateMode.IsChecked)
+            {
+                MI_LoadAllPAKs.Header = "Load Difference";
+            }
+
+            //BOTH
+            if (!MI_DifferenceMode.IsChecked && !MI_UpdateMode.IsChecked)
+            {
+                MI_LoadAllPAKs.Header = "Load All PAKs";
+            }
         }
         #endregion
 

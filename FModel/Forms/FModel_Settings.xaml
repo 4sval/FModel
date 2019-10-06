@@ -47,12 +47,15 @@
                     <ComboBoxItem Content="Traditional Chinese"/>
                 </ComboBox>
                 <Label Content="Rarity Design:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,32,0,0"/>
-                <ComboBox x:Name="ComboBox_Design" HorizontalAlignment="Left" Margin="78,35,0,0" VerticalAlignment="Top" Width="315" BorderBrush="#7F748198" Background="#FF333C46" IsReadOnly="True">
+                <ComboBox x:Name="ComboBox_Design" HorizontalAlignment="Left" Margin="78,35,0,0" VerticalAlignment="Top" Width="315" BorderBrush="#7F748198" Background="#FF333C46" IsReadOnly="True" SelectionChanged="UpdateImageBox">
                     <ComboBoxItem Content="Default"/>
                     <ComboBoxItem Content="Flat"/>
                     <ComboBoxItem Content="Minimalist"/>
                 </ComboBox>
-                <Border BorderThickness="1" Background="#FF252D36" HorizontalAlignment="Right" Height="164" Margin="398,0,0,0" Width="164"/>
+                <Border BorderThickness="1" Background="#FF252D36" HorizontalAlignment="Right" Height="164" Margin="398,0,0,0" Width="164">
+                    <Image x:Name="ImageBox_RarityPreview" Source="/FModel;component/Resources/Template_D_N.png" UseLayoutRounding="True"/>
+                </Border>
+                <CheckBox x:Name="bFeaturedIcon" Content="Featured Item Icon" HorizontalAlignment="Left" Margin="286,149,0,0" VerticalAlignment="Top" Checked="UpdateImageBox" Unchecked="UpdateImageBox"/>
             </Grid>
         </GroupBox>
         <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="80" Click="Button_Click"/>

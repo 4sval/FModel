@@ -36,8 +36,8 @@
                 <MenuItem x:Name="MI_DownloadBackups" Header="Download Backups"/>
                 <MenuItem x:Name="MI_BackupPAKs" Header="Backup PAKs" Click="MI_BackupPAKs_Click" IsEnabled="False"/>
                 <Separator/>
-                <MenuItem Header="Difference Mode" IsCheckable="True"/>
-                <MenuItem Header="Update Mode" IsCheckable="True" IsEnabled="False"/>
+                <MenuItem x:Name="MI_DifferenceMode" Header="Difference Mode" IsCheckable="True" Checked="MI_Change_Header" Unchecked="MI_Change_Header"/>
+                <MenuItem x:Name="MI_UpdateMode" Header="Update Mode" IsCheckable="True" Checked="MI_Change_Header" Unchecked="MI_Change_Header" IsEnabled="False"/>
                 <Separator/>
                 <MenuItem x:Name="MI_Settings" Header="Settings" InputGestureText="F1" Command="{x:Static commands:FModel_Commands.OpenSettings}">
                     <MenuItem.Icon>
@@ -158,6 +158,5 @@
                 </Border>
             </Grid>
         </Grid>
-
     </Grid>
 </Window>

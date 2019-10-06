@@ -40,6 +40,12 @@ namespace FModel.Methods.AESManager
                 }
             }
 
+            Directory.CreateDirectory(Path.GetDirectoryName(AESManager_PATH));
+            using (var fileStream = new FileStream(AESManager_PATH, FileMode.Create))
+            {
+                KeysManager.serializer.Serialize(fileStream, AESEntries.AESEntriesList);
+            }
+
             FWindow.FMain.Dispatcher.InvokeAsync(() =>
             {
                 PAKsUtility.DisableNonKeyedPAKs();

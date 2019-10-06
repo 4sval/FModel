@@ -7,23 +7,16 @@ namespace FModel.Methods.AESManager
 {
     static class KeysManager
     {
-        private static XmlSerializer serializer = new XmlSerializer(typeof(List<AESInfosEntry>));
+        public static XmlSerializer serializer = new XmlSerializer(typeof(List<AESInfosEntry>));
         private static readonly string AESManager_PATH = FProp.Default.FOutput_Path + "\\FAESManager.xml";
 
         public static void Serialize(string PAKName, string PAKKey)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(AESManager_PATH));
-
             AESEntries.AESEntriesList.Add(new AESInfosEntry
             {
                 ThePAKName = PAKName,
                 ThePAKKey = PAKKey
             });
-
-            using (var fileStream = new FileStream(AESManager_PATH, FileMode.Create))
-            {
-                serializer.Serialize(fileStream, AESEntries.AESEntriesList);
-            }
         }
 
         public static void Deserialize()

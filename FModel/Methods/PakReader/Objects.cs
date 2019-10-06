@@ -213,7 +213,7 @@ namespace PakReader
         public int StructSize;
     }
 
-    public class FPakEntry : BasePakEntry
+    public class FPakEntry : BasePakEntry, IEquatable<FPakEntry>
     {
         public string Name;
         public int CompressionMethod;
@@ -264,6 +264,19 @@ namespace PakReader
 
             StructSize = (int)(reader.BaseStream.Position - StartOffset);
         }
+
+        // difference mode
+        public bool Equals(FPakEntry other)
+        {
+            if (other is null)
+                return false;
+
+            return this.Name == other.Name && this.UncompressedSize == other.UncompressedSize;
+        }
+        public override bool Equals(object obj) => Equals(obj as FPakEntry);
+        public override int GetHashCode() => (Name, UncompressedSize).GetHashCode();
+
+        public FPakEntry() { } // xml file
     }
 
     internal struct FPakCompressedBlock

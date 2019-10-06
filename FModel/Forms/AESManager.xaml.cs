@@ -18,6 +18,8 @@ namespace FModel.Forms
     /// </summary>
     public partial class AESManager : Window
     {
+        private static readonly string AESManager_PATH = FProp.Default.FOutput_Path + "\\FAESManager.xml";
+
         public AESManager()
         {
             InitializeComponent();
@@ -114,6 +116,12 @@ namespace FModel.Forms
                         else { KeysManager.Serialize(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), Regex.Replace(PakTextBox.Text.ToUpper(), @"\s+", string.Empty)); }
                     }
                     else { KeysManager.Serialize(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), string.Empty); }
+                }
+
+                Directory.CreateDirectory(Path.GetDirectoryName(AESManager_PATH));
+                using (var fileStream = new FileStream(AESManager_PATH, FileMode.Create))
+                {
+                    KeysManager.serializer.Serialize(fileStream, AESEntries.AESEntriesList);
                 }
             }
 

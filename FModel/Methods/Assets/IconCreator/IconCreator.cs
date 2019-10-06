@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Media;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets.IconCreator
 {
@@ -20,7 +21,7 @@ namespace FModel.Methods.Assets.IconCreator
                 ICDrawingContext.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), new Size(515, 515)));
 
                 Rarity.DrawRarityBackground(AssetProperties);
-                IconImage.DrawIconImage(AssetProperties);
+                IconImage.DrawIconImage(AssetProperties, FProp.Default.FIsFeatured);
                 IconText.DrawIconText(AssetProperties);
             }
 

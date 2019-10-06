@@ -267,6 +267,24 @@
     <Folder Include="Methods\Assets\IconCreator\SchematicID\" />
     <Folder Include="Methods\Assets\IconCreator\VariantID\" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_D_F.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_D_N.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_F_F.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_F_N.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_M_F.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_M_N.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">
     <ItemGroup>

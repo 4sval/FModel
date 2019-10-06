@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows.Media;
 using FModel.Methods.Assets;
 using FModel.Methods;
+using System.Windows.Media.Imaging;
 
 namespace FModel.Forms
 {
@@ -101,6 +102,8 @@ namespace FModel.Forms
 
             ComboBox_Language.SelectedIndex = (int)GetEnumValueFromDescription<LIndexes>(FProp.Default.FLanguage);
             ComboBox_Design.SelectedIndex = (int)GetEnumValueFromDescription<RIndexes>(FProp.Default.FRarity_Design);
+
+            bFeaturedIcon.IsChecked = FProp.Default.FIsFeatured;
         }
 
         private void SetUserSettings()
@@ -124,8 +127,27 @@ namespace FModel.Forms
             FProp.Default.FLanguage = ((ComboBoxItem)ComboBox_Language.SelectedItem).Content.ToString();
 
             FProp.Default.FRarity_Design = ((ComboBoxItem)ComboBox_Design.SelectedItem).Content.ToString();
+            FProp.Default.FIsFeatured = (bool)bFeaturedIcon.IsChecked;
 
             FProp.Default.Save();
+        }
+
+        private void UpdateImageBox(object sender, RoutedEventArgs e)
+        {
+            BitmapImage source = null;
+            switch (((ComboBoxItem)ComboBox_Design.SelectedItem).Content.ToString())
+            {
+                case "Default":
+                    source = new BitmapImage(new Uri((bool)bFeaturedIcon.IsChecked ? "/FModel;component/Resources/Template_D_F.png" : "/FModel;component/Resources/Template_D_N.png", UriKind.Relative));
+                    break;
+                case "Flat":
+                    source = new BitmapImage(new Uri((bool)bFeaturedIcon.IsChecked ? "/FModel;component/Resources/Template_F_F.png" : "/FModel;component/Resources/Template_F_N.png", UriKind.Relative));
+                    break;
+                case "Minimalist":
+                    source = new BitmapImage(new Uri((bool)bFeaturedIcon.IsChecked ? "/FModel;component/Resources/Template_M_F.png" : "/FModel;component/Resources/Template_M_N.png", UriKind.Relative));
+                    break;
+            }
+            ImageBox_RarityPreview.Source = source;
         }
     }
 }

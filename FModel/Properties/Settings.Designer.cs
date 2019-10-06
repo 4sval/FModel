@@ -82,5 +82,17 @@ namespace FModel.Properties {
                 this["FLanguage"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FIsFeatured {
+            get {
+                return ((bool)(this["FIsFeatured"]));
+            }
+            set {
+                this["FIsFeatured"] = value;
+            }
+        }
     }
 }
