@@ -24,10 +24,12 @@ namespace PakReader
         {
             EncryptionKeyGuid = new FGuid(reader);
             bEncryptedIndex = reader.ReadByte();
+
             Magic = reader.ReadInt32();
             Version = reader.ReadInt32();
             IndexOffset = reader.ReadInt64();
             IndexSize = reader.ReadInt64();
+
             IndexHash = reader.ReadBytes(20);
 
             if (Version < (int)PAK_VERSION.PAK_INDEX_ENCRYPTION)
@@ -312,7 +314,7 @@ namespace PakReader
 
         public override string ToString()
         {
-            return $"({A}, {B}, {C}, {D})";
+            return $"{A}-{B}-{C}-{D}";
         }
 
         public static bool operator ==(FGuid a, FGuid b) =>

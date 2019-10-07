@@ -12,8 +12,7 @@ namespace FModel.Methods.PAKs
 {
     static class BackupPAKs
     {
-        private static List<FPakEntry> BackupList;
-        public static XmlSerializer serializer = new XmlSerializer(typeof(List<FPakEntry>));
+        public static readonly XmlSerializer serializer = new XmlSerializer(typeof(List<FPakEntry>));
         private static readonly string BACKUP_FILE_PATH = FProp.Default.FOutput_Path + "\\Backups\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".xml";
 
         public static async Task CreateBackupFile()
@@ -31,7 +30,7 @@ namespace FModel.Methods.PAKs
         {
             if (PAKEntries.PAKEntriesList != null && PAKEntries.PAKEntriesList.Any())
             {
-                BackupList = new List<FPakEntry>();
+                List<FPakEntry> BackupList = new List<FPakEntry>();
                 foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList)
                 {
                     byte[] AESKey = null;

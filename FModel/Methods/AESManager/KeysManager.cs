@@ -7,7 +7,7 @@ namespace FModel.Methods.AESManager
 {
     static class KeysManager
     {
-        public static XmlSerializer serializer = new XmlSerializer(typeof(List<AESInfosEntry>));
+        public static readonly XmlSerializer serializer = new XmlSerializer(typeof(List<AESInfosEntry>));
         private static readonly string AESManager_PATH = FProp.Default.FOutput_Path + "\\FAESManager.xml";
 
         public static void Serialize(string PAKName, string PAKKey)

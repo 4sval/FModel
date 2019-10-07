@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,10 +45,17 @@ namespace FModel.Methods.Assets.IconCreator
                 else if (weaponToken != null)
                 {
                     string weaponName = weaponToken.Value<string>();
-
                     if (weaponToken.Value<string>().Equals("WID_Harvest_Pickaxe_STWCosmetic_Tier")) //STW PICKAXES MANUAL FIX
                     {
                         weaponName = "WID_Harvest_Pickaxe_STWCosmetic_Tier_" + FWindow.FCurrentAsset.Substring(FWindow.FCurrentAsset.Length - 1);
+                    }
+                    if (weaponToken.Value<string>().Equals("WID_Harvest_Pickaxe_NutCracker")) //RIP CASE SENSITIVE
+                    {
+                        weaponName = "WID_Harvest_Pickaxe_Nutcracker";
+                    }
+                    if (weaponToken.Value<string>().Equals("WID_Harvest_Pickaxe_Wukong")) //RIP CASE SENSITIVE
+                    {
+                        weaponName = "WID_Harvest_Pickaxe_WuKong";
                     }
 
                     string assetPath = "/FortniteGame/Content/Athena/Items/Weapons/" + weaponName;
@@ -193,10 +201,11 @@ namespace FModel.Methods.Assets.IconCreator
 
         private static void DrawFeaturedImageFromDisplayAssetProperty(JArray AssetProperties, JArray displayAssetProperties)
         {
-            JToken resourceObjectToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(displayAssetProperties, "ResourceObject");
-            if (resourceObjectToken != null)
+            JToken resourceObjectOuterImportToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(displayAssetProperties, "ResourceObject");
+            JToken resourceObjectImportToken = AssetsUtility.GetPropertyTagImport<JToken>(displayAssetProperties, "ResourceObject");
+            if (resourceObjectOuterImportToken != null && resourceObjectOuterImportToken.Value<string>() != null)
             {
-                string texturePath = FoldersUtility.FixFortnitePath(resourceObjectToken.Value<string>());
+                string texturePath = FoldersUtility.FixFortnitePath(resourceObjectOuterImportToken.Value<string>());
                 if (texturePath.Contains("/FortniteGame/Content/Athena/Prototype/Textures/"))
                 {
                     DrawIconImage(AssetProperties, false);
@@ -214,6 +223,71 @@ namespace FModel.Methods.Assets.IconCreator
                             bmp.EndInit();
 
                             IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
+                        }
+                    }
+                }
+            }
+            else if (resourceObjectImportToken != null)
+            {
+                //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
+                string renderSwitchPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.Contains("/" + resourceObjectImportToken.Value<string>())).Select(d => d.Key).FirstOrDefault();
+                if (!string.IsNullOrEmpty(renderSwitchPath))
+                {
+                    if (renderSwitchPath.Contains("MI_UI_FeaturedRenderSwitch_") || 
+                        renderSwitchPath.Contains("M_UI_ChallengeTile_PCB") || 
+                        renderSwitchPath.Contains("M-Wraps-StreetDemon") || 
+                        renderSwitchPath.Contains("/FortniteGame/Content/UI/Foundation/Textures/Icons/Wraps/FeaturedMaterials/"))
+                    {
+                        PakReader.PakReader reader = AssetsUtility.GetPakReader(renderSwitchPath.Substring(0, renderSwitchPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                        if (reader != null)
+                        {
+                            List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(renderSwitchPath.Substring(0, renderSwitchPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                            string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
+
+                            if (AssetsUtility.IsValidJson(jsonData))
+                            {
+                                dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
+                                JToken AssetMainToken = null;
+                                if (jsonData.StartsWith("[") && jsonData.EndsWith("]"))
+                                {
+                                    JArray AssetArray = JArray.FromObject(AssetData);
+                                    AssetMainToken = AssetArray[0];
+                                }
+                                else if (jsonData.StartsWith("{") && jsonData.EndsWith("}"))
+                                {
+                                    AssetMainToken = AssetData;
+                                }
+
+                                if (AssetMainToken != null)
+                                {
+                                    JArray renderSwitchProperties = AssetMainToken["properties"].Value<JArray>();
+                                    if (renderSwitchProperties != null)
+                                    {
+                                        JArray textureParameterArray = AssetsUtility.GetPropertyTagText<JArray>(renderSwitchProperties, "TextureParameterValues", "data")[0]["struct_type"]["properties"].Value<JArray>();
+                                        if (textureParameterArray != null)
+                                        {
+                                            JToken parameterValueToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(textureParameterArray, "ParameterValue");
+                                            if (parameterValueToken != null)
+                                            {
+                                                string texturePath = FoldersUtility.FixFortnitePath(parameterValueToken.Value<string>());
+                                                using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
+                                                {
+                                                    if (image != null)
+                                                    {
+                                                        BitmapImage bmp = new BitmapImage();
+                                                        bmp.BeginInit();
+                                                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                                        bmp.StreamSource = image;
+                                                        bmp.EndInit();
+
+                                                        IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

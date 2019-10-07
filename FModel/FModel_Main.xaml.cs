@@ -132,7 +132,7 @@ namespace FModel
             //LOAD AND EXTRACT DIFF
             if (MI_DifferenceMode.IsChecked && MI_UpdateMode.IsChecked)
             {
-
+                //not done yet
             }
         }
         private async void MI_BackupPAKs_Click(object sender, RoutedEventArgs e)
