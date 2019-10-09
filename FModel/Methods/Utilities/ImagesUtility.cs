@@ -45,7 +45,10 @@ namespace FModel.Methods.Utilities
                 for (int x = 0; x < source.PixelWidth; x++)
                 {
                     int i = stride * y + bytesPerPixel * x;
-                    buffer[i + 3] = Convert.ToByte(opacity);
+                    if (buffer[i + 3] != 0x00) //do not change the pixels that are already transparent god dammit    
+                    {
+                        buffer[i + 3] = Convert.ToByte(opacity);
+                    }
                 }
             }
 

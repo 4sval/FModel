@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Settings"
         Height="558" 
-        Width="600"
+        Width="610"
         Style="{StaticResource {x:Type Window}}" 
         WindowStartupLocation="CenterScreen" 
         Icon="/FModel;component/Logo.ico" 
@@ -26,7 +26,7 @@
                 <TextBox x:Name="OutputTextBox" Height="19" Margin="50,4,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Icon Creator" HorizontalAlignment="Left" Height="186" Margin="10,116,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
+        <GroupBox Header="Icon Creator" HorizontalAlignment="Left" Height="206" Margin="10,116,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
             <Grid>
                 <Label Content="Language:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0"/>
                 <ComboBox x:Name="ComboBox_Language" HorizontalAlignment="Left" Margin="61,5,0,0" VerticalAlignment="Top" Width="332" BorderBrush="#7F748198" Background="#FF333C46">
@@ -52,10 +52,24 @@
                     <ComboBoxItem Content="Flat"/>
                     <ComboBoxItem Content="Minimalist"/>
                 </ComboBox>
-                <Border BorderThickness="1" Background="#FF252D36" HorizontalAlignment="Right" Height="164" Margin="398,0,0,0" Width="164">
+                <Border BorderThickness="1" Background="#FF252D36" HorizontalAlignment="Right" Height="164" Margin="398,0,0,0" Width="164" VerticalAlignment="Top">
                     <Image x:Name="ImageBox_RarityPreview" Source="/FModel;component/Resources/Template_D_N.png" UseLayoutRounding="True"/>
                 </Border>
-                <CheckBox x:Name="bFeaturedIcon" Content="Featured Item Icon" HorizontalAlignment="Left" Margin="286,149,0,0" VerticalAlignment="Top" Checked="UpdateImageBox" Unchecked="UpdateImageBox"/>
+
+                <CheckBox x:Name="bWatermarkIcon" Content="Watermark" HorizontalAlignment="Left" Margin="8,87,0,0" VerticalAlignment="Top" Checked="EnableDisableWatermark" Unchecked="EnableDisableWatermark"/>
+                <Button x:Name="OpenFile_Button" Content="Open File" HorizontalAlignment="Right" Margin="0,0,411,83" VerticalAlignment="Bottom" Width="60" IsEnabled="False" Click="OpenFile_Button_Click"/>
+                <Label x:Name="Watermark_Label" Content="File Name: " MaxWidth="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="156,82,0,0"/>
+                <Label Content="X Position:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,107,0,0"/>
+                <Slider x:Name="xPos_Slider" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="67,111,0,0" VerticalAlignment="Top" Maximum="509" Minimum="3" Width="326" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
+                <Label Content="Y Position:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,134,0,0"/>
+                <Slider x:Name="yPos_Slider" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="67,138,0,0" VerticalAlignment="Top" Maximum="509" Minimum="3" Width="326" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
+                <Label Content="Opacity:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,161,0,-2"/>
+                <Slider x:Name="Opacity_Slider" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="67,165,0,0" VerticalAlignment="Top" Maximum="255" Width="138" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
+                <Label Content="Scale:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="212,161,0,-2"/>
+                <Slider x:Name="Scale_Slider" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="255,165,0,0" VerticalAlignment="Top" Maximum="515" Width="138" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
+
+                <CheckBox x:Name="bFeaturedIcon" Content="Shop Item Icon" HorizontalAlignment="Left" Margin="305,59,0,0" VerticalAlignment="Top" Checked="UpdateImageBox" Unchecked="UpdateImageBox"/>
+                <Button x:Name="OpenIconCreator_Button" Content="Open Image" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="164" Click="OpenIconCreator_Button_Click"/>
             </Grid>
         </GroupBox>
         <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="80" Click="Button_Click"/>

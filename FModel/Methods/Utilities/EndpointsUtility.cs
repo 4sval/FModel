@@ -44,18 +44,19 @@ namespace FModel.Methods.Utilities
             }
         }
 
-        public static string[] GetKeysFromKeychain()
+        public static string GetKeysFromBen()
         {
             if (DLLImport.IsInternetAvailable())
             {
-                string EndpointContent = GetEndpoint("http://api2.nitestats.com/v1/epic/keychain");
+                string EndpointContent = GetEndpoint("http://benbotfn.tk:8080/api/aes");
                 if (!string.IsNullOrEmpty(EndpointContent))
                 {
-                    return EndpointContent.TrimStart('[').TrimEnd(']').Replace("\"", string.Empty).Split(',');
+                    JToken dynamicPaks = JObject.Parse(EndpointContent).SelectToken("additionalKeys");
+                    return JToken.Parse(dynamicPaks.ToString()).ToString().TrimStart('[').TrimEnd(']');
                 }
                 else
                 {
-                    new UpdateMyConsole("Error while checking for dynamic keys", CColors.Red, true).Append();
+                    new UpdateMyConsole("API Down or Rate Limit Exceeded", CColors.Blue, true).Append();
                     return null;
                 }
             }

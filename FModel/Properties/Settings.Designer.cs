@@ -94,5 +94,77 @@ namespace FModel.Properties {
                 this["FIsFeatured"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FUseWatermark {
+            get {
+                return ((bool)(this["FUseWatermark"]));
+            }
+            set {
+                this["FUseWatermark"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FWatermarkFilePath {
+            get {
+                return ((string)(this["FWatermarkFilePath"]));
+            }
+            set {
+                this["FWatermarkFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int FWatermarkOpacity {
+            get {
+                return ((int)(this["FWatermarkOpacity"]));
+            }
+            set {
+                this["FWatermarkOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double FWatermarkScale {
+            get {
+                return ((double)(this["FWatermarkScale"]));
+            }
+            set {
+                this["FWatermarkScale"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public double FWatermarkXPos {
+            get {
+                return ((double)(this["FWatermarkXPos"]));
+            }
+            set {
+                this["FWatermarkXPos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public double FWatermarkYPos {
+            get {
+                return ((double)(this["FWatermarkYPos"]));
+            }
+            set {
+                this["FWatermarkYPos"] = value;
+            }
+        }
     }
 }

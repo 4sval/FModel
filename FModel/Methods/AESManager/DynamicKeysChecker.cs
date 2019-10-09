@@ -1,5 +1,5 @@
 ﻿using FModel.Methods.Utilities;
-using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,15 +27,42 @@ namespace FModel.Methods.AESManager
 
             if (PAKEntries.PAKEntriesList != null && PAKEntries.PAKEntriesList.Any())
             {
-                string[] KeysFromKeychain = EndpointsUtility.GetKeysFromKeychain();
-                if (KeysFromKeychain != null)
+                string KeysFromBen = EndpointsUtility.GetKeysFromBen();
+                if (!string.IsNullOrEmpty(KeysFromBen))
                 {
-                    AESEntries.AESEntriesList = new List<AESInfosEntry>();
-                    KeysManager.Serialize(string.Empty, string.Empty); //to delete the old keys in case there's no new keys in the api and old ones got moved to the main files
-                    foreach (string GuidKeyItem in KeysFromKeychain)
+                    Dictionary<string, string> KeysDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(KeysFromBen);
+                    if (KeysDict != null)
                     {
-                        string[] Parts = GuidKeyItem.Split(':');
-                        AddDynamicKeysToAESManager(Parts[0], Parts[1]);
+                        AESEntries.AESEntriesList = new List<AESInfosEntry>();
+                        foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK == true //DYNAMIC PAK ONLY 
+                        && !AESEntries.AESEntriesList.Where(w => string.Equals(w.ThePAKName, Path.GetFileNameWithoutExtension(x.ThePAKPath))).Any() //IS NOT ALREADY ADDED
+                        ))
+                        {
+                            if (KeysDict.ContainsKey(Path.GetFileName(Pak.ThePAKPath)))
+                            {
+                                KeysManager.Serialize(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), KeysDict[Path.GetFileName(Pak.ThePAKPath)].ToUpperInvariant().Substring(2));
+
+                                if (_oldAESEntriesList != null)
+                                {
+                                    if (!_oldAESEntriesList.Where(x => string.Equals(x.ThePAKKey, KeysDict[Path.GetFileName(Pak.ThePAKPath)].ToUpperInvariant().Substring(2))).Any())
+                                    {
+                                        new UpdateMyConsole(Path.GetFileName(Pak.ThePAKPath), CColors.Blue).Append();
+                                        new UpdateMyConsole(" can now be opened.", CColors.White, true).Append();
+                                    }
+                                    //else mean there was a FAESManager.xml but the key was already there and didn't change
+                                }
+                                else
+                                {
+                                    //mostly for new users
+                                    new UpdateMyConsole(Path.GetFileName(Pak.ThePAKPath), CColors.Blue).Append();
+                                    new UpdateMyConsole(" can be opened.", CColors.White, true).Append();
+                                }
+                            }
+                            else
+                            {
+                                KeysManager.Serialize(Path.GetFileName(Pak.ThePAKPath), string.Empty);
+                            }
+                        }
                     }
                 }
             }
@@ -50,35 +77,6 @@ namespace FModel.Methods.AESManager
             {
                 PAKsUtility.DisableNonKeyedPAKs();
             });
-        }
-
-        private static void AddDynamicKeysToAESManager(string GuidPart, string AESPart)
-        {
-            foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK == true //DYNAMIC PAK ONLY
-            && string.Equals(PAKsUtility.GetEpicGuid(x.ThePAKGuid), GuidPart) //LOCAL GUID MATCH API GUID
-            && !AESEntries.AESEntriesList.Where(w => string.Equals(w.ThePAKName, Path.GetFileNameWithoutExtension(x.ThePAKPath))).Any() //IS NOT ALREADY ADDED
-            ))
-            {
-                string AESKey = BitConverter.ToString(Convert.FromBase64String(AESPart)).Replace("-", "");
-
-                KeysManager.Serialize(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), AESKey.ToUpperInvariant());
-
-                if (_oldAESEntriesList != null)
-                {
-                    if (!_oldAESEntriesList.Where(x => string.Equals(x.ThePAKKey, AESKey.ToUpperInvariant())).Any())
-                    {
-                        new UpdateMyConsole(Path.GetFileName(Pak.ThePAKPath), CColors.Blue).Append();
-                        new UpdateMyConsole(" can now be opened.", CColors.White, true).Append();
-                    }
-                    //else mean there was a FAESManager.xml but the key was already there and didn't change
-                }
-                else
-                {
-                    //mostly for new users
-                    new UpdateMyConsole(Path.GetFileName(Pak.ThePAKPath), CColors.Blue).Append();
-                    new UpdateMyConsole(" can be opened.", CColors.White, true).Append();
-                }
-            }
         }
     }
 }

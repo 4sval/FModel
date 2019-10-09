@@ -23,6 +23,7 @@ namespace FModel.Methods.Assets.IconCreator
                 Rarity.DrawRarityBackground(AssetProperties);
                 IconImage.DrawIconImage(AssetProperties, FProp.Default.FIsFeatured);
                 IconText.DrawIconText(AssetProperties);
+                IconWatermark.DrawIconWatermark();
             }
 
             GC.Collect();

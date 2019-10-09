@@ -104,29 +104,32 @@ namespace FModel.Methods.PAKs
                 //MAIN PAKs LOOP
                 foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => !x.bTheDynamicPAK))
                 {
-                    byte[] AESKey = AESUtility.StringToByteArray(FProp.Default.FPak_MainAES);
-                    PakReader.PakReader reader = null;
-                    try
+                    if (!string.IsNullOrEmpty(FProp.Default.FPak_MainAES))
                     {
-                        reader = new PakReader.PakReader(Pak.ThePAKPath, AESKey);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (string.Equals(ex.Message, "The AES key is invalid")) { UIHelper.DisplayError(); }
-                        else { UIHelper.DisplayEmergencyError(ex); return; }
-                        break;
-                    }
-
-                    if (reader != null)
-                    {
-                        isMainKeyWorking = true;
-                        PAKEntries.PAKToDisplay.Add(Path.GetFileName(Pak.ThePAKPath), reader.FileInfos);
-
-                        if (bAllPAKs) { new UpdateMyProcessEvents($"{Path.GetFileNameWithoutExtension(Pak.ThePAKPath)} mount point: {reader.MountPoint}", "Loading").Update(); }
-                        foreach (FPakEntry entry in reader.FileInfos)
+                        byte[] AESKey = AESUtility.StringToByteArray(FProp.Default.FPak_MainAES);
+                        PakReader.PakReader reader = null;
+                        try
                         {
-                            AssetEntries.AssetEntriesDict[entry.Name] = reader;
-                            AssetEntries.ArraySearcher[entry.Name] = reader.FileInfos;
+                            reader = new PakReader.PakReader(Pak.ThePAKPath, AESKey);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (string.Equals(ex.Message, "The AES key is invalid")) { UIHelper.DisplayError(); }
+                            else { UIHelper.DisplayEmergencyError(ex); return; }
+                            break;
+                        }
+
+                        if (reader != null)
+                        {
+                            isMainKeyWorking = true;
+                            PAKEntries.PAKToDisplay.Add(Path.GetFileName(Pak.ThePAKPath), reader.FileInfos);
+
+                            if (bAllPAKs) { new UpdateMyProcessEvents($"{Path.GetFileNameWithoutExtension(Pak.ThePAKPath)} mount point: {reader.MountPoint}", "Loading").Update(); }
+                            foreach (FPakEntry entry in reader.FileInfos)
+                            {
+                                AssetEntries.AssetEntriesDict[entry.Name] = reader;
+                                AssetEntries.ArraySearcher[entry.Name] = reader.FileInfos;
+                            }
                         }
                     }
                 }
