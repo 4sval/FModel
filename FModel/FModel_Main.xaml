@@ -21,10 +21,12 @@
     UseLayoutRounding="True">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static commands:FModel_Commands.OpenSettings}" Executed="MI_Settings_Click"/>
+        <CommandBinding Command="{x:Static commands:FModel_Commands.OpenSearch}" Executed="MI_Search_Click"/>
         <CommandBinding Command="{x:Static commands:FModel_Commands.OpenOutput}" Executed="MI_OpenOutputFolder_Click"/>
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Key="F1" Command="{x:Static commands:FModel_Commands.OpenSettings}"/>
+        <KeyBinding Key="F2" Command="{x:Static commands:FModel_Commands.OpenSearch}"/>
         <KeyBinding Key="F3" Command="{x:Static commands:FModel_Commands.OpenOutput}"/>
     </Window.InputBindings>
     <Grid>
@@ -46,7 +48,7 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Files">
-                <MenuItem x:Name="MI_Search" Header="Search" InputGestureText="F2"/>
+                <MenuItem x:Name="MI_Search" Header="Search" InputGestureText="F2" Command="{x:Static commands:FModel_Commands.OpenSearch}"/>
                 <Separator/>
                 <MenuItem x:Name="MI_ExportRaw" Header="Export RAW Data" Click="MI_ExportRaw_Click"/>
                 <MenuItem x:Name="MI_SaveJson" Header="Save JSON Data" Click="MI_SaveJson_Click"/>

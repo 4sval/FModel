@@ -17,13 +17,15 @@
         <GroupBox Header=".PAK Files" HorizontalAlignment="Left" Height="48" Margin="10,10,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
             <Grid>
                 <Label Content="Input:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,1,0,0"/>
-                <TextBox x:Name="InputTextBox" Height="19" Margin="41,4,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
+                <TextBox x:Name="InputTextBox" Height="19" Margin="41,4,35,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
+                <Button x:Name="BrowseInput_Button" Content="..." HorizontalAlignment="Left" Margin="532,4,0,0" VerticalAlignment="Top" Width="20" Click="BrowseInput_Button_Click"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Extraction" HorizontalAlignment="Left" Height="48" Margin="10,63,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
             <Grid>
                 <Label Content="Output:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,-1"/>
-                <TextBox x:Name="OutputTextBox" Height="19" Margin="50,4,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
+                <TextBox x:Name="OutputTextBox" Height="19" Margin="50,4,35,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
+                <Button x:Name="BrowseOutput_Button" Content="..." HorizontalAlignment="Left" Margin="532,4,0,0" VerticalAlignment="Top" Width="20" Click="BrowseOutput_Button_Click"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Icon Creator" HorizontalAlignment="Left" Height="206" Margin="10,116,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
@@ -60,13 +62,13 @@
                 <Button x:Name="OpenFile_Button" Content="Open File" HorizontalAlignment="Right" Margin="0,0,411,83" VerticalAlignment="Bottom" Width="60" IsEnabled="False" Click="OpenFile_Button_Click"/>
                 <Label x:Name="Watermark_Label" Content="File Name: " MaxWidth="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="156,82,0,0"/>
                 <Label Content="X Position:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,107,0,0"/>
-                <Slider x:Name="xPos_Slider" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="67,111,0,0" VerticalAlignment="Top" Maximum="509" Minimum="3" Width="326" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
+                <Slider x:Name="xPos_Slider" Style="{StaticResource Horizontal_Slider}" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="67,110,0,0" VerticalAlignment="Top" Maximum="509" Minimum="3" Width="326" Background="#FF525A63" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
                 <Label Content="Y Position:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,134,0,0"/>
-                <Slider x:Name="yPos_Slider" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="67,138,0,0" VerticalAlignment="Top" Maximum="509" Minimum="3" Width="326" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
+                <Slider x:Name="yPos_Slider" Style="{StaticResource Horizontal_Slider}" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="67,137,0,0" VerticalAlignment="Top" Maximum="509" Minimum="3" Width="326" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
                 <Label Content="Opacity:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,161,0,-2"/>
-                <Slider x:Name="Opacity_Slider" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="67,165,0,0" VerticalAlignment="Top" Maximum="255" Width="138" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
+                <Slider x:Name="Opacity_Slider" Style="{StaticResource Horizontal_Slider}" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="67,164,0,-1" VerticalAlignment="Top" Maximum="255" Width="138" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
                 <Label Content="Scale:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="212,161,0,-2"/>
-                <Slider x:Name="Scale_Slider" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="255,165,0,0" VerticalAlignment="Top" Maximum="515" Width="138" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
+                <Slider x:Name="Scale_Slider" Style="{StaticResource Horizontal_Slider}" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="255,164,0,-1" VerticalAlignment="Top" Maximum="515" Width="138" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
 
                 <CheckBox x:Name="bFeaturedIcon" Content="Shop Item Icon" HorizontalAlignment="Left" Margin="305,59,0,0" VerticalAlignment="Top" Checked="UpdateImageBox" Unchecked="UpdateImageBox"/>
                 <Button x:Name="OpenIconCreator_Button" Content="Open Image" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="164" Click="OpenIconCreator_Button_Click"/>

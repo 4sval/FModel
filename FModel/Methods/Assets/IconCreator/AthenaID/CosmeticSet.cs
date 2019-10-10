@@ -52,7 +52,10 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                 {
                     if (string.Equals(FProp.Default.FLanguage, "English"))
                     {
-                        if (AssetTranslations.HotfixLocResDict != null && AssetTranslations.HotfixLocResDict.ContainsKey(set_namespace.Value<string>()) && AssetTranslations.HotfixLocResDict[set_namespace.Value<string>()].ContainsKey(set_key.Value<string>()))
+                        if (AssetTranslations.HotfixLocResDict != null &&
+                            AssetTranslations.HotfixLocResDict.ContainsKey(set_namespace.Value<string>()) &&
+                            AssetTranslations.HotfixLocResDict[set_namespace.Value<string>()].ContainsKey(set_key.Value<string>()) &&
+                            AssetTranslations.HotfixLocResDict[set_namespace.Value<string>()][set_key.Value<string>()].ContainsKey("en"))
                         {
                             return string.Format("\nPart of the {0} set.", AssetTranslations.HotfixLocResDict[set_namespace.Value<string>()][set_key.Value<string>()]["en"]);
                         }

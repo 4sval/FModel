@@ -147,6 +147,14 @@ namespace FModel
             }
             else { FormsUtility.GetOpenedWindow<Window>("Settings").Focus(); }
         }
+        private void MI_Search_Click(object sender, RoutedEventArgs e)
+        {
+            if (!FormsUtility.IsWindowOpen<Window>("Search"))
+            {
+                new FModel_SearchFiles().Show();
+            }
+            else { FormsUtility.GetOpenedWindow<Window>("Search").Focus(); }
+        }
         private void MI_ExportRaw_Click(object sender, RoutedEventArgs e)
         {
             if (ListBox_Main.SelectedIndex >= 0)
@@ -242,6 +250,7 @@ namespace FModel
         private async void FilterTextBox_Main_TextChanged(object sender, TextChangedEventArgs e)
         {
             await ListBoxUtility.FilterListBox();
+            await Task.Delay(300);
         }
         private async void RC_Extract_Click(object sender, RoutedEventArgs e)
         {

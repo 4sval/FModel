@@ -66,7 +66,10 @@ namespace FModel.Methods.Assets
 
         public static string SearchTranslation(string tNamespace, string tKey, string ifNotFound)
         {
-            if (HotfixLocResDict != null && HotfixLocResDict.ContainsKey(tNamespace) && HotfixLocResDict[tNamespace].ContainsKey(tKey))
+            if (HotfixLocResDict != null &&
+                HotfixLocResDict.ContainsKey(tNamespace) &&
+                HotfixLocResDict[tNamespace].ContainsKey(tKey) &&
+                HotfixLocResDict[tNamespace][tKey].ContainsKey(GetLanguageCode()))
             {
                 return HotfixLocResDict[tNamespace][tKey][GetLanguageCode()];
             }

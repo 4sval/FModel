@@ -11,9 +11,9 @@ using FModel.Methods.Assets;
 using FModel.Methods;
 using System.Windows.Media.Imaging;
 using FModel.Methods.Utilities;
-using Microsoft.Win32;
 using System.IO;
 using System.Threading.Tasks;
+using Ookii.Dialogs.Wpf;
 
 namespace FModel.Forms
 {
@@ -155,13 +155,15 @@ namespace FModel.Forms
         {
             await UpdateImageWithWatermark();
         }
-        private void EnableDisableWatermark(object sender, RoutedEventArgs e)
+        private async void EnableDisableWatermark(object sender, RoutedEventArgs e)
         {
             OpenFile_Button.IsEnabled = (bool)bWatermarkIcon.IsChecked;
             xPos_Slider.IsEnabled = (bool)bWatermarkIcon.IsChecked;
             yPos_Slider.IsEnabled = (bool)bWatermarkIcon.IsChecked;
             Opacity_Slider.IsEnabled = (bool)bWatermarkIcon.IsChecked;
             Scale_Slider.IsEnabled = (bool)bWatermarkIcon.IsChecked;
+
+            await UpdateImageWithWatermark();
         }
         private async void UpdateImageWithWatermark(object sender, RoutedEventArgs e)
         {
@@ -269,7 +271,7 @@ namespace FModel.Forms
 
         private async void OpenFile_Button_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFiledialog = new OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog openFiledialog = new Microsoft.Win32.OpenFileDialog();
             openFiledialog.Title = "Choose your watermark";
             openFiledialog.Multiselect = false;
             openFiledialog.Filter = "PNG Files (*.png)|*.png|All Files (*.*)|*.*";
@@ -280,6 +282,30 @@ namespace FModel.Forms
                 FProp.Default.Save();
 
                 await UpdateImageWithWatermark();
+            }
+        }
+
+        private void BrowseInput_Button_Click(object sender, RoutedEventArgs e)
+        {
+            VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog();
+            dialog.Description = "Please select a folder.";
+            dialog.UseDescriptionForTitle = true; // This applies to the Vista style dialog only, not the old dialog.
+
+            if ((bool)dialog.ShowDialog(this))
+            {
+                InputTextBox.Text = dialog.SelectedPath;
+            }
+        }
+
+        private void BrowseOutput_Button_Click(object sender, RoutedEventArgs e)
+        {
+            VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog();
+            dialog.Description = "Please select a folder.";
+            dialog.UseDescriptionForTitle = true; // This applies to the Vista style dialog only, not the old dialog.
+
+            if ((bool)dialog.ShowDialog(this))
+            {
+                OutputTextBox.Text = dialog.SelectedPath;
             }
         }
     }

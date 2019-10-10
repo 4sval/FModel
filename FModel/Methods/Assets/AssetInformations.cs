@@ -10,9 +10,9 @@ namespace FModel.Methods.Assets
 {
     static class AssetInformations
     {
-        public static void OpenAssetInfos()
+        public static void OpenAssetInfos(bool isFromDataGrid = false)
         {
-            string infos = GetAssetInfos();
+            string infos = GetAssetInfos(isFromDataGrid);
             if (DarkMessageBox.ShowYesNo(infos, FWindow.FCurrentAsset, "Copy Properties", "OK") == System.Windows.MessageBoxResult.Yes)
             {
                 Clipboard.SetText(infos);
@@ -22,11 +22,11 @@ namespace FModel.Methods.Assets
             }
         }
 
-        private static string GetAssetInfos()
+        private static string GetAssetInfos(bool isFromDataGrid = false)
         {
             StringBuilder sb = new StringBuilder();
 
-            string fullPath = TreeViewUtility.GetFullPath(FWindow.TVItem) + "/" + FWindow.FCurrentAsset;
+            string fullPath = isFromDataGrid ? FWindow.FCurrentAsset : TreeViewUtility.GetFullPath(FWindow.TVItem) + "/" + FWindow.FCurrentAsset;
             PakReader.PakReader reader = AssetsUtility.GetPakReader(fullPath);
             if (reader != null)
             {
@@ -44,6 +44,15 @@ namespace FModel.Methods.Assets
                 }
             }
 
+            if (isFromDataGrid)
+            {
+                string selectedName = fullPath.Substring(fullPath.LastIndexOf("/") + 1);
+                if (selectedName.EndsWith(".uasset"))
+                {
+                    selectedName = selectedName.Substring(0, selectedName.LastIndexOf('.'));
+                }
+                FWindow.FCurrentAsset = selectedName;
+            }
             return sb.ToString();
         }
     }
