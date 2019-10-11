@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -68,6 +69,35 @@ namespace FModel.Methods.Utilities
             if (path != "")
             {
                 PopulateTreeView(node, path);
+            }
+        }
+
+        public static void JumpToFolder(string node)
+        {
+            bool done = false;
+            ICollectionView icv = FWindow.FMain.ViewModel.ItemsView;
+
+            while (!done)
+            {
+                bool found = false;
+                foreach (TreeViewModel.TreeViewModel tvi in icv)
+                {
+                    if (node.StartsWith(tvi.Value))
+                    {
+                        found = true;
+                        tvi.IsExpanded = true;
+                        icv = tvi.ItemsView;
+                        node = node.Substring(node.IndexOf("/") + 1);
+                        if (node == tvi.Value)
+                        {
+                            tvi.IsSelected = true;
+                            done = true;
+                        }
+                        break;
+                    }
+                }
+
+                done = (found == false && done == false);
             }
         }
     }

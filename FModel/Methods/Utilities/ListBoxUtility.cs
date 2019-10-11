@@ -122,6 +122,7 @@ namespace FModel.Methods.Utilities
                             }
                         }
                     }
+                    Task.Delay(300);
                 }).ContinueWith(TheTask =>
                 {
                     TasksUtility.TaskCompleted(TheTask.Exception);

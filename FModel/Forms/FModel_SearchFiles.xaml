@@ -41,6 +41,6 @@
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>
-        <Button Content="Go To Selected Asset" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120"/>
+        <Button x:Name="GoTo_Button" Content="Go To Selected Asset" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Click="GoTo_Button_Click"/>
     </Grid>
 </Window>

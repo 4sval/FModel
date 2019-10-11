@@ -7,6 +7,8 @@ using PakReader;
 using FModel.Methods.Utilities;
 using System.IO;
 using FModel.Methods.Assets;
+using FModel.Methods.TreeViewModel;
+using System.Linq;
 
 namespace FModel.Forms
 {
@@ -20,7 +22,7 @@ namespace FModel.Forms
         public class FileInfo
         {
             public string Name { get; set; }
-            public string Size { get; set; }
+            public string Extension { get; set; }
             public string PAK { get; set; }
         }
 
@@ -47,40 +49,28 @@ namespace FModel.Forms
         {
             if (PAKEntries.PAKToDisplay != null)
             {
+                FilterTextBox_Search.IsReadOnly = true;
                 FileNames = new List<FileInfo>();
                 await PopulateDataGrid();
                 DataGrid_Search.ItemsSource = FileNames;
+                FilterTextBox_Search.IsReadOnly = false;
             }
         }
 
-        private static async Task PopulateDataGrid(bool filtered = false, string[] filters = null)
+        private static async Task PopulateDataGrid()
         {
             Dictionary<string, string> IfExistChecker = new Dictionary<string, string>();
             await Task.Run(() =>
             {
                 if (!string.IsNullOrEmpty(FWindow.FCurrentPAK))
                 {
-                    if (filtered)
-                    {
-                        GetFilteredItems(PAKEntries.PAKToDisplay[FWindow.FCurrentPAK], IfExistChecker, filters);
-                    }
-                    else
-                    {
-                        FillList(PAKEntries.PAKToDisplay[FWindow.FCurrentPAK], IfExistChecker);
-                    }
+                    FillList(PAKEntries.PAKToDisplay[FWindow.FCurrentPAK], IfExistChecker);
                 }
                 else
                 {
                     foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
                     {
-                        if (filtered)
-                        {
-                            GetFilteredItems(PAKsFileInfos, IfExistChecker, filters);
-                        }
-                        else
-                        {
-                            FillList(PAKsFileInfos, IfExistChecker);
-                        }
+                        FillList(PAKsFileInfos, IfExistChecker);
                     }
                 }
             }).ContinueWith(TheTask =>
@@ -94,12 +84,21 @@ namespace FModel.Forms
             foreach (FPakEntry entry in EntryArray)
             {
                 string filename = entry.Name;
-                long size = entry.UncompressedSize;
+                string ext = Path.GetExtension(entry.Name);
                 string pak = Path.GetFileName(AssetEntries.AssetEntriesDict[entry.Name].Name);
 
                 if (filename.EndsWith(".uasset") || filename.EndsWith(".uexp") || filename.EndsWith(".ubulk"))
                 {
-                    filename = filename.Substring(0, filename.LastIndexOf('.')) + ".uasset";
+                    filename = filename.Substring(0, filename.LastIndexOf('.'));
+                    if (AssetEntries.ArraySearcher.ContainsKey(filename + ".uexp"))
+                    {
+                        ext += " .uexp";
+                    }
+                    if (AssetEntries.ArraySearcher.ContainsKey(filename + ".ubulk"))
+                    {
+                        ext += " .ubulk";
+                    }
+                    filename += ".uasset";
                 }
 
                 if (!ExistChecker.ContainsKey(filename))
@@ -109,7 +108,7 @@ namespace FModel.Forms
                     FileNames.Add(new FileInfo
                     {
                         Name = filename,
-                        Size = AssetsUtility.GetReadableSize(size), //size of the uasset (or other non uexp/ubulk ext) only :(
+                        Extension = ext,
                         PAK = pak
                     });
                 }
@@ -118,54 +117,34 @@ namespace FModel.Forms
 
         private async void FilterTextBox_Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if (PAKEntries.PAKToDisplay != null)
+            if (PAKEntries.PAKToDisplay != null && FileNames != null)
             {
-                FileNames = new List<FileInfo>();
+                List<FileInfo> filtered = new List<FileInfo>();
                 string[] filters = FilterTextBox_Search.Text.Trim().Split(' ');
-                await PopulateDataGrid(true, filters);
-                await Task.Delay(300);
-                DataGrid_Search.ItemsSource = FileNames;
-            }
-        }
 
-        private static void GetFilteredItems(FPakEntry[] EntryArray, Dictionary<string, string> ExistChecker, string[] filters)
-        {
-            foreach (FPakEntry entry in EntryArray)
-            {
-                string filename = entry.Name;
-                long size = entry.UncompressedSize;
-                string pak = Path.GetFileName(AssetEntries.AssetEntriesDict[entry.Name].Name);
-
-                if (filename.EndsWith(".uasset") || filename.EndsWith(".uexp") || filename.EndsWith(".ubulk"))
+                await Task.Run(() =>
                 {
-                    filename = filename.Substring(0, filename.LastIndexOf('.')) + ".uasset";
-                }
-
-                bool checkSearch = false;
-                if (filters.Length > 1)
-                {
-                    foreach (string filter in filters)
+                    foreach (FileInfo fi in FileNames)
                     {
-                        checkSearch = ListBoxUtility.CaseInsensitiveContains(filename, filter);
-                        if (!checkSearch) { break; }
-                    }
-                }
-                else { checkSearch = ListBoxUtility.CaseInsensitiveContains(filename, filters[0]); }
-
-                if (checkSearch)
-                {
-                    if (!ExistChecker.ContainsKey(filename))
-                    {
-                        ExistChecker.Add(filename, pak);
-
-                        FileNames.Add(new FileInfo
+                        bool checkSearch = false;
+                        if (filters.Length > 1)
                         {
-                            Name = filename,
-                            Size = AssetsUtility.GetReadableSize(size), //size of the uasset (or other non uexp/ubulk ext) only :(
-                            PAK = pak
-                        });
+                            foreach (string filter in filters)
+                            {
+                                checkSearch = ListBoxUtility.CaseInsensitiveContains(fi.Name, filter);
+                                if (!checkSearch) { break; }
+                            }
+                        }
+                        else { checkSearch = ListBoxUtility.CaseInsensitiveContains(fi.Name, filters[0]); }
+
+                        if (checkSearch)
+                        {
+                            filtered.Add(fi);
+                        }
                     }
-                }
+                });
+
+                DataGrid_Search.ItemsSource = filtered;
             }
         }
 
@@ -226,5 +205,23 @@ namespace FModel.Forms
             }
         }
         #endregion
+
+        private void GoTo_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataGrid_Search.SelectedIndex >= 0)
+            {
+                FileInfo item = (FileInfo)DataGrid_Search.SelectedItem;
+                string selectedName = item.Name;
+                if (selectedName.EndsWith(".uasset"))
+                {
+                    selectedName = selectedName.Substring(0, selectedName.LastIndexOf('.'));
+                }
+
+                FWindow.FCurrentAsset = selectedName;
+                TreeViewUtility.JumpToFolder(selectedName.Substring(1, selectedName.LastIndexOf("/") - 1));
+                FWindow.FMain.ListBox_Main.SelectedValue = selectedName.Substring(selectedName.LastIndexOf("/") + 1);
+                Close();
+            }
+        }
     }
 }

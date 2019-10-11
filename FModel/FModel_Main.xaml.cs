@@ -237,6 +237,7 @@ namespace FModel
         #region LISTBOX EVENTS
         private void ListBox_Main_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (e.AddedItems.Count > 0) { ((ListBox)sender).ScrollIntoView(e.AddedItems[0]); }
             if (!AssetsLoader.isRunning) { Button_Extract.IsEnabled = ListBox_Main.SelectedIndex >= 0; }
         }
         private async void ListBox_Main_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -250,7 +251,6 @@ namespace FModel
         private async void FilterTextBox_Main_TextChanged(object sender, TextChangedEventArgs e)
         {
             await ListBoxUtility.FilterListBox();
-            await Task.Delay(300);
         }
         private async void RC_Extract_Click(object sender, RoutedEventArgs e)
         {

@@ -156,6 +156,7 @@
     <Compile Include="Methods\SyntaxHighlighter\ResourceLoader.cs" />
     <Compile Include="Methods\TreeViewModel\PropertyChangedBase.cs" />
     <Compile Include="Methods\TreeViewModel\SortedTreeViewWindowViewModel.cs" />
+    <Compile Include="Methods\TreeViewModel\TreeViewItemBehavior.cs" />
     <Compile Include="Methods\TreeViewModel\TreeViewModel.cs" />
     <Compile Include="Methods\Utilities\AESUtility.cs" />
     <Compile Include="Methods\Utilities\AssetsUtility.cs" />

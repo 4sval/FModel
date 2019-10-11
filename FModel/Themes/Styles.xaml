@@ -3,6 +3,7 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:darkBlendTheme="clr-namespace:DarkBlendTheme"
+                    xmlns:TreeViewModel="clr-namespace:FModel.Methods.TreeViewModel"
                     mc:Ignorable="d">
 
     <!--Converters-->
@@ -1954,6 +1955,9 @@
         <Setter Property="Padding" Value="2,2,2,1"/>
         <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource TreeViewItemFocusVisual}"/>
+        <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+        <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+        <Setter Property="TreeViewModel:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TreeViewItem}">
