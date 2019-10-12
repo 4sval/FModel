@@ -293,9 +293,9 @@ namespace FModel.Methods.Utilities
             return null;
         }
 
-        public static void ExportAssetData()
+        public static void ExportAssetData(string fPath = null)
         {
-            string fullPath = TreeViewUtility.GetFullPath(FWindow.TVItem) + "/" + FWindow.FCurrentAsset;
+            string fullPath = fPath == null ? TreeViewUtility.GetFullPath(FWindow.TVItem) + "/" + FWindow.FCurrentAsset : fPath;
             PakReader.PakReader reader = GetPakReader(fullPath);
             if (reader != null)
             {

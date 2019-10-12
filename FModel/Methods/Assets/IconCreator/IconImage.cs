@@ -161,6 +161,8 @@ namespace FModel.Methods.Assets.IconCreator
 
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
+                    FWindow.FCurrentAsset = Path.GetFileName(displayAssetPath);
+
                     dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
                     JToken AssetMainToken = null;
                     if (jsonData.StartsWith("[") && jsonData.EndsWith("]"))

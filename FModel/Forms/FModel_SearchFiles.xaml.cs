@@ -7,8 +7,8 @@ using PakReader;
 using FModel.Methods.Utilities;
 using System.IO;
 using FModel.Methods.Assets;
-using FModel.Methods.TreeViewModel;
-using System.Linq;
+using FProp = FModel.Properties.Settings;
+using System;
 
 namespace FModel.Forms
 {
@@ -204,8 +204,6 @@ namespace FModel.Forms
                 AssetInformations.OpenAssetInfos(true);
             }
         }
-        #endregion
-
         private void GoTo_Button_Click(object sender, RoutedEventArgs e)
         {
             if (DataGrid_Search.SelectedIndex >= 0)
@@ -223,5 +221,49 @@ namespace FModel.Forms
                 Close();
             }
         }
+        private void RC_ExportData_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataGrid_Search.SelectedIndex >= 0)
+            {
+                FileInfo item = (FileInfo)DataGrid_Search.SelectedItem;
+                string selectedName = item.Name;
+                if (selectedName.EndsWith(".uasset"))
+                {
+                    selectedName = selectedName.Substring(0, selectedName.LastIndexOf('.'));
+                }
+
+                PakReader.PakReader reader = AssetsUtility.GetPakReader(selectedName);
+                if (reader != null)
+                {
+                    List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(selectedName);
+                    foreach (FPakEntry entry in entriesList)
+                    {
+                        string path = FProp.Default.FOutput_Path + "\\Exports\\" + entry.Name;
+                        string pWExt = FoldersUtility.GetFullPathWithoutExtension(entry.Name);
+                        string subfolders = pWExt.Substring(0, pWExt.LastIndexOf("/", StringComparison.InvariantCultureIgnoreCase));
+
+                        Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Exports\\" + subfolders);
+                        Stream stream = reader.GetPackageStream(entry);
+                        using (var fStream = File.OpenWrite(path))
+                        using (stream)
+                        {
+                            stream.CopyTo(fStream);
+                        }
+
+                        if (File.Exists(path))
+                        {
+                            new UpdateMyConsole(Path.GetFileName(path), CColors.Blue).Append();
+                            new UpdateMyConsole(" successfully exported", CColors.White, true).Append();
+                        }
+                        else //just in case
+                        {
+                            new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
+                            new UpdateMyConsole(Path.GetFileName(path), CColors.Blue, true).Append();
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
     }
 }

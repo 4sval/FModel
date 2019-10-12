@@ -51,7 +51,10 @@
                 <MenuItem x:Name="MI_Search" Header="Search" InputGestureText="F2" Command="{x:Static commands:FModel_Commands.OpenSearch}"/>
                 <Separator/>
                 <MenuItem x:Name="MI_ExportRaw" Header="Export RAW Data" Click="MI_ExportRaw_Click"/>
+                <MenuItem x:Name="MI_AutoExportRaw" Header="Auto Export RAW Data" IsCheckable="True"/>
+                <Separator/>
                 <MenuItem x:Name="MI_SaveJson" Header="Save JSON Data" Click="MI_SaveJson_Click"/>
+                <MenuItem x:Name="MI_AutoSaveJson" Header="Auto Save JSON Data" IsCheckable="True"/>
                 <Separator/>
                 <MenuItem Header="Open Output Folder" InputGestureText="F3" Command="{x:Static commands:FModel_Commands.OpenOutput}">
                     <MenuItem.Icon>
@@ -117,6 +120,11 @@
                         <TextBlock Text="{Binding Value}"/>
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
+                <TreeView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem x:Name="RC_ExtractFolders" Header="Extract Folder and Subfolders" Click="RC_ExtractFolders_Click"/>
+                    </ContextMenu>
+                </TreeView.ContextMenu>
             </TreeView>
             <ListBox x:Name="ListBox_Main" Margin="2,1,0,2" Grid.Row="1" SelectionMode="Extended" SelectionChanged="ListBox_Main_SelectionChanged" MouseDoubleClick="ListBox_Main_MouseDoubleClick">
                 <ListBox.ContextMenu>

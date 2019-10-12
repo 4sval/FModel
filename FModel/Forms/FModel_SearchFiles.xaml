@@ -26,6 +26,9 @@
         <DataGrid x:Name="DataGrid_Search" Margin="0,0,0,0" HeadersVisibility="Column" ItemsSource="{Binding FileNames}" IsReadOnly="True" BorderBrush="#7F748198" ColumnHeaderHeight="25" AutoGenerateColumns="True" ColumnWidth="*" Grid.Row="1" Grid.ColumnSpan="2">
             <DataGrid.ContextMenu>
                 <ContextMenu>
+                    <MenuItem x:Name="RC_GoTo" Header="Go To" Click="GoTo_Button_Click"/>
+                    <MenuItem x:Name="RC_ExportData" Header="Export RAW Data" Click="RC_ExportData_Click"/>
+                    <Separator/>
                     <MenuItem Header="Copy File">
                         <MenuItem x:Name="RC_Copy_FPath" Header="Copy File Path" Click="RC_Copy_FPath_Click"/>
                         <MenuItem x:Name="RC_Copy_FName" Header="Copy File Name" Click="RC_Copy_FName_Click"/>

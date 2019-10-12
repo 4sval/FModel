@@ -232,6 +232,14 @@ namespace FModel
             }
 
         }
+        private async void RC_ExtractFolders_Click(object sender, RoutedEventArgs e)
+        {
+            if (TreeView_Main.SelectedItem != null)
+            {
+                string path = TreeViewUtility.GetFullPath(FWindow.TVItem);
+                await AssetsLoader.ExtractFoldersAndSub(path);
+            }
+        }
         #endregion
 
         #region LISTBOX EVENTS
