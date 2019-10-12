@@ -64,7 +64,7 @@ namespace FModel.Methods.Utilities
             {
                 string name = FWindow.FCurrentAsset; //FCurrentAsset isn't upated inside Dispatcher.InvokeAsync so we put this in another string outside of the dispatcher
 
-                RenderTargetBitmap RTB = new RenderTargetBitmap(515, 515, 96, 96, PixelFormats.Pbgra32);
+                RenderTargetBitmap RTB = new RenderTargetBitmap((int)Math.Floor(image.DescendantBounds.Width), (int)Math.Floor(image.DescendantBounds.Height), 96, 96, PixelFormats.Pbgra32);
                 RTB.Render(image);
                 RTB.Freeze(); //We freeze to apply the RTB to our imagesource from the UI Thread
 

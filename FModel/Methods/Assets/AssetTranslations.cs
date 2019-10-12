@@ -73,6 +73,10 @@ namespace FModel.Methods.Assets
             {
                 return HotfixLocResDict[tNamespace][tKey][GetLanguageCode()];
             }
+            else if (FProp.Default.FLanguage == "English")
+            {
+                return ifNotFound;
+            }
             else if (BRLocResDict != null && BRLocResDict.ContainsKey(tNamespace) && BRLocResDict[tNamespace].ContainsKey(tKey))
             {
                 return BRLocResDict[tNamespace][tKey];
@@ -81,7 +85,10 @@ namespace FModel.Methods.Assets
             {
                 return STWLocResDict[tNamespace][tKey];
             }
-            return ifNotFound;
+            else
+            {
+                return ifNotFound;
+            }
         }
 
         private static void PopulateDict(string LocResPath)

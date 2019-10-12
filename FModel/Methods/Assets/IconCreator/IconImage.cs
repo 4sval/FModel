@@ -178,7 +178,7 @@ namespace FModel.Methods.Assets.IconCreator
                     if (AssetMainToken != null)
                     {
                         JArray displayAssetProperties = AssetMainToken["properties"].Value<JArray>();
-                        switch (displayAssetPath.Substring(displayAssetPath.LastIndexOf("/", System.StringComparison.InvariantCultureIgnoreCase) + 1))
+                        switch (displayAssetPath.Substring(displayAssetPath.LastIndexOf("/", StringComparison.InvariantCultureIgnoreCase) + 1))
                         {
                             case "DA_Featured_Glider_ID_070_DarkViking":
                             case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
@@ -227,6 +227,11 @@ namespace FModel.Methods.Assets.IconCreator
                             IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
                         }
                     }
+
+                    if (AssetsLoader.ExportType == "AthenaItemWrapDefinition" && texturePath.Contains("WeaponRenders"))
+                    {
+                        DrawAdditionalWrapImage(AssetProperties);
+                    }
                 }
             }
             else if (resourceObjectImportToken != null)
@@ -236,7 +241,6 @@ namespace FModel.Methods.Assets.IconCreator
                 if (!string.IsNullOrEmpty(renderSwitchPath))
                 {
                     if (renderSwitchPath.Contains("MI_UI_FeaturedRenderSwitch_") || 
-                        renderSwitchPath.Contains("M_UI_ChallengeTile_PCB") || 
                         renderSwitchPath.Contains("M-Wraps-StreetDemon") || 
                         renderSwitchPath.Contains("/FortniteGame/Content/UI/Foundation/Textures/Icons/Wraps/FeaturedMaterials/"))
                     {
@@ -285,11 +289,46 @@ namespace FModel.Methods.Assets.IconCreator
                                                         IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
                                                     }
                                                 }
+
+                                                if (AssetsLoader.ExportType == "AthenaItemWrapDefinition" && texturePath.Contains("WeaponRenders"))
+                                                {
+                                                    DrawAdditionalWrapImage(AssetProperties);
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void DrawAdditionalWrapImage(JArray AssetProperties)
+        {
+            JToken largePreviewImage = AssetProperties.Where(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage")).FirstOrDefault();
+            JToken smallPreviewImage = AssetProperties.Where(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage")).FirstOrDefault();
+            if (largePreviewImage != null || smallPreviewImage != null)
+            {
+                JToken assetPathName =
+                    largePreviewImage != null ? largePreviewImage["tag_data"]["asset_path_name"] :
+                    smallPreviewImage != null ? smallPreviewImage["tag_data"]["asset_path_name"] : null;
+
+                if (assetPathName != null)
+                {
+                    string texturePath = FoldersUtility.FixFortnitePath(assetPathName.Value<string>());
+                    using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
+                    {
+                        if (image != null)
+                        {
+                            BitmapImage bmp = new BitmapImage();
+                            bmp.BeginInit();
+                            bmp.CacheOption = BitmapCacheOption.OnLoad;
+                            bmp.StreamSource = image;
+                            bmp.EndInit();
+
+                            IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(275, 272, 122, 122));
                         }
                     }
                 }

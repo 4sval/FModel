@@ -405,5 +405,12 @@ namespace FModel.Methods.Utilities
                 .Select(x => x["tag_data"]["struct_type"][struct_type].Value<T>())
                 .FirstOrDefault();
         }
+        public static T GetPropertyTagItemData<T>(JArray properties, string item, string item_data)
+        {
+            return properties
+                .Where(x => string.Equals(x["Item1"].Value<string>(), item))
+                .Select(x => x["Item2"][item_data].Value<T>())
+                .FirstOrDefault();
+        }
     }
 }

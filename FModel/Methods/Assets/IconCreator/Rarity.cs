@@ -15,7 +15,11 @@ namespace FModel.Methods.Assets.IconCreator
             JToken serieToken = AssetsUtility.GetPropertyTagImport<JToken>(AssetProperties, "Series");
             JToken rarityToken = AssetsUtility.GetPropertyTag<JToken>(AssetProperties, "Rarity");
 
-            if (serieToken != null)
+            if (AssetsLoader.ExportType == "FortAmmoItemDefinition")
+            {
+                DrawBackground(ImagesUtility.ParseColorFromHex("#6D6D6D"), ImagesUtility.ParseColorFromHex("#464646"), ImagesUtility.ParseColorFromHex("#9E9E9E"));
+            }
+            else if (serieToken != null)
             {
                 switch (serieToken.Value<string>())
                 {
@@ -91,7 +95,8 @@ namespace FModel.Methods.Assets.IconCreator
 
 
                     //background + border
-                    IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(background), new Pen(new SolidColorBrush(border), 6), new Rect(0, 0, 515, 515));
+                    IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(border), null, new Rect(0, 0, 515, 515));
+                    IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(background), null, new Rect(3, 3, 509, 509));
                     //up & down
                     IconCreator.ICDrawingContext.DrawGeometry(new SolidColorBrush(Color.FromArgb(125, backgroundUpDown.R, backgroundUpDown.G, backgroundUpDown.B)), null, uGeo);
                     IconCreator.ICDrawingContext.DrawGeometry(new SolidColorBrush(Color.FromArgb(125, backgroundUpDown.R, backgroundUpDown.G, backgroundUpDown.B)), null, dGeo);
@@ -112,7 +117,8 @@ namespace FModel.Methods.Assets.IconCreator
                     radialGradient.Freeze();
 
                     //background + border
-                    IconCreator.ICDrawingContext.DrawRectangle(radialGradient, new Pen(new SolidColorBrush(border), 6), new Rect(0, 0, 515, 515));
+                    IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(border), null, new Rect(0, 0, 515, 515));
+                    IconCreator.ICDrawingContext.DrawRectangle(radialGradient, null, new Rect(3, 3, 509, 509));
                     break;
                 default:
                     break;

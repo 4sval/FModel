@@ -6,15 +6,16 @@ using PakReader;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using System.Linq;
 using System.IO;
+using System.Windows.Media;
 
 namespace FModel.Methods.Assets
 {
     static class AssetsLoader
     {
         public static bool isRunning = false;
+        public static string ExportType { get; set; }
 
         public static async Task LoadSelectedAsset()
         {
@@ -165,8 +166,9 @@ namespace FModel.Methods.Assets
                     
                     if (AssetMainToken != null && AssetMainToken["export_type"] != null)
                     {
+                        ExportType = AssetMainToken["export_type"].Value<string>();
                         DrawingVisual VisualImage = null;
-                        switch (AssetMainToken["export_type"].Value<string>())
+                        switch (ExportType)
                         {
                             case "AthenaBackpackItemDefinition":
                             case "AthenaBattleBusItemDefinition":

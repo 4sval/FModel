@@ -58,12 +58,37 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                     {
                         if (
                             uFFTarget.Contains("Animated") && categoryNameToken.Value<string>() == "Animated" ||
-                            (uFFTarget.Contains("HasVariants") || uFFTarget.Contains("HasUpgradeQuests")) && categoryNameToken.Value<string>() == "Unlockable Styles" ||
+                            uFFTarget.Contains("HasVariants") && categoryNameToken.Value<string>() == "Unlockable Styles" ||
                             uFFTarget.Contains("Reactive") && categoryNameToken.Value<string>() == "Reactive" ||
                             uFFTarget.Contains("Traversal") && categoryNameToken.Value<string>() == "Traversal" ||
                             uFFTarget.Contains("BuiltInEmote") && categoryNameToken.Value<string>() == "Built-in")
                         {
                             GetUFFImage(propertiesArray);
+                        }
+                        else if (uFFTarget.Contains("HasUpgradeQuests") && categoryNameToken.Value<string>() == "Unlockable Styles")
+                        {
+                            if (AssetsLoader.ExportType == "AthenaPetCarrierItemDefinition")
+                            {
+                                BitmapImage bmp = new BitmapImage();
+                                bmp.BeginInit();
+                                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                bmp.UriSource = new Uri("pack://application:,,,/Resources/T-Icon-Pets-64.png");
+                                bmp.EndInit();
+
+                                xCoords += 25;
+                                IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(xCoords, 4, 25, 25));
+                            }
+                            else
+                            {
+                                BitmapImage bmp = new BitmapImage();
+                                bmp.BeginInit();
+                                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                bmp.UriSource = new Uri("pack://application:,,,/Resources/T-Icon-Quests-64.png");
+                                bmp.EndInit();
+
+                                xCoords += 25;
+                                IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(xCoords, 4, 25, 25));
+                            }
                         }
                     }
                 }

@@ -130,6 +130,8 @@
     <Compile Include="Methods\Assets\IconCreator\IconText.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconWatermark.cs" />
     <Compile Include="Methods\Assets\IconCreator\Rarity.cs" />
+    <Compile Include="Methods\Assets\IconCreator\WeaponID\IconAmmoData.cs" />
+    <Compile Include="Methods\Assets\IconCreator\WeaponID\WeaponStats.cs" />
     <Compile Include="Methods\BackupsManager\RegisterDownloadedBackups.cs" />
     <Compile Include="Methods\FindReplace\FindReplace.cs" />
     <Compile Include="Methods\FindReplace\FindReplaceDialog.xaml.cs">
@@ -274,7 +276,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Methods\Assets\IconCreator\AmmoID\" />
     <Folder Include="Methods\Assets\IconCreator\ChallengeID\" />
     <Folder Include="Methods\Assets\IconCreator\DefenderID\" />
     <Folder Include="Methods\Assets\IconCreator\HeroID\" />
@@ -298,6 +299,21 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Template_M_N.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\T-Icon-Pets-64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\T-Icon-Quests-64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\clipSize64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\dmg64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\reload64.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">

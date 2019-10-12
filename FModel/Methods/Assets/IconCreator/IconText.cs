@@ -1,4 +1,5 @@
 ﻿using FModel.Methods.Assets.IconCreator.AthenaID;
+using FModel.Methods.Assets.IconCreator.WeaponID;
 using FModel.Methods.Utilities;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -16,6 +17,9 @@ namespace FModel.Methods.Assets.IconCreator
         private static string _description;
         private static string _shortDescription;
         private static string _cosmeticSource;
+        private static string _cosmeticItemDefinition;
+        private static string _itemAction;
+        private static string _maxStackSize;
         private static IEnumerable<JToken> _userFacingFlagsToken;
 
         public static void DrawIconText(JArray AssetProperties)
@@ -32,6 +36,9 @@ namespace FModel.Methods.Assets.IconCreator
             _description = string.Empty;
             _shortDescription = string.Empty;
             _cosmeticSource = string.Empty;
+            _cosmeticItemDefinition = string.Empty;
+            _itemAction = string.Empty;
+            _maxStackSize = string.Empty;
             _userFacingFlagsToken = null;
 
             JToken name_namespace = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "DisplayName", "namespace");
@@ -45,6 +52,10 @@ namespace FModel.Methods.Assets.IconCreator
             JToken short_description_namespace = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "ShortDescription", "namespace");
             JToken short_description_key = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "ShortDescription", "key");
             JToken short_description_source_string = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "ShortDescription", "source_string");
+
+            JToken cosmetic_item = AssetsUtility.GetPropertyTagImport<JToken>(AssetProperties, "cosmetic_item");
+            JToken max_stack_size = AssetsUtility.GetPropertyTag<JToken>(AssetProperties, "MaxStackSize");
+            JToken ammo_data = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "AmmoData", "asset_path_name");
 
             JArray gTagsArray = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "GameplayTags", "gameplay_tags");
 
@@ -62,6 +73,35 @@ namespace FModel.Methods.Assets.IconCreator
             {
                 _shortDescription = AssetTranslations.SearchTranslation(short_description_namespace.Value<string>(), short_description_key.Value<string>(), short_description_source_string.Value<string>());
             }
+            else if (AssetsLoader.ExportType == "AthenaItemWrapDefinition")
+            {
+                _shortDescription = AssetTranslations.SearchTranslation("Fort.Cosmetics", "ItemWrapShortDescription", "Wrap");
+            }
+
+            if (cosmetic_item != null)
+            {
+                _cosmeticItemDefinition = cosmetic_item.Value<string>();
+            }
+            if (max_stack_size != null)
+            {
+                _maxStackSize = "Max Stack Size: " + max_stack_size.Value<string>();
+            }
+            if (ammo_data != null && ammo_data.Value<string>().Contains("Ammo"))
+            {
+                string path = FoldersUtility.FixFortnitePath(ammo_data.Value<string>());
+                IconAmmoData.DrawIconAmmoData(path);
+
+                JArray weapon_stat_handle = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "WeaponStatHandle", "properties");
+                if (weapon_stat_handle != null)
+                {
+                    JToken stats_file = AssetsUtility.GetPropertyTagImport<JToken>(weapon_stat_handle, "DataTable");
+                    JToken row_name = AssetsUtility.GetPropertyTag<JToken>(weapon_stat_handle, "RowName");
+                    if (stats_file != null && row_name != null)
+                    {
+                        WeaponStats.DrawWeaponStats(stats_file.Value<string>(), row_name.Value<string>());
+                    }
+                }
+            }
 
             if (gTagsArray != null)
             {
@@ -78,6 +118,12 @@ namespace FModel.Methods.Assets.IconCreator
                     _cosmeticSource = cSourceToken.Value<string>().Substring("Cosmetics.Source.".Length);
                 }
 
+                JToken cActionToken = gTagsArray.Children<JToken>().FirstOrDefault(x => x.ToString().StartsWith("Athena.ItemAction."));
+                if (cActionToken != null)
+                {
+                    _itemAction = cActionToken.Value<string>().Substring("Athena.ItemAction.".Length);
+                }
+
                 _userFacingFlagsToken = gTagsArray.Children<JToken>().Where(x => x.ToString().StartsWith("Cosmetics.UserFacingFlags."));
             }
         }
@@ -86,8 +132,39 @@ namespace FModel.Methods.Assets.IconCreator
         {
             DrawDisplayName(_displayName);
             DrawDescription(_description);
-            DrawToBottom("Left", _shortDescription);
-            DrawToBottom("Right", _cosmeticSource);
+
+            switch (AssetsLoader.ExportType)
+            {
+                case "AthenaBackpackItemDefinition":
+                case "AthenaBattleBusItemDefinition":
+                case "AthenaCharacterItemDefinition":
+                case "AthenaConsumableEmoteItemDefinition":
+                case "AthenaSkyDiveContrailItemDefinition":
+                case "AthenaDanceItemDefinition":
+                case "AthenaEmojiItemDefinition":
+                case "AthenaGliderItemDefinition":
+                case "AthenaItemWrapDefinition":
+                case "AthenaLoadingScreenItemDefinition":
+                case "AthenaMusicPackItemDefinition":
+                case "AthenaPetCarrierItemDefinition":
+                case "AthenaPickaxeItemDefinition":
+                case "AthenaSprayItemDefinition":
+                case "AthenaToyItemDefinition":
+                case "AthenaVictoryPoseItemDefinition":
+                case "FortBannerTokenType":
+                    DrawToBottom("Left", _shortDescription);
+                    DrawToBottom("Right", _cosmeticSource);
+                    break;
+                case "FortWeaponRangedItemDefinition":
+                case "AthenaGadgetItemDefinition":
+                    DrawToBottom("Left", _maxStackSize);
+                    DrawToBottom("Right", _itemAction);
+                    break;
+                case "FortVariantTokenType":
+                    DrawToBottom("Left", _shortDescription);
+                    DrawToBottom("Right", _cosmeticItemDefinition);
+                    break;
+            }
 
             if (_userFacingFlagsToken != null)
             {
