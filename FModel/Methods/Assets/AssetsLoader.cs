@@ -188,25 +188,14 @@ namespace FModel.Methods.Assets
                             case "AthenaVictoryPoseItemDefinition":
                             case "FortBannerTokenType":
                             case "AthenaGadgetItemDefinition":
-                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                                break;
                             case "FortWeaponRangedItemDefinition":
                             case "FortWeaponMeleeItemDefinition":
+                            case "FortWeaponMeleeDualWieldItemDefinition":
                             case "FortIngredientItemDefinition":
-                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                                break;
                             case "FortVariantTokenType":
-                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                                break;
                             case "FortAmmoItemDefinition":
-                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                                break;
                             case "FortHeroType":
-                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                                break;
                             case "FortDefenderItemDefinition":
-                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
-                                break;
                             case "FortContextTrapItemDefinition":
                             case "FortTrapItemDefinition":
                             case "FortCardPackItemDefinition":
@@ -230,12 +219,12 @@ namespace FModel.Methods.Assets
                             case "FortAwardItemDefinition":
                             case "FortChallengeBundleScheduleDefinition":
                             case "FortAbilityKit":
-                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
+                            case "FortSchematicItemDefinition":
+                            case "FortAccoladeItemDefinition":
+                                VisualImage = IconCreator.IconCreator.DrawNormalIconKThx(AssetMainToken["properties"].Value<JArray>());
                                 break;
                             case "FortChallengeBundleItemDefinition":
-                                break;
-                            case "FortSchematicItemDefinition":
-                                VisualImage = IconCreator.IconCreator.DrawTest(AssetMainToken["properties"].Value<JArray>());
+                                VisualImage = IconCreator.IconCreator.DrawChallengeKThx(AssetMainToken["properties"].Value<JArray>(), assetPath);
                                 break;
                         }
                         if (VisualImage != null) { ImagesUtility.LoadImageAfterExtraction(VisualImage); }

@@ -74,6 +74,7 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                                 bmp.CacheOption = BitmapCacheOption.OnLoad;
                                 bmp.UriSource = new Uri("pack://application:,,,/Resources/T-Icon-Pets-64.png");
                                 bmp.EndInit();
+                                bmp.Freeze();
 
                                 xCoords += 25;
                                 IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(xCoords, 4, 25, 25));
@@ -85,6 +86,7 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                                 bmp.CacheOption = BitmapCacheOption.OnLoad;
                                 bmp.UriSource = new Uri("pack://application:,,,/Resources/T-Icon-Quests-64.png");
                                 bmp.EndInit();
+                                bmp.Freeze();
 
                                 xCoords += 25;
                                 IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(xCoords, 4, 25, 25));
@@ -122,6 +124,7 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                                         bmp.CacheOption = BitmapCacheOption.OnLoad;
                                         bmp.StreamSource = image;
                                         bmp.EndInit();
+                                        bmp.Freeze();
 
                                         xCoords += 25;
                                         IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(xCoords, 4, 25, 25));

@@ -90,6 +90,31 @@ namespace FModel.Methods
     }
     #endregion
 
+    #region CHALLENGES
+    public struct BundleInfosEntry : IEquatable<BundleInfosEntry>
+    {
+        public string TheQuestDescription { get; set; }
+        public long TheQuestCount { get; set; }
+        public string TheQuestUnlockType { get; set; }
+        public string TheRewardPath { get; set; }
+        public string TheRewardQuantity { get; set; }
+
+        internal BundleInfosEntry(string MyQuestDescription, long MyQuestCount, string MyQuestUnlockType, string MyRewardPath, string MyRewardQuantity)
+        {
+            TheQuestDescription = MyQuestDescription;
+            TheQuestCount = MyQuestCount;
+            TheQuestUnlockType = MyQuestUnlockType;
+            TheRewardPath = MyRewardPath;
+            TheRewardQuantity = MyRewardQuantity;
+        }
+
+        bool IEquatable<BundleInfosEntry>.Equals(BundleInfosEntry other)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    #endregion
+
     static class DLLImport
     {
         [DllImport("wininet.dll")]

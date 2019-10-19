@@ -136,6 +136,7 @@ namespace FModel.Methods.Assets.IconCreator
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
                     bmp.StreamSource = image;
                     bmp.EndInit();
+                    bmp.Freeze();
 
                     IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, 100), new Rect(3, 3, 509, 509));
                 }

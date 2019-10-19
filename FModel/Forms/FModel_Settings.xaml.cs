@@ -101,7 +101,7 @@ namespace FModel.Forms
 
         private async void GetUserSettings()
         {
-            InputTextBox.Text = FProp.Default.FPak_Path;    
+            InputTextBox.Text = FProp.Default.FPak_Path;
             OutputTextBox.Text = FProp.Default.FOutput_Path;
 
             ComboBox_Language.SelectedIndex = (int)GetEnumValueFromDescription<LIndexes>(FProp.Default.FLanguage);

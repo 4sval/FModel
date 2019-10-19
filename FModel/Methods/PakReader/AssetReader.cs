@@ -575,6 +575,7 @@ namespace PakReader
             public int num_slices;
             public string pixel_format;
             public int first_mip;
+            public bool is_virtual;
             public FTexture2DMipMap[] mips;
 
             internal FTexturePlatformData(BinaryReader reader, BinaryReader ubulk, long bulk_offset)
@@ -588,6 +589,11 @@ namespace PakReader
                 for (int i = 0; i < mips.Length; i++)
                 {
                     mips[i] = new FTexture2DMipMap(reader, ubulk, bulk_offset);
+                }
+                is_virtual = reader.ReadInt32() == 1;
+                if (is_virtual)
+                {
+                    throw new IOException("Texture is virtual, unsupported for now");
                 }
             }
         }

@@ -1,5 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using FModel.Methods.Assets.IconCreator.ChallengeID;
+using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using FProp = FModel.Properties.Settings;
@@ -11,7 +14,7 @@ namespace FModel.Methods.Assets.IconCreator
         public static DrawingContext ICDrawingContext { get; set; }
         public static double PPD { get; set; }
 
-        public static DrawingVisual DrawTest(JArray AssetProperties)
+        public static DrawingVisual DrawNormalIconKThx(JArray AssetProperties)
         {
             DrawingVisual drawingVisual = new DrawingVisual();
             PPD = VisualTreeHelper.GetDpi(drawingVisual).PixelsPerDip;
@@ -24,6 +27,24 @@ namespace FModel.Methods.Assets.IconCreator
                 IconImage.DrawIconImage(AssetProperties, FProp.Default.FIsFeatured);
                 IconText.DrawIconText(AssetProperties);
                 IconWatermark.DrawIconWatermark();
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            return drawingVisual;
+        }
+
+        public static DrawingVisual DrawChallengeKThx(JArray AssetProperties, string path)
+        {
+            DrawingVisual drawingVisual = new DrawingVisual();
+            PPD = VisualTreeHelper.GetDpi(drawingVisual).PixelsPerDip;
+            using (ICDrawingContext = drawingVisual.RenderOpen())
+            {
+                //INITIALIZATION
+                ICDrawingContext.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), new Size(1024, 300)));
+
+                ChallengeBundleInfos.GetBundleData(AssetProperties);
+                ChallengeIconDesign.DrawChallenge(AssetProperties, new DirectoryInfo(path).Parent.Name.ToUpperInvariant());
             }
 
             GC.Collect();

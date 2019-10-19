@@ -67,6 +67,10 @@ namespace FModel
                     win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     win.Width = ImageBox_Main.Source.Width;
                     win.Height = ImageBox_Main.Source.Height;
+                    if (ImageBox_Main.Source.Height > 1000)
+                    {
+                        win.WindowState = WindowState.Maximized;
+                    }
 
                     DockPanel dockPanel = new DockPanel
                     {

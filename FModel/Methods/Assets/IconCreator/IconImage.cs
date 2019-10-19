@@ -121,6 +121,7 @@ namespace FModel.Methods.Assets.IconCreator
                             bmp.CacheOption = BitmapCacheOption.OnLoad;
                             bmp.StreamSource = image;
                             bmp.EndInit();
+                            bmp.Freeze();
 
                             IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
                         }
@@ -223,6 +224,7 @@ namespace FModel.Methods.Assets.IconCreator
                             bmp.CacheOption = BitmapCacheOption.OnLoad;
                             bmp.StreamSource = image;
                             bmp.EndInit();
+                            bmp.Freeze();
 
                             IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
                         }
@@ -285,6 +287,7 @@ namespace FModel.Methods.Assets.IconCreator
                                                         bmp.CacheOption = BitmapCacheOption.OnLoad;
                                                         bmp.StreamSource = image;
                                                         bmp.EndInit();
+                                                        bmp.Freeze();
 
                                                         IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
                                                     }
@@ -327,6 +330,7 @@ namespace FModel.Methods.Assets.IconCreator
                             bmp.CacheOption = BitmapCacheOption.OnLoad;
                             bmp.StreamSource = image;
                             bmp.EndInit();
+                            bmp.Freeze();
 
                             IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(275, 272, 122, 122));
                         }

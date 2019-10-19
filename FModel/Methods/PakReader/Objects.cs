@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using FProp = FModel.Properties.Settings;
 
 namespace PakReader
 {
@@ -273,10 +274,10 @@ namespace PakReader
             if (other is null)
                 return false;
 
-            return this.Name == other.Name && this.UncompressedSize == other.UncompressedSize;
+            return this.Name == other.Name;
         }
         public override bool Equals(object obj) => Equals(obj as FPakEntry);
-        public override int GetHashCode() => (Name, UncompressedSize).GetHashCode();
+        public override int GetHashCode() => (Name).GetHashCode();
 
         public FPakEntry() { } // xml file
     }

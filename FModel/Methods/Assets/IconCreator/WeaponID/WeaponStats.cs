@@ -67,6 +67,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
                     bmp.UriSource = new Uri("pack://application:,,,/Resources/reload64.png");
                     bmp.EndInit();
+                    bmp.Freeze();
 
                     Typeface typeface = new Typeface(TextsUtility.FakeFNFont, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
                     FormattedText formattedText =
@@ -100,6 +101,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
                     bmp.UriSource = new Uri("pack://application:,,,/Resources/clipSize64.png");
                     bmp.EndInit();
+                    bmp.Freeze();
 
                     Typeface typeface = new Typeface(TextsUtility.FakeFNFont, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
                     FormattedText formattedText =
@@ -133,6 +135,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
                     bmp.UriSource = new Uri("pack://application:,,,/Resources/dmg64.png");
                     bmp.EndInit();
+                    bmp.Freeze();
 
                     Typeface typeface = new Typeface(TextsUtility.FakeFNFont, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
                     FormattedText formattedText =

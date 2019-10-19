@@ -23,6 +23,7 @@ namespace FModel.Methods.Utilities
                 photo.CacheOption = BitmapCacheOption.OnLoad;
                 photo.StreamSource = stream;
                 photo.EndInit();
+                photo.Freeze();
             }
             return photo;
         }

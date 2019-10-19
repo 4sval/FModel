@@ -21,6 +21,7 @@ namespace FModel.Methods.Assets.IconCreator
                         bmp.CacheOption = BitmapCacheOption.OnLoad;
                         bmp.StreamSource = image.BaseStream;
                         bmp.EndInit();
+                        bmp.Freeze();
 
                         IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, FProp.Default.FWatermarkOpacity), new Rect(FProp.Default.FWatermarkXPos, FProp.Default.FWatermarkYPos, FProp.Default.FWatermarkScale, FProp.Default.FWatermarkScale));
                     }

@@ -47,6 +47,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                                     bmp.CacheOption = BitmapCacheOption.OnLoad;
                                     bmp.StreamSource = image;
                                     bmp.EndInit();
+                                    bmp.Freeze();
 
                                     //RESIZE
                                     IconCreator.ICDrawingContext.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), new Size(515, 560)));

@@ -125,6 +125,8 @@
     <Compile Include="Methods\Assets\AssetTranslations.cs" />
     <Compile Include="Methods\Assets\IconCreator\AthenaID\CosmeticSet.cs" />
     <Compile Include="Methods\Assets\IconCreator\AthenaID\IconUserFacingFlags.cs" />
+    <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeBundleInfos.cs" />
+    <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeIconDesign.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconCreator.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconImage.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconText.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="Methods\TreeViewModel\TreeViewModel.cs" />
     <Compile Include="Methods\Utilities\AESUtility.cs" />
     <Compile Include="Methods\Utilities\AssetsUtility.cs" />
+    <Compile Include="Methods\Utilities\ChallengesUtility.cs" />
     <Compile Include="Methods\Utilities\EndpointsUtility.cs" />
     <Compile Include="Methods\Utilities\FoldersUtility.cs" />
     <Compile Include="Methods\Utilities\FormsUtility.cs" />
@@ -276,7 +279,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Methods\Assets\IconCreator\ChallengeID\" />
     <Folder Include="Methods\Assets\IconCreator\DefenderID\" />
     <Folder Include="Methods\Assets\IconCreator\HeroID\" />
     <Folder Include="Methods\Assets\IconCreator\SchematicID\" />
@@ -314,6 +316,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\reload64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\unknown512.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">
