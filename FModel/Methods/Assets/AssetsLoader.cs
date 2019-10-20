@@ -164,7 +164,7 @@ namespace FModel.Methods.Assets
                     }
 
                     
-                    if (AssetMainToken != null && AssetMainToken["export_type"] != null)
+                    if (AssetMainToken != null && AssetMainToken["export_type"] != null && AssetMainToken["properties"] != null)
                     {
                         ExportType = AssetMainToken["export_type"].Value<string>();
                         DrawingVisual VisualImage = null;

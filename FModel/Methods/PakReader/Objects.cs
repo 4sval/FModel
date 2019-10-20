@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using FProp = FModel.Properties.Settings;
 
 namespace PakReader
 {

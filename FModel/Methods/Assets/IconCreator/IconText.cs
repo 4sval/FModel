@@ -178,7 +178,7 @@ namespace FModel.Methods.Assets.IconCreator
 
         private static void DrawDisplayName(string DisplayName)
         {
-            Typeface typeface = new Typeface(TextsUtility.FakeFNFont, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+            Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
             FormattedText formattedText =
                 new FormattedText(
@@ -250,7 +250,7 @@ namespace FModel.Methods.Assets.IconCreator
         {
             if (!string.Equals(FProp.Default.FRarity_Design, "Minimalist"))
             {
-                Typeface typeface = new Typeface(TextsUtility.FakeFNFont, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+                Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
                 FormattedText formattedText =
                     new FormattedText(

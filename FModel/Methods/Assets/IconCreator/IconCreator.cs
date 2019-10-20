@@ -1,8 +1,8 @@
 ﻿using FModel.Methods.Assets.IconCreator.ChallengeID;
+using FModel.Methods.Utilities;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using FProp = FModel.Properties.Settings;
@@ -16,6 +16,8 @@ namespace FModel.Methods.Assets.IconCreator
 
         public static DrawingVisual DrawNormalIconKThx(JArray AssetProperties)
         {
+            new UpdateMyProcessEvents("Creating Icon...", "Waiting").Update();
+
             DrawingVisual drawingVisual = new DrawingVisual();
             PPD = VisualTreeHelper.GetDpi(drawingVisual).PixelsPerDip;
             using (ICDrawingContext = drawingVisual.RenderOpen())
@@ -29,6 +31,8 @@ namespace FModel.Methods.Assets.IconCreator
                 IconWatermark.DrawIconWatermark();
             }
 
+            new UpdateMyProcessEvents("Done", "Success").Update();
+
             GC.Collect();
             GC.WaitForPendingFinalizers();
             return drawingVisual;
@@ -36,6 +40,8 @@ namespace FModel.Methods.Assets.IconCreator
 
         public static DrawingVisual DrawChallengeKThx(JArray AssetProperties, string path)
         {
+            new UpdateMyProcessEvents("Creating Challenges Icon...", "Waiting").Update();
+
             DrawingVisual drawingVisual = new DrawingVisual();
             PPD = VisualTreeHelper.GetDpi(drawingVisual).PixelsPerDip;
             using (ICDrawingContext = drawingVisual.RenderOpen())
@@ -44,8 +50,12 @@ namespace FModel.Methods.Assets.IconCreator
                 ICDrawingContext.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), new Size(1024, 300)));
 
                 ChallengeBundleInfos.GetBundleData(AssetProperties);
+
+                new UpdateMyProcessEvents("Drawing Quests Informations...", "Waiting").Update();
                 ChallengeIconDesign.DrawChallenge(AssetProperties, new DirectoryInfo(path).Parent.Name.ToUpperInvariant());
             }
+
+            new UpdateMyProcessEvents("Done", "Success").Update();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();

@@ -408,7 +408,7 @@ namespace FModel.Methods.Utilities
         public static T GetPropertyTagItemData<T>(JArray properties, string item, string item_data)
         {
             return properties
-                .Where(x => string.Equals(x["Item1"].Value<string>(), item))
+                .Where(x => string.Equals(x["Item1"].Value<string>(), item, StringComparison.InvariantCultureIgnoreCase))
                 .Select(x => x["Item2"][item_data].Value<T>())
                 .FirstOrDefault();
         }

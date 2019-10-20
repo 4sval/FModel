@@ -62,6 +62,9 @@
     <StartupObject>FModel.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack, Version=1.11.16.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.11.16\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.AvalonEdit, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <HintPath>..\packages\AvalonEdit.6.0.0\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
@@ -126,7 +129,9 @@
     <Compile Include="Methods\Assets\IconCreator\AthenaID\CosmeticSet.cs" />
     <Compile Include="Methods\Assets\IconCreator\AthenaID\IconUserFacingFlags.cs" />
     <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeBundleInfos.cs" />
+    <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeCompletionRewards.cs" />
     <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeIconDesign.cs" />
+    <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeRewards.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconCreator.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconImage.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconText.cs" />

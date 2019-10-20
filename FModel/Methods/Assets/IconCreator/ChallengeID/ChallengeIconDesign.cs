@@ -11,6 +11,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
     class ChallengeIconDesign
     {
         public static bool isBanner { get; set; }
+        public static int y { get; set; }
         private static bool hasDisplayStyle { get; set; }
 
         public static void DrawChallenge(JArray AssetProperties, string lastfolder)
@@ -33,7 +34,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             else
             {
                 PrimaryColor = ChallengesUtility.RandomSolidColorBrush();
-                SecondaryColor = ChallengesUtility.LightBrush(PrimaryColor, 0.4f);
+                SecondaryColor = ChallengesUtility.RandomSolidColorBrush();
             }
 
             JToken name_namespace = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "DisplayName", "namespace");
@@ -46,6 +47,8 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
 
             DrawHeader(displayName, lastfolder, PrimaryColor, SecondaryColor, image);
             DrawQuests(PrimaryColor, SecondaryColor);
+
+            ChallengeCompletionRewards.DrawChallengeCompletion(AssetProperties, PrimaryColor, SecondaryColor, y);
         }
 
         private static void DrawHeader(string displayName, string lastfolder, SolidColorBrush PrimaryColor, SolidColorBrush SecondaryColor, Stream image)
@@ -62,7 +65,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             PathFigure dFigure = new PathFigure(dStart, dSegments, true);
             PathGeometry dGeo = new PathGeometry(new[] { dFigure });
 
-            Typeface typeface = new Typeface(TextsUtility.OffFNFont, FontStyles.Normal, FontWeights.Black, FontStretches.Normal);
+            Typeface typeface = new Typeface(TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal);
             FormattedText formattedText =
                 new FormattedText(
                     displayName.ToUpperInvariant(),
@@ -112,6 +115,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             textLocation = new Point(isBanner || !hasDisplayStyle ? 50 : 310, 100 - formattedText.Height);
             Geometry geometry = formattedText.BuildGeometry(textLocation);
             Pen pen = new Pen(ChallengesUtility.DarkBrush(SecondaryColor, 0.3f), 1);
+            pen.LineJoin = PenLineJoin.Round;
             IconCreator.ICDrawingContext.DrawGeometry(SecondaryColor, pen, geometry);
         }
 
@@ -127,9 +131,9 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             IconCreator.ICDrawingContext.DrawRectangle(ChallengesUtility.DarkBrush(PrimaryColor, 0.3f), null, new Rect(0, 256, 1024, 144));
             IconCreator.ICDrawingContext.DrawRectangle(linGrBrush, null, new Rect(0, 256, 1024, 144));
 
-            Typeface typeface = new Typeface(TextsUtility.OffFNFont, FontStyles.Normal, FontWeights.Black, FontStretches.Normal);
+            Typeface typeface = new Typeface(TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal);
 
-            int y = 310;
+            y = 310;
             bool isBundleLevelup = false;
             bool isRequiresBattlePass = false;
             foreach (BundleInfosEntry entry in ChallengeBundleInfos.BundleData)
@@ -192,6 +196,8 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                 #endregion
 
                 #region DESCRIPTION
+                new UpdateMyConsole(entry.TheQuestDescription, CColors.ChallengeDescription).Append();
+
                 FormattedText formattedText =
                     new FormattedText(
                         entry.TheQuestDescription,
@@ -210,6 +216,8 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                 #endregion
 
                 #region COUNT
+                new UpdateMyConsole("\t\tCount: " + entry.TheQuestCount.ToString(), CColors.ChallengeCount).Append();
+
                 formattedText =
                     new FormattedText(
                         "0 /",
@@ -241,8 +249,12 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                 IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
                 #endregion
 
+                new UpdateMyConsole("\t\tReward: " + Path.GetFileNameWithoutExtension(entry.TheRewardPath) + " x" + entry.TheRewardQuantity, CColors.ChallengeReward, true).Append();
+                ChallengeRewards.DrawRewards(entry.TheRewardPath, entry.TheRewardQuantity, y);
+
                 y += 90;
             }
+            new UpdateMyConsole("• ------------------------------ •", CColors.White, true).Append();
         }
 
         private static void DrawUnlockType(SolidColorBrush PrimaryColor, SolidColorBrush SecondaryColor, string path, int y)

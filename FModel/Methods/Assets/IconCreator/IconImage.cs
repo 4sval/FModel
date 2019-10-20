@@ -39,8 +39,12 @@ namespace FModel.Methods.Assets.IconCreator
                 JToken weaponToken = AssetsUtility.GetPropertyTagImport<JToken>(AssetProperties, "WeaponDefinition");
                 if (heroToken != null)
                 {
-                    string assetPath = "/FortniteGame/Content/Athena/Heroes/" + heroToken.Value<string>();
-                    DrawImageFromTagData(assetPath);
+                    //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
+                    string assetPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + heroToken.Value<string>().ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
+                    if (!string.IsNullOrEmpty(assetPath))
+                    {
+                        DrawImageFromTagData(assetPath.Substring(0, assetPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                    }
                 }
                 else if (weaponToken != null)
                 {
@@ -49,17 +53,13 @@ namespace FModel.Methods.Assets.IconCreator
                     {
                         weaponName = "WID_Harvest_Pickaxe_STWCosmetic_Tier_" + FWindow.FCurrentAsset.Substring(FWindow.FCurrentAsset.Length - 1);
                     }
-                    if (weaponToken.Value<string>().Equals("WID_Harvest_Pickaxe_NutCracker")) //RIP CASE SENSITIVE
-                    {
-                        weaponName = "WID_Harvest_Pickaxe_Nutcracker";
-                    }
-                    if (weaponToken.Value<string>().Equals("WID_Harvest_Pickaxe_Wukong")) //RIP CASE SENSITIVE
-                    {
-                        weaponName = "WID_Harvest_Pickaxe_WuKong";
-                    }
 
-                    string assetPath = "/FortniteGame/Content/Athena/Items/Weapons/" + weaponName;
-                    DrawImageFromTagData(assetPath);
+                    //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
+                    string assetPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + weaponName.ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
+                    if (!string.IsNullOrEmpty(assetPath))
+                    {
+                        DrawImageFromTagData(assetPath.Substring(0, assetPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                    }
                 }
                 else
                 {

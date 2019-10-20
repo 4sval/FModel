@@ -30,6 +30,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                             if (questDefinitionToken != null)
                             {
                                 string path = FoldersUtility.FixFortnitePath(questDefinitionToken.Value<string>());
+                                new UpdateMyProcessEvents(System.IO.Path.GetFileNameWithoutExtension(path), "Waiting").Update();
                                 GetQuestData(dataPropertiesArray, path);
                             }
                         }
@@ -135,36 +136,71 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                             {
                                 if (rewardsDataArray[0]["struct_name"] != null && rewardsDataArray[0]["struct_type"] != null && string.Equals(rewardsDataArray[0]["struct_name"].Value<string>(), "FortItemQuantityPair"))
                                 {
-                                    JArray rewardPropertiesArray = rewardsDataArray[0]["struct_type"]["properties"].Value<JArray>();
-                                    if (rewardPropertiesArray != null)
+                                    try
                                     {
-                                        //reward name (not path)
-                                        JArray itemPrimaryAssetIdArray = AssetsUtility.GetPropertyTagStruct<JArray>(rewardPropertiesArray, "ItemPrimaryAssetId", "properties");
-                                        if (itemPrimaryAssetIdArray != null)
+                                        //checking the whole array for the reward
+                                        //ignoring all Quest and Token until he find the reward
+                                        JToken targetChecker = rewardsDataArray.Where(x =>
+                                        !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Quest") &&
+                                        !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Token"))
+                                            .FirstOrDefault()["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][1]["tag_data"];
+
+                                        //checking the whole array for the reward quantity
+                                        //ignoring all Quest and Token until he find the reward quantity
+                                        JToken targetQuantity = rewardsDataArray.Where(x =>
+                                        !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Quest") &&
+                                        !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Token"))
+                                            .FirstOrDefault()["struct_type"]["properties"][1]["tag_data"];
+
+                                        if (targetChecker != null)
                                         {
-                                            JArray primaryAssetTypeArray = AssetsUtility.GetPropertyTagStruct<JArray>(itemPrimaryAssetIdArray, "PrimaryAssetType", "properties");
-                                            if (primaryAssetTypeArray != null)
+                                            //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
+                                            string primaryAssetNameFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + targetChecker.Value<string>().ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
+                                            if (!string.IsNullOrEmpty(primaryAssetNameFullPath))
                                             {
-                                                JToken targetChecker = AssetsUtility.GetPropertyTag<JToken>(primaryAssetTypeArray, "Name");
-                                                if (targetChecker != null && !string.Equals(targetChecker.Value<string>(), "Quest") && !string.Equals(targetChecker.Value<string>(), "Token"))
+                                                rewardPath = primaryAssetNameFullPath.Substring(0, primaryAssetNameFullPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase));
+                                            }
+
+                                            if (targetQuantity != null)
+                                            {
+                                                rewardQuantity = targetQuantity.Value<string>();
+                                            }
+
+                                            BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity);
+                                            if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
+                                            {
+                                                BundleData.Add(currentData);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, "", "");
+                                            if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
+                                            {
+                                                BundleData.Add(currentData);
+                                            }
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        if (hiddenRewardsDataArray != null)
+                                        {
+                                            if (hiddenRewardsDataArray[0]["struct_name"] != null && hiddenRewardsDataArray[0]["struct_type"] != null && string.Equals(hiddenRewardsDataArray[0]["struct_name"].Value<string>(), "FortHiddenRewardQuantityPair"))
+                                            {
+                                                JArray hiddenRewardPropertiesArray = hiddenRewardsDataArray[0]["struct_type"]["properties"].Value<JArray>();
+                                                if (hiddenRewardPropertiesArray != null)
                                                 {
-                                                    //this come from the itemPrimaryAssetIdArray
-                                                    JToken primaryAssetNameToken = AssetsUtility.GetPropertyTag<JToken>(itemPrimaryAssetIdArray, "PrimaryAssetName");
-                                                    if (primaryAssetNameToken != null)
+                                                    JToken templateIdToken = AssetsUtility.GetPropertyTag<JToken>(hiddenRewardPropertiesArray, "TemplateId");
+                                                    if (templateIdToken != null)
                                                     {
-                                                        //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
-                                                        string primaryAssetNameFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.Contains("/" + primaryAssetNameToken.Value<string>())).Select(d => d.Key).FirstOrDefault();
-                                                        if (!string.IsNullOrEmpty(primaryAssetNameFullPath))
-                                                        {
-                                                            rewardPath = primaryAssetNameFullPath.Substring(0, primaryAssetNameFullPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase));
-                                                        }
+                                                        rewardPath = templateIdToken.Value<string>();
                                                     }
 
                                                     //reward quantity (if 1, this won't be displayed)
-                                                    JToken quantityToken = AssetsUtility.GetPropertyTag<JToken>(rewardPropertiesArray, "Quantity");
-                                                    if (quantityToken != null)
+                                                    JToken hiddenQuantityToken = AssetsUtility.GetPropertyTag<JToken>(hiddenRewardPropertiesArray, "Quantity");
+                                                    if (hiddenQuantityToken != null)
                                                     {
-                                                        rewardQuantity = quantityToken.Value<string>();
+                                                        rewardQuantity = hiddenQuantityToken.Value<string>();
                                                     }
 
                                                     BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity);
@@ -173,42 +209,14 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                                         BundleData.Add(currentData);
                                                     }
                                                 }
-                                                else if (hiddenRewardsDataArray != null)
-                                                {
-                                                    if (hiddenRewardsDataArray[0]["struct_name"] != null && hiddenRewardsDataArray[0]["struct_type"] != null && string.Equals(hiddenRewardsDataArray[0]["struct_name"].Value<string>(), "FortHiddenRewardQuantityPair"))
-                                                    {
-                                                        JArray hiddenRewardPropertiesArray = hiddenRewardsDataArray[0]["struct_type"]["properties"].Value<JArray>();
-                                                        if (hiddenRewardPropertiesArray != null)
-                                                        {
-                                                            JToken templateIdToken = AssetsUtility.GetPropertyTag<JToken>(hiddenRewardPropertiesArray, "TemplateId");
-                                                            if (templateIdToken != null)
-                                                            {
-                                                                rewardPath = templateIdToken.Value<string>();
-                                                            }
-
-                                                            //reward quantity (if 1, this won't be displayed)
-                                                            JToken hiddenQuantityToken = AssetsUtility.GetPropertyTag<JToken>(hiddenRewardPropertiesArray, "Quantity");
-                                                            if (hiddenQuantityToken != null)
-                                                            {
-                                                                rewardQuantity = hiddenQuantityToken.Value<string>();
-                                                            }
-
-                                                            BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity);
-                                                            if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
-                                                            {
-                                                                BundleData.Add(currentData);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, "", "");
-                                                    if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
-                                                    {
-                                                        BundleData.Add(currentData);
-                                                    }
-                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, "", "");
+                                            if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
+                                            {
+                                                BundleData.Add(currentData);
                                             }
                                         }
                                     }

@@ -5,6 +5,7 @@ using PakReader;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using System.Windows.Media;
 
 namespace FModel.Methods.Utilities
@@ -103,7 +104,7 @@ namespace FModel.Methods.Utilities
                     return new SolidColorBrush(Color.FromRgb((byte)r, (byte)g, (byte)b));
                 }
             }
-            return LightBrush(GetPrimaryColor(displayStyleArray), 0.4f);
+            return RandomSolidColorBrush();
         }
 
         public static Stream GetChallengeBundleImage(JArray displayStyleArray)
@@ -169,7 +170,7 @@ namespace FModel.Methods.Utilities
                     return AssetsUtility.GetStreamImageFromPath(path);
                 }
             }
-            return null;
+            return Application.GetResourceStream(new Uri("pack://application:,,,/Resources/unknown512.png")).Stream;
         }
     }
 }

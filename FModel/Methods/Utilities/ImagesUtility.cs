@@ -71,7 +71,7 @@ namespace FModel.Methods.Utilities
 
                 FWindow.FMain.Dispatcher.InvokeAsync(() =>
                 {
-                    FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create(RTB); //thread safe and fast af
+                    FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create(RTB); //thread safe
 
                     if (FWindow.FMain.MI_Auto_Save_Images.IsChecked) //auto save images
                     {
@@ -98,7 +98,7 @@ namespace FModel.Methods.Utilities
         {
             using (var fileStream = new FileStream(path, FileMode.Create))
             {
-                BitmapEncoder encoder = new PngBitmapEncoder();
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create((BitmapSource)FWindow.FMain.ImageBox_Main.Source));
                 encoder.Save(fileStream);
 
