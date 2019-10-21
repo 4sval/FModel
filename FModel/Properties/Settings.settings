@@ -38,5 +38,23 @@
     <Setting Name="FWatermarkYPos" Type="System.Double" Scope="User">
       <Value Profile="(Default)">3</Value>
     </Setting>
+    <Setting Name="FChallengeWatermark" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{BundleName} - {Date}</Value>
+    </Setting>
+    <Setting Name="FUseChallengeWatermark" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FPrimaryColor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">35:41:48</Value>
+    </Setting>
+    <Setting Name="FSecondaryColor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">51:60:70</Value>
+    </Setting>
+    <Setting Name="FBannerFilePath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FBannerOpacity" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

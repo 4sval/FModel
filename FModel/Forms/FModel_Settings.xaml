@@ -59,8 +59,8 @@
                 </Border>
 
                 <CheckBox x:Name="bWatermarkIcon" Content="Watermark" HorizontalAlignment="Left" Margin="8,87,0,0" VerticalAlignment="Top" Checked="EnableDisableWatermark" Unchecked="EnableDisableWatermark"/>
-                <Button x:Name="OpenFile_Button" Content="Open File" HorizontalAlignment="Right" Margin="0,0,411,83" VerticalAlignment="Bottom" Width="60" IsEnabled="False" Click="OpenFile_Button_Click"/>
-                <Label x:Name="Watermark_Label" Content="File Name: " MaxWidth="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="156,82,0,0"/>
+                <Button x:Name="OpenFile_Button" Content="+" HorizontalAlignment="Right" Margin="0,0,454,82" VerticalAlignment="Bottom" Width="19" IsEnabled="False" Click="OpenFile_Button_Click"/>
+                <Label x:Name="Watermark_Label" Content="File Name: " MaxWidth="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="108,83,0,0"/>
                 <Label Content="X Position:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,107,0,0"/>
                 <Slider x:Name="xPos_Slider" Style="{StaticResource Horizontal_Slider}" Thumb.DragCompleted="UpdateImageWithWatermark" HorizontalAlignment="Left" Margin="67,110,0,0" VerticalAlignment="Top" Maximum="509" Minimum="3" Width="326" Background="#FF525A63" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
                 <Label Content="Y Position:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,134,0,0"/>
@@ -72,6 +72,29 @@
 
                 <CheckBox x:Name="bFeaturedIcon" Content="Shop Item Icon" HorizontalAlignment="Left" Margin="305,59,0,0" VerticalAlignment="Top" Checked="UpdateImageBox" Unchecked="UpdateImageBox"/>
                 <Button x:Name="OpenIconCreator_Button" Content="Open Image" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="164" Click="OpenIconCreator_Button_Click"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Challenges Theme" HorizontalAlignment="Left" Height="155" Margin="10,327,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
+            <Grid>
+                <Label Content="Watermark:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,-1"/>
+                <TextBox x:Name="WatermarkChallenge_TextBox" Height="19" Margin="69,4,263,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF" TextChanged="UpdateChallengeCustomTheme"/>
+
+                <Label Content="Colors:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,82,0,0"/>
+                <Button x:Name="PrimaryColor_Button" Content="Primary" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="124" Margin="0,0,393,29" IsEnabled="False" Click="PrimaryColor_Button_Click"/>
+                <Button x:Name="SecondaryColor_Button" Content="Secondary" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="124" Margin="0,0,263,29" IsEnabled="False" Click="SecondaryColor_Button_Click"/>
+
+                <Button x:Name="AddBanner_Button" Content="+" HorizontalAlignment="Right" Margin="0,0,438,59" VerticalAlignment="Bottom" Width="19" IsEnabled="False" Click="AddBanner_Button_Click"/>
+                <Label x:Name="Banner_Label" Content="File Name: " MaxWidth="155" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="148,55,0,0"/>
+                <Button x:Name="DeleteBanner_Button" Content="-" HorizontalAlignment="Right" Margin="0,0,414,59" VerticalAlignment="Bottom" Width="19" IsEnabled="False" Click="DeleteBanner_Button_Click"/>
+
+                <Label Content="Opacity:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,111,0,-3"/>
+                <Slider x:Name="OpacityBanner_Slider" Style="{StaticResource Horizontal_Slider}" Thumb.DragCompleted="UpdateChallengeCustomTheme" HorizontalAlignment="Left" Margin="57,112,0,0" VerticalAlignment="Top" Maximum="255" Width="242" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
+
+                <CheckBox x:Name="bCustomChallenge" Content="Custom Theme" HorizontalAlignment="Left" Margin="6,59,0,0" VerticalAlignment="Top" Checked="EnableDisableCustomTheme" Unchecked="EnableDisableCustomTheme"/>
+                <Border BorderThickness="1" Background="#FF252D36" HorizontalAlignment="Right" Height="105" Width="258" VerticalAlignment="Top" Margin="0,3,0,0">
+                    <Image x:Name="ImageBox_ChallengePreview" Source="/FModel;component/Resources/Template_Challenge.png" UseLayoutRounding="True"/>
+                </Border>
+                <Button x:Name="OpenChallengeTheme_Button" Content="Open Image" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="258" Click="OpenChallengeTheme_Button_Click" Margin="0,0,0,3"/>
             </Grid>
         </GroupBox>
         <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="80" Click="Button_Click"/>

@@ -166,5 +166,77 @@ namespace FModel.Properties {
                 this["FWatermarkYPos"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{BundleName} - {Date}")]
+        public string FChallengeWatermark {
+            get {
+                return ((string)(this["FChallengeWatermark"]));
+            }
+            set {
+                this["FChallengeWatermark"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FUseChallengeWatermark {
+            get {
+                return ((bool)(this["FUseChallengeWatermark"]));
+            }
+            set {
+                this["FUseChallengeWatermark"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("35:41:48")]
+        public string FPrimaryColor {
+            get {
+                return ((string)(this["FPrimaryColor"]));
+            }
+            set {
+                this["FPrimaryColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("51:60:70")]
+        public string FSecondaryColor {
+            get {
+                return ((string)(this["FSecondaryColor"]));
+            }
+            set {
+                this["FSecondaryColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FBannerFilePath {
+            get {
+                return ((string)(this["FBannerFilePath"]));
+            }
+            set {
+                this["FBannerFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int FBannerOpacity {
+            get {
+                return ((int)(this["FBannerOpacity"]));
+            }
+            set {
+                this["FBannerOpacity"] = value;
+            }
+        }
     }
 }

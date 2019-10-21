@@ -94,5 +94,26 @@ namespace FModel.Methods.Utilities
             int sep = fixedPath.LastIndexOf('.');
             return fixedPath.Substring(0, sep > 0 ? sep : fixedPath.Length);
         }
+
+        public static void CheckWatermark()
+        {
+            if (!string.IsNullOrEmpty(FProp.Default.FWatermarkFilePath) &&
+                !File.Exists(FProp.Default.FWatermarkFilePath))
+            {
+                FProp.Default.FWatermarkFilePath = string.Empty;
+                FProp.Default.FUseWatermark = false;
+                new UpdateMyConsole("Watermark file not found, watermarking disabled.", CColors.Blue, true).Append();
+            }
+
+            if (!string.IsNullOrEmpty(FProp.Default.FBannerFilePath) &&
+                !File.Exists(FProp.Default.FBannerFilePath))
+            {
+                FProp.Default.FBannerFilePath = string.Empty;
+                FProp.Default.FUseChallengeWatermark = false;
+                new UpdateMyConsole("Banner file not found, challenges custom theme disabled.", CColors.Blue, true).Append();
+            }
+
+            FProp.Default.Save();
+        }
     }
 }

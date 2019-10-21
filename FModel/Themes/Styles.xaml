@@ -20,7 +20,7 @@
     <Color x:Key="ForegroundColor">#EFEFEF</Color>
 
     <Color x:Key="HighlightColor">#3e4652</Color>
-    <Color x:Key="HotColor">#525252</Color>
+    <Color x:Key="HotColor">#3C4C5E</Color>
     
     <!--Brushes-->
     <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}"/>
@@ -30,7 +30,7 @@
     <SolidColorBrush x:Key="TabControlNormalBorderBrush" Color="{StaticResource WindowBackgroundColor}"/>
 
     <SolidColorBrush x:Key="TabItemHotBackground" Color="{StaticResource HotColor}"/>
-    <SolidColorBrush x:Key="TabItemSelectedBackground" Color="{StaticResource LightBackgroundColor}"/>
+    <SolidColorBrush x:Key="TabItemSelectedBackground" Color="#333C46"/>
     <SolidColorBrush x:Key="TabItemHotBorderBrush" Color="{StaticResource HotColor}"/>
     <SolidColorBrush x:Key="TabItemDisabledBackground" Color="{StaticResource DarkBackgroundColor}"/>
     <SolidColorBrush x:Key="TabItemDisabledBorderBrush" Color="{StaticResource DarkBackgroundColor}"/>

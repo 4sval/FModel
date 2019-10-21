@@ -99,6 +99,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WriteableBitmapEx.Wpf, Version=1.5.0.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
+      <HintPath>..\packages\WriteableBitmapEx.1.5.1.0\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -108,6 +111,26 @@
     <Compile Include="Commands\FModel_Commands.cs" />
     <Compile Include="Forms\AESManager.xaml.cs">
       <DependentUpon>AESManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ColorPicker\Code\ColorPalette.cs" />
+    <Compile Include="Forms\ColorPicker\Code\ColorPickerDialogOptions.cs" />
+    <Compile Include="Forms\ColorPicker\Code\ColorSwatchItem.cs" />
+    <Compile Include="Forms\ColorPicker\Code\Util.cs" />
+    <Compile Include="Forms\ColorPicker\ColorPickerControl.xaml.cs">
+      <DependentUpon>ColorPickerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ColorPicker\ColorPickerSettings.cs" />
+    <Compile Include="Forms\ColorPicker\ColorPickerSwatch.xaml.cs">
+      <DependentUpon>ColorPickerSwatch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ColorPicker\ColorPickerWindow.xaml.cs">
+      <DependentUpon>ColorPickerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ColorPicker\ColorPickRow.xaml.cs">
+      <DependentUpon>ColorPickRow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ColorPicker\SliderRow.xaml.cs">
+      <DependentUpon>SliderRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\FModel_About.xaml.cs">
       <DependentUpon>FModel_About.xaml</DependentUpon>
@@ -197,6 +220,26 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Forms\AESManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ColorPicker\ColorPickerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ColorPicker\ColorPickerSwatch.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ColorPicker\ColorPickerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ColorPicker\ColorPickRow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ColorPicker\SliderRow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -324,6 +367,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\unknown512.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_Challenge.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\colorpicker1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\colorpicker2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">

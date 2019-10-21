@@ -93,6 +93,26 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap colorpicker1 {
+            get {
+                object obj = ResourceManager.GetObject("colorpicker1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap colorpicker2 {
+            get {
+                object obj = ResourceManager.GetObject("colorpicker2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap dmg64 {
             get {
                 object obj = ResourceManager.GetObject("dmg64", resourceCulture);
@@ -166,6 +186,16 @@ namespace FModel.Properties {
         internal static System.Drawing.Bitmap T_Icon_Quests_64 {
             get {
                 object obj = ResourceManager.GetObject("T_Icon_Quests_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Template_Challenge {
+            get {
+                object obj = ResourceManager.GetObject("Template_Challenge", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

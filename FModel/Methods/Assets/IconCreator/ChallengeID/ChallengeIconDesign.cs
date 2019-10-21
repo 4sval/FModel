@@ -1,10 +1,12 @@
 ﻿using FModel.Methods.Utilities;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets.IconCreator.ChallengeID
 {
@@ -24,7 +26,14 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             string displayName = string.Empty;
 
             JArray displayStyleArray = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "DisplayStyle", "properties");
-            if (displayStyleArray != null)
+            if (FProp.Default.FUseChallengeWatermark)
+            {
+                string[] primaryParts = FProp.Default.FPrimaryColor.Split(':');
+                string[] secondaryParts = FProp.Default.FSecondaryColor.Split(':');
+                PrimaryColor = new SolidColorBrush(Color.FromRgb(Convert.ToByte(primaryParts[0]), Convert.ToByte(primaryParts[1]), Convert.ToByte(primaryParts[2])));
+                SecondaryColor = new SolidColorBrush(Color.FromRgb(Convert.ToByte(secondaryParts[0]), Convert.ToByte(secondaryParts[1]), Convert.ToByte(secondaryParts[2])));
+            }
+            else if (displayStyleArray != null)
             {
                 hasDisplayStyle = true;
                 PrimaryColor = ChallengesUtility.GetPrimaryColor(displayStyleArray);
@@ -82,7 +91,12 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             Point textLocation = new Point(isBanner || !hasDisplayStyle ? 50 : 310, 165 - formattedText.Height);
 
             IconCreator.ICDrawingContext.DrawRectangle(PrimaryColor, null, new Rect(0, 0, 1024, 256));
-            if (image != null)
+            if (FProp.Default.FUseChallengeWatermark && !string.IsNullOrEmpty(FProp.Default.FBannerFilePath))
+            {
+                BitmapImage bmp = new BitmapImage(new Uri(FProp.Default.FBannerFilePath));
+                IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, FProp.Default.FBannerOpacity), new Rect(0, 0, 1024, 256));
+            }
+            else if (image != null)
             {
                 using (image)
                 {
@@ -117,6 +131,26 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             Pen pen = new Pen(ChallengesUtility.DarkBrush(SecondaryColor, 0.3f), 1);
             pen.LineJoin = PenLineJoin.Round;
             IconCreator.ICDrawingContext.DrawGeometry(SecondaryColor, pen, geometry);
+
+            string watermark = FProp.Default.FChallengeWatermark;
+            if (watermark.Contains("{BundleName}")) { watermark = watermark.Replace("{BundleName}", displayName); }
+            if (watermark.Contains("{Date}")) { watermark = watermark.Replace("{Date}", DateTime.Now.ToString("dd/MM/yyyy")); }
+            typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+            formattedText =
+                new FormattedText(
+                    watermark,
+                    CultureInfo.CurrentUICulture,
+                    FlowDirection.LeftToRight,
+                    typeface,
+                    20,
+                    new SolidColorBrush(Color.FromArgb(150, 255, 255, 255)),
+                    IconCreator.PPD
+                    );
+            formattedText.TextAlignment = TextAlignment.Right;
+            formattedText.MaxTextWidth = 1014;
+            formattedText.MaxLineCount = 1;
+            textLocation = new Point(0, 205);
+            IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
         }
 
         private static void DrawQuests(SolidColorBrush PrimaryColor, SolidColorBrush SecondaryColor)
