@@ -66,23 +66,23 @@ namespace FModel
             else if (theSeries.Equals("CUBESeries"))
             {
                 DrawBackground(toDrawOn, Color.FromArgb(255, 157, 0, 108), Color.FromArgb(255, 97, 0, 100), Color.FromArgb(255, 175, 27, 185));
-                DrawnSeriesBackgroundImage("T-Cube-Background", toDrawOn);
+                DrawnSeriesBackgroundImage("T-Cube-Background", 0.2f, toDrawOn);
             }
             else if (theSeries.Equals("DCUSeries"))
             {
                 DrawBackground(toDrawOn, Color.FromArgb(255, 45, 68, 93), Color.FromArgb(255, 16, 25, 40), Color.FromArgb(255, 62, 94, 122));
-                DrawnSeriesBackgroundImage("T-BlackMonday-Background", toDrawOn);
+                DrawnSeriesBackgroundImage("T-BlackMonday-Background", 0.6f, toDrawOn);
             }
             else if (theSeries.Equals("CreatorCollabSeries"))
             {
                 DrawBackground(toDrawOn, Color.FromArgb(255, 14, 114, 119), Color.FromArgb(255, 11, 86, 92), Color.FromArgb(255, 63, 179, 170));
-                DrawnSeriesBackgroundImage("T_Ui_CreatorsCollab_Bg", toDrawOn);
+                DrawnSeriesBackgroundImage("T_Ui_CreatorsCollab_Bg", 0.4f, toDrawOn);
             }
             else
                 DrawRarityBackground(theItem, toDrawOn);
         }
 
-        private static void DrawnSeriesBackgroundImage(string icon, Graphics toDrawOn)
+        private static void DrawnSeriesBackgroundImage(string icon, float opacity, Graphics toDrawOn)
         {
             string iconBG = JohnWick.AssetToTexture2D(icon);
             if (!string.IsNullOrEmpty(iconBG))
@@ -91,7 +91,7 @@ namespace FModel
                 using (var bmpTemp = new Bitmap(iconBG))
                     itemIcon = new Bitmap(bmpTemp);
 
-                Image opacityImage = ImageUtilities.SetImageOpacity(itemIcon, (float)0.6);
+                Image opacityImage = ImageUtilities.SetImageOpacity(itemIcon, opacity);
                 toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 512, 512), new Point(5, 5));
             }
         }
