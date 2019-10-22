@@ -1,4 +1,4 @@
-﻿using FModel.Properties;
+using FModel.Properties;
 using Newtonsoft.Json.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -62,42 +62,37 @@ namespace FModel
         private static void DrawSeriesBackground(JToken theItem, Graphics toDrawOn, string theSeries)
         {
             if (theSeries.Equals("MarvelSeries"))
-            {
                 DrawBackground(toDrawOn, Color.FromArgb(255, 203, 35, 45), Color.FromArgb(255, 127, 14, 29), Color.FromArgb(255, 255, 67, 61));
-            }
             else if (theSeries.Equals("CUBESeries"))
             {
                 DrawBackground(toDrawOn, Color.FromArgb(255, 157, 0, 108), Color.FromArgb(255, 97, 0, 100), Color.FromArgb(255, 175, 27, 185));
-                string cubeBG = JohnWick.AssetToTexture2D("T-Cube-Background");
-                if (!string.IsNullOrEmpty(cubeBG))
-                {
-                    Image itemIcon;
-                    using (var bmpTemp = new Bitmap(cubeBG))
-                    {
-                        itemIcon = new Bitmap(bmpTemp);
-                    }
-                    Image opacityImage = ImageUtilities.SetImageOpacity(itemIcon, (float)0.2);
-                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 512, 512), new Point(5, 5));
-                }
+                DrawnSeriesBackgroundImage("T-Cube-Background", toDrawOn);
             }
             else if (theSeries.Equals("DCUSeries"))
             {
                 DrawBackground(toDrawOn, Color.FromArgb(255, 45, 68, 93), Color.FromArgb(255, 16, 25, 40), Color.FromArgb(255, 62, 94, 122));
-                string cubeBG = JohnWick.AssetToTexture2D("T-BlackMonday-Background");
-                if (!string.IsNullOrEmpty(cubeBG))
-                {
-                    Image itemIcon;
-                    using (var bmpTemp = new Bitmap(cubeBG))
-                    {
-                        itemIcon = new Bitmap(bmpTemp);
-                    }
-                    Image opacityImage = ImageUtilities.SetImageOpacity(itemIcon, (float)0.6);
-                    toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 512, 512), new Point(5, 5));
-                }
+                DrawnSeriesBackgroundImage("T-BlackMonday-Background", toDrawOn);
+            }
+            else if (theSeries.Equals("CreatorCollabSeries"))
+            {
+                DrawBackground(toDrawOn, Color.FromArgb(255, 14, 114, 119), Color.FromArgb(255, 11, 86, 92), Color.FromArgb(255, 63, 179, 170));
+                DrawnSeriesBackgroundImage("T_Ui_CreatorsCollab_Bg", toDrawOn);
             }
             else
-            {
                 DrawRarityBackground(theItem, toDrawOn);
+        }
+
+        private static void DrawnSeriesBackgroundImage(string icon, Graphics toDrawOn)
+        {
+            string iconBG = JohnWick.AssetToTexture2D(icon);
+            if (!string.IsNullOrEmpty(iconBG))
+            {
+                Image itemIcon;
+                using (var bmpTemp = new Bitmap(iconBG))
+                    itemIcon = new Bitmap(bmpTemp);
+
+                Image opacityImage = ImageUtilities.SetImageOpacity(itemIcon, (float)0.6);
+                toDrawOn.DrawImage(ImageUtilities.ResizeImage(opacityImage, 512, 512), new Point(5, 5));
             }
         }
 
