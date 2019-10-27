@@ -100,6 +100,7 @@ If you find this project useful, feel free to give it a :star: thank you :kissin
   - [ ] Code refactoring
   - [ ] New Heroes icon design with perks and more
   - [ ] New Defenders icon design with useful infos
+  - [ ] Add a 3d Viewer
   - [x] Translation support
   - [x] AES Manager
   - [x] Display support for .locres files
@@ -112,7 +113,6 @@ If you find this project useful, feel free to give it a :star: thank you :kissin
   - [x] Load all paks
   - [x] Load only difference between 2 paks version
   - [x] Custom watermark option on icons
-
 ## Removal
 Contact me with an authorized, genuine email if you work for Epic Games and would like this removed.
 asval.contactme@gmail.com
