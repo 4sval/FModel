@@ -3,11 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:FModel"
              StartupUri="FModel_Main.xaml"
-             ShutdownMode="OnMainWindowClose">
+             ShutdownMode="OnMainWindowClose"
+             DispatcherUnhandledException="OnDispatcherUnhandledException">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes\Styles.xaml" />
+                <ResourceDictionary Source="Forms/HexViewer/BrushesDictionary.xaml" />
+                <ResourceDictionary Source="Forms/HexViewer/MiscelanousDictionary.xaml" />
+                <ResourceDictionary Source="Forms/HexViewer/ToolTipDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

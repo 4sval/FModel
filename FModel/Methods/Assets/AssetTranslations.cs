@@ -61,6 +61,9 @@ namespace FModel.Methods.Assets
                 case "Traditional Chinese":
                     PopulateDict(string.Format(partialPath, "zh-Hant"));
                     break;
+                default:
+                    if (HotfixLocResDict == null) { SetHotfixedLocResDict(); } //once, no need to do more
+                    break;
             }
         }
 

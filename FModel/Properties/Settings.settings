@@ -44,17 +44,32 @@
     <Setting Name="FUseChallengeWatermark" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="FPrimaryColor" Type="System.String" Scope="User">
-      <Value Profile="(Default)">35:41:48</Value>
-    </Setting>
-    <Setting Name="FSecondaryColor" Type="System.String" Scope="User">
-      <Value Profile="(Default)">51:60:70</Value>
-    </Setting>
     <Setting Name="FBannerFilePath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="FBannerOpacity" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="FDiffFileSize" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="HeaderVisibility" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ReadOnly" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="StatusBarVisibility" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="FPrimaryColor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">21:32:43</Value>
+    </Setting>
+    <Setting Name="FSecondaryColor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">29:161:242</Value>
+    </Setting>
+    <Setting Name="FUpdateSettings" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

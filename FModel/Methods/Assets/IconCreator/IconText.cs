@@ -1,4 +1,5 @@
 ﻿using FModel.Methods.Assets.IconCreator.AthenaID;
+using FModel.Methods.Assets.IconCreator.HeroID;
 using FModel.Methods.Assets.IconCreator.WeaponID;
 using FModel.Methods.Utilities;
 using Newtonsoft.Json.Linq;
@@ -27,7 +28,7 @@ namespace FModel.Methods.Assets.IconCreator
             DrawTextBackground();
 
             SetTextVariables(AssetProperties);
-            DrawTextVariables();
+            DrawTextVariables(AssetProperties);
         }
 
         private static void SetTextVariables(JArray AssetProperties)
@@ -128,7 +129,7 @@ namespace FModel.Methods.Assets.IconCreator
             }
         }
 
-        private static void DrawTextVariables()
+        private static void DrawTextVariables(JArray AssetProperties)
         {
             DrawDisplayName(_displayName);
             DrawDescription(_description);
@@ -163,6 +164,9 @@ namespace FModel.Methods.Assets.IconCreator
                 case "FortVariantTokenType":
                     DrawToBottom("Left", _shortDescription);
                     DrawToBottom("Right", _cosmeticItemDefinition);
+                    break;
+                case "FortHeroType":
+                    HeroGameplayDefinition.GetHeroPerk(AssetProperties);
                     break;
             }
 
@@ -267,12 +271,12 @@ namespace FModel.Methods.Assets.IconCreator
                 if (string.Equals(side, "Right"))
                 {
                     formattedText.TextAlignment = TextAlignment.Right;
-                    textLocation = new Point(510, 513 - formattedText.Height);
+                    textLocation = new Point(509, 512 - formattedText.Height);
                 }
                 else if (string.Equals(side, "Left"))
                 {
                     formattedText.TextAlignment = TextAlignment.Left;
-                    textLocation = new Point(5, 513 - formattedText.Height);
+                    textLocation = new Point(6, 512 - formattedText.Height);
                 }
                 IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
             }

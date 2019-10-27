@@ -20,7 +20,7 @@ namespace FModel.Methods.Utilities
         {
             if (DLLImport.IsInternetAvailable())
             {
-                string EndpointContent = GetEndpoint("https://dl.dropbox.com/s/lngkoq2ucd9di2n/FModel_Backups.json?dl=0");
+                string EndpointContent = GetEndpoint("https://dl.dropbox.com/s/mi7oyjywdtatxb0/FModel3_Backups.json?dl=0");
                 if (!string.IsNullOrEmpty(EndpointContent))
                 {
                     List<BackupInfosEntry> ListToReturn = new List<BackupInfosEntry>();

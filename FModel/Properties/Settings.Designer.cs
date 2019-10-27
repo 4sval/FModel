@@ -193,30 +193,6 @@ namespace FModel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("35:41:48")]
-        public string FPrimaryColor {
-            get {
-                return ((string)(this["FPrimaryColor"]));
-            }
-            set {
-                this["FPrimaryColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("51:60:70")]
-        public string FSecondaryColor {
-            get {
-                return ((string)(this["FSecondaryColor"]));
-            }
-            set {
-                this["FSecondaryColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string FBannerFilePath {
             get {
@@ -236,6 +212,90 @@ namespace FModel.Properties {
             }
             set {
                 this["FBannerOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FDiffFileSize {
+            get {
+                return ((bool)(this["FDiffFileSize"]));
+            }
+            set {
+                this["FDiffFileSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool HeaderVisibility {
+            get {
+                return ((bool)(this["HeaderVisibility"]));
+            }
+            set {
+                this["HeaderVisibility"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ReadOnly {
+            get {
+                return ((bool)(this["ReadOnly"]));
+            }
+            set {
+                this["ReadOnly"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool StatusBarVisibility {
+            get {
+                return ((bool)(this["StatusBarVisibility"]));
+            }
+            set {
+                this["StatusBarVisibility"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("21:32:43")]
+        public string FPrimaryColor {
+            get {
+                return ((string)(this["FPrimaryColor"]));
+            }
+            set {
+                this["FPrimaryColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("29:161:242")]
+        public string FSecondaryColor {
+            get {
+                return ((string)(this["FSecondaryColor"]));
+            }
+            set {
+                this["FSecondaryColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FUpdateSettings {
+            get {
+                return ((bool)(this["FUpdateSettings"]));
+            }
+            set {
+                this["FUpdateSettings"] = value;
             }
         }
     }

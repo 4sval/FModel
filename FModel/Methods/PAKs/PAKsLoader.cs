@@ -21,6 +21,9 @@ namespace FModel.Methods.PAKs
         {
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
+            FWindow.FMain.MI_BackupPAKs.IsEnabled = false;
+            FWindow.FMain.MI_DifferenceMode.IsEnabled = false;
+            FWindow.FMain.MI_UpdateMode.IsEnabled = false;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
             FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.ImageBox_Main.Source = null;
@@ -42,11 +45,16 @@ namespace FModel.Methods.PAKs
 
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = true;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
+            FWindow.FMain.MI_BackupPAKs.IsEnabled = true;
+            FWindow.FMain.MI_DifferenceMode.IsEnabled = true;
         }
         public static async Task LoadAllPAKs()
         {
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
+            FWindow.FMain.MI_BackupPAKs.IsEnabled = false;
+            FWindow.FMain.MI_DifferenceMode.IsEnabled = false;
+            FWindow.FMain.MI_UpdateMode.IsEnabled = false;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
             FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.ImageBox_Main.Source = null;
@@ -67,23 +75,28 @@ namespace FModel.Methods.PAKs
 
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = true;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
+            FWindow.FMain.MI_BackupPAKs.IsEnabled = true;
+            FWindow.FMain.MI_DifferenceMode.IsEnabled = true;
         }
         public static async Task LoadDifference()
         {
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
+            FWindow.FMain.MI_BackupPAKs.IsEnabled = false;
+            FWindow.FMain.MI_DifferenceMode.IsEnabled = false;
+            FWindow.FMain.MI_UpdateMode.IsEnabled = false;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
             FWindow.FMain.ViewModel = srt = new SortedTreeViewWindowViewModel();
             FWindow.FMain.ImageBox_Main.Source = null;
             ListBoxUtility.FilesListWithoutPath = null;
             FWindow.FMain.ListBox_Main.Items.Clear();
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 PAKEntries.PAKToDisplay = new Dictionary<string, FPakEntry[]>();
 
                 LoadPAKFiles(true);
-                LoadBackupFile();
+                await LoadBackupFile();
 
             }).ContinueWith(TheTask =>
             {
@@ -91,6 +104,8 @@ namespace FModel.Methods.PAKs
             });
 
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
+            FWindow.FMain.MI_BackupPAKs.IsEnabled = true;
+            FWindow.FMain.MI_DifferenceMode.IsEnabled = true;
         }
 
         private static void LoadPAKFiles(bool bAllPAKs = false)
@@ -217,7 +232,7 @@ namespace FModel.Methods.PAKs
             new UpdateMyProcessEvents(!bAllPAKs ? PAK_PATH + "\\" + FWindow.FCurrentPAK : PAK_PATH, "Success").Update();
         }
 
-        private static void LoadBackupFile()
+        private static async Task LoadBackupFile()
         {
             OpenFileDialog openFiledialog = new OpenFileDialog();
             openFiledialog.Title = "Choose your Backup File";
@@ -241,29 +256,25 @@ namespace FModel.Methods.PAKs
                     {
                         PAKsFileInfos.ToList().ForEach(x => LocalEntries.Add(x));
                     }
+                    PAKEntries.PAKToDisplay.Clear();
 
                     //FILTER WITH THE OVERRIDED EQUALS METHOD (CHECKING FILE NAME AND FILE UNCOMPRESSED SIZE)
                     IEnumerable<FPakEntry> newAssets = LocalEntries.ToArray().Except(BackupEntries);
-
-                    //ADD TO TREE
-                    foreach (FPakEntry entry in newAssets)
+                    await FWindow.FMain.Dispatcher.InvokeAsync(() =>
                     {
-                        FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                        //ADD TO TREE
+                        foreach (FPakEntry entry in newAssets)
                         {
                             string onlyFolders = entry.Name.Substring(0, entry.Name.LastIndexOf('/'));
                             TreeViewUtility.PopulateTreeView(srt, onlyFolders.Substring(1));
-                        });
-                    }
+                        }
 
-                    //ONLY LOAD THE DIFFERENCE WHEN WE CLICK ON A FOLDER
-                    PAKEntries.PAKToDisplay.Clear();
-                    FWindow.FCurrentPAK = "ComparedPAK-WindowsClient.pak";
-                    PAKEntries.PAKToDisplay.Add("ComparedPAK-WindowsClient.pak", newAssets.ToArray());
-
-                    FWindow.FMain.Dispatcher.InvokeAsync(() =>
-                    {
+                        //ONLY LOAD THE DIFFERENCE WHEN WE CLICK ON A FOLDER
+                        FWindow.FCurrentPAK = "ComparedPAK-WindowsClient.pak";
+                        PAKEntries.PAKToDisplay.Add("ComparedPAK-WindowsClient.pak", newAssets.ToArray());
                         FWindow.FMain.ViewModel = srt;
                     });
+
                     new UpdateMyProcessEvents("All PAK files have been compared successfully", "Success").Update();
                 }
             }

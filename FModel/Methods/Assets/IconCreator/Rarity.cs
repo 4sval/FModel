@@ -34,37 +34,47 @@ namespace FModel.Methods.Assets.IconCreator
                         DrawBackground(ImagesUtility.ParseColorFromHex("#2D445D"), ImagesUtility.ParseColorFromHex("#101928"), ImagesUtility.ParseColorFromHex("#3E5E7A"));
                         DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T-BlackMonday-Background");
                         break;
+                    case "CreatorCollabSeries":
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#158588"), ImagesUtility.ParseColorFromHex("#073A4A"), ImagesUtility.ParseColorFromHex("#3FB3AA"));
+                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T_Ui_CreatorsCollab_Bg");
+                        break;
                     default:
+                        DrawNormalRarity(rarityToken);
                         break;
                 }
             }
             else
             {
-                switch (rarityToken != null ? rarityToken.Value<string>() : string.Empty)
-                {
-                    case "EFortRarity::Transcendent":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#D51944"), ImagesUtility.ParseColorFromHex("#86072D"), ImagesUtility.ParseColorFromHex("#FF3F58"));
-                        break;
-                    case "EFortRarity::Mythic":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#BA9C36"), ImagesUtility.ParseColorFromHex("#73581A"), ImagesUtility.ParseColorFromHex("#EED951"));
-                        break;
-                    case "EFortRarity::Legendary":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#C06A38"), ImagesUtility.ParseColorFromHex("#73331A"), ImagesUtility.ParseColorFromHex("#EC9650"));
-                        break;
-                    case "EFortRarity::Epic":
-                    case "EFortRarity::Quality":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#8138C2"), ImagesUtility.ParseColorFromHex("#421A73"), ImagesUtility.ParseColorFromHex("#B251ED"));
-                        break;
-                    case "EFortRarity::Rare":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#3669BB"), ImagesUtility.ParseColorFromHex("#1A4473"), ImagesUtility.ParseColorFromHex("#5180EE"));
-                        break;
-                    case "EFortRarity::Common":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#6D6D6D"), ImagesUtility.ParseColorFromHex("#464646"), ImagesUtility.ParseColorFromHex("#9E9E9E"));
-                        break;
-                    default:
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#5EBC36"), ImagesUtility.ParseColorFromHex("#3C731A"), ImagesUtility.ParseColorFromHex("#74EF52"));
-                        break;
-                }
+                DrawNormalRarity(rarityToken);
+            }
+        }
+
+        private static void DrawNormalRarity(JToken rarityToken)
+        {
+            switch (rarityToken != null ? rarityToken.Value<string>() : string.Empty)
+            {
+                case "EFortRarity::Transcendent":
+                    DrawBackground(ImagesUtility.ParseColorFromHex("#D51944"), ImagesUtility.ParseColorFromHex("#86072D"), ImagesUtility.ParseColorFromHex("#FF3F58"));
+                    break;
+                case "EFortRarity::Mythic":
+                    DrawBackground(ImagesUtility.ParseColorFromHex("#BA9C36"), ImagesUtility.ParseColorFromHex("#73581A"), ImagesUtility.ParseColorFromHex("#EED951"));
+                    break;
+                case "EFortRarity::Legendary":
+                    DrawBackground(ImagesUtility.ParseColorFromHex("#C06A38"), ImagesUtility.ParseColorFromHex("#73331A"), ImagesUtility.ParseColorFromHex("#EC9650"));
+                    break;
+                case "EFortRarity::Epic":
+                case "EFortRarity::Quality":
+                    DrawBackground(ImagesUtility.ParseColorFromHex("#8138C2"), ImagesUtility.ParseColorFromHex("#421A73"), ImagesUtility.ParseColorFromHex("#B251ED"));
+                    break;
+                case "EFortRarity::Rare":
+                    DrawBackground(ImagesUtility.ParseColorFromHex("#3669BB"), ImagesUtility.ParseColorFromHex("#1A4473"), ImagesUtility.ParseColorFromHex("#5180EE"));
+                    break;
+                case "EFortRarity::Common":
+                    DrawBackground(ImagesUtility.ParseColorFromHex("#6D6D6D"), ImagesUtility.ParseColorFromHex("#464646"), ImagesUtility.ParseColorFromHex("#9E9E9E"));
+                    break;
+                default:
+                    DrawBackground(ImagesUtility.ParseColorFromHex("#5EBC36"), ImagesUtility.ParseColorFromHex("#3C731A"), ImagesUtility.ParseColorFromHex("#74EF52"));
+                    break;
             }
         }
 

@@ -1,10 +1,14 @@
-﻿using FindReplace;
+﻿using AutoUpdaterDotNET;
+using FindReplace;
 using ICSharpCode.AvalonEdit;
 using System;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Documents;
 using System.Windows.Media;
 using FProp = FModel.Properties.Settings;
+using System.Diagnostics;
+using FModel.Methods.MessageBox;
 
 namespace FModel.Methods.Utilities
 {
@@ -199,6 +203,65 @@ namespace FModel.Methods.Utilities
             }
 
             return foundChild;
+        }
+
+        public static void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            if (args != null)
+            {
+                if (args.IsUpdateAvailable)
+                {
+                    MessageBoxResult dialogResult;
+                    if (args.Mandatory)
+                    {
+                        dialogResult =
+                            DarkMessageBox.ShowOK(
+                                $"FModel {args.CurrentVersion} is available. You are using version {args.InstalledVersion}. This is a required update. Press Ok to begin updating the application.", 
+                                "Update Available", 
+                                "OK", 
+                                MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        dialogResult =
+                            DarkMessageBox.ShowYesNoCancel(
+                                $"FModel {args.CurrentVersion} is available. You are using version {args.InstalledVersion}. Do you want to update the application now?", 
+                                "Update Available",
+                                "Yes (See the changelog)",
+                                "Yes",
+                                "No");
+                    }
+
+                    if (dialogResult == MessageBoxResult.Yes)
+                    {
+                        Process.Start(args.ChangelogURL);
+                    }
+
+                    //yes if clicked on changelog (show changelog + update kthx)
+                    //no if clicked on ShowYesNoCancel Yes (do not show changelog but update kthx)
+                    //ok if force update
+                    if (dialogResult == MessageBoxResult.Yes || dialogResult == MessageBoxResult.No || dialogResult == MessageBoxResult.OK)
+                    {
+                        try
+                        {
+                            if (AutoUpdater.DownloadUpdate())
+                            {
+                                System.Windows.Application.Current.Shutdown();
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            DarkMessageBox.ShowOK(exception.Message, exception.GetType().ToString(), "OK", MessageBoxImage.Error);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                DarkMessageBox.ShowOK(
+                        "There is a problem reaching update server please check your internet connection and try again later.",
+                        "Update check failed", "OK", MessageBoxImage.Error);
+            }
         }
     }
 }

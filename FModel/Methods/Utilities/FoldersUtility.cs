@@ -61,7 +61,7 @@ namespace FModel.Methods.Utilities
         {
             if (string.IsNullOrEmpty(FProp.Default.FOutput_Path))
             {
-                FProp.Default.FOutput_Path = AppDomain.CurrentDomain.BaseDirectory;
+                FProp.Default.FOutput_Path = AppDomain.CurrentDomain.BaseDirectory + "\\Output";
                 FProp.Default.Save();
             }
         }
@@ -72,9 +72,10 @@ namespace FModel.Methods.Utilities
         private static void CreateDefaultSubFolders()
         {
             //THIS WILL STAY FOR INITIAL LAUNCH ONLY
-            //if (File.Exists(FProp.Default.FOutput_Path + "\\AESManager.xml")) { File.Delete(FProp.Default.FOutput_Path + "\\AESManager.xml"); }
-            //if (Directory.Exists(FProp.Default.FOutput_Path + "\\Extracted\\")) { Directory.Delete(FProp.Default.FOutput_Path + "\\Extracted\\", true); }
-            //if (Directory.Exists(FProp.Default.FOutput_Path + "\\Saved_JSON\\")) { Directory.Delete(FProp.Default.FOutput_Path + "\\Saved_JSON\\", true); }
+            if (File.Exists(FProp.Default.FOutput_Path + "\\AESManager.xml")) { File.Delete(FProp.Default.FOutput_Path + "\\AESManager.xml"); }
+            if (Directory.Exists(FProp.Default.FOutput_Path + "\\Backup\\")) { Directory.Delete(FProp.Default.FOutput_Path + "\\Backup\\", true); }
+            if (Directory.Exists(FProp.Default.FOutput_Path + "\\Extracted\\")) { Directory.Delete(FProp.Default.FOutput_Path + "\\Extracted\\", true); }
+            if (Directory.Exists(FProp.Default.FOutput_Path + "\\Saved_JSON\\")) { Directory.Delete(FProp.Default.FOutput_Path + "\\Saved_JSON\\", true); }
 
             Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Backups\\");
             Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Exports\\");

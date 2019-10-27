@@ -47,14 +47,14 @@ namespace FModel.Methods.BackupsManager
 
                         RestClient EndpointClient = new RestClient(Backup.TheFileDownload);
                         EndpointClient.ExecuteAsync(new RestRequest(Method.GET), response => {
-                            File.WriteAllText($"{OUTPUT_PATH}\\Backup\\{BackupFileName}", response.Content); //FILE WILL ALWAYS EXIST
-                            if (new FileInfo($"{OUTPUT_PATH}\\Backup\\{BackupFileName}").Length > 0) //HENCE WE CHECK THE LENGTH
+                            File.WriteAllText($"{OUTPUT_PATH}\\Backups\\{BackupFileName}", response.Content); //FILE WILL ALWAYS EXIST
+                            if (new FileInfo($"{OUTPUT_PATH}\\Backups\\{BackupFileName}").Length > 0) //HENCE WE CHECK THE LENGTH
                             {
-                                new UpdateMyProcessEvents($"\\Backup\\{BackupFileName} successfully downloaded", "Success").Update();
+                                new UpdateMyProcessEvents($"\\Backups\\{BackupFileName} successfully downloaded", "Success").Update();
                             }
                             else
                             {
-                                File.Delete($"{OUTPUT_PATH}\\Backup\\{BackupFileName}"); //WE DELETE THE EMPTY FILE CREATED
+                                File.Delete($"{OUTPUT_PATH}\\Backups\\{BackupFileName}"); //WE DELETE THE EMPTY FILE CREATED
                                 new UpdateMyProcessEvents($"Error while downloading {BackupFileName}", "Error").Update();
                             }
                         });

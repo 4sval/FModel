@@ -106,6 +106,7 @@ namespace FModel.Forms
         private async void GetUserSettings()
         {
             InputTextBox.Text = FProp.Default.FPak_Path;
+            bDiffFileSize.IsChecked = FProp.Default.FDiffFileSize;
             OutputTextBox.Text = FProp.Default.FOutput_Path;
 
             ComboBox_Language.SelectedIndex = (int)GetEnumValueFromDescription<LIndexes>(FProp.Default.FLanguage);
@@ -136,6 +137,7 @@ namespace FModel.Forms
                 FProp.Default.FPak_Path = InputTextBox.Text;
                 DarkMessageBox.Show("Please, restart FModel to apply your new input path", "FModel Input Path Changed", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+            FProp.Default.FDiffFileSize = (bool)bDiffFileSize.IsChecked;
 
             if (!string.Equals(FProp.Default.FOutput_Path, OutputTextBox.Text))
             {

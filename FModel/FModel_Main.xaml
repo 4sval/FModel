@@ -23,11 +23,13 @@
         <CommandBinding Command="{x:Static commands:FModel_Commands.OpenSettings}" Executed="MI_Settings_Click"/>
         <CommandBinding Command="{x:Static commands:FModel_Commands.OpenSearch}" Executed="MI_Search_Click"/>
         <CommandBinding Command="{x:Static commands:FModel_Commands.OpenOutput}" Executed="MI_OpenOutputFolder_Click"/>
+        <CommandBinding Command="{x:Static commands:FModel_Commands.MergeImages}" Executed="MI_MergeImages_Click"/>
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Key="F1" Command="{x:Static commands:FModel_Commands.OpenSettings}"/>
         <KeyBinding Key="F2" Command="{x:Static commands:FModel_Commands.OpenSearch}"/>
         <KeyBinding Key="F3" Command="{x:Static commands:FModel_Commands.OpenOutput}"/>
+        <KeyBinding Key="F4" Command="{x:Static commands:FModel_Commands.MergeImages}"/>
     </Window.InputBindings>
     <Grid>
         <Menu Height="25" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
@@ -39,21 +41,34 @@
                 <MenuItem x:Name="MI_BackupPAKs" Header="Backup PAKs" Click="MI_BackupPAKs_Click" IsEnabled="False"/>
                 <Separator/>
                 <MenuItem x:Name="MI_DifferenceMode" Header="Difference Mode" IsCheckable="True" Checked="MI_Change_Header" Unchecked="MI_Change_Header"/>
-                <MenuItem x:Name="MI_UpdateMode" Header="Update Mode" IsCheckable="True" Checked="MI_Change_Header" Unchecked="MI_Change_Header" IsEnabled="False"/>
+                <MenuItem x:Name="MI_UpdateMode" Header="Update Mode (Coming Soon)" IsCheckable="True" Checked="MI_Change_Header" Unchecked="MI_Change_Header" IsEnabled="False"/>
                 <Separator/>
                 <MenuItem x:Name="MI_Settings" Header="Settings" InputGestureText="F1" Command="{x:Static commands:FModel_Commands.OpenSettings}">
                     <MenuItem.Icon>
-                        <Image Source="/FModel;component/Resources/properties_16xLG.png" Width="16" Height="16"/>
+                        <Image Source="Resources/settings_16x.png" Width="16" Height="16"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Files">
                 <MenuItem x:Name="MI_Search" Header="Search" InputGestureText="F2" Command="{x:Static commands:FModel_Commands.OpenSearch}"/>
+                <MenuItem x:Name="MI_HexViewer" Header="Hex Viewer" Click="MI_HexViewer_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/FModel;component/Resources/Logo-Icon.ico" Width="19"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator/>
-                <MenuItem x:Name="MI_ExportRaw" Header="Export RAW Data" Click="MI_ExportRaw_Click"/>
+                <MenuItem x:Name="MI_ExportRaw" Header="Export RAW Data" Click="MI_ExportRaw_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/FModel;component/Resources/save_16x.png" Height="15" Width="15"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem x:Name="MI_AutoExportRaw" Header="Auto Export RAW Data" IsCheckable="True"/>
                 <Separator/>
-                <MenuItem x:Name="MI_SaveJson" Header="Save JSON Data" Click="MI_SaveJson_Click"/>
+                <MenuItem x:Name="MI_SaveJson" Header="Save JSON Data" Click="MI_SaveJson_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/FModel;component/Resources/save_16x.png" Height="15" Width="15"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem x:Name="MI_AutoSaveJson" Header="Auto Save JSON Data" IsCheckable="True"/>
                 <Separator/>
                 <MenuItem Header="Open Output Folder" InputGestureText="F3" Command="{x:Static commands:FModel_Commands.OpenOutput}">
@@ -63,15 +78,19 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Image">
-                <MenuItem x:Name="MI_Save_Image" Header="Save Image" Click="MI_Save_Image_Click"/>
+                <MenuItem x:Name="MI_Save_Image" Header="Save Image" Click="MI_Save_Image_Click">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/save_16x.png" Height="15" Width="15"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem x:Name="MI_Auto_Save_Images" Header="Auto Save Images" IsCheckable="True"/>
                 <Separator/>
-                <MenuItem Header="Merge Images" InputGestureText="F4"/>
+                <MenuItem Header="Images Merger" InputGestureText="F4"  Command="{x:Static commands:FModel_Commands.MergeImages}"/>
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem x:Name="MI_About" Header="About FModel" Click="MI_About_Click">
                     <MenuItem.Icon>
-                        <Image Source="/FModel;component/Resources/StatusAnnotations_Information_16xLG_color.png" Width="16" Height="16"/>
+                        <Image Source="Resources/info_16x.png" Width="16" Height="16"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
@@ -142,7 +161,7 @@
                         <Separator/>
                         <MenuItem x:Name="RC_Properties" Header="Properties" Click="RC_Properties_Click">
                             <MenuItem.Icon>
-                                <Image Source="/FModel;component/Resources/StatusAnnotations_Information_16xLG_color.png" Width="16" Height="16"/>
+                                <Image Source="Resources/info_16x.png" Width="16" Height="16"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>

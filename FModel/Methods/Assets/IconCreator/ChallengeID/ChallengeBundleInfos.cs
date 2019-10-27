@@ -246,6 +246,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                             string primaryAssetNameFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.Contains("/" + primaryAssetNameToken.Value<string>())).Select(d => d.Key).FirstOrDefault();
                                             if (!string.IsNullOrEmpty(primaryAssetNameFullPath))
                                             {
+                                                new UpdateMyProcessEvents(System.IO.Path.GetFileNameWithoutExtension(primaryAssetNameFullPath), "Waiting").Update();
                                                 GetQuestData(BundleProperties, primaryAssetNameFullPath.Substring(0, primaryAssetNameFullPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
                                             }
                                         }

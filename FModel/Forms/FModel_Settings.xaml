@@ -17,8 +17,9 @@
         <GroupBox Header=".PAK Files" HorizontalAlignment="Left" Height="48" Margin="10,10,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
             <Grid>
                 <Label Content="Input:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,1,0,0"/>
-                <TextBox x:Name="InputTextBox" Height="19" Margin="41,4,35,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
-                <Button x:Name="BrowseInput_Button" Content="..." HorizontalAlignment="Left" Margin="532,4,0,0" VerticalAlignment="Top" Width="20" Click="BrowseInput_Button_Click"/>
+                <TextBox x:Name="InputTextBox" Height="19" Margin="41,4,121,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
+                <Button x:Name="BrowseInput_Button" Content="..." HorizontalAlignment="Left" Margin="446,4,0,0" VerticalAlignment="Top" Width="20" Click="BrowseInput_Button_Click"/>
+                <CheckBox x:Name="bDiffFileSize" Content="Diff w/ File Size" HorizontalAlignment="Left" Margin="471,7,0,0" VerticalAlignment="Top"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Extraction" HorizontalAlignment="Left" Height="48" Margin="10,63,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">

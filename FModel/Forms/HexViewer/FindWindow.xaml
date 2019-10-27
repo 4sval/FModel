@@ -1,0 +1,119 @@
+﻿<!--
+    Apache 2.0  2018 - 2019
+    Author : Derek Tremblay (derektremblay666@gmail.com)
+-->
+
+<Window
+    x:Class="WpfHexaEditor.Dialog.FindWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:p="clr-namespace:FModel.Properties"
+    xmlns:wpfHexaEditor="clr-namespace:WpfHexaEditor"
+    Title="Find"
+    Width="193"
+    Height="190"
+    MinWidth="550"
+    MinHeight="275"
+    MaxWidth="700"
+    MaxHeight="500"
+    Icon="/FModel;component/Resources/Logo-Icon.ico"
+    ResizeMode="CanResizeWithGrip"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterOwner"
+    Style="{StaticResource {x:Type Window}}" 
+    mc:Ignorable="d">
+
+    <Grid>
+
+        <Button
+            x:Name="FindNextButton"
+            Width="100"
+            Height="27"
+            Margin="0,73,14,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Click="FindNextButton_Click"
+            Content="Find Next"
+            TabIndex="3" />
+
+        <Button
+            Width="100"
+            Height="27"
+            Margin="0,0,14,16"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Click="CloseButton_Click"
+            Content="Close"
+            IsCancel="True"
+            TabIndex="6" />
+
+        <wpfHexaEditor:HexEditor
+            x:Name="FindHexEdit"
+            Margin="10,41,129,21"
+            AllowAutoHighLightSelectionByte="False"
+            AllowContextMenu="False"
+            AllowDeleteByte="True"
+            AllowDrop="True"
+            AllowExtend="True"
+            AllowFileDrop="False"
+            AllowZoom="False"
+            AppendNeedConfirmation="False"
+            ByteModifiedColor="White"
+            BytePerLine="8"
+            ByteSpacerPositioning="Nothing"
+            BytesDeleted="FindHexEdit_BytesDeleted"
+            HideByteDeleted="False"
+            StatusBarVisibility="Collapsed" />
+
+        <Label
+            Margin="10,10,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Find what:" />
+
+        <Button
+            x:Name="FindAllButton"
+            Width="100"
+            Height="27"
+            Margin="0,137,14,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Click="FindAllButton_Click"
+            Content="Find All"
+            TabIndex="5" />
+
+        <Button
+            x:Name="FindFirstButton"
+            Width="100"
+            Height="27"
+            Margin="0,41,14,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Click="FindFirstButton_Click"
+            Content="Find First"
+            TabIndex="2" />
+
+        <Button
+            x:Name="FindLastButton"
+            Width="100"
+            Height="27"
+            Margin="0,105,14,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Click="FindLastButton_Click"
+            Content="Find Last"
+            TabIndex="4" />
+
+        <Button
+            Width="61"
+            Height="26"
+            Margin="0,10,129,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Click="ClearButton_Click"
+            Content="Clear"
+            TabIndex="1" />
+    </Grid>
+</Window>

@@ -32,6 +32,12 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                 string[] secondaryParts = FProp.Default.FSecondaryColor.Split(':');
                 PrimaryColor = new SolidColorBrush(Color.FromRgb(Convert.ToByte(primaryParts[0]), Convert.ToByte(primaryParts[1]), Convert.ToByte(primaryParts[2])));
                 SecondaryColor = new SolidColorBrush(Color.FromRgb(Convert.ToByte(secondaryParts[0]), Convert.ToByte(secondaryParts[1]), Convert.ToByte(secondaryParts[2])));
+
+                if (string.IsNullOrEmpty(FProp.Default.FBannerFilePath) && displayStyleArray != null)
+                {
+                    hasDisplayStyle = true;
+                    image = ChallengesUtility.GetChallengeBundleImage(displayStyleArray);
+                }
             }
             else if (displayStyleArray != null)
             {
@@ -91,10 +97,29 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             Point textLocation = new Point(isBanner || !hasDisplayStyle ? 50 : 310, 165 - formattedText.Height);
 
             IconCreator.ICDrawingContext.DrawRectangle(PrimaryColor, null, new Rect(0, 0, 1024, 256));
-            if (FProp.Default.FUseChallengeWatermark && !string.IsNullOrEmpty(FProp.Default.FBannerFilePath))
+
+            #region IMAGE
+            if (FProp.Default.FUseChallengeWatermark)
             {
-                BitmapImage bmp = new BitmapImage(new Uri(FProp.Default.FBannerFilePath));
-                IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, FProp.Default.FBannerOpacity), new Rect(0, 0, 1024, 256));
+                if (!string.IsNullOrEmpty(FProp.Default.FBannerFilePath))
+                {
+                    BitmapImage bmp = new BitmapImage(new Uri(FProp.Default.FBannerFilePath));
+                    IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, FProp.Default.FBannerOpacity), new Rect(0, 0, 1024, 256));
+                }
+                else if (image != null)
+                {
+                    using (image)
+                    {
+                        BitmapImage bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.StreamSource = image;
+                        bmp.EndInit();
+                        bmp.Freeze();
+
+                        IconCreator.ICDrawingContext.DrawImage(isBanner ? ImagesUtility.CreateTransparency(bmp, 50) : bmp, new Rect(0, 0, isBanner ? 1024 : 256, 256));
+                    }
+                }
             }
             else if (image != null)
             {
@@ -110,6 +135,8 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                     IconCreator.ICDrawingContext.DrawImage(isBanner ? ImagesUtility.CreateTransparency(bmp, 50) : bmp, new Rect(0, 0, isBanner ? 1024 : 256, 256));
                 }
             }
+            #endregion
+
             IconCreator.ICDrawingContext.DrawGeometry(SecondaryColor, null, dGeo);
             IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
 
@@ -172,9 +199,9 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             bool isRequiresBattlePass = false;
             foreach (BundleInfosEntry entry in ChallengeBundleInfos.BundleData)
             {
-                #region DESIGN
+#region DESIGN
 
-                #region UNLOCK TYPE
+#region UNLOCK TYPE
                 if (!string.IsNullOrEmpty(entry.TheQuestUnlockType))
                 {
                     switch (entry.TheQuestUnlockType)
@@ -199,7 +226,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                             break;
                     }
                 }
-                #endregion
+#endregion
 
                 IconCreator.ICDrawingContext.DrawRectangle(ChallengesUtility.DarkBrush(PrimaryColor, 0.3f), null, new Rect(0, y, 1024, 90));
                 IconCreator.ICDrawingContext.DrawRectangle(PrimaryColor, null, new Rect(25, y, 1024 - 50, 70));
@@ -227,9 +254,9 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                 dFigure = new PathFigure(dStart, dSegments, true);
                 dGeo = new PathGeometry(new[] { dFigure });
                 IconCreator.ICDrawingContext.DrawGeometry(SecondaryColor, null, dGeo);
-                #endregion
+#endregion
 
-                #region DESCRIPTION
+#region DESCRIPTION
                 new UpdateMyConsole(entry.TheQuestDescription, CColors.ChallengeDescription).Append();
 
                 FormattedText formattedText =
@@ -247,9 +274,9 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                 formattedText.MaxLineCount = 1;
                 Point textLocation = new Point(60, y + 15);
                 IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
-                #endregion
+#endregion
 
-                #region COUNT
+#region COUNT
                 new UpdateMyConsole("\t\tCount: " + entry.TheQuestCount.ToString(), CColors.ChallengeCount).Append();
 
                 formattedText =
@@ -281,7 +308,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                 formattedText.MaxLineCount = 1;
                 textLocation = new Point(584, y + 44);
                 IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
-                #endregion
+#endregion
 
                 new UpdateMyConsole("\t\tReward: " + Path.GetFileNameWithoutExtension(entry.TheRewardPath) + " x" + entry.TheRewardQuantity, CColors.ChallengeReward, true).Append();
                 ChallengeRewards.DrawRewards(entry.TheRewardPath, entry.TheRewardQuantity, y);

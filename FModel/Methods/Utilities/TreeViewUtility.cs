@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using FModel.Methods.TreeViewModel;
+using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -82,13 +83,14 @@ namespace FModel.Methods.Utilities
                 bool found = false;
                 foreach (TreeViewModel.TreeViewModel tvi in icv)
                 {
-                    if (node.StartsWith(tvi.Value))
+                    int sep = node.IndexOf("/");
+                    if (node.StartsWith(tvi.Value) && node.Substring(0, sep > 0 ? sep : node.Length).Length == tvi.Value.Length)
                     {
                         found = true;
                         tvi.IsExpanded = true;
                         icv = tvi.ItemsView;
                         node = node.Substring(node.IndexOf("/") + 1);
-                        if (node == tvi.Value)
+                        if (node == tvi.Value && node.Length == tvi.Value.Length)
                         {
                             tvi.IsSelected = true;
                             done = true;

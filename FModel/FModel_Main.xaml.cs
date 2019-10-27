@@ -1,4 +1,6 @@
-﻿using FModel.Forms;
+﻿using AutoUpdaterDotNET;
+using FModel.Forms;
+using FModel.Forms.HexViewer;
 using FModel.Methods;
 using FModel.Methods.AESManager;
 using FModel.Methods.Assets;
@@ -11,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel
 {
@@ -31,6 +34,17 @@ namespace FModel
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             FModelVersionLabel.Text += Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
+
+            AutoUpdater.CheckForUpdateEvent += UIHelper.AutoUpdaterOnCheckForUpdateEvent;
+            AutoUpdater.Start("https://dl.dropbox.com/s/3kv2pukqu6tj1r0/FModel.xml?dl=0");
+
+            // Copy user settings from previous application version if necessary
+            /*if (FProp.Default.FUpdateSettings)
+            {
+                FProp.Default.Upgrade();
+                FProp.Default.FUpdateSettings = false;
+                FProp.Default.Save();
+            }*/
 
             await Task.Run(() => 
             {
@@ -160,6 +174,14 @@ namespace FModel
             }
             else { FormsUtility.GetOpenedWindow<Window>("Search").Focus(); }
         }
+        private void MI_HexViewer_Click(object sender, RoutedEventArgs e)
+        {
+            if (!FormsUtility.IsWindowOpen<Window>("Hex Viewer"))
+            {
+                new HexViewer().Show();
+            }
+            else { FormsUtility.GetOpenedWindow<Window>("Hex Viewer").Focus(); }
+        }
         private void MI_ExportRaw_Click(object sender, RoutedEventArgs e)
         {
             if (ListBox_Main.SelectedIndex >= 0)
@@ -182,6 +204,14 @@ namespace FModel
             {
                 ImagesUtility.SaveImageDialog();
             }
+        }
+        private void MI_MergeImages_Click(object sender, RoutedEventArgs e)
+        {
+            if (!FormsUtility.IsWindowOpen<Window>("Images Merger"))
+            {
+                new FModel_ImagesMerger().Show();
+            }
+            else { FormsUtility.GetOpenedWindow<Window>("Images Merger").Focus(); }
         }
         private void MI_About_Click(object sender, RoutedEventArgs e)
         {

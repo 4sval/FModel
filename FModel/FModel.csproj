@@ -62,6 +62,9 @@
     <StartupObject>FModel.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoUpdater.NET, Version=1.5.7.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autoupdater.NET.Official.1.5.7\lib\net40\AutoUpdater.NET.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.11.16.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.1.11.16\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
@@ -99,8 +102,8 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WriteableBitmapEx.Wpf, Version=1.5.0.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
-      <HintPath>..\packages\WriteableBitmapEx.1.5.1.0\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
+    <Reference Include="WriteableBitmapEx.Wpf, Version=1.6.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WriteableBitmapEx.1.6.3\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -138,12 +141,69 @@
     <Compile Include="Forms\FModel_CustomMB.xaml.cs">
       <DependentUpon>FModel_CustomMB.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FModel_ImagesMerger.xaml.cs">
+      <DependentUpon>FModel_ImagesMerger.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FModel_SearchFiles.xaml.cs">
       <DependentUpon>FModel_SearchFiles.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\FModel_Settings.xaml.cs">
       <DependentUpon>FModel_Settings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Forms\HexViewer\BaseByte.cs" />
+    <Compile Include="Forms\HexViewer\Core\BookMark.cs" />
+    <Compile Include="Forms\HexViewer\Core\Bytes\ByteConverters.cs" />
+    <Compile Include="Forms\HexViewer\Core\Bytes\ByteModified.cs" />
+    <Compile Include="Forms\HexViewer\Core\Bytes\ByteProvider.cs" />
+    <Compile Include="Forms\HexViewer\Core\Caret.cs" />
+    <Compile Include="Forms\HexViewer\Core\CharacterTable\DTE.cs" />
+    <Compile Include="Forms\HexViewer\Core\CharacterTable\Enum.cs" />
+    <Compile Include="Forms\HexViewer\Core\CharacterTable\TBLStream.cs" />
+    <Compile Include="Forms\HexViewer\Core\ConstantReadOnly.cs" />
+    <Compile Include="Forms\HexViewer\Core\Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Forms\HexViewer\Core\Converters\BoolInverterConverter.cs" />
+    <Compile Include="Forms\HexViewer\Core\Converters\HexToLongStringConverter.cs" />
+    <Compile Include="Forms\HexViewer\Core\Converters\LongToHexStringConverter.cs" />
+    <Compile Include="Forms\HexViewer\Core\Converters\PathToFilenameConverter.cs" />
+    <Compile Include="Forms\HexViewer\Core\Enumeration.cs" />
+    <Compile Include="Forms\HexViewer\Core\GenericStaticInstance.cs" />
+    <Compile Include="Forms\HexViewer\Core\Interfaces\IByteControl.cs" />
+    <Compile Include="Forms\HexViewer\Core\Interfaces\IByteModified.cs" />
+    <Compile Include="Forms\HexViewer\Core\KeyValidator.cs" />
+    <Compile Include="Forms\HexViewer\Core\MethodExtention\ApplicationExtention.cs" />
+    <Compile Include="Forms\HexViewer\Core\MethodExtention\ByteArrayExtention.cs" />
+    <Compile Include="Forms\HexViewer\Core\MethodExtention\DoubleExtension.cs" />
+    <Compile Include="Forms\HexViewer\Core\MethodExtention\StringExtension.cs" />
+    <Compile Include="Forms\HexViewer\Core\MethodExtention\TrackExtention.cs" />
+    <Compile Include="Forms\HexViewer\Core\Native\NativeMethods.cs" />
+    <Compile Include="Forms\HexViewer\Core\Xcbb\CustomBackgroundBlock.cs" />
+    <Compile Include="Forms\HexViewer\Core\Xcbb\ExeFile.cs" />
+    <Compile Include="Forms\HexViewer\Core\Xcbb\XcbbExpressionParser.cs" />
+    <Compile Include="Forms\HexViewer\Core\Xcbb\XcbbFileParser.cs" />
+    <Compile Include="Forms\HexViewer\FastTextLine.cs" />
+    <Compile Include="Forms\HexViewer\FindReplaceWindow.xaml.cs">
+      <DependentUpon>FindReplaceWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\FindWindow.xaml.cs">
+      <DependentUpon>FindWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\GiveByteWindow.xaml.cs">
+      <DependentUpon>GiveByteWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\HexBox.xaml.cs">
+      <DependentUpon>HexBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\HexByte.cs" />
+    <Compile Include="Forms\HexViewer\HexEditor.xaml.cs">
+      <DependentUpon>HexEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\HexViewer.xaml.cs">
+      <DependentUpon>HexViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\ReplaceByteWindow.xaml.cs">
+      <DependentUpon>ReplaceByteWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\StringByte.cs" />
     <Compile Include="Methods\AESManager\DynamicKeysChecker.cs" />
     <Compile Include="Methods\AESManager\KeysManager.cs" />
     <Compile Include="Methods\Assets\AssetInformations.cs" />
@@ -155,6 +215,7 @@
     <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeCompletionRewards.cs" />
     <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeIconDesign.cs" />
     <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeRewards.cs" />
+    <Compile Include="Methods\Assets\IconCreator\HeroID\HeroGameplayDefinition.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconCreator.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconImage.cs" />
     <Compile Include="Methods\Assets\IconCreator\IconText.cs" />
@@ -205,6 +266,11 @@
     <Compile Include="Methods\Utilities\TreeViewUtility.cs" />
     <Compile Include="Methods\Utilities\UIUtility.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Themes\LeftMarginMultiplierConverter.cs" />
     <Compile Include="Themes\TreeViewItemExtensions.cs" />
     <Page Include="FModel_Main.xaml">
@@ -251,6 +317,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Forms\FModel_ImagesMerger.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Forms\FModel_SearchFiles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -258,6 +328,46 @@
     <Page Include="Forms\FModel_Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\BrushesDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Forms\HexViewer\FindReplaceWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\FindWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\GiveByteWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\HexBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\HexEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\HexViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\MiscelanousDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Forms\HexViewer\ReplaceByteWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\ToolTipDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Methods\FindReplace\FindReplaceDialog.xaml">
       <SubType>Designer</SubType>
@@ -272,11 +382,6 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -288,25 +393,19 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Methods\SyntaxHighlighter\Json.xshd" />
     <EmbeddedResource Include="Methods\SyntaxHighlighter\Ini.xshd" />
+    <None Include="Forms\HexViewer\Core\Xcbb\Exefile.xcbb" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Resource Include="Resources\EBCDIC-NoSpecialChar.tbl" />
+    <Resource Include="Resources\EBCDIC.tbl" />
     <Resource Include="Resources\BurbankBigCondensed-Black.ttf" />
     <Resource Include="Resources\BurbankBigCondensed-Bold.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\folder_16x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\properties_16xLG.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\StatusAnnotations_Information_16xLG_color.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Logo.ico" />
@@ -328,7 +427,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Methods\Assets\IconCreator\DefenderID\" />
-    <Folder Include="Methods\Assets\IconCreator\HeroID\" />
     <Folder Include="Methods\Assets\IconCreator\SchematicID\" />
     <Folder Include="Methods\Assets\IconCreator\VariantID\" />
   </ItemGroup>
@@ -376,6 +474,27 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\colorpicker2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Logo-Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\close_file_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\folder_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\info_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\open_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\save_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\settings_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">
