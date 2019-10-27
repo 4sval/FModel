@@ -61,7 +61,7 @@ namespace FModel.Methods.Utilities
         {
             if (string.IsNullOrEmpty(FProp.Default.FOutput_Path))
             {
-                FProp.Default.FOutput_Path = AppDomain.CurrentDomain.BaseDirectory + "\\Output";
+                FProp.Default.FOutput_Path = AppDomain.CurrentDomain.BaseDirectory + "Output";
                 FProp.Default.Save();
             }
         }

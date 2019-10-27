@@ -13,6 +13,10 @@
     <img src="https://img.shields.io/github/v/release/iamasval/fmodel"
          alt="Releases">
   </a>
+  <a href="https://github.com/iAmAsval/FModel/releases/latest">
+    <img src="https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.0%20Downloads"
+         alt="Downloads">
+  </a>
   <a href="https://twitter.com/AsvalFN"><img src="https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter"></a>
   <a href="https://discord.gg/fdkNYYQ">
       <img src="https://img.shields.io/badge/Discord-Need%20Help%3F-778cd4.svg?logo=discord">

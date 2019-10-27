@@ -30,33 +30,48 @@ namespace FModel.Methods.Utilities
 
         public static BitmapSource CreateTransparency(BitmapSource source, int opacity)
         {
-            if (source.Format != PixelFormats.Bgra32)
+            int pixelsCount = source.PixelWidth * source.PixelHeight;
+            int[] pixels = new int[pixelsCount];
+            int stride = (source.PixelWidth * source.Format.BitsPerPixel + 7) / 8;
+            source.CopyPixels(pixels, stride, 0);
+
+            for (int i = 0; i < pixelsCount; i++)
             {
-                return source;
+                int alpha = (pixels[i] >> 24) & 255;
+                int red = (pixels[i] >> 16) & 255;
+                int green = (pixels[i] >> 8) & 255;
+                int blue = pixels[i] & 255;
+
+                alpha = ChangeColorOpacity(alpha, opacity);
+
+                int color = (alpha << 24) + (red << 16) + (green << 8) + blue;
+
+                pixels[i] = color;
             }
 
-            int bytesPerPixel = (source.Format.BitsPerPixel + 7) / 8;
-            int stride = bytesPerPixel * source.PixelWidth;
-            byte[] buffer = new byte[stride * source.PixelHeight];
+            BitmapSource result = BitmapSource.Create(source.PixelWidth, source.PixelHeight, source.DpiX, source.DpiY,
+                PixelFormats.Bgra32, null, pixels, stride);
 
-            source.CopyPixels(buffer, stride, 0);
+            return result;
+        }
+        private static int ChangeColorOpacity(int color, int opacity)
+        {
+            color -= 255 - opacity;
 
-            for (int y = 0; y < source.PixelHeight; y++)
+            return AdjustColorValue(color);
+        }
+        private static int AdjustColorValue(int color)
+        {
+            if (color > 255)
             {
-                for (int x = 0; x < source.PixelWidth; x++)
-                {
-                    int i = stride * y + bytesPerPixel * x;
-                    if (buffer[i + 3] != 0x00) //do not change the pixels that are already transparent god dammit    
-                    {
-                        buffer[i + 3] = Convert.ToByte(opacity);
-                    }
-                }
+                color = 255;
+            }
+            else if (color < 0)
+            {
+                color = 0;
             }
 
-            return BitmapSource.Create(
-                source.PixelWidth, source.PixelHeight,
-                source.DpiX, source.DpiY,
-                source.Format, null, buffer, stride);
+            return color;
         }
 
         public static void LoadImageAfterExtraction(DrawingVisual image)
