@@ -1,6 +1,6 @@
 ﻿<h1 align="center">
   <br>
-  <a href="https://github.com/iAmAsval/FModel"><img src="https://raw.githubusercontent.com/iAmAsval/FModel/FModel-3.0-Dev/FModel/Resources/Logo.png" alt="FModel" width="200"></a>
+  <a href="https://github.com/iAmAsval/FModel"><img src="https://github.com/iAmAsval/FModel/blob/FModel-3.0-Dev/Images/Logo.png" alt="FModel" width="200"></a>
   <br>
   FModel
   <br>
@@ -33,7 +33,7 @@
   <a href="#license">License</a>
 </p>
 
-![demo]()
+![demo](https://github.com/iAmAsval/FModel/blob/FModel-3.0-Dev/Images/FModel_Demo.gif)
 
 ## Key Features
 
