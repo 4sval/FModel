@@ -61,6 +61,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à You have reached the end of the file. Do you want to append one byte? This operation cannot be canceled if you continue..
+        /// </summary>
+        internal static string AppendByteConfirmationString {
+            get {
+                return ResourceManager.GetString("AppendByteConfirmationString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
         internal static byte[] BurbankBigCondensed_Black {
@@ -73,20 +82,144 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
-        internal static byte[] BurbankBigCondensed_Black_vJapanese {
+        internal static byte[] BurbankBigCondensed_Bold {
             get {
-                object obj = ResourceManager.GetObject("BurbankBigCondensed_Black_vJapanese", resourceCulture);
+                object obj = ResourceManager.GetObject("BurbankBigCondensed_Bold", resourceCulture);
                 return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Byte[].
+        ///   Recherche une chaîne localisée semblable à The number of bytes in the last block of the program that are actually used. 
+        ///If this value is zero, that means the entire last block is used.
         /// </summary>
-        internal static byte[] BurbankBigCondensed_Bold {
+        internal static string CBB_EXEFile_BytesInLastBlockString {
             get {
-                object obj = ResourceManager.GetObject("BurbankBigCondensed_Bold", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("CBB_EXEFile_BytesInLastBlockString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Initial value of the CS register, relative to the segment the program was loaded at..
+        /// </summary>
+        internal static string CBB_EXEFile_InitialValueOfCSRegisterString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_InitialValueOfCSRegisterString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Initial value of the IP register..
+        /// </summary>
+        internal static string CBB_EXEFile_InitialValueOfIPRegisterString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_InitialValueOfIPRegisterString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Initial value of the SP register..
+        /// </summary>
+        internal static string CBB_EXEFile_InitialValueOfSPRegisterString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_InitialValueOfSPRegisterString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à This is the &apos;magic number&apos; of an EXE file..
+        /// </summary>
+        internal static string CBB_EXEFile_MagicNumberString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_MagicNumberString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Maximum number of paragraphs of additional memory. 
+        ///Normally, the OS reserves all the remaining conventional memory for your program, but you can limit it with this field..
+        /// </summary>
+        internal static string CBB_EXEFile_MaxNumberOfHeaderParagraphAdditionalMemoryString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_MaxNumberOfHeaderParagraphAdditionalMemoryString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à This program cannot be run in DOS mode....
+        /// </summary>
+        internal static string CBB_EXEFile_NotDOSProgramString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_NotDOSProgramString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Number of blocks in the file that are part of the EXE file. 
+        ///If [02-03] is non-zero, only that much of the last block is used..
+        /// </summary>
+        internal static string CBB_EXEFile_NumberOfBlockInFileBlockString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_NumberOfBlockInFileBlockString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Number of paragraphs of additional memory that the program will need.
+        ///This is the equivalent of the BSS size in a Unix program. 
+        ///The program can&apos;t be loaded if there isn&apos;t at least this much memory available to it..
+        /// </summary>
+        internal static string CBB_EXEFile_NumberOfHeaderParagraphAdditionalMemoryString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_NumberOfHeaderParagraphAdditionalMemoryString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Number of relocation entries stored after the header. May be zero.
+        /// </summary>
+        internal static string CBB_EXEFile_NumberOfRelocationEntriesString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_NumberOfRelocationEntriesString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Offset of the first relocation item in the file..
+        /// </summary>
+        internal static string CBB_EXEFile_OffsetOfTheFirstRelocationItemString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_OffsetOfTheFirstRelocationItemString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Overlay number. Normally zero, meaning that it&apos;s the main program..
+        /// </summary>
+        internal static string CBB_EXEFile_OverlayNumberString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_OverlayNumberString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Relative value of the stack segment. 
+        ///This value is added to the segment the program was loaded at, and the result is used to initialize the SS register..
+        /// </summary>
+        internal static string CBB_EXEFile_RelativeValueOfStackSegmentString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_RelativeValueOfStackSegmentString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Word checksum. 
+        ///If set properly, the 16-bit sum of all words in the file should be zero. 
+        ///Usually, this isn&apos;t filled in..
+        /// </summary>
+        internal static string CBB_EXEFile_WordChecksumString {
+            get {
+                return ResourceManager.GetString("CBB_EXEFile_WordChecksumString", resourceCulture);
             }
         }
         
@@ -103,10 +236,39 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cTemplate {
+        internal static System.Drawing.Bitmap close_file_16x {
             get {
-                object obj = ResourceManager.GetObject("cTemplate", resourceCulture);
+                object obj = ResourceManager.GetObject("close_file_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap colorpicker1 {
+            get {
+                object obj = ResourceManager.GetObject("colorpicker1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap colorpicker2 {
+            get {
+                object obj = ResourceManager.GetObject("colorpicker2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Default TBL.
+        /// </summary>
+        internal static string DefaultTBLString {
+            get {
+                return ResourceManager.GetString("DefaultTBLString", resourceCulture);
             }
         }
         
@@ -121,22 +283,197 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        ///   Recherche une chaîne localisée semblable à 00=&lt;NUL&gt;
+        ///01=&lt;SOH&gt;
+        ///02=&lt;STX&gt;
+        ///03=&lt;ETX&gt;
+        ///04=&lt;PF&gt;
+        ///05=&lt;HT&gt;
+        ///06=&lt;LC&gt;
+        ///07=&lt;DEL&gt;
+        ///08=&lt;GE&gt;
+        ///09=&lt;RLF&gt;
+        ///0A=&lt;SMM&gt;
+        ///0B=&lt;VT&gt;
+        ///0C=&lt;FF&gt;
+        ///0D=&lt;CR&gt;
+        ///0E=&lt;SO&gt;
+        ///0F=&lt;SI&gt;
+        ///10=&lt;DLE&gt;
+        ///11=&lt;DC1&gt;
+        ///12=&lt;DC2&gt;
+        ///13=&lt;TM&gt;
+        ///14=&lt;RES&gt;
+        ///15=&lt;NL&gt;
+        ///16=&lt;BS&gt;
+        ///17=&lt;IL&gt;
+        ///18=&lt;CAN&gt;
+        ///19=&lt;EM&gt;
+        ///1A=&lt;CC&gt;
+        ///1B=&lt;CU1&gt;
+        ///1C=&lt;IFS&gt;
+        ///1D=&lt;IGS&gt;
+        ///1E=&lt;IRS&gt;
+        ///1F=&lt;IUS&gt;
+        ///20=&lt;DS&gt;
+        ///21=&lt;SOS&gt;
+        ///22=&lt;FS&gt;
+        ///23=.
+        ///24=&lt;BYP&gt;
+        ///25=&lt;LF&gt;
+        ///26=&lt;ETB&gt;
+        ///27=&lt;ESC&gt;
+        ///28=.
+        ///29=.
+        ///2A=&lt;SM&gt;
+        ///2B=&lt;CU2&gt;
+        ///2C=.
+        ///2D=&lt;ENQ&gt;
+        ///2E=&lt;ACK&gt;
+        ///2F=&lt;BEL&gt;
+        ///30=.
+        ///31=.
+        ///32=&lt;SYN&gt;
+        ///33=.
+        ///34=&lt;PN&gt;
+        ///35=&lt;RS&gt;
+        ///36=&lt;UC&gt;
+        ///37=&lt;EOT&gt;
+        ///38 [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
-        internal static System.Drawing.Icon FModel {
+        internal static string EBCDIC {
             get {
-                object obj = ResourceManager.GetObject("FModel", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ResourceManager.GetString("EBCDIC", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        ///   Recherche une chaîne localisée semblable à 00=.
+        ///01=.
+        ///02=.
+        ///03=.
+        ///04=.
+        ///05=.
+        ///06=.
+        ///07=.
+        ///08=.
+        ///09=.
+        ///0A=.
+        ///0B=.
+        ///0C=.
+        ///0D=.
+        ///0E=.
+        ///0F=.
+        ///10=.
+        ///11=.
+        ///12=.
+        ///13=.
+        ///14=.
+        ///15=.
+        ///16=.
+        ///17=.
+        ///18=.
+        ///19=.
+        ///1A=.
+        ///1B=.
+        ///1C=.
+        ///1D=.
+        ///1E=.
+        ///1F=.
+        ///20=.
+        ///21=.
+        ///22=.
+        ///23=.
+        ///24=.
+        ///25=.
+        ///26=.
+        ///27=.
+        ///28=.
+        ///29=.
+        ///2A=.
+        ///2B=.
+        ///2C=.
+        ///2D=.
+        ///2E=.
+        ///2F=.
+        ///30=.
+        ///31=.
+        ///32=.
+        ///33=.
+        ///34=.
+        ///35=.
+        ///36=.
+        ///37=.
+        ///38=.
+        ///39=.
+        ///3A=.
+        ///3B=.
+        ///3C=.
+        ///3D=.
+        ///3E=.
+        ///3F=.
+        ///40=.
+        ///41=.
+        ///42=.
+        ///43=.
+        ///44=.
+        ///45=.
+        ///46=.
+        ///47=.
+        ///48=.
+        ///49=.
+        ///4A=¢
+        ///4B=.
+        ///4C=&lt;
+        ///4D=(
+        ///4E=+
+        ///4F=|
+        ///50=&amp;
+        ///51=.
+        ///52=.
+        ///53=.
+        ///54=.
+        ///55 [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
-        internal static System.Drawing.Bitmap FModel_Logo {
+        internal static string EBCDIC_NoSpecialChar {
             get {
-                object obj = ResourceManager.GetObject("FModel_Logo", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("EBCDIC_NoSpecialChar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à &amp;lt;end&amp;gt;.
+        /// </summary>
+        internal static string EndTagString {
+            get {
+                return ResourceManager.GetString("EndTagString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Do you want to close the current file and open :.
+        /// </summary>
+        internal static string FileDroppingConfirmationString {
+            get {
+                return ResourceManager.GetString("FileDroppingConfirmationString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Fill selection with byte.
+        /// </summary>
+        internal static string FillSelectionAloneString {
+            get {
+                return ResourceManager.GetString("FillSelectionAloneString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à First byte.
+        /// </summary>
+        internal static string FirstByteString {
+            get {
+                return ResourceManager.GetString("FirstByteString", resourceCulture);
             }
         }
         
@@ -153,50 +490,85 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_Closed_16xLG {
+        internal static System.Drawing.Bitmap info_16x {
             get {
-                object obj = ResourceManager.GetObject("folder_Closed_16xLG", resourceCulture);
+                object obj = ResourceManager.GetObject("info_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Kb.
+        /// </summary>
+        internal static string KBTagString {
+            get {
+                return ResourceManager.GetString("KBTagString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à &amp;lt;ln&amp;gt;.
+        /// </summary>
+        internal static string LineTagString {
+            get {
+                return ResourceManager.GetString("LineTagString", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap LBolt64 {
+        internal static System.Drawing.Bitmap Logo {
             get {
-                object obj = ResourceManager.GetObject("LBolt64", resourceCulture);
+                object obj = ResourceManager.GetObject("Logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        internal static System.Drawing.Icon Logo_Icon {
+            get {
+                object obj = ResourceManager.GetObject("Logo_Icon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Mb.
+        /// </summary>
+        internal static string MBTagString {
+            get {
+                return ResourceManager.GetString("MBTagString", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Pets64 {
+        internal static System.Drawing.Bitmap open_16x {
             get {
-                object obj = ResourceManager.GetObject("Pets64", resourceCulture);
+                object obj = ResourceManager.GetObject("open_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        ///   Recherche une chaîne localisée semblable à Paste operation reached the end of the file. Do you want to extend the file to complete the operation? This operation cannot be canceled if you continue..
         /// </summary>
-        internal static System.Drawing.Bitmap properties_16xLG {
+        internal static string PasteExtendByteConfirmationString {
             get {
-                object obj = ResourceManager.GetObject("properties_16xLG", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("PasteExtendByteConfirmationString", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        ///   Recherche une chaîne localisée semblable à Paste from clipboard.
         /// </summary>
-        internal static System.Drawing.Bitmap Quests64 {
+        internal static string PasteFromClipboardString {
             get {
-                object obj = ResourceManager.GetObject("Quests64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("PasteFromClipboardString", resourceCulture);
             }
         }
         
@@ -211,11 +583,60 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Replace with byte.
+        /// </summary>
+        internal static string ReplaceWithByteString {
+            get {
+                return ResourceManager.GetString("ReplaceWithByteString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap StatusAnnotations_Information_16xLG_color {
+        internal static System.Drawing.Bitmap save_16x {
             get {
-                object obj = ResourceManager.GetObject("StatusAnnotations_Information_16xLG_color", resourceCulture);
+                object obj = ResourceManager.GetObject("save_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap settings_16x {
+            get {
+                object obj = ResourceManager.GetObject("settings_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap T_Icon_Pets_64 {
+            get {
+                object obj = ResourceManager.GetObject("T_Icon_Pets_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap T_Icon_Quests_64 {
+            get {
+                object obj = ResourceManager.GetObject("T_Icon_Quests_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Template_Challenge {
+            get {
+                object obj = ResourceManager.GetObject("Template_Challenge", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -281,22 +702,21 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
-        /// </summary>
-        internal static System.Drawing.Icon Twitter {
-            get {
-                object obj = ResourceManager.GetObject("Twitter", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap unknown512 {
             get {
                 object obj = ResourceManager.GetObject("unknown512", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à An error occured when writing..
+        /// </summary>
+        internal static string WritingErrorExeptionString {
+            get {
+                return ResourceManager.GetString("WritingErrorExeptionString", resourceCulture);
             }
         }
     }

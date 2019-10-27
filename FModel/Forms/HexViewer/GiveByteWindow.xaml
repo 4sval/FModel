@@ -1,0 +1,56 @@
+﻿<Window
+    x:Class="WpfHexaEditor.Dialog.GiveByteWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:control="clr-namespace:WpfHexaEditor"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:p="clr-namespace:FModel.Properties"
+    Title="Enter hexadecimal value ..."
+    Width="359"
+    Height="121"
+    x:ClassModifier="internal"
+    Icon="/FModel;component/Resources/Logo-Icon.ico"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterOwner"
+    WindowStyle="SingleBorderWindow"
+    Style="{StaticResource {x:Type Window}}" 
+    mc:Ignorable="d">
+    <Grid>
+        <Button
+            x:Name="OkButton"
+            Width="75"
+            Margin="0,0,92,10"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Click="OKButton_Click"
+            Content="Ok"
+            IsDefault="True"
+            TabIndex="2" />
+
+        <Button
+            Width="75"
+            Height="20"
+            Margin="0,0,10,10"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Content="Cancel"
+            IsCancel="True"
+            TabIndex="3" />
+
+        <Label
+            Margin="10,18,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Byte to search" />
+
+        <control:HexBox
+            x:Name="HexTextBox"
+            Width="Auto"
+            Height="23"
+            Margin="143,20,10,0"
+            VerticalAlignment="Top"
+            MaximumValue="255" />
+    </Grid>
+</Window>

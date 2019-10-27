@@ -1,118 +1,124 @@
-﻿# FModel
+﻿<h1 align="center">
+  <br>
+  <a href="https://github.com/iAmAsval/FModel"><img src="https://github.com/iAmAsval/FModel/blob/master/Images/Logo.png" alt="FModel" width="200"></a>
+  <br>
+  FModel
+  <br>
+</h1>
 
-[![](https://img.shields.io/github/downloads/iAmAsval/FModel/total.svg?color=green&label=Total%20Downloads&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel/releases)
-[![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=2.4.5.3&logo=buzzfeed&logoColor=white)](https://github.com/iAmAsval/FModel//releases/latest)
-[![](https://img.shields.io/badge/License-GPL-blue.svg?logo=gnu)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
-[![](https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter)](https://twitter.com/AsvalFN)
-[![](https://img.shields.io/badge/Discord-Need%20Help%3F-7289da.svg?logo=discord)](https://discord.gg/JmWvXKb)
+<h4 align="center">A powerful .PAK file explorer fully dedicated to Fortnite.</h4>
 
-**A Fortnite .PAK files explorer built in C#**
+<p align="center">
+  <a href="https://github.com/iAmAsval/FModel/releases/latest">
+    <img src="https://img.shields.io/github/v/release/iamasval/fmodel"
+         alt="Releases">
+  </a>
+  <a href="https://twitter.com/AsvalFN"><img src="https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter"></a>
+  <a href="https://discord.gg/fdkNYYQ">
+      <img src="https://img.shields.io/badge/Discord-Need%20Help%3F-778cd4.svg?logo=discord">
+  </a>
+  <a href="https://www.paypal.me/FModel">
+    <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">
+  </a>
+</p>
 
-## GETTING STARTED
-### Prerequisites
-[.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471)
-### Download
-[![](https://img.shields.io/badge/Release-2.4.5.3-orange.svg?logo=github)](https://github.com/iAmAsval/FModel/releases/latest)
-### How To Use
-><p align="center"><a href="https://www.youtube.com/watch?v=rWlux5vg9Xs">Video Tutorial by FireMonkey</a></p>
+------
 
-**1.** Once you start the executable, you'll be asked to set your path to your Fortnite .PAK files. Meanwhile a `FModel` subfolder will be created in your `Documents` folder.
+<p align="center">
+  <a href="#key-features">Key Features</a> •
+  <a href="#how-to-use">How To Use</a> •
+  <a href="#download">Download</a> •
+  <a href="#contributors">Contributors</a> •
+  <a href="#credits">Credits</a> •
+  <a href="#license">License</a>
+</p>
 
-![](https://i.imgur.com/j0WJcDW.gif)
+![demo](https://github.com/iAmAsval/FModel/blob/master/Images/FModel_Demo.gif)
 
-**2.** Restart the executable, go to the AES Manager and add your AES Keys, click **Load** and select your .PAK file
-- It will parse all Assets contained in the selected .PAK file with their respective path
-  
-**3.** Navigate through the tree to find the Asset you want
+## Key Features
 
-**4.** Clicking on **Extract** will extract the selected Asset to your `Documents` folder, it will also try to serialize it and will display information about it
-- if the Asset is an **_Item Definition_**:
-    - Try to create an [Icon](https://i.imgur.com/wazPloQ.png) with **Name**, **Description**, **Rarity**, **Type**, **Cosmetic Source** and the **Cosmetic Set**
-- if the Asset is a **_Bundle Of Challenges_**:
-    - Try to create an [Icon](https://i.imgur.com/SzW11Kk.png) with all **Challenges' Description**, **Count**, **Reward** and more. You can also **add your own banner** and overwrite the default color **to make the icon more unique**
-- if the Asset is a **_Texture_**:
-    - Try to display the Asset as PNG
-- if the Asset is a **_Sound_**:
-    - Try to convert the Asset to OGG and play the sound
-- if the Asset is a **_Font_**:
-    - Try to convert the Asset to OTF
+* .PAK Files
+  - Load one or all of them
+  - Load the difference between 2 Fortnite versions
+  - Load difference and auto generate & save icons for you
+  - Backup your current files
+* Assets
+  - Extract and show the deserialized json string
+  - Save JSON string
+  - Export RAW data
+  - Copy asset path
+  - Get asset properties
+* Filter & Search assets by their name
+* Icon Generation
+  - Battle Royale Cosmetics
+  - Battle Royale Challenges
+  - Save The World Heroes
+  - Save The World Defenders
+  - Weapons
+  - Schematics
+  - Other various assets
+  - Supports for 15 different languages
+* Save images
+* Merge images
+* Hex Viewer
+* Sound Player
+* Night Mode
+
+## How To Use
+
+To run this program, you'll need [.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471) or newer installed on your computer. Once it's done, you can download the latest release [here](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip).
+
+1. Extract `FModel.exe` and `libSkiaSharp.dll` somewhere - __double click on FModel.exe__
+2. You're now asked to set the path to your Fortnite .PAK files - __click on Load and then on Settings__
+3. You'll need the AES key in order to read the files - __click on AES Manager and enter the key under Static Key__
+4. You can now load one or all .PAK files
+5. Navigate through the tree to find the Asset you want
 
 ### Difference Mode
-**1.** Create a backup of your .PAK files before the update, or download one of those i made
 
-**2.** Enable Difference Mode
+The difference mode can check new files between 2 different Fortnite versions. You'll need at least one backup file to be able to compare your current .PAK files and the backup file.
 
-**3.** Click `Load Difference`
+1. You can target file size check on the settings window if you want - __click on Load, Settings, and then check Diff w/ File Size__
+2. Enable the difference mode - __click on Load and then on Difference Mode__
+3. Compare files - __click on Load and then on Load Difference__
+4. It's gonna check you current .PAK files and then ask you for the backup file - __choose the backup file__
+5. You can now see the difference between your backup file and you current files
 
-![](https://i.imgur.com/us68z5R.gif)
+## Download
 
-### Update Mode
-**1.** Enable Difference Mode, then Update Mode
+You can download the latest version of FModel for Windows x64 [here](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip).
+For x32 users (i wonder how you play the game), you just have to clone or download the repository and build FModel on Visual Studio, make sure to target x32 Platforms in the solution properties.
 
-**2.** Choose your Assets to extract
+## Contributors
 
-**3.** Click `Load And Extract Difference`
+<table><tr><td align="center"><a href="https://github.com/SirWaddles"><img src="https://avatars1.githubusercontent.com/u/769399?s=200&v=4" width="100px;" alt="Waddlesworth"/><br /><sub><b>Waddlesworth</b></sub></a><br><a href="https://github.com/SirWaddles" title="Github">🔧</a></td><td align="center"><a href="https://github.com/MaikyM"><img src="https://avatars3.githubusercontent.com/u/51415805?s=200&v=4" width="100px;" alt="Maiky"/><br /><sub><b>Maiky</b></sub></a><br /><a href="https://github.com/MaikyM" title="Github">🔧</a><a href="https://twitter.com/MaikyMOficial" title="Twitter">🐦</a></td><td align="center"><a href="https://github.com/WorkingRobot"><img src="https://avatars1.githubusercontent.com/u/16126912?s=200&v=4" width="100px;" alt="Asriel"/><br><sub><b>Asriel</b></sub></a><br><a href="https://github.com/WorkingRobot" title="Github">🔧</a><a href="https://twitter.com/Asriel_Dev" title="Twitter">🐦</a></td><td align="center"><a href="https://github.com/ItsFireMonkey"><img src="https://avatars2.githubusercontent.com/u/38590471?s=200&v=4" width="100px;" alt="FireMonkey"/><br /><sub><b>FireMonkey</b></sub></a><br><a href="https://github.com/ItsFireMonkey" title="Github">🔧</a><a href="https://twitter.com/iFireMonkey" title="Twitter">🐦</a></td></tr></table>
 
-[Demonstration](https://streamable.com/c39oz)
+## Credits
 
-## DOCUMENTATION
-### FAQ
-- _What's FModel?_
+This software uses the following open source packages:
 
-    - FModel is a Fortnite .PAK files explorer mainly known to create icons for different BR/STW items as well as all BR challenges
+- [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
+- [Avalon Edit](http://avalonedit.net/)
+- [Color Picker](https://github.com/drogoganor/ColorPickerWPF)
+- [Hex Editor](https://github.com/abbaye/WpfHexEditorControl)
+- [Html Agility Pack (HAP)](https://html-agility-pack.net/)
+- [Newtonsoft Json.NET](https://www.newtonsoft.com/json)
+- [Ookii Dialogs](https://github.com/caioproiete/ookii-dialogs-wpf)
+- [RestSharp](http://http://restsharp.org//)
+- [SkiaSharp](https://github.com/mono/SkiaSharp)
+- [WPFThemes DarkBlend](https://github.com/DanPristupov/WpfExpressionBlendTheme)
+- [Writeable Bitmap Extensions](https://github.com/reneschulte/WriteableBitmapEx)
 
-- _Where can i download FModel?_
-    - [Latest Version](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)
+## Support
 
-- _I'm sure the key is correct but opening the file with this key isn't working_
+<a href="https://www.paypal.me/FModel">
+  <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">
+</a>
 
-    - First, make sure `C:\Windows\System32\vcruntime140.dll` isn't missing. If it's missing you can download it by installing [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads).
-    - If it's not missing you can open on issue on GitHub or contact us on Twitter [@AsvalFN](https://twitter.com/AsvalFN) [@MaikyMOficial](https://twitter.com/MaikyMOficial)
+## You may also like...
 
-- _I can't compile the solution on Visual Studio_
+- [UModel](https://github.com/gildor2/UEViewer) - **THE** Unreal Engine Viewer
 
-    - If issues occur when compiling the source code, make sure that the software is being built for x64.
+## License
 
-- _Why FModel?_
-
-    - The name come from the popular Unreal Engine Viewer [UModel](https://github.com/gildor2/UModel)
-    - It wasn't made to be a competitor but more to complete what was missing for Fortnite
-    - Icon creation with languages support, an area to display the serialized asset, single pak file loader, and more.
-
-If you find this project useful, feel free to give it a :star: thank you :kissing_heart:
-
-### Features
- 1. Read, Search, Extract, Serialize
- 2. Icon Creation for various BR/STW Cosmetics or Challenges with language support
- 3. Icon Merger
- 4. Automatic Key Detection for Dynamic PAKs
-### What I'm using
-  - [Fortnite Asset Parser](https://github.com/SirWaddles/JohnWickParse) - *C# Bind*
-  - [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
-  - [ScintillaNET](https://www.nuget.org/packages/jacobslusser.ScintillaNET)
-  - [Find & Replace for ScintillaNET](https://www.nuget.org/packages/snt.ScintillaNet.FindReplaceDialog/)
-  - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
-  - [Cyotek ColorPicker](https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)
-### Contributors
-<table><tr><td align="center"><a href="https://github.com/SirWaddles"><img src="https://avatars1.githubusercontent.com/u/769399?s=200&v=4" width="100px;" alt="Waddlesworth"/><br /><sub><b>Waddlesworth</b></sub></a><br><a href="https://github.com/SirWaddles" title="Github">🔧</a></td><td align="center"><a href="https://github.com/MaikyM"><img src="https://avatars3.githubusercontent.com/u/51415805?s=200&v=4" width="100px;" alt="Maiky M"/><br /><sub><b>Maiky M</b></sub></a><br /><a href="https://github.com/MaikyM" title="Github">🔧</a><a href="https://twitter.com/MaikyMOficial" title="Twitter">🐦</a></td><td align="center"><a href="https://github.com/AyeTSG"><img src="https://avatars1.githubusercontent.com/u/49595354?s=200&v=4" width="100px;" alt="AyeTSG"/><br><sub><b>AyeTSG</b></sub></a><br><a href="https://github.com/AyeTSG" title="Github">🔧</a><a href="https://twitter.com/AyeTSG" title="Twitter">🐦</a></td><td align="center"><a href="https://github.com/ItsFireMonkey"><img src="https://avatars2.githubusercontent.com/u/38590471?s=200&v=4" width="100px;" alt="FireMonkey"/><br /><sub><b>FireMonkey</b></sub></a><br><a href="https://github.com/ItsFireMonkey" title="Github">🔧</a><a href="https://twitter.com/iFireMonkey" title="Twitter">🐦</a></td></tr></table>
-
-## TODO
-  - [ ] Code refactoring
-  - [ ] New Heroes icon design with perks and more
-  - [ ] New Defenders icon design with useful infos
-  - [x] Translation support
-  - [x] AES Manager
-  - [x] Display support for .locres files
-  - [x] Stop button
-  - [x] Auto update
-  - [x] STW Icons
-  - [x] Update Mode
-  - [x] Search through PAKs
-  - [x] Quest viewer or something
-  - [x] Load all paks
-  - [x] Load only difference between 2 paks version
-  - [x] Custom watermark option on icons
-
-## Removal
-Contact me with an authorized, genuine email if you work for Epic Games and would like this removed.
-asval.contactme@gmail.com
+MIT

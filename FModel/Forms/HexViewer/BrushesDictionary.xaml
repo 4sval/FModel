@@ -1,0 +1,15 @@
+﻿<!--
+    Apache 2.0  - 2016-2018
+    Author : Derek Tremblay (derektremblay666@gmail.com)
+-->
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  THIS DICTIONARY IS USED FOR PUT CUSTOM BRUSH  -->
+
+    <SolidColorBrush x:Key="BookMarkColor" Color="#B20000FF" />
+    <SolidColorBrush x:Key="SearchBookMarkColor" Color="#FFFF8B00" />
+    <SolidColorBrush x:Key="SelectionStartBookMarkColor" Color="Blue" />
+    <SolidColorBrush x:Key="ByteModifiedMarkColor" Color="#CC68717C" />
+    <SolidColorBrush x:Key="ByteDeletedMarkColor" Color="#B2FF0000" />
+</ResourceDictionary>

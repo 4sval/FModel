@@ -1,0 +1,43 @@
+﻿<Window x:Class="FModel.Forms.FModel_About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FModel.Forms"
+        mc:Ignorable="d"
+        Title="About" 
+        Height="180" 
+        Width="510"
+        Style="{StaticResource {x:Type Window}}" 
+        ResizeMode="NoResize" 
+        WindowStartupLocation="CenterScreen" 
+        WindowStyle="ToolWindow"
+        ShowInTaskbar="False"
+        >
+    <Grid>
+        <Image Width="127" Height="127" Source="/FModel;component/Resources/Logo.png" Margin="10,10,0,10" HorizontalAlignment="Left"/>
+        <Grid Height="127" Margin="142,10,10,10">
+            <Label x:Name="AboutTitle_Lbl" Content="FModel" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="24" FontWeight="Bold" Margin="0,5,0,0"/>
+            <Label Content="A powerful .PAK file explorer fully dedicated to Fortnite." HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,33,0,0"/>
+            <Label Content="Big thanks to:" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,60,0,0"/>
+            <Label Content="• Waddlesworth • Maiky • Asriel • FireMonkey" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,75,0,0" FontSize="11"/>
+
+            <Label HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
+                <TextBlock>
+                    <Hyperlink NavigateUri="https://www.paypal.me/FModel" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FFEFEFEF">Donate</Hyperlink>
+                </TextBlock>
+            </Label>
+            <Label HorizontalAlignment="Center" Margin="10,0,0,10" VerticalAlignment="Bottom" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
+                <TextBlock>
+                    <Hyperlink NavigateUri="https://discord.gg/fdkNYYQ" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FFEFEFEF"><Run Text="Discord"/></Hyperlink>
+                </TextBlock>
+            </Label>
+            <Label HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
+                <TextBlock>
+                    <Hyperlink NavigateUri="https://github.com/iAmAsval/FModel/blob/master/README.md#how-to-use" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FFEFEFEF">How To Use</Hyperlink>
+                </TextBlock>
+            </Label>
+        </Grid>
+
+    </Grid>
+</Window>

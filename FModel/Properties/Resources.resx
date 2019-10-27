@@ -118,59 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="folder_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder_Closed_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder_Closed_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="StatusAnnotations_Information_16xLG_color" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\StatusAnnotations_Information_16xLG_color.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="properties_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\properties_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="unknown512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\unknown512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="FModel_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\FModel_Logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Quests64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T-Icon-Quests-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Pets64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T-Icon-Pets-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="BurbankBigCondensed_Black" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\BurbankBigCondensed-Black.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="BurbankBigCondensed_Bold" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\BurbankBigCondensed-Bold.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="dmg64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\dmg64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="LBolt64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\LBolt64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="clipSize64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\clipSize64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="reload64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\reload64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="BurbankBigCondensed_Black_vJapanese" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\BurbankBigCondensed-Black-vJapanese.otf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Twitter" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\twitter.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="FModel" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\FModel.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cTemplate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Template_D_F" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Template_D_F.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -189,5 +138,154 @@
   </data>
   <data name="Template_M_N" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Template_M_N.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_Icon_Pets_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T-Icon-Pets-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_Icon_Quests_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T-Icon-Quests-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="clipSize64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\clipSize64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dmg64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dmg64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="reload64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\reload64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="unknown512" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\unknown512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BurbankBigCondensed_Bold" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BurbankBigCondensed-Bold.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BurbankBigCondensed_Black" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BurbankBigCondensed-Black.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Template_Challenge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Template_Challenge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="colorpicker1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\colorpicker1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="colorpicker2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\colorpicker2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EBCDIC" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EBCDIC.tbl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="EBCDIC_NoSpecialChar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EBCDIC-NoSpecialChar.tbl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="AppendByteConfirmationString" xml:space="preserve">
+    <value>You have reached the end of the file. Do you want to append one byte? This operation cannot be canceled if you continue.</value>
+  </data>
+  <data name="DefaultTBLString" xml:space="preserve">
+    <value>Default TBL</value>
+  </data>
+  <data name="FileDroppingConfirmationString" xml:space="preserve">
+    <value>Do you want to close the current file and open :</value>
+  </data>
+  <data name="FillSelectionAloneString" xml:space="preserve">
+    <value>Fill selection with byte</value>
+  </data>
+  <data name="FirstByteString" xml:space="preserve">
+    <value>First byte</value>
+  </data>
+  <data name="KBTagString" xml:space="preserve">
+    <value>Kb</value>
+  </data>
+  <data name="MBTagString" xml:space="preserve">
+    <value>Mb</value>
+  </data>
+  <data name="PasteExtendByteConfirmationString" xml:space="preserve">
+    <value>Paste operation reached the end of the file. Do you want to extend the file to complete the operation? This operation cannot be canceled if you continue.</value>
+  </data>
+  <data name="PasteFromClipboardString" xml:space="preserve">
+    <value>Paste from clipboard</value>
+  </data>
+  <data name="ReplaceWithByteString" xml:space="preserve">
+    <value>Replace with byte</value>
+  </data>
+  <data name="CBB_EXEFile_BytesInLastBlockString" xml:space="preserve">
+    <value>The number of bytes in the last block of the program that are actually used. 
+If this value is zero, that means the entire last block is used</value>
+  </data>
+  <data name="CBB_EXEFile_InitialValueOfCSRegisterString" xml:space="preserve">
+    <value>Initial value of the CS register, relative to the segment the program was loaded at.</value>
+  </data>
+  <data name="CBB_EXEFile_InitialValueOfIPRegisterString" xml:space="preserve">
+    <value>Initial value of the IP register.</value>
+  </data>
+  <data name="CBB_EXEFile_InitialValueOfSPRegisterString" xml:space="preserve">
+    <value>Initial value of the SP register.</value>
+  </data>
+  <data name="CBB_EXEFile_MagicNumberString" xml:space="preserve">
+    <value>This is the 'magic number' of an EXE file.</value>
+  </data>
+  <data name="CBB_EXEFile_MaxNumberOfHeaderParagraphAdditionalMemoryString" xml:space="preserve">
+    <value>Maximum number of paragraphs of additional memory. 
+Normally, the OS reserves all the remaining conventional memory for your program, but you can limit it with this field.</value>
+  </data>
+  <data name="CBB_EXEFile_NotDOSProgramString" xml:space="preserve">
+    <value>This program cannot be run in DOS mode...</value>
+  </data>
+  <data name="CBB_EXEFile_NumberOfBlockInFileBlockString" xml:space="preserve">
+    <value>Number of blocks in the file that are part of the EXE file. 
+If [02-03] is non-zero, only that much of the last block is used.</value>
+  </data>
+  <data name="CBB_EXEFile_NumberOfHeaderParagraphAdditionalMemoryString" xml:space="preserve">
+    <value>Number of paragraphs of additional memory that the program will need.
+This is the equivalent of the BSS size in a Unix program. 
+The program can't be loaded if there isn't at least this much memory available to it.</value>
+  </data>
+  <data name="CBB_EXEFile_NumberOfRelocationEntriesString" xml:space="preserve">
+    <value>Number of relocation entries stored after the header. May be zero</value>
+  </data>
+  <data name="CBB_EXEFile_OffsetOfTheFirstRelocationItemString" xml:space="preserve">
+    <value>Offset of the first relocation item in the file.</value>
+  </data>
+  <data name="CBB_EXEFile_OverlayNumberString" xml:space="preserve">
+    <value>Overlay number. Normally zero, meaning that it's the main program.</value>
+  </data>
+  <data name="CBB_EXEFile_RelativeValueOfStackSegmentString" xml:space="preserve">
+    <value>Relative value of the stack segment. 
+This value is added to the segment the program was loaded at, and the result is used to initialize the SS register.</value>
+  </data>
+  <data name="CBB_EXEFile_WordChecksumString" xml:space="preserve">
+    <value>Word checksum. 
+If set properly, the 16-bit sum of all words in the file should be zero. 
+Usually, this isn't filled in.</value>
+  </data>
+  <data name="EndTagString" xml:space="preserve">
+    <value>&amp;lt;end&amp;gt;</value>
+  </data>
+  <data name="LineTagString" xml:space="preserve">
+    <value>&amp;lt;ln&amp;gt;</value>
+  </data>
+  <data name="WritingErrorExeptionString" xml:space="preserve">
+    <value>An error occured when writing.</value>
+  </data>
+  <data name="Logo_Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Logo-Icon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="close_file_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\close_file_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="folder_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="info_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\info_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="open_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\open_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="save_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="settings_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settings_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

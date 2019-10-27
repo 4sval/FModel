@@ -12,7 +12,7 @@ namespace FModel.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.2.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -26,276 +26,276 @@ namespace FModel.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string PAKsPath {
+        public string FPak_Path {
             get {
-                return ((string)(this["PAKsPath"]));
+                return ((string)(this["FPak_Path"]));
             }
             set {
-                this["PAKsPath"] = value;
+                this["FPak_Path"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ExtractOutput {
+        public string FOutput_Path {
             get {
-                return ((string)(this["ExtractOutput"]));
+                return ((string)(this["FOutput_Path"]));
             }
             set {
-                this["ExtractOutput"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool loadFeaturedImage {
-            get {
-                return ((bool)(this["loadFeaturedImage"]));
-            }
-            set {
-                this["loadFeaturedImage"] = value;
+                this["FOutput_Path"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string wFilename {
+        public string FPak_MainAES {
             get {
-                return ((string)(this["wFilename"]));
+                return ((string)(this["FPak_MainAES"]));
             }
             set {
-                this["wFilename"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int wOpacity {
-            get {
-                return ((int)(this["wOpacity"]));
-            }
-            set {
-                this["wOpacity"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int wSize {
-            get {
-                return ((int)(this["wSize"]));
-            }
-            set {
-                this["wSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isWatermark {
-            get {
-                return ((bool)(this["isWatermark"]));
-            }
-            set {
-                this["isWatermark"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string AESKey {
-            get {
-                return ((string)(this["AESKey"]));
-            }
-            set {
-                this["AESKey"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int UMSize {
-            get {
-                return ((int)(this["UMSize"]));
-            }
-            set {
-                this["UMSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int UMOpacity {
-            get {
-                return ((int)(this["UMOpacity"]));
-            }
-            set {
-                this["UMOpacity"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UMWatermark {
-            get {
-                return ((bool)(this["UMWatermark"]));
-            }
-            set {
-                this["UMWatermark"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UMFeatured {
-            get {
-                return ((bool)(this["UMFeatured"]));
-            }
-            set {
-                this["UMFeatured"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string UMFilename {
-            get {
-                return ((string)(this["UMFilename"]));
-            }
-            set {
-                this["UMFilename"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UpdateSettings {
-            get {
-                return ((bool)(this["UpdateSettings"]));
-            }
-            set {
-                this["UpdateSettings"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("English")]
-        public string IconLanguage {
-            get {
-                return ((string)(this["IconLanguage"]));
-            }
-            set {
-                this["IconLanguage"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string challengesWatermark {
-            get {
-                return ((string)(this["challengesWatermark"]));
-            }
-            set {
-                this["challengesWatermark"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string UMParameters {
-            get {
-                return ((string)(this["UMParameters"]));
-            }
-            set {
-                this["UMParameters"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool isChallengesTheme {
-            get {
-                return ((bool)(this["isChallengesTheme"]));
-            }
-            set {
-                this["isChallengesTheme"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string challengesBannerFileName {
-            get {
-                return ((string)(this["challengesBannerFileName"]));
-            }
-            set {
-                this["challengesBannerFileName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int challengesOpacity {
-            get {
-                return ((int)(this["challengesOpacity"]));
-            }
-            set {
-                this["challengesOpacity"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50,50,50")]
-        public string challengesColors {
-            get {
-                return ((string)(this["challengesColors"]));
-            }
-            set {
-                this["challengesColors"] = value;
+                this["FPak_MainAES"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Default")]
-        public string rarityDesign {
+        public string FRarity_Design {
             get {
-                return ((string)(this["rarityDesign"]));
+                return ((string)(this["FRarity_Design"]));
             }
             set {
-                this["rarityDesign"] = value;
+                this["FRarity_Design"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("English")]
+        public string FLanguage {
+            get {
+                return ((string)(this["FLanguage"]));
+            }
+            set {
+                this["FLanguage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FIsFeatured {
+            get {
+                return ((bool)(this["FIsFeatured"]));
+            }
+            set {
+                this["FIsFeatured"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FUseWatermark {
+            get {
+                return ((bool)(this["FUseWatermark"]));
+            }
+            set {
+                this["FUseWatermark"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FWatermarkFilePath {
+            get {
+                return ((string)(this["FWatermarkFilePath"]));
+            }
+            set {
+                this["FWatermarkFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int FWatermarkOpacity {
+            get {
+                return ((int)(this["FWatermarkOpacity"]));
+            }
+            set {
+                this["FWatermarkOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double FWatermarkScale {
+            get {
+                return ((double)(this["FWatermarkScale"]));
+            }
+            set {
+                this["FWatermarkScale"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public double FWatermarkXPos {
+            get {
+                return ((double)(this["FWatermarkXPos"]));
+            }
+            set {
+                this["FWatermarkXPos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public double FWatermarkYPos {
+            get {
+                return ((double)(this["FWatermarkYPos"]));
+            }
+            set {
+                this["FWatermarkYPos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{BundleName} - {Date}")]
+        public string FChallengeWatermark {
+            get {
+                return ((string)(this["FChallengeWatermark"]));
+            }
+            set {
+                this["FChallengeWatermark"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FUseChallengeWatermark {
+            get {
+                return ((bool)(this["FUseChallengeWatermark"]));
+            }
+            set {
+                this["FUseChallengeWatermark"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FBannerFilePath {
+            get {
+                return ((string)(this["FBannerFilePath"]));
+            }
+            set {
+                this["FBannerFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int FBannerOpacity {
+            get {
+                return ((int)(this["FBannerOpacity"]));
+            }
+            set {
+                this["FBannerOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FDiffFileSize {
+            get {
+                return ((bool)(this["FDiffFileSize"]));
+            }
+            set {
+                this["FDiffFileSize"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool openSound {
+        public bool HeaderVisibility {
             get {
-                return ((bool)(this["openSound"]));
+                return ((bool)(this["HeaderVisibility"]));
             }
             set {
-                this["openSound"] = value;
+                this["HeaderVisibility"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ReadOnly {
+            get {
+                return ((bool)(this["ReadOnly"]));
+            }
+            set {
+                this["ReadOnly"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool StatusBarVisibility {
+            get {
+                return ((bool)(this["StatusBarVisibility"]));
+            }
+            set {
+                this["StatusBarVisibility"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("21:32:43")]
+        public string FPrimaryColor {
+            get {
+                return ((string)(this["FPrimaryColor"]));
+            }
+            set {
+                this["FPrimaryColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("29:161:242")]
+        public string FSecondaryColor {
+            get {
+                return ((string)(this["FSecondaryColor"]));
+            }
+            set {
+                this["FSecondaryColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FUpdateSettings {
+            get {
+                return ((bool)(this["FUpdateSettings"]));
+            }
+            set {
+                this["FUpdateSettings"] = value;
             }
         }
     }

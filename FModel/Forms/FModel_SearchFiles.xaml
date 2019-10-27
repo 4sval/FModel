@@ -1,0 +1,49 @@
+﻿<Window x:Class="FModel.Forms.FModel_SearchFiles"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FModel.Forms"
+        mc:Ignorable="d"
+        Title="Search" 
+        Height="700" 
+        Width="1000"
+        Style="{StaticResource {x:Type Window}}" 
+        WindowStartupLocation="CenterScreen"
+        Icon="/FModel;component/Logo.ico"
+        UseLayoutRounding="True" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60*"/>
+            <ColumnDefinition Width="20*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="103*"/>
+        </Grid.RowDefinitions>
+        <Label Content="Filter:" VerticalAlignment="Center" Height="24" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left"/>
+        <TextBox x:Name="FilterTextBox_Search" Height="20" Margin="38,12,10,11" TextWrapping="NoWrap" VerticalAlignment="Center" Foreground="#FFEFEFEF" Grid.Row="0" Grid.Column="0" TextChanged="FilterTextBox_Search_TextChanged"/>
+        <DataGrid x:Name="DataGrid_Search" Margin="0,0,0,0" HeadersVisibility="Column" ItemsSource="{Binding FileNames}" IsReadOnly="True" BorderBrush="#7F748198" ColumnHeaderHeight="25" AutoGenerateColumns="True" ColumnWidth="*" Grid.Row="1" Grid.ColumnSpan="2">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="RC_GoTo" Header="Go To" Click="GoTo_Button_Click"/>
+                    <MenuItem x:Name="RC_ExportData" Header="Export RAW Data" Click="RC_ExportData_Click"/>
+                    <Separator/>
+                    <MenuItem Header="Copy File">
+                        <MenuItem x:Name="RC_Copy_FPath" Header="Copy File Path" Click="RC_Copy_FPath_Click"/>
+                        <MenuItem x:Name="RC_Copy_FName" Header="Copy File Name" Click="RC_Copy_FName_Click"/>
+                        <MenuItem x:Name="RC_Copy_FPath_NoExt" Header="Copy File Path w/o Extension" Click="RC_Copy_FPath_NoExt_Click"/>
+                        <MenuItem x:Name="RC_Copy_FName_NoExt" Header="Copy File Name w/o Extension" Click="RC_Copy_FName_NoExt_Click"/>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem x:Name="RC_Properties" Header="Properties" Click="RC_Properties_Click">
+                        <MenuItem.Icon>
+                            <Image Source="/FModel;component/Resources/StatusAnnotations_Information_16xLG_color.png" Width="16" Height="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+        <Button x:Name="GoTo_Button" Content="Go To Selected Asset" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Click="GoTo_Button_Click"/>
+    </Grid>
+</Window>

@@ -4,16 +4,34 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8FABCD3A-9D55-4B54-B237-B259D815DEB8}</ProjectGuid>
+    <ProjectGuid>{8AAB27BD-18D7-4164-8BBC-AB534D55D30F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>FModel</RootNamespace>
     <AssemblyName>FModel</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -24,259 +42,460 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>FModel.ico</ApplicationIcon>
+    <ApplicationIcon>Logo.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>FModel.Program</StartupObject>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoUpdater.NET, Version=1.5.4.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autoupdater.NET.Official.1.5.4\lib\net40\AutoUpdater.NET.dll</HintPath>
+    <Reference Include="AutoUpdater.NET, Version=1.5.7.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autoupdater.NET.Official.1.5.7\lib\net40\AutoUpdater.NET.dll</HintPath>
     </Reference>
-    <Reference Include="csharp-wick, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>DLLs\csharp-wick.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.11.16.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.11.16\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="Cyotek.Windows.Forms.ColorPicker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=58daa28b0b2de221, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cyotek.Windows.Forms.ColorPicker.1.7.2\lib\net35\Cyotek.Windows.Forms.ColorPicker.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.11.12.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.11.12\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvalonEdit.6.0.0\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Ookii.Dialogs.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ookii.Dialogs.Wpf.1.1.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="RestSharp, Version=106.6.10.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.6.10\lib\net452\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="ScintillaNET FindReplaceDialog, Version=1.4.0.17540, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>DLLs\ScintillaNET FindReplaceDialog.dll</HintPath>
-    </Reference>
-    <Reference Include="ScintillaNET, Version=3.6.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\jacobslusser.ScintillaNET.3.6.3\lib\net40\ScintillaNET.dll</HintPath>
+    <Reference Include="SkiaSharp, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\SkiaSharp.1.68.0\lib\net45\SkiaSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Messaging" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WriteableBitmapEx.Wpf, Version=1.6.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WriteableBitmapEx.1.6.3\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\MergeImages.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MergeImages.Designer.cs">
-      <DependentUpon>MergeImages.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Methods\Converter\UnrealEngineDataToOGG.cs" />
-    <Compile Include="Custom\JsonExtensions.cs" />
-    <Compile Include="Custom\TypeAssistant.cs" />
-    <Compile Include="Forms\AESManager.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AESManager.Designer.cs">
-      <DependentUpon>AESManager.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Methods\AESManager\DynamicKeysManager.cs" />
-    <Compile Include="Methods\AESManager\DynamicKeys\AddToUI.cs" />
-    <Compile Include="Methods\AESManager\DynamicKeys\Keychain.cs" />
-    <Compile Include="Methods\IconGenerator\ChallengeGenerator\BundleDesign.cs" />
-    <Compile Include="Methods\IconGenerator\ChallengeGenerator\BundleInfos.cs" />
-    <Compile Include="Methods\IconGenerator\ChallengeGenerator\ChallengeInfoEntry.cs" />
-    <Compile Include="Methods\IconGenerator\ChallengeGenerator\DrawingRewards.cs" />
-    <Compile Include="Methods\DLLImport.cs" />
-    <Compile Include="Methods\IconGenerator\ItemGenerator\DrawText.cs" />
-    <Compile Include="Methods\IconGenerator\SchematicGenerator\SchematicIconDesign.cs" />
-    <Compile Include="Methods\IconGenerator\SchematicGenerator\SchematicInfoEntry.cs" />
-    <Compile Include="Methods\IconGenerator\SchematicGenerator\SchematicItemInfos.cs" />
-    <Compile Include="Methods\IconGenerator\Translations\LoadLocRes.cs" />
-    <Compile Include="Methods\IconGenerator\Translations\SearchResource.cs" />
-    <Compile Include="Methods\PakHelper\BackupFilesEntry.cs" />
-    <Compile Include="Methods\PakHelper\CreateBackup.cs" />
-    <Compile Include="Methods\PakHelper\PakHelper.cs" />
-    <Compile Include="Methods\Serializer\AssetReader.cs" />
-    <Compile Include="Methods\Serializer\LocRes\HotfixedStrings.cs" />
-    <Compile Include="Methods\Serializer\LocRes\LocResSerializer.cs" />
-    <Compile Include="Methods\Scintilla\MyScintilla.cs" />
-    <Compile Include="Methods\UpdateMode\RegisterSettings.cs" />
-    <Compile Include="Methods\Utilities\FontUtilities.cs" />
-    <Compile Include="Methods\IconGenerator\ItemGenerator\ItemIcon.cs" />
-    <Compile Include="Methods\IconGenerator\ItemGenerator\Rarity.cs" />
-    <Compile Include="Forms\About.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\About.Designer.cs">
-      <DependentUpon>About.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SearchFiles.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SearchFiles.Designer.cs">
-      <DependentUpon>SearchFiles.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Settings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Settings.Designer.cs">
-      <DependentUpon>Settings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\UpdateModeSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\UpdateModeSettings.Designer.cs">
-      <DependentUpon>UpdateModeSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MainWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainWindow.Designer.cs">
-      <DependentUpon>MainWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Methods\Utilities\ImageUtilities.cs" />
-    <Compile Include="Methods\JohnWick\JohnWick.cs" />
-    <Compile Include="Methods\Utilities\Utilities.cs" />
-    <Compile Include="Methods\VarApp.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\About.resx">
-      <DependentUpon>About.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AESManager.resx">
-      <DependentUpon>AESManager.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MergeImages.resx">
-      <DependentUpon>MergeImages.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SearchFiles.resx">
-      <DependentUpon>SearchFiles.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Settings.resx">
-      <DependentUpon>Settings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UpdateModeSettings.resx">
-      <DependentUpon>UpdateModeSettings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainWindow.resx">
-      <DependentUpon>MainWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
+    </ApplicationDefinition>
+    <Compile Include="Commands\FModel_Commands.cs" />
+    <Compile Include="Forms\AESManager.xaml.cs">
+      <DependentUpon>AESManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ColorPicker\Code\ColorPalette.cs" />
+    <Compile Include="Forms\ColorPicker\Code\ColorPickerDialogOptions.cs" />
+    <Compile Include="Forms\ColorPicker\Code\ColorSwatchItem.cs" />
+    <Compile Include="Forms\ColorPicker\Code\Util.cs" />
+    <Compile Include="Forms\ColorPicker\ColorPickerControl.xaml.cs">
+      <DependentUpon>ColorPickerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ColorPicker\ColorPickerSettings.cs" />
+    <Compile Include="Forms\ColorPicker\ColorPickerSwatch.xaml.cs">
+      <DependentUpon>ColorPickerSwatch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ColorPicker\ColorPickerWindow.xaml.cs">
+      <DependentUpon>ColorPickerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ColorPicker\ColorPickRow.xaml.cs">
+      <DependentUpon>ColorPickRow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ColorPicker\SliderRow.xaml.cs">
+      <DependentUpon>SliderRow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FModel_About.xaml.cs">
+      <DependentUpon>FModel_About.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FModel_CustomMB.xaml.cs">
+      <DependentUpon>FModel_CustomMB.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FModel_ImagesMerger.xaml.cs">
+      <DependentUpon>FModel_ImagesMerger.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FModel_SearchFiles.xaml.cs">
+      <DependentUpon>FModel_SearchFiles.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FModel_Settings.xaml.cs">
+      <DependentUpon>FModel_Settings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\BaseByte.cs" />
+    <Compile Include="Forms\HexViewer\Core\BookMark.cs" />
+    <Compile Include="Forms\HexViewer\Core\Bytes\ByteConverters.cs" />
+    <Compile Include="Forms\HexViewer\Core\Bytes\ByteModified.cs" />
+    <Compile Include="Forms\HexViewer\Core\Bytes\ByteProvider.cs" />
+    <Compile Include="Forms\HexViewer\Core\Caret.cs" />
+    <Compile Include="Forms\HexViewer\Core\CharacterTable\DTE.cs" />
+    <Compile Include="Forms\HexViewer\Core\CharacterTable\Enum.cs" />
+    <Compile Include="Forms\HexViewer\Core\CharacterTable\TBLStream.cs" />
+    <Compile Include="Forms\HexViewer\Core\ConstantReadOnly.cs" />
+    <Compile Include="Forms\HexViewer\Core\Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Forms\HexViewer\Core\Converters\BoolInverterConverter.cs" />
+    <Compile Include="Forms\HexViewer\Core\Converters\HexToLongStringConverter.cs" />
+    <Compile Include="Forms\HexViewer\Core\Converters\LongToHexStringConverter.cs" />
+    <Compile Include="Forms\HexViewer\Core\Converters\PathToFilenameConverter.cs" />
+    <Compile Include="Forms\HexViewer\Core\Enumeration.cs" />
+    <Compile Include="Forms\HexViewer\Core\GenericStaticInstance.cs" />
+    <Compile Include="Forms\HexViewer\Core\Interfaces\IByteControl.cs" />
+    <Compile Include="Forms\HexViewer\Core\Interfaces\IByteModified.cs" />
+    <Compile Include="Forms\HexViewer\Core\KeyValidator.cs" />
+    <Compile Include="Forms\HexViewer\Core\MethodExtention\ApplicationExtention.cs" />
+    <Compile Include="Forms\HexViewer\Core\MethodExtention\ByteArrayExtention.cs" />
+    <Compile Include="Forms\HexViewer\Core\MethodExtention\DoubleExtension.cs" />
+    <Compile Include="Forms\HexViewer\Core\MethodExtention\StringExtension.cs" />
+    <Compile Include="Forms\HexViewer\Core\MethodExtention\TrackExtention.cs" />
+    <Compile Include="Forms\HexViewer\Core\Native\NativeMethods.cs" />
+    <Compile Include="Forms\HexViewer\Core\Xcbb\CustomBackgroundBlock.cs" />
+    <Compile Include="Forms\HexViewer\Core\Xcbb\ExeFile.cs" />
+    <Compile Include="Forms\HexViewer\Core\Xcbb\XcbbExpressionParser.cs" />
+    <Compile Include="Forms\HexViewer\Core\Xcbb\XcbbFileParser.cs" />
+    <Compile Include="Forms\HexViewer\FastTextLine.cs" />
+    <Compile Include="Forms\HexViewer\FindReplaceWindow.xaml.cs">
+      <DependentUpon>FindReplaceWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\FindWindow.xaml.cs">
+      <DependentUpon>FindWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\GiveByteWindow.xaml.cs">
+      <DependentUpon>GiveByteWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\HexBox.xaml.cs">
+      <DependentUpon>HexBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\HexByte.cs" />
+    <Compile Include="Forms\HexViewer\HexEditor.xaml.cs">
+      <DependentUpon>HexEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\HexViewer.xaml.cs">
+      <DependentUpon>HexViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\ReplaceByteWindow.xaml.cs">
+      <DependentUpon>ReplaceByteWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HexViewer\StringByte.cs" />
+    <Compile Include="Methods\AESManager\DynamicKeysChecker.cs" />
+    <Compile Include="Methods\AESManager\KeysManager.cs" />
+    <Compile Include="Methods\Assets\AssetInformations.cs" />
+    <Compile Include="Methods\Assets\AssetsLoader.cs" />
+    <Compile Include="Methods\Assets\AssetTranslations.cs" />
+    <Compile Include="Methods\Assets\IconCreator\AthenaID\CosmeticSet.cs" />
+    <Compile Include="Methods\Assets\IconCreator\AthenaID\IconUserFacingFlags.cs" />
+    <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeBundleInfos.cs" />
+    <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeCompletionRewards.cs" />
+    <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeIconDesign.cs" />
+    <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeRewards.cs" />
+    <Compile Include="Methods\Assets\IconCreator\HeroID\HeroGameplayDefinition.cs" />
+    <Compile Include="Methods\Assets\IconCreator\IconCreator.cs" />
+    <Compile Include="Methods\Assets\IconCreator\IconImage.cs" />
+    <Compile Include="Methods\Assets\IconCreator\IconText.cs" />
+    <Compile Include="Methods\Assets\IconCreator\IconWatermark.cs" />
+    <Compile Include="Methods\Assets\IconCreator\Rarity.cs" />
+    <Compile Include="Methods\Assets\IconCreator\WeaponID\IconAmmoData.cs" />
+    <Compile Include="Methods\Assets\IconCreator\WeaponID\WeaponStats.cs" />
+    <Compile Include="Methods\BackupsManager\RegisterDownloadedBackups.cs" />
+    <Compile Include="Methods\FindReplace\FindReplace.cs" />
+    <Compile Include="Methods\FindReplace\FindReplaceDialog.xaml.cs">
+      <DependentUpon>FindReplaceDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Methods\FVar.cs" />
+    <Compile Include="Methods\MessageBox\DarkMessageBox.cs" />
+    <Compile Include="Methods\PakReader\AESDecryptor.cs" />
+    <Compile Include="Methods\PakReader\AssetReader.cs" />
+    <Compile Include="Methods\PakReader\AssetRegReader.cs" />
+    <Compile Include="Methods\PakReader\DDSDecoder.cs" />
+    <Compile Include="Methods\PakReader\Extensions.cs" />
+    <Compile Include="Methods\PakReader\ImageExporter.cs" />
+    <Compile Include="Methods\PakReader\LocReader.cs" />
+    <Compile Include="Methods\PakReader\MeshExporter.cs" />
+    <Compile Include="Methods\PakReader\Objects.cs" />
+    <Compile Include="Methods\PakReader\PakIndex.cs" />
+    <Compile Include="Methods\PakReader\PakReader.cs" />
+    <Compile Include="Methods\PakReader\SigReader.cs" />
+    <Compile Include="Methods\PakReader\UDicReader.cs" />
+    <Compile Include="Methods\PAKs\BackupPAKs.cs" />
+    <Compile Include="Methods\PAKs\PAKsLoader.cs" />
+    <Compile Include="Methods\PAKs\RegisterFromPath.cs" />
+    <Compile Include="Methods\SyntaxHighlighter\ResourceLoader.cs" />
+    <Compile Include="Methods\TreeViewModel\PropertyChangedBase.cs" />
+    <Compile Include="Methods\TreeViewModel\SortedTreeViewWindowViewModel.cs" />
+    <Compile Include="Methods\TreeViewModel\TreeViewItemBehavior.cs" />
+    <Compile Include="Methods\TreeViewModel\TreeViewModel.cs" />
+    <Compile Include="Methods\Utilities\AESUtility.cs" />
+    <Compile Include="Methods\Utilities\AssetsUtility.cs" />
+    <Compile Include="Methods\Utilities\ChallengesUtility.cs" />
+    <Compile Include="Methods\Utilities\EndpointsUtility.cs" />
+    <Compile Include="Methods\Utilities\FoldersUtility.cs" />
+    <Compile Include="Methods\Utilities\FormsUtility.cs" />
+    <Compile Include="Methods\Utilities\ImagesUtility.cs" />
+    <Compile Include="Methods\Utilities\ListBoxUtility.cs" />
+    <Compile Include="Methods\Utilities\MBoxesUtility.cs" />
+    <Compile Include="Methods\Utilities\PAKsUtility.cs" />
+    <Compile Include="Methods\Utilities\TasksUtility.cs" />
+    <Compile Include="Methods\Utilities\TextsUtility.cs" />
+    <Compile Include="Methods\Utilities\TreeViewUtility.cs" />
+    <Compile Include="Methods\Utilities\UIUtility.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Themes\LeftMarginMultiplierConverter.cs" />
+    <Compile Include="Themes\TreeViewItemExtensions.cs" />
+    <Page Include="FModel_Main.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FModel_Main.xaml.cs">
+      <DependentUpon>FModel_Main.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Forms\AESManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ColorPicker\ColorPickerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ColorPicker\ColorPickerSwatch.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ColorPicker\ColorPickerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ColorPicker\ColorPickRow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ColorPicker\SliderRow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\FModel_About.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\FModel_CustomMB.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\FModel_ImagesMerger.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\FModel_SearchFiles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\FModel_Settings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\BrushesDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Forms\HexViewer\FindReplaceWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\FindWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\GiveByteWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\HexBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\HexEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\HexViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\MiscelanousDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Forms\HexViewer\ReplaceByteWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\HexViewer\ToolTipDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Methods\FindReplace\FindReplaceDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Methods\SyntaxHighlighter\Json.xshd" />
+    <EmbeddedResource Include="Methods\SyntaxHighlighter\Ini.xshd" />
+    <None Include="Forms\HexViewer\Core\Xcbb\Exefile.xcbb" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Resource Include="Resources\EBCDIC-NoSpecialChar.tbl" />
+    <Resource Include="Resources\EBCDIC.tbl" />
+    <Resource Include="Resources\BurbankBigCondensed-Black.ttf" />
+    <Resource Include="Resources\BurbankBigCondensed-Bold.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="csharp_wick.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DLLs\csharp-wick.dll" />
-    <Content Include="DLLs\ScintillaNET FindReplaceDialog.dll" />
-    <Content Include="FModel.ico" />
-    <None Include="Resources\Template_M_N.png" />
-    <None Include="Resources\Template_M_F.png" />
-    <None Include="Resources\Template_F_N.png" />
-    <None Include="Resources\Template_F_F.png" />
-    <None Include="Resources\Template_D_N.png" />
-    <None Include="Resources\Template_D_F.png" />
-    <None Include="Resources\cTemplate.png" />
-    <None Include="Resources\LBolt64.png" />
-    <None Include="Resources\FModel.ico" />
-    <None Include="Resources\FModel_Logo.png" />
-    <None Include="Resources\twitter.ico" />
-    <None Include="Resources\BurbankBigCondensed-Black-vJapanese.otf" />
-    <None Include="Resources\reload64.png" />
-    <None Include="Resources\clipSize64.png" />
-    <None Include="Resources\dmg64.png" />
-    <None Include="Resources\BurbankBigCondensed-Black.ttf" />
-    <None Include="Resources\BurbankBigCondensed-Bold.ttf" />
-    <None Include="Resources\T-Icon-Pets-64.png" />
-    <None Include="Resources\T-Icon-Quests-64.png" />
-    <None Include="Resources\unknown512.png" />
-    <None Include="Resources\properties_16xLG.png" />
-    <None Include="Resources\StatusAnnotations_Information_16xLG_color.png" />
-    <None Include="Resources\folder_Closed_16xLG.png" />
-    <None Include="Resources\folder_16x.png" />
+    <Resource Include="Logo.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 et x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Methods\Assets\IconCreator\DefenderID\" />
+    <Folder Include="Methods\Assets\IconCreator\SchematicID\" />
+    <Folder Include="Methods\Assets\IconCreator\VariantID\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_D_F.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_D_N.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_F_F.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_F_N.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_M_F.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_M_N.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\T-Icon-Pets-64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\T-Icon-Quests-64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\clipSize64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\dmg64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\reload64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\unknown512.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_Challenge.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\colorpicker1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\colorpicker2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Logo-Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\close_file_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\folder_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\info_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\open_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\save_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\settings_16x.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">
     <ItemGroup>
@@ -285,8 +504,11 @@
       </EmbeddedResource>
     </ItemGroup>
   </Target>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
+  <Import Project="..\packages\SkiaSharp.1.68.0\build\net45\SkiaSharp.targets" Condition="Exists('..\packages\SkiaSharp.1.68.0\build\net45\SkiaSharp.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Ce projet fait référence à des packages NuGet qui sont manquants sur cet ordinateur. Utilisez l'option de restauration des packages NuGet pour les télécharger. Pour plus d'informations, consultez http://go.microsoft.com/fwlink/?LinkID=322105. Le fichier manquant est : {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\SkiaSharp.1.68.0\build\net45\SkiaSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SkiaSharp.1.68.0\build\net45\SkiaSharp.targets'))" />
+  </Target>
 </Project>

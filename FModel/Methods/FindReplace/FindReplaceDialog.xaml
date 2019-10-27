@@ -1,0 +1,65 @@
+﻿<Window x:Class="FindReplace.FindReplaceDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:my="clr-namespace:FindReplace"
+        Title="Find And Replace" 
+        Height="Auto" 
+        Width="300" 
+        ResizeMode="NoResize" 
+        SizeToContent="Height" 
+        KeyDown="Window_KeyDown" 
+        Style="{StaticResource {x:Type Window}}" 
+        ShowInTaskbar="False" 
+        Topmost="False"
+        FocusManager.IsFocusScope="True"
+        >
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="boolToVis" />
+        <DataTemplate x:Key="FindPageTemplate">
+            <StackPanel>
+                <TextBlock Margin="3">Text to Find:</TextBlock>
+                <ContentPresenter Content="{Binding }" />
+                <StackPanel DataContext="{Binding DataContext}">
+                    <TextBlock Margin="3" Visibility="{Binding ShowSearchIn,Converter={StaticResource boolToVis}}">Search in:</TextBlock>
+                    <ComboBox Margin="0 0 0 3" 
+                              Visibility="{Binding ShowSearchIn,Converter={StaticResource boolToVis}}"
+                              HorizontalAlignment="Stretch" BorderBrush="#7F748198">
+                        <ComboBoxItem>Current Document</ComboBoxItem>
+                        <ComboBoxItem>All Documents</ComboBoxItem>
+                    </ComboBox>
+                    <Expander Header="Options" IsExpanded="False" Background="#FF252D36" BorderBrush="#7F748198">
+                        <StackPanel>
+                            <CheckBox Margin="1" Name="chkCaseSensitive" IsChecked="{Binding CaseSensitive, Mode=TwoWay}" BorderBrush="#7F748198" Background="#FF333C46">Case Sensitive</CheckBox>
+                            <CheckBox Margin="1" Name="chkSearchUp" IsChecked="{Binding SearchUp, Mode=TwoWay}" BorderBrush="#7F748198" Background="#FF333C46">Search up</CheckBox>
+                            <CheckBox Margin="1" Name="chkWholeWord" IsChecked="{Binding WholeWord, Mode=TwoWay}" BorderBrush="#7F748198" Background="#FF333C46">Match whole Word</CheckBox>
+                            <CheckBox Margin="1" Name="chkRegex" IsChecked="{Binding UseRegEx, Mode=TwoWay}" BorderBrush="#7F748198" Background="#FF333C46">Regular Expression</CheckBox>
+                            <CheckBox Margin="1" Name="chkWildcards" IsChecked="{Binding UseWildcards, Mode=TwoWay}" BorderBrush="#7F748198" Background="#FF333C46">Wildcards</CheckBox>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid >
+        <TabControl Name="tabMain" Height="Auto" Background="#FF1C2026" BorderBrush="#7F748198">
+            <TabItem Header="Find" Name="tabFind"  ContentTemplate="{StaticResource FindPageTemplate}" Visibility="{Binding AllowReplace, Converter={StaticResource boolToVis}}" BorderBrush="#7F748198">
+                <StackPanel>
+                    <TextBox Margin="3" Name="txtFind" AcceptsReturn="{Binding AcceptsReturn}" Text="{Binding TextToFind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="#FFEFEFEF"/>
+                    <Button Margin="3" IsDefault="True" HorizontalAlignment="Right" Width="65" Click="FindNextClick">Find Next</Button>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Replace" Name="tabReplace"  ContentTemplate="{StaticResource FindPageTemplate}" Visibility="{Binding AllowReplace, Converter={StaticResource boolToVis}}" BorderBrush="#7F748198">
+                <StackPanel>
+                    <TextBox Margin="3" Name="txtFind2" AcceptsReturn="{Binding AcceptsReturn}" Text="{Binding TextToFind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="#FFEFEFEF"/>
+                    <TextBlock Margin="3">Replace with:</TextBlock>
+                    <TextBox Margin="3" Name="txtReplace" AcceptsReturn="{Binding AcceptsReturn}" Text="{Binding ReplacementText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="#FFEFEFEF"></TextBox>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button IsDefault="True" Margin="3" HorizontalAlignment="Right" Width="65" Click="FindNextClick">Find Next</Button>
+                        <Button Margin="3" HorizontalAlignment="Right" Width="65" Click="ReplaceClick">Replace</Button>
+                        <Button Margin="3" HorizontalAlignment="Right" Width="65" Click="ReplaceAllClick">Replace all</Button>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
