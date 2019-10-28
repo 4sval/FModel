@@ -1,4 +1,4 @@
-﻿using AutoUpdaterDotNET;
+using AutoUpdaterDotNET;
 using FModel.Forms;
 using FModel.Forms.HexViewer;
 using FModel.Methods;
@@ -51,7 +51,8 @@ namespace FModel
                 FoldersUtility.LoadFolders();
                 FoldersUtility.CheckWatermark();
                 RegisterFromPath.FilterPAKs();
-                DynamicKeysChecker.SetDynamicKeys();
+                if (FProp.Default.ReloadAES)
+                    DynamicKeysChecker.SetDynamicKeys();
                 RegisterDownloadedBackups.LoadBackupFiles();
             }).ContinueWith(TheTask =>
             {
@@ -356,5 +357,10 @@ namespace FModel
             }
         }
         #endregion
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            DynamicKeysChecker.SetDynamicKeys();
+        }
     }
 }

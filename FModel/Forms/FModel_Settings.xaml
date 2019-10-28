@@ -1,4 +1,4 @@
-﻿<Window x:Class="FModel.Forms.FModel_Settings"
+<Window x:Class="FModel.Forms.FModel_Settings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FModel.Forms"
         mc:Ignorable="d"
         Title="Settings"
-        Height="558" 
+        Height="585" 
         Width="610"
         Style="{StaticResource {x:Type Window}}" 
         WindowStartupLocation="CenterScreen" 
@@ -14,22 +14,23 @@
         ResizeMode="CanMinimize" Loaded="Window_Loaded"
         >
     <Grid>
-        <GroupBox Header=".PAK Files" HorizontalAlignment="Left" Height="48" Margin="10,10,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
+        <GroupBox Header=".PAK Files" HorizontalAlignment="Left" Height="72" Margin="10,10,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
             <Grid>
                 <Label Content="Input:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,1,0,0"/>
-                <TextBox x:Name="InputTextBox" Height="19" Margin="41,4,121,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
-                <Button x:Name="BrowseInput_Button" Content="..." HorizontalAlignment="Left" Margin="446,4,0,0" VerticalAlignment="Top" Width="20" Click="BrowseInput_Button_Click"/>
-                <CheckBox x:Name="bDiffFileSize" Content="Diff w/ File Size" HorizontalAlignment="Left" Margin="471,7,0,0" VerticalAlignment="Top"/>
+                <TextBox x:Name="InputTextBox" Height="19" Margin="41,4,35,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
+                <Button x:Name="BrowseInput_Button" Content="..." HorizontalAlignment="Left" Margin="532,4,0,0" VerticalAlignment="Top" Width="20" Click="BrowseInput_Button_Click"/>
+                <CheckBox x:Name="bDiffFileSize" Content="Diff w/ File Size" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top"/>
+                <CheckBox x:Name="checkReloadAES" Content="AES reload automatically" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="120,31,0,0" Width="148" IsChecked="True"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Extraction" HorizontalAlignment="Left" Height="48" Margin="10,63,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
+        <GroupBox Header="Extraction" HorizontalAlignment="Left" Height="48" Margin="10,87,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
             <Grid>
                 <Label Content="Output:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,-1"/>
                 <TextBox x:Name="OutputTextBox" Height="19" Margin="50,4,35,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
                 <Button x:Name="BrowseOutput_Button" Content="..." HorizontalAlignment="Left" Margin="532,4,0,0" VerticalAlignment="Top" Width="20" Click="BrowseOutput_Button_Click"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Icon Creator" HorizontalAlignment="Left" Height="206" Margin="10,116,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
+        <GroupBox Header="Icon Creator" HorizontalAlignment="Left" Height="206" Margin="10,140,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
             <Grid>
                 <Label Content="Language:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0"/>
                 <ComboBox x:Name="ComboBox_Language" HorizontalAlignment="Left" Margin="61,5,0,0" VerticalAlignment="Top" Width="332" BorderBrush="#7F748198" Background="#FF333C46">
@@ -75,7 +76,7 @@
                 <Button x:Name="OpenIconCreator_Button" Content="Open Image" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="164" Click="OpenIconCreator_Button_Click"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Challenges Theme" HorizontalAlignment="Left" Height="155" Margin="10,327,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
+        <GroupBox Header="Challenges Theme" HorizontalAlignment="Left" Height="155" Margin="10,351,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">
             <Grid>
                 <Label Content="Watermark:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,-1"/>
                 <TextBox x:Name="WatermarkChallenge_TextBox" Height="19" Margin="69,4,263,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF" TextChanged="UpdateChallengeCustomTheme"/>

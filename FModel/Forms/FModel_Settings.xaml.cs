@@ -1,4 +1,4 @@
-﻿using FModel.Methods.MessageBox;
+using FModel.Methods.MessageBox;
 using System.Windows;
 using System;
 using FProp = FModel.Properties.Settings;
@@ -108,6 +108,7 @@ namespace FModel.Forms
             InputTextBox.Text = FProp.Default.FPak_Path;
             bDiffFileSize.IsChecked = FProp.Default.FDiffFileSize;
             OutputTextBox.Text = FProp.Default.FOutput_Path;
+            checkReloadAES.IsChecked = FProp.Default.ReloadAES;
 
             ComboBox_Language.SelectedIndex = (int)GetEnumValueFromDescription<LIndexes>(FProp.Default.FLanguage);
             ComboBox_Design.SelectedIndex = (int)GetEnumValueFromDescription<RIndexes>(FProp.Default.FRarity_Design);
@@ -137,7 +138,9 @@ namespace FModel.Forms
                 FProp.Default.FPak_Path = InputTextBox.Text;
                 DarkMessageBox.Show("Please, restart FModel to apply your new input path", "FModel Input Path Changed", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+
             FProp.Default.FDiffFileSize = (bool)bDiffFileSize.IsChecked;
+            FProp.Default.ReloadAES     = (bool)checkReloadAES.IsChecked;
 
             if (!string.Equals(FProp.Default.FOutput_Path, OutputTextBox.Text))
             {
