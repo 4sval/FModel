@@ -238,7 +238,7 @@ namespace FModel.Methods.PAKs
             openFiledialog.Title = "Choose your Backup File";
             openFiledialog.InitialDirectory = FProp.Default.FOutput_Path + "\\Backups\\";
             openFiledialog.Multiselect = false;
-            openFiledialog.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
+            openFiledialog.Filter = "FBKP Files (*.fbkp)|*.fbkp|All Files (*.*)|*.*";
             if (openFiledialog.ShowDialog() == true)
             {
                 new UpdateMyProcessEvents("Comparing Files", "Waiting").Update();
@@ -246,7 +246,21 @@ namespace FModel.Methods.PAKs
                 FPakEntry[] BackupEntries;
                 using (var fileStream = new FileStream(openFiledialog.FileName, FileMode.Open))
                 {
-                    BackupEntries = ((List<FPakEntry>)BackupPAKs.serializer.Deserialize(fileStream)).ToArray();
+                    List<FPakEntry> entries = new List<FPakEntry>();
+                    var reader = new BinaryReader(fileStream);
+                    while(reader.BaseStream.Position < reader.BaseStream.Length)
+                    {
+                        var entry = new FPakEntry();
+                        entry.Pos = reader.ReadInt64();
+                        entry.Size = reader.ReadInt64();
+                        entry.UncompressedSize = reader.ReadInt64();
+                        entry.Encrypted = reader.ReadBoolean();
+                        entry.StructSize = reader.ReadInt32();
+                        entry.Name = reader.ReadString();
+                        entry.CompressionMethod = reader.ReadInt32();
+                        entries.Add(entry);
+                    }
+                    BackupEntries = entries.ToArray();
                 }
 
                 if (BackupEntries.Any())

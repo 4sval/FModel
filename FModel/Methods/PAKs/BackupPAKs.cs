@@ -1,19 +1,16 @@
 ﻿using FModel.Methods.Utilities;
 using PakReader;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.PAKs
 {
     static class BackupPAKs
     {
-        public static readonly XmlSerializer serializer = new XmlSerializer(typeof(List<FPakEntry>));
-        private static readonly string BACKUP_FILE_PATH = FProp.Default.FOutput_Path + "\\Backups\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".xml";
+        private static readonly string BACKUP_FILE_PATH = FProp.Default.FOutput_Path + "\\Backups\\FortniteGame_" + DateTime.Now.ToString("MMddyyyy") + ".fbkp";
 
         public static async Task CreateBackupFile()
         {
@@ -30,7 +27,10 @@ namespace FModel.Methods.PAKs
         {
             if (PAKEntries.PAKEntriesList != null && PAKEntries.PAKEntriesList.Any())
             {
-                List<FPakEntry> BackupList = new List<FPakEntry>();
+                new UpdateMyProcessEvents($"Writing {Path.GetFileName(BACKUP_FILE_PATH)}", "Waiting").Update();
+                Directory.CreateDirectory(Path.GetDirectoryName(BACKUP_FILE_PATH));
+                var fileStream = new FileStream(BACKUP_FILE_PATH, FileMode.Create);
+                var writer = new BinaryWriter(fileStream);
                 foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList)
                 {
                     byte[] AESKey = null;
@@ -59,18 +59,19 @@ namespace FModel.Methods.PAKs
 
                             foreach (FPakEntry entry in reader.FileInfos)
                             {
-                                BackupList.Add(entry);
+                                writer.Write(entry.Pos);
+                                writer.Write(entry.Size);
+                                writer.Write(entry.UncompressedSize);
+                                writer.Write(entry.Encrypted);
+                                writer.Write(entry.StructSize);
+                                writer.Write(entry.Name);
+                                writer.Write(entry.CompressionMethod);
                             }
                         }
                     }
                 }
-
-                new UpdateMyProcessEvents($"Writing {Path.GetFileName(BACKUP_FILE_PATH)}", "Waiting").Update();
-                Directory.CreateDirectory(Path.GetDirectoryName(BACKUP_FILE_PATH));
-                using (var fileStream = new FileStream(BACKUP_FILE_PATH, FileMode.Create))
-                {
-                    serializer.Serialize(fileStream, BackupList);
-                }
+                fileStream.Close();
+                writer.Close();
                 if (new FileInfo(BACKUP_FILE_PATH).Length > 0) //HENCE WE CHECK THE LENGTH
                 {
                     new UpdateMyProcessEvents($"\\Backups\\{Path.GetFileName(BACKUP_FILE_PATH)} successfully created", "Success").Update();
