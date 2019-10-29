@@ -38,6 +38,14 @@ namespace FModel.Methods.Assets.IconCreator
                         DrawBackground(ImagesUtility.ParseColorFromHex("#158588"), ImagesUtility.ParseColorFromHex("#073A4A"), ImagesUtility.ParseColorFromHex("#3FB3AA"));
                         DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T_Ui_CreatorsCollab_Bg");
                         break;
+                    case "FrozenSeries":
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#5D9BC9"), ImagesUtility.ParseColorFromHex("#77C2E5"), ImagesUtility.ParseColorFromHex("#0296C9"));
+                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T_Ui_LavaSeries_Frozen");
+                        break;
+                    case "LavaSeries":
+                        DrawBackground(ImagesUtility.ParseColorFromHex("#5E0536"), ImagesUtility.ParseColorFromHex("#4D065F"), ImagesUtility.ParseColorFromHex("#A61835"));
+                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T_Ui_LavaSeries_Bg");
+                        break;
                     default:
                         DrawNormalRarity(rarityToken);
                         break;
