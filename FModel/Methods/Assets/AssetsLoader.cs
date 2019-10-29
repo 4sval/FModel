@@ -19,6 +19,7 @@ namespace FModel.Methods.Assets
 
         public static async Task LoadSelectedAsset()
         {
+            new UpdateMyProcessEvents("", "").Update();
             FWindow.FMain.Button_Extract.IsEnabled = false;
             FWindow.FMain.Button_Stop.IsEnabled = true;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
@@ -57,6 +58,7 @@ namespace FModel.Methods.Assets
 
         public static async Task ExtractFoldersAndSub(string path)
         {
+            new UpdateMyProcessEvents("", "").Update();
             FWindow.FMain.Button_Extract.IsEnabled = false;
             FWindow.FMain.Button_Stop.IsEnabled = true;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;

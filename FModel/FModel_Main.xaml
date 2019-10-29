@@ -37,7 +37,7 @@
                 <MenuItem x:Name="MI_LoadOnePAK" Header="Load One PAK" IsEnabled="False"/>
                 <MenuItem x:Name="MI_LoadAllPAKs" Header="Load All PAKs" Padding="2,4,2,2" IsEnabled="False" Click="MI_LoadAllPAKs_Click"/>
                 <Separator/>
-                <MenuItem x:Name="reloadAES" Header="Reload AES Key" Click="MenuItem_Click"/>
+                <MenuItem x:Name="MI_ReloadAESs" Header="Reload AES Keys" Click="MI_ReloadAESs_Click"/>
                 <Separator/>
                 <MenuItem x:Name="MI_DownloadBackups" Header="Download Backups"/>
                 <MenuItem x:Name="MI_BackupPAKs" Header="Backup PAKs" Click="MI_BackupPAKs_Click" IsEnabled="False"/>

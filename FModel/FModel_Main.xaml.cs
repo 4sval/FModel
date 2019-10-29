@@ -51,8 +51,7 @@ namespace FModel
                 FoldersUtility.LoadFolders();
                 FoldersUtility.CheckWatermark();
                 RegisterFromPath.FilterPAKs();
-                if (FProp.Default.ReloadAES)
-                    DynamicKeysChecker.SetDynamicKeys();
+                DynamicKeysChecker.SetDynamicKeys();
                 RegisterDownloadedBackups.LoadBackupFiles();
             }).ContinueWith(TheTask =>
             {
@@ -154,6 +153,10 @@ namespace FModel
             {
                 //not done yet
             }
+        }
+        private void MI_ReloadAESs_Click(object sender, RoutedEventArgs e)
+        {
+            DynamicKeysChecker.SetDynamicKeys(true);
         }
         private async void MI_BackupPAKs_Click(object sender, RoutedEventArgs e)
         {
@@ -357,10 +360,5 @@ namespace FModel
             }
         }
         #endregion
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            DynamicKeysChecker.SetDynamicKeys();
-        }
     }
 }

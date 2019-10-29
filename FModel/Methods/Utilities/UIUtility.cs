@@ -53,6 +53,7 @@ namespace FModel.Methods.Utilities
                         FWindow.FMain.StateTextBlock.Background = new SolidColorBrush(Color.FromRgb(0, 158, 63));
                         break;
                     default:
+                        FWindow.FMain.StateTextBlock.Background = new SolidColorBrush(Color.FromRgb(28, 32, 38));
                         break;
                 }
             });

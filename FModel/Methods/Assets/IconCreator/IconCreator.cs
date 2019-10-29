@@ -17,6 +17,7 @@ namespace FModel.Methods.Assets.IconCreator
         public static DrawingVisual DrawNormalIconKThx(JArray AssetProperties)
         {
             FoldersUtility.CheckWatermark();
+
             new UpdateMyProcessEvents("Creating Icon...", "Waiting").Update();
 
             DrawingVisual drawingVisual = new DrawingVisual();

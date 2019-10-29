@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/iAmAsval/FModel/releases/latest">
-    <img src="https://img.shields.io/github/v/release/iamasval/fmodel"
+    <img src="https://img.shields.io/github/v/release/iamasval/fmodel?label=Release"
          alt="Releases">
   </a>
   <a href="https://github.com/iAmAsval/FModel/releases/latest">

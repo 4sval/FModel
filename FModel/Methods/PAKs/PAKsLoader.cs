@@ -91,6 +91,7 @@ namespace FModel.Methods.PAKs
             ListBoxUtility.FilesListWithoutPath = null;
             FWindow.FMain.ListBox_Main.Items.Clear();
 
+            FWindow.FMain.TreeView_Main.IsEnabled = false;
             await Task.Run(async () =>
             {
                 PAKEntries.PAKToDisplay = new Dictionary<string, FPakEntry[]>();
@@ -102,6 +103,7 @@ namespace FModel.Methods.PAKs
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
             });
+            FWindow.FMain.TreeView_Main.IsEnabled = true;
 
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
             FWindow.FMain.MI_BackupPAKs.IsEnabled = true;
@@ -244,13 +246,13 @@ namespace FModel.Methods.PAKs
                 new UpdateMyProcessEvents("Comparing Files", "Waiting").Update();
 
                 FPakEntry[] BackupEntries;
-                using (var fileStream = new FileStream(openFiledialog.FileName, FileMode.Open))
+                using (FileStream fileStream = new FileStream(openFiledialog.FileName, FileMode.Open))
+                using (BinaryReader reader = new BinaryReader(fileStream))
                 {
                     List<FPakEntry> entries = new List<FPakEntry>();
-                    var reader = new BinaryReader(fileStream);
-                    while(reader.BaseStream.Position < reader.BaseStream.Length)
+                    while (reader.BaseStream.Position < reader.BaseStream.Length)
                     {
-                        var entry = new FPakEntry();
+                        FPakEntry entry = new FPakEntry();
                         entry.Pos = reader.ReadInt64();
                         entry.Size = reader.ReadInt64();
                         entry.UncompressedSize = reader.ReadInt64();
@@ -274,18 +276,22 @@ namespace FModel.Methods.PAKs
 
                     //FILTER WITH THE OVERRIDED EQUALS METHOD (CHECKING FILE NAME AND FILE UNCOMPRESSED SIZE)
                     IEnumerable<FPakEntry> newAssets = LocalEntries.ToArray().Except(BackupEntries);
+
+                    //ADD TO TREE
+                    foreach (FPakEntry entry in newAssets)
+                    {
+                        string onlyFolders = entry.Name.Substring(0, entry.Name.LastIndexOf('/'));
+                        await FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                        {
+                            TreeViewUtility.PopulateTreeView(srt, onlyFolders.Substring(1));
+                        });
+                    }
+
+                    //ONLY LOAD THE DIFFERENCE WHEN WE CLICK ON A FOLDER
+                    FWindow.FCurrentPAK = "ComparedPAK-WindowsClient.pak";
+                    PAKEntries.PAKToDisplay.Add("ComparedPAK-WindowsClient.pak", newAssets.ToArray());
                     await FWindow.FMain.Dispatcher.InvokeAsync(() =>
                     {
-                        //ADD TO TREE
-                        foreach (FPakEntry entry in newAssets)
-                        {
-                            string onlyFolders = entry.Name.Substring(0, entry.Name.LastIndexOf('/'));
-                            TreeViewUtility.PopulateTreeView(srt, onlyFolders.Substring(1));
-                        }
-
-                        //ONLY LOAD THE DIFFERENCE WHEN WE CLICK ON A FOLDER
-                        FWindow.FCurrentPAK = "ComparedPAK-WindowsClient.pak";
-                        PAKEntries.PAKToDisplay.Add("ComparedPAK-WindowsClient.pak", newAssets.ToArray());
                         FWindow.FMain.ViewModel = srt;
                     });
 

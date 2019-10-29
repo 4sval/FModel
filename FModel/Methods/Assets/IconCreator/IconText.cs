@@ -182,11 +182,11 @@ namespace FModel.Methods.Assets.IconCreator
 
         private static void DrawDisplayName(string DisplayName)
         {
-            Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+            Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, string.Equals(FProp.Default.FLanguage, "Japanese") ? FontWeights.Black : FontWeights.Normal, FontStretches.Normal);
 
             FormattedText formattedText =
                 new FormattedText(
-                    string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? DisplayName.ToUpperInvariant() : DisplayName,
+                    string.Equals(FProp.Default.FRarity_Design, "Minimalist") || string.Equals(FProp.Default.FLanguage, "Russian") ? DisplayName.ToUpperInvariant() : DisplayName,
                     CultureInfo.CurrentUICulture,
                     FlowDirection.LeftToRight,
                     typeface,

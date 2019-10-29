@@ -185,6 +185,11 @@ namespace FModel.Methods.Utilities
                                         FWindow.FMain.Dispatcher.InvokeAsync(() =>
                                         {
                                             FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)img); //thread safe and fast af
+
+                                            if (FWindow.FMain.MI_Auto_Save_Images.IsChecked) //auto save images
+                                            {
+                                                ImagesUtility.SaveImage(FProp.Default.FOutput_Path + "\\Icons\\" + FWindow.FCurrentAsset + ".png");
+                                            }
                                         });
                                     }
                                 }

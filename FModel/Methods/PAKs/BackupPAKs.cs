@@ -29,49 +29,51 @@ namespace FModel.Methods.PAKs
             {
                 new UpdateMyProcessEvents($"Writing {Path.GetFileName(BACKUP_FILE_PATH)}", "Waiting").Update();
                 Directory.CreateDirectory(Path.GetDirectoryName(BACKUP_FILE_PATH));
-                var fileStream = new FileStream(BACKUP_FILE_PATH, FileMode.Create);
-                var writer = new BinaryWriter(fileStream);
-                foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList)
+
+                using (FileStream fileStream = new FileStream(BACKUP_FILE_PATH, FileMode.Create))
+                using (BinaryWriter writer = new BinaryWriter(fileStream))
                 {
-                    byte[] AESKey = null;
-                    if (Pak.bTheDynamicPAK)
+                    foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList)
                     {
-                        if (AESEntries.AESEntriesList != null && AESEntries.AESEntriesList.Any())
+                        byte[] AESKey = null;
+                        if (Pak.bTheDynamicPAK)
                         {
-                            string AESFromManager = AESEntries.AESEntriesList.Where(x => string.Equals(x.ThePAKName, Path.GetFileNameWithoutExtension(Pak.ThePAKPath))).Select(x => x.ThePAKKey).FirstOrDefault();
-                            if (!string.IsNullOrEmpty(AESFromManager))
+                            if (AESEntries.AESEntriesList != null && AESEntries.AESEntriesList.Any())
                             {
-                                AESKey = AESUtility.StringToByteArray(AESFromManager);
+                                string AESFromManager = AESEntries.AESEntriesList.Where(x => string.Equals(x.ThePAKName, Path.GetFileNameWithoutExtension(Pak.ThePAKPath))).Select(x => x.ThePAKKey).FirstOrDefault();
+                                if (!string.IsNullOrEmpty(AESFromManager))
+                                {
+                                    AESKey = AESUtility.StringToByteArray(AESFromManager);
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        AESKey = AESUtility.StringToByteArray(FProp.Default.FPak_MainAES);
-                    }
-
-                    if (AESKey != null)
-                    {
-                        PakReader.PakReader reader = new PakReader.PakReader(Pak.ThePAKPath, AESKey);
-                        if (reader != null)
+                        else
                         {
-                            new UpdateMyProcessEvents($"{Path.GetFileNameWithoutExtension(Pak.ThePAKPath)} mount point: {reader.MountPoint}", "Waiting").Update();
+                            AESKey = AESUtility.StringToByteArray(FProp.Default.FPak_MainAES);
+                        }
 
-                            foreach (FPakEntry entry in reader.FileInfos)
+                        if (AESKey != null)
+                        {
+                            PakReader.PakReader reader = new PakReader.PakReader(Pak.ThePAKPath, AESKey);
+                            if (reader != null)
                             {
-                                writer.Write(entry.Pos);
-                                writer.Write(entry.Size);
-                                writer.Write(entry.UncompressedSize);
-                                writer.Write(entry.Encrypted);
-                                writer.Write(entry.StructSize);
-                                writer.Write(entry.Name);
-                                writer.Write(entry.CompressionMethod);
+                                new UpdateMyProcessEvents($"{Path.GetFileNameWithoutExtension(Pak.ThePAKPath)} mount point: {reader.MountPoint}", "Waiting").Update();
+
+                                foreach (FPakEntry entry in reader.FileInfos)
+                                {
+                                    writer.Write(entry.Pos);
+                                    writer.Write(entry.Size);
+                                    writer.Write(entry.UncompressedSize);
+                                    writer.Write(entry.Encrypted);
+                                    writer.Write(entry.StructSize);
+                                    writer.Write(entry.Name);
+                                    writer.Write(entry.CompressionMethod);
+                                }
                             }
                         }
                     }
                 }
-                fileStream.Close();
-                writer.Close();
+
                 if (new FileInfo(BACKUP_FILE_PATH).Length > 0) //HENCE WE CHECK THE LENGTH
                 {
                     new UpdateMyProcessEvents($"\\Backups\\{Path.GetFileName(BACKUP_FILE_PATH)} successfully created", "Success").Update();
