@@ -91,7 +91,7 @@ The difference mode can check new files between 2 different Fortnite versions. Y
 ## Download
 
 You can download the latest version of FModel for Windows x64 [here](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip).
-For x32 users (i wonder how you play the game), you just have to clone or download the repository and build FModel on Visual Studio, make sure to target x32 Platforms in the solution properties.
+For x32 users, you just have to clone or download the repository and build FModel on Visual Studio, make sure to target x32 Platforms in the solution properties. __THERE WILL BE NO SUPPORT FOR x32 USERS AT ALL BECAUSE I WON'T HELP USERS THAT CAN'T EVEN PLAY THE GAME__. It's a waste of time for those who have real issues.
 
 ## Contributors
 
