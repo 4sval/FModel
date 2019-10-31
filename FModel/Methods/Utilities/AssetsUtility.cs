@@ -202,7 +202,12 @@ namespace FModel.Methods.Utilities
                                     {
                                         string path = FProp.Default.FOutput_Path + "\\Sounds\\" + FWindow.FCurrentAsset + ".ogg";
                                         File.WriteAllBytes(path, s);
-                                        FoldersUtility.OpenWithDefaultProgram(path);
+
+                                        //open sound
+                                        if (FProp.Default.FOpenSounds)
+                                        {
+                                            FoldersUtility.OpenWithDefaultProgram(path);
+                                        }
                                     }
 
                                     GC.Collect();

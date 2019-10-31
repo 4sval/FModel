@@ -43,7 +43,7 @@
                 <MenuItem x:Name="MI_BackupPAKs" Header="Backup PAKs" Click="MI_BackupPAKs_Click" IsEnabled="False"/>
                 <Separator/>
                 <MenuItem x:Name="MI_DifferenceMode" Header="Difference Mode" IsCheckable="True" Checked="MI_Change_Header" Unchecked="MI_Change_Header"/>
-                <MenuItem x:Name="MI_UpdateMode" Header="Update Mode (Coming Soon)" IsCheckable="True" Checked="MI_Change_Header" Unchecked="MI_Change_Header" IsEnabled="False"/>
+                <MenuItem x:Name="MI_UpdateMode" Header="Lazy Mode" IsCheckable="True" Checked="MI_Change_Header" Unchecked="MI_Change_Header" IsEnabled="False"/>
                 <Separator/>
                 <MenuItem x:Name="MI_Settings" Header="Settings" InputGestureText="F1" Command="{x:Static commands:FModel_Commands.OpenSettings}">
                     <MenuItem.Icon>

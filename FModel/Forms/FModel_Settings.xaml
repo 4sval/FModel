@@ -20,7 +20,8 @@
                 <TextBox x:Name="InputTextBox" Height="19" Margin="41,4,35,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF"/>
                 <Button x:Name="BrowseInput_Button" Content="..." HorizontalAlignment="Left" Margin="532,4,0,0" VerticalAlignment="Top" Width="20" Click="BrowseInput_Button_Click"/>
                 <CheckBox x:Name="bDiffFileSize" Content="Diff w/ File Size" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top"/>
-                <CheckBox x:Name="checkReloadAES" Content="Reload AES Keys at Launch" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="120,31,0,0" Width="148" IsChecked="True"/>
+                <CheckBox x:Name="bReloadAES" Content="Reload AES Keys at Launch" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="124,31,0,0" IsChecked="True"/>
+                <CheckBox x:Name="bOpenSounds" Content="Auto Open Sounds" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="292,31,0,0" IsChecked="True"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Extraction" HorizontalAlignment="Left" Height="48" Margin="10,85,0,0" VerticalAlignment="Top" Width="574" BorderBrush="#7F748198">

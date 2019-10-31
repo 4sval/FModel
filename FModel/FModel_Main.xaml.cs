@@ -39,12 +39,12 @@ namespace FModel
             AutoUpdater.Start("https://dl.dropbox.com/s/3kv2pukqu6tj1r0/FModel.xml?dl=0");
 
             // Copy user settings from previous application version if necessary
-            /*if (FProp.Default.FUpdateSettings)
+            if (FProp.Default.FUpdateSettings)
             {
                 FProp.Default.Upgrade();
                 FProp.Default.FUpdateSettings = false;
                 FProp.Default.Save();
-            }*/
+            }
 
             await Task.Run(() => 
             {

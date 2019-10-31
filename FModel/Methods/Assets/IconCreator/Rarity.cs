@@ -1,6 +1,11 @@
 ﻿using FModel.Methods.Utilities;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PakReader;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,35 +26,7 @@ namespace FModel.Methods.Assets.IconCreator
             }
             else if (serieToken != null)
             {
-                switch (serieToken.Value<string>())
-                {
-                    case "MarvelSeries":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#CB232D"), ImagesUtility.ParseColorFromHex("#7F0E1D"), ImagesUtility.ParseColorFromHex("#FF433D"));
-                        break;
-                    case "CUBESeries":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#9D006C"), ImagesUtility.ParseColorFromHex("#610064"), ImagesUtility.ParseColorFromHex("#AF1BB9"));
-                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T-Cube-Background");
-                        break;
-                    case "DCUSeries":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#2D445D"), ImagesUtility.ParseColorFromHex("#101928"), ImagesUtility.ParseColorFromHex("#3E5E7A"));
-                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T-BlackMonday-Background");
-                        break;
-                    case "CreatorCollabSeries":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#158588"), ImagesUtility.ParseColorFromHex("#073A4A"), ImagesUtility.ParseColorFromHex("#3FB3AA"));
-                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T_Ui_CreatorsCollab_Bg");
-                        break;
-                    case "FrozenSeries":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#5D9BC9"), ImagesUtility.ParseColorFromHex("#77C2E5"), ImagesUtility.ParseColorFromHex("#0296C9"));
-                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T_Ui_LavaSeries_Frozen");
-                        break;
-                    case "LavaSeries":
-                        DrawBackground(ImagesUtility.ParseColorFromHex("#5E0536"), ImagesUtility.ParseColorFromHex("#4D065F"), ImagesUtility.ParseColorFromHex("#A61835"));
-                        DrawSerieImage("/FortniteGame/Content/Athena/UI/Series/Art/DCU-Series/T_Ui_LavaSeries_Bg");
-                        break;
-                    default:
-                        DrawNormalRarity(rarityToken);
-                        break;
-                }
+                GetSerieAsset(serieToken, rarityToken);
             }
             else
             {
@@ -143,6 +120,59 @@ namespace FModel.Methods.Assets.IconCreator
             }
         }
 
+        private static void GetSerieAsset(JToken serieToken, JToken rarityToken)
+        {
+            //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
+            string seriesFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + serieToken.Value<string>().ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
+            if (!string.IsNullOrEmpty(seriesFullPath))
+            {
+                string path = seriesFullPath.Substring(0, seriesFullPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase));
+                PakReader.PakReader reader = AssetsUtility.GetPakReader(path);
+                if (reader != null)
+                {
+                    List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(path);
+                    string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
+
+                    if (AssetsUtility.IsValidJson(jsonData))
+                    {
+                        dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
+                        JToken AssetMainToken = null;
+                        if (jsonData.StartsWith("[") && jsonData.EndsWith("]"))
+                        {
+                            JArray AssetArray = JArray.FromObject(AssetData);
+                            AssetMainToken = AssetArray[0];
+                        }
+                        else if (jsonData.StartsWith("{") && jsonData.EndsWith("}"))
+                        {
+                            AssetMainToken = AssetData;
+                        }
+
+                        if (AssetMainToken != null)
+                        {
+                            JArray propertiesArray = AssetMainToken["properties"].Value<JArray>();
+                            if (propertiesArray != null)
+                            {
+                                JArray colorsArray = AssetsUtility.GetPropertyTagStruct<JArray>(propertiesArray, "Colors", "properties");
+                                if (colorsArray != null)
+                                {
+                                    DrawSerieBackground(colorsArray);
+                                }
+
+                                JToken backgroundTextureToken = AssetsUtility.GetPropertyTagText<JToken>(propertiesArray, "BackgroundTexture", "asset_path_name");
+                                if (backgroundTextureToken != null)
+                                {
+                                    string imagePath = FoldersUtility.FixFortnitePath(backgroundTextureToken.Value<string>());
+                                    DrawSerieImage(imagePath);
+                                }
+                            }
+                        }
+                    }
+                }
+                else { DrawNormalRarity(rarityToken); }
+            }
+            else { DrawNormalRarity(rarityToken); }
+        }
+
         private static void DrawSerieImage(string AssetPath)
         {
             using (Stream image = AssetsUtility.GetStreamImageFromPath(AssetPath))
@@ -156,10 +186,78 @@ namespace FModel.Methods.Assets.IconCreator
                     bmp.EndInit();
                     bmp.Freeze();
 
-                    IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, 100), new Rect(3, 3, 509, 509));
+                    IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
                 }
             }
             
+        }
+
+        private static void DrawSerieBackground(JArray colorsArray)
+        {
+            Color background = new Color();
+            Color backgroundupdown = new Color();
+            Color border = new Color();
+
+            JToken backgroundRed = AssetsUtility.GetPropertyTagStruct<JToken>(colorsArray, "Color3", "r");
+            JToken backgroundGreen = AssetsUtility.GetPropertyTagStruct<JToken>(colorsArray, "Color3", "g");
+            JToken backgroundBlue = AssetsUtility.GetPropertyTagStruct<JToken>(colorsArray, "Color3", "b");
+            if (backgroundRed != null && backgroundGreen != null && backgroundBlue != null)
+            {
+                int r = (int)(backgroundRed.Value<double>() * 255);
+                int g = (int)(backgroundGreen.Value<double>() * 255);
+                int b = (int)(backgroundBlue.Value<double>() * 255);
+
+                background = Color.FromRgb((byte)r, (byte)g, (byte)b);
+            }
+
+            JToken backgroundupdownRed = AssetsUtility.GetPropertyTagStruct<JToken>(colorsArray, "Color1", "r");
+            JToken backgroundupdownGreen = AssetsUtility.GetPropertyTagStruct<JToken>(colorsArray, "Color1", "g");
+            JToken backgroundupdownBlue = AssetsUtility.GetPropertyTagStruct<JToken>(colorsArray, "Color1", "b");
+            if (backgroundupdownRed != null && backgroundupdownGreen != null && backgroundupdownBlue != null)
+            {
+                int r = (int)(backgroundupdownRed.Value<double>() * 255);
+                int g = (int)(backgroundupdownGreen.Value<double>() * 255);
+                int b = (int)(backgroundupdownBlue.Value<double>() * 255);
+
+                backgroundupdown = Color.FromRgb((byte)r, (byte)g, (byte)b);
+            }
+
+            JToken borderRed = AssetsUtility.GetPropertyTagStruct<JToken>(colorsArray, "Color2", "r");
+            JToken borderGreen = AssetsUtility.GetPropertyTagStruct<JToken>(colorsArray, "Color2", "g");
+            JToken borderBlue = AssetsUtility.GetPropertyTagStruct<JToken>(colorsArray, "Color2", "b");
+            if (borderRed != null && borderGreen != null && borderBlue != null)
+            {
+                int r = (int)(borderRed.Value<double>() * 255);
+                int g = (int)(borderGreen.Value<double>() * 255);
+                int b = (int)(borderBlue.Value<double>() * 255);
+
+                border = Color.FromRgb((byte)r, (byte)g, (byte)b);
+            }
+
+            DrawBackground(backgroundupdown, background, ChangeColorBrightness(border, 0.25f));
+        }
+
+        public static Color ChangeColorBrightness(Color color, float correctionFactor)
+        {
+            float red = color.R;
+            float green = color.G;
+            float blue = color.B;
+
+            if (correctionFactor < 0)
+            {
+                correctionFactor = 1 + correctionFactor;
+                red *= correctionFactor;
+                green *= correctionFactor;
+                blue *= correctionFactor;
+            }
+            else
+            {
+                red = (255 - red) * correctionFactor + red;
+                green = (255 - green) * correctionFactor + green;
+                blue = (255 - blue) * correctionFactor + blue;
+            }
+
+            return Color.FromRgb((byte)red, (byte)green, (byte)blue);
         }
     }
 }

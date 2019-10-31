@@ -108,7 +108,8 @@ namespace FModel.Forms
             InputTextBox.Text = FProp.Default.FPak_Path;
             bDiffFileSize.IsChecked = FProp.Default.FDiffFileSize;
             OutputTextBox.Text = FProp.Default.FOutput_Path;
-            checkReloadAES.IsChecked = FProp.Default.ReloadAES;
+            bReloadAES.IsChecked = FProp.Default.ReloadAES;
+            bOpenSounds.IsChecked = FProp.Default.FOpenSounds;
 
             ComboBox_Language.SelectedIndex = (int)GetEnumValueFromDescription<LIndexes>(FProp.Default.FLanguage);
             ComboBox_Design.SelectedIndex = (int)GetEnumValueFromDescription<RIndexes>(FProp.Default.FRarity_Design);
@@ -140,7 +141,8 @@ namespace FModel.Forms
             }
 
             FProp.Default.FDiffFileSize = (bool)bDiffFileSize.IsChecked;
-            FProp.Default.ReloadAES     = (bool)checkReloadAES.IsChecked;
+            FProp.Default.ReloadAES     = (bool)bReloadAES.IsChecked;
+            FProp.Default.FOpenSounds = (bool)bOpenSounds.IsChecked;
 
             if (!string.Equals(FProp.Default.FOutput_Path, OutputTextBox.Text))
             {
