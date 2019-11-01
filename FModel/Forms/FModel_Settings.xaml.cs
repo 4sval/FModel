@@ -17,6 +17,8 @@ using Ookii.Dialogs.Wpf;
 using System.Globalization;
 using FModel.Methods.Assets.IconCreator;
 using ColorPickerWPF;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace FModel.Forms
 {
@@ -102,14 +104,13 @@ namespace FModel.Forms
             SetUserSettings();
             Close();
         }
-        
-        private string GetEpicDirectory() => Directory.Exists(@"C:\ProgramData\Epic") ? @"C:\ProgramData\Epic" : Directory.Exists(@"D:\ProgramData\Epic") ? @"D:\ProgramData\Epic" : @"E:\ProgramData\Epic";
-        
-        private bool DatFileExists() => File.Exists($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat");
-        
+        private static string GetEpicDirectory() => Directory.Exists(@"C:\ProgramData\Epic") ? @"C:\ProgramData\Epic" : Directory.Exists(@"D:\ProgramData\Epic") ? @"D:\ProgramData\Epic" : @"E:\ProgramData\Epic";
+
+        private static bool DatFileExists() => File.Exists($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat");
+
         private string GetGameFiles()
         {
-            if(DatFileExists())
+            if (DatFileExists())
             {
                 var games = JsonConvert.DeserializeObject<ParseDatFile>(File.ReadAllText($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat")).List;
                 List<string> AllGames = new List<string>();
@@ -121,7 +122,6 @@ namespace FModel.Forms
             }
             return null;
         }
-
 
         private class ParseDatFile
         {
