@@ -2,6 +2,7 @@
 using FModel.Methods.AESManager;
 using FModel.Methods.Utilities;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -47,13 +48,30 @@ namespace FModel.Forms
         private async Task SetMainKey()
         {
             dynamic key = null;
-            using (HttpClient web = new HttpClient())
+            if (DLLImport.IsInternetAvailable())
             {
-                //Not using BenBot api since Rate Limit
-                key = JsonConvert.DeserializeObject(await web.GetStringAsync("https://fnbot.shop/api/aes.json"));
+                try
+                {
+                    using (HttpClient web = new HttpClient())
+                    {
+                        //Not using BenBot api since Rate Limit
+                        key = JsonConvert.DeserializeObject(await web.GetStringAsync("https://fnbot.shop/api/aes.json"));
+                    }
+                    MAesTextBox.Text = $"0x{key.aes}";
+                    FProp.Default.FPak_MainAES = $"{key.aes}";
+                }
+                catch (Exception)
+                {
+                    new UpdateMyConsole("There was a problem getting the latest aes key for main pak files.", CColors.Blue, true).Append();
+                }
+               
             }
-            MAesTextBox.Text = $"0x{key.aes}";
-            FProp.Default.FPak_MainAES = $"{key.aes}";
+            else
+            {
+                new UpdateMyConsole("Your internet connection is currently unavailable, can't check for dynamic keys at the moment.", CColors.Blue, true).Append();
+                
+            }
+           
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
