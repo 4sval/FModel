@@ -102,9 +102,40 @@ namespace FModel.Forms
             SetUserSettings();
             Close();
         }
+        
+        private string GetEpicDirectory() => Directory.Exists(@"C:\ProgramData\Epic") ? @"C:\ProgramData\Epic" : Directory.Exists(@"D:\ProgramData\Epic") ? @"D:\ProgramData\Epic" : @"E:\ProgramData\Epic";
+        
+        private bool DatFileExists() => File.Exists($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat");
+        
+        private string GetGameFiles()
+        {
+            if(DatFileExists())
+            {
+                var games = JsonConvert.DeserializeObject<ParseDatFile>(File.ReadAllText($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat")).List;
+                List<string> AllGames = new List<string>();
+                foreach (var game in games)
+                {
+                    AllGames.Add(game.installlocation);
+                }
+                return $@"{AllGames.Where(x => x.Contains("Fortnite")).FirstOrDefault()}\FortniteGame\Content\Paks";
+            }
+            return null;
+        }
+
+
+        private class ParseDatFile
+        {
+            [JsonProperty("InstallationList")] public InstallationList[] List { get; set; }
+        }
+        private class InstallationList
+        {
+            [JsonProperty("InstallLocation")] public string installlocation { get; set; }
+        }
 
         private async void GetUserSettings()
         {
+            string AutoPath = GetGameFiles();
+            FProp.Default.FPak_Path = string.IsNullOrEmpty(FProp.Default.FPak_Path) && DatFileExists() && AutoPath != null ? AutoPath : FProp.Default.FPak_Path;
             InputTextBox.Text = FProp.Default.FPak_Path;
             bDiffFileSize.IsChecked = FProp.Default.FDiffFileSize;
             OutputTextBox.Text = FProp.Default.FOutput_Path;
