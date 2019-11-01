@@ -19,6 +19,7 @@ using FModel.Methods.Assets.IconCreator;
 using ColorPickerWPF;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using FModel.Methods.PAKs;
 
 namespace FModel.Forms
 {
@@ -104,10 +105,20 @@ namespace FModel.Forms
             SetUserSettings();
             Close();
         }
+        /// <summary>
+        /// Get user's Directory Letter.
+        /// </summary>
+        /// <returns></returns>
         private static string GetEpicDirectory() => Directory.Exists(@"C:\ProgramData\Epic") ? @"C:\ProgramData\Epic" : Directory.Exists(@"D:\ProgramData\Epic") ? @"D:\ProgramData\Epic" : @"E:\ProgramData\Epic";
-
+        /// <summary>
+        /// Check if the LauncherInstalled.dat exists.
+        /// </summary>
+        /// <returns></returns>
         private static bool DatFileExists() => File.Exists($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat");
-
+        /// <summary>
+        /// Fetch automatically user's game file location.
+        /// </summary>
+        /// <returns></returns>
         private string GetGameFiles()
         {
             if (DatFileExists())
@@ -135,7 +146,15 @@ namespace FModel.Forms
         private async void GetUserSettings()
         {
             string AutoPath = GetGameFiles();
-            FProp.Default.FPak_Path = string.IsNullOrEmpty(FProp.Default.FPak_Path) && DatFileExists() && AutoPath != null ? AutoPath : FProp.Default.FPak_Path;
+            if (string.IsNullOrEmpty(FProp.Default.FPak_Path) && DatFileExists() && AutoPath != null)
+            {
+                FProp.Default.FPak_Path = AutoPath;
+                RegisterFromPath.PAK_PATH = AutoPath;
+                RegisterFromPath.FilterPAKs();
+                new UpdateMyProcessEvents("Process events", "State").Update();
+            }
+             
+            
             InputTextBox.Text = FProp.Default.FPak_Path;
             bDiffFileSize.IsChecked = FProp.Default.FDiffFileSize;
             OutputTextBox.Text = FProp.Default.FOutput_Path;
