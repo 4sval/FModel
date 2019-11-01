@@ -55,7 +55,7 @@ namespace FModel.Methods.PAKs
 
         private static IEnumerable<string> GetPAKsFromPath()
         {
-            return Directory.GetFiles(PAK_PATH).Where(x => x.EndsWith(".pak"));
+            return Directory.GetFiles(PAK_PATH,"*.pak",SearchOption.AllDirectories);
         }
     }
 }
