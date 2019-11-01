@@ -10,7 +10,7 @@ namespace FModel.Methods.PAKs
 {
     static class RegisterFromPath
     {
-        private static readonly string PAK_PATH = FProp.Default.FPak_Path;
+        public static string PAK_PATH = FProp.Default.FPak_Path;
 
         public static void FilterPAKs()
         {
@@ -55,7 +55,7 @@ namespace FModel.Methods.PAKs
 
         private static IEnumerable<string> GetPAKsFromPath()
         {
-            return Directory.GetFiles(PAK_PATH).Where(x => x.EndsWith(".pak"));
+            return Directory.GetFiles(PAK_PATH, "*.pak", SearchOption.AllDirectories);
         }
     }
 }
