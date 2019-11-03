@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:FModel"
     xmlns:commands="clr-namespace:FModel.Commands"
+    xmlns:properties="clr-namespace:FModel.Properties"
     xmlns:TreeViewModel="clr-namespace:FModel.Methods.TreeViewModel"
     xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
     x:Class="FModel.MainWindow"
@@ -18,7 +19,7 @@
     WindowStartupLocation="CenterScreen" 
     Icon="Logo.ico"
     Loaded="Window_Loaded"
-    UseLayoutRounding="True">
+    UseLayoutRounding="True" Closed="Window_Closed">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static commands:FModel_Commands.OpenSettings}" Executed="MI_Settings_Click"/>
         <CommandBinding Command="{x:Static commands:FModel_Commands.OpenSearch}" Executed="MI_Search_Click"/>
@@ -64,14 +65,14 @@
                         <Image Source="/FModel;component/Resources/save_16x.png" Height="15" Width="15"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="MI_AutoExportRaw" Header="Auto Export RAW Data" IsCheckable="True"/>
+                <MenuItem x:Name="MI_AutoExportRaw" Header="Auto Export RAW Data" IsCheckable="True" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=FAutoExtractRaw, Mode=TwoWay}"/>
                 <Separator/>
                 <MenuItem x:Name="MI_SaveJson" Header="Save JSON Data" Click="MI_SaveJson_Click">
                     <MenuItem.Icon>
                         <Image Source="/FModel;component/Resources/save_16x.png" Height="15" Width="15"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="MI_AutoSaveJson" Header="Auto Save JSON Data" IsCheckable="True"/>
+                <MenuItem x:Name="MI_AutoSaveJson" Header="Auto Save JSON Data" IsCheckable="True" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=FAutoSaveJson, Mode=TwoWay}"/>
                 <Separator/>
                 <MenuItem Header="Open Output Folder" InputGestureText="F3" Command="{x:Static commands:FModel_Commands.OpenOutput}">
                     <MenuItem.Icon>
@@ -85,7 +86,7 @@
                         <Image Source="Resources/save_16x.png" Height="15" Width="15"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="MI_Auto_Save_Images" Header="Auto Save Images" IsCheckable="True"/>
+                <MenuItem x:Name="MI_Auto_Save_Images" Header="Auto Save Images" IsCheckable="True" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=FAutoSaveImg, Mode=TwoWay}"/>
                 <Separator/>
                 <MenuItem Header="Images Merger" InputGestureText="F4"  Command="{x:Static commands:FModel_Commands.MergeImages}"/>
             </MenuItem>

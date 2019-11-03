@@ -105,56 +105,9 @@ namespace FModel.Forms
             SetUserSettings();
             Close();
         }
-        /// <summary>
-        /// Get user's Directory Letter.
-        /// </summary>
-        /// <returns></returns>
-        private static string GetEpicDirectory() => Directory.Exists(@"C:\ProgramData\Epic") ? @"C:\ProgramData\Epic" : Directory.Exists(@"D:\ProgramData\Epic") ? @"D:\ProgramData\Epic" : @"E:\ProgramData\Epic";
-        /// <summary>
-        /// Check if the LauncherInstalled.dat exists.
-        /// </summary>
-        /// <returns></returns>
-        private static bool DatFileExists() => File.Exists($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat");
-        /// <summary>
-        /// Fetch automatically user's game file location.
-        /// </summary>
-        /// <returns></returns>
-        private string GetGameFiles()
-        {
-            if (DatFileExists())
-            {
-                var games = JsonConvert.DeserializeObject<ParseDatFile>(File.ReadAllText($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat")).List;
-                List<string> AllGames = new List<string>();
-                foreach (var game in games)
-                {
-                    AllGames.Add(game.installlocation);
-                }
-                return $@"{AllGames.Where(x => x.Contains("Fortnite")).FirstOrDefault()}\FortniteGame\Content\Paks";
-            }
-            return null;
-        }
-
-        private class ParseDatFile
-        {
-            [JsonProperty("InstallationList")] public InstallationList[] List { get; set; }
-        }
-        private class InstallationList
-        {
-            [JsonProperty("InstallLocation")] public string installlocation { get; set; }
-        }
 
         private async void GetUserSettings()
         {
-            string AutoPath = GetGameFiles();
-            if (string.IsNullOrEmpty(FProp.Default.FPak_Path) && DatFileExists() && AutoPath != null)
-            {
-                FProp.Default.FPak_Path = AutoPath;
-                RegisterFromPath.PAK_PATH = AutoPath;
-                RegisterFromPath.FilterPAKs();
-                new UpdateMyProcessEvents("Process events", "State").Update();
-            }
-             
-            
             InputTextBox.Text = FProp.Default.FPak_Path;
             bDiffFileSize.IsChecked = FProp.Default.FDiffFileSize;
             OutputTextBox.Text = FProp.Default.FOutput_Path;
@@ -184,20 +137,22 @@ namespace FModel.Forms
 
         private void SetUserSettings()
         {
+            bool restart = false;
+
             if (!string.Equals(FProp.Default.FPak_Path, InputTextBox.Text))
             {
                 FProp.Default.FPak_Path = InputTextBox.Text;
-                DarkMessageBox.Show("Please, restart FModel to apply your new input path", "FModel Input Path Changed", MessageBoxButton.OK, MessageBoxImage.Information);
+                restart = true;
             }
 
             FProp.Default.FDiffFileSize = (bool)bDiffFileSize.IsChecked;
             FProp.Default.ReloadAES     = (bool)bReloadAES.IsChecked;
-            FProp.Default.FOpenSounds = (bool)bOpenSounds.IsChecked;
+            FProp.Default.FOpenSounds   = (bool)bOpenSounds.IsChecked;
 
             if (!string.Equals(FProp.Default.FOutput_Path, OutputTextBox.Text))
             {
                 FProp.Default.FOutput_Path = OutputTextBox.Text;
-                DarkMessageBox.Show("Please, restart FModel to apply your new output path", "FModel Output Path Changed", MessageBoxButton.OK, MessageBoxImage.Information);
+                restart = true;
             }
 
             if (AssetEntries.AssetEntriesDict != null && !string.Equals(FProp.Default.FLanguage, ((ComboBoxItem)ComboBox_Language.SelectedItem).Content.ToString()))
@@ -220,6 +175,11 @@ namespace FModel.Forms
             FProp.Default.FBannerOpacity = Convert.ToInt32(OpacityBanner_Slider.Value);
 
             FProp.Default.Save();
+
+            if (restart)
+            {
+                DarkMessageBox.Show("Please, restart FModel to apply your new path", "FModel Path Changed", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private async void UpdateImageBox(object sender, RoutedEventArgs e)

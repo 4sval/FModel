@@ -121,6 +121,34 @@ namespace FModel.Methods.Utilities
 
             foreach (FPakEntry entry in entriesList)
             {
+                #region AUTO EXTRACT RAW
+                if (FProp.Default.FAutoExtractRaw)
+                {
+                    string path = FProp.Default.FOutput_Path + "\\Exports\\" + entry.Name;
+                    string pWExt = FoldersUtility.GetFullPathWithoutExtension(entry.Name);
+                    string subfolders = pWExt.Substring(0, pWExt.LastIndexOf("/", StringComparison.InvariantCultureIgnoreCase));
+
+                    Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Exports\\" + subfolders);
+                    Stream stream = reader.GetPackageStream(entry);
+                    using (var fStream = File.OpenWrite(path))
+                    using (stream)
+                    {
+                        stream.CopyTo(fStream);
+                    }
+
+                    if (File.Exists(path))
+                    {
+                        new UpdateMyConsole(Path.GetFileName(path), CColors.Blue).Append();
+                        new UpdateMyConsole(" successfully exported", CColors.White, true).Append();
+                    }
+                    else //just in case
+                    {
+                        new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
+                        new UpdateMyConsole(Path.GetFileName(path), CColors.Blue, true).Append();
+                    }
+                }
+                #endregion
+
                 switch (Path.GetExtension(entry.Name.ToLowerInvariant()))
                 {
                     case ".ini":
@@ -218,7 +246,31 @@ namespace FModel.Methods.Utilities
                     }
                 }
 
-                return JsonConvert.SerializeObject(ar.Exports, Formatting.Indented);
+                string stringData = JsonConvert.SerializeObject(ar.Exports, Formatting.Indented);
+
+                #region AUTO SAVE JSON
+                if (FProp.Default.FAutoSaveJson)
+                {
+                    string name = Path.GetFileNameWithoutExtension(entriesList.ElementAt(0).Name);
+                    string path = FProp.Default.FOutput_Path + "\\JSONs\\" + name + ".json";
+                    if (!string.IsNullOrEmpty(stringData))
+                    {
+                        File.WriteAllText(path, stringData);
+                        if (File.Exists(path))
+                        {
+                            new UpdateMyConsole(name, CColors.Blue).Append();
+                            new UpdateMyConsole("'s Json data successfully saved", CColors.White, true).Append();
+                        }
+                        else //just in case
+                        {
+                            new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
+                            new UpdateMyConsole(name, CColors.Blue, true).Append();
+                        }
+                    }
+                }
+                #endregion
+
+                return stringData;
             }
 
             return string.Empty;

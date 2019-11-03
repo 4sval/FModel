@@ -1,4 +1,6 @@
 ﻿using FModel.Methods.Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +16,21 @@ namespace FModel.Methods.PAKs
 
         public static void FilterPAKs()
         {
+            if (string.IsNullOrEmpty(FProp.Default.FPak_Path) && DatFileExists())
+            {
+                string AutoPath = GetGameFiles();
+                if (!string.IsNullOrEmpty(AutoPath))
+                {
+                    new UpdateMyConsole(".PAK files path detected at ", CColors.White).Append();
+                    new UpdateMyConsole(AutoPath, CColors.Blue, true).Append();
+
+                    FProp.Default.FPak_Path = AutoPath;
+                    FProp.Default.Save();
+
+                    PAK_PATH = FProp.Default.FPak_Path;
+                }
+            }
+
             if (Directory.Exists(PAK_PATH))
             {
                 PAKEntries.PAKEntriesList = new List<PAKInfosEntry>();
@@ -56,6 +73,35 @@ namespace FModel.Methods.PAKs
         private static IEnumerable<string> GetPAKsFromPath()
         {
             return Directory.GetFiles(PAK_PATH, "*.pak", SearchOption.AllDirectories);
+        }
+
+        private static string GetEpicDirectory() => Directory.Exists(@"C:\ProgramData\Epic") ? @"C:\ProgramData\Epic" : Directory.Exists(@"D:\ProgramData\Epic") ? @"D:\ProgramData\Epic" : @"E:\ProgramData\Epic";
+        private static bool DatFileExists() => File.Exists($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat");
+        private static string GetGameFiles()
+        {
+            if (DatFileExists())
+            {
+                string jsonData = File.ReadAllText($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat");
+                if (AssetsUtility.IsValidJson(jsonData))
+                {
+                    JToken games = JsonConvert.DeserializeObject<JToken>(jsonData);
+                    if (games != null)
+                    {
+                        JArray installationListArray = games["InstallationList"].Value<JArray>();
+                        if (installationListArray != null)
+                        {
+                            foreach (JToken game in installationListArray)
+                            {
+                                if (string.Equals(game["AppName"].Value<string>(), "Fortnite"))
+                                {
+                                    return $@"{game["InstallLocation"].Value<string>()}\FortniteGame\Content\Paks";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return string.Empty;
         }
     }
 }

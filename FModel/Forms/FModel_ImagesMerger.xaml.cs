@@ -251,5 +251,60 @@ namespace FModel.Forms
                 }
             }
         }
+
+        private async void Up_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (ImagesListBox.Items.Count > 0 && ImagesListBox.SelectedItems.Count > 0)
+            {
+                bool reloadImage = false;
+
+                int[] indices = ImagesListBox.SelectedItems.Cast<object>().Select(i => ImagesListBox.Items.IndexOf(i)).ToArray();
+                if (indices.Length > 0 && indices[0] > 0)
+                {
+                    for (int i = 0; i < ImagesListBox.Items.Count; i++)
+                    {
+                        if (indices.Contains(i))
+                        {
+                            object moveItem = ImagesListBox.Items[i];
+                            ImagesListBox.Items.Remove(moveItem);
+                            ImagesListBox.Items.Insert(i - 1, moveItem);
+                            ((ListBoxItem)moveItem).IsSelected = true;
+                            reloadImage = true;
+                        }
+                    }
+                }
+                ImagesListBox.SelectedItems.Add(indices);
+
+                if (reloadImage)
+                    await UpdateMergerPreview();
+            }
+        }
+
+        private async void Down_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (ImagesListBox.Items.Count > 0 && ImagesListBox.SelectedItems.Count > 0)
+            {
+                bool reloadImage = false;
+
+                int[] indices = ImagesListBox.SelectedItems.Cast<object>().Select(i => ImagesListBox.Items.IndexOf(i)).ToArray();
+                if (indices.Length > 0 && indices[indices.Length - 1] < ImagesListBox.Items.Count - 1)
+                {
+                    for (int i = ImagesListBox.Items.Count - 1; i > -1; --i)
+                    {
+                        if (indices.Contains(i))
+                        {
+                            object moveItem = ImagesListBox.Items[i];
+                            ImagesListBox.Items.Remove(moveItem);
+                            ImagesListBox.Items.Insert(i + 1, moveItem);
+                            ((ListBoxItem)moveItem).IsSelected = true;
+                            reloadImage = true;
+                        }
+                    }
+                }
+
+                if (reloadImage)
+                    await UpdateMergerPreview();
+            }
+        }
     }
 }

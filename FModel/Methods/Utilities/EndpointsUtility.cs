@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using RestSharp;
 using System.Collections.Generic;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Utilities
 {
@@ -51,6 +52,13 @@ namespace FModel.Methods.Utilities
                 string EndpointContent = GetEndpoint("http://benbotfn.tk:8080/api/aes");
                 if (!string.IsNullOrEmpty(EndpointContent))
                 {
+                    if (string.IsNullOrEmpty(FProp.Default.FPak_MainAES))
+                    {
+                        JToken mainKeyToken = JObject.Parse(EndpointContent).SelectToken("mainKey");
+                        FProp.Default.FPak_MainAES = mainKeyToken != null ? $"{mainKeyToken.Value<string>().Substring(2).ToUpperInvariant()}" : "";
+                        FProp.Default.Save();
+                    }
+
                     JToken dynamicPaks = JObject.Parse(EndpointContent).SelectToken("additionalKeys");
                     return JToken.Parse(dynamicPaks.ToString()).ToString().TrimStart('[').TrimEnd(']');
                 }

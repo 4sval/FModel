@@ -3,7 +3,6 @@ using FindReplace;
 using ICSharpCode.AvalonEdit;
 using System;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Documents;
 using System.Windows.Media;
 using FProp = FModel.Properties.Settings;
@@ -51,6 +50,9 @@ namespace FModel.Methods.Utilities
                         break;
                     case "Success":
                         FWindow.FMain.StateTextBlock.Background = new SolidColorBrush(Color.FromRgb(0, 158, 63));
+                        break;
+                    case "State":
+                        FWindow.FMain.StateTextBlock.Background = new SolidColorBrush(Color.FromRgb(28, 32, 38));
                         break;
                     default:
                         FWindow.FMain.StateTextBlock.Background = new SolidColorBrush(Color.FromRgb(28, 32, 38));
@@ -205,7 +207,6 @@ namespace FModel.Methods.Utilities
 
             return foundChild;
         }
-
         public static void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
             if (args != null)

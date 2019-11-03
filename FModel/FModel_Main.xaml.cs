@@ -60,6 +60,10 @@ namespace FModel
 
             AvalonEdit.SetAEConfig();
         }
+        private void Window_Closed(object sender, System.EventArgs e)
+        {
+            FProp.Default.Save();
+        }
 
         #region BUTTON EVENTS
         private void Button_AESManager_Click(object sender, RoutedEventArgs e)

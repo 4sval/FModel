@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 using System.Windows.Media;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets
 {
@@ -137,14 +138,6 @@ namespace FModel.Methods.Assets
                 FWindow.FMain.Dispatcher.InvokeAsync(() =>
                 {
                     FWindow.FMain.AssetPropertiesBox_Main.Text = jsonData;
-                    if (FWindow.FMain.MI_AutoExportRaw.IsChecked)
-                    {
-                        AssetsUtility.ExportAssetData(assetPath);
-                    }
-                    if (FWindow.FMain.MI_AutoSaveJson.IsChecked)
-                    {
-                        AssetsUtility.SaveAssetProperties();
-                    }
                 });
 
                 if (AssetsUtility.IsValidJson(jsonData))

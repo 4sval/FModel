@@ -236,6 +236,8 @@
     <Compile Include="Methods\PakReader\AssetRegReader.cs" />
     <Compile Include="Methods\PakReader\ExportObject\AssetReader.cs" />
     <Compile Include="Methods\PakReader\ExportObject\ExportObject.cs" />
+    <Compile Include="Methods\PakReader\ExportObject\UDictionary\FDictionaryHeader\FDictionaryHeader.cs" />
+    <Compile Include="Methods\PakReader\ExportObject\UDictionary\FDictionaryHeader\FOodleCompressedData.cs" />
     <Compile Include="Methods\PakReader\ExportObject\UScript\UScriptStruct\FObjectExport.cs" />
     <Compile Include="Methods\PakReader\ExportObject\UScript\UScriptStruct\FPackageIndex.cs" />
     <Compile Include="Methods\PakReader\DDSDecoder.cs" />
@@ -314,7 +316,7 @@
     <Compile Include="Methods\PakReader\ExportObject\UCurveTable\ECurveTableMode.cs" />
     <Compile Include="Methods\PakReader\ExportObject\UCurveTable\UCurveTable.cs" />
     <Compile Include="Methods\PakReader\ExportObject\UDataTable\UDataTable.cs" />
-    <Compile Include="Methods\PakReader\UDicReader.cs" />
+    <Compile Include="Methods\PakReader\ExportObject\UDictionary\UDictionary.cs" />
     <Compile Include="Methods\PakReader\ExportObject\UScript\UScriptStruct\FBoxSphereBounds.cs" />
     <Compile Include="Methods\PakReader\ExportObject\UScript\UScriptStruct\FReferenceSkeleton\FMeshBoneInfo.cs" />
     <Compile Include="Methods\PakReader\ExportObject\UScript\UScriptStruct\FSkeletalMaterial\FMeshUVChannelInfo.cs" />

@@ -322,5 +322,41 @@ namespace FModel.Properties {
                 this["FOpenSounds"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FAutoExtractRaw {
+            get {
+                return ((bool)(this["FAutoExtractRaw"]));
+            }
+            set {
+                this["FAutoExtractRaw"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FAutoSaveJson {
+            get {
+                return ((bool)(this["FAutoSaveJson"]));
+            }
+            set {
+                this["FAutoSaveJson"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FAutoSaveImg {
+            get {
+                return ((bool)(this["FAutoSaveImg"]));
+            }
+            set {
+                this["FAutoSaveImg"] = value;
+            }
+        }
     }
 }

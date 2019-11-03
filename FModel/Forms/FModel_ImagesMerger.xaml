@@ -17,7 +17,9 @@
             <Grid>
                 <ListBox x:Name="ImagesListBox" Margin="0,40,0,0" SelectionMode="Extended"/>
                 <Button x:Name="AddImages_Button" Content="Add" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Click="AddImages_Button_Click"/>
-                <Button x:Name="RemoveImage_Button" Content="Remove" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Click="RemoveImage_Button_Click"/>
+                <Button x:Name="Up_Button" Content="🡹" HorizontalAlignment="Left" Margin="110,10,0,0" VerticalAlignment="Top" Width="30" Click="Up_Button_Click"/>
+                <Button x:Name="Down_Button" Content="🡻" HorizontalAlignment="Left" Margin="145,10,0,0" VerticalAlignment="Top" Width="30" Click="Down_Button_Click"/>
+                <Button x:Name="RemoveImage_Button" Content="Remove" HorizontalAlignment="Center" Margin="184,10,105,0" VerticalAlignment="Top" Width="100" Click="RemoveImage_Button_Click"/>
                 <Button x:Name="ClearImages_Button" Content="Clear" HorizontalAlignment="Right" Margin="0,10,0,0" VerticalAlignment="Top" Width="100" Click="ClearImages_Button_Click"/>
 
             </Grid>

@@ -103,11 +103,6 @@ namespace FModel.Methods.PAKs
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
             });
-            FWindow.FMain.TreeView_Main.IsEnabled = true;
-
-            FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
-            FWindow.FMain.MI_BackupPAKs.IsEnabled = true;
-            FWindow.FMain.MI_DifferenceMode.IsEnabled = true;
         }
 
         private static void LoadPAKFiles(bool bAllPAKs = false)
@@ -296,6 +291,32 @@ namespace FModel.Methods.PAKs
                     });
 
                     new UpdateMyProcessEvents("All PAK files have been compared successfully", "Success").Update();
+                    await FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                    {
+                        FWindow.FMain.TreeView_Main.IsEnabled = true;
+                        FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
+                        FWindow.FMain.MI_BackupPAKs.IsEnabled = true;
+                        FWindow.FMain.MI_DifferenceMode.IsEnabled = true;
+                    });
+
+                    //PRINT REMOVED IF NO FILE SIZE CHECK
+                    if (!FProp.Default.FDiffFileSize)
+                    {
+                        IEnumerable<FPakEntry> removedAssets = BackupEntries.Except(LocalEntries.ToArray());
+
+                        List<string> removedItems = new List<string>();
+                        foreach (FPakEntry entry in removedAssets)
+                        {
+                            if (entry.Name.StartsWith("/FortniteGame/Content/Athena/Items/Cosmetics/"))
+                                removedItems.Add(entry.Name.Substring(0, entry.Name.LastIndexOf(".")));
+                        }
+
+                        if (removedItems.Count > 0)
+                        {
+                            new UpdateMyConsole("Items Removed/Renamed:", CColors.Red, true).Append();
+                            removedItems.Distinct().ToList().ForEach(e => new UpdateMyConsole($"    - {e.Substring(1)}", CColors.White, true).Append());
+                        }
+                    }
                 }
             }
             else

@@ -1,15 +1,10 @@
 ﻿using FModel.Methods;
 using FModel.Methods.AESManager;
 using FModel.Methods.Utilities;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -31,47 +26,10 @@ namespace FModel.Forms
             this.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
         }
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             AddLblTxtForDynamicPAKs();
             GetUserSettings();
-            if (string.IsNullOrEmpty(FProp.Default.FPak_MainAES))
-            {
-                await SetMainKey();
-            }
-        }
-
-        /// <summary>
-        /// Fetch latest version's main aes key.
-        /// </summary>
-        /// <returns></returns>
-        private async Task SetMainKey()
-        {
-            dynamic key = null;
-            if (DLLImport.IsInternetAvailable())
-            {
-                try
-                {
-                    using (HttpClient web = new HttpClient())
-                    {
-                        //Not using BenBot api since Rate Limit
-                        key = JsonConvert.DeserializeObject(await web.GetStringAsync("https://fnbot.shop/api/aes.json"));
-                    }
-                    MAesTextBox.Text = $"0x{key.aes}";
-                    FProp.Default.FPak_MainAES = $"{key.aes}";
-                }
-                catch (Exception)
-                {
-                    new UpdateMyConsole("There was a problem getting the latest aes key for main pak files.", CColors.Blue, true).Append();
-                }
-               
-            }
-            else
-            {
-                new UpdateMyConsole("Your internet connection is currently unavailable, can't check for dynamic keys at the moment.", CColors.Blue, true).Append();
-                
-            }
-           
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
