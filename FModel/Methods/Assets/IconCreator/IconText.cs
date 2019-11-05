@@ -214,8 +214,8 @@ namespace FModel.Methods.Assets.IconCreator
 
             Point textLocation =
                 string.Equals(FProp.Default.FRarity_Design, "Flat") ? new Point(510, 450 - formattedText.Height) :
-                string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? new Point(515, 445 - formattedText.Height) :
-                new Point(515, 435 - formattedText.Height);
+                string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? new Point(515 / 2, 445 - formattedText.Height) :
+                new Point(515 / 2, 435 - formattedText.Height);
 
             IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
         }
