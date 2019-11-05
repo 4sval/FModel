@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using FProp = FModel.Properties.Settings;
@@ -259,20 +260,27 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
 #region DESCRIPTION
                 new UpdateMyConsole(entry.TheQuestDescription, CColors.ChallengeDescription).Append();
 
+                double size = 27;
                 FormattedText formattedText =
                     new FormattedText(
                         entry.TheQuestDescription,
                         CultureInfo.CurrentUICulture,
                         FlowDirection.LeftToRight,
                         typeface,
-                        27,
+                        size,
                         Brushes.White,
                         IconCreator.PPD
                         );
                 formattedText.TextAlignment = TextAlignment.Left;
-                formattedText.MaxTextWidth = 800;
                 formattedText.MaxLineCount = 1;
                 Point textLocation = new Point(60, y + 15);
+
+                while (formattedText.Width > 800)
+                {
+                    size -= 1;
+                    formattedText.SetFontSize(size);
+                }
+
                 IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
 #endregion
 

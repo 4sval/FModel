@@ -183,6 +183,7 @@ namespace FModel.Methods.Assets.IconCreator
         private static void DrawDisplayName(string DisplayName)
         {
             Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, string.Equals(FProp.Default.FLanguage, "Japanese") ? FontWeights.Black : FontWeights.Normal, FontStretches.Normal);
+            double size = string.Equals(FProp.Default.FRarity_Design, "Flat") || string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? 50 : 45;
 
             FormattedText formattedText =
                 new FormattedText(
@@ -190,27 +191,31 @@ namespace FModel.Methods.Assets.IconCreator
                     CultureInfo.CurrentUICulture,
                     FlowDirection.LeftToRight,
                     typeface,
-                    string.Equals(FProp.Default.FRarity_Design, "Flat") || string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? 50 : 45,
+                    size,
                     Brushes.White,
                     IconCreator.PPD
                     );
             if (string.Equals(FProp.Default.FRarity_Design, "Flat"))
             {
                 formattedText.TextAlignment = TextAlignment.Right;
-                formattedText.MaxTextWidth = 515;
                 formattedText.MaxLineCount = 1;
             }
             else
             {
                 formattedText.TextAlignment = TextAlignment.Center;
-                formattedText.MaxTextWidth = 515;
                 formattedText.MaxLineCount = 1;
             }
 
+            while (formattedText.Width > 515)
+            {
+                size -= 1;
+                formattedText.SetFontSize(size);
+            }
+
             Point textLocation =
-                string.Equals(FProp.Default.FRarity_Design, "Flat") ? new Point(-5, 450 - formattedText.Height) :
-                string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? new Point(0, 445 - formattedText.Height) :
-                new Point(0, 435 - formattedText.Height);
+                string.Equals(FProp.Default.FRarity_Design, "Flat") ? new Point(510, 450 - formattedText.Height) :
+                string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? new Point(515, 445 - formattedText.Height) :
+                new Point(515, 435 - formattedText.Height);
 
             IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
         }
@@ -254,7 +259,7 @@ namespace FModel.Methods.Assets.IconCreator
         {
             if (!string.Equals(FProp.Default.FRarity_Design, "Minimalist"))
             {
-                Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+                Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, string.Equals(FProp.Default.FLanguage, "Japanese") ? FontWeights.Black : FontWeights.Normal, FontStretches.Normal);
 
                 FormattedText formattedText =
                     new FormattedText(

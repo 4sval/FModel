@@ -178,7 +178,7 @@ namespace FModel.Forms
 
             if (restart)
             {
-                DarkMessageBox.Show("Please, restart FModel to apply your new path", "FModel Path Changed", MessageBoxButton.OK, MessageBoxImage.Information);
+                DarkMessageBox.Show("Please, restart FModel to apply your new path(s)", "FModel Path(s) Changed", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 

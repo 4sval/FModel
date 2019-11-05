@@ -1,4 +1,5 @@
 ﻿using FModel.Methods.SyntaxHighlighter;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
@@ -393,19 +394,27 @@ namespace FModel.Methods.Utilities
         public static void SaveAssetProperties()
         {
             string prop = FWindow.FMain.AssetPropertiesBox_Main.Text;
-            string path = FProp.Default.FOutput_Path + "\\JSONs\\" + FWindow.FCurrentAsset + ".json";
             if (!string.IsNullOrEmpty(prop))
             {
-                File.WriteAllText(path, prop);
-                if (File.Exists(path))
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Title = "Save Asset Properties";
+                saveFileDialog.FileName = FWindow.FCurrentAsset;
+                saveFileDialog.InitialDirectory = FProp.Default.FOutput_Path + "\\JSONs\\";
+                saveFileDialog.Filter = "JSON Files (*.json)|*.json";
+                if (saveFileDialog.ShowDialog() == true)
                 {
-                    new UpdateMyConsole(FWindow.FCurrentAsset, CColors.Blue).Append();
-                    new UpdateMyConsole("'s Json data successfully saved", CColors.White, true).Append();
-                }
-                else //just in case
-                {
-                    new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
-                    new UpdateMyConsole(FWindow.FCurrentAsset, CColors.Blue, true).Append();
+                    string path = saveFileDialog.FileName;
+                    File.WriteAllText(path, prop);
+                    if (File.Exists(path))
+                    {
+                        new UpdateMyConsole(FWindow.FCurrentAsset, CColors.Blue).Append();
+                        new UpdateMyConsole("'s Json data successfully saved", CColors.White, true).Append();
+                    }
+                    else //just in case
+                    {
+                        new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
+                        new UpdateMyConsole(FWindow.FCurrentAsset, CColors.Blue, true).Append();
+                    }
                 }
             }
         }
