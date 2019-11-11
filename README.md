@@ -14,7 +14,7 @@
          alt="Releases">
   </a>
   <a href="https://github.com/iAmAsval/FModel/releases/latest">
-    <img src="https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.0%20Downloads"
+    <img src="https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.0.1%20Downloads"
          alt="Downloads">
   </a>
   <a href="https://twitter.com/AsvalFN"><img src="https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter"></a>
@@ -87,6 +87,18 @@ The difference mode can check new files between 2 different Fortnite versions. Y
 3. Compare files - __click on Load and then on Load Difference__
 4. It's gonna check you current .PAK files and then ask you for the backup file - __choose the backup file__
 5. You can now see the difference between your backup file and you current files
+
+### Update Mode
+
+The update mode can check new files between 2 different Fortnite versions and auto extract assets of your choice. You'll need at least one backup file to be able to compare your current .PAK files and the backup file.
+
+1. You can target file size check on the settings window if you want - __click on Load, Settings, and then check Diff w/ File Size__
+2. Enable the difference mode - __click on Load and then on Difference Mode__
+3. Enable the update mode - __click on Load and then on Update Mode__
+4. Choose assets to extract - __click on the asset type you wanna auto extract and then on OK__
+5. Compare files - __click on Load and then on Load And Extract Difference__
+6. It's gonna check you current .PAK files and then ask you for the backup file - __choose the backup file__
+7. You can see the difference between your backup file and you current files and it's also gonna auto extract the assets you selected
 
 ## Download
 

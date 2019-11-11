@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 using System.Windows.Media;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets
 {
@@ -134,6 +135,8 @@ namespace FModel.Methods.Assets
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
             FWindow.FMain.AssetPropertiesBox_Main.SyntaxHighlighting = ResourceLoader.LoadHighlightingDefinition("Json.xshd");
             FWindow.FMain.ImageBox_Main.Source = null;
+            bool sound = FProp.Default.FOpenSounds;
+            FProp.Default.FOpenSounds = false;
 
             List<IEnumerable<string>> assetList = new List<IEnumerable<string>>();
             foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
@@ -185,6 +188,7 @@ namespace FModel.Methods.Assets
             FWindow.FMain.MI_Auto_Save_Images.IsChecked = false;
             FWindow.FMain.Button_Extract.IsEnabled = true;
             FWindow.FMain.Button_Stop.IsEnabled = false;
+            FProp.Default.FOpenSounds = sound;
             new UpdateMyProcessEvents("All assets have been extracted successfully", "Success").Update();
         }
 
