@@ -155,7 +155,8 @@ namespace FModel
             //LOAD AND EXTRACT DIFF
             if (MI_DifferenceMode.IsChecked && MI_UpdateMode.IsChecked)
             {
-                //not done yet
+                await PAKsLoader.LoadDifference();
+                await AssetsLoader.ExtractUpdateMode();
             }
         }
         private void MI_ReloadAESs_Click(object sender, RoutedEventArgs e)
@@ -250,10 +251,21 @@ namespace FModel
             {
                 MI_LoadAllPAKs.Header = "Load And Extract Difference";
                 MI_UpdateMode.IsEnabled = true;
+                MI_Auto_Save_Images.IsChecked = true; //auto save images
+
+                if (MI_DifferenceMode.IsChecked && MI_UpdateMode.IsChecked)
+                {
+                    if (!FormsUtility.IsWindowOpen<Window>("Update Mode"))
+                    {
+                        new FModel_UpdateMode().Show();
+                    }
+                    else { FormsUtility.GetOpenedWindow<Window>("Update Mode").Focus(); }
+                }
             }
             if (!MI_UpdateMode.IsChecked)
             {
                 MI_LoadAllPAKs.Header = "Load Difference";
+                MI_Auto_Save_Images.IsChecked = false;
             }
 
             //BOTH

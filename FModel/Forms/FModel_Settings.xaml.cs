@@ -1,7 +1,6 @@
 using FModel.Methods.MessageBox;
 using System.Windows;
 using System;
-using FProp = FModel.Properties.Settings;
 using System.Windows.Controls;
 using System.ComponentModel;
 using System.Reflection;
@@ -17,9 +16,7 @@ using Ookii.Dialogs.Wpf;
 using System.Globalization;
 using FModel.Methods.Assets.IconCreator;
 using ColorPickerWPF;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using FModel.Methods.PAKs;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel.Forms
 {

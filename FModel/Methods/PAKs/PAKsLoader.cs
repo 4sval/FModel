@@ -127,7 +127,7 @@ namespace FModel.Methods.PAKs
                         catch (Exception ex)
                         {
                             if (string.Equals(ex.Message, "The AES key is invalid")) { UIHelper.DisplayError(); }
-                            else { UIHelper.DisplayEmergencyError(ex); return; }
+                            else { new UpdateMyConsole(ex.Message, CColors.Red, true).Append(); return; }
                             break;
                         }
 
@@ -171,7 +171,7 @@ namespace FModel.Methods.PAKs
                         catch (Exception ex)
                         {
                             if (string.Equals(ex.Message, "The AES key is invalid")) { UIHelper.DisplayError(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), AESFromManager); }
-                            else { UIHelper.DisplayEmergencyError(ex); return; }
+                            else { new UpdateMyConsole(ex.Message, CColors.Red, true).Append(); return; }
                             continue;
                         }
 
@@ -290,9 +290,9 @@ namespace FModel.Methods.PAKs
                         FWindow.FMain.ViewModel = srt;
                     });
 
-                    new UpdateMyProcessEvents("All PAK files have been compared successfully", "Success").Update();
                     await FWindow.FMain.Dispatcher.InvokeAsync(() =>
                     {
+                        new UpdateMyProcessEvents("All PAK files have been compared successfully", "Success").Update();
                         FWindow.FMain.TreeView_Main.IsEnabled = true;
                         FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
                         FWindow.FMain.MI_BackupPAKs.IsEnabled = true;

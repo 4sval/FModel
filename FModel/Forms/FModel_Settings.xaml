@@ -57,7 +57,7 @@
                     <ComboBoxItem Content="Flat"/>
                     <ComboBoxItem Content="Minimalist"/>
                 </ComboBox>
-                <Border BorderThickness="1" Background="#FF252D36" HorizontalAlignment="Right" Height="164" Margin="398,0,0,0" Width="164" VerticalAlignment="Top">
+                <Border BorderThickness="1" BorderBrush="#7F748198" Background="#FF252D36" HorizontalAlignment="Right" Height="164" Margin="398,0,0,0" Width="164" VerticalAlignment="Top">
                     <Image x:Name="ImageBox_RarityPreview" Source="/FModel;component/Resources/Template_D_N.png" UseLayoutRounding="True"/>
                 </Border>
 
@@ -94,7 +94,7 @@
                 <Slider x:Name="OpacityBanner_Slider" Style="{StaticResource Horizontal_Slider}" Thumb.DragCompleted="UpdateChallengeCustomTheme" HorizontalAlignment="Left" Margin="57,112,0,0" VerticalAlignment="Top" Maximum="255" Width="242" Background="#FF333C46" BorderBrush="#7F748198" Foreground="{x:Null}" IsEnabled="False"/>
 
                 <CheckBox x:Name="bCustomChallenge" Content="Custom Theme" HorizontalAlignment="Left" Margin="6,59,0,0" VerticalAlignment="Top" Checked="EnableDisableCustomTheme" Unchecked="EnableDisableCustomTheme"/>
-                <Border BorderThickness="1" Background="#FF252D36" HorizontalAlignment="Right" Height="105" Width="258" VerticalAlignment="Top" Margin="0,3,0,0">
+                <Border BorderThickness="1" BorderBrush="#7F748198" Background="#FF252D36" HorizontalAlignment="Right" Height="105" Width="258" VerticalAlignment="Top" Margin="0,3,0,0">
                     <Image x:Name="ImageBox_ChallengePreview" Source="/FModel;component/Resources/Template_Challenge.png" UseLayoutRounding="True"/>
                 </Border>
                 <Button x:Name="OpenChallengeTheme_Button" Content="Open Image" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="258" Click="OpenChallengeTheme_Button_Click" Margin="0,0,0,3"/>

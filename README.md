@@ -70,10 +70,10 @@
 
 ## How To Use
 
-To run this program, you'll need [.NET Framework 4.7.1](https://dotnet.microsoft.com/download/dotnet-framework/net471) or newer installed on your computer. Once it's done, you can download the latest release [here](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip).
+To run this program, you'll need [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/net472) or newer installed on your computer. Once it's done, you can download the latest release [here](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip).
 
 1. Extract `FModel.exe` and `libSkiaSharp.dll` somewhere - __double click on FModel.exe__
-2. You're now asked to set the path to your Fortnite .PAK files - __click on Load and then on Settings__
+2. The path to your Fortnite .PAK files should be automatically detected but you can still set it manually - __click on Load and then on Settings__
 3. You'll need the AES key in order to read the files - __click on AES Manager and enter the key under Static Key__
 4. You can now load one or all .PAK files
 5. Navigate through the tree to find the Asset you want

@@ -9,6 +9,7 @@ using System.IO;
 using FModel.Methods.Assets;
 using FProp = FModel.Properties.Settings;
 using System;
+using System.Globalization;
 
 namespace FModel.Forms
 {
@@ -57,26 +58,34 @@ namespace FModel.Forms
             }
         }
 
-        private static async Task PopulateDataGrid()
+        private async Task PopulateDataGrid()
         {
             Dictionary<string, string> IfExistChecker = new Dictionary<string, string>();
+            int i = 0;
+
             await Task.Run(() =>
             {
                 if (!string.IsNullOrEmpty(FWindow.FCurrentPAK))
                 {
-                    FillList(PAKEntries.PAKToDisplay[FWindow.FCurrentPAK], IfExistChecker);
+                    FPakEntry[] ohyeah = PAKEntries.PAKToDisplay[FWindow.FCurrentPAK];
+                    FillList(ohyeah, IfExistChecker);
+                    i = ohyeah.Length;
                 }
                 else
                 {
                     foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
                     {
                         FillList(PAKsFileInfos, IfExistChecker);
+                        i += PAKsFileInfos.Length;
                     }
                 }
             }).ContinueWith(TheTask =>
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
             });
+
+            //max = million
+            FoundNumber_Label.Content = $"Found {i.ToString("# ### ###", new NumberFormatInfo{ NumberGroupSeparator = " " }).Trim()} assets";
         }
 
         private static void FillList(FPakEntry[] EntryArray, Dictionary<string, string> ExistChecker)

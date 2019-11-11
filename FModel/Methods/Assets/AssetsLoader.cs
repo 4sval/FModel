@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 using System.Windows.Media;
-using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets
 {
@@ -56,7 +55,6 @@ namespace FModel.Methods.Assets
             FWindow.FMain.Button_Extract.IsEnabled = true;
             FWindow.FMain.Button_Stop.IsEnabled = false;
         }
-
         public static async Task ExtractFoldersAndSub(string path)
         {
             new UpdateMyProcessEvents("", "").Update();
@@ -127,8 +125,70 @@ namespace FModel.Methods.Assets
             FWindow.FMain.Button_Extract.IsEnabled = true;
             FWindow.FMain.Button_Stop.IsEnabled = false;
         }
+        public static async Task ExtractUpdateMode()
+        {
+            new UpdateMyProcessEvents("", "").Update();
+            FWindow.FMain.MI_UpdateMode.IsEnabled = true;
+            FWindow.FMain.Button_Extract.IsEnabled = false;
+            FWindow.FMain.Button_Stop.IsEnabled = true;
+            FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
+            FWindow.FMain.AssetPropertiesBox_Main.SyntaxHighlighting = ResourceLoader.LoadHighlightingDefinition("Json.xshd");
+            FWindow.FMain.ImageBox_Main.Source = null;
 
-        private static void LoadAsset(string assetPath)
+            List<IEnumerable<string>> assetList = new List<IEnumerable<string>>();
+            foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
+            {
+                IEnumerable<string> files = PAKsFileInfos
+                    .Where(x => Forms.FModel_UpdateMode.AssetsEntriesDict.Any(c => bool.Parse(c.Value["isChecked"]) && x.Name.StartsWith(c.Value["Path"])))
+                    .Select(x => x.Name);
+
+                if (files != null) { assetList.Add(files); }
+            }
+
+            TasksUtility.CancellableTaskTokenSource = new CancellationTokenSource();
+            CancellationToken cToken = TasksUtility.CancellableTaskTokenSource.Token;
+            await Task.Run(() =>
+            {
+                isRunning = true;
+                foreach (IEnumerable<string> filesFromOnePak in assetList)
+                {
+                    foreach (string asset in filesFromOnePak.OrderBy(s => s))
+                    {
+                        cToken.ThrowIfCancellationRequested(); //if clicked on 'Stop' it breaks at the following item
+
+                        string target;
+                        if (asset.EndsWith(".uexp") || asset.EndsWith(".ubulk")) { continue; }
+                        else if (!asset.EndsWith(".uasset"))
+                        {
+                            target = asset; //ini uproject locres etc
+                        }
+                        else
+                        {
+                            target = asset.Substring(0, asset.LastIndexOf(".")); //uassets
+                        }
+
+                        FWindow.FMain.Dispatcher.InvokeAsync(() => //ui thread because if not, FCurrentAsset isn't updated in time to Auto Save a JSON Data for example
+                        {
+                            FWindow.FCurrentAsset = Path.GetFileName(target);
+                        });
+                        LoadAsset(target);
+                    }
+                }
+
+            }, cToken).ContinueWith(TheTask =>
+            {
+                TasksUtility.TaskCompleted(TheTask.Exception);
+                TasksUtility.CancellableTaskTokenSource.Dispose();
+                isRunning = false;
+            });
+
+            FWindow.FMain.MI_Auto_Save_Images.IsChecked = false;
+            FWindow.FMain.Button_Extract.IsEnabled = true;
+            FWindow.FMain.Button_Stop.IsEnabled = false;
+            new UpdateMyProcessEvents("All assets have been extracted successfully", "Success").Update();
+        }
+
+        public static void LoadAsset(string assetPath)
         {
             PakReader.PakReader reader = AssetsUtility.GetPakReader(assetPath);
             if (reader != null)

@@ -358,5 +358,47 @@ namespace FModel.Properties {
                 this["FAutoSaveImg"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{\r\n  \"[BR] Cosmetics\": {\r\n    \"Path\": \"/FortniteGame/Content/Athena/Items/Cosmeti" +
+            "cs/\",\r\n    \"isChecked\": \"True\"\r\n  },\r\n  \"[BR] Cosmetics Variants\": {\r\n    \"Path\"" +
+            ": \"/FortniteGame/Content/Athena/Items/CosmeticVariantTokens/\",\r\n    \"isChecked\":" +
+            " \"True\"\r\n  },\r\n  \"[BR] Banners\": {\r\n    \"Path\": \"/FortniteGame/Content/Athena/It" +
+            "ems/BannerToken/\",\r\n    \"isChecked\": \"True\"\r\n  },\r\n  \"[BR] Challenges\": {\r\n    \"" +
+            "Path\": \"/FortniteGame/Content/Athena/Items/ChallengeBundles/\",\r\n    \"isChecked\":" +
+            " \"True\"\r\n  },\r\n  \"[BR] Consumables\": {\r\n    \"Path\": \"/FortniteGame/Content/Athen" +
+            "a/Items/Consumables/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[BR] Traps\": {\r\n    \"" +
+            "Path\": \"/FortniteGame/Content/Athena/Items/Traps/\",\r\n    \"isChecked\": \"False\"\r\n " +
+            " },\r\n  \"[BR] Weapons\": {\r\n    \"Path\": \"/FortniteGame/Content/Athena/Items/Weapon" +
+            "s/\",\r\n    \"isChecked\": \"True\"\r\n  },\r\n  \"[BR] 2D Assets\": {\r\n    \"Path\": \"/Fortni" +
+            "teGame/Content/2dAssets/\",\r\n    \"isChecked\": \"True\"\r\n  },\r\n  \"[BR] Featured Imag" +
+            "es\": {\r\n    \"Path\": \"/FortniteGame/Content/UI/Foundation/Textures/BattleRoyale/F" +
+            "eaturedItems/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[STW] Heroes\": {\r\n    \"Path\"" +
+            ": \"/FortniteGame/Content/Heroes/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[STW] Def" +
+            "enders\": {\r\n    \"Path\": \"/FortniteGame/Content/Items/Defenders/\",\r\n    \"isChecke" +
+            "d\": \"False\"\r\n  },\r\n  \"[STW] Schematics\": {\r\n    \"Path\": \"/FortniteGame/Content/I" +
+            "tems/Schematics/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[STW] Traps\": {\r\n    \"Pat" +
+            "h\": \"/FortniteGame/Content/Items/Traps/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[S" +
+            "TW] Weapons\": {\r\n    \"Path\": \"/FortniteGame/Content/Items/Weapons/\",\r\n    \"isChe" +
+            "cked\": \"False\"\r\n  },\r\n  \"[STW] Ingredients\": {\r\n    \"Path\": \"/FortniteGame/Conte" +
+            "nt/Items/Ingredients/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[STW] Persistent Res" +
+            "ources\": {\r\n    \"Path\": \"/FortniteGame/Content/Items/PersistentResources/\",\r\n   " +
+            " \"isChecked\": \"False\"\r\n  },\r\n  \"[STW] CardPacks\": {\r\n    \"Path\": \"/FortniteGame/" +
+            "Content/Items/CardPacks/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"Tokens\": {\r\n    \"" +
+            "Path\": \"/FortniteGame/Content/Items/Tokens/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n " +
+            " \"Icons\": {\r\n    \"Path\": \"/FortniteGame/Content/UI/Foundation/Textures/Icons/\",\r" +
+            "\n    \"isChecked\": \"False\"\r\n  },\r\n  \"Additional Banners\": {\r\n    \"Path\": \"/Fortni" +
+            "teGame/Content/UI/Foundation/Textures/Banner/\",\r\n    \"isChecked\": \"False\"\r\n  },\r" +
+            "\n  \"Additional Loading Screens\": {\r\n    \"Path\": \"/FortniteGame/Content/UI/Founda" +
+            "tion/Textures/LoadingScreens/\",\r\n    \"isChecked\": \"False\"\r\n  }\r\n}")]
+        public string FUM_AssetsType {
+            get {
+                return ((string)(this["FUM_AssetsType"]));
+            }
+            set {
+                this["FUM_AssetsType"] = value;
+            }
+        }
     }
 }

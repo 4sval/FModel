@@ -152,6 +152,9 @@
     <Compile Include="Forms\FModel_Settings.xaml.cs">
       <DependentUpon>FModel_Settings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FModel_UpdateMode.xaml.cs">
+      <DependentUpon>FModel_UpdateMode.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Forms\HexViewer\BaseByte.cs" />
     <Compile Include="Forms\HexViewer\Core\BookMark.cs" />
     <Compile Include="Forms\HexViewer\Core\Bytes\ByteConverters.cs" />
@@ -414,6 +417,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Forms\FModel_Settings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\FModel_UpdateMode.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

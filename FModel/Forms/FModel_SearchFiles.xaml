@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Search" 
         Height="700" 
-        Width="1000"
+        Width="1100"
         Style="{StaticResource {x:Type Window}}" 
         WindowStartupLocation="CenterScreen"
         Icon="/FModel;component/Logo.ico"
@@ -38,12 +38,13 @@
                     <Separator/>
                     <MenuItem x:Name="RC_Properties" Header="Properties" Click="RC_Properties_Click">
                         <MenuItem.Icon>
-                            <Image Source="/FModel;component/Resources/StatusAnnotations_Information_16xLG_color.png" Width="16" Height="16"/>
+                            <Image Source="/FModel;component/Resources/info_16x.png" Width="16" Height="16"/>
                         </MenuItem.Icon>
                     </MenuItem>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>
-        <Button x:Name="GoTo_Button" Content="Go To Selected Asset" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Click="GoTo_Button_Click"/>
+        <Button x:Name="GoTo_Button" Content="Go To Selected Asset" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="120" Click="GoTo_Button_Click" Margin="10,0,0,0"/>
+        <Label x:Name="FoundNumber_Label" Content="Found 0 asset" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Padding="0"/>
     </Grid>
 </Window>
