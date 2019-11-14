@@ -7,6 +7,9 @@ using System.Windows;
 using System.Windows.Controls;
 using FProp = FModel.Properties.Settings;
 
+/// <summary>
+/// GLOBAL MESSAGES ARE CHECKED IN THE BACKUP ENDPOINT (This might become the main endpoint soon anyway)
+/// </summary>
 namespace FModel.Methods.BackupsManager
 {
     static class RegisterDownloadedBackups

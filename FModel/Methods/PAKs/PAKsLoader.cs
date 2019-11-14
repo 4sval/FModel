@@ -14,6 +14,7 @@ namespace FModel.Methods.PAKs
 {
     static class PAKsLoader
     {
+        public static bool umIsOk { get; set; }
         private static readonly string PAK_PATH = FProp.Default.FPak_Path;
         private static SortedTreeViewWindowViewModel srt { get; set; }
 
@@ -78,7 +79,7 @@ namespace FModel.Methods.PAKs
             FWindow.FMain.MI_BackupPAKs.IsEnabled = true;
             FWindow.FMain.MI_DifferenceMode.IsEnabled = true;
         }
-        public static async Task LoadDifference()
+        public static async Task LoadDifference(bool updateMode = false)
         {
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = false;
             FWindow.FMain.MI_LoadAllPAKs.IsEnabled = false;
@@ -90,6 +91,7 @@ namespace FModel.Methods.PAKs
             FWindow.FMain.ImageBox_Main.Source = null;
             ListBoxUtility.FilesListWithoutPath = null;
             FWindow.FMain.ListBox_Main.Items.Clear();
+            umIsOk = false;
 
             FWindow.FMain.TreeView_Main.IsEnabled = false;
             await Task.Run(async () =>
@@ -97,7 +99,7 @@ namespace FModel.Methods.PAKs
                 PAKEntries.PAKToDisplay = new Dictionary<string, FPakEntry[]>();
 
                 LoadPAKFiles(true);
-                await LoadBackupFile();
+                await LoadBackupFile(updateMode);
 
             }).ContinueWith(TheTask =>
             {
@@ -229,7 +231,7 @@ namespace FModel.Methods.PAKs
             new UpdateMyProcessEvents(!bAllPAKs ? PAK_PATH + "\\" + FWindow.FCurrentPAK : PAK_PATH, "Success").Update();
         }
 
-        private static async Task LoadBackupFile()
+        private static async Task LoadBackupFile(bool updateMode = false)
         {
             OpenFileDialog openFiledialog = new OpenFileDialog();
             openFiledialog.Title = "Choose your Backup File";
@@ -292,16 +294,17 @@ namespace FModel.Methods.PAKs
 
                     await FWindow.FMain.Dispatcher.InvokeAsync(() =>
                     {
-                        new UpdateMyProcessEvents("All PAK files have been compared successfully", "Success").Update();
                         FWindow.FMain.TreeView_Main.IsEnabled = true;
                         FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
                         FWindow.FMain.MI_BackupPAKs.IsEnabled = true;
                         FWindow.FMain.MI_DifferenceMode.IsEnabled = true;
+                        if (updateMode) { FWindow.FMain.MI_UpdateMode.IsEnabled = true; }
                     });
 
                     //PRINT REMOVED IF NO FILE SIZE CHECK
                     if (!FProp.Default.FDiffFileSize)
                     {
+                        new UpdateMyProcessEvents("Checking deleted items", "Waiting").Update();
                         IEnumerable<FPakEntry> removedAssets = BackupEntries.Except(LocalEntries.ToArray());
 
                         List<string> removedItems = new List<string>();
@@ -317,6 +320,9 @@ namespace FModel.Methods.PAKs
                             removedItems.Distinct().ToList().ForEach(e => new UpdateMyConsole($"    - {e.Substring(1)}", CColors.White, true).Append());
                         }
                     }
+
+                    new UpdateMyProcessEvents("All PAK files have been compared successfully", "Success").Update();
+                    umIsOk = true;
                 }
             }
             else
@@ -324,6 +330,20 @@ namespace FModel.Methods.PAKs
                 new UpdateMyConsole("You change your mind pretty fast but it's fine ", CColors.White).Append();
                 new UpdateMyConsole("all paks have been loaded instead", CColors.Blue, true).Append();
                 FillTreeView(true);
+
+                await FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                {
+                    FWindow.FMain.TreeView_Main.IsEnabled = true;
+                    FWindow.FMain.MI_LoadAllPAKs.IsEnabled = true;
+                    FWindow.FMain.MI_BackupPAKs.IsEnabled = true;
+                    FWindow.FMain.MI_DifferenceMode.IsEnabled = true;
+                    FWindow.FMain.MI_DifferenceMode.IsChecked = false;
+                    if (updateMode)
+                    {
+                        FWindow.FMain.MI_UpdateMode.IsEnabled = true;
+                        FWindow.FMain.MI_UpdateMode.IsChecked = false;
+                    }
+                });
             }
         }
     }

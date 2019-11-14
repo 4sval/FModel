@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using RestSharp;
 using System.Collections.Generic;
+using System.Linq;
 using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Utilities
@@ -21,12 +22,24 @@ namespace FModel.Methods.Utilities
         {
             if (DLLImport.IsInternetAvailable())
             {
-                string EndpointContent = GetEndpoint("https://dl.dropbox.com/s/mi7oyjywdtatxb0/FModel3_Backups.json?dl=0");
+                string EndpointContent = GetEndpoint("https://dl.dropbox.com/s/0ykcue03qweb98r/FModel.json?dl=0");
                 if (!string.IsNullOrEmpty(EndpointContent))
                 {
                     List<BackupInfosEntry> ListToReturn = new List<BackupInfosEntry>();
-                    JArray array = JArray.Parse(EndpointContent);
-                    foreach (JProperty prop in array.Children<JObject>().Properties())
+                    JToken FData = JToken.Parse(EndpointContent);
+
+                    //GLOBAL MESSAGES
+                    JArray FGMessages = FData["Global_Messages"].Value<JArray>();
+                    if (!string.IsNullOrEmpty(FGMessages[0]["Message"].Value<string>()))
+                    {
+                        foreach (JToken t in FGMessages)
+                        {
+                            new UpdateMyConsole(t["Message"].Value<string>(), t["Color"].Value<string>(), t["bNewLine"].Value<bool>()).Append();
+                        }
+                    }
+
+                    //BACKUPS
+                    foreach (JProperty prop in FData["Backups"].Value<JObject>().Properties())
                     {
                         ListToReturn.Add(new BackupInfosEntry(prop.Name, prop.Value.Value<string>()));
                     }

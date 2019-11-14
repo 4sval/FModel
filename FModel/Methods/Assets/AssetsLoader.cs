@@ -129,7 +129,6 @@ namespace FModel.Methods.Assets
         public static async Task ExtractUpdateMode()
         {
             new UpdateMyProcessEvents("", "").Update();
-            FWindow.FMain.MI_UpdateMode.IsEnabled = true;
             FWindow.FMain.Button_Extract.IsEnabled = false;
             FWindow.FMain.Button_Stop.IsEnabled = true;
             FWindow.FMain.AssetPropertiesBox_Main.Text = string.Empty;
@@ -188,6 +187,7 @@ namespace FModel.Methods.Assets
             FWindow.FMain.MI_Auto_Save_Images.IsChecked = false;
             FWindow.FMain.Button_Extract.IsEnabled = true;
             FWindow.FMain.Button_Stop.IsEnabled = false;
+            FWindow.FMain.MI_Auto_Save_Images.IsChecked = false;
             FProp.Default.FOpenSounds = sound;
             new UpdateMyProcessEvents("All assets have been extracted successfully", "Success").Update();
         }

@@ -5,9 +5,9 @@ using System;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
-using FProp = FModel.Properties.Settings;
 using System.Diagnostics;
 using FModel.Methods.MessageBox;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Utilities
 {

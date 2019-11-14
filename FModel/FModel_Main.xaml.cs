@@ -155,8 +155,9 @@ namespace FModel
             //LOAD AND EXTRACT DIFF
             if (MI_DifferenceMode.IsChecked && MI_UpdateMode.IsChecked)
             {
-                await PAKsLoader.LoadDifference();
-                await AssetsLoader.ExtractUpdateMode();
+                await PAKsLoader.LoadDifference(true);
+                if (PAKsLoader.umIsOk)
+                    await AssetsLoader.ExtractUpdateMode();
             }
         }
         private void MI_ReloadAESs_Click(object sender, RoutedEventArgs e)
