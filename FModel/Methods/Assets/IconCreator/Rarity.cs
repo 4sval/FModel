@@ -63,7 +63,7 @@ namespace FModel.Methods.Assets.IconCreator
             }
         }
 
-        private static void DrawBackground(Color background, Color backgroundUpDown, Color border)
+        private static void DrawBackground(Color background, Color backgroundUpDown, Color border, bool series = false)
         {
             switch (FProp.Default.FRarity_Design)
             {
@@ -111,8 +111,22 @@ namespace FModel.Methods.Assets.IconCreator
                     // Freeze the brush (make it unmodifiable) for performance benefits.
                     radialGradient.Freeze();
 
-                    //background + border
-                    IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(border), null, new Rect(0, 0, 515, 515));
+                    //border
+                    if (!series)
+                        IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(border), null, new Rect(0, 0, 515, 515));
+                    else
+                    {
+                        LinearGradientBrush linearGradient = new LinearGradientBrush();
+                        linearGradient.StartPoint = new Point(0, 1);
+                        linearGradient.EndPoint = new Point(1, 0);
+                        linearGradient.GradientStops.Add(new GradientStop(border, 0.3));
+                        linearGradient.GradientStops.Add(new GradientStop(backgroundUpDown, 1.5));
+                        linearGradient.Freeze();
+
+                        IconCreator.ICDrawingContext.DrawRectangle(linearGradient, null, new Rect(0, 0, 515, 515));
+                    }
+
+                    //background
                     IconCreator.ICDrawingContext.DrawRectangle(radialGradient, null, new Rect(3, 3, 509, 509));
                     break;
                 default:
@@ -234,7 +248,7 @@ namespace FModel.Methods.Assets.IconCreator
                 border = Color.FromRgb((byte)r, (byte)g, (byte)b);
             }
 
-            DrawBackground(backgroundupdown, background, ChangeColorBrightness(border, 0.25f));
+            DrawBackground(background, backgroundupdown, ChangeColorBrightness(border, 0.25f), true);
         }
 
         public static Color ChangeColorBrightness(Color color, float correctionFactor)

@@ -47,17 +47,23 @@ namespace FModel.Methods.BackupsManager
                     if (string.Equals(BackupFileName, ClickedBackup.Header))
                     {
                         new UpdateMyProcessEvents($"Downloading {Backup.TheFileName}", "Waiting").Update();
+                        string path = $"{OUTPUT_PATH}\\Backups\\{BackupFileName}";
 
                         RestClient EndpointClient = new RestClient(Backup.TheFileDownload);
                         EndpointClient.ExecuteAsync(new RestRequest(Method.GET), response => {
-                            File.WriteAllText($"{OUTPUT_PATH}\\Backups\\{BackupFileName}", response.Content); //FILE WILL ALWAYS EXIST
-                            if (new FileInfo($"{OUTPUT_PATH}\\Backups\\{BackupFileName}").Length > 0) //HENCE WE CHECK THE LENGTH
+                            using (FileStream fileStream = new FileStream(path, FileMode.Create))
+                            using (BinaryWriter writer = new BinaryWriter(fileStream))
+                            {
+                                writer.Write(response.RawBytes);
+                            }
+
+                            if (new FileInfo(path).Length > 0) //HENCE WE CHECK THE LENGTH
                             {
                                 new UpdateMyProcessEvents($"\\Backups\\{BackupFileName} successfully downloaded", "Success").Update();
                             }
                             else
                             {
-                                File.Delete($"{OUTPUT_PATH}\\Backups\\{BackupFileName}"); //WE DELETE THE EMPTY FILE CREATED
+                                File.Delete(path); //WE DELETE THE EMPTY FILE CREATED
                                 new UpdateMyProcessEvents($"Error while downloading {BackupFileName}", "Error").Update();
                             }
                         });
