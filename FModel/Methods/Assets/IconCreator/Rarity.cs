@@ -88,10 +88,24 @@ namespace FModel.Methods.Assets.IconCreator
                     PathFigure uFigure = new PathFigure(uStart, uSegments, true);
                     PathGeometry uGeo = new PathGeometry(new[] { uFigure });
 
+                    //border
+                    if (!series)
+                        IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(border), null, new Rect(0, 0, 515, 515));
+                    else
+                    {
+                        LinearGradientBrush linearGradient = new LinearGradientBrush();
+                        linearGradient.StartPoint = new Point(0, 1);
+                        linearGradient.EndPoint = new Point(1, 0);
+                        linearGradient.GradientStops.Add(new GradientStop(border, 0.3));
+                        linearGradient.GradientStops.Add(new GradientStop(backgroundUpDown, 1.5));
+                        linearGradient.Freeze();
 
-                    //background + border
-                    IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(border), null, new Rect(0, 0, 515, 515));
+                        IconCreator.ICDrawingContext.DrawRectangle(linearGradient, null, new Rect(0, 0, 515, 515));
+                    }
+
+                    //background
                     IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(background), null, new Rect(3, 3, 509, 509));
+                    
                     //up & down
                     IconCreator.ICDrawingContext.DrawGeometry(new SolidColorBrush(Color.FromArgb(125, backgroundUpDown.R, backgroundUpDown.G, backgroundUpDown.B)), null, uGeo);
                     IconCreator.ICDrawingContext.DrawGeometry(new SolidColorBrush(Color.FromArgb(125, backgroundUpDown.R, backgroundUpDown.G, backgroundUpDown.B)), null, dGeo);
