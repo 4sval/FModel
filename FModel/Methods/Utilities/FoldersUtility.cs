@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Utilities
@@ -91,7 +92,8 @@ namespace FModel.Methods.Utilities
 
         public static string FixFortnitePath(string path)
         {
-            string fixedPath = path.Replace("Game", "FortniteGame/Content");
+            Regex regexGame = new Regex(Regex.Escape("Game"));
+            string fixedPath = regexGame.Replace(path, "FortniteGame/Content", 1);
             int sep = fixedPath.LastIndexOf('.');
             return fixedPath.Substring(0, sep > 0 ? sep : fixedPath.Length);
         }
