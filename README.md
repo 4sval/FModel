@@ -19,7 +19,7 @@
   </a>
   <a href="https://twitter.com/AsvalFN"><img src="https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter"></a>
   <a href="https://discord.gg/fdkNYYQ">
-      <img src="https://img.shields.io/badge/Discord-Need%20Help%3F-778cd4.svg?logo=discord">
+      <img src="https://img.shields.io/discord/637265123144237061.svg?label=Discord&logo=discord&color=778cd4">
   </a>
   <a href="https://www.paypal.me/FModel">
     <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">

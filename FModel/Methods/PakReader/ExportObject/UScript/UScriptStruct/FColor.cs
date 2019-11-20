@@ -14,7 +14,7 @@ namespace PakReader
         [JsonProperty]
         public string Hex => a == 0 || a == 255 ?
             ToHex(r, g, b) :
-            ToHex(r, g, b, a);
+            ToHex(a, r, g, b);
 
         internal FColor(BinaryReader reader)
         {

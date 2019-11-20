@@ -14,8 +14,8 @@ namespace PakReader
 
         [JsonProperty]
         public string Hex => a == 1 || a == 0 ?
-            ToHex((byte)Math.Round(r * 256), (byte)Math.Round(g * 256), (byte)Math.Round(b * 256)) :
-            ToHex((byte)Math.Round(r * 256), (byte)Math.Round(g * 256), (byte)Math.Round(b * 256), (byte)Math.Round(a * 256));
+            ToHex((byte)Math.Round(r * 255), (byte)Math.Round(g * 255), (byte)Math.Round(b * 255)) :
+            ToHex((byte)Math.Round(a * 255), (byte)Math.Round(r * 255), (byte)Math.Round(g * 255), (byte)Math.Round(b * 255));
 
         internal FLinearColor(BinaryReader reader)
         {

@@ -138,33 +138,19 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                 {
                                     try
                                     {
-                                        JToken targetChecker = null;
-                                        JToken targetQuantity = null;
-
-                                        // It's individual, other challenges with tokens must be displayed?
-                                        // It's checked if it remains a token because it can change in the future
-                                        bool isToken = rewardsDataArray.Where(x => string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Token")).Any();
-                                        if (string.Equals(System.IO.Path.GetFileName(assetPath), "Quest_S11_AlterEgo_08") && isToken)
-                                        {
-                                            targetChecker = rewardsDataArray.FirstOrDefault()["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][1]["tag_data"];
-                                            targetQuantity = rewardsDataArray.FirstOrDefault()["struct_type"]["properties"][1]["tag_data"];
-                                        }
-                                        else
-                                        {
-                                            //checking the whole array for the reward
-                                            //ignoring all Quest and Token until he find the reward
-                                            targetChecker = rewardsDataArray.Where(x =>
-                                            !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Quest") &&
-                                            !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Token"))
+                                        //checking the whole array for the reward
+                                        //ignoring all Quest and Token until he find the reward
+                                        JToken targetChecker = rewardsDataArray.Where(x =>
+                                        !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Quest") &&
+                                        !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Token"))
                                             .FirstOrDefault()["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][1]["tag_data"];
 
-                                            //checking the whole array for the reward quantity
-                                            //ignoring all Quest and Token until he find the reward quantity
-                                            targetQuantity = rewardsDataArray.Where(x =>
-                                            !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Quest") &&
-                                            !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Token"))
+                                        //checking the whole array for the reward quantity
+                                        //ignoring all Quest and Token until he find the reward quantity
+                                        JToken targetQuantity = rewardsDataArray.Where(x =>
+                                        !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Quest") &&
+                                        !string.Equals(x["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][0]["tag_data"].Value<string>(), "Token"))
                                             .FirstOrDefault()["struct_type"]["properties"][1]["tag_data"];
-                                        }
 
                                         if (targetChecker != null)
                                         {
