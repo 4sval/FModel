@@ -113,6 +113,13 @@ namespace FModel.Methods.Assets.IconCreator
                     if (!string.IsNullOrEmpty(cosmeticSet)) { _description += cosmeticSet; }
                 }
 
+                JToken cFilterToken = gTagsArray.Children<JToken>().FirstOrDefault(x => x.ToString().StartsWith("Cosmetics.Filter.Season."));
+                if (cFilterToken != null)
+                {
+                    string cosmeticFilter = CosmeticSeason.GetCosmeticSeason(cFilterToken.Value<string>().Substring("Cosmetics.Filter.Season.".Length));
+                    if (!string.IsNullOrEmpty(cosmeticFilter)) { _description += cosmeticFilter; }
+                }
+
                 JToken cSourceToken = gTagsArray.Children<JToken>().FirstOrDefault(x => x.ToString().StartsWith("Cosmetics.Source."));
                 if (cSourceToken != null)
                 {

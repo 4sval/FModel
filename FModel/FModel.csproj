@@ -214,6 +214,7 @@
     <Compile Include="Methods\Assets\AssetInformations.cs" />
     <Compile Include="Methods\Assets\AssetsLoader.cs" />
     <Compile Include="Methods\Assets\AssetTranslations.cs" />
+    <Compile Include="Methods\Assets\IconCreator\AthenaID\CosmeticSeason.cs" />
     <Compile Include="Methods\Assets\IconCreator\AthenaID\CosmeticSet.cs" />
     <Compile Include="Methods\Assets\IconCreator\AthenaID\IconUserFacingFlags.cs" />
     <Compile Include="Methods\Assets\IconCreator\ChallengeID\ChallengeBundleInfos.cs" />
