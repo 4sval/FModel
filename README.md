@@ -107,12 +107,63 @@ For x32 users, you just have to clone or download the repository and build FMode
 
 ## Contributors
 
-<table><tr><td align="center"><a href="https://github.com/SirWaddles"><img src="https://avatars1.githubusercontent.com/u/769399?s=200&v=4" width="100px;" alt="Waddlesworth"/><br /><sub><b>Waddlesworth</b></sub></a><br><a href="https://github.com/SirWaddles" title="Github">🔧</a></td><td align="center"><a href="https://github.com/MaikyM"><img src="https://avatars3.githubusercontent.com/u/51415805?s=200&v=4" width="100px;" alt="Maiky"/><br /><sub><b>Maiky</b></sub></a><br /><a href="https://github.com/MaikyM" title="Github">🔧</a><a href="https://twitter.com/MaikyMOficial" title="Twitter">🐦</a></td><td align="center"><a href="https://github.com/WorkingRobot"><img src="https://avatars1.githubusercontent.com/u/16126912?s=200&v=4" width="100px;" alt="Asriel"/><br><sub><b>Asriel</b></sub></a><br><a href="https://github.com/WorkingRobot" title="Github">🔧</a><a href="https://twitter.com/Asriel_Dev" title="Twitter">🐦</a></td><td align="center"><a href="https://github.com/ItsFireMonkey"><img src="https://avatars2.githubusercontent.com/u/38590471?s=200&v=4" width="100px;" alt="FireMonkey"/><br /><sub><b>FireMonkey</b></sub></a><br><a href="https://github.com/ItsFireMonkey" title="Github">🔧</a><a href="https://twitter.com/iFireMonkey" title="Twitter">🐦</a></td></tr></table>
+<table>
+    <tr>
+        <td align="center">
+            <a href="https://github.com/SirWaddles">
+                <img src="https://avatars1.githubusercontent.com/u/769399?s=200&v=4" width="100px;" alt="Waddlesworth"/><br/>
+                <sub><b>Waddlesworth</b></sub>
+            </a><br>
+            <a href="https://github.com/SirWaddles" title="Github">🔧</a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/MaikyM">
+                <img src="https://avatars3.githubusercontent.com/u/51415805?s=200&v=4" width="100px;" alt="Maiky"/><br/>
+                <sub><b>Maiky</b></sub>
+            </a><br/>
+            <a href="https://github.com/MaikyM" title="Github">🔧</a>
+            <a href="https://twitter.com/MaikyMOficial" title="Twitter">🐦</a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/FunGamesLeaks">
+                <img src="https://avatars2.githubusercontent.com/u/32957190?s=200&v=4" width="100px;" alt="FunGames"/><br>
+                <sub><b>FunGames</b></sub>
+            </a><br>
+            <a href="https://github.com/FunGamesLeaks" title="Github">🔧</a>
+            <a href="https://twitter.com/FunGamesLeaks" title="Twitter">🐦</a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/PsychoPast">
+                <img src="https://avatars0.githubusercontent.com/u/33565739?s=200&v=4" width="100px;" alt="PsychoPast"/><br>
+                <sub><b>PsychoPast</b></sub>
+            </a><br>
+            <a href="https://github.com/PsychoPast" title="Github">🔧</a>
+            <a href="https://twitter.com/xXPsychoPastXx" title="Twitter">🐦</a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/AyeTSG">
+                <img src="https://avatars1.githubusercontent.com/u/49595354?s=200&v=4" width="100px;" alt="TSG"/><br>
+                <sub><b>TSG</b></sub>
+            </a><br>
+            <a href="https://github.com/AyeTSG" title="Github">🔧</a>
+            <a href="https://twitter.com/AyeTSG" title="Twitter">🐦</a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/ItsFireMonkey">
+                <img src="https://avatars2.githubusercontent.com/u/38590471?s=200&v=4" width="100px;" alt="FireMonkey"/><br/>
+                <sub><b>FireMonkey</b></sub>
+            </a><br>
+            <a href="https://github.com/ItsFireMonkey" title="Github">🔧</a>
+            <a href="https://twitter.com/iFireMonkey" title="Twitter">🐦</a>
+        </td>
+    </tr>
+</table>
 
 ## Credits
 
 This software uses the following open source packages:
 
+- [PakReader](https://github.com/WorkingRobot/PakReader) *Updated Version*
 - [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
 - [Avalon Edit](http://avalonedit.net/)
 - [Color Picker](https://github.com/drogoganor/ColorPickerWPF)

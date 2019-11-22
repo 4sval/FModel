@@ -103,7 +103,7 @@
 
     <SolidColorBrush x:Key="DataGridBackgroundBrush" Color="{StaticResource DarkBackgroundColor}"/>
     <SolidColorBrush x:Key="DataGridHeaderBackgroundBrush" Color="{StaticResource DarkBackgroundColor}"/>
-    <SolidColorBrush x:Key="DataGridHeaderMouseOverBrush" Color="#AAAAAA"/>
+    <SolidColorBrush x:Key="DataGridHeaderMouseOverBrush" Color="#FF3E4652"/>
     <SolidColorBrush x:Key="DataGridHeaderBorderBrush" Color="#7F748198"/>
     <SolidColorBrush x:Key="DataGridRowBorderBrush" Color="#7F748198"/>
     <SolidColorBrush x:Key="DataGridRowBackgroundBrush" Color="{StaticResource DarkBackgroundColor}"/>
@@ -3013,7 +3013,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="{StaticResource DataGridHeaderMouseOverBrush}"/>
-                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
