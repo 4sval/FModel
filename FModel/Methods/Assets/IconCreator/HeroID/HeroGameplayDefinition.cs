@@ -1,4 +1,4 @@
-﻿using FModel.Methods.Utilities;
+using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
@@ -34,18 +34,7 @@ namespace FModel.Methods.Assets.IconCreator.HeroID
 
                         if (AssetsUtility.IsValidJson(jsonData))
                         {
-                            dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
-                            JToken AssetMainToken = null;
-                            if (jsonData.StartsWith("[") && jsonData.EndsWith("]"))
-                            {
-                                JArray AssetArray = JArray.FromObject(AssetData);
-                                AssetMainToken = AssetArray[0];
-                            }
-                            else if (jsonData.StartsWith("{") && jsonData.EndsWith("}"))
-                            {
-                                AssetMainToken = AssetData;
-                            }
-
+                            JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
                             if (AssetMainToken != null)
                             {
                                 JArray heroGameplayProperties = AssetMainToken["properties"].Value<JArray>();
@@ -144,18 +133,7 @@ namespace FModel.Methods.Assets.IconCreator.HeroID
 
                     if (AssetsUtility.IsValidJson(jsonData))
                     {
-                        dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
-                        JToken AssetMainToken = null;
-                        if (jsonData.StartsWith("[") && jsonData.EndsWith("]"))
-                        {
-                            JArray AssetArray = JArray.FromObject(AssetData);
-                            AssetMainToken = AssetArray[0];
-                        }
-                        else if (jsonData.StartsWith("{") && jsonData.EndsWith("}"))
-                        {
-                            AssetMainToken = AssetData;
-                        }
-
+                        JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
                         if (AssetMainToken != null)
                         {
                             JArray abilityKitProperties = AssetMainToken["properties"].Value<JArray>();

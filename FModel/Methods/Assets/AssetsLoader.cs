@@ -1,4 +1,4 @@
-﻿using FModel.Methods.SyntaxHighlighter;
+using FModel.Methods.SyntaxHighlighter;
 using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -206,23 +206,8 @@ namespace FModel.Methods.Assets
 
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
-                    dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
-                    JToken AssetMainToken;
-                    if (jsonData.StartsWith("[") && jsonData.EndsWith("]"))
-                    {
-                        JArray AssetArray = JArray.FromObject(AssetData);
-                        AssetMainToken = AssetArray[0];
-                    }
-                    else if (jsonData.StartsWith("{") && jsonData.EndsWith("}"))
-                    {
-                        AssetMainToken = AssetData;
-                    }
-                    else
-                    {
-                        AssetMainToken = null;
-                    }
-
-                    
+                   
+                    JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
                     if (AssetMainToken != null && AssetMainToken["export_type"] != null && AssetMainToken["properties"] != null)
                     {
                         ExportType = AssetMainToken["export_type"].Value<string>();

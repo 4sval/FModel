@@ -55,18 +55,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
 
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
-                    dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
-                    JToken AssetMainToken = null;
-                    if (jsonData.StartsWith("[") && jsonData.EndsWith("]"))
-                    {
-                        JArray AssetArray = JArray.FromObject(AssetData);
-                        AssetMainToken = AssetArray[0];
-                    }
-                    else if (jsonData.StartsWith("{") && jsonData.EndsWith("}"))
-                    {
-                        AssetMainToken = AssetData;
-                    }
-
+                    JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
                     if (AssetMainToken != null)
                     {
                         JArray AssetProperties = AssetMainToken["properties"].Value<JArray>();
@@ -236,18 +225,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
 
                                         if (AssetsUtility.IsValidJson(jsonData))
                                         {
-                                            dynamic AssetRewarsTableData = JsonConvert.DeserializeObject(jsonData);
-                                            JToken AssetRewarsTableMainToken = null;
-                                            if (jsonData.StartsWith("[") && jsonData.EndsWith("]"))
-                                            {
-                                                JArray AssetArray = JArray.FromObject(AssetRewarsTableData);
-                                                AssetRewarsTableMainToken = AssetArray[0];
-                                            }
-                                            else if (jsonData.StartsWith("{") && jsonData.EndsWith("}"))
-                                            {
-                                                AssetRewarsTableMainToken = AssetRewarsTableData;
-                                            }
-
+                                            JToken AssetRewarsTableMainToken = AssetsUtility.ConvertJson2Token(jsonData);
                                             if (AssetRewarsTableMainToken != null)
                                             {
                                                 JArray propertiesArray = AssetRewarsTableMainToken["rows"].Value<JArray>();

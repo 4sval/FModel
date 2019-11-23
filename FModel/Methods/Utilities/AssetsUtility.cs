@@ -1,4 +1,4 @@
-﻿using FModel.Methods.SyntaxHighlighter;
+using FModel.Methods.SyntaxHighlighter;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -439,6 +439,23 @@ namespace FModel.Methods.Utilities
             {
                 return false;
             }
+        }
+
+        public static JToken ConvertJson2Token(string json)
+        {
+            dynamic AssetData = JsonConvert.DeserializeObject(json);
+            JToken AssetMainToken = null;
+            if (json.StartsWith("[") && json.EndsWith("]"))
+            {
+                JArray AssetArray = JArray.FromObject(AssetData);
+                AssetMainToken = AssetArray[0];
+            }
+            else if (json.StartsWith("{") && json.EndsWith("}"))
+            {
+                AssetMainToken = AssetData;
+            }
+
+            return AssetMainToken;
         }
 
         public static T GetPropertyTag<T>(JArray properties, string name)
