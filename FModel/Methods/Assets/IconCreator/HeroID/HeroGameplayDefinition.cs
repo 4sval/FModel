@@ -2,6 +2,7 @@ using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -26,12 +27,10 @@ namespace FModel.Methods.Assets.IconCreator.HeroID
                 string assetPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + heroGameplayDefinitionToken.Value<string>().ToLowerInvariant() + ".")).Select(d => d.Key).FirstOrDefault();
                 if (!string.IsNullOrEmpty(assetPath))
                 {
-                    PakReader.PakReader reader = AssetsUtility.GetPakReader(assetPath);
-                    if (reader != null)
+                    Console.WriteLine(assetPath);
+                    string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath, false, assetPath.Substring(0, assetPath.LastIndexOf(".")));
+                    if (jsonData != null)
                     {
-                        List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(assetPath.Substring(0, assetPath.Length - ".uasset".Length));
-                        string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                         if (AssetsUtility.IsValidJson(jsonData))
                         {
                             JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
@@ -125,12 +124,9 @@ namespace FModel.Methods.Assets.IconCreator.HeroID
         {
             if (!string.IsNullOrEmpty(assetPath))
             {
-                PakReader.PakReader reader = AssetsUtility.GetPakReader(assetPath);
-                if (reader != null)
+                string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath);
+                if (jsonData != null)
                 {
-                    List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(assetPath);
-                    string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                     if (AssetsUtility.IsValidJson(jsonData))
                     {
                         JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);

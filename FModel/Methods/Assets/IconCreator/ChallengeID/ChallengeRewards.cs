@@ -63,12 +63,9 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             string assetPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.Contains("/BannerIcons.uasset")).Select(d => d.Key).FirstOrDefault();
             if (!string.IsNullOrEmpty(assetPath))
             {
-                PakReader.PakReader reader = AssetsUtility.GetPakReader(assetPath.Substring(0, assetPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
-                if (reader != null)
+                string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath.Substring(0, assetPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                if (jsonData != null)
                 {
-                    List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(assetPath.Substring(0, assetPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
-                    string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                     if (AssetsUtility.IsValidJson(jsonData))
                     {
                         JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
@@ -127,12 +124,9 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
 
         private static void DrawNormalIcon(string path, string quantity, int y, int mode = 0)
         {
-            PakReader.PakReader reader = AssetsUtility.GetPakReader(path);
-            if (reader != null)
+            string jsonData = AssetsUtility.GetAssetJsonDataByPath(path);
+            if (jsonData != null)
             {
-                List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(path);
-                string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
                     JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
@@ -189,12 +183,9 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
 
         private static void DrawImageFromTagData(string assetPath, string quantity, int y, int mode = 0)
         {
-            PakReader.PakReader reader = AssetsUtility.GetPakReader(assetPath);
-            if (reader != null)
+            string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath);
+            if (jsonData != null)
             {
-                List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(assetPath);
-                string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
                     JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);

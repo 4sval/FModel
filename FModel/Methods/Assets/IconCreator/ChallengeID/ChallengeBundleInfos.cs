@@ -47,12 +47,9 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
         /// <param name="assetPath"></param>
         private static void GetQuestData(JArray BundleProperties, string assetPath)
         {
-            PakReader.PakReader reader = AssetsUtility.GetPakReader(assetPath);
-            if (reader != null)
+            string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath);
+            if (jsonData != null)
             {
-                List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(assetPath);
-                string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
                     JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
@@ -217,12 +214,9 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                 string rewardsTablePath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + rewardsTable.Value<string>().ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
                                 if (!string.IsNullOrEmpty(rewardsTablePath))
                                 {
-                                    reader = AssetsUtility.GetPakReader(rewardsTablePath.Substring(0, rewardsTablePath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
-                                    if (reader != null)
+                                    jsonData = AssetsUtility.GetAssetJsonDataByPath(rewardsTablePath.Substring(0, rewardsTablePath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                                    if (jsonData != null)
                                     {
-                                        entriesList = AssetsUtility.GetPakEntries(rewardsTablePath.Substring(0, rewardsTablePath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
-                                        jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                                         if (AssetsUtility.IsValidJson(jsonData))
                                         {
                                             JToken AssetRewarsTableMainToken = AssetsUtility.ConvertJson2Token(jsonData);

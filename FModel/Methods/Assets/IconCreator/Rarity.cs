@@ -154,13 +154,9 @@ namespace FModel.Methods.Assets.IconCreator
             string seriesFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + serieToken.Value<string>().ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
             if (!string.IsNullOrEmpty(seriesFullPath))
             {
-                string path = seriesFullPath.Substring(0, seriesFullPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase));
-                PakReader.PakReader reader = AssetsUtility.GetPakReader(path);
-                if (reader != null)
+                string jsonData = AssetsUtility.GetAssetJsonDataByPath(seriesFullPath.Substring(0, seriesFullPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                if (jsonData != null)
                 {
-                    List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(path);
-                    string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                     if (AssetsUtility.IsValidJson(jsonData))
                     {
                         JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);

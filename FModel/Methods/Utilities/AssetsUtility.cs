@@ -277,6 +277,20 @@ namespace FModel.Methods.Utilities
             return string.Empty;
         }
 
+        public static string GetAssetJsonDataByPath(string path, bool loadImageInBox = false, string pathEntries = null)
+        {
+            string jsonData = null;
+            PakReader.PakReader reader = GetPakReader(path);
+            if (reader != null)
+            {
+                List<FPakEntry> entriesList = GetPakEntries(pathEntries != null ? pathEntries : path);
+                if (entriesList != null)
+                    jsonData = GetAssetJsonData(reader, entriesList, loadImageInBox);
+            }
+
+            return jsonData;
+        }
+
         public static byte[] readSound(USoundWave sound)
         {
             if (!sound.bStreaming)
@@ -421,6 +435,9 @@ namespace FModel.Methods.Utilities
 
         public static bool IsValidJson(string strInput)
         {
+            if (string.IsNullOrEmpty(strInput))
+                return false;
+
             strInput = strInput.Trim();
             if ((strInput.StartsWith("{") && strInput.EndsWith("}")) || //For object
                 (strInput.StartsWith("[") && strInput.EndsWith("]"))) //For array

@@ -1,4 +1,4 @@
-﻿using FModel.Methods.Utilities;
+using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
@@ -19,11 +19,9 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
         {
             if (ItemCategoriesArray == null)
             {
-                PakReader.PakReader reader = AssetsUtility.GetPakReader("/FortniteGame/Content/Items/ItemCategories");
-                if (reader != null)
+                string jsonData = AssetsUtility.GetAssetJsonDataByPath("/FortniteGame/Content/Items/ItemCategories", true);
+                if (jsonData != null)
                 {
-                    List<FPakEntry> entriesList = AssetsUtility.GetPakEntries("/FortniteGame/Content/Items/ItemCategories");
-                    string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList, true);
                     if (AssetsUtility.IsValidJson(jsonData))
                     {
                         dynamic AssetData = JsonConvert.DeserializeObject(jsonData);

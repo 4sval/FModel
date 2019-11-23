@@ -194,11 +194,9 @@ namespace FModel.Methods.Assets
 
         public static void LoadAsset(string assetPath)
         {
-            PakReader.PakReader reader = AssetsUtility.GetPakReader(assetPath);
-            if (reader != null)
+            string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath, true);
+            if (jsonData != null)
             {
-                List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(assetPath);
-                string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList, true);
                 FWindow.FMain.Dispatcher.InvokeAsync(() =>
                 {
                     FWindow.FMain.AssetPropertiesBox_Main.Text = jsonData;

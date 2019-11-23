@@ -1,4 +1,4 @@
-﻿using FModel.Methods.Utilities;
+using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
@@ -24,11 +24,9 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                 string filepath = AssetEntries.AssetEntriesDict.Where(x => x.Key.Contains("/" + file + ".uasset")).Select(d => d.Key).FirstOrDefault();
                 if (!string.IsNullOrEmpty(filepath))
                 {
-                    PakReader.PakReader reader = AssetsUtility.GetPakReader(filepath.Substring(0, filepath.LastIndexOf(".")));
-                    if (reader != null)
+                    string jsonData = AssetsUtility.GetAssetJsonDataByPath(filepath.Substring(0, filepath.LastIndexOf(".")), true);
+                    if (jsonData != null)
                     {
-                        List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(filepath.Substring(0, filepath.LastIndexOf(".")));
-                        string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList, true);
                         if (AssetsUtility.IsValidJson(jsonData))
                         {
                             dynamic AssetData = JsonConvert.DeserializeObject(jsonData);

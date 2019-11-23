@@ -125,12 +125,9 @@ namespace FModel.Methods.Utilities
                 string path = FoldersUtility.FixFortnitePath(displayImageToken["asset_path_name"].Value<string>());
                 if (string.Equals(path, "/FortniteGame/Content/Athena/UI/Challenges/Art/TileImages/M_UI_ChallengeTile_PCB"))
                 {
-                    PakReader.PakReader reader = AssetsUtility.GetPakReader(path);
-                    if (reader != null)
+                    string jsonData = AssetsUtility.GetAssetJsonDataByPath(path);
+                    if (jsonData != null)
                     {
-                        List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(path);
-                        string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                         if (AssetsUtility.IsValidJson(jsonData))
                         {
                             JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);

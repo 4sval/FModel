@@ -70,12 +70,9 @@ namespace FModel.Methods.Assets.IconCreator
 
         private static void DrawImageFromTagData(string assetPath)
         {
-            PakReader.PakReader reader = AssetsUtility.GetPakReader(assetPath);
-            if (reader != null)
+            string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath);
+            if (jsonData != null)
             {
-                List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(assetPath);
-                string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
                     JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
@@ -143,12 +140,9 @@ namespace FModel.Methods.Assets.IconCreator
 
         private static void DrawFeaturedImage(JArray AssetProperties, string displayAssetPath)
         {
-            PakReader.PakReader reader = AssetsUtility.GetPakReader(displayAssetPath);
-            if (reader != null)
+            string jsonData = AssetsUtility.GetAssetJsonDataByPath(displayAssetPath);
+            if (jsonData != null)
             {
-                List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(displayAssetPath);
-                string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
                     FWindow.FCurrentAsset = Path.GetFileName(displayAssetPath);
@@ -224,12 +218,9 @@ namespace FModel.Methods.Assets.IconCreator
                         renderSwitchPath.Contains("M-Wraps-StreetDemon") || 
                         renderSwitchPath.Contains("/FortniteGame/Content/UI/Foundation/Textures/Icons/Wraps/FeaturedMaterials/"))
                     {
-                        PakReader.PakReader reader = AssetsUtility.GetPakReader(renderSwitchPath.Substring(0, renderSwitchPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
-                        if (reader != null)
+                        string jsonData = AssetsUtility.GetAssetJsonDataByPath(renderSwitchPath.Substring(0, renderSwitchPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                        if (jsonData != null)
                         {
-                            List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(renderSwitchPath.Substring(0, renderSwitchPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
-                            string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                             if (AssetsUtility.IsValidJson(jsonData))
                             {
                                 JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);

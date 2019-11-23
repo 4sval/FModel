@@ -1,4 +1,4 @@
-﻿using FModel.Methods.Utilities;
+using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
@@ -16,12 +16,9 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
     {
         public static void DrawIconAmmoData(string path)
         {
-            PakReader.PakReader reader = AssetsUtility.GetPakReader(path);
-            if (reader != null)
+            string jsonData = AssetsUtility.GetAssetJsonDataByPath(path);
+            if (jsonData != null)
             {
-                List<FPakEntry> entriesList = AssetsUtility.GetPakEntries(path);
-                string jsonData = AssetsUtility.GetAssetJsonData(reader, entriesList);
-
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
                     dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
