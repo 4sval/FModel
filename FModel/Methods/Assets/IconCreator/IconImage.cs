@@ -229,7 +229,8 @@ namespace FModel.Methods.Assets.IconCreator
                                     JArray renderSwitchProperties = AssetMainToken["properties"].Value<JArray>();
                                     if (renderSwitchProperties != null)
                                     {
-                                        JArray textureParameterArray = AssetsUtility.GetPropertyTagText<JArray>(renderSwitchProperties, "TextureParameterValues", "data")[0]["struct_type"]["properties"].Value<JArray>();
+                                        JArray textureParameterArray = AssetsUtility.GetPropertyTagText<JArray>(renderSwitchProperties, "TextureParameterValues", "data");
+                                        textureParameterArray = textureParameterArray[textureParameterArray.Count() > 1 && !AssetsLoader.ExportType.Equals("AthenaItemWrapDefinition") ? 1 : 0]["struct_type"]["properties"].Value<JArray>();
                                         if (textureParameterArray != null)
                                         {
                                             JToken parameterValueToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(textureParameterArray, "ParameterValue");

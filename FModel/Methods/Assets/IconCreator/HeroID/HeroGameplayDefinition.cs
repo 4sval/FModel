@@ -2,7 +2,6 @@ using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -27,7 +26,6 @@ namespace FModel.Methods.Assets.IconCreator.HeroID
                 string assetPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + heroGameplayDefinitionToken.Value<string>().ToLowerInvariant() + ".")).Select(d => d.Key).FirstOrDefault();
                 if (!string.IsNullOrEmpty(assetPath))
                 {
-                    Console.WriteLine(assetPath);
                     string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath, false, assetPath.Substring(0, assetPath.LastIndexOf(".")));
                     if (jsonData != null)
                     {
