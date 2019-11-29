@@ -62,8 +62,11 @@ namespace FModel.Methods.Utilities
         {
             if (string.IsNullOrEmpty(FProp.Default.FOutput_Path))
             {
-                FProp.Default.FOutput_Path = AppDomain.CurrentDomain.BaseDirectory + "Output";
+                string path = AppDomain.CurrentDomain.BaseDirectory + "Output";
+                FProp.Default.FOutput_Path = path;
                 FProp.Default.Save();
+
+                DebugHelper.WriteLine("No output path, auto set to " + path);
             }
         }
 
@@ -72,7 +75,7 @@ namespace FModel.Methods.Utilities
         /// </summary>
         private static void CreateDefaultSubFolders()
         {
-            //THIS WILL STAY FOR INITIAL LAUNCH ONLY
+            //3.0-
             if (File.Exists(FProp.Default.FOutput_Path + "\\AESManager.xml")) { File.Delete(FProp.Default.FOutput_Path + "\\AESManager.xml"); }
             if (Directory.Exists(FProp.Default.FOutput_Path + "\\Backup\\")) { Directory.Delete(FProp.Default.FOutput_Path + "\\Backup\\", true); }
             if (Directory.Exists(FProp.Default.FOutput_Path + "\\Extracted\\")) { Directory.Delete(FProp.Default.FOutput_Path + "\\Extracted\\", true); }
@@ -81,8 +84,11 @@ namespace FModel.Methods.Utilities
             Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Backups\\");
             Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Exports\\");
             Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Icons\\");
-            Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Sounds\\");
             Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\JSONs\\");
+            Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Sounds\\");
+            Directory.CreateDirectory(FProp.Default.FOutput_Path + "\\Logs\\");
+
+            DebugHelper.WriteLine("Folders created if they didn't exist");
         }
 
         public static string GetFullPathWithoutExtension(string path)
@@ -100,12 +106,17 @@ namespace FModel.Methods.Utilities
 
         public static void CheckWatermark()
         {
+            bool bSave = false;
+
             if (!string.IsNullOrEmpty(FProp.Default.FWatermarkFilePath) &&
                 !File.Exists(FProp.Default.FWatermarkFilePath))
             {
                 FProp.Default.FWatermarkFilePath = string.Empty;
                 FProp.Default.FUseWatermark = false;
+                bSave = true;
+
                 new UpdateMyConsole("Watermark file not found, watermarking disabled.", CColors.Blue, true).Append();
+                DebugHelper.WriteLine("Watermark file for icons not found, option disabled");
             }
 
             if (!string.IsNullOrEmpty(FProp.Default.FBannerFilePath) &&
@@ -113,10 +124,14 @@ namespace FModel.Methods.Utilities
             {
                 FProp.Default.FBannerFilePath = string.Empty;
                 FProp.Default.FUseChallengeWatermark = false;
+                bSave = true;
+
                 new UpdateMyConsole("Banner file not found, challenges custom theme disabled.", CColors.Blue, true).Append();
+                DebugHelper.WriteLine("Watermark file for banners not found, option disabled");
             }
 
-            FProp.Default.Save();
+            if (bSave)
+                FProp.Default.Save();
         }
     }
 }

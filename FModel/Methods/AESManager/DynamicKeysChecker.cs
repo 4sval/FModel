@@ -12,10 +12,11 @@ namespace FModel.Methods.AESManager
         private static readonly string AESManager_PATH = FProp.Default.FOutput_Path + "\\FAESManager.xml";
         private static List<AESInfosEntry> _oldAESEntriesList;
 
-        public static void SetDynamicKeys(bool reaload = false)
+        public static void SetDynamicKeys(bool reload = false)
         {
-            if (FProp.Default.ReloadAES || reaload)
+            if (FProp.Default.ReloadAES || reload)
             {
+                DebugHelper.WriteLine("Loading AES keys");
                 if (!File.Exists(AESManager_PATH))
                 {
                     AESEntries.AESEntriesList = new List<AESInfosEntry>();
@@ -76,7 +77,10 @@ namespace FModel.Methods.AESManager
                 }
             }
             else
+            {
+                DebugHelper.WriteLine("AES keys not loaded, this isn't an error");
                 KeysManager.Deserialize();
+            }
 
             FWindow.FMain.Dispatcher.InvokeAsync(() =>
             {

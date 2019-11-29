@@ -213,6 +213,10 @@ namespace FModel.Methods.Utilities
             {
                 if (args.IsUpdateAvailable)
                 {
+                    DebugHelper.WriteLine("AutoUpdater: Update available");
+                    DebugHelper.WriteLine("AutoUpdater: Installed version: " + args.InstalledVersion);
+                    DebugHelper.WriteLine("AutoUpdater: Available version: " + args.CurrentVersion);
+
                     MessageBoxResult dialogResult;
                     if (args.Mandatory)
                     {
@@ -236,6 +240,7 @@ namespace FModel.Methods.Utilities
 
                     if (dialogResult == MessageBoxResult.Yes)
                     {
+                        DebugHelper.WriteLine("AutoUpdater: User is checking the changelog");
                         Process.Start(args.ChangelogURL);
                     }
 
@@ -244,22 +249,30 @@ namespace FModel.Methods.Utilities
                     //ok if force update
                     if (dialogResult == MessageBoxResult.Yes || dialogResult == MessageBoxResult.No || dialogResult == MessageBoxResult.OK)
                     {
+                        DebugHelper.WriteLine("AutoUpdater: Updating");
                         try
                         {
                             if (AutoUpdater.DownloadUpdate())
                             {
-                                System.Windows.Application.Current.Shutdown();
+                                Application.Current.Shutdown();
                             }
                         }
                         catch (Exception exception)
                         {
+                            DebugHelper.WriteException(exception);
                             DarkMessageBox.ShowOK(exception.Message, exception.GetType().ToString(), "OK", MessageBoxImage.Error);
                         }
                     }
+                    else
+                        DebugHelper.WriteLine("AutoUpdater: Do not wanna update");
                 }
+                else
+                    DebugHelper.WriteLine("AutoUpdater: No update available");
             }
             else
             {
+                DebugHelper.WriteLine("AutoUpdater: There is a problem reaching update server please check your internet connection and try again later.");
+
                 DarkMessageBox.ShowOK(
                         "There is a problem reaching update server please check your internet connection and try again later.",
                         "Update check failed", "OK", MessageBoxImage.Error);

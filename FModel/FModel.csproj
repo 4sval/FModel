@@ -346,11 +346,13 @@
     <Compile Include="Methods\Utilities\AESUtility.cs" />
     <Compile Include="Methods\Utilities\AssetsUtility.cs" />
     <Compile Include="Methods\Utilities\ChallengesUtility.cs" />
+    <Compile Include="Methods\Utilities\DebugHelper.cs" />
     <Compile Include="Methods\Utilities\EndpointsUtility.cs" />
     <Compile Include="Methods\Utilities\FoldersUtility.cs" />
     <Compile Include="Methods\Utilities\FormsUtility.cs" />
     <Compile Include="Methods\Utilities\ImagesUtility.cs" />
     <Compile Include="Methods\Utilities\ListBoxUtility.cs" />
+    <Compile Include="Methods\Utilities\Logger.cs" />
     <Compile Include="Methods\Utilities\MBoxesUtility.cs" />
     <Compile Include="Methods\Utilities\PAKsUtility.cs" />
     <Compile Include="Methods\Utilities\TasksUtility.cs" />

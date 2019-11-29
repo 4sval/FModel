@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using RestSharp;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Utilities
@@ -10,6 +10,8 @@ namespace FModel.Methods.Utilities
     {
         public static string GetEndpoint(string url)
         {
+            DebugHelper.WriteLine("Sending GET request to " + url);
+
             RestClient EndpointClient = new RestClient(url);
             RestRequest EndpointRequest = new RestRequest(Method.GET);
 
@@ -32,27 +34,39 @@ namespace FModel.Methods.Utilities
                     JArray FGMessages = FData["Global_Messages"].Value<JArray>();
                     if (!string.IsNullOrEmpty(FGMessages[0]["Message"].Value<string>()))
                     {
+                        StringBuilder sb = new StringBuilder();
                         foreach (JToken t in FGMessages)
                         {
-                            new UpdateMyConsole(t["Message"].Value<string>(), t["Color"].Value<string>(), t["bNewLine"].Value<bool>()).Append();
+                            string text = t["Message"].Value<string>();
+                            bool nl = t["bNewLine"].Value<bool>();
+                            new UpdateMyConsole(text, t["Color"].Value<string>(), nl).Append();
+
+                            if (nl)
+                                sb.AppendLine(text);
+                            else
+                                sb.Append(text);
                         }
+                        DebugHelper.WriteLine("Dropbox: MOTD: " + sb.ToString().TrimEnd());
                     }
 
                     //BACKUPS
                     foreach (JProperty prop in FData["Backups"].Value<JObject>().Properties())
                     {
+                        DebugHelper.WriteLine("Dropbox: " + prop.Name + " available to download");
                         ListToReturn.Add(new BackupInfosEntry(prop.Name, prop.Value.Value<string>()));
                     }
                     return ListToReturn;
                 }
                 else
                 {
+                    DebugHelper.WriteLine("Dropbox: Error while checking for backup files");
                     new UpdateMyConsole("Error while checking for backup files", CColors.Red, true).Append();
                     return null;
                 }
             }
             else
             {
+                DebugHelper.WriteLine("Dropbox: Your internet connection is currently unavailable, can't check for backup files at the moment.");
                 new UpdateMyConsole("Your internet connection is currently unavailable, can't check for backup files at the moment.", CColors.Blue, true).Append();
                 return null;
             }
@@ -68,8 +82,15 @@ namespace FModel.Methods.Utilities
                     if (string.IsNullOrEmpty(FProp.Default.FPak_MainAES))
                     {
                         JToken mainKeyToken = JObject.Parse(EndpointContent).SelectToken("mainKey");
-                        FProp.Default.FPak_MainAES = mainKeyToken != null ? $"{mainKeyToken.Value<string>().Substring(2).ToUpperInvariant()}" : "";
-                        FProp.Default.Save();
+                        if (mainKeyToken != null)
+                        {
+                            FProp.Default.FPak_MainAES = $"{mainKeyToken.Value<string>().Substring(2).ToUpperInvariant()}";
+                            FProp.Default.Save();
+
+                            DebugHelper.WriteLine("BenBotAPI: Main AES key set to " + mainKeyToken.Value<string>());
+                        }
+                        else
+                            DebugHelper.WriteLine("BenBotAPI: Main AES key not found in endpoint response");
                     }
 
                     JToken dynamicPaks = JObject.Parse(EndpointContent).SelectToken("additionalKeys");
@@ -77,14 +98,16 @@ namespace FModel.Methods.Utilities
                 }
                 else
                 {
+                    DebugHelper.WriteLine("BenBotAPI: Down or Rate Limit Exceeded");
                     new UpdateMyConsole("API Down or Rate Limit Exceeded", CColors.Blue, true).Append();
-                    return null;
+                    return string.Empty;
                 }
             }
             else
             {
+                DebugHelper.WriteLine("BenBotAPI: Your internet connection is currently unavailable, can't check for dynamic keys at the moment.");
                 new UpdateMyConsole("Your internet connection is currently unavailable, can't check for dynamic keys at the moment.", CColors.Blue, true).Append();
-                return null;
+                return string.Empty;
             }
         }
     }

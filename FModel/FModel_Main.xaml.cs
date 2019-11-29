@@ -35,6 +35,7 @@ namespace FModel
         {
             FModelVersionLabel.Text += Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
 
+            DebugHelper.WriteLine("AutoUpdater: Checking for updates");
             AutoUpdater.CheckForUpdateEvent += UIHelper.AutoUpdaterOnCheckForUpdateEvent;
             AutoUpdater.Start("https://dl.dropbox.com/s/3kv2pukqu6tj1r0/FModel.xml?dl=0");
 
@@ -44,6 +45,8 @@ namespace FModel
                 FProp.Default.Upgrade();
                 FProp.Default.FUpdateSettings = false;
                 FProp.Default.Save();
+
+                DebugHelper.WriteLine("User settings copied from previous version");
             }
 
             await Task.Run(() => 
@@ -56,13 +59,10 @@ namespace FModel
             }).ContinueWith(TheTask =>
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
+                Dispatcher.InvokeAsync(() => AvalonEdit.SetAEConfig());
+                Program.StartTimer.Stop();
+                DebugHelper.WriteLine("Startup time: {0} ms", Program.StartTimer.ElapsedMilliseconds);
             });
-
-            AvalonEdit.SetAEConfig();
-        }
-        private void Window_Closed(object sender, System.EventArgs e)
-        {
-            FProp.Default.Save();
         }
 
         #region BUTTON EVENTS

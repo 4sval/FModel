@@ -1,6 +1,7 @@
 ﻿using FModel.Methods.Utilities;
 using RestSharp;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -41,6 +42,7 @@ namespace FModel.Methods.BackupsManager
             MenuItem ClickedBackup = sender as MenuItem;
             if (BackupsFromDropbox != null && BackupsFromDropbox.Any())
             {
+                Stopwatch timer = Stopwatch.StartNew();
                 foreach (BackupInfosEntry Backup in BackupsFromDropbox)
                 {
                     string BackupFileName = Backup.TheFileName;
@@ -59,11 +61,17 @@ namespace FModel.Methods.BackupsManager
 
                             if (new FileInfo(path).Length > 0) //HENCE WE CHECK THE LENGTH
                             {
+                                timer.Stop();
+                                DebugHelper.WriteLine("Dropbox: Downloaded " + BackupFileName + " in " + timer.ElapsedMilliseconds + "ms");
+
                                 new UpdateMyProcessEvents($"\\Backups\\{BackupFileName} successfully downloaded", "Success").Update();
                             }
                             else
                             {
                                 File.Delete(path); //WE DELETE THE EMPTY FILE CREATED
+
+                                timer.Stop();
+                                DebugHelper.WriteLine("Dropbox: Error while downloading " + BackupFileName + ", spent " + timer.ElapsedMilliseconds + "ms");
                                 new UpdateMyProcessEvents($"Error while downloading {BackupFileName}", "Error").Update();
                             }
                         });

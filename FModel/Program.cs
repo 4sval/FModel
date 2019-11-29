@@ -1,5 +1,7 @@
-﻿using System;
+﻿using FModel.Methods.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,9 +10,35 @@ namespace FModel
 {
     static class Program
     {
+        private static bool isClosing;
+        public enum FModelBuild
+        {
+            Debug,
+            Release,
+            Unknown
+        }
+        public const FModelBuild Build =
+#if RELEASE
+            FModelBuild.Release;
+#elif DEBUG
+            FModelBuild.Debug;
+#else
+            FModelBuild.Unknown;
+#endif
+        internal static Stopwatch StartTimer { get; private set; }
+
+
         [STAThreadAttribute]
         public static void Main()
         {
+            StartTimer = Stopwatch.StartNew();
+
+            DebugHelper.Init(LogsFilePath);
+            DebugHelper.WriteLine("FModel starting.");
+            DebugHelper.WriteLine("Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            DebugHelper.WriteLine("Build: " + Build);
+            DebugHelper.WriteLine("OS: " + Logger.GetOperatingSystemProductName(true));
+
             Dictionary<string, Assembly> assemblies = new Dictionary<string, Assembly>();
             Assembly executingAssembly = Assembly.GetExecutingAssembly();
             IEnumerable<string> resources = executingAssembly.GetManifestResourceNames().Where(n => n.EndsWith(".dll"));
@@ -29,7 +57,7 @@ namespace FModel
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.Print(string.Format("Failed to load: {0}, Exception: {1}", resource, ex.Message));
+                        DebugHelper.WriteLine(string.Format("Failed to load: {0}, Exception: {1}", resource, ex.Message));
                     }
                 }
             }
@@ -47,6 +75,32 @@ namespace FModel
                 return null;
             };
             App.Main();
+
+            CloseWithLogs();
+        }
+
+        public static void CloseWithLogs()
+        {
+            if (!isClosing)
+            {
+                isClosing = true;
+
+                DebugHelper.Logger.AsyncWrite = false;
+                DebugHelper.WriteLine("FModel closing.");
+
+                Properties.Settings.Default.Save();
+
+                DebugHelper.WriteLine("FModel closed.");
+            }
+        }
+
+        public static string LogsFilePath
+        {
+            get
+            {
+                string filename = string.Format("FModel-Log-{0:yyyy-MM-dd}.txt", DateTime.Now);
+                return Path.Combine(Properties.Settings.Default.FOutput_Path + "\\Logs", filename);
+            }
         }
     }
 }

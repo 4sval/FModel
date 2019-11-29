@@ -12,6 +12,8 @@ namespace FModel.Methods.Utilities
             if (ex != null)
             {
                 Exception innerEx = ex.InnerException;
+                DebugHelper.WriteException(innerEx, "thrown in TasksUtility.cs by TaskCompleted");
+
                 if (innerEx is ArgumentOutOfRangeException) //aes key is too short
                 {
                     new UpdateMyProcessEvents((innerEx as ArgumentOutOfRangeException).ParamName, "Error").Update();
