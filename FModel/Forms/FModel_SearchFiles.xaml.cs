@@ -50,11 +50,15 @@ namespace FModel.Forms
         {
             if (PAKEntries.PAKToDisplay != null)
             {
+                DebugHelper.WriteLine("SearchFiles: Populating DataGrid...");
+
                 FilterTextBox_Search.IsReadOnly = true;
                 FileNames = new List<FileInfo>();
                 await PopulateDataGrid();
                 DataGrid_Search.ItemsSource = FileNames;
                 FilterTextBox_Search.IsReadOnly = false;
+
+                DebugHelper.WriteLine("SearchFiles: Populated DataGrid");
             }
         }
 
@@ -85,7 +89,9 @@ namespace FModel.Forms
             });
 
             //max = million
-            FoundNumber_Label.Content = $"Found {i.ToString("# ### ###", new NumberFormatInfo{ NumberGroupSeparator = " " }).Trim()} assets";
+            string number = i.ToString("# ### ###", new NumberFormatInfo { NumberGroupSeparator = " " }).Trim();
+            DebugHelper.WriteLine($"SearchFiles: Loaded {number} assets");
+            FoundNumber_Label.Content = $"Found {number} assets";
         }
 
         private static void FillList(FPakEntry[] EntryArray, Dictionary<string, string> ExistChecker)

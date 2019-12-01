@@ -41,6 +41,8 @@ namespace FModel.Forms
 
         private async Task UpdateMergerPreview()
         {
+            DebugHelper.WriteLine("Merger: Merging images of the listbox");
+
             AddImages_Button.IsEnabled = false;
             RemoveImage_Button.IsEnabled = false;
             ClearImages_Button.IsEnabled = false;
@@ -134,6 +136,8 @@ namespace FModel.Forms
             ImagesPerRow_Slider.IsEnabled = true;
             OpenImage_Button.IsEnabled = true;
             SaveImage_Button.IsEnabled = true;
+
+            DebugHelper.WriteLine("Merger: Images of the listbox merged successfully");
         }
 
         private async void AddImages_Button_Click(object sender, RoutedEventArgs e)
@@ -161,6 +165,7 @@ namespace FModel.Forms
                     itm.Content = Path.GetFileNameWithoutExtension(file);
 
                     ImagesListBox.Items.Add(itm);
+                    DebugHelper.WriteLine($"Merger: {file} added to the listbox");
                 }
             }
         }
@@ -188,6 +193,7 @@ namespace FModel.Forms
         {
             if (MergerPreview_Image.Source != null)
             {
+                DebugHelper.WriteLine("Merger: Opening preview of the merged image");
                 if (!FormsUtility.IsWindowOpen<Window>("Merged Image"))
                 {
                     Window win = new Window();
@@ -223,6 +229,8 @@ namespace FModel.Forms
         {
             if (MergerPreview_Image.Source != null)
             {
+                DebugHelper.WriteLine("Merger: Saving image...");
+
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Title = "Save Image";
                 saveFileDialog.FileName = "Merger";
@@ -239,13 +247,17 @@ namespace FModel.Forms
 
                         if (File.Exists(path))
                         {
-                            new UpdateMyConsole(System.IO.Path.GetFileNameWithoutExtension(path), CColors.Blue).Append();
+                            DebugHelper.WriteLine("Merger: Image saved at " + path);
+
+                            new UpdateMyConsole(Path.GetFileNameWithoutExtension(path), CColors.Blue).Append();
                             new UpdateMyConsole(" successfully saved", CColors.White, true).Append();
                         }
                         else //just in case
                         {
+                            DebugHelper.WriteLine("Merger: Image couldn't be saved at " + path);
+
                             new UpdateMyConsole("Bruh moment\nCouldn't save ", CColors.White).Append();
-                            new UpdateMyConsole(System.IO.Path.GetFileNameWithoutExtension(path), CColors.Blue, true).Append();
+                            new UpdateMyConsole(Path.GetFileNameWithoutExtension(path), CColors.Blue, true).Append();
                         }
                     }
                 }

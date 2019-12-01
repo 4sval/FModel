@@ -27,6 +27,7 @@ namespace FModel.Methods.Assets
             StringBuilder sb = new StringBuilder();
 
             string fullPath = isFromDataGrid ? FWindow.FCurrentAsset : TreeViewUtility.GetFullPath(FWindow.TVItem) + "/" + FWindow.FCurrentAsset;
+            DebugHelper.WriteLine("Assets: Gathering info about {0}", fullPath);
             PakReader.PakReader reader = AssetsUtility.GetPakReader(fullPath);
             if (reader != null)
             {

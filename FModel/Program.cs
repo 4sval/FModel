@@ -34,6 +34,7 @@ namespace FModel
             StartTimer = Stopwatch.StartNew();
 
             DebugHelper.Init(LogsFilePath);
+            DebugHelper.WriteLine("=================================================================== FModel ===================================================================");
             DebugHelper.WriteLine("FModel starting.");
             DebugHelper.WriteLine("Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
             DebugHelper.WriteLine("Build: " + Build);

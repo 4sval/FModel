@@ -33,6 +33,7 @@ namespace FModel.Methods.PAKs
                 using (FileStream fileStream = new FileStream(BACKUP_FILE_PATH, FileMode.Create))
                 using (BinaryWriter writer = new BinaryWriter(fileStream))
                 {
+                    DebugHelper.WriteLine("Backup: Gathering info about local .PAK files");
                     foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList)
                     {
                         byte[] AESKey = null;
@@ -54,6 +55,8 @@ namespace FModel.Methods.PAKs
 
                         if (AESKey != null)
                         {
+                            DebugHelper.WriteLine($".PAKs: Backing up {Pak.ThePAKPath} with key: {BitConverter.ToString(AESKey).Replace("-", string.Empty)}");
+
                             PakReader.PakReader reader = new PakReader.PakReader(Pak.ThePAKPath, AESKey);
                             if (reader != null)
                             {
@@ -71,15 +74,20 @@ namespace FModel.Methods.PAKs
                                 }
                             }
                         }
+                        else
+                            DebugHelper.WriteLine($".PAKs: Not backing up {Pak.ThePAKPath} because its key is empty");
                     }
                 }
 
                 if (new FileInfo(BACKUP_FILE_PATH).Length > 0) //HENCE WE CHECK THE LENGTH
                 {
+                    DebugHelper.WriteLine($".PAKs: \\Backups\\{Path.GetFileName(BACKUP_FILE_PATH)} successfully created");
                     new UpdateMyProcessEvents($"\\Backups\\{Path.GetFileName(BACKUP_FILE_PATH)} successfully created", "Success").Update();
                 }
                 else
                 {
+                    DebugHelper.WriteLine("Backup: File created is empty");
+
                     File.Delete(BACKUP_FILE_PATH); //WE DELETE THE EMPTY FILE CREATED
                     new UpdateMyProcessEvents($"Error while creating {Path.GetFileName(BACKUP_FILE_PATH)}", "Error").Update();
                 }

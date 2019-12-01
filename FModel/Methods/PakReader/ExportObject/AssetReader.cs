@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FModel.Methods.Utilities;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -90,13 +91,13 @@ namespace PakReader
                 }
                 catch (Exception e)
                 {
+                    DebugHelper.WriteException(e, "thrown in AssetReader.cs by AssetReader");
                     if (!ignoreErrors)
                         throw e;
                 }
                 long valid_pos = position + v.serial_size;
                 if (reader.BaseStream.Position != valid_pos)
                 {
-                    Console.WriteLine($"Did not read {export_type} correctly. Current Position: {reader.BaseStream.Position}, Bytes Remaining: {valid_pos - reader.BaseStream.Position}");
                     reader.BaseStream.Seek(valid_pos, SeekOrigin.Begin);
                 }
                 ind++;

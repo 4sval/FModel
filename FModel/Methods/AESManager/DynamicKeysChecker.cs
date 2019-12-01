@@ -78,7 +78,7 @@ namespace FModel.Methods.AESManager
             }
             else
             {
-                DebugHelper.WriteLine("AES keys not loaded, this isn't an error");
+                DebugHelper.WriteLine("AES keys not loaded, user doesn't wanna check for new keys on startup");
                 KeysManager.Deserialize();
             }
 

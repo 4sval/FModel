@@ -26,6 +26,8 @@ namespace FModel.Methods.Assets.IconCreator
                         IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, FProp.Default.FWatermarkOpacity), new Rect(FProp.Default.FWatermarkXPos, FProp.Default.FWatermarkYPos, FProp.Default.FWatermarkScale, FProp.Default.FWatermarkScale));
                     }
                 }
+
+                DebugHelper.WriteLine("DefaultIconCreation: Icon watermark has been applied on {0}", FWindow.FCurrentAsset);
             }
         }
     }

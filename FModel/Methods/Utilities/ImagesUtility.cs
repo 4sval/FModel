@@ -119,11 +119,15 @@ namespace FModel.Methods.Utilities
 
                 if (File.Exists(path))
                 {
+                    DebugHelper.WriteLine("SaveImage: Successfully saved image of {0}", FWindow.FCurrentAsset);
+
                     new UpdateMyConsole(Path.GetFileNameWithoutExtension(path), CColors.Blue).Append();
                     new UpdateMyConsole(" successfully saved", CColors.White, true).Append();
                 }
                 else //just in case
                 {
+                    DebugHelper.WriteLine("SaveImage: Couldn't save image of {0}", FWindow.FCurrentAsset);
+
                     new UpdateMyConsole("Bruh moment\nCouldn't save ", CColors.White).Append();
                     new UpdateMyConsole(Path.GetFileNameWithoutExtension(path), CColors.Blue, true).Append();
                 }

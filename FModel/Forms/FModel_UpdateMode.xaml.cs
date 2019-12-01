@@ -268,14 +268,17 @@ namespace FModel.Forms
                 AssetsEntriesDict[a.Name] = new Dictionary<string, string>();
                 AssetsEntriesDict[a.Name]["Path"] = a.Path;
                 AssetsEntriesDict[a.Name]["isChecked"] = a.IsChecked.ToString();
+
+                if (a.IsChecked)
+                    DebugHelper.WriteLine("UpdateMode: User is about to extract everything in " + a.Path);
             }
 
-
-            if (AssetEntries.AssetEntriesDict != null && !string.Equals(FProp.Default.FLanguage, ((ComboBoxItem)ComboBox_Language.SelectedItem).Content.ToString()))
+            string selectedLang = ((ComboBoxItem)ComboBox_Language.SelectedItem).Content.ToString();
+            if (AssetEntries.AssetEntriesDict != null && !string.Equals(FProp.Default.FLanguage, selectedLang))
             {
-                AssetTranslations.SetAssetTranslation(((ComboBoxItem)ComboBox_Language.SelectedItem).Content.ToString());
+                AssetTranslations.SetAssetTranslation(selectedLang);
             }
-            FProp.Default.FLanguage = ((ComboBoxItem)ComboBox_Language.SelectedItem).Content.ToString();
+            FProp.Default.FLanguage = selectedLang;
 
             FProp.Default.FRarity_Design = ((ComboBoxItem)ComboBox_Design.SelectedItem).Content.ToString();
             FProp.Default.FIsFeatured = (bool)bFeaturedIcon.IsChecked;
@@ -284,6 +287,23 @@ namespace FModel.Forms
             FProp.Default.FWatermarkOpacity = Convert.ToInt32(Opacity_Slider.Value);
             FProp.Default.FUM_AssetsType = JsonConvert.SerializeObject(AssetsEntriesDict, Formatting.Indented);
             FProp.Default.Save();
+
+            DebugHelper.WriteLine("=============== UPDATE MODE ===============");
+            DebugHelper.WriteLine("FRarity_Design > " + FProp.Default.FRarity_Design);
+            DebugHelper.WriteLine("FLanguage > " + FProp.Default.FLanguage);
+            DebugHelper.WriteLine("FIsFeatured > " + FProp.Default.FIsFeatured);
+            DebugHelper.WriteLine("FUseWatermark > " + FProp.Default.FUseWatermark);
+            DebugHelper.WriteLine("FWatermarkFilePath > " + FProp.Default.FWatermarkFilePath);
+            DebugHelper.WriteLine("FWatermarkOpacity > " + FProp.Default.FWatermarkOpacity);
+            DebugHelper.WriteLine("FWatermarkScale > " + FProp.Default.FWatermarkScale);
+            DebugHelper.WriteLine("FWatermarkXPos > " + FProp.Default.FWatermarkXPos);
+            DebugHelper.WriteLine("FWatermarkYPos > " + FProp.Default.FWatermarkYPos);
+            DebugHelper.WriteLine("FOpenSounds > " + FProp.Default.FOpenSounds);
+            DebugHelper.WriteLine("FAutoExtractRaw > " + FProp.Default.FAutoExtractRaw);
+            DebugHelper.WriteLine("FAutoSaveJson > " + FProp.Default.FAutoSaveJson);
+            DebugHelper.WriteLine("FAutoSaveImg > " + FProp.Default.FAutoSaveImg);
+            DebugHelper.WriteLine("=============================================");
+
             Close();
         }
 
@@ -297,6 +317,7 @@ namespace FModel.Forms
         {
             if (AssetsListBox.Items.Count > 0 && AssetsListBox.SelectedItems.Count > 0)
             {
+                DebugHelper.WriteLine("UpdateMode: Removing " + (AssetsListBox.SelectedItem as AssetProperties).Path + " to the list of assets type");
                 Assets.Remove(AssetsListBox.SelectedItem as AssetProperties);
             }
         }
@@ -309,6 +330,7 @@ namespace FModel.Forms
             if (!path.EndsWith("/"))
                 path += "/";
 
+            DebugHelper.WriteLine("UpdateMode: Adding " + path + " to the list of assets type");
             Assets.Add(new AssetProperties
             {
                 Name = NameTextBox.Text,

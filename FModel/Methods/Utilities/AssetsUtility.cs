@@ -118,6 +118,8 @@ namespace FModel.Methods.Utilities
 
         public static string GetAssetJsonData(PakReader.PakReader reader, IEnumerable<FPakEntry> entriesList, bool loadImageInBox = false)
         {
+            DebugHelper.WriteLine("Assets: Gathering info about {0}", entriesList.ElementAt(0).Name);
+
             Stream[] AssetStreamArray = new Stream[3];
 
             foreach (FPakEntry entry in entriesList)
@@ -139,11 +141,15 @@ namespace FModel.Methods.Utilities
 
                     if (File.Exists(path))
                     {
+                        DebugHelper.WriteLine("Assets: Successfully extracted data of {0}", entry.Name);
+
                         new UpdateMyConsole(Path.GetFileName(path), CColors.Blue).Append();
                         new UpdateMyConsole(" successfully exported", CColors.White, true).Append();
                     }
                     else //just in case
                     {
+                        DebugHelper.WriteLine("Assets: Couldn't extract data of {0}", entry.Name);
+
                         new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
                         new UpdateMyConsole(Path.GetFileName(path), CColors.Blue, true).Append();
                     }
@@ -259,11 +265,15 @@ namespace FModel.Methods.Utilities
                         File.WriteAllText(path, stringData);
                         if (File.Exists(path))
                         {
+                            DebugHelper.WriteLine("Assets: Successfully saved serialized data of {0}", entriesList.ElementAt(0).Name);
+
                             new UpdateMyConsole(name, CColors.Blue).Append();
                             new UpdateMyConsole("'s Json data successfully saved", CColors.White, true).Append();
                         }
                         else //just in case
                         {
+                            DebugHelper.WriteLine("Assets: Couldn't save serialized data of {0}", entriesList.ElementAt(0).Name);
+
                             new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
                             new UpdateMyConsole(name, CColors.Blue, true).Append();
                         }
@@ -286,7 +296,11 @@ namespace FModel.Methods.Utilities
                 List<FPakEntry> entriesList = GetPakEntries(pathEntries != null ? pathEntries : path);
                 if (entriesList != null)
                     jsonData = GetAssetJsonData(reader, entriesList, loadImageInBox);
+                else
+                    DebugHelper.WriteLine("Assets: GetAssetJsonDataByPath -> entriesList -> is empty for {0}", path);
             }
+            else
+                DebugHelper.WriteLine("Assets: No PakReader found for {0}", path);
 
             return jsonData;
         }
@@ -393,11 +407,15 @@ namespace FModel.Methods.Utilities
 
                     if (File.Exists(path))
                     {
+                        DebugHelper.WriteLine("ExportAssetData: Successfully extracted data of {0}", entry.Name);
+
                         new UpdateMyConsole(Path.GetFileName(path), CColors.Blue).Append();
                         new UpdateMyConsole(" successfully exported", CColors.White, true).Append();
                     }
                     else //just in case
                     {
+                        DebugHelper.WriteLine("ExportAssetData: Couldn't extract data of {0}", entry.Name);
+
                         new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
                         new UpdateMyConsole(Path.GetFileName(path), CColors.Blue, true).Append();
                     }
@@ -421,11 +439,15 @@ namespace FModel.Methods.Utilities
                     File.WriteAllText(path, prop);
                     if (File.Exists(path))
                     {
+                        DebugHelper.WriteLine("SaveAssetProperties: Successfully saved serialized data of {0}", FWindow.FCurrentAsset);
+
                         new UpdateMyConsole(FWindow.FCurrentAsset, CColors.Blue).Append();
                         new UpdateMyConsole("'s Json data successfully saved", CColors.White, true).Append();
                     }
                     else //just in case
                     {
+                        DebugHelper.WriteLine("SaveAssetProperties: Couldn't save serialized data of {0}", FWindow.FCurrentAsset);
+
                         new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
                         new UpdateMyConsole(FWindow.FCurrentAsset, CColors.Blue, true).Append();
                     }

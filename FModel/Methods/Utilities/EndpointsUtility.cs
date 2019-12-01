@@ -52,7 +52,7 @@ namespace FModel.Methods.Utilities
                     //BACKUPS
                     foreach (JProperty prop in FData["Backups"].Value<JObject>().Properties())
                     {
-                        DebugHelper.WriteLine("Dropbox: " + prop.Name + " available to download");
+                        DebugHelper.WriteLine("Dropbox: " + prop.Name + " is available to download");
                         ListToReturn.Add(new BackupInfosEntry(prop.Name, prop.Value.Value<string>()));
                     }
                     return ListToReturn;

@@ -34,6 +34,7 @@ namespace FModel.Methods.PAKs
             await Task.Run(() =>
             {
                 PAKEntries.PAKToDisplay = new Dictionary<string, FPakEntry[]>();
+                DebugHelper.WriteLine($".PAKs: User is loading {PAK_PATH}\\{FWindow.FCurrentPAK}");
                 new UpdateMyProcessEvents($"{PAK_PATH}\\{FWindow.FCurrentPAK}", "Loading").Update();
 
                 LoadPAKFiles();
@@ -42,6 +43,7 @@ namespace FModel.Methods.PAKs
             }).ContinueWith(TheTask =>
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
+                DebugHelper.WriteLine($".PAKs: Loaded {PAK_PATH}\\{FWindow.FCurrentPAK}");
             });
 
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = true;
@@ -65,6 +67,7 @@ namespace FModel.Methods.PAKs
             await Task.Run(() =>
             {
                 PAKEntries.PAKToDisplay = new Dictionary<string, FPakEntry[]>();
+                DebugHelper.WriteLine($".PAKs: User is loading all .PAK files at {PAK_PATH}\\");
 
                 LoadPAKFiles(true);
                 FillTreeView(true);
@@ -72,6 +75,7 @@ namespace FModel.Methods.PAKs
             }).ContinueWith(TheTask =>
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
+                DebugHelper.WriteLine($".PAKs: Loaded all .PAK files at {PAK_PATH}\\");
             });
 
             FWindow.FMain.MI_LoadOnePAK.IsEnabled = true;
@@ -97,6 +101,7 @@ namespace FModel.Methods.PAKs
             await Task.Run(async () =>
             {
                 PAKEntries.PAKToDisplay = new Dictionary<string, FPakEntry[]>();
+                DebugHelper.WriteLine($".PAKs: User is loading difference at {PAK_PATH}\\");
 
                 LoadPAKFiles(true);
                 await LoadBackupFile(updateMode);
@@ -104,6 +109,7 @@ namespace FModel.Methods.PAKs
             }).ContinueWith(TheTask =>
             {
                 TasksUtility.TaskCompleted(TheTask.Exception);
+                DebugHelper.WriteLine($".PAKs: Loaded difference at {PAK_PATH}\\");
             });
         }
 
@@ -120,6 +126,8 @@ namespace FModel.Methods.PAKs
                 {
                     if (!string.IsNullOrEmpty(FProp.Default.FPak_MainAES))
                     {
+                        DebugHelper.WriteLine($".PAKs: Loading {Pak.ThePAKPath} with key: {FProp.Default.FPak_MainAES}");
+
                         byte[] AESKey = AESUtility.StringToByteArray(FProp.Default.FPak_MainAES);
                         PakReader.PakReader reader = null;
                         try
@@ -128,6 +136,8 @@ namespace FModel.Methods.PAKs
                         }
                         catch (Exception ex)
                         {
+                            DebugHelper.WriteException(ex, Pak.ThePAKPath);
+
                             if (string.Equals(ex.Message, "The AES key is invalid")) { UIHelper.DisplayError(); }
                             else { new UpdateMyConsole(ex.Message, CColors.Red, true).Append(); return; }
                             break;
@@ -159,6 +169,7 @@ namespace FModel.Methods.PAKs
                         AESFromManager = AESEntries.AESEntriesList.Where(x => string.Equals(x.ThePAKName, Path.GetFileNameWithoutExtension(Pak.ThePAKPath))).Select(x => x.ThePAKKey).FirstOrDefault();
                         if (!string.IsNullOrEmpty(AESFromManager))
                         {
+                            DebugHelper.WriteLine($".PAKs: Loading {Pak.ThePAKPath} with key: {AESFromManager}");
                             AESKey = AESUtility.StringToByteArray(AESFromManager);
                         }
                     }
@@ -172,6 +183,8 @@ namespace FModel.Methods.PAKs
                         }
                         catch (Exception ex)
                         {
+                            DebugHelper.WriteException(ex, Pak.ThePAKPath);
+
                             if (string.Equals(ex.Message, "The AES key is invalid")) { UIHelper.DisplayError(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), AESFromManager); }
                             else { new UpdateMyConsole(ex.Message, CColors.Red, true).Append(); return; }
                             continue;
@@ -189,6 +202,8 @@ namespace FModel.Methods.PAKs
                             }
                         }
                     }
+                    else
+                        DebugHelper.WriteLine($".PAKs: No key found for {Pak.ThePAKPath}");
                 }
             }
         }
@@ -198,8 +213,13 @@ namespace FModel.Methods.PAKs
             if (!bAllPAKs)
             {
                 FPakEntry[] PAKFileInfos = PAKEntries.PAKToDisplay.Where(x => x.Key == FWindow.FCurrentPAK).Select(x => x.Value).FirstOrDefault();
-                if (PAKFileInfos == null) { throw new ArgumentException($"Please, provide a working key in the AES Manager for {FWindow.FCurrentPAK}"); }
+                if (PAKFileInfos == null)
+                {
+                    DebugHelper.WriteLine($".PAKs: Wrong key provided for {FWindow.FCurrentPAK}");
+                    throw new ArgumentException($"Please, provide a working key in the AES Manager for {FWindow.FCurrentPAK}");
+                }
 
+                DebugHelper.WriteLine($".PAKs: Filling Treeview with {FWindow.FCurrentPAK}'s assets");
                 FWindow.FMain.Dispatcher.InvokeAsync(() =>
                 {
                     foreach (FPakEntry entry in PAKFileInfos)
@@ -211,6 +231,7 @@ namespace FModel.Methods.PAKs
             }
             else
             {
+                DebugHelper.WriteLine(".PAKs: Filling Treeview with all PAK's assets");
                 foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
                 {
                     FWindow.FMain.Dispatcher.InvokeAsync(() =>
@@ -228,6 +249,7 @@ namespace FModel.Methods.PAKs
             {
                 FWindow.FMain.ViewModel = srt;
             });
+            DebugHelper.WriteLine(".PAKs: Treeview filled");
             new UpdateMyProcessEvents(!bAllPAKs ? PAK_PATH + "\\" + FWindow.FCurrentPAK : PAK_PATH, "Success").Update();
         }
 
@@ -240,12 +262,15 @@ namespace FModel.Methods.PAKs
             openFiledialog.Filter = "FBKP Files (*.fbkp)|*.fbkp|All Files (*.*)|*.*";
             if (openFiledialog.ShowDialog() == true)
             {
+                DebugHelper.WriteLine($".PAKs: Loading {openFiledialog.FileName} as the backup file");
                 new UpdateMyProcessEvents("Comparing Files", "Waiting").Update();
 
                 FPakEntry[] BackupEntries;
                 using (FileStream fileStream = new FileStream(openFiledialog.FileName, FileMode.Open))
                 using (BinaryReader reader = new BinaryReader(fileStream))
                 {
+                    DebugHelper.WriteLine(".PAKs: Populating FPakEntry[] for the backup file");
+
                     List<FPakEntry> entries = new List<FPakEntry>();
                     while (reader.BaseStream.Position < reader.BaseStream.Length)
                     {
@@ -264,17 +289,23 @@ namespace FModel.Methods.PAKs
 
                 if (BackupEntries.Any())
                 {
+                    DebugHelper.WriteLine(".PAKs: FPakEntry[] for the backup file is populated");
+
                     List<FPakEntry> LocalEntries = new List<FPakEntry>();
                     foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
                     {
                         PAKsFileInfos.ToList().ForEach(x => LocalEntries.Add(x));
                     }
                     PAKEntries.PAKToDisplay.Clear();
+                    DebugHelper.WriteLine(".PAKs: FPakEntry[] for the local .PAKs is populated");
 
                     //FILTER WITH THE OVERRIDED EQUALS METHOD (CHECKING FILE NAME AND FILE UNCOMPRESSED SIZE)
+                    DebugHelper.WriteLine($".PAKs: Comparing...\t File Size Check: {FProp.Default.FDiffFileSize}");
                     IEnumerable<FPakEntry> newAssets = LocalEntries.ToArray().Except(BackupEntries);
+                    DebugHelper.WriteLine(".PAKs: Compared");
 
                     //ADD TO TREE
+                    DebugHelper.WriteLine(".PAKs: Filling Treeview with differentiated assets");
                     foreach (FPakEntry entry in newAssets)
                     {
                         string onlyFolders = entry.Name.Substring(0, entry.Name.LastIndexOf('/'));
@@ -291,6 +322,7 @@ namespace FModel.Methods.PAKs
                     {
                         FWindow.FMain.ViewModel = srt;
                     });
+                    DebugHelper.WriteLine(".PAKs: Treeview filled");
 
                     await FWindow.FMain.Dispatcher.InvokeAsync(() =>
                     {
@@ -304,6 +336,7 @@ namespace FModel.Methods.PAKs
                     //PRINT REMOVED IF NO FILE SIZE CHECK
                     if (!FProp.Default.FDiffFileSize)
                     {
+                        DebugHelper.WriteLine(".PAKs: Checking deleted items");
                         new UpdateMyProcessEvents("Checking deleted items", "Waiting").Update();
                         IEnumerable<FPakEntry> removedAssets = BackupEntries.Except(LocalEntries.ToArray());
 
@@ -316,17 +349,26 @@ namespace FModel.Methods.PAKs
 
                         if (removedItems.Count > 0)
                         {
+                            DebugHelper.WriteLine(".PAKs: Items Removed/Renamed:");
                             new UpdateMyConsole("Items Removed/Renamed:", CColors.Red, true).Append();
-                            removedItems.Distinct().ToList().ForEach(e => new UpdateMyConsole($"    - {e.Substring(1)}", CColors.White, true).Append());
+                            removedItems.Distinct().ToList().ForEach(e => {
+                                new UpdateMyConsole($"    - {e.Substring(1)}", CColors.White, true).Append();
+                                DebugHelper.WriteLine($"    - {e.Substring(1)}");
+                            });
                         }
                     }
 
+                    DebugHelper.WriteLine(".PAKs: PAK files have been compared successfully");
                     new UpdateMyProcessEvents("All PAK files have been compared successfully", "Success").Update();
                     umIsOk = true;
                 }
+                else
+                    DebugHelper.WriteLine(".PAKs: FPakEntry[] for the backup file is empty");
             }
             else
             {
+                DebugHelper.WriteLine(".PAKs: User canceled when he got asked to select a backup file");
+
                 new UpdateMyConsole("You change your mind pretty fast but it's fine ", CColors.White).Append();
                 new UpdateMyConsole("all paks have been loaded instead", CColors.Blue, true).Append();
                 FillTreeView(true);

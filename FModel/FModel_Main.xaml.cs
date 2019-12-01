@@ -49,6 +49,8 @@ namespace FModel
                 DebugHelper.WriteLine("User settings copied from previous version");
             }
 
+            DebugHelper.WriteUserSettings();
+
             await Task.Run(() => 
             {
                 FoldersUtility.LoadFolders();
@@ -68,6 +70,7 @@ namespace FModel
         #region BUTTON EVENTS
         private void Button_AESManager_Click(object sender, RoutedEventArgs e)
         {
+            DebugHelper.WriteLine("FWindow: AES Manager");
             if (!FormsUtility.IsWindowOpen<Window>("AES Manager"))
             {
                 new AESManager().Show();
@@ -78,6 +81,7 @@ namespace FModel
         {
             if (ImageBox_Main.Source != null)
             {
+                DebugHelper.WriteLine("FWindow: Opening image of " + FWindow.FCurrentAsset);
                 if (!FormsUtility.IsWindowOpen<Window>(FWindow.FCurrentAsset))
                 {
                     Window win = new Window();
@@ -112,6 +116,7 @@ namespace FModel
         {
             if (TasksUtility.CancellableTaskTokenSource != null)
             {
+                DebugHelper.WriteLine("Thread canceled by user");
                 TasksUtility.CancellableTaskTokenSource.Cancel();
                 if (TasksUtility.CancellableTaskTokenSource.IsCancellationRequested)
                 {
@@ -124,7 +129,6 @@ namespace FModel
         {
             if (ListBox_Main.SelectedIndex >= 0)
             {
-                //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
                 await AssetsLoader.LoadSelectedAsset();
             }
         }
@@ -178,6 +182,7 @@ namespace FModel
         }
         private void MI_Search_Click(object sender, RoutedEventArgs e)
         {
+            DebugHelper.WriteLine("FWindow: Search Files");
             if (!FormsUtility.IsWindowOpen<Window>("Search"))
             {
                 new FModel_SearchFiles().Show();
@@ -186,6 +191,7 @@ namespace FModel
         }
         private void MI_HexViewer_Click(object sender, RoutedEventArgs e)
         {
+            DebugHelper.WriteLine("FWindow: Hex Viewer");
             if (!FormsUtility.IsWindowOpen<Window>("Hex Viewer"))
             {
                 new HexViewer().Show();
@@ -217,6 +223,7 @@ namespace FModel
         }
         private void MI_MergeImages_Click(object sender, RoutedEventArgs e)
         {
+            DebugHelper.WriteLine("FWindow: Images Merger");
             if (!FormsUtility.IsWindowOpen<Window>("Images Merger"))
             {
                 new FModel_ImagesMerger().Show();
@@ -225,6 +232,7 @@ namespace FModel
         }
         private void MI_About_Click(object sender, RoutedEventArgs e)
         {
+            DebugHelper.WriteLine("FWindow: About");
             if (!FormsUtility.IsWindowOpen<Window>("About"))
             {
                 new FModel_About().Show();
@@ -308,7 +316,6 @@ namespace FModel
         {   
             if (!AssetsLoader.isRunning && ListBox_Main.SelectedIndex >= 0)
             {
-                //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
                 await AssetsLoader.LoadSelectedAsset();
             }
         }
@@ -320,7 +327,6 @@ namespace FModel
         {
             if (ListBox_Main.SelectedIndex >= 0)
             {
-                //FWindow.FCurrentAsset = ListBox_Main.SelectedItem.ToString(); <-- already in the 'Load' loop
                 await AssetsLoader.LoadSelectedAsset();
             }
         }

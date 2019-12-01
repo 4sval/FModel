@@ -69,15 +69,18 @@ namespace FModel.Forms
                     PakTextBox.Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239));
                     PakTextBox.Name = $"TxtBox_{Regex.Match(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), @"\d+").Value}";
 
+                    string PAKKeyFromXML = string.Empty;
                     if (AESEntries.AESEntriesList != null && AESEntries.AESEntriesList.Any())
                     {
-                        string PAKKeyFromXML = AESEntries.AESEntriesList.Where(x => string.Equals(x.ThePAKName, Path.GetFileNameWithoutExtension(Pak.ThePAKPath))).Select(x => x.ThePAKKey).FirstOrDefault();
+                        PAKKeyFromXML = AESEntries.AESEntriesList.Where(x => string.Equals(x.ThePAKName, Path.GetFileNameWithoutExtension(Pak.ThePAKPath))).Select(x => x.ThePAKKey).FirstOrDefault();
                         PakTextBox.Text = $"0x{PAKKeyFromXML}";
                     }
 
                     yPos += 28;
                     Grid_DynamicKeys.Children.Add(PakLabel);
                     Grid_DynamicKeys.Children.Add(PakTextBox);
+
+                    DebugHelper.WriteLine($"AESManager GET: {Pak.ThePAKPath} with key: {PAKKeyFromXML}");
                 }
             }
         }
@@ -85,6 +88,7 @@ namespace FModel.Forms
         private void GetUserSettings()
         {
             MAesTextBox.Text = $"0x{FProp.Default.FPak_MainAES}";
+            DebugHelper.WriteLine($"AESManager GET: Main PAKs with key: {FProp.Default.FPak_MainAES}");
         }
 
         private void SetUserSettings()
@@ -99,6 +103,7 @@ namespace FModel.Forms
                 else { FProp.Default.FPak_MainAES = Regex.Replace(MAesTextBox.Text.ToUpper(), @"\s+", string.Empty); }
             }
             else { FProp.Default.FPak_MainAES = string.Empty; }
+            DebugHelper.WriteLine($"AESManager SET: Main PAKs with key: {MAesTextBox.Text}");
 
             //DYNAMIC AESs
             AESEntries.AESEntriesList = new List<AESInfosEntry>();
@@ -116,6 +121,7 @@ namespace FModel.Forms
                         else { KeysManager.Serialize(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), Regex.Replace(PakTextBox.Text.ToUpper(), @"\s+", string.Empty)); }
                     }
                     else { KeysManager.Serialize(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), string.Empty); }
+                    DebugHelper.WriteLine($"AESManager SET: {Pak.ThePAKPath} with key: {PakTextBox.Text}");
                 }
 
                 Directory.CreateDirectory(Path.GetDirectoryName(AESManager_PATH));
@@ -127,6 +133,7 @@ namespace FModel.Forms
 
             //SAVE
             FProp.Default.Save();
+            DebugHelper.WriteLine($"AESManager: Saved");
         }
 
         

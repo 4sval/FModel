@@ -42,7 +42,7 @@ namespace FModel.Methods.PAKs
                         if (pVersion == 8)
                         {
                             string PAKGuid = PAKsUtility.GetPAKGuid(Pak);
-                            DebugHelper.WriteLine("Registering " + Pak + " with GUID " + PAKGuid);
+                            DebugHelper.WriteLine("Registering " + Pak + " with GUID " + PAKGuid + " (" + PAKsUtility.GetEpicGuid(PAKGuid) + ")");
 
                             PAKEntries.PAKEntriesList.Add(new PAKInfosEntry(Pak, PAKGuid, string.Equals(PAKGuid, "0-0-0-0") ? false : true));
                             FWindow.FMain.Dispatcher.InvokeAsync(() =>

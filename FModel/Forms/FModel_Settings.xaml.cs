@@ -100,6 +100,7 @@ namespace FModel.Forms
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             SetUserSettings();
+            DebugHelper.WriteUserSettings();
             Close();
         }
 

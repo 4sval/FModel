@@ -96,6 +96,8 @@ namespace FModel.Methods.Assets
 
         private static void PopulateDict(string LocResPath)
         {
+            DebugHelper.WriteLine(".PAKs: Loading " + LocResPath + " as the translation file");
+
             if (HotfixLocResDict == null) { SetHotfixedLocResDict(); } //once, no need to do more
             BRLocResDict = GetLocResDict(LocResPath);
             STWLocResDict = GetLocResDict(LocResPath.Replace("Game_BR", "Game_StW"));
@@ -124,6 +126,7 @@ namespace FModel.Methods.Assets
             string pdd = Path.GetFullPath(Path.Combine(FProp.Default.FPak_Path, @"..\..\PersistentDownloadDir\EMS\"));
             if (File.Exists(pdd + "a22d837b6a2b46349421259c0a5411bf"))
             {
+                DebugHelper.WriteLine(".PAKs: Populating hotfixed string dictionary at " + pdd + "a22d837b6a2b46349421259c0a5411bf");
                 HotfixLocResDict = new Dictionary<string, Dictionary<string, Dictionary<string, string>>> ();
                 using (StreamReader sr = new StreamReader(File.Open(pdd + "a22d837b6a2b46349421259c0a5411bf", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
                 {
@@ -160,7 +163,10 @@ namespace FModel.Methods.Assets
                         }
                     }
                 }
+                DebugHelper.WriteLine(".PAKs: Populated hotfixed string dictionary");
             }
+            else
+                DebugHelper.WriteLine(".PAKs: No such file or directory " + pdd + "a22d837b6a2b46349421259c0a5411bf");
         }
 
         private static string GetValueFromParam(string fullLine, string startWith, string endWith)

@@ -1,6 +1,5 @@
 using FModel.Methods.SyntaxHighlighter;
 using FModel.Methods.Utilities;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PakReader;
 using System.Collections.Generic;
@@ -37,6 +36,8 @@ namespace FModel.Methods.Assets
                 isRunning = true;
                 foreach (string item in selectedItems)
                 {
+                    DebugHelper.WriteLine("Assets: User selected " + item);
+
                     cToken.ThrowIfCancellationRequested(); //if clicked on 'Stop' it breaks at the following item
                     FWindow.FMain.Dispatcher.InvokeAsync(() => //ui thread because if not, FCurrentAsset isn't updated in time to Auto Save a JSON Data for example
                     {
@@ -91,6 +92,7 @@ namespace FModel.Methods.Assets
             await Task.Run(() =>
             {
                 isRunning = true;
+                DebugHelper.WriteLine("Assets: User is extracting everything in " + path);
                 foreach (IEnumerable<string> filesFromOnePak in assetList)
                 {
                     foreach (string asset in filesFromOnePak.OrderBy(s => s))

@@ -11,7 +11,11 @@ namespace FModel.Methods.Utilities
 
         public static byte[] StringToByteArray(string hex)
         {
-            if (IsOdd(hex.Length)) { throw new ArgumentException("The binary key cannot have an odd number of digits"); }
+            if (IsOdd(hex.Length))
+            {
+                DebugHelper.WriteLine($".PAKs: The binary key cannot have an odd number of digits, Key {hex}");
+                throw new ArgumentException("The binary key cannot have an odd number of digits");
+            }
 
             byte[] arr = new byte[hex.Length >> 1];
             for (int i = 0; i < hex.Length >> 1; ++i)
