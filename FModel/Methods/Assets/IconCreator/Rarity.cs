@@ -1,9 +1,6 @@
 using FModel.Methods.Utilities;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PakReader;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -13,6 +10,18 @@ using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets.IconCreator
 {
+    public enum RarityCollectionIndexes
+    {
+        Common = 0,
+        Uncommon = 1,
+        Rare = 2,
+        Epic = 3,
+        Legendary = 4,
+        Mythic = 5,
+        Transcendent = 6,
+        Impossible_T7 = 7,
+    }
+
     static class Rarity
     {
         public static void DrawRarityBackground(JArray AssetProperties)
@@ -27,6 +36,10 @@ namespace FModel.Methods.Assets.IconCreator
             else if (serieToken != null)
             {
                 GetSerieAsset(serieToken, rarityToken);
+            }
+            else if (string.Equals(FProp.Default.FRarity_Design, "Accurate Colors"))
+            {
+                GetRarityData(rarityToken);
             }
             else
             {
@@ -61,6 +74,99 @@ namespace FModel.Methods.Assets.IconCreator
                     DrawBackground(ImagesUtility.ParseColorFromHex("#5EBC36"), ImagesUtility.ParseColorFromHex("#3C731A"), ImagesUtility.ParseColorFromHex("#74EF52"));
                     break;
             }
+        }
+
+        private static void GetRarityData(JToken rarityToken)
+        {
+            string jsonData = AssetsUtility.GetAssetJsonDataByPath("/FortniteGame/Content/Balance/RarityData");
+            if (jsonData != null)
+            {
+                if (AssetsUtility.IsValidJson(jsonData))
+                {
+                    JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                    if (AssetMainToken != null)
+                    {
+                        JArray propertiesArray = AssetMainToken["properties"].Value<JArray>();
+                        if (propertiesArray != null)
+                        {
+                            RarityCollectionIndexes rColor = RarityCollectionIndexes.Uncommon;
+                            switch (rarityToken != null ? rarityToken.Value<string>() : string.Empty)
+                            {
+                                /*case "EFortRarity::Legendary": OLD IMPOSSIBLE (T9) but its EFortRarity doesn't exist anymore and T9 is now T7
+                                    rColor = RarityCollectionIndexes.Impossible_T7;
+                                    break;*/
+                                case "EFortRarity::Transcendent":
+                                    rColor = RarityCollectionIndexes.Transcendent;
+                                    break;
+                                case "EFortRarity::Mythic":
+                                    rColor = RarityCollectionIndexes.Mythic;
+                                    break;
+                                case "EFortRarity::Legendary":
+                                    rColor = RarityCollectionIndexes.Legendary;
+                                    break;
+                                case "EFortRarity::Epic":
+                                case "EFortRarity::Quality":
+                                    rColor = RarityCollectionIndexes.Epic;
+                                    break;
+                                case "EFortRarity::Rare":
+                                    rColor = RarityCollectionIndexes.Rare;
+                                    break;
+                                case "EFortRarity::Common":
+                                    rColor = RarityCollectionIndexes.Common;
+                                    break;
+                            }
+
+                            JArray rarityCollectionArray = propertiesArray[(int)rColor]["tag_data"]["struct_type"]["properties"].Value<JArray>();
+                            if (rarityCollectionArray != null)
+                            {
+                                DrawWithInGameColors(rarityCollectionArray, true);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+                DebugHelper.WriteLine("Rarity: This is kinda important because /FortniteGame/Content/Balance/RarityData.uasset couldn't be find");
+        }
+
+        private static void GetSerieAsset(JToken serieToken, JToken rarityToken)
+        {
+            //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
+            string seriesFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + serieToken.Value<string>().ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
+            if (!string.IsNullOrEmpty(seriesFullPath))
+            {
+                string jsonData = AssetsUtility.GetAssetJsonDataByPath(seriesFullPath.Substring(0, seriesFullPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                if (jsonData != null)
+                {
+                    if (AssetsUtility.IsValidJson(jsonData))
+                    {
+                        JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                        if (AssetMainToken != null)
+                        {
+                            JArray propertiesArray = AssetMainToken["properties"].Value<JArray>();
+                            if (propertiesArray != null)
+                            {
+                                JArray colorsArray = AssetsUtility.GetPropertyTagStruct<JArray>(propertiesArray, "Colors", "properties");
+                                if (colorsArray != null)
+                                {
+                                    DrawWithInGameColors(colorsArray, 
+                                        string.Equals(seriesFullPath, "/FortniteGame/Content/Athena/Items/Cosmetics/Series/MarvelSeries.uasset") ? true : false //REVERSE COLORS IF MARVEL
+                                        );                                                                                                                      //BECAUSE IT LOOKS WEIRD
+                                }
+
+                                JToken backgroundTextureToken = AssetsUtility.GetPropertyTagText<JToken>(propertiesArray, "BackgroundTexture", "asset_path_name");
+                                if (backgroundTextureToken != null)
+                                {
+                                    string imagePath = FoldersUtility.FixFortnitePath(backgroundTextureToken.Value<string>());
+                                    DrawSerieImage(imagePath);
+                                }
+                            }
+                        }
+                    }
+                }
+                else { DrawNormalRarity(rarityToken); }
+            }
+            else { DrawNormalRarity(rarityToken); }
         }
 
         private static void DrawBackground(Color background, Color backgroundUpDown, Color border, bool series = false)
@@ -105,13 +211,14 @@ namespace FModel.Methods.Assets.IconCreator
 
                     //background
                     IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(background), null, new Rect(3, 3, 509, 509));
-                    
+
                     //up & down
                     IconCreator.ICDrawingContext.DrawGeometry(new SolidColorBrush(Color.FromArgb(125, backgroundUpDown.R, backgroundUpDown.G, backgroundUpDown.B)), null, uGeo);
                     IconCreator.ICDrawingContext.DrawGeometry(new SolidColorBrush(Color.FromArgb(125, backgroundUpDown.R, backgroundUpDown.G, backgroundUpDown.B)), null, dGeo);
                     break;
                 case "Default":
                 case "Minimalist":
+                case "Accurate Colors":
                     RadialGradientBrush radialGradient = new RadialGradientBrush();
                     radialGradient.GradientOrigin = new Point(0.5, 0.5);
                     radialGradient.Center = new Point(0.5, 0.5);
@@ -148,64 +255,7 @@ namespace FModel.Methods.Assets.IconCreator
             }
         }
 
-        private static void GetSerieAsset(JToken serieToken, JToken rarityToken)
-        {
-            //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
-            string seriesFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + serieToken.Value<string>().ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
-            if (!string.IsNullOrEmpty(seriesFullPath))
-            {
-                string jsonData = AssetsUtility.GetAssetJsonDataByPath(seriesFullPath.Substring(0, seriesFullPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
-                if (jsonData != null)
-                {
-                    if (AssetsUtility.IsValidJson(jsonData))
-                    {
-                        JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
-                        if (AssetMainToken != null)
-                        {
-                            JArray propertiesArray = AssetMainToken["properties"].Value<JArray>();
-                            if (propertiesArray != null)
-                            {
-                                JArray colorsArray = AssetsUtility.GetPropertyTagStruct<JArray>(propertiesArray, "Colors", "properties");
-                                if (colorsArray != null)
-                                {
-                                    DrawSerieBackground(colorsArray);
-                                }
-
-                                JToken backgroundTextureToken = AssetsUtility.GetPropertyTagText<JToken>(propertiesArray, "BackgroundTexture", "asset_path_name");
-                                if (backgroundTextureToken != null)
-                                {
-                                    string imagePath = FoldersUtility.FixFortnitePath(backgroundTextureToken.Value<string>());
-                                    DrawSerieImage(imagePath);
-                                }
-                            }
-                        }
-                    }
-                }
-                else { DrawNormalRarity(rarityToken); }
-            }
-            else { DrawNormalRarity(rarityToken); }
-        }
-
-        private static void DrawSerieImage(string AssetPath)
-        {
-            using (Stream image = AssetsUtility.GetStreamImageFromPath(AssetPath))
-            {
-                if (image != null)
-                {
-                    BitmapImage bmp = new BitmapImage();
-                    bmp.BeginInit();
-                    bmp.CacheOption = BitmapCacheOption.OnLoad;
-                    bmp.StreamSource = image;
-                    bmp.EndInit();
-                    bmp.Freeze();
-
-                    IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
-                }
-            }
-            
-        }
-
-        private static void DrawSerieBackground(JArray colorsArray)
+        private static void DrawWithInGameColors(JArray colorsArray, bool shouldBeReversed = false)
         {
             Color background = new Color();
             Color backgroundupdown = new Color();
@@ -247,7 +297,7 @@ namespace FModel.Methods.Assets.IconCreator
                 border = Color.FromRgb((byte)r, (byte)g, (byte)b);
             }
 
-            DrawBackground(background, backgroundupdown, ChangeColorBrightness(border, 0.25f), true);
+            DrawBackground(shouldBeReversed ? backgroundupdown : background, shouldBeReversed ? background : backgroundupdown, ChangeColorBrightness(border, 0.25f), true);
         }
 
         public static Color ChangeColorBrightness(Color color, float correctionFactor)
@@ -271,6 +321,25 @@ namespace FModel.Methods.Assets.IconCreator
             }
 
             return Color.FromRgb((byte)red, (byte)green, (byte)blue);
+        }
+
+        private static void DrawSerieImage(string AssetPath)
+        {
+            using (Stream image = AssetsUtility.GetStreamImageFromPath(AssetPath))
+            {
+                if (image != null)
+                {
+                    BitmapImage bmp = new BitmapImage();
+                    bmp.BeginInit();
+                    bmp.CacheOption = BitmapCacheOption.OnLoad;
+                    bmp.StreamSource = image;
+                    bmp.EndInit();
+                    bmp.Freeze();
+
+                    IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
+                }
+            }
+
         }
     }
 }

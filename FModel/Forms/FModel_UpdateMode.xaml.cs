@@ -108,7 +108,9 @@ namespace FModel.Forms
             [Description("Flat")]
             Flat = 1,
             [Description("Minimalist")]
-            Minimalist = 2
+            Minimalist = 2,
+            [Description("Accurate Colors")]
+            Accurate = 3
         }
 
         public static T GetEnumValueFromDescription<T>(string description)
@@ -198,6 +200,9 @@ namespace FModel.Forms
                             break;
                         case "Minimalist":
                             source = new BitmapImage(new Uri(isFeatured ? "pack://application:,,,/Resources/Template_M_F.png" : "pack://application:,,,/Resources/Template_M_N.png"));
+                            break;
+                        case "Accurate Colors":
+                            source = new BitmapImage(new Uri(isFeatured ? "pack://application:,,,/Resources/Template_AC_F.png" : "pack://application:,,,/Resources/Template_AC_N.png"));
                             break;
                     }
                     drawingContext.DrawImage(source, new Rect(new Point(0, 0), new Size(515, 515)));

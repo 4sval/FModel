@@ -313,6 +313,7 @@ namespace FModel.Methods.Assets.IconCreator
                     break;
                 case "Default":
                 case "Minimalist":
+                case "Accurate Colors":
                     IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(70, 0, 0, 50)), null, new Rect(3, 380, 509, 132));
                     break;
                 default:

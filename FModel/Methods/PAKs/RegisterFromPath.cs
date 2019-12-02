@@ -38,27 +38,18 @@ namespace FModel.Methods.PAKs
                 {
                     if (!PAKsUtility.IsPAKLocked(new FileInfo(Pak)))
                     {
-                        uint pVersion = PAKsUtility.GetPAKVersion(Pak);
-                        if (pVersion == 8)
-                        {
-                            string PAKGuid = PAKsUtility.GetPAKGuid(Pak);
-                            DebugHelper.WriteLine("Registering " + Pak + " with GUID " + PAKGuid + " (" + PAKsUtility.GetEpicGuid(PAKGuid) + ")");
+                        string PAKGuid = PAKsUtility.GetPAKGuid(Pak);
+                        DebugHelper.WriteLine("Registering " + Pak + " with GUID " + PAKGuid + " (" + PAKsUtility.GetEpicGuid(PAKGuid) + ")");
 
-                            PAKEntries.PAKEntriesList.Add(new PAKInfosEntry(Pak, PAKGuid, string.Equals(PAKGuid, "0-0-0-0") ? false : true));
-                            FWindow.FMain.Dispatcher.InvokeAsync(() =>
-                            {
-                                MenuItem MI_Pak = new MenuItem();
-                                MI_Pak.Header = Path.GetFileName(Pak);
-                                MI_Pak.Click += new RoutedEventHandler(FWindow.FMain.MI_Pak_Click);
-
-                                FWindow.FMain.MI_LoadOnePAK.Items.Add(MI_Pak);
-                            });
-                        }
-                        else
+                        PAKEntries.PAKEntriesList.Add(new PAKInfosEntry(Pak, PAKGuid, string.Equals(PAKGuid, "0-0-0-0") ? false : true));
+                        FWindow.FMain.Dispatcher.InvokeAsync(() =>
                         {
-                            DebugHelper.WriteLine(Path.GetFileName(Pak) + " file version is " + pVersion + " instead of 8");
-                            new UpdateMyProcessEvents($"Unsupported .PAK Version for {Path.GetFileName(Pak)}", "Error").Update();
-                        }
+                            MenuItem MI_Pak = new MenuItem();
+                            MI_Pak.Header = Path.GetFileName(Pak);
+                            MI_Pak.Click += new RoutedEventHandler(FWindow.FMain.MI_Pak_Click);
+
+                            FWindow.FMain.MI_LoadOnePAK.Items.Add(MI_Pak);
+                        });
                     }
                     else
                     {

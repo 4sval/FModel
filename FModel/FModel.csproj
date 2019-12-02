@@ -595,6 +595,12 @@
   <ItemGroup>
     <Resource Include="Resources\settings_16x.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_AC_F.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Template_AC_N.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">
     <ItemGroup>

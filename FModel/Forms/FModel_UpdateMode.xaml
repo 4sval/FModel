@@ -58,6 +58,7 @@
             <ComboBoxItem Content="Default"/>
             <ComboBoxItem Content="Flat"/>
             <ComboBoxItem Content="Minimalist"/>
+            <ComboBoxItem Content="Accurate Colors"/>
         </ComboBox>
         <CheckBox x:Name="bFeaturedIcon" Content="Shop Item Icon" HorizontalAlignment="Left" Margin="438,143,0,0" VerticalAlignment="Top" Checked="UpdateImageBox" Unchecked="UpdateImageBox"/>
         <CheckBox x:Name="bWatermarkIcon" Content="Watermark" HorizontalAlignment="Left" Margin="271,188,0,0" VerticalAlignment="Top" Checked="EnableDisableWatermark" Unchecked="EnableDisableWatermark"/>

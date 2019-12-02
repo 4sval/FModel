@@ -56,6 +56,7 @@
                     <ComboBoxItem Content="Default"/>
                     <ComboBoxItem Content="Flat"/>
                     <ComboBoxItem Content="Minimalist"/>
+                    <ComboBoxItem Content="Accurate Colors"/>
                 </ComboBox>
                 <Border BorderThickness="1" BorderBrush="#7F748198" Background="#FF252D36" HorizontalAlignment="Right" Height="164" Margin="398,0,0,0" Width="164" VerticalAlignment="Top">
                     <Image x:Name="ImageBox_RarityPreview" Source="/FModel;component/Resources/Template_D_N.png" UseLayoutRounding="True"/>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FModel.Methods.Utilities;
+using System;
 using System.IO;
 
 namespace PakReader
@@ -26,18 +27,20 @@ namespace PakReader
             FPakInfo info = new FPakInfo(Reader);
             if (info.Magic != FPakInfo.PAK_FILE_MAGIC)
             {
+                DebugHelper.WriteLine(".PAKs: The file magic is invalid");
                 throw new FileLoadException("The file magic is invalid");
             }
 
             if (info.Version > (int)PAK_VERSION.PAK_LATEST)
             {
-                Console.Error.WriteLine($"WARNING: Pak file \"{Name}\" has unsupported version {info.Version}");
+                DebugHelper.WriteLine($".PAKs: WARNING: Pak file \"{Name}\" has unsupported version {info.Version}");
             }
 
             if (info.bEncryptedIndex != 0)
             {
                 if (Aes == null)
                 {
+                    DebugHelper.WriteLine(".PAKs: The file has an encrypted index");
                     throw new FileLoadException("The file has an encrypted index");
                 }
             }
@@ -58,6 +61,7 @@ namespace PakReader
                 int stringLen = infoReader.ReadInt32();
                 if (stringLen > 512 || stringLen < -512)
                 {
+                    DebugHelper.WriteLine(".PAKs: The AES key is invalid");
                     throw new FileLoadException("The AES key is invalid");
                 }
                 if (stringLen < 0)
@@ -66,6 +70,7 @@ namespace PakReader
                     ushort c = infoReader.ReadUInt16();
                     if (c != 0)
                     {
+                        DebugHelper.WriteLine(".PAKs: The AES key is invalid");
                         throw new FileLoadException("The AES key is invalid");
                     }
                 }
@@ -75,6 +80,7 @@ namespace PakReader
                     byte c = infoReader.ReadByte();
                     if (c != 0)
                     {
+                        DebugHelper.WriteLine(".PAKs: The AES key is invalid");
                         throw new FileLoadException("The AES key is invalid");
                     }
                 }
@@ -102,7 +108,7 @@ namespace PakReader
 
             if (badMountPoint)
             {
-                Console.Error.WriteLine($"WARNING: Pak \"{Name}\" has strange mount point \"{MountPoint}\", mounting to root");
+                DebugHelper.WriteLine($".PAKs: WARNING: Pak \"{Name}\" has strange mount point \"{MountPoint}\", mounting to root");
                 MountPoint = "/";
             }
             
@@ -144,7 +150,7 @@ namespace PakReader
             catch (IOException) { }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                DebugHelper.WriteException(e, "thrown in PakReader.cs by Export");
             }
         }
     }
