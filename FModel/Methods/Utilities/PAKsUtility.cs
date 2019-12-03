@@ -10,8 +10,6 @@ namespace FModel.Methods.Utilities
 {
     static class PAKsUtility
     {
-        private const int _SIZE = 4 * 2 + 8 * 2 + 20 + /* new fields */ 1 + 16;
-
         public static string GetPAKGuid(string PAKPath)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(PAKPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))

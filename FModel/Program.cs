@@ -87,8 +87,6 @@ namespace FModel
                 isClosing = true;
 
                 DebugHelper.Logger.AsyncWrite = false;
-                DebugHelper.WriteLine("FModel closing.");
-
                 Properties.Settings.Default.Save();
 
                 DebugHelper.WriteLine("FModel closed.");
@@ -100,6 +98,7 @@ namespace FModel
             get
             {
                 string filename = string.Format("FModel-Log-{0:yyyy-MM-dd}.txt", DateTime.Now);
+                FoldersUtility.LoadFolders();
                 return Path.Combine(Properties.Settings.Default.FOutput_Path + "\\Logs", filename);
             }
         }

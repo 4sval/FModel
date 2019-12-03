@@ -53,7 +53,6 @@ namespace FModel
 
             await Task.Run(() => 
             {
-                FoldersUtility.LoadFolders();
                 FoldersUtility.CheckWatermark();
                 RegisterFromPath.FilterPAKs();
                 DynamicKeysChecker.SetDynamicKeys();
