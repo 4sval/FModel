@@ -126,7 +126,10 @@ namespace FModel.Methods.Assets.IconCreator
                 }
             }
             else
+            {
                 DebugHelper.WriteLine("Rarity: This is kinda important because /FortniteGame/Content/Balance/RarityData.uasset couldn't be find");
+                DrawNormalRarity(rarityToken);
+            }
         }
 
         private static void GetSerieAsset(JToken serieToken, JToken rarityToken)
