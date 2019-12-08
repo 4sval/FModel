@@ -1,8 +1,9 @@
-﻿using FModel.Methods.Utilities;
+using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using FProp = FModel.Properties.Settings;
@@ -12,12 +13,13 @@ namespace FModel.Methods.PAKs
     static class RegisterFromPath
     {
         public static string PAK_PATH = FProp.Default.FPak_Path;
+        private static string datFilePath = string.Empty;
 
         public static void FilterPAKs()
         {
-            if (string.IsNullOrEmpty(FProp.Default.FPak_Path) && DatFileExists())
+            if (string.IsNullOrEmpty(FProp.Default.FPak_Path) && !string.IsNullOrEmpty(datFilePath))
             {
-                string AutoPath = GetGameFiles();
+                string AutoPath = GetGameInstallLocation();
                 if (!string.IsNullOrEmpty(AutoPath))
                 {
                     DebugHelper.WriteLine("Auto .PAK files detection at " + AutoPath);
@@ -76,15 +78,37 @@ namespace FModel.Methods.PAKs
         }
 
         private static string GetEpicDirectory() => Directory.Exists(@"C:\ProgramData\Epic") ? @"C:\ProgramData\Epic" : Directory.Exists(@"D:\ProgramData\Epic") ? @"D:\ProgramData\Epic" : @"E:\ProgramData\Epic";
-        private static bool DatFileExists() => File.Exists($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat");
-        private static string GetGameFiles()
+        private static string GetDatFile()
         {
-            if (DatFileExists())
-            {
-                string path = $@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat";
-                string jsonData = File.ReadAllText(path);
-                DebugHelper.WriteLine("EPIC .dat file at " + path);
+            if (!string.IsNullOrEmpty(datFilePath))
+                return datFilePath;
 
+            if (File.Exists($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat"))
+            {
+                datFilePath = $@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat";
+                DebugHelper.WriteLine("EPIC .dat file at " + datFilePath);
+            }
+            else
+                DebugHelper.WriteLine("EPIC .dat file not found");
+
+            return datFilePath;
+        }
+
+        private static string GetGameInstallLocation()
+        {
+            JToken game = GetGameData();
+            if (game != null)
+                return $@"{game["InstallLocation"].Value<string>()}\FortniteGame\Content\Paks";
+
+            return string.Empty;
+        }
+
+        private static JToken GetGameData()
+        {
+            GetDatFile();
+            if (!string.IsNullOrEmpty(datFilePath))
+            {
+                string jsonData = File.ReadAllText(datFilePath);
                 if (AssetsUtility.IsValidJson(jsonData))
                 {
                     JToken games = JsonConvert.DeserializeObject<JToken>(jsonData);
@@ -92,22 +116,21 @@ namespace FModel.Methods.PAKs
                     {
                         JArray installationListArray = games["InstallationList"].Value<JArray>();
                         if (installationListArray != null)
-                        {
-                            foreach (JToken game in installationListArray)
-                            {
-                                if (string.Equals(game["AppName"].Value<string>(), "Fortnite"))
-                                {
-                                    DebugHelper.WriteLine(game["AppVersion"] + " found in .dat file");
-                                    return $@"{game["InstallLocation"].Value<string>()}\FortniteGame\Content\Paks";
-                                }
-                            }
-                            DebugHelper.WriteLine("Fortnite not found in .dat file");
-                        }
+                            return installationListArray.Where(game => string.Equals(game["AppName"].Value<string>(), "Fortnite")).FirstOrDefault();
+
+                        DebugHelper.WriteLine("Fortnite not found in .dat file");
                     }
                 }
             }
-            DebugHelper.WriteLine("EPIC .dat file not found");
-            return string.Empty;
+
+            return null;
+        }
+
+        public static void CheckFortniteVersion()
+        {
+            JToken game = GetGameData();
+            if (game != null)
+                DebugHelper.WriteLine("Fortnite version: " + game["AppVersion"] + " found in .dat file");
         }
     }
 }

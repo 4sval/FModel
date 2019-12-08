@@ -54,6 +54,7 @@ namespace FModel
             await Task.Run(() => 
             {
                 FoldersUtility.CheckWatermark();
+                RegisterFromPath.CheckFortniteVersion();
                 RegisterFromPath.FilterPAKs();
                 DynamicKeysChecker.SetDynamicKeys();
                 RegisterDownloadedBackups.LoadBackupFiles();
