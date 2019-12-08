@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using RestSharp;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using FProp = FModel.Properties.Settings;
 
@@ -31,7 +32,7 @@ namespace FModel.Methods.Utilities
                     JToken FData = JToken.Parse(EndpointContent);
 
                     //GLOBAL MESSAGES
-                    JArray FGMessages = FData["Global_Messages"].Value<JArray>();
+                    JArray FGMessages = FData["Global_Messages"][Assembly.GetExecutingAssembly().GetName().Version.ToString()].Value<JArray>();
                     if (!string.IsNullOrEmpty(FGMessages[0]["Message"].Value<string>()))
                     {
                         StringBuilder sb = new StringBuilder();
