@@ -1,7 +1,8 @@
-﻿using FModel.Methods.Utilities;
+using FModel.Methods.Utilities;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using FProp = FModel.Properties.Settings;
@@ -129,6 +130,54 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                 //because HtmlAgilityPack fail to detect the end of the tag when it's </>
                 if (all.Contains("</>")) { all = all.Replace("</>", "</text>"); }
                 if (any.Contains("</>")) { any = any.Replace("</>", "</text>"); }
+
+                // Polish
+                if (all.Contains("|plural"))
+                {
+                    int indexStart = all.IndexOf("|plural(") + 8;
+                    int indexEnd = all.IndexOf(")", indexStart);
+                    string extractDatas = all.Substring(indexStart, indexEnd - indexStart);
+
+                    // one = 1, few >= 2 and <= 4, many > 4, other = ??
+                    System.Collections.Generic.Dictionary<string, string> various = extractDatas.Split(',').Select(x => x.Split('=')).Where(x => x.Length == 2).ToDictionary(x => x[0], x => x[1]);
+                    if (various != null && various.Any())
+                    {
+                        int compCount = int.Parse(completionCount);
+                        string variousText = various.ContainsKey("other") ? various["other"] : "";
+                        if (compCount == 1 && various.ContainsKey("one"))
+                            variousText = various["one"];
+                        else if (compCount >= 2 && compCount <= 4 && various.ContainsKey("few"))
+                            variousText = various["few"];
+                        else if (compCount > 4 && various.ContainsKey("many"))
+                            variousText = various["many"];
+
+                        all = all.Replace($"|plural({extractDatas})", "").Replace("{0} {0}", "{0} " + variousText);
+                    }
+                }
+
+                // Polish
+                if (any.Contains("|plural"))
+                {
+                    int indexStart = any.IndexOf("|plural(") + 8;
+                    int indexEnd = any.IndexOf(")", indexStart);
+                    string extractDatas = any.Substring(indexStart, indexEnd - indexStart);
+
+                    // one = 1, few >= 2 and <= 4, many > 4, other = ??
+                    System.Collections.Generic.Dictionary<string, string> various = extractDatas.Split(',').Select(x => x.Split('=')).Where(x => x.Length == 2).ToDictionary(x => x[0], x => x[1]);
+                    if (various != null && various.Any())
+                    {
+                        int compCount = int.Parse(completionCount);
+                        string variousText = various.ContainsKey("other") ? various["other"] : "";
+                        if (compCount == 1 && various.ContainsKey("one"))
+                            variousText = various["one"];
+                        else if (compCount >= 2 && compCount <= 4 && various.ContainsKey("few"))
+                            variousText = various["few"];
+                        else if (compCount > 4 && various.ContainsKey("many"))
+                            variousText = various["many"];
+
+                        any = any.Replace($"|plural({extractDatas})", "").Replace("{0} {0}", "{0} " + variousText);
+                    }
+                }
 
                 HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
                 doc.LoadHtml(all);
