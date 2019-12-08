@@ -39,16 +39,6 @@ namespace FModel
             AutoUpdater.CheckForUpdateEvent += UIHelper.AutoUpdaterOnCheckForUpdateEvent;
             AutoUpdater.Start("https://dl.dropbox.com/s/3kv2pukqu6tj1r0/FModel.xml?dl=0");
 
-            // Copy user settings from previous application version if necessary
-            if (FProp.Default.FUpdateSettings)
-            {
-                FProp.Default.Upgrade();
-                FProp.Default.FUpdateSettings = false;
-                FProp.Default.Save();
-
-                DebugHelper.WriteLine("User settings copied from previous version");
-            }
-
             DebugHelper.WriteUserSettings();
 
             await Task.Run(() => 

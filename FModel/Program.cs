@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel
 {
@@ -98,7 +99,18 @@ namespace FModel
             get
             {
                 string filename = string.Format("FModel-Log-{0:yyyy-MM-dd}.txt", DateTime.Now);
+
+                // Copy user settings from previous application version if necessary
+                if (FProp.Default.FUpdateSettings)
+                {
+                    FProp.Default.Upgrade();
+                    FProp.Default.FUpdateSettings = false;
+                    FProp.Default.Save();
+
+                    DebugHelper.WriteLine("User settings copied from previous version");
+                }
                 FoldersUtility.LoadFolders();
+
                 return Path.Combine(Properties.Settings.Default.FOutput_Path + "\\Logs", filename);
             }
         }
