@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using FProp = FModel.Properties.Settings;
 
 namespace FModel
 {
@@ -164,6 +163,7 @@ namespace FModel
         }
         private void MI_Settings_Click(object sender, RoutedEventArgs e)
         {
+            DebugHelper.WriteLine("FWindow: Settings");
             if (!FormsUtility.IsWindowOpen<Window>("Settings"))
             {
                 new FModel_Settings().Show();

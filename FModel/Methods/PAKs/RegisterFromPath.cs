@@ -12,6 +12,8 @@ namespace FModel.Methods.PAKs
 {
     static class RegisterFromPath
     {
+        private static string _ePath = string.Empty;
+
         public static void FilterPAKs()
         {
             if (string.IsNullOrEmpty(FProp.Default.FPak_Path))
@@ -87,11 +89,14 @@ namespace FModel.Methods.PAKs
 
         private static string GetDatFile()
         {
-            string ePath = $"{GetEpicDirectory()}\\UnrealEngineLauncher\\LauncherInstalled.dat";
-            if (File.Exists(ePath))
+            if (!string.IsNullOrEmpty(_ePath))
+                return _ePath;
+
+            _ePath = $"{GetEpicDirectory()}\\UnrealEngineLauncher\\LauncherInstalled.dat";
+            if (File.Exists(_ePath))
             {
-                DebugHelper.WriteLine("EPIC .dat file at " + ePath);
-                return ePath;
+                DebugHelper.WriteLine("EPIC .dat file at " + _ePath);
+                return _ePath;
             }
             else
                 DebugHelper.WriteLine("EPIC .dat file not found");
@@ -135,7 +140,7 @@ namespace FModel.Methods.PAKs
         {
             JToken game = GetGameData();
             if (game != null)
-                DebugHelper.WriteLine("Fortnite version: " + game["AppVersion"] + " found in .dat file");
+                DebugHelper.WriteLine(game["AppVersion"] + " found in .dat file");
         }
     }
 }

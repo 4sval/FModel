@@ -112,7 +112,6 @@ namespace FModel.Forms
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             SetUserSettings();
-            DebugHelper.WriteUserSettings();
             Close();
         }
 
@@ -188,8 +187,13 @@ namespace FModel.Forms
 
             if (restart)
             {
-                DarkMessageBox.Show("Please, restart FModel to apply your new path(s)", "FModel Path(s) Changed", MessageBoxButton.OK, MessageBoxImage.Information);
+                DarkMessageBox.Show("FModel is about to restart because you applied your new path(s)", "FModel Path(s) Changed", MessageBoxButton.OK, MessageBoxImage.Information);
+                DebugHelper.WriteLine("FModel is restarting");
+                System.Windows.Forms.Application.Restart();
+                Application.Current.Shutdown();
             }
+            else
+                DebugHelper.WriteUserSettings();
         }
 
         private async void UpdateImageBox(object sender, RoutedEventArgs e)
