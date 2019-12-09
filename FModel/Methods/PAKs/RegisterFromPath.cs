@@ -12,12 +12,9 @@ namespace FModel.Methods.PAKs
 {
     static class RegisterFromPath
     {
-        public static string PAK_PATH = FProp.Default.FPak_Path;
-        private static string datFilePath = string.Empty;
-
         public static void FilterPAKs()
         {
-            if (string.IsNullOrEmpty(FProp.Default.FPak_Path) && !string.IsNullOrEmpty(datFilePath))
+            if (string.IsNullOrEmpty(FProp.Default.FPak_Path))
             {
                 string AutoPath = GetGameInstallLocation();
                 if (!string.IsNullOrEmpty(AutoPath))
@@ -28,12 +25,10 @@ namespace FModel.Methods.PAKs
 
                     FProp.Default.FPak_Path = AutoPath;
                     FProp.Default.Save();
-
-                    PAK_PATH = FProp.Default.FPak_Path;
                 }
             }
 
-            if (Directory.Exists(PAK_PATH))
+            if (Directory.Exists(FProp.Default.FPak_Path))
             {
                 PAKEntries.PAKEntriesList = new List<PAKInfosEntry>();
                 foreach (string Pak in GetPAKsFromPath())
@@ -43,7 +38,7 @@ namespace FModel.Methods.PAKs
                         string PAKGuid = PAKsUtility.GetPAKGuid(Pak);
                         DebugHelper.WriteLine("Registering " + Pak + " with GUID " + PAKGuid + " (" + PAKsUtility.GetEpicGuid(PAKGuid) + ")");
 
-                        PAKEntries.PAKEntriesList.Add(new PAKInfosEntry(Pak, PAKGuid, string.Equals(PAKGuid, "0-0-0-0") ? false : true));
+                        PAKEntries.PAKEntriesList.Add(new PAKInfosEntry(Pak, PAKGuid, !string.Equals(PAKGuid, "0-0-0-0")));
                         FWindow.FMain.Dispatcher.InvokeAsync(() =>
                         {
                             MenuItem MI_Pak = new MenuItem();
@@ -74,24 +69,34 @@ namespace FModel.Methods.PAKs
 
         private static IEnumerable<string> GetPAKsFromPath()
         {
-            return Directory.GetFiles(PAK_PATH, "*.pak", SearchOption.AllDirectories);
+            return Directory.GetFiles(FProp.Default.FPak_Path, "*.pak", SearchOption.AllDirectories);
         }
 
-        private static string GetEpicDirectory() => Directory.Exists(@"C:\ProgramData\Epic") ? @"C:\ProgramData\Epic" : Directory.Exists(@"D:\ProgramData\Epic") ? @"D:\ProgramData\Epic" : @"E:\ProgramData\Epic";
+        private static string GetEpicDirectory()
+        {
+            foreach (DriveInfo drive in DriveInfo.GetDrives())
+            {
+                string path = $"{drive.Name}ProgramData\\Epic";
+                if (Directory.Exists(path))
+                {
+                    return path;
+                }
+            }
+            return string.Empty;
+        }
+
         private static string GetDatFile()
         {
-            if (!string.IsNullOrEmpty(datFilePath))
-                return datFilePath;
-
-            if (File.Exists($@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat"))
+            string ePath = $"{GetEpicDirectory()}\\UnrealEngineLauncher\\LauncherInstalled.dat";
+            if (File.Exists(ePath))
             {
-                datFilePath = $@"{GetEpicDirectory()}\UnrealEngineLauncher\LauncherInstalled.dat";
-                DebugHelper.WriteLine("EPIC .dat file at " + datFilePath);
+                DebugHelper.WriteLine("EPIC .dat file at " + ePath);
+                return ePath;
             }
             else
                 DebugHelper.WriteLine("EPIC .dat file not found");
 
-            return datFilePath;
+            return string.Empty;
         }
 
         private static string GetGameInstallLocation()
@@ -105,8 +110,8 @@ namespace FModel.Methods.PAKs
 
         private static JToken GetGameData()
         {
-            GetDatFile();
-            if (!string.IsNullOrEmpty(datFilePath))
+            string datFilePath = GetDatFile();
+            if (!string.IsNullOrEmpty(datFilePath) && File.Exists(datFilePath))
             {
                 string jsonData = File.ReadAllText(datFilePath);
                 if (AssetsUtility.IsValidJson(jsonData))
@@ -116,7 +121,7 @@ namespace FModel.Methods.PAKs
                     {
                         JArray installationListArray = games["InstallationList"].Value<JArray>();
                         if (installationListArray != null)
-                            return installationListArray.Where(game => string.Equals(game["AppName"].Value<string>(), "Fortnite")).FirstOrDefault();
+                            return installationListArray.FirstOrDefault(game => string.Equals(game["AppName"].Value<string>(), "Fortnite"));
 
                         DebugHelper.WriteLine("Fortnite not found in .dat file");
                     }

@@ -104,7 +104,7 @@ namespace FModel.Methods.Utilities
                 }
                 return toReturn;
             }
-            return null;
+            return new List<FPakEntry>();
         }
 
         public static AssetReader GetAssetReader(Stream[] AssetStreamList)
@@ -328,7 +328,7 @@ namespace FModel.Methods.Utilities
                 }
                 return bytes.ToArray();
             }
-            return null;
+            return new byte[0];
         }
 
         public static Stream GetStreamImageFromPath(string AssetFullPath)
@@ -369,7 +369,7 @@ namespace FModel.Methods.Utilities
                 AssetReader ar = GetAssetReader(AssetStreamArray);
                 if (ar != null)
                 {
-                    ExportObject eo = ar.Exports.Where(x => x is Texture2D).FirstOrDefault();
+                    ExportObject eo = ar.Exports.FirstOrDefault(x => x is Texture2D);
                     if (eo != null)
                     {
                         SKImage image = ((Texture2D)eo).GetImage();
@@ -466,7 +466,7 @@ namespace FModel.Methods.Utilities
             {
                 try
                 {
-                    JToken obj = JToken.Parse(strInput);
+                    JToken.Parse(strInput);
                     return true;
                 }
                 catch (Exception)

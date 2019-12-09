@@ -1,9 +1,7 @@
 using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PakReader;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -14,26 +12,25 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
     {
         private static JArray ItemCategoriesArray { get; set; }
         public static int xCoords = 4 - 25;
+        private const string PET_CUSTOM_ICON = "pack://application:,,,/Resources/T-Icon-Pets-64.png";
+        private const string QUEST_CUSTOM_ICON = "pack://application:,,,/Resources/T-Icon-Quests-64.png";
 
         public static void DrawUserFacingFlag(JToken uFF)
         {
             if (ItemCategoriesArray == null)
             {
                 string jsonData = AssetsUtility.GetAssetJsonDataByPath("/FortniteGame/Content/Items/ItemCategories", true);
-                if (jsonData != null)
+                if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
                 {
-                    if (AssetsUtility.IsValidJson(jsonData))
+                    dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
+                    JArray AssetArray = JArray.FromObject(AssetData);
+                    JToken tertiaryCategoriesToken = AssetsUtility.GetPropertyTag<JToken>(AssetArray[0]["properties"].Value<JArray>(), "TertiaryCategories");
+                    if (tertiaryCategoriesToken != null)
                     {
-                        dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
-                        JArray AssetArray = JArray.FromObject(AssetData);
-                        JToken tertiaryCategoriesToken = AssetsUtility.GetPropertyTag<JToken>(AssetArray[0]["properties"].Value<JArray>(), "TertiaryCategories");
-                        if (tertiaryCategoriesToken != null)
-                        {
-                            ItemCategoriesArray = tertiaryCategoriesToken["data"].Value<JArray>();
+                        ItemCategoriesArray = tertiaryCategoriesToken["data"].Value<JArray>();
 
-                            string uFFTargeted = uFF.Value<string>().Substring("Cosmetics.UserFacingFlags.".Length);
-                            SearchUserFacingFlag(uFFTargeted);
-                        }
+                        string uFFTargeted = uFF.Value<string>().Substring("Cosmetics.UserFacingFlags.".Length);
+                        SearchUserFacingFlag(uFFTargeted);
                     }
                 }
             }
@@ -71,7 +68,7 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                                 BitmapImage bmp = new BitmapImage();
                                 bmp.BeginInit();
                                 bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                bmp.UriSource = new Uri("pack://application:,,,/Resources/T-Icon-Pets-64.png");
+                                bmp.UriSource = new Uri(PET_CUSTOM_ICON);
                                 bmp.EndInit();
                                 bmp.Freeze();
 
@@ -83,7 +80,7 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                                 BitmapImage bmp = new BitmapImage();
                                 bmp.BeginInit();
                                 bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                bmp.UriSource = new Uri("pack://application:,,,/Resources/T-Icon-Quests-64.png");
+                                bmp.UriSource = new Uri(QUEST_CUSTOM_ICON);
                                 bmp.EndInit();
                                 bmp.Freeze();
 

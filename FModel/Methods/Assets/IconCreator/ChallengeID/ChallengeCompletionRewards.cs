@@ -9,7 +9,7 @@ using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets.IconCreator.ChallengeID
 {
-    class ChallengeCompletionRewards
+    static class ChallengeCompletionRewards
     {
         public static void DrawChallengeCompletion(JArray AssetProperties, SolidColorBrush PrimaryColor, SolidColorBrush SecondaryColor, int y)
         {

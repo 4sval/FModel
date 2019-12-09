@@ -1,8 +1,6 @@
 using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PakReader;
-using System.Collections.Generic;
 using System.Linq;
 using FProp = FModel.Properties.Settings;
 
@@ -17,15 +15,12 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
             if (ItemSetsArray == null)
             {
                 string jsonData = AssetsUtility.GetAssetJsonDataByPath("/FortniteGame/Content/Athena/Items/Cosmetics/Metadata/CosmeticSets", true);
-                if (jsonData != null)
+                if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
                 {
-                    if (AssetsUtility.IsValidJson(jsonData))
-                    {
-                        dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
-                        JArray AssetArray = JArray.FromObject(AssetData);
-                        ItemSetsArray = AssetArray[0]["rows"].Value<JArray>();
-                        return SearchSetDisplayName(SetTagName);
-                    }
+                    dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
+                    JArray AssetArray = JArray.FromObject(AssetData);
+                    ItemSetsArray = AssetArray[0]["rows"].Value<JArray>();
+                    return SearchSetDisplayName(SetTagName);
                 }
             }
             else

@@ -4,7 +4,7 @@ using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Utilities
 {
-    class DebugHelper
+    static class DebugHelper
     {
         public static Logger Logger { get; private set; }
 

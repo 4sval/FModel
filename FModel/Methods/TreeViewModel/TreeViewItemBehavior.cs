@@ -30,7 +30,7 @@ namespace FModel.Methods.TreeViewModel
             if (item == null)
                 return;
 
-            if (e.NewValue is bool == false)
+            if (!(e.NewValue is bool))
                 return;
 
             if ((bool)e.NewValue)

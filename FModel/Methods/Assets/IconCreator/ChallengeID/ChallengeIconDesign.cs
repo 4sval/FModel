@@ -4,14 +4,13 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets.IconCreator.ChallengeID
 {
-    class ChallengeIconDesign
+    static class ChallengeIconDesign
     {
         public static bool isBanner { get; set; }
         public static int y { get; set; }
@@ -211,7 +210,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                             if (!isBundleLevelup)
                             {
                                 IconCreator.ICDrawingContext.DrawRectangle(ChallengesUtility.DarkBrush(PrimaryColor, 0.3f), null, new Rect(0, y, 1024, 40));
-                                DrawUnlockType(PrimaryColor, SecondaryColor, "/FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-FNBR-MissionIcon-L", y);
+                                DrawUnlockType(PrimaryColor, "/FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-FNBR-MissionIcon-L", y);
                                 isBundleLevelup = true;
                                 y += 40;
                             }
@@ -220,7 +219,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                             if (!isRequiresBattlePass)
                             {
                                 IconCreator.ICDrawingContext.DrawRectangle(ChallengesUtility.DarkBrush(PrimaryColor, 0.3f), null, new Rect(0, y, 1024, 40));
-                                DrawUnlockType(PrimaryColor, SecondaryColor, "/FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-FNBR-BattlePass-L", y);
+                                DrawUnlockType(PrimaryColor, "/FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-FNBR-BattlePass-L", y);
                                 isRequiresBattlePass = true;
                                 y += 40;
                             }
@@ -326,7 +325,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             new UpdateMyConsole("• ------------------------------ •", CColors.White, true).Append();
         }
 
-        private static void DrawUnlockType(SolidColorBrush PrimaryColor, SolidColorBrush SecondaryColor, string path, int y)
+        private static void DrawUnlockType(SolidColorBrush PrimaryColor, string path, int y)
         {
             Stream image = AssetsUtility.GetStreamImageFromPath(path);
             if (image != null)

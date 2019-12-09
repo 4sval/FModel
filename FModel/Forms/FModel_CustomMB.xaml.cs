@@ -90,7 +90,7 @@ namespace FModel.Forms
             this.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
 
             Message = message;
-            Image_MessageBox.Visibility = System.Windows.Visibility.Collapsed;
+            Image_MessageBox.Visibility = Visibility.Collapsed;
             DisplayButtons(MessageBoxButton.OK);
         }
 
@@ -100,7 +100,7 @@ namespace FModel.Forms
 
             Message = message;
             Caption = caption;
-            Image_MessageBox.Visibility = System.Windows.Visibility.Collapsed;
+            Image_MessageBox.Visibility = Visibility.Collapsed;
             DisplayButtons(MessageBoxButton.OK);
         }
 
@@ -110,7 +110,7 @@ namespace FModel.Forms
 
             Message = message;
             Caption = caption;
-            Image_MessageBox.Visibility = System.Windows.Visibility.Collapsed;
+            Image_MessageBox.Visibility = Visibility.Collapsed;
 
             DisplayButtons(button);
         }
@@ -131,7 +131,7 @@ namespace FModel.Forms
 
             Message = message;
             Caption = caption;
-            Image_MessageBox.Visibility = System.Windows.Visibility.Collapsed;
+            Image_MessageBox.Visibility = Visibility.Collapsed;
 
             DisplayButtons(button);
             DisplayImage(image);
@@ -143,39 +143,39 @@ namespace FModel.Forms
             {
                 case MessageBoxButton.OKCancel:
                     // Hide all but OK, Cancel
-                    Button_OK.Visibility = System.Windows.Visibility.Visible;
+                    Button_OK.Visibility = Visibility.Visible;
                     Button_OK.Focus();
-                    Button_Cancel.Visibility = System.Windows.Visibility.Visible;
+                    Button_Cancel.Visibility = Visibility.Visible;
 
-                    Button_Yes.Visibility = System.Windows.Visibility.Collapsed;
-                    Button_No.Visibility = System.Windows.Visibility.Collapsed;
+                    Button_Yes.Visibility = Visibility.Collapsed;
+                    Button_No.Visibility = Visibility.Collapsed;
                     break;
                 case MessageBoxButton.YesNo:
                     // Hide all but Yes, No
-                    Button_Yes.Visibility = System.Windows.Visibility.Visible;
+                    Button_Yes.Visibility = Visibility.Visible;
                     Button_Yes.Focus();
-                    Button_No.Visibility = System.Windows.Visibility.Visible;
+                    Button_No.Visibility = Visibility.Visible;
 
-                    Button_OK.Visibility = System.Windows.Visibility.Collapsed;
-                    Button_Cancel.Visibility = System.Windows.Visibility.Collapsed;
+                    Button_OK.Visibility = Visibility.Collapsed;
+                    Button_Cancel.Visibility = Visibility.Collapsed;
                     break;
                 case MessageBoxButton.YesNoCancel:
                     // Hide only OK
-                    Button_Yes.Visibility = System.Windows.Visibility.Visible;
+                    Button_Yes.Visibility = Visibility.Visible;
                     Button_Yes.Focus();
-                    Button_No.Visibility = System.Windows.Visibility.Visible;
-                    Button_Cancel.Visibility = System.Windows.Visibility.Visible;
+                    Button_No.Visibility = Visibility.Visible;
+                    Button_Cancel.Visibility = Visibility.Visible;
 
-                    Button_OK.Visibility = System.Windows.Visibility.Collapsed;
+                    Button_OK.Visibility = Visibility.Collapsed;
                     break;
                 default:
                     // Hide all but OK
-                    Button_OK.Visibility = System.Windows.Visibility.Visible;
+                    Button_OK.Visibility = Visibility.Visible;
                     Button_OK.Focus();
 
-                    Button_Yes.Visibility = System.Windows.Visibility.Collapsed;
-                    Button_No.Visibility = System.Windows.Visibility.Collapsed;
-                    Button_Cancel.Visibility = System.Windows.Visibility.Collapsed;
+                    Button_Yes.Visibility = Visibility.Collapsed;
+                    Button_No.Visibility = Visibility.Collapsed;
+                    Button_Cancel.Visibility = Visibility.Collapsed;
                     break;
             }
         }
@@ -204,7 +204,7 @@ namespace FModel.Forms
             }
 
             Image_MessageBox.Source = icon.ToImageSource();
-            Image_MessageBox.Visibility = System.Windows.Visibility.Visible;
+            Image_MessageBox.Visibility = Visibility.Visible;
         }
 
         private void Button_OK_Click(object sender, RoutedEventArgs e)

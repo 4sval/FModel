@@ -1,5 +1,4 @@
-﻿using FModel.Methods.TreeViewModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -99,7 +98,7 @@ namespace FModel.Methods.Utilities
                     }
                 }
 
-                done = (found == false && done == false);
+                done = !found && !done;
             }
         }
     }

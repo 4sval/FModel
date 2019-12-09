@@ -1,8 +1,5 @@
 using FModel.Methods.Utilities;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PakReader;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -12,7 +9,7 @@ using System.Windows.Media.Imaging;
 
 namespace FModel.Methods.Assets.IconCreator.HeroID
 {
-    class HeroGameplayDefinition
+    static class HeroGameplayDefinition
     {
         private static int _borderY = 518;
         private static int _textY = 550;
@@ -27,26 +24,23 @@ namespace FModel.Methods.Assets.IconCreator.HeroID
                 if (!string.IsNullOrEmpty(assetPath))
                 {
                     string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath, false, assetPath.Substring(0, assetPath.LastIndexOf(".")));
-                    if (jsonData != null)
+                    if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
                     {
-                        if (AssetsUtility.IsValidJson(jsonData))
+                        JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                        if (AssetMainToken != null)
                         {
-                            JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
-                            if (AssetMainToken != null)
+                            JArray heroGameplayProperties = AssetMainToken["properties"].Value<JArray>();
+                            if (heroGameplayProperties != null)
                             {
-                                JArray heroGameplayProperties = AssetMainToken["properties"].Value<JArray>();
-                                if (heroGameplayProperties != null)
-                                {
-                                    _borderY = 518;
-                                    _textY = 550;
-                                    _imageY = 519;
+                                _borderY = 518;
+                                _textY = 550;
+                                _imageY = 519;
 
-                                    DrawHeroPerk(heroGameplayProperties);
-                                    DrawTierAbilityKits(heroGameplayProperties);
+                                DrawHeroPerk(heroGameplayProperties);
+                                DrawTierAbilityKits(heroGameplayProperties);
 
-                                    //RESIZE
-                                    IconCreator.ICDrawingContext.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), new Size(515, 560 + 35 * 3)));
-                                }
+                                //RESIZE
+                                IconCreator.ICDrawingContext.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), new Size(515, 560 + 35 * 3)));
                             }
                         }
                     }
@@ -123,72 +117,69 @@ namespace FModel.Methods.Assets.IconCreator.HeroID
             if (!string.IsNullOrEmpty(assetPath))
             {
                 string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath);
-                if (jsonData != null)
+                if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
                 {
-                    if (AssetsUtility.IsValidJson(jsonData))
+                    JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                    if (AssetMainToken != null)
                     {
-                        JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
-                        if (AssetMainToken != null)
+                        JArray abilityKitProperties = AssetMainToken["properties"].Value<JArray>();
+                        if (abilityKitProperties != null)
                         {
-                            JArray abilityKitProperties = AssetMainToken["properties"].Value<JArray>();
-                            if (abilityKitProperties != null)
+                            JToken name_namespace = AssetsUtility.GetPropertyTagText<JToken>(abilityKitProperties, "DisplayName", "namespace");
+                            JToken name_key = AssetsUtility.GetPropertyTagText<JToken>(abilityKitProperties, "DisplayName", "key");
+                            JToken name_source_string = AssetsUtility.GetPropertyTagText<JToken>(abilityKitProperties, "DisplayName", "source_string");
+
+                            JArray iconBrushArray = AssetsUtility.GetPropertyTagStruct<JArray>(abilityKitProperties, "IconBrush", "properties");
+                            if (iconBrushArray != null)
                             {
-                                JToken name_namespace = AssetsUtility.GetPropertyTagText<JToken>(abilityKitProperties, "DisplayName", "namespace");
-                                JToken name_key = AssetsUtility.GetPropertyTagText<JToken>(abilityKitProperties, "DisplayName", "key");
-                                JToken name_source_string = AssetsUtility.GetPropertyTagText<JToken>(abilityKitProperties, "DisplayName", "source_string");
-
-                                JArray iconBrushArray = AssetsUtility.GetPropertyTagStruct<JArray>(abilityKitProperties, "IconBrush", "properties");
-                                if (iconBrushArray != null)
+                                JToken resourceObjectToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(iconBrushArray, "ResourceObject");
+                                if (resourceObjectToken != null)
                                 {
-                                    JToken resourceObjectToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(iconBrushArray, "ResourceObject");
-                                    if (resourceObjectToken != null)
+                                    string texturePath = FoldersUtility.FixFortnitePath(resourceObjectToken.Value<string>());
+                                    using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
                                     {
-                                        string texturePath = FoldersUtility.FixFortnitePath(resourceObjectToken.Value<string>());
-                                        using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
+                                        if (image != null)
                                         {
-                                            if (image != null)
+                                            BitmapImage bmp = new BitmapImage();
+                                            bmp.BeginInit();
+                                            bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                            bmp.StreamSource = image;
+                                            bmp.EndInit();
+                                            bmp.Freeze();
+
+                                            //background
+                                            IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(ImagesUtility.ParseColorFromHex("#6D6D6D")), null, new Rect(0, _borderY, 515, 34));
+
+                                            if (name_namespace != null && name_key != null && name_source_string != null)
                                             {
-                                                BitmapImage bmp = new BitmapImage();
-                                                bmp.BeginInit();
-                                                bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                                bmp.StreamSource = image;
-                                                bmp.EndInit();
-                                                bmp.Freeze();
+                                                string displayName = AssetTranslations.SearchTranslation(name_namespace.Value<string>(), name_key.Value<string>(), name_source_string.Value<string>());
 
-                                                //background
-                                                IconCreator.ICDrawingContext.DrawRectangle(new SolidColorBrush(ImagesUtility.ParseColorFromHex("#6D6D6D")), null, new Rect(0, _borderY, 515, 34));
+                                                Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
-                                                if (name_namespace != null && name_key != null && name_source_string != null)
-                                                {
-                                                    string displayName = AssetTranslations.SearchTranslation(name_namespace.Value<string>(), name_key.Value<string>(), name_source_string.Value<string>());
+                                                FormattedText formattedText =
+                                                    new FormattedText(
+                                                        displayName.ToUpperInvariant(),
+                                                        CultureInfo.CurrentUICulture,
+                                                        FlowDirection.LeftToRight,
+                                                        typeface,
+                                                        25,
+                                                        Brushes.White,
+                                                        IconCreator.PPD
+                                                        );
+                                                formattedText.TextAlignment = TextAlignment.Left;
+                                                formattedText.MaxTextWidth = 515;
+                                                formattedText.MaxLineCount = 1;
 
-                                                    Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+                                                Point textLocation = new Point(50, _textY - formattedText.Height);
 
-                                                    FormattedText formattedText =
-                                                        new FormattedText(
-                                                            displayName.ToUpperInvariant(),
-                                                            CultureInfo.CurrentUICulture,
-                                                            FlowDirection.LeftToRight,
-                                                            typeface,
-                                                            25,
-                                                            Brushes.White,
-                                                            IconCreator.PPD
-                                                            );
-                                                    formattedText.TextAlignment = TextAlignment.Left;
-                                                    formattedText.MaxTextWidth = 515;
-                                                    formattedText.MaxLineCount = 1;
-
-                                                    Point textLocation = new Point(50, _textY - formattedText.Height);
-
-                                                    IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
-                                                }
-
-                                                IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(9, _imageY, 32, 32));
-
-                                                _borderY += 37;
-                                                _textY += 37;
-                                                _imageY += 37;
+                                                IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
                                             }
+
+                                            IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(9, _imageY, 32, 32));
+
+                                            _borderY += 37;
+                                            _textY += 37;
+                                            _imageY += 37;
                                         }
                                     }
                                 }

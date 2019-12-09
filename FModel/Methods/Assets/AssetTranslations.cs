@@ -118,7 +118,7 @@ namespace FModel.Methods.Assets
                     }
                 }
             }
-            return null;
+            return new Dictionary<string, Dictionary<string, string>>();
         }
 
         public static void SetHotfixedLocResDict()
@@ -172,7 +172,7 @@ namespace FModel.Methods.Assets
         private static string GetValueFromParam(string fullLine, string startWith, string endWith)
         {
             int startIndex = fullLine.IndexOf(startWith, StringComparison.InvariantCultureIgnoreCase) + startWith.Length;
-            int endIndex = fullLine.Substring(startIndex).IndexOf(endWith, StringComparison.InvariantCultureIgnoreCase);
+            int endIndex = fullLine.Substring(startIndex).ToString().IndexOf(endWith, StringComparison.InvariantCultureIgnoreCase);
             return fullLine.Substring(startIndex, endIndex);
         }
 

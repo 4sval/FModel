@@ -72,13 +72,10 @@ namespace FModel.Methods.Utilities
                     {
                         if (AESEntries.AESEntriesList != null && AESEntries.AESEntriesList.Any())
                         {
-                            AESInfosEntry AESFromManager = AESEntries.AESEntriesList.Where(x => string.Equals(x.ThePAKName, Path.GetFileNameWithoutExtension(Pak.ThePAKPath))).FirstOrDefault();
-                            if (!string.IsNullOrEmpty(AESFromManager.ThePAKKey))
+                            AESInfosEntry AESFromManager = AESEntries.AESEntriesList.FirstOrDefault(x => string.Equals(x.ThePAKName, Path.GetFileNameWithoutExtension(Pak.ThePAKPath)));
+                            if (!string.IsNullOrEmpty(AESFromManager.ThePAKKey) && string.Equals(AESFromManager.ThePAKName, Path.GetFileNameWithoutExtension(MI_Pak.Header.ToString())))
                             {
-                                if (string.Equals(AESFromManager.ThePAKName, Path.GetFileNameWithoutExtension(MI_Pak.Header.ToString())))
-                                {
-                                    MI_Pak.IsEnabled = true;
-                                }
+                                MI_Pak.IsEnabled = true;
                             }
                         }
                     }

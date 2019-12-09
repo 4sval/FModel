@@ -9,6 +9,9 @@ namespace FModel.Methods.Utilities
 {
     static class EndpointsUtility
     {
+        private const string DROPBOX_JSON = "https://dl.dropbox.com/s/0ykcue03qweb98r/FModel.json?dl=0";
+        private const string BENBOT_AES = "http://benbotfn.tk:8080/api/aes";
+
         public static string GetEndpoint(string url)
         {
             DebugHelper.WriteLine("Sending GET request to " + url);
@@ -25,7 +28,7 @@ namespace FModel.Methods.Utilities
         {
             if (DLLImport.IsInternetAvailable())
             {
-                string EndpointContent = GetEndpoint("https://dl.dropbox.com/s/0ykcue03qweb98r/FModel.json?dl=0");
+                string EndpointContent = GetEndpoint(DROPBOX_JSON);
                 if (!string.IsNullOrEmpty(EndpointContent))
                 {
                     List<BackupInfosEntry> ListToReturn = new List<BackupInfosEntry>();
@@ -62,14 +65,14 @@ namespace FModel.Methods.Utilities
                 {
                     DebugHelper.WriteLine("Dropbox: Error while checking for backup files");
                     new UpdateMyConsole("Error while checking for backup files", CColors.Red, true).Append();
-                    return null;
+                    return new List<BackupInfosEntry>();
                 }
             }
             else
             {
                 DebugHelper.WriteLine("Dropbox: Your internet connection is currently unavailable, can't check for backup files at the moment.");
                 new UpdateMyConsole("Your internet connection is currently unavailable, can't check for backup files at the moment.", CColors.Blue, true).Append();
-                return null;
+                return new List<BackupInfosEntry>();
             }
         }
 
@@ -77,7 +80,7 @@ namespace FModel.Methods.Utilities
         {
             if (DLLImport.IsInternetAvailable())
             {
-                string EndpointContent = GetEndpoint("http://benbotfn.tk:8080/api/aes");
+                string EndpointContent = GetEndpoint(BENBOT_AES);
                 if (!string.IsNullOrEmpty(EndpointContent))
                 {
                     if (string.IsNullOrEmpty(FProp.Default.FPak_MainAES))

@@ -24,8 +24,8 @@ namespace FModel.Methods.Utilities
         public string LogFilePath { get; private set; }
 
         private readonly object loggerLock = new object();
-        private ConcurrentQueue<string> messageQueue = new ConcurrentQueue<string>();
-        private StringBuilder sbMessages = new StringBuilder();
+        private readonly ConcurrentQueue<string> messageQueue = new ConcurrentQueue<string>();
+        private readonly StringBuilder sbMessages = new StringBuilder();
 
         public Logger()
         {
@@ -142,7 +142,7 @@ namespace FModel.Methods.Utilities
                     return sbMessages.ToString();
                 }
 
-                return null;
+                return string.Empty;
             }
         }
 
@@ -181,6 +181,7 @@ namespace FModel.Methods.Utilities
             }
             catch
             {
+                //hello world :)
             }
 
             if (string.IsNullOrEmpty(productName))

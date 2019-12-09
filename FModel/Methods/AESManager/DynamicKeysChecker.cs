@@ -37,8 +37,8 @@ namespace FModel.Methods.AESManager
                         if (KeysDict != null)
                         {
                             AESEntries.AESEntriesList = new List<AESInfosEntry>();
-                            foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK == true //DYNAMIC PAK ONLY 
-                            && !AESEntries.AESEntriesList.Where(w => string.Equals(w.ThePAKName, Path.GetFileNameWithoutExtension(x.ThePAKPath))).Any() //IS NOT ALREADY ADDED
+                            foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK //DYNAMIC PAK ONLY 
+                            && !AESEntries.AESEntriesList.Any(w => string.Equals(w.ThePAKName, Path.GetFileNameWithoutExtension(x.ThePAKPath))) //IS NOT ALREADY ADDED
                             ))
                             {
                                 if (KeysDict.ContainsKey(Path.GetFileName(Pak.ThePAKPath)))
@@ -47,7 +47,7 @@ namespace FModel.Methods.AESManager
 
                                     if (_oldAESEntriesList != null)
                                     {
-                                        if (!_oldAESEntriesList.Where(x => string.Equals(x.ThePAKKey, KeysDict[Path.GetFileName(Pak.ThePAKPath)].ToUpperInvariant().Substring(2))).Any())
+                                        if (!_oldAESEntriesList.Any(x => string.Equals(x.ThePAKKey, KeysDict[Path.GetFileName(Pak.ThePAKPath)].ToUpperInvariant().Substring(2))))
                                         {
                                             new UpdateMyConsole(Path.GetFileName(Pak.ThePAKPath), CColors.Blue).Append();
                                             new UpdateMyConsole(" can now be opened.", CColors.White, true).Append();

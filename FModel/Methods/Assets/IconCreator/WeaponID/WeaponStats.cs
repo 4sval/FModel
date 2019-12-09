@@ -1,9 +1,7 @@
 using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PakReader;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -12,9 +10,12 @@ using System.Windows.Media.Imaging;
 
 namespace FModel.Methods.Assets.IconCreator.WeaponID
 {
-    class WeaponStats
+    static class WeaponStats
     {
         private static JArray WeaponsStatsArray { get; set; }
+        private const string RELOAD_CUSTOM_ICON = "pack://application:,,,/Resources/reload64.png";
+        private const string MAGSIZE_CUSTOM_ICON = "pack://application:,,,/Resources/clipSize64.png";
+        private const string DAMAGE_CUSTOM_ICON = "pack://application:,,,/Resources/dmg64.png";
 
         public static void DrawWeaponStats(string file, string rowname)
         {
@@ -25,15 +26,12 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                 if (!string.IsNullOrEmpty(filepath))
                 {
                     string jsonData = AssetsUtility.GetAssetJsonDataByPath(filepath.Substring(0, filepath.LastIndexOf(".")), true);
-                    if (jsonData != null)
+                    if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
                     {
-                        if (AssetsUtility.IsValidJson(jsonData))
-                        {
-                            dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
-                            JArray AssetArray = JArray.FromObject(AssetData);
-                            WeaponsStatsArray = AssetArray[0]["rows"].Value<JArray>();
-                            SearchWeaponStats(rowname);
-                        }
+                        dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
+                        JArray AssetArray = JArray.FromObject(AssetData);
+                        WeaponsStatsArray = AssetArray[0]["rows"].Value<JArray>();
+                        SearchWeaponStats(rowname);
                     }
                 }
             }
@@ -63,7 +61,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     BitmapImage bmp = new BitmapImage();
                     bmp.BeginInit();
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
-                    bmp.UriSource = new Uri("pack://application:,,,/Resources/reload64.png");
+                    bmp.UriSource = new Uri(RELOAD_CUSTOM_ICON);
                     bmp.EndInit();
                     bmp.Freeze();
 
@@ -97,7 +95,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     BitmapImage bmp = new BitmapImage();
                     bmp.BeginInit();
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
-                    bmp.UriSource = new Uri("pack://application:,,,/Resources/clipSize64.png");
+                    bmp.UriSource = new Uri(MAGSIZE_CUSTOM_ICON);
                     bmp.EndInit();
                     bmp.Freeze();
 
@@ -131,7 +129,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     BitmapImage bmp = new BitmapImage();
                     bmp.BeginInit();
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
-                    bmp.UriSource = new Uri("pack://application:,,,/Resources/dmg64.png");
+                    bmp.UriSource = new Uri(DAMAGE_CUSTOM_ICON);
                     bmp.EndInit();
                     bmp.Freeze();
 

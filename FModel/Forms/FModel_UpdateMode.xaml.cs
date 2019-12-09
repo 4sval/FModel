@@ -25,6 +25,16 @@ namespace FModel.Forms
     /// </summary>
     public partial class FModel_UpdateMode : Window
     {
+        private const string CHALLENGE_TEMPLATE_ICON = "pack://application:,,,/Resources/Template_Challenge.png";
+        private const string RARITY_DEFAULT_FEATURED = "pack://application:,,,/Resources/Template_D_F.png";
+        private const string RARITY_DEFAULT_NORMAL = "pack://application:,,,/Resources/Template_D_N.png";
+        private const string RARITY_FLAT_FEATURED = "pack://application:,,,/Resources/Template_F_F.png";
+        private const string RARITY_FLAT_NORMAL = "pack://application:,,,/Resources/Template_F_N.png";
+        private const string RARITY_MINIMALIST_FEATURED = "pack://application:,,,/Resources/Template_M_F.png";
+        private const string RARITY_MINIMALIST_NORMAL = "pack://application:,,,/Resources/Template_M_N.png";
+        private const string RARITY_ACCURATECOLORS_FEATURED = "pack://application:,,,/Resources/Template_AC_F.png";
+        private const string RARITY_ACCURATECOLORS_NORMAL = "pack://application:,,,/Resources/Template_AC_N.png";
+
         #region CLASS
         public class AssetProperties : INotifyPropertyChanged
         {
@@ -116,14 +126,14 @@ namespace FModel.Forms
         public static T GetEnumValueFromDescription<T>(string description)
         {
             var type = typeof(T);
-            if (!type.IsEnum) { throw new ArgumentException(); }
+            if (!type.IsEnum) { throw new ArgumentException("Enum type is null, bruh"); }
             FieldInfo[] fields = type.GetFields();
             var field = fields
                             .SelectMany(f => f.GetCustomAttributes(
                                 typeof(DescriptionAttribute), false), (
                                     f, a) => new { Field = f, Att = a })
-                            .Where(a => ((DescriptionAttribute)a.Att)
-                                .Description == description).SingleOrDefault();
+                            .SingleOrDefault(a => ((DescriptionAttribute)a.Att)
+                                .Description == description);
             return field == null ? default(T) : (T)field.Field.GetRawConstantValue();
         }
         #endregion
@@ -193,16 +203,16 @@ namespace FModel.Forms
                     switch (rarityDesign)
                     {
                         case "Default":
-                            source = new BitmapImage(new Uri(isFeatured ? "pack://application:,,,/Resources/Template_D_F.png" : "pack://application:,,,/Resources/Template_D_N.png"));
+                            source = new BitmapImage(new Uri(isFeatured ? RARITY_DEFAULT_FEATURED : RARITY_DEFAULT_NORMAL));
                             break;
                         case "Flat":
-                            source = new BitmapImage(new Uri(isFeatured ? "pack://application:,,,/Resources/Template_F_F.png" : "pack://application:,,,/Resources/Template_F_N.png"));
+                            source = new BitmapImage(new Uri(isFeatured ? RARITY_FLAT_FEATURED : RARITY_FLAT_NORMAL));
                             break;
                         case "Minimalist":
-                            source = new BitmapImage(new Uri(isFeatured ? "pack://application:,,,/Resources/Template_M_F.png" : "pack://application:,,,/Resources/Template_M_N.png"));
+                            source = new BitmapImage(new Uri(isFeatured ? RARITY_MINIMALIST_FEATURED : RARITY_MINIMALIST_NORMAL));
                             break;
                         case "Accurate Colors":
-                            source = new BitmapImage(new Uri(isFeatured ? "pack://application:,,,/Resources/Template_AC_F.png" : "pack://application:,,,/Resources/Template_AC_N.png"));
+                            source = new BitmapImage(new Uri(isFeatured ? RARITY_ACCURATECOLORS_FEATURED : RARITY_ACCURATECOLORS_NORMAL));
                             break;
                     }
                     drawingContext.DrawImage(source, new Rect(new Point(0, 0), new Size(515, 515)));
@@ -211,31 +221,25 @@ namespace FModel.Forms
                     {
                         using (StreamReader image = new StreamReader(FProp.Default.FWatermarkFilePath))
                         {
-                            if (image != null)
-                            {
-                                BitmapImage bmp = new BitmapImage();
-                                bmp.BeginInit();
-                                bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                bmp.StreamSource = image.BaseStream;
-                                bmp.EndInit();
+                            BitmapImage bmp = new BitmapImage();
+                            bmp.BeginInit();
+                            bmp.CacheOption = BitmapCacheOption.OnLoad;
+                            bmp.StreamSource = image.BaseStream;
+                            bmp.EndInit();
 
-                                drawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, opacity), new Rect(FProp.Default.FWatermarkXPos, FProp.Default.FWatermarkYPos, scale, scale));
-                            }
+                            drawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, opacity), new Rect(FProp.Default.FWatermarkXPos, FProp.Default.FWatermarkYPos, scale, scale));
                         }
                     }
                 }
 
-                if (drawingVisual != null)
-                {
-                    RenderTargetBitmap RTB = new RenderTargetBitmap(515, 515, 96, 96, PixelFormats.Pbgra32);
-                    RTB.Render(drawingVisual);
-                    RTB.Freeze(); //We freeze to apply the RTB to our imagesource from the UI Thread
+                RenderTargetBitmap RTB = new RenderTargetBitmap(515, 515, 96, 96, PixelFormats.Pbgra32);
+                RTB.Render(drawingVisual);
+                RTB.Freeze(); //We freeze to apply the RTB to our imagesource from the UI Thread
 
-                    FWindow.FMain.Dispatcher.InvokeAsync(() =>
-                    {
-                        ImageBox_RarityPreview.Source = BitmapFrame.Create(RTB); //thread safe and fast af
-                    });
-                }
+                FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                {
+                    ImageBox_RarityPreview.Source = BitmapFrame.Create(RTB); //thread safe and fast af
+                });
 
             }).ContinueWith(TheTask =>
             {

@@ -51,7 +51,7 @@ namespace FModel.Forms
                 if (AESEntries.AESEntriesList == null) { KeysManager.Deserialize(); }
                 int yPos = 4;
 
-                foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK == true))
+                foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK))
                 {
                     Label PakLabel = new Label();
                     PakLabel.Content = Path.GetFileNameWithoutExtension(Pak.ThePAKPath);
@@ -109,7 +109,7 @@ namespace FModel.Forms
             AESEntries.AESEntriesList = new List<AESInfosEntry>();
             if (PAKEntries.PAKEntriesList != null && PAKEntries.PAKEntriesList.Any())
             {
-                foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK == true))
+                foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK))
                 {
                     TextBox PakTextBox = UIHelper.FindChild<TextBox>(this, $"TxtBox_{Regex.Match(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), @"\d+").Value}");
                     if (!string.IsNullOrEmpty(PakTextBox.Text))

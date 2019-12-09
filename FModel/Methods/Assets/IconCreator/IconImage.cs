@@ -68,24 +68,21 @@ namespace FModel.Methods.Assets.IconCreator
         private static void DrawImageFromTagData(string assetPath)
         {
             string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath);
-            if (jsonData != null)
+            if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
             {
-                if (AssetsUtility.IsValidJson(jsonData))
+                JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                if (AssetMainToken != null)
                 {
-                    JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
-                    if (AssetMainToken != null)
-                    {
-                        JArray AssetProperties = AssetMainToken["properties"].Value<JArray>();
-                        DrawLargeSmallImage(AssetProperties);
-                    }
+                    JArray AssetProperties = AssetMainToken["properties"].Value<JArray>();
+                    DrawLargeSmallImage(AssetProperties);
                 }
             }
         }
 
         private static void DrawLargeSmallImage(JArray propertiesArray)
         {
-            JToken largePreviewImage = propertiesArray.Where(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage")).FirstOrDefault();
-            JToken smallPreviewImage = propertiesArray.Where(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage")).FirstOrDefault();
+            JToken largePreviewImage = propertiesArray.FirstOrDefault(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage"));
+            JToken smallPreviewImage = propertiesArray.FirstOrDefault(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage"));
             if (largePreviewImage != null || smallPreviewImage != null)
             {
                 JToken assetPathName =
@@ -138,34 +135,31 @@ namespace FModel.Methods.Assets.IconCreator
         private static void DrawFeaturedImage(JArray AssetProperties, string displayAssetPath)
         {
             string jsonData = AssetsUtility.GetAssetJsonDataByPath(displayAssetPath);
-            if (jsonData != null)
+            if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
             {
-                if (AssetsUtility.IsValidJson(jsonData))
-                {
-                    FWindow.FCurrentAsset = Path.GetFileName(displayAssetPath);
+                FWindow.FCurrentAsset = Path.GetFileName(displayAssetPath);
 
-                    JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
-                    if (AssetMainToken != null)
+                JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                if (AssetMainToken != null)
+                {
+                    JArray displayAssetProperties = AssetMainToken["properties"].Value<JArray>();
+                    switch (displayAssetPath.Substring(displayAssetPath.LastIndexOf("/", StringComparison.InvariantCultureIgnoreCase) + 1))
                     {
-                        JArray displayAssetProperties = AssetMainToken["properties"].Value<JArray>();
-                        switch (displayAssetPath.Substring(displayAssetPath.LastIndexOf("/", StringComparison.InvariantCultureIgnoreCase) + 1))
-                        {
-                            case "DA_Featured_Glider_ID_070_DarkViking":
-                            case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
-                                JArray TileImageProperties = AssetsUtility.GetPropertyTagStruct<JArray>(displayAssetProperties, "TileImage", "properties");
-                                if (TileImageProperties != null)
-                                {
-                                    DrawFeaturedImageFromDisplayAssetProperty(AssetProperties, TileImageProperties);
-                                }
-                                break;
-                            default:
-                                JArray DetailsImageProperties = AssetsUtility.GetPropertyTagStruct<JArray>(displayAssetProperties, "DetailsImage", "properties");
-                                if (DetailsImageProperties != null)
-                                {
-                                    DrawFeaturedImageFromDisplayAssetProperty(AssetProperties, DetailsImageProperties);
-                                }
-                                break;
-                        }
+                        case "DA_Featured_Glider_ID_070_DarkViking":
+                        case "DA_Featured_CID_319_Athena_Commando_F_Nautilus":
+                            JArray TileImageProperties = AssetsUtility.GetPropertyTagStruct<JArray>(displayAssetProperties, "TileImage", "properties");
+                            if (TileImageProperties != null)
+                            {
+                                DrawFeaturedImageFromDisplayAssetProperty(AssetProperties, TileImageProperties);
+                            }
+                            break;
+                        default:
+                            JArray DetailsImageProperties = AssetsUtility.GetPropertyTagStruct<JArray>(displayAssetProperties, "DetailsImage", "properties");
+                            if (DetailsImageProperties != null)
+                            {
+                                DrawFeaturedImageFromDisplayAssetProperty(AssetProperties, DetailsImageProperties);
+                            }
+                            break;
                     }
                 }
             }
@@ -209,51 +203,45 @@ namespace FModel.Methods.Assets.IconCreator
             {
                 //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
                 string renderSwitchPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.Contains("/" + resourceObjectImportToken.Value<string>())).Select(d => d.Key).FirstOrDefault();
-                if (!string.IsNullOrEmpty(renderSwitchPath))
+                if (!string.IsNullOrEmpty(renderSwitchPath) && (renderSwitchPath.Contains("MI_UI_FeaturedRenderSwitch_") ||
+                        renderSwitchPath.Contains("M-Wraps-StreetDemon") ||
+                        renderSwitchPath.Contains("/FortniteGame/Content/UI/Foundation/Textures/Icons/Wraps/FeaturedMaterials/")))
                 {
-                    if (renderSwitchPath.Contains("MI_UI_FeaturedRenderSwitch_") || 
-                        renderSwitchPath.Contains("M-Wraps-StreetDemon") || 
-                        renderSwitchPath.Contains("/FortniteGame/Content/UI/Foundation/Textures/Icons/Wraps/FeaturedMaterials/"))
+                    string jsonData = AssetsUtility.GetAssetJsonDataByPath(renderSwitchPath.Substring(0, renderSwitchPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                    if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
                     {
-                        string jsonData = AssetsUtility.GetAssetJsonDataByPath(renderSwitchPath.Substring(0, renderSwitchPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
-                        if (jsonData != null)
+                        JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                        if (AssetMainToken != null)
                         {
-                            if (AssetsUtility.IsValidJson(jsonData))
+                            JArray renderSwitchProperties = AssetMainToken["properties"].Value<JArray>();
+                            if (renderSwitchProperties != null)
                             {
-                                JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
-                                if (AssetMainToken != null)
+                                JArray textureParameterArray = AssetsUtility.GetPropertyTagText<JArray>(renderSwitchProperties, "TextureParameterValues", "data");
+                                textureParameterArray = textureParameterArray[textureParameterArray.Count() > 1 && !AssetsLoader.ExportType.Equals("AthenaItemWrapDefinition") ? 1 : 0]["struct_type"]["properties"].Value<JArray>();
+                                if (textureParameterArray != null)
                                 {
-                                    JArray renderSwitchProperties = AssetMainToken["properties"].Value<JArray>();
-                                    if (renderSwitchProperties != null)
+                                    JToken parameterValueToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(textureParameterArray, "ParameterValue");
+                                    if (parameterValueToken != null)
                                     {
-                                        JArray textureParameterArray = AssetsUtility.GetPropertyTagText<JArray>(renderSwitchProperties, "TextureParameterValues", "data");
-                                        textureParameterArray = textureParameterArray[textureParameterArray.Count() > 1 && !AssetsLoader.ExportType.Equals("AthenaItemWrapDefinition") ? 1 : 0]["struct_type"]["properties"].Value<JArray>();
-                                        if (textureParameterArray != null)
+                                        string texturePath = FoldersUtility.FixFortnitePath(parameterValueToken.Value<string>());
+                                        using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
                                         {
-                                            JToken parameterValueToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(textureParameterArray, "ParameterValue");
-                                            if (parameterValueToken != null)
+                                            if (image != null)
                                             {
-                                                string texturePath = FoldersUtility.FixFortnitePath(parameterValueToken.Value<string>());
-                                                using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
-                                                {
-                                                    if (image != null)
-                                                    {
-                                                        BitmapImage bmp = new BitmapImage();
-                                                        bmp.BeginInit();
-                                                        bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                                        bmp.StreamSource = image;
-                                                        bmp.EndInit();
-                                                        bmp.Freeze();
+                                                BitmapImage bmp = new BitmapImage();
+                                                bmp.BeginInit();
+                                                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                                bmp.StreamSource = image;
+                                                bmp.EndInit();
+                                                bmp.Freeze();
 
-                                                        IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
-                                                    }
-                                                }
-
-                                                if (AssetsLoader.ExportType == "AthenaItemWrapDefinition" && texturePath.Contains("WeaponRenders"))
-                                                {
-                                                    DrawAdditionalWrapImage(AssetProperties);
-                                                }
+                                                IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(3, 3, 509, 509));
                                             }
+                                        }
+
+                                        if (AssetsLoader.ExportType == "AthenaItemWrapDefinition" && texturePath.Contains("WeaponRenders"))
+                                        {
+                                            DrawAdditionalWrapImage(AssetProperties);
                                         }
                                     }
                                 }
@@ -266,8 +254,8 @@ namespace FModel.Methods.Assets.IconCreator
 
         private static void DrawAdditionalWrapImage(JArray AssetProperties)
         {
-            JToken largePreviewImage = AssetProperties.Where(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage")).FirstOrDefault();
-            JToken smallPreviewImage = AssetProperties.Where(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage")).FirstOrDefault();
+            JToken largePreviewImage = AssetProperties.FirstOrDefault(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage"));
+            JToken smallPreviewImage = AssetProperties.FirstOrDefault(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage"));
             if (largePreviewImage != null || smallPreviewImage != null)
             {
                 JToken assetPathName =

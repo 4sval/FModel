@@ -1,9 +1,6 @@
 using FModel.Methods.Utilities;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PakReader;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -13,8 +10,10 @@ using System.Windows.Media.Imaging;
 
 namespace FModel.Methods.Assets.IconCreator.ChallengeID
 {
-    class ChallengeRewards
+    static class ChallengeRewards
     {
+        private const string UNKNOWN_ICON = "pack://application:,,,/Resources/unknown512.png";
+
         public static void DrawRewards(string path, string quantity, int y)
         {
             if (!string.IsNullOrEmpty(path))
@@ -64,43 +63,40 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             if (!string.IsNullOrEmpty(assetPath))
             {
                 string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath.Substring(0, assetPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
-                if (jsonData != null)
+                if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
                 {
-                    if (AssetsUtility.IsValidJson(jsonData))
+                    JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                    if (AssetMainToken != null)
                     {
-                        JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
-                        if (AssetMainToken != null)
+                        JArray propertiesArray = AssetMainToken["rows"].Value<JArray>();
+                        if (propertiesArray != null)
                         {
-                            JArray propertiesArray = AssetMainToken["rows"].Value<JArray>();
-                            if (propertiesArray != null)
+                            JArray target = AssetsUtility.GetPropertyTagItemData<JArray>(propertiesArray, bannerName, "properties");
+                            if (target != null)
                             {
-                                JArray target = AssetsUtility.GetPropertyTagItemData<JArray>(propertiesArray, bannerName, "properties");
-                                if (target != null)
+                                JToken largeImage = target.FirstOrDefault(x => string.Equals(x["name"].Value<string>(), "LargeImage"));
+                                JToken smallImage = target.FirstOrDefault(x => string.Equals(x["name"].Value<string>(), "SmallImage"));
+                                if (largeImage != null || smallImage != null)
                                 {
-                                    JToken largeImage = target.Where(x => string.Equals(x["name"].Value<string>(), "LargeImage")).FirstOrDefault();
-                                    JToken smallImage = target.Where(x => string.Equals(x["name"].Value<string>(), "SmallImage")).FirstOrDefault();
-                                    if (largeImage != null || smallImage != null)
+                                    JToken assetPathName =
+                                        largeImage != null ? largeImage["tag_data"]["asset_path_name"] :
+                                        smallImage != null ? smallImage["tag_data"]["asset_path_name"] : null;
+
+                                    if (assetPathName != null)
                                     {
-                                        JToken assetPathName =
-                                            largeImage != null ? largeImage["tag_data"]["asset_path_name"] :
-                                            smallImage != null ? smallImage["tag_data"]["asset_path_name"] : null;
-
-                                        if (assetPathName != null)
+                                        string texturePath = FoldersUtility.FixFortnitePath(assetPathName.Value<string>());
+                                        using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
                                         {
-                                            string texturePath = FoldersUtility.FixFortnitePath(assetPathName.Value<string>());
-                                            using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
+                                            if (image != null)
                                             {
-                                                if (image != null)
-                                                {
-                                                    BitmapImage bmp = new BitmapImage();
-                                                    bmp.BeginInit();
-                                                    bmp.CacheOption = BitmapCacheOption.OnLoad;
-                                                    bmp.StreamSource = image;
-                                                    bmp.EndInit();
-                                                    bmp.Freeze();
+                                                BitmapImage bmp = new BitmapImage();
+                                                bmp.BeginInit();
+                                                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                                                bmp.StreamSource = image;
+                                                bmp.EndInit();
+                                                bmp.Freeze();
 
-                                                    IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(902, y + 3, 64, 64));
-                                                }
+                                                IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(902, y + 3, 64, 64));
                                             }
                                         }
                                     }
@@ -115,7 +111,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                 BitmapImage bmp = new BitmapImage();
                 bmp.BeginInit();
                 bmp.CacheOption = BitmapCacheOption.OnLoad;
-                bmp.StreamSource = Application.GetResourceStream(new Uri("pack://application:,,,/Resources/unknown512.png")).Stream;
+                bmp.StreamSource = Application.GetResourceStream(new Uri(UNKNOWN_ICON)).Stream;
                 bmp.EndInit();
                 bmp.Freeze();
                 IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(902, y + 3, 64, 64));
@@ -174,7 +170,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                 BitmapImage bmp = new BitmapImage();
                 bmp.BeginInit();
                 bmp.CacheOption = BitmapCacheOption.OnLoad;
-                bmp.StreamSource = Application.GetResourceStream(new Uri("pack://application:,,,/Resources/unknown512.png")).Stream;
+                bmp.StreamSource = Application.GetResourceStream(new Uri(UNKNOWN_ICON)).Stream;
                 bmp.EndInit();
                 bmp.Freeze();
                 IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(902, y + 3, 64, 64));
@@ -184,24 +180,21 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
         private static void DrawImageFromTagData(string assetPath, string quantity, int y, int mode = 0)
         {
             string jsonData = AssetsUtility.GetAssetJsonDataByPath(assetPath);
-            if (jsonData != null)
+            if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
             {
-                if (AssetsUtility.IsValidJson(jsonData))
+                JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                if (AssetMainToken != null)
                 {
-                    JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
-                    if (AssetMainToken != null)
-                    {
-                        JArray AssetProperties = AssetMainToken["properties"].Value<JArray>();
-                        DrawLargeSmallImage(AssetProperties, quantity, y, mode);
-                    }
+                    JArray AssetProperties = AssetMainToken["properties"].Value<JArray>();
+                    DrawLargeSmallImage(AssetProperties, quantity, y, mode);
                 }
             }
         }
 
         private static void DrawLargeSmallImage(JArray propertiesArray, string quantity, int y, int mode = 0)
         {
-            JToken largePreviewImage = propertiesArray.Where(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage")).FirstOrDefault();
-            JToken smallPreviewImage = propertiesArray.Where(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage")).FirstOrDefault();
+            JToken largePreviewImage = propertiesArray.FirstOrDefault(x => string.Equals(x["name"].Value<string>(), "LargePreviewImage"));
+            JToken smallPreviewImage = propertiesArray.FirstOrDefault(x => string.Equals(x["name"].Value<string>(), "SmallPreviewImage"));
             if (largePreviewImage != null || smallPreviewImage != null)
             {
                 JToken assetPathName =

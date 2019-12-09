@@ -1,18 +1,16 @@
 using FModel.Methods.Assets.IconCreator.ChallengeID;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PakReader;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
 
 namespace FModel.Methods.Utilities
 {
-    class ChallengesUtility
+    static class ChallengesUtility
     {
         private static readonly Random _Random = new Random(Environment.TickCount);
+        private const string UNKNOWN_ICON = "pack://application:,,,/Resources/unknown512.png";
 
         private static int RandomNext(int minValue, int maxValue)
         {
@@ -126,25 +124,22 @@ namespace FModel.Methods.Utilities
                 if (string.Equals(path, "/FortniteGame/Content/Athena/UI/Challenges/Art/TileImages/M_UI_ChallengeTile_PCB"))
                 {
                     string jsonData = AssetsUtility.GetAssetJsonDataByPath(path);
-                    if (jsonData != null)
+                    if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
                     {
-                        if (AssetsUtility.IsValidJson(jsonData))
+                        JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                        if (AssetMainToken != null)
                         {
-                            JToken AssetMainToken = AssetsUtility.ConvertJson2Token(jsonData);
-                            if (AssetMainToken != null)
+                            JArray renderSwitchProperties = AssetMainToken["properties"].Value<JArray>();
+                            if (renderSwitchProperties != null)
                             {
-                                JArray renderSwitchProperties = AssetMainToken["properties"].Value<JArray>();
-                                if (renderSwitchProperties != null)
+                                JArray textureParameterArray = AssetsUtility.GetPropertyTagText<JArray>(renderSwitchProperties, "TextureParameterValues", "data")[0]["struct_type"]["properties"].Value<JArray>();
+                                if (textureParameterArray != null)
                                 {
-                                    JArray textureParameterArray = AssetsUtility.GetPropertyTagText<JArray>(renderSwitchProperties, "TextureParameterValues", "data")[0]["struct_type"]["properties"].Value<JArray>();
-                                    if (textureParameterArray != null)
+                                    JToken parameterValueToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(textureParameterArray, "ParameterValue");
+                                    if (parameterValueToken != null)
                                     {
-                                        JToken parameterValueToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(textureParameterArray, "ParameterValue");
-                                        if (parameterValueToken != null)
-                                        {
-                                            string texturePath = FoldersUtility.FixFortnitePath(parameterValueToken.Value<string>());
-                                            return AssetsUtility.GetStreamImageFromPath(texturePath);
-                                        }
+                                        string texturePath = FoldersUtility.FixFortnitePath(parameterValueToken.Value<string>());
+                                        return AssetsUtility.GetStreamImageFromPath(texturePath);
                                     }
                                 }
                             }
@@ -156,7 +151,7 @@ namespace FModel.Methods.Utilities
                     return AssetsUtility.GetStreamImageFromPath(path);
                 }
             }
-            return Application.GetResourceStream(new Uri("pack://application:,,,/Resources/unknown512.png")).Stream;
+            return Application.GetResourceStream(new Uri(UNKNOWN_ICON)).Stream;
         }
     }
 }

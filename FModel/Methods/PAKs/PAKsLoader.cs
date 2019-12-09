@@ -301,7 +301,7 @@ namespace FModel.Methods.PAKs
 
                     //FILTER WITH THE OVERRIDED EQUALS METHOD (CHECKING FILE NAME AND FILE UNCOMPRESSED SIZE)
                     DebugHelper.WriteLine($".PAKs: Comparing...\t File Size Check: {FProp.Default.FDiffFileSize}");
-                    IEnumerable<FPakEntry> newAssets = LocalEntries.ToArray().Except(BackupEntries);
+                    IEnumerable<FPakEntry> newAssets = LocalEntries.Except(BackupEntries);
                     DebugHelper.WriteLine(".PAKs: Compared");
 
                     //ADD TO TREE

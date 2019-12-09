@@ -2,7 +2,6 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -69,14 +68,6 @@ namespace FModel.Forms
                     //INITIALIZATION
                     drawingContext.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), new Size(515, 515)));
 
-                    var w = 520 * numperrow;
-                    if (imageCount * 520 < 520 * numperrow)
-                    {
-                        w = imageCount * 520;
-                    }
-
-                    int h = int.Parse(Math.Ceiling(double.Parse(imageCount.ToString()) / numperrow).ToString(CultureInfo.InvariantCulture)) * 520;
-
                     int num = 1;
                     int curW = 0;
                     int curH = 0;
@@ -84,8 +75,6 @@ namespace FModel.Forms
 
                     for (int i = 0; i < imageCount; i++)
                     {
-                        int percentage = (i + 1) * 100 / imageCount;
-
                         BitmapImage source = new BitmapImage(new Uri(_imagePath[i]));
                         source.DecodePixelWidth = 515;
 
@@ -110,17 +99,14 @@ namespace FModel.Forms
                     }
                 }
 
-                if (drawingVisual != null)
-                {
-                    RenderTargetBitmap RTB = new RenderTargetBitmap((int)Math.Floor(drawingVisual.DescendantBounds.Width), (int)Math.Floor(drawingVisual.DescendantBounds.Height), 96, 96, PixelFormats.Pbgra32);
-                    RTB.Render(drawingVisual);
-                    RTB.Freeze(); //We freeze to apply the RTB to our imagesource from the UI Thread
+                RenderTargetBitmap RTB = new RenderTargetBitmap((int)Math.Floor(drawingVisual.DescendantBounds.Width), (int)Math.Floor(drawingVisual.DescendantBounds.Height), 96, 96, PixelFormats.Pbgra32);
+                RTB.Render(drawingVisual);
+                RTB.Freeze(); //We freeze to apply the RTB to our imagesource from the UI Thread
 
-                    this.Dispatcher.InvokeAsync(() =>
-                    {
-                        MergerPreview_Image.Source = BitmapFrame.Create(RTB); //thread safe and fast af
-                    });
-                }
+                this.Dispatcher.InvokeAsync(() =>
+                {
+                    MergerPreview_Image.Source = BitmapFrame.Create(RTB); //thread safe and fast af
+                });
 
             }).ContinueWith(TheTask =>
             {
@@ -156,7 +142,7 @@ namespace FModel.Forms
 
         private void AddFiles(string[] files)
         {
-            if (files.Count() > 0)
+            if (files.Length > 0)
             {
                 foreach (string file in files)
                 {

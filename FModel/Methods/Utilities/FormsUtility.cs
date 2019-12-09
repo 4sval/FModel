@@ -14,7 +14,7 @@ namespace FModel.Methods.Utilities
 
         public static Window GetOpenedWindow<T>(string name) where T : Window
         {
-            return Application.Current.Windows.OfType<T>().Where(w => w.Title.Equals(name)).FirstOrDefault();
+            return Application.Current.Windows.OfType<T>().FirstOrDefault(w => w.Title.Equals(name));
         }
     }
 }
