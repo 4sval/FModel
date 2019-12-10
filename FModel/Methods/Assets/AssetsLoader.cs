@@ -39,10 +39,10 @@ namespace FModel.Methods.Assets
                     DebugHelper.WriteLine("Assets: User selected " + item);
 
                     cToken.ThrowIfCancellationRequested(); //if clicked on 'Stop' it breaks at the following item
-                    FWindow.FMain.Dispatcher.InvokeAsync(() => //ui thread because if not, FCurrentAsset isn't updated in time to Auto Save a JSON Data for example
+                    while (!string.Equals(FWindow.FCurrentAsset, item))
                     {
                         FWindow.FCurrentAsset = item;
-                    });
+                    }
 
                     LoadAsset(treePath + "/" + item);
                 }
@@ -110,10 +110,10 @@ namespace FModel.Methods.Assets
                             target = asset.Substring(0, asset.LastIndexOf(".")); //uassets
                         }
 
-                        FWindow.FMain.Dispatcher.InvokeAsync(() => //ui thread because if not, FCurrentAsset isn't updated in time to Auto Save a JSON Data for example
+                        while (!string.Equals(FWindow.FCurrentAsset, Path.GetFileName(target)))
                         {
                             FWindow.FCurrentAsset = Path.GetFileName(target);
-                        });
+                        }
                         LoadAsset(target);
                     }
                 }
@@ -171,10 +171,10 @@ namespace FModel.Methods.Assets
                             target = asset.Substring(0, asset.LastIndexOf(".")); //uassets
                         }
 
-                        FWindow.FMain.Dispatcher.InvokeAsync(() => //ui thread because if not, FCurrentAsset isn't updated in time to Auto Save a JSON Data for example
+                        while (!string.Equals(FWindow.FCurrentAsset, Path.GetFileName(target)))
                         {
                             FWindow.FCurrentAsset = Path.GetFileName(target);
-                        });
+                        }
                         LoadAsset(target);
                     }
                 }
