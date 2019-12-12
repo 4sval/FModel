@@ -1,4 +1,4 @@
-﻿namespace FModel.Methods.Assets.IconCreator.AthenaID
+namespace FModel.Methods.Assets.IconCreator.AthenaID
 {
     static class CosmeticSeason
     {
@@ -19,7 +19,7 @@
                 string schapter = AssetTranslations.SearchTranslation("AthenaSeasonItemDefinitionInternal", "ChapterTextFormat", "Chapter {0}");
                 string sformat = AssetTranslations.SearchTranslation("AthenaSeasonItemDefinitionInternal", "ChapterSeasonTextFormat", "{0}, {1}");
 
-                stext = string.Format(introduced, string.Format(sformat, string.Format(schapter, int.Parse(s.Substring(1)) + 1), string.Format(stext, s.Substring(s.Length - 1))));
+                stext = string.Format(introduced, string.Format(sformat, string.Format(schapter, int.Parse(s.Substring(0, 1)) + 1), string.Format(stext, s.Substring(s.Length - 1))));
                 return stext;
             }
 
