@@ -487,14 +487,14 @@ namespace FModel.Methods.Utilities
             if (json.StartsWith("[") && json.EndsWith("]"))
             {
                 JArray AssetArray = JArray.FromObject(AssetData);
-                AssetMainToken = AssetArray[0];
+                AssetMainToken = AssetArray.Count() > 0 ? AssetArray[0] : null;
             }
             else if (json.StartsWith("{") && json.EndsWith("}"))
             {
                 AssetMainToken = AssetData;
             }
 
-            return AssetMainToken;
+            return !string.IsNullOrEmpty(AssetMainToken.ToString()) ? AssetMainToken : null;
         }
 
         public static T GetPropertyTag<T>(JArray properties, string name)

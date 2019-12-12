@@ -92,9 +92,9 @@ namespace FModel.Methods.Assets.IconCreator
                             RarityCollectionIndexes rColor = RarityCollectionIndexes.Uncommon;
                             switch (rarityToken != null ? rarityToken.Value<string>() : string.Empty)
                             {
-                                /*case "EFortRarity::Legendary": OLD IMPOSSIBLE (T9) but its EFortRarity doesn't exist anymore and T9 is now T7
+                                case "EFortRarity::Unattainable": //OLD IMPOSSIBLE (T9) but its EFortRarity doesn't exist anymore and T9 is now T7
                                     rColor = RarityCollectionIndexes.Impossible_T7;
-                                    break;*/
+                                    break;
                                 case "EFortRarity::Transcendent":
                                     rColor = RarityCollectionIndexes.Transcendent;
                                     break;
