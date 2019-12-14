@@ -271,8 +271,28 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                     JToken primaryAssetNameToken = token["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][1]["tag_data"];
                                     if (primaryAssetNameToken != null)
                                     {
+                                        string primaryAssetName = primaryAssetNameToken.Value<string>();
+
+                                        // Manual fix: QuestBundle_Event_Galileo Stages
+                                        if (assetPath.StartsWith("/FortniteGame/Content/Athena/Items/Quests/BattlePass/Season11/Galileo/"))
+                                        {
+                                            JArray objectivesGalileoArray = AssetsUtility.GetPropertyTagText<JArray>(AssetProperties, "Objectives", "data");
+                                            if (objectivesGalileoArray != null)
+                                            {
+                                                JToken questGalileoToken = objectivesGalileoArray[0]["struct_type"]["properties"][0]["tag_data"];
+                                                if (questGalileoToken != null)
+                                                {
+                                                    if (!string.Equals(primaryAssetName, questGalileoToken.Value<string>()))
+                                                    {
+                                                        int questGalileoStageId = int.Parse(questGalileoToken.Value<string>().Substring(questGalileoToken.Value<string>().Length - 1, 1)) + 1;
+                                                        primaryAssetName = questGalileoToken.Value<string>().Remove(questGalileoToken.Value<string>().Length - 1).Replace("questobj", "quest") + "_" + questGalileoStageId;
+                                                    }
+                                                }
+                                            }
+                                        }
+
                                         //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
-                                        string primaryAssetNameFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.Contains("/" + primaryAssetNameToken.Value<string>())).Select(d => d.Key).FirstOrDefault();
+                                        string primaryAssetNameFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.Contains("/" + primaryAssetName)).Select(d => d.Key).FirstOrDefault();
                                         if (!string.IsNullOrEmpty(primaryAssetNameFullPath))
                                         {
                                             // Prevents loops

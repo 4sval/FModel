@@ -494,7 +494,7 @@ namespace FModel.Methods.Utilities
                 AssetMainToken = AssetData;
             }
 
-            return !string.IsNullOrEmpty(AssetMainToken.ToString()) ? AssetMainToken : null;
+            return AssetMainToken != null && !string.IsNullOrEmpty(AssetMainToken.ToString()) ? AssetMainToken : null;
         }
 
         public static T GetPropertyTag<T>(JArray properties, string name)
