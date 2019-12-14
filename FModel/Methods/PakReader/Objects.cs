@@ -226,7 +226,9 @@ namespace PakReader
 
         public FPakEntry(BinaryReader reader, string mountPoint, int pakVersion)
         {
-            Name = mountPoint + reader.ReadString(FPakInfo.MAX_PACKAGE_PATH);
+            //replace .umap to .uasset to serialize umap files
+            //this will be refactored with the updated pak reader
+            Name = mountPoint + reader.ReadString(FPakInfo.MAX_PACKAGE_PATH).Replace(".umap", ".uasset");
 
             // FPakEntry is duplicated before each stored file, without a filename. So,
             // remember the serialized size of this structure to avoid recomputation later.
