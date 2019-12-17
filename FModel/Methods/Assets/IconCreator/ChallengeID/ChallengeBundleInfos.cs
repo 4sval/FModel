@@ -285,7 +285,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                                     if (!string.Equals(primaryAssetName, questGalileoToken.Value<string>()))
                                                     {
                                                         int questGalileoStageId = int.Parse(questGalileoToken.Value<string>().Substring(questGalileoToken.Value<string>().Length - 1, 1)) + 1;
-                                                        primaryAssetName = questGalileoToken.Value<string>().Remove(questGalileoToken.Value<string>().Length - 1).Replace("questobj", "quest") + "_" + questGalileoStageId;
+                                                        primaryAssetName = questGalileoToken.Value<string>().Remove(questGalileoToken.Value<string>().Length - 1).Replace("questobj", "quest").Replace("_npc_or_player", "") + "_" + questGalileoStageId;
                                                     }
                                                 }
                                             }
