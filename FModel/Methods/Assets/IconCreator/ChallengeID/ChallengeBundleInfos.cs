@@ -292,7 +292,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                         }
 
                                         //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
-                                        string primaryAssetNameFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.Contains("/" + primaryAssetName)).Select(d => d.Key).FirstOrDefault();
+                                        string primaryAssetNameFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + primaryAssetName.ToLowerInvariant())).Select(d => d.Key).FirstOrDefault();
                                         if (!string.IsNullOrEmpty(primaryAssetNameFullPath))
                                         {
                                             // Prevents loops
