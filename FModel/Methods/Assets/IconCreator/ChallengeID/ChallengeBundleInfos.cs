@@ -147,16 +147,16 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                             rewardQuantity = targetQuantity.Value<string>();
                                         }
 
-                                        BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity);
-                                        if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
+                                        BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity, assetPath);
+                                        if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount && string.Equals(item.TheAssetPath, currentData.TheAssetPath)))
                                         {
                                             BundleData.Add(currentData);
                                         }
                                     }
                                     else
                                     {
-                                        BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, "", "");
-                                        if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
+                                        BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, "", "", assetPath);
+                                        if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount && string.Equals(item.TheAssetPath, currentData.TheAssetPath)))
                                         {
                                             BundleData.Add(currentData);
                                         }
@@ -184,8 +184,8 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                                     rewardQuantity = hiddenQuantityToken.Value<string>();
                                                 }
 
-                                                BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity);
-                                                if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
+                                                BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity, assetPath);
+                                                if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount && string.Equals(item.TheAssetPath, currentData.TheAssetPath)))
                                                 {
                                                     BundleData.Add(currentData);
                                                 }
@@ -194,8 +194,8 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                     }
                                     else
                                     {
-                                        BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, "", "");
-                                        if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
+                                        BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, "", "", assetPath);
+                                        if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount && string.Equals(item.TheAssetPath, currentData.TheAssetPath)))
                                         {
                                             BundleData.Add(currentData);
                                         }
@@ -239,8 +239,8 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                                         rewardQuantity = quantityToken["tag_data"].Value<string>();
                                                     }
 
-                                                    BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity);
-                                                    if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
+                                                    BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity, assetPath);
+                                                    if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount && string.Equals(item.TheAssetPath, currentData.TheAssetPath)))
                                                     {
                                                         BundleData.Add(currentData);
                                                     }
@@ -253,8 +253,8 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                         }
                         else
                         {
-                            BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, "", "");
-                            if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount))
+                            BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, "", "", assetPath);
+                            if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount && string.Equals(item.TheAssetPath, currentData.TheAssetPath)))
                             {
                                 BundleData.Add(currentData);
                             }

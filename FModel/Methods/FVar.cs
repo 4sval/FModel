@@ -1,4 +1,4 @@
-﻿using PakReader;
+using PakReader;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -98,14 +98,16 @@ namespace FModel.Methods
         public string TheQuestUnlockType { get; set; }
         public string TheRewardPath { get; set; }
         public string TheRewardQuantity { get; set; }
+        public string TheAssetPath { get; set; }
 
-        internal BundleInfosEntry(string MyQuestDescription, long MyQuestCount, string MyQuestUnlockType, string MyRewardPath, string MyRewardQuantity)
+        internal BundleInfosEntry(string MyQuestDescription, long MyQuestCount, string MyQuestUnlockType, string MyRewardPath, string MyRewardQuantity, string MyAssetPath)
         {
             TheQuestDescription = MyQuestDescription;
             TheQuestCount = MyQuestCount;
             TheQuestUnlockType = MyQuestUnlockType;
             TheRewardPath = MyRewardPath;
             TheRewardQuantity = MyRewardQuantity;
+            TheAssetPath = MyAssetPath;
         }
 
         bool IEquatable<BundleInfosEntry>.Equals(BundleInfosEntry other)
