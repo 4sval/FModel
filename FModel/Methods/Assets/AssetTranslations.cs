@@ -1,4 +1,4 @@
-﻿using FModel.Methods.Utilities;
+using FModel.Methods.Utilities;
 using PakReader;
 using System;
 using System.Collections.Generic;
@@ -71,10 +71,26 @@ namespace FModel.Methods.Assets
         {
             if (HotfixLocResDict != null &&
                 HotfixLocResDict.ContainsKey(tNamespace) &&
-                HotfixLocResDict[tNamespace].ContainsKey(tKey) &&
-                HotfixLocResDict[tNamespace][tKey].ContainsKey(GetLanguageCode()))
+                HotfixLocResDict[tNamespace].ContainsKey(tKey))
             {
-                return HotfixLocResDict[tNamespace][tKey][GetLanguageCode()];
+                // If there is a default text in hotfix, it's changed.
+                bool isHotfixDefault = false;
+                if (HotfixLocResDict[tNamespace][tKey].ContainsKey("en"))
+                {
+                    ifNotFound = HotfixLocResDict[tNamespace][tKey]["en"];
+                    isHotfixDefault = true;
+                }
+
+                string hotfixString = HotfixLocResDict[tNamespace][tKey].ContainsKey(GetLanguageCode())
+                ? HotfixLocResDict[tNamespace][tKey][GetLanguageCode()]
+                : ifNotFound;
+
+                // ONLY if there is english in the hotfix.
+                // If the translation is empty, it will be the default text.
+                if (isHotfixDefault && !string.IsNullOrEmpty(ifNotFound) && string.IsNullOrEmpty(hotfixString))
+                    hotfixString = ifNotFound;
+
+                return hotfixString;
             }
             else if (FProp.Default.FLanguage == "English")
             {
@@ -150,13 +166,11 @@ namespace FModel.Methods.Assets
                                 try
                                 {
                                     string[] langParts = match.Value.Substring(1, match.Value.Length - 2).Split(new string[] { "\",\"" }, StringSplitOptions.None);
-
                                     HotfixLocResDict[txtNamespace][txtKey][langParts[0]] = langParts[1];
                                 }
                                 catch (IndexOutOfRangeException)
                                 {
                                     string[] langParts = match.Value.Substring(1, match.Value.Length - 2).Split(new string[] { "\", \"" }, StringSplitOptions.None);
-
                                     HotfixLocResDict[txtNamespace][txtKey][langParts[0]] = langParts[1];
                                 }
                             }
