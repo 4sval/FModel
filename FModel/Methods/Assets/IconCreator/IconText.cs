@@ -21,7 +21,9 @@ namespace FModel.Methods.Assets.IconCreator
         private static string _cosmeticItemDefinition;
         private static string _itemAction;
         private static string _maxStackSize;
+        private static string _miniMapIconBrushPath;
         private static IEnumerable<JToken> _userFacingFlagsToken;
+        private static IEnumerable<JToken> _userHeroFlagsToken;
 
         public static void DrawIconText(JArray AssetProperties)
         {
@@ -41,6 +43,7 @@ namespace FModel.Methods.Assets.IconCreator
             _itemAction = string.Empty;
             _maxStackSize = string.Empty;
             _userFacingFlagsToken = null;
+            _userHeroFlagsToken = null;
 
             JToken name_namespace = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "DisplayName", "namespace");
             JToken name_key = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "DisplayName", "key");
@@ -59,6 +62,8 @@ namespace FModel.Methods.Assets.IconCreator
             JToken ammo_data = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "AmmoData", "asset_path_name");
 
             JArray gTagsArray = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "GameplayTags", "gameplay_tags");
+            JArray hTagsArray = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "RequiredGPTags", "gameplay_tags");
+            JArray wTagsArray = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "MiniMapIconBrush", "properties");
 
             if (name_namespace != null && name_key != null && name_source_string != null)
             {
@@ -134,6 +139,16 @@ namespace FModel.Methods.Assets.IconCreator
 
                 _userFacingFlagsToken = gTagsArray.Children<JToken>().Where(x => x.ToString().StartsWith("Cosmetics.UserFacingFlags."));
             }
+
+            if (hTagsArray != null)
+                _userHeroFlagsToken = hTagsArray.Children<JToken>().Where(x => x.ToString().StartsWith("Unlocks.Class."));
+
+            if (wTagsArray != null)
+            {
+                JToken resourceObjectToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(wTagsArray, "ResourceObject");
+                if (resourceObjectToken != null)
+                    _miniMapIconBrushPath = FoldersUtility.FixFortnitePath(resourceObjectToken.Value<string>());
+            }
         }
 
         private static void DrawTextVariables(JArray AssetProperties)
@@ -185,6 +200,33 @@ namespace FModel.Methods.Assets.IconCreator
                 }
                 IconUserFacingFlags.xCoords = 4 - 25; //reset uFF coords
             }
+
+            if (_userHeroFlagsToken != null)
+            {
+                foreach (JToken uFF in _userHeroFlagsToken)
+                {
+                    IconUserFacingFlags.DrawHeroFacingFlag(uFF);
+                }
+                IconUserFacingFlags.xCoords = 4 - 25; //reset uFF coords
+            }
+
+            if (!string.IsNullOrEmpty(_miniMapIconBrushPath))
+                using (System.IO.Stream image = AssetsUtility.GetStreamImageFromPath(_miniMapIconBrushPath))
+                {
+                    if (image != null)
+                    {
+                        System.Windows.Media.Imaging.BitmapImage bmp = new System.Windows.Media.Imaging.BitmapImage();
+                        bmp.BeginInit();
+                        bmp.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                        bmp.StreamSource = image;
+                        bmp.EndInit();
+                        bmp.Freeze();
+
+                        IconUserFacingFlags.xCoords += 25;
+                        IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(IconUserFacingFlags.xCoords, 4, 25, 25));
+                        IconUserFacingFlags.xCoords = 4 - 25; //reset uFF coords
+                    }
+                }
         }
 
         private static void DrawDisplayName(string DisplayName)

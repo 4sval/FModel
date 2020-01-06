@@ -91,6 +91,8 @@
                 <MenuItem Header="Images Merger" InputGestureText="F4"  Command="{x:Static commands:FModel_Commands.MergeImages}"/>
             </MenuItem>
             <MenuItem Header="Help">
+                <MenuItem x:Name="MI_Changelog" Header="Changelog" Click="MI_Changelog_Click"/>
+                <MenuItem x:Name="MI_BugReports" Header="Bugs Report" Click="MI_BugReports_Click"/>
                 <MenuItem x:Name="MI_About" Header="About FModel" Click="MI_About_Click">
                     <MenuItem.Icon>
                         <Image Source="Resources/info_16x.png" Width="16" Height="16"/>

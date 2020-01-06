@@ -220,6 +220,14 @@ namespace FModel
             }
             else { FormsUtility.GetOpenedWindow<Window>("Images Merger").Focus(); }
         }
+        private void MI_Changelog_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/iAmAsval/FModel/releases/latest");
+        }
+        private void MI_BugReports_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/iAmAsval/FModel/issues/new");
+        }
         private void MI_About_Click(object sender, RoutedEventArgs e)
         {
             DebugHelper.WriteLine("FWindow: About");
