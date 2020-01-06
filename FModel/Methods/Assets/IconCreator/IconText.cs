@@ -42,6 +42,7 @@ namespace FModel.Methods.Assets.IconCreator
             _cosmeticItemDefinition = string.Empty;
             _itemAction = string.Empty;
             _maxStackSize = string.Empty;
+            _miniMapIconBrushPath = string.Empty;
             _userFacingFlagsToken = null;
             _userHeroFlagsToken = null;
 
