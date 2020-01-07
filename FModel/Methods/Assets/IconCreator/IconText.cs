@@ -3,6 +3,7 @@ using FModel.Methods.Assets.IconCreator.HeroID;
 using FModel.Methods.Assets.IconCreator.WeaponID;
 using FModel.Methods.Utilities;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace FModel.Methods.Assets.IconCreator
         private static string _miniMapIconBrushPath;
         private static IEnumerable<JToken> _userFacingFlagsToken;
         private static IEnumerable<JToken> _userHeroFlagsToken;
+        private static IEnumerable<JToken> _userWeaponFlagsToken;
 
         public static void DrawIconText(JArray AssetProperties)
         {
@@ -45,6 +47,7 @@ namespace FModel.Methods.Assets.IconCreator
             _miniMapIconBrushPath = string.Empty;
             _userFacingFlagsToken = null;
             _userHeroFlagsToken = null;
+            _userWeaponFlagsToken = null;
 
             JToken name_namespace = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "DisplayName", "namespace");
             JToken name_key = AssetsUtility.GetPropertyTagText<JToken>(AssetProperties, "DisplayName", "key");
@@ -64,7 +67,8 @@ namespace FModel.Methods.Assets.IconCreator
 
             JArray gTagsArray = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "GameplayTags", "gameplay_tags");
             JArray hTagsArray = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "RequiredGPTags", "gameplay_tags");
-            JArray wTagsArray = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "MiniMapIconBrush", "properties");
+            JArray wTagsArray = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "AnalyticTags", "gameplay_tags");
+            JArray MiniMapIconArray = AssetsUtility.GetPropertyTagStruct<JArray>(AssetProperties, "MiniMapIconBrush", "properties");
 
             if (name_namespace != null && name_key != null && name_source_string != null)
             {
@@ -145,8 +149,10 @@ namespace FModel.Methods.Assets.IconCreator
                 _userHeroFlagsToken = hTagsArray.Children<JToken>().Where(x => x.ToString().StartsWith("Unlocks.Class."));
 
             if (wTagsArray != null)
+                _userWeaponFlagsToken = wTagsArray.Children<JToken>().Where(x => x.ToString().StartsWith("Weapon.Ranged.", StringComparison.InvariantCultureIgnoreCase));
+            else if (MiniMapIconArray != null)
             {
-                JToken resourceObjectToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(wTagsArray, "ResourceObject");
+                JToken resourceObjectToken = AssetsUtility.GetPropertyTagOuterImport<JToken>(MiniMapIconArray, "ResourceObject");
                 if (resourceObjectToken != null)
                     _miniMapIconBrushPath = FoldersUtility.FixFortnitePath(resourceObjectToken.Value<string>());
             }
@@ -211,7 +217,16 @@ namespace FModel.Methods.Assets.IconCreator
                 IconUserFacingFlags.xCoords = 4 - 25; //reset uFF coords
             }
 
-            if (!string.IsNullOrEmpty(_miniMapIconBrushPath))
+            if (_userWeaponFlagsToken != null)
+            {
+                foreach (JToken uFF in _userWeaponFlagsToken)
+                {
+                    IconUserFacingFlags.DrawWeaponFacingFlag(uFF);
+                }
+                IconUserFacingFlags.xCoords = 4 - 25; //reset uFF coords
+            }
+
+            if (!string.IsNullOrEmpty(_miniMapIconBrushPath) && !_miniMapIconBrushPath.Contains("UI_Radar_EnemyDot_White"))
                 using (System.IO.Stream image = AssetsUtility.GetStreamImageFromPath(_miniMapIconBrushPath))
                 {
                     if (image != null)

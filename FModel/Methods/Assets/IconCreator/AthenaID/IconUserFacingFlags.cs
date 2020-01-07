@@ -2,23 +2,27 @@ using FModel.Methods.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using FProp = FModel.Properties.Settings;
 
 namespace FModel.Methods.Assets.IconCreator.AthenaID
 {
     static class IconUserFacingFlags
     {
-        private static JArray ItemCategoriesArray { get; set; }
-        private static JArray HeroItemCategoriesArray { get; set; }
+        private static JArray TertiaryCategoriesDataArray { get; set; }
+        private static JArray SecondaryCategoriesDataArray { get; set; }
         public static int xCoords = 4 - 25;
         private const string PET_CUSTOM_ICON = "pack://application:,,,/Resources/T-Icon-Pets-64.png";
         private const string QUEST_CUSTOM_ICON = "pack://application:,,,/Resources/T-Icon-Quests-64.png";
 
         public static void DrawUserFacingFlag(JToken uFF)
         {
-            if (ItemCategoriesArray == null)
+            if (TertiaryCategoriesDataArray == null)
             {
                 string jsonData = AssetsUtility.GetAssetJsonDataByPath("/FortniteGame/Content/Items/ItemCategories", true);
                 if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
@@ -28,7 +32,7 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                     JToken tertiaryCategoriesToken = AssetsUtility.GetPropertyTag<JToken>(AssetArray[0]["properties"].Value<JArray>(), "TertiaryCategories");
                     if (tertiaryCategoriesToken != null)
                     {
-                        ItemCategoriesArray = tertiaryCategoriesToken["data"].Value<JArray>();
+                        TertiaryCategoriesDataArray = tertiaryCategoriesToken["data"].Value<JArray>();
 
                         string uFFTargeted = uFF.Value<string>().Substring("Cosmetics.UserFacingFlags.".Length);
                         SearchUserFacingFlag(uFFTargeted);
@@ -44,7 +48,7 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
 
         public static void DrawHeroFacingFlag(JToken uFF)
         {
-            if (HeroItemCategoriesArray == null)
+            if (SecondaryCategoriesDataArray == null)
             {
                 string jsonData = AssetsUtility.GetAssetJsonDataByPath("/FortniteGame/Content/Items/ItemCategories", true);
                 if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
@@ -54,7 +58,7 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                     JToken secondaryCategoriesToken = AssetsUtility.GetPropertyTag<JToken>(AssetArray[0]["properties"].Value<JArray>(), "SecondaryCategories");
                     if (secondaryCategoriesToken != null)
                     {
-                        HeroItemCategoriesArray = secondaryCategoriesToken["data"].Value<JArray>();
+                        SecondaryCategoriesDataArray = secondaryCategoriesToken["data"].Value<JArray>();
 
                         string uFFTargeted = uFF.Value<string>().Substring("Unlocks.Class.".Length);
                         SearchHeroFacingFlag(uFFTargeted);
@@ -68,9 +72,52 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
             }
         }
 
+        public static void DrawWeaponFacingFlag(JToken uFF)
+        {
+            if (SecondaryCategoriesDataArray == null)
+            {
+                string jsonData = AssetsUtility.GetAssetJsonDataByPath("/FortniteGame/Content/Items/ItemCategories", true);
+                if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
+                {
+                    dynamic AssetData = JsonConvert.DeserializeObject(jsonData);
+                    JArray AssetArray = JArray.FromObject(AssetData);
+                    JToken secondaryCategoriesToken = AssetsUtility.GetPropertyTag<JToken>(AssetArray[0]["properties"].Value<JArray>(), "SecondaryCategories");
+                    if (secondaryCategoriesToken != null)
+                    {
+                        SecondaryCategoriesDataArray = secondaryCategoriesToken["data"].Value<JArray>();
+
+                        string uFFTargeted = uFF.Value<string>();
+                        SearchWeaponFacingFlag(uFFTargeted);
+                    }
+                }
+            }
+            else
+            {
+                string uFFTargeted = uFF.Value<string>();
+                SearchWeaponFacingFlag(uFFTargeted);
+            }
+        }
+
+        private static void SearchWeaponFacingFlag(string uFFTarget)
+        {
+            foreach (JToken data in SecondaryCategoriesDataArray)
+            {
+                JArray propertiesArray = data["struct_type"]["properties"].Value<JArray>();
+                if (propertiesArray != null)
+                {
+                    JArray wTagsArray = AssetsUtility.GetPropertyTagStruct<JArray>(propertiesArray, "TagContainer", "gameplay_tags");
+                    if (wTagsArray != null)
+                    {
+                        if (wTagsArray.FirstOrDefault(i => i.Value<string>().ToLowerInvariant().Contains(uFFTarget.ToLowerInvariant())) != null)
+                            GetUFFImage(propertiesArray);
+                    }
+                }
+            }
+        }
+
         private static void SearchHeroFacingFlag(string uFFTarget)
         {
-            foreach (JToken data in HeroItemCategoriesArray)
+            foreach (JToken data in SecondaryCategoriesDataArray)
             {
                 JArray propertiesArray = data["struct_type"]["properties"].Value<JArray>();
                 if (propertiesArray != null)
@@ -90,7 +137,7 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
 
         private static void SearchUserFacingFlag(string uFFTarget)
         {
-            foreach (JToken data in ItemCategoriesArray)
+            foreach (JToken data in TertiaryCategoriesDataArray)
             {
                 JArray propertiesArray = data["struct_type"]["properties"].Value<JArray>();
                 if (propertiesArray != null)
