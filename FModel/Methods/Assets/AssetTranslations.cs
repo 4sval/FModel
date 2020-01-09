@@ -10,7 +10,7 @@ namespace FModel.Methods.Assets
 {
     static class AssetTranslations
     {
-        public static Dictionary<string, Dictionary<string, Dictionary<string, string>>> HotfixLocResDict { get; set; } //namespace -> key -> language -> string
+        public static Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, string>>>> HotfixLocResDict { get; set; } //namespace -> key -> language -> string
         public static Dictionary<string, Dictionary<string, string>> BRLocResDict { get; set; } //namespace -> key -> string
         public static Dictionary<string, Dictionary<string, string>> STWLocResDict { get; set; } //namespace -> key -> string
 
@@ -69,21 +69,24 @@ namespace FModel.Methods.Assets
 
         public static string SearchTranslation(string tNamespace, string tKey, string ifNotFound)
         {
-            if (HotfixLocResDict != null &&
-                HotfixLocResDict.ContainsKey(tNamespace) &&
-                HotfixLocResDict[tNamespace].ContainsKey(tKey))
+            if (HotfixLocResDict != null
+                && HotfixLocResDict.ContainsKey(tNamespace)
+                && HotfixLocResDict[tNamespace].ContainsKey(tKey)
+                && HotfixLocResDict[tNamespace][tKey].ContainsKey(ifNotFound))
             {
+                string ifNotFoundTemp = ifNotFound;
+
                 // If there is a default text in hotfix, it's changed.
                 bool isHotfixDefault = false;
                 if (HotfixLocResDict[tNamespace][tKey].ContainsKey("en"))
                 {
-                    ifNotFound = HotfixLocResDict[tNamespace][tKey]["en"];
+                    ifNotFound = HotfixLocResDict[tNamespace][tKey][ifNotFound]["en"];
                     isHotfixDefault = true;
                 }
 
-                string hotfixString = HotfixLocResDict[tNamespace][tKey].ContainsKey(GetLanguageCode())
-                ? HotfixLocResDict[tNamespace][tKey][GetLanguageCode()]
-                : ifNotFound;
+                string hotfixString = HotfixLocResDict[tNamespace][tKey][ifNotFoundTemp].ContainsKey(GetLanguageCode())
+                    ? HotfixLocResDict[tNamespace][tKey][ifNotFoundTemp][GetLanguageCode()]
+                    : ifNotFound;
 
                 // ONLY if there is english in the hotfix.
                 // If the translation is empty, it will be the default text.
@@ -143,7 +146,7 @@ namespace FModel.Methods.Assets
             if (File.Exists(pdd + "a22d837b6a2b46349421259c0a5411bf"))
             {
                 DebugHelper.WriteLine(".PAKs: Populating hotfixed string dictionary at " + pdd + "a22d837b6a2b46349421259c0a5411bf");
-                HotfixLocResDict = new Dictionary<string, Dictionary<string, Dictionary<string, string>>> ();
+                HotfixLocResDict = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, string>>>>();
                 using (StreamReader sr = new StreamReader(File.Open(pdd + "a22d837b6a2b46349421259c0a5411bf", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
                 {
                     while (!sr.EndOfStream)
@@ -153,12 +156,19 @@ namespace FModel.Methods.Assets
                         {
                             string txtNamespace = GetValueFromParam(line, "Namespace=\"", "\",");
                             string txtKey = GetValueFromParam(line, "Key=\"", "\",");
+                            string txtNativeString = GetValueFromParam(line, "NativeString=\"", "\",");
 
                             string translations = GetValueFromParam(line, "LocalizedStrings=(", "))");
                             if (!translations.EndsWith(")")) { translations = translations + ")"; }
 
-                            if (!HotfixLocResDict.ContainsKey(txtNamespace)) { HotfixLocResDict[txtNamespace] = new Dictionary<string, Dictionary<string, string>>(); }
-                            if (!HotfixLocResDict[txtNamespace].ContainsKey(txtKey)) { HotfixLocResDict[txtNamespace][txtKey] = new Dictionary<string, string>(); }
+                            if (!HotfixLocResDict.ContainsKey(txtNamespace))
+                                HotfixLocResDict[txtNamespace] = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+
+                            if (!HotfixLocResDict[txtNamespace].ContainsKey(txtKey))
+                                HotfixLocResDict[txtNamespace][txtKey] = new Dictionary<string, Dictionary<string, string>>();
+
+                            if (!HotfixLocResDict[txtNamespace][txtKey].ContainsKey(txtNativeString))
+                                HotfixLocResDict[txtNamespace][txtKey][txtNativeString] = new Dictionary<string, string>();
 
                             Regex regex = new Regex(@"(?<=\().+?(?=\))");
                             foreach (Match match in regex.Matches(translations))
@@ -166,12 +176,12 @@ namespace FModel.Methods.Assets
                                 try
                                 {
                                     string[] langParts = match.Value.Substring(1, match.Value.Length - 2).Split(new string[] { "\",\"" }, StringSplitOptions.None);
-                                    HotfixLocResDict[txtNamespace][txtKey][langParts[0]] = langParts[1];
+                                    HotfixLocResDict[txtNamespace][txtKey][txtNativeString][langParts[0]] = langParts[1];
                                 }
                                 catch (IndexOutOfRangeException)
                                 {
                                     string[] langParts = match.Value.Substring(1, match.Value.Length - 2).Split(new string[] { "\", \"" }, StringSplitOptions.None);
-                                    HotfixLocResDict[txtNamespace][txtKey][langParts[0]] = langParts[1];
+                                    HotfixLocResDict[txtNamespace][txtKey][txtNativeString][langParts[0]] = langParts[1];
                                 }
                             }
                         }
