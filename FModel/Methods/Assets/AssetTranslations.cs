@@ -84,18 +84,20 @@ namespace FModel.Methods.Assets
                     isHotfixDefault = true;
                 }
 
-                string hotfixString = HotfixLocResDict[tNamespace][tKey][ifNotFoundTemp].ContainsKey(GetLanguageCode())
-                    ? HotfixLocResDict[tNamespace][tKey][ifNotFoundTemp][GetLanguageCode()]
-                    : ifNotFound;
+                if (HotfixLocResDict[tNamespace][tKey][ifNotFoundTemp].ContainsKey(GetLanguageCode()))
+                {
+                    string hotfixString = HotfixLocResDict[tNamespace][tKey][ifNotFoundTemp][GetLanguageCode()];
 
-                // ONLY if there is english in the hotfix.
-                // If the translation is empty, it will be the default text.
-                if (isHotfixDefault && !string.IsNullOrEmpty(ifNotFound) && string.IsNullOrEmpty(hotfixString))
-                    hotfixString = ifNotFound;
+                    // ONLY if there is english in the hotfix.
+                    // If the translation is empty, it will be the default text.
+                    if (isHotfixDefault && !string.IsNullOrEmpty(ifNotFound) && string.IsNullOrEmpty(hotfixString))
+                        hotfixString = ifNotFound;
 
-                return hotfixString;
+                    return hotfixString;
+                }
             }
-            else if (FProp.Default.FLanguage == "English")
+
+            if (FProp.Default.FLanguage == "English")
             {
                 return ifNotFound;
             }

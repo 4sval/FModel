@@ -43,23 +43,9 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                 JToken set_source_string = AssetsUtility.GetPropertyTagText<JToken>(setArray, "DisplayName", "source_string");
                 if (set_namespace != null && set_key != null && set_source_string != null)
                 {
-                    if (string.Equals(FProp.Default.FLanguage, "English"))
-                    {
-                        if (AssetTranslations.HotfixLocResDict != null &&
-                            AssetTranslations.HotfixLocResDict.ContainsKey(set_namespace.Value<string>()) &&
-                            AssetTranslations.HotfixLocResDict[set_namespace.Value<string>()].ContainsKey(set_key.Value<string>()) &&
-                            AssetTranslations.HotfixLocResDict[set_namespace.Value<string>()][set_key.Value<string>()].ContainsKey("en"))
-                        {
-                            return string.Format("\nPart of the {0} set.", AssetTranslations.HotfixLocResDict[set_namespace.Value<string>()][set_key.Value<string>()]["en"]);
-                        }
-                        return string.Format("\nPart of the {0} set.", set_source_string.Value<string>());
-                    }
-                    else
-                    {
-                        string cosmeticSet = AssetTranslations.SearchTranslation(set_namespace.Value<string>(), set_key.Value<string>(), set_source_string.Value<string>());
-                        string cosmeticPart = AssetTranslations.SearchTranslation("Fort.Cosmetics", "CosmeticItemDescription_SetMembership_NotRich", "\nPart of the {0} set.");
-                        return string.Format(cosmeticPart, cosmeticSet);
-                    }
+                    string cosmeticSet = AssetTranslations.SearchTranslation(set_namespace.Value<string>(), set_key.Value<string>(), set_source_string.Value<string>());
+                    string cosmeticPart = AssetTranslations.SearchTranslation("Fort.Cosmetics", "CosmeticItemDescription_SetMembership_NotRich", "\nPart of the {0} set.");
+                    return string.Format(cosmeticPart, cosmeticSet);
                 }
             }
             return string.Empty;
