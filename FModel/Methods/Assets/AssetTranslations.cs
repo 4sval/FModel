@@ -159,41 +159,30 @@ namespace FModel.Methods.Assets
 
                     foreach (string line in lines)
                     {
-                        if (line.StartsWith("+TextReplacements=(Category=Game,"))
-                        {
-                            string txtNamespace = GetValueFromParam(line, "Namespace=\"", "\",");
-                            string txtKey = GetValueFromParam(line, "Key=\"", "\",");
-                            string txtNativeString = GetValueFromParam(line, "NativeString=\"", "\",");
-
-                            string translations = GetValueFromParam(line, "LocalizedStrings=(", "))");
-                            if (!translations.EndsWith(")")) { translations = translations + ")"; }
-
-                            if (!HotfixLocResDict.ContainsKey(txtNamespace))
-                                HotfixLocResDict[txtNamespace] = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
-
-                            if (!HotfixLocResDict[txtNamespace].ContainsKey(txtKey))
-                                HotfixLocResDict[txtNamespace][txtKey] = new Dictionary<string, Dictionary<string, string>>();
-
-                            if (!HotfixLocResDict[txtNamespace][txtKey].ContainsKey(txtNativeString))
-                                HotfixLocResDict[txtNamespace][txtKey][txtNativeString] = new Dictionary<string, string>();
-
-                            Regex regex = new Regex(@"(?<=\().+?(?=\))");
-                            foreach (Match match in regex.Matches(translations))
-                            {
-                                try
-                                {
-                                    string[] langParts = match.Value.Substring(1, match.Value.Length - 2).Split(new string[] { "\",\"" }, StringSplitOptions.None);
-                                    HotfixLocResDict[txtNamespace][txtKey][txtNativeString][langParts[0]] = langParts[1];
-                                }
-                                catch (IndexOutOfRangeException)
-                                {
-                                    string[] langParts = match.Value.Substring(1, match.Value.Length - 2).Split(new string[] { "\", \"" }, StringSplitOptions.None);
-                                    HotfixLocResDict[txtNamespace][txtKey][txtNativeString][langParts[0]] = langParts[1];
-                                }
-                            }
-                        }
+                        HFedStringsProcess(line);
                     }
                     DebugHelper.WriteLine(".PAKs: Populated hotfixed string dictionary");
+                }
+                else
+                {
+                    DebugHelper.WriteLine(".PAKs: Hotfixed strings endpoint returned nothing!!! this isn't normal");
+                    string pdd = Path.GetFullPath(Path.Combine(FProp.Default.FPak_Path, @"..\..\PersistentDownloadDir\EMS\"));
+                    if (File.Exists(pdd + "a22d837b6a2b46349421259c0a5411bf"))
+                    {
+                        DebugHelper.WriteLine(".PAKs: Populating hotfixed string dictionary at " + pdd + "a22d837b6a2b46349421259c0a5411bf");
+                        HotfixLocResDict = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, string>>>>();
+                        using (StreamReader sr = new StreamReader(File.Open(pdd + "a22d837b6a2b46349421259c0a5411bf", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+                        {
+                            while (!sr.EndOfStream)
+                            {
+                                string line = sr.ReadLine();
+                                HFedStringsProcess(line);
+                            }
+                        }
+                        DebugHelper.WriteLine(".PAKs: Populated hotfixed string dictionary");
+                    }
+                    else
+                        DebugHelper.WriteLine(".PAKs: No such file or directory " + pdd + "a22d837b6a2b46349421259c0a5411bf");
                 }
             }
         }
@@ -203,6 +192,43 @@ namespace FModel.Methods.Assets
             int startIndex = fullLine.IndexOf(startWith, StringComparison.InvariantCultureIgnoreCase) + startWith.Length;
             int endIndex = fullLine.Substring(startIndex).ToString().IndexOf(endWith, StringComparison.InvariantCultureIgnoreCase);
             return fullLine.Substring(startIndex, endIndex);
+        }
+
+        private static void HFedStringsProcess(string line)
+        {
+            if (line.StartsWith("+TextReplacements=(Category=Game,"))
+            {
+                string txtNamespace = GetValueFromParam(line, "Namespace=\"", "\",");
+                string txtKey = GetValueFromParam(line, "Key=\"", "\",");
+                string txtNativeString = GetValueFromParam(line, "NativeString=\"", "\",");
+
+                string translations = GetValueFromParam(line, "LocalizedStrings=(", "))");
+                if (!translations.EndsWith(")")) { translations = translations + ")"; }
+
+                if (!HotfixLocResDict.ContainsKey(txtNamespace))
+                    HotfixLocResDict[txtNamespace] = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+
+                if (!HotfixLocResDict[txtNamespace].ContainsKey(txtKey))
+                    HotfixLocResDict[txtNamespace][txtKey] = new Dictionary<string, Dictionary<string, string>>();
+
+                if (!HotfixLocResDict[txtNamespace][txtKey].ContainsKey(txtNativeString))
+                    HotfixLocResDict[txtNamespace][txtKey][txtNativeString] = new Dictionary<string, string>();
+
+                Regex regex = new Regex(@"(?<=\().+?(?=\))");
+                foreach (Match match in regex.Matches(translations))
+                {
+                    try
+                    {
+                        string[] langParts = match.Value.Substring(1, match.Value.Length - 2).Split(new string[] { "\",\"" }, StringSplitOptions.None);
+                        HotfixLocResDict[txtNamespace][txtKey][txtNativeString][langParts[0]] = langParts[1];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        string[] langParts = match.Value.Substring(1, match.Value.Length - 2).Split(new string[] { "\", \"" }, StringSplitOptions.None);
+                        HotfixLocResDict[txtNamespace][txtKey][txtNativeString][langParts[0]] = langParts[1];
+                    }
+                }
+            }
         }
 
         private static string GetLanguageCode()

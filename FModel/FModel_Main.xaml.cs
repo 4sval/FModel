@@ -36,7 +36,7 @@ namespace FModel
 
             DebugHelper.WriteLine("AutoUpdater: Checking for updates");
             AutoUpdater.CheckForUpdateEvent += UIHelper.AutoUpdaterOnCheckForUpdateEvent;
-            AutoUpdater.Start("https://dl.dropbox.com/s/3kv2pukqu6tj1r0/FModel.xml?dl=0");
+            AutoUpdater.Start("https://cdn.asval.tk/d/FModel/FModel.xml");
 
             DebugHelper.WriteUserSettings();
 

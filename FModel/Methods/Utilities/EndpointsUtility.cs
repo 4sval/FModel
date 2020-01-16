@@ -9,7 +9,7 @@ namespace FModel.Methods.Utilities
 {
     static class EndpointsUtility
     {
-        private const string DROPBOX_JSON = "https://dl.dropbox.com/s/0ykcue03qweb98r/FModel.json?dl=0";
+        private const string DROPBOX_JSON = "https://cdn.asval.tk/d/FModel/FModel.json";
         private const string BENBOT_AES = "http://benbotfn.tk:8080/api/aes";
 
         public static string GetEndpoint(string url)
