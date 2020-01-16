@@ -1,3 +1,4 @@
+using FModel.Methods.Auth;
 using FModel.Methods.Utilities;
 using PakReader;
 using System;
@@ -144,16 +145,20 @@ namespace FModel.Methods.Assets
 
         public static void SetHotfixedLocResDict()
         {
-            string pdd = Path.GetFullPath(Path.Combine(FProp.Default.FPak_Path, @"..\..\PersistentDownloadDir\EMS\"));
-            if (File.Exists(pdd + "a22d837b6a2b46349421259c0a5411bf"))
+            if (!FProp.Default.ELauncherToken.StartsWith("eg1~") || AuthFlow.IsLauncherTokenExpired())
+                AuthFlow.SetOAuthLauncherToken();
+
+            if (!AuthFlow.IsLauncherTokenExpired() && FProp.Default.ELauncherToken.StartsWith("eg1~"))
             {
-                DebugHelper.WriteLine(".PAKs: Populating hotfixed string dictionary at " + pdd + "a22d837b6a2b46349421259c0a5411bf");
-                HotfixLocResDict = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, string>>>>();
-                using (StreamReader sr = new StreamReader(File.Open(pdd + "a22d837b6a2b46349421259c0a5411bf", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+                string response = Requests.GetLauncherEndpoint("https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/cloudstorage/system/a22d837b6a2b46349421259c0a5411bf");
+                if (!string.IsNullOrEmpty(response))
                 {
-                    while (!sr.EndOfStream)
+                    string[] lines = response.Split('\n');
+                    DebugHelper.WriteLine(".PAKs: Populating hotfixed string dictionary");
+                    HotfixLocResDict = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, string>>>>();
+
+                    foreach (string line in lines)
                     {
-                        string line = sr.ReadLine();
                         if (line.StartsWith("+TextReplacements=(Category=Game,"))
                         {
                             string txtNamespace = GetValueFromParam(line, "Namespace=\"", "\",");
@@ -188,11 +193,9 @@ namespace FModel.Methods.Assets
                             }
                         }
                     }
+                    DebugHelper.WriteLine(".PAKs: Populated hotfixed string dictionary");
                 }
-                DebugHelper.WriteLine(".PAKs: Populated hotfixed string dictionary");
             }
-            else
-                DebugHelper.WriteLine(".PAKs: No such file or directory " + pdd + "a22d837b6a2b46349421259c0a5411bf");
         }
 
         private static string GetValueFromParam(string fullLine, string startWith, string endWith)

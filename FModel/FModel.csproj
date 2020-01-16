@@ -242,6 +242,8 @@
     <Compile Include="Methods\Assets\IconCreator\Rarity.cs" />
     <Compile Include="Methods\Assets\IconCreator\WeaponID\IconAmmoData.cs" />
     <Compile Include="Methods\Assets\IconCreator\WeaponID\WeaponStats.cs" />
+    <Compile Include="Methods\Auth\AuthFlow.cs" />
+    <Compile Include="Methods\Auth\Requests.cs" />
     <Compile Include="Methods\BackupsManager\RegisterDownloadedBackups.cs" />
     <Compile Include="Methods\FindReplace\FindReplace.cs" />
     <Compile Include="Methods\FindReplace\FindReplaceDialog.xaml.cs">

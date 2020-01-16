@@ -76,14 +76,14 @@ namespace FModel.Methods.Utilities
             }
         }
 
-        public static string GetKeysFromBen()
+        public static string GetKeysFromBen(bool reload)
         {
             if (DLLImport.IsInternetAvailable())
             {
                 string EndpointContent = GetEndpoint(BENBOT_AES);
                 if (!string.IsNullOrEmpty(EndpointContent))
                 {
-                    if (string.IsNullOrEmpty(FProp.Default.FPak_MainAES))
+                    if (string.IsNullOrEmpty(FProp.Default.FPak_MainAES) || reload)
                     {
                         JToken mainKeyToken = JObject.Parse(EndpointContent).SelectToken("mainKey");
                         if (mainKeyToken != null)

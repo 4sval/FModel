@@ -30,7 +30,7 @@ namespace FModel.Methods.AESManager
 
                 if (PAKEntries.PAKEntriesList != null && PAKEntries.PAKEntriesList.Any())
                 {
-                    string KeysFromBen = EndpointsUtility.GetKeysFromBen();
+                    string KeysFromBen = EndpointsUtility.GetKeysFromBen(reload);
                     if (!string.IsNullOrEmpty(KeysFromBen))
                     {
                         Dictionary<string, string> KeysDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(KeysFromBen);
