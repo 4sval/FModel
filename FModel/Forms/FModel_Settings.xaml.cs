@@ -270,7 +270,7 @@ namespace FModel.Forms
                             bmp.StreamSource = image.BaseStream;
                             bmp.EndInit();
 
-                            drawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, opacity), new Rect(xPos, yPos, scale, scale));
+                            drawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, opacity), new Rect(xPos, yPos, bmp.Width * (scale / 515), bmp.Height * (scale / 515)));
                         }
                     }
                 }

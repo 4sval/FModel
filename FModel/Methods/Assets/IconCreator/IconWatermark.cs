@@ -23,7 +23,15 @@ namespace FModel.Methods.Assets.IconCreator
                         bmp.EndInit();
                         bmp.Freeze();
 
-                        IconCreator.ICDrawingContext.DrawImage(ImagesUtility.CreateTransparency(bmp, FProp.Default.FWatermarkOpacity), new Rect(FProp.Default.FWatermarkXPos, FProp.Default.FWatermarkYPos, FProp.Default.FWatermarkScale, FProp.Default.FWatermarkScale));
+                        IconCreator.ICDrawingContext.DrawImage(
+                            ImagesUtility.CreateTransparency(bmp, FProp.Default.FWatermarkOpacity),
+                            new Rect(
+                                FProp.Default.FWatermarkXPos,
+                                FProp.Default.FWatermarkYPos,
+                                bmp.Width * (FProp.Default.FWatermarkScale / 515),
+                                bmp.Height * (FProp.Default.FWatermarkScale / 515)
+                               )
+                            );
                     }
                 }
 
