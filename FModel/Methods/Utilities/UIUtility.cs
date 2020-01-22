@@ -79,8 +79,10 @@ namespace FModel.Methods.Utilities
             FWindow.FMain.Dispatcher.InvokeAsync(() =>
             {
                 BrushConverter bc = new BrushConverter();
-                TextRange tr = new TextRange(FWindow.FMain.ConsoleBox_Main.Document.ContentEnd, FWindow.FMain.ConsoleBox_Main.Document.ContentEnd);
-                tr.Text = _newLine ? $"{_textToDisplay}{Environment.NewLine}" : _textToDisplay;
+                TextRange tr = new TextRange(FWindow.FMain.ConsoleBox_Main.Document.ContentEnd, FWindow.FMain.ConsoleBox_Main.Document.ContentEnd)
+                {
+                    Text = _newLine ? $"{_textToDisplay}{Environment.NewLine}" : _textToDisplay
+                };
                 try
                 {
                     tr.ApplyPropertyValue(TextElement.ForegroundProperty,
@@ -119,10 +121,12 @@ namespace FModel.Methods.Utilities
 
         public static FindReplaceMgr SetFindReplaceDiag()
         {
-            FindReplaceMgr FRM = new FindReplaceMgr();
-            FRM.CurrentEditor = new TextEditorAdapter(FWindow.FMain.AssetPropertiesBox_Main);
-            FRM.ShowSearchIn = false;
-            FRM.OwnerWindow = FWindow.FMain;
+            FindReplaceMgr FRM = new FindReplaceMgr
+            {
+                CurrentEditor = new TextEditorAdapter(FWindow.FMain.AssetPropertiesBox_Main),
+                ShowSearchIn = false,
+                OwnerWindow = FWindow.FMain
+            };
 
             return FRM;
         }
@@ -188,9 +192,8 @@ namespace FModel.Methods.Utilities
                 }
                 else if (!string.IsNullOrEmpty(childName))
                 {
-                    FrameworkElement frameworkElement = child as FrameworkElement;
                     // If the child's name is set for search
-                    if (frameworkElement != null && frameworkElement.Name == childName)
+                    if (child is FrameworkElement frameworkElement && frameworkElement.Name == childName)
                     {
                         // if the child's name is of the request name
                         foundChild = (T)child;
