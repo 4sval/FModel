@@ -21,9 +21,16 @@
   <a href="https://discord.gg/fdkNYYQ">
       <img src="https://img.shields.io/discord/637265123144237061.svg?label=Discord&logo=discord&color=778cd4">
   </a>
-  <a href="https://www.paypal.me/FModel">
-    <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">
-  </a>
+  
+  <h6 align="center">This project is not my full time job, donations are greatly appreciated.</h6>
+  <p align="center">
+    <a href="https://www.paypal.me/FModel">
+      <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">
+    </a>
+    <a href="https://wakatime.com/badge/github/iAmAsval/FModel">
+      <img src="https://wakatime.com/badge/github/iAmAsval/FModel.svg">
+    </a>
+  </p>
 </p>
 
 ------
