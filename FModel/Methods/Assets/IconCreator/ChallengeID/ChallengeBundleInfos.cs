@@ -271,7 +271,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                     JToken primaryAssetNameToken = token["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][1]["tag_data"];
                                     if (primaryAssetNameToken != null)
                                     {
-                                        string primaryAssetName = GetChallengeStageContinuation(assetPath, primaryAssetNameToken.Value<string>(), AssetProperties);
+                                        string primaryAssetName = GetChallengeStageContinuation(assetPath, primaryAssetNameToken.Value<string>());
 
                                         //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
                                         string primaryAssetNameFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + primaryAssetName.ToLowerInvariant())).Select(d => d.Key).FirstOrDefault();
@@ -293,7 +293,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             }
         }
 
-        static string GetChallengeStageContinuation(string assetPath, string assetName, JArray AssetProperties)
+        static string GetChallengeStageContinuation(string assetPath, string assetName)
         {
             string assetPathTemp = System.IO.Path.GetFileNameWithoutExtension(assetPath);
             string assetPathTempN = assetPathTemp.Substring(assetPathTemp.LastIndexOf("_") + 1);
