@@ -271,25 +271,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                     JToken primaryAssetNameToken = token["struct_type"]["properties"][0]["tag_data"]["struct_type"]["properties"][1]["tag_data"];
                                     if (primaryAssetNameToken != null)
                                     {
-                                        string primaryAssetName = primaryAssetNameToken.Value<string>();
-
-                                        // Manual fix: QuestBundle_Event_Galileo Stages
-                                        if (assetPath.StartsWith("/FortniteGame/Content/Athena/Items/Quests/BattlePass/Season11/Galileo/"))
-                                        {
-                                            JArray objectivesGalileoArray = AssetsUtility.GetPropertyTagText<JArray>(AssetProperties, "Objectives", "data");
-                                            if (objectivesGalileoArray != null)
-                                            {
-                                                JToken questGalileoToken = objectivesGalileoArray[0]["struct_type"]["properties"][0]["tag_data"];
-                                                if (questGalileoToken != null)
-                                                {
-                                                    if (!string.Equals(primaryAssetName, questGalileoToken.Value<string>()))
-                                                    {
-                                                        int questGalileoStageId = int.Parse(questGalileoToken.Value<string>().Substring(questGalileoToken.Value<string>().Length - 1, 1)) + 1;
-                                                        primaryAssetName = questGalileoToken.Value<string>().Remove(questGalileoToken.Value<string>().Length - 1).Replace("questobj", "quest").Replace("_npc_or_player", "") + "_" + questGalileoStageId;
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        string primaryAssetName = GetChallengeStageContinuation(assetPath, primaryAssetNameToken.Value<string>(), AssetProperties);
 
                                         //this will catch the full path if asset exists to be able to grab his PakReader and List<FPakEntry>
                                         string primaryAssetNameFullPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + primaryAssetName.ToLowerInvariant())).Select(d => d.Key).FirstOrDefault();
@@ -309,6 +291,17 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                     }
                 }
             }
+        }
+
+        static string GetChallengeStageContinuation(string assetPath, string assetName, JArray AssetProperties)
+        {
+            string assetPathTemp = System.IO.Path.GetFileNameWithoutExtension(assetPath);
+            string assetPathTempN = assetPathTemp.Substring(assetPathTemp.LastIndexOf("_") + 1);
+            string assetNameTemp = assetName.Substring(assetName.LastIndexOf("_") + 1);
+            if (int.TryParse(assetPathTempN, out int assetNumber) && !int.TryParse(assetNameTemp, out _) && assetPathTemp.StartsWith(assetName))
+                assetName += $"_{assetNumber + 1}";
+
+            return assetName;
         }
     }
 }
