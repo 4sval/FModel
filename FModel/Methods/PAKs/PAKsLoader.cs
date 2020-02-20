@@ -274,14 +274,12 @@ namespace FModel.Methods.PAKs
                     List<FPakEntry> entries = new List<FPakEntry>();
                     while (reader.BaseStream.Position < reader.BaseStream.Length)
                     {
-                        FPakEntry entry = new FPakEntry();
-                        entry.Pos = reader.ReadInt64();
-                        entry.Size = reader.ReadInt64();
-                        entry.UncompressedSize = reader.ReadInt64();
-                        entry.Encrypted = reader.ReadBoolean();
-                        entry.StructSize = reader.ReadInt32();
-                        entry.Name = reader.ReadString();
-                        entry.CompressionMethod = reader.ReadInt32();
+                        FPakEntry entry = new FPakEntry(
+                            reader.ReadString(),
+                            reader.ReadInt64(),
+                            reader.ReadInt64(),
+                            reader.ReadInt64(),
+                            reader.ReadBytes(20), null, 0, 0, 0);
                         entries.Add(entry);
                     }
                     BackupEntries = entries.ToArray();

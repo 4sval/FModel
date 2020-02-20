@@ -288,7 +288,7 @@ namespace PakReader
             int l = reader.Reader.ReadInt32();
             for(int i = 0; i < l; i++)
             {
-                Map.Add(reader.ReadFName(), reader.Reader.ReadString(-1));
+                Map.Add(reader.ReadFName(), reader.Reader.ReadFString(-1));
             }
         }
     }

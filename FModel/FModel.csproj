@@ -326,7 +326,6 @@
     <Compile Include="Methods\PakReader\LocReader.cs" />
     <Compile Include="Methods\PakReader\MeshExporter.cs" />
     <Compile Include="Methods\PakReader\Objects.cs" />
-    <Compile Include="Methods\PakReader\PakIndex.cs" />
     <Compile Include="Methods\PakReader\PakReader.cs" />
     <Compile Include="Methods\PakReader\SigReader.cs" />
     <Compile Include="Methods\PakReader\ExportObject\UScript\UScriptStruct\FTexturePlatformData\FTexture2DMipMap.cs" />

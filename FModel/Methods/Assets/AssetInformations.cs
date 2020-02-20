@@ -37,7 +37,7 @@ namespace FModel.Methods.Assets
                     sb.Append(
                         "\n- PAK File:\t" + Path.GetFileName(reader.Name) +
                         "\n- Path:\t\t" + entry.Name +
-                        "\n- Position:\t" + entry.Pos +
+                        "\n- Position:\t" + entry.Offset +
                         "\n- Size:\t\t" + AssetsUtility.GetReadableSize(entry.UncompressedSize) +
                         "\n- Encrypted:\t" + entry.Encrypted +
                         "\n"

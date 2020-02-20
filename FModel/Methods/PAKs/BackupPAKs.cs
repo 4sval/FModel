@@ -64,13 +64,13 @@ namespace FModel.Methods.PAKs
 
                                 foreach (FPakEntry entry in reader.FileInfos)
                                 {
-                                    writer.Write(entry.Pos);
+                                    writer.Write(entry.Offset);
                                     writer.Write(entry.Size);
                                     writer.Write(entry.UncompressedSize);
                                     writer.Write(entry.Encrypted);
                                     writer.Write(entry.StructSize);
                                     writer.Write(entry.Name);
-                                    writer.Write(entry.CompressionMethod);
+                                    writer.Write(entry.CompressionMethodIndex);
                                 }
                             }
                         }

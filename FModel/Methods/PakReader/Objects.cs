@@ -51,14 +51,14 @@ namespace PakReader
         const int EncryptionAlign = 16; // AES-specific constant
         const int EncryptedBufferSize = 256; //?? TODO: check - may be value 16 will be better for performance
 
-        public FPakFile(BinaryReader Reader, BasePakEntry Info, byte[] key = null)
+        public FPakFile(BinaryReader Reader, FPakEntry Info, byte[] key = null)
         {
-            Reader.BaseStream.Seek(Info.Pos + Info.StructSize, SeekOrigin.Begin);
+            Reader.BaseStream.Seek(Info.Offset + Info.StructSize, SeekOrigin.Begin);
             if (Info.Encrypted)
             {
                 long encSize = (Info.Size & 15) == 0 ? Info.Size : ((Info.Size / 16) + 1) * 16;
                 byte[] encBuffer = Reader.ReadBytes((int)encSize);
-                data = AESDecryptor.DecryptAES(encBuffer, (int)encSize, key, key.Length).SubArray(0, (int)Info.UncompressedSize);
+                data = AESDecryptor.DecryptAES(encBuffer, key).SubArray(0, (int)Info.UncompressedSize);
                 if (encSize != Info.Size)
                 {
                     data = data.SubArray(0, (int)Info.UncompressedSize);
@@ -191,7 +191,7 @@ namespace PakReader
         public Stream GetStream() => new MemoryStream(data);
     }
 
-    internal enum PAK_VERSION
+    public enum PAK_VERSION
     {
         PAK_INITIAL = 1,
         PAK_NO_TIMESTAMPS = 2,
@@ -201,9 +201,48 @@ namespace PakReader
         PAK_DELETE_RECORDS = 6,                 // UE4.21+ - this constant is not used in UE4 code
         PAK_ENCRYPTION_KEY_GUID = 7,            // ... allows to use multiple encryption keys over the single project
         PAK_FNAME_BASED_COMPRESSION_METHOD = 8, // UE4.22+ - use string instead of enum for compression method
+        PAK_FROZEN_INDEX = 9,
+        PAK_PATH_HASH_INDEX = 10,
 
         PAK_LATEST_PLUS_ONE,
         PAK_LATEST = PAK_LATEST_PLUS_ONE - 1
+    }
+
+    public enum ECompressionFlags : uint
+    {
+        /** No compression																*/
+        COMPRESS_None = 0x00,
+        /** Compress with ZLIB - DEPRECATED, USE FNAME									*/
+        COMPRESS_ZLIB = 0x01,
+        /** Compress with GZIP - DEPRECATED, USE FNAME									*/
+        COMPRESS_GZIP = 0x02,
+        /** Compress with user defined callbacks - DEPRECATED, USE FNAME                */
+        COMPRESS_Custom = 0x04,
+        /** Joint of the previous ones to determine if old flags are being used			*/
+        COMPRESS_DeprecatedFormatFlagsMask = 0xF,
+
+
+        /** No flags specified /														*/
+        COMPRESS_NoFlags = 0x00,
+        /** Prefer compression that compresses smaller (ONLY VALID FOR COMPRESSION)		*/
+        COMPRESS_BiasMemory = 0x10,
+        /** Prefer compression that compresses faster (ONLY VALID FOR COMPRESSION)		*/
+        COMPRESS_BiasSpeed = 0x20,
+        /** Is the source buffer padded out	(ONLY VALID FOR UNCOMPRESS)					*/
+        COMPRESS_SourceIsPadded = 0x80,
+
+        /** Set of flags that are options are still allowed								*/
+        COMPRESS_OptionsFlagsMask = 0xF0,
+    }
+
+    public struct FSHAHash
+    {
+        public readonly byte[] Hash;
+
+        internal FSHAHash(BinaryReader reader)
+        {
+            Hash = reader.ReadBytes(20);
+        }
     }
 
     public abstract class BasePakEntry
@@ -216,75 +255,171 @@ namespace PakReader
         public int StructSize;
     }
 
-    public class FPakEntry : BasePakEntry, IEquatable<FPakEntry>
+    public struct FPakEntry : IEquatable<FPakEntry>
     {
-        public string Name;
-        public int CompressionMethod;
-        // public byte[] Hash; // 20 bytes
-        // public FPakCompressedBlock[] CompressionBlocks;
-        // public int CompressionBlockSize;
+        const byte Flag_None = 0x00;
+        const byte Flag_Encrypted = 0x01;
+        const byte Flag_Deleted = 0x02;
 
-        public FPakEntry(BinaryReader reader, string mountPoint, int pakVersion)
+        public bool Encrypted => (Flags & Flag_Encrypted) != 0;
+        public bool Deleted => (Flags & Flag_Deleted) != 0;
+
+        public readonly string Name;
+        public readonly long Offset;
+        public readonly long Size;
+        public readonly long UncompressedSize;
+        public readonly byte[] Hash; // why isn't this an FShaHash?
+        public readonly FPakCompressedBlock[] CompressionBlocks;
+        public readonly uint CompressionBlockSize;
+        public readonly uint CompressionMethodIndex;
+        public readonly byte Flags;
+
+        public readonly int StructSize;
+
+        internal FPakEntry(BinaryReader reader, string mountPoint, PAK_VERSION Version)
         {
-            //replace .umap to .uasset to serialize umap files
-            //this will be refactored with the updated pak reader
-            Name = mountPoint + reader.ReadString(FPakInfo.MAX_PACKAGE_PATH).Replace(".umap", ".uasset");
+            CompressionBlocks = null;
+            CompressionBlockSize = 0;
+            Flags = 0;
 
-            // FPakEntry is duplicated before each stored file, without a filename. So,
-            // remember the serialized size of this structure to avoid recomputation later.
-            long StartOffset = reader.BaseStream.Position;
-            Pos = reader.ReadInt64();
+            Name = mountPoint + reader.ReadFString(FPakInfo.MAX_PACKAGE_PATH).Replace(".umap", ".uasset");
+
+            var StartOffset = reader.BaseStream.Position;
+
+            Offset = reader.ReadInt64();
             Size = reader.ReadInt64();
             UncompressedSize = reader.ReadInt64();
-            CompressionMethod = reader.ReadInt32();
-
-            if (pakVersion < (int)PAK_VERSION.PAK_NO_TIMESTAMPS)
+            if (Version < PAK_VERSION.PAK_FNAME_BASED_COMPRESSION_METHOD)
             {
-                long timestamp = reader.ReadInt64();
-            }
-
-            /*Hash = */reader.ReadBytes(20);
-
-            if (pakVersion >= (int)PAK_VERSION.PAK_COMPRESSION_ENCRYPTION)
-            {
-                if (CompressionMethod != 0)
+                var LegacyCompressionMethod = reader.ReadInt32();
+                if (LegacyCompressionMethod == (int)ECompressionFlags.COMPRESS_None)
                 {
-                    /*CompressionBlocks = */reader.ReadTArray(() => new FPakCompressedBlock(reader));
+                    CompressionMethodIndex = 0;
                 }
-                Encrypted = reader.ReadBoolean();
-                /* CompressionBlockSize = */reader.ReadInt32();
-            }
-
-            if (pakVersion >= (int)PAK_VERSION.PAK_RELATIVE_CHUNK_OFFSETS)
-            {
-                // Convert relative compressed offsets to absolute
-                /*
-                for (int i = 0; i < CompressionBlocks?.Length; i++)
+                else if ((LegacyCompressionMethod & (int)ECompressionFlags.COMPRESS_ZLIB) != 0)
                 {
-                    CompressionBlocks[i].CompressedStart += Pos;
-                    CompressionBlocks[i].CompressedEnd += Pos;
+                    CompressionMethodIndex = 1;
                 }
-                */
+                else if ((LegacyCompressionMethod & (int)ECompressionFlags.COMPRESS_GZIP) != 0)
+                {
+                    CompressionMethodIndex = 2;
+                }
+                else if ((LegacyCompressionMethod & (int)ECompressionFlags.COMPRESS_Custom) != 0)
+                {
+                    CompressionMethodIndex = 3;
+                }
+                else
+                {
+                    // https://github.com/EpicGames/UnrealEngine/blob/8b6414ae4bca5f93b878afadcc41ab518b09984f/Engine/Source/Runtime/PakFile/Public/IPlatformFilePak.h#L441
+                    throw new FileLoadException(@"Found an unknown compression type in pak file, will need to be supported for legacy files");
+                }
+            }
+            else
+            {
+                CompressionMethodIndex = reader.ReadUInt32();
+            }
+            if (Version <= PAK_VERSION.PAK_INITIAL)
+            {
+                // Timestamp of type FDateTime, but the serializer only reads to the Ticks property (int64)
+                reader.ReadInt64();
+            }
+            Hash = reader.ReadBytes(20);
+            if (Version >= PAK_VERSION.PAK_COMPRESSION_ENCRYPTION)
+            {
+                if (CompressionMethodIndex != 0)
+                {
+                    CompressionBlocks = reader.ReadTArray(() => new FPakCompressedBlock(reader));
+                }
+                Flags = reader.ReadByte();
+                CompressionBlockSize = reader.ReadUInt32();
             }
 
+            // Used to seek ahead to the file data instead of parsing the entry again
             StructSize = (int)(reader.BaseStream.Position - StartOffset);
         }
 
-        // difference mode
+        internal FPakEntry(BinaryReader reader, string mountPoint)
+        {
+            CompressionBlocks = null;
+            CompressionBlockSize = 0;
+            Flags = 0;
+
+            Name = mountPoint + reader.ReadFString(FPakInfo.MAX_PACKAGE_PATH).Replace(".umap", ".uasset");
+
+            var StartOffset = reader.BaseStream.Position;
+
+            Offset = reader.ReadInt64();
+            Size = reader.ReadInt64();
+            UncompressedSize = reader.ReadInt64();
+            CompressionMethodIndex = reader.ReadUInt32();
+            Hash = reader.ReadBytes(20);
+            if (CompressionMethodIndex != 0)
+            {
+                CompressionBlocks = reader.ReadTArray(() => new FPakCompressedBlock(reader));
+            }
+            Flags = reader.ReadByte();
+            CompressionBlockSize = reader.ReadUInt32();
+
+            // Used to seek ahead to the file data instead of parsing the entry again
+            StructSize = (int)(reader.BaseStream.Position - StartOffset);
+        }
+
+        internal FPakEntry(string name, long offset, long size, long uncompressedSize, byte[] hash, FPakCompressedBlock[] compressionBlocks, uint compressionBlockSize, uint compressionMethodIndex, byte flags)
+        {
+            Name = name;
+            Offset = offset;
+            Size = size;
+            UncompressedSize = uncompressedSize;
+            Hash = hash;
+            CompressionBlocks = compressionBlocks;
+            CompressionBlockSize = compressionBlockSize;
+            CompressionMethodIndex = compressionMethodIndex;
+            Flags = flags;
+            StructSize = (int)GetSize(PAK_VERSION.PAK_LATEST, compressionMethodIndex, (uint)compressionBlocks.Length);
+        }
+
+        public static long GetSize(PAK_VERSION version, uint CompressionMethodIndex = 0, uint CompressionBlocksCount = 0)
+        {
+            long SerializedSize = sizeof(long) + sizeof(long) + sizeof(long) + 20;
+
+            if (version >= PAK_VERSION.PAK_FNAME_BASED_COMPRESSION_METHOD)
+            {
+                SerializedSize += sizeof(uint);
+            }
+            else
+            {
+                SerializedSize += sizeof(int); // Old CompressedMethod var from pre-fname based compression methods
+            }
+
+            if (version >= PAK_VERSION.PAK_COMPRESSION_ENCRYPTION)
+            {
+                SerializedSize += sizeof(byte) + sizeof(uint);
+                if (CompressionMethodIndex != 0)
+                {
+                    SerializedSize += sizeof(long) * 2 * CompressionBlocksCount + sizeof(int);
+                }
+            }
+            if (version < PAK_VERSION.PAK_NO_TIMESTAMPS)
+            {
+                // Timestamp
+                SerializedSize += sizeof(long);
+            }
+            return SerializedSize;
+        }
+
         public bool Equals(FPakEntry other)
         {
-            if (other is null)
+            if (other.GetType() != typeof(FPakEntry))
                 return false;
 
             return FProp.Default.FDiffFileSize ? this.Name == other.Name && this.UncompressedSize == other.UncompressedSize : this.Name == other.Name;
         }
-        public override bool Equals(object obj) => Equals(obj as FPakEntry);
-        public override int GetHashCode() => FProp.Default.FDiffFileSize ? (Name, UncompressedSize).GetHashCode() : (Name).GetHashCode();
+        public override bool Equals(object obj) => Equals((FPakEntry)obj);
 
-        public FPakEntry() { } // xml file
+        public override int GetHashCode() => FProp.Default.FDiffFileSize ? (Name, UncompressedSize).GetHashCode() : (Name).GetHashCode();
     }
 
-    internal struct FPakCompressedBlock
+    public struct FPakCompressedBlock
     {
         public long CompressedStart;
         public long CompressedEnd;
@@ -293,6 +428,11 @@ namespace PakReader
         {
             CompressedStart = reader.ReadInt64();
             CompressedEnd = reader.ReadInt64();
+        }
+        public FPakCompressedBlock(long compressedStart, long compressedEnd)
+        {
+            CompressedStart = compressedStart;
+            CompressedEnd = compressedEnd;
         }
     }
 

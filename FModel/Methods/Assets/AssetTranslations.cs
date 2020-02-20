@@ -17,50 +17,50 @@ namespace FModel.Methods.Assets
 
         public static void SetAssetTranslation(string language)
         {
-            string partialPath = "/FortniteGame/Content/Localization/Game_BR/{0}/Game_BR.locres";
+            string partialPath = "/FortniteGame/Content/Localization/Game_BR{0}/{1}/Game_BR.locres";
             switch (language)
             {
                 case "French":
-                    PopulateDict(string.Format(partialPath, "fr"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "fr"));
                     break;
                 case "German":
-                    PopulateDict(string.Format(partialPath, "de"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "de"));
                     break;
                 case "Italian":
-                    PopulateDict(string.Format(partialPath, "it"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "it"));
                     break;
                 case "Spanish":
-                    PopulateDict(string.Format(partialPath, "es"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "es"));
                     break;
                 case "Spanish (LA)":
-                    PopulateDict(string.Format(partialPath, "es-419"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "es-419"));
                     break;
                 case "Arabic":
-                    PopulateDict(string.Format(partialPath, "ar"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "ar"));
                     break;
                 case "Japanese":
-                    PopulateDict(string.Format(partialPath, "ja"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "ja"));
                     break;
                 case "Korean":
-                    PopulateDict(string.Format(partialPath, "ko"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "ko"));
                     break;
                 case "Polish":
-                    PopulateDict(string.Format(partialPath, "pl"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "pl"));
                     break;
                 case "Portuguese (Brazil)":
-                    PopulateDict(string.Format(partialPath, "pt-BR"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "pt-BR"));
                     break;
                 case "Russian":
-                    PopulateDict(string.Format(partialPath, "ru"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "ru"));
                     break;
                 case "Turkish":
-                    PopulateDict(string.Format(partialPath, "tr"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "tr"));
                     break;
                 case "Chinese (S)":
-                    PopulateDict(string.Format(partialPath, "zh-CN"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "zh-CN"));
                     break;
                 case "Traditional Chinese":
-                    PopulateDict(string.Format(partialPath, "zh-Hant"));
+                    PopulateDict(string.Format(partialPath, string.Empty, "zh-Hant"));
                     break;
                 default:
                     if (HotfixLocResDict == null) { SetHotfixedLocResDict(); } //once, no need to do more
