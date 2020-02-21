@@ -1,9 +1,11 @@
 using FModel.Methods.Auth;
 using FModel.Methods.Utilities;
+using Newtonsoft.Json;
 using PakReader;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using FProp = FModel.Properties.Settings;
 
@@ -17,50 +19,51 @@ namespace FModel.Methods.Assets
 
         public static void SetAssetTranslation(string language)
         {
-            string partialPath = "/FortniteGame/Content/Localization/Game_BR{0}/{1}/Game_BR.locres";
+            string locFolder = "/FortniteGame/Content/Localization/";
+            string locFileNameBase = "Game_BR";
             switch (language)
             {
                 case "French":
-                    PopulateDict(string.Format(partialPath, string.Empty, "fr"));
+                    PopulateDict(locFolder, locFileNameBase, "fr");
                     break;
                 case "German":
-                    PopulateDict(string.Format(partialPath, string.Empty, "de"));
+                    PopulateDict(locFolder, locFileNameBase, "de");
                     break;
                 case "Italian":
-                    PopulateDict(string.Format(partialPath, string.Empty, "it"));
+                    PopulateDict(locFolder, locFileNameBase, "it");
                     break;
                 case "Spanish":
-                    PopulateDict(string.Format(partialPath, string.Empty, "es"));
+                    PopulateDict(locFolder, locFileNameBase, "es");
                     break;
                 case "Spanish (LA)":
-                    PopulateDict(string.Format(partialPath, string.Empty, "es-419"));
+                    PopulateDict(locFolder, locFileNameBase, "es-419");
                     break;
                 case "Arabic":
-                    PopulateDict(string.Format(partialPath, string.Empty, "ar"));
+                    PopulateDict(locFolder, locFileNameBase, "ar");
                     break;
                 case "Japanese":
-                    PopulateDict(string.Format(partialPath, string.Empty, "ja"));
+                    PopulateDict(locFolder, locFileNameBase, "ja");
                     break;
                 case "Korean":
-                    PopulateDict(string.Format(partialPath, string.Empty, "ko"));
+                    PopulateDict(locFolder, locFileNameBase, "ko");
                     break;
                 case "Polish":
-                    PopulateDict(string.Format(partialPath, string.Empty, "pl"));
+                    PopulateDict(locFolder, locFileNameBase, "pl");
                     break;
                 case "Portuguese (Brazil)":
-                    PopulateDict(string.Format(partialPath, string.Empty, "pt-BR"));
+                    PopulateDict(locFolder, locFileNameBase, "pt-BR");
                     break;
                 case "Russian":
-                    PopulateDict(string.Format(partialPath, string.Empty, "ru"));
+                    PopulateDict(locFolder, locFileNameBase, "ru");
                     break;
                 case "Turkish":
-                    PopulateDict(string.Format(partialPath, string.Empty, "tr"));
+                    PopulateDict(locFolder, locFileNameBase, "tr");
                     break;
                 case "Chinese (S)":
-                    PopulateDict(string.Format(partialPath, string.Empty, "zh-CN"));
+                    PopulateDict(locFolder, locFileNameBase, "zh-CN");
                     break;
                 case "Traditional Chinese":
-                    PopulateDict(string.Format(partialPath, string.Empty, "zh-Hant"));
+                    PopulateDict(locFolder, locFileNameBase, "zh-Hant");
                     break;
                 default:
                     if (HotfixLocResDict == null) { SetHotfixedLocResDict(); } //once, no need to do more
@@ -116,13 +119,33 @@ namespace FModel.Methods.Assets
             }
         }
 
-        private static void PopulateDict(string LocResPath)
+        private static void PopulateDict(string folder, string fileName, string lang)
         {
-            DebugHelper.WriteLine(".PAKs: Loading " + LocResPath + " as the translation file");
+            string path = $"{folder}{fileName}/{lang}/{fileName}.locres";
+            DebugHelper.WriteLine(".PAKs: Loading " + path + " as the translation file");
 
             if (HotfixLocResDict == null) { SetHotfixedLocResDict(); } //once, no need to do more
-            BRLocResDict = GetLocResDict(LocResPath);
-            STWLocResDict = GetLocResDict(LocResPath.Replace("Game_BR", "Game_StW"));
+
+            Dictionary<string, Dictionary<string, string>> finalDict = new Dictionary<string, Dictionary<string, string>>();
+            foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
+            {
+                IEnumerable<string> locresFilesPath = PAKsFileInfos.Where(x => x.Name.StartsWith(folder + fileName) && x.Name.Contains($"/{lang}/") && x.Name.EndsWith(".locres")).Select(x => x.Name);
+                if (locresFilesPath.Any())
+                    foreach (string file in locresFilesPath)
+                    {
+                        var dict = GetLocResDict(file);
+                        foreach (var namespac in dict)
+                        {
+                            if (!finalDict.ContainsKey(namespac.Key))
+                                finalDict.Add(namespac.Key, new Dictionary<string, string>());
+
+                            foreach (var key in namespac.Value)
+                                finalDict[namespac.Key].Add(key.Key, key.Value);
+                        }
+                    }
+            }
+            BRLocResDict = finalDict;
+            STWLocResDict = GetLocResDict(path.Replace("Game_BR", "Game_StW"));
         }
 
         private static Dictionary<string, Dictionary<string, string>> GetLocResDict(string LocResPath)
