@@ -1,64 +1,59 @@
-<?xml version="1.0" encoding="utf-8"?>
+<SyntaxDefinition name="Ini" extensions=".cfg;.conf;.ini;.iss;"
+     xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 
-<!-- 
-INI/INF syntax highlighting
-Written by Ezra Altahan
-Created 18/07/2009 | Updated 16/10/2016
-Version 1.0
+  <Color name="Bool"         foreground="#61AFEF"/>
+  <Color name="Digits"       foreground="#D19A66"/>
+  <Color name="Comment"      foreground="SeaGreen"/>
+  <Color name="Punctuation"  foreground="#BBBBBB"/>
+  <Color name="String"       foreground="#98C379"/>
+  <Color name="String2"      foreground="#98C379"/>
 
-hello@exr.be
-https://github.com/ei
--->
+  <Color name="Section"      foreground="#7F848E"/>
 
-<SyntaxDefinition name="INI" extensions=".ini;.inf;.wer;.dof">
+  <Color name="PropertyName" foreground="#E06C6C"/>
 
-  <Environment>
-    <Default color="Black" bgcolor="#FFFFFF"/>
-    <Selection color="Black" bgcolor="#C3C3FF"/>
-    <LineNumbers color="Gray" bgcolor="#FFFFFF"/>
-    <CaretMarker color="#F0F0F1"/>
-    <VRuler color="#E0E0E5"/>
+  <RuleSet ignoreCase="true">
 
-    <FoldLine color="#A0A0A0" bgcolor="#FFFFFF"/>
-    <FoldMarker color="Black" bgcolor="#FFFFFF"/>
-    <SelectedFoldLine color="Black" bgcolor="#FFFFFF"/>
+    <Span color="String" multiline="false" >
+      <Begin>'</Begin>
+      <End>'</End>
+    </Span>
 
-    <EOLMarkers color="#CACAD2"/>
-    <SpaceMarkers color="#B6B6C0"/>
-    <TabMarkers color="#B6B6C0"/>
-    <InvalidLines color="#B6B6C0"/>
-  </Environment>
+    <Keywords color="Bool" >
+      <Word>true</Word>
+      <Word>false</Word>
+    </Keywords>
 
-  <Properties>
-    <Property name="LineComment" value=";"/>
-  </Properties>
+    <Span color="String2" multiline="false"  >
+      <Begin>"</Begin>
+      <End>"</End>
+    </Span>
 
-  <Digits name="Digits" color="#ED6464"/>
+    <!-- span for escape sequences -->
+    <Span  color="Comment" multiline="false">
+      <Begin>;</Begin>
+    </Span>
+    <Span  color="Comment" multiline="false">
+      <Begin>\#</Begin>
+    </Span>
 
-  <RuleSets>
-    <RuleSet ignorecase="false">
+    <Span  color="Section" multiline="false">
+      <Begin>\[</Begin>
+      <End>\]</End>
+    </Span>
 
-      <Delimiters>&amp;|\/"',;=:-</Delimiters>
+    <Rule  color="PropertyName">
+      [a-zA-Z]
+    </Rule>
 
-      <Span name="LineComment1" stopateol="true" color="Green" bold="false" italic="false">
-        <Begin>;</Begin>
-      </Span>
+    <Rule color="Punctuation">
+      [?,.;()\[\]{}+=_\-/%*&lt;&gt;^+~!|&amp;]+
+    </Rule>
 
-      <Span name="LineComment2" stopateol="true" color="Green" bold="false" italic="false">
-        <Begin>#</Begin>
-      </Span>
+    <Rule color="Digits">
+      \b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?
+    </Rule>
 
-      <Span name="String" stopateol="true" color="#6495ED" bold="false" italic="false" escapecharacter="\">
-        <Begin>"</Begin>
-        <End>"</End>
-      </Span>
+  </RuleSet>
 
-      <Span name="Variable" stopateol="true" color="Goldenrod" bold="true" italic="false">
-        <Begin startofline="true">[</Begin>
-        <End>]</End>
-      </Span>
-
-      <MarkPrevious color="Crimson" bold="false" italic="false">=</MarkPrevious>
-    </RuleSet>
-  </RuleSets>
 </SyntaxDefinition>

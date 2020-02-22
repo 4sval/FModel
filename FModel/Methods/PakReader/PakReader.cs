@@ -10,7 +10,7 @@ namespace PakReader
         readonly Stream Stream;
         readonly BinaryReader Reader;
         readonly byte[] Aes;
-        public readonly string MountPoint;
+        public string MountPoint;
         public FPakEntry[] FileInfos;
         public readonly string Name;
 
@@ -85,39 +85,28 @@ namespace PakReader
                         throw new FileLoadException("The AES key is invalid");
                     }
                 }
+
+                infoReader.BaseStream.Seek(0, SeekOrigin.Begin);
             }
 
             if (!ParseFiles) return;
 
-            // Pak index reading time :)
-            infoReader.BaseStream.Seek(0, SeekOrigin.Begin);
-            MountPoint = infoReader.ReadFString(FPakInfo.MAX_PACKAGE_PATH);
-            bool badMountPoint = false;
-            if (!MountPoint.StartsWith("../../.."))
-            {
-                badMountPoint = true;
-            }
-            else
-            {
-                MountPoint = MountPoint.Substring(8);
-            }
-            if (MountPoint[0] != '/' || ((MountPoint.Length > 1) && (MountPoint[1] == '.')))
-            {
-                badMountPoint = true;
-            }
-
-            if (badMountPoint)
-            {
-                DebugHelper.WriteLine($".PAKs: WARNING: Pak \"{Name}\" has strange mount point \"{MountPoint}\", mounting to root");
-                MountPoint = "/";
-            }
-
             if (info.Version >= (int)PAK_VERSION.PAK_PATH_HASH_INDEX)
             {
-                ReadIndexUpdated(infoReader, MountPoint, info, Aes, Stream.Length);
+                ReadIndexUpdated(infoReader, info, Aes);
             }
             else
             {
+                MountPoint = infoReader.ReadFString();
+                if (MountPoint.StartsWith("../../.."))
+                {
+                    MountPoint = MountPoint.Substring(8);
+                }
+                else
+                {
+                    MountPoint = "/";
+                }
+
                 FileInfos = new FPakEntry[infoReader.ReadInt32()];
                 for (int i = 0; i < FileInfos.Length; i++)
                 {
@@ -126,127 +115,64 @@ namespace PakReader
             }
         }
 
-        void ReadIndexUpdated(BinaryReader reader, string mountPoint, FPakInfo info, byte[] key, long totalSize)
+        private void ReadIndexUpdated(BinaryReader reader, FPakInfo info, byte[] aesKey)
         {
-            int NumEntries = reader.ReadInt32();
-            ulong PathHashSeed = reader.ReadUInt64();
-
-            bool bReaderHasPathHashIndex = false;
-            long PathHashIndexOffset = -1; // INDEX_NONE
-            long PathHashIndexSize = 0;
-            FSHAHash PathHashIndexHash = default;
-            bReaderHasPathHashIndex = reader.ReadInt32() != 0;
-            if (bReaderHasPathHashIndex)
+            MountPoint = reader.ReadFString();
+            if (MountPoint.StartsWith("../../.."))
             {
-                PathHashIndexOffset = reader.ReadInt64();
-                PathHashIndexSize = reader.ReadInt64();
-                PathHashIndexHash = new FSHAHash(reader);
-                bReaderHasPathHashIndex = bReaderHasPathHashIndex && PathHashIndexOffset != -1;
-            }
-
-            bool bReaderHasFullDirectoryIndex = false;
-            long FullDirectoryIndexOffset = -1; // INDEX_NONE
-            long FullDirectoryIndexSize = 0;
-            FSHAHash FullDirectoryIndexHash = default;
-            bReaderHasFullDirectoryIndex = reader.ReadInt32() != 0;
-            if (bReaderHasFullDirectoryIndex)
-            {
-                FullDirectoryIndexOffset = reader.ReadInt64();
-                FullDirectoryIndexSize = reader.ReadInt64();
-                FullDirectoryIndexHash = new FSHAHash(reader);
-                bReaderHasFullDirectoryIndex = bReaderHasFullDirectoryIndex && FullDirectoryIndexOffset != -1;
-            }
-
-            byte[] EncodedPakEntries = reader.ReadTArray(() => reader.ReadByte());
-
-            int FilesNum = reader.ReadInt32();
-            if (FilesNum < 0)
-                // Should not be possible for any values in the PrimaryIndex to be invalid, since we verified the index hash
-                throw new FileLoadException("Corrupt pak PrimaryIndex detected!");
-
-            FPakEntry[] Files = new FPakEntry[FilesNum]; // from what i can see, there aren't any???
-            if (FilesNum > 0)
-                for (int FileIndex = 0; FileIndex < FilesNum; ++FileIndex)
-                    Files[FileIndex] = new FPakEntry(reader, mountPoint, (PAK_VERSION)info.Version);
-
-            // Decide which SecondaryIndex(es) to load
-            bool bWillUseFullDirectoryIndex;
-            bool bWillUsePathHashIndex;
-            bool bReadFullDirectoryIndex;
-            if (bReaderHasPathHashIndex && bReaderHasFullDirectoryIndex)
-            {
-                bWillUseFullDirectoryIndex = false;
-                bWillUsePathHashIndex = !bWillUseFullDirectoryIndex;
-                bool bWantToReadFullDirectoryIndex = false;
-                bReadFullDirectoryIndex = bReaderHasFullDirectoryIndex && bWantToReadFullDirectoryIndex;
-            }
-            else if (bReaderHasPathHashIndex)
-            {
-                bWillUsePathHashIndex = true;
-                bWillUseFullDirectoryIndex = false;
-                bReadFullDirectoryIndex = false;
-            }
-            else if (bReaderHasFullDirectoryIndex)
-            {
-                // We don't support creating the PathHash Index at runtime; we want to move to having only the PathHashIndex, so supporting not having it at all is not useful enough to write
-                bWillUsePathHashIndex = false;
-                bWillUseFullDirectoryIndex = true;
-                bReadFullDirectoryIndex = true;
+                MountPoint = MountPoint.Substring(8);
             }
             else
-                // It should not be possible for PrimaryIndexes to be built without a PathHashIndex AND without a FullDirectoryIndex; CreatePakFile in UnrealPak.exe has a check statement for it.
+            {
+                MountPoint = "/";
+            }
+
+            var filesNum = reader.ReadInt32();
+            reader.ReadUInt64();
+
+            if (reader.ReadInt32() == 0)
+            {
+                throw new FileLoadException("No path hash index");
+            }
+
+            //reader.ReadInt64();
+            //reader.ReadInt64();
+            reader.BaseStream.Position += 20L + 8L + 8L;
+
+            if (reader.ReadInt32() == 0)
+            {
+                throw new FileLoadException("No directory index");
+            }
+
+            var position = reader.ReadInt64();
+            var directoryIndexSize = reader.ReadInt64();
+            reader.BaseStream.Position += 20L;
+            var encodedPakEntries = reader.ReadTArray(reader.ReadByte);
+            var files = reader.ReadInt32();
+
+            if (files < 0)
+            {
                 throw new FileLoadException("Corrupt pak PrimaryIndex detected!");
-
-            // Load the Secondary Index(es)
-            byte[] PathHashIndexData;
-            Dictionary<ulong, int> PathHashIndex;
-            BinaryReader PathHashIndexReader = default;
-            if (bWillUsePathHashIndex)
-            {
-                if (PathHashIndexOffset < 0 || totalSize < (PathHashIndexOffset + PathHashIndexSize))
-                    // Should not be possible for these values (which came from the PrimaryIndex) to be invalid, since we verified the index hash of the PrimaryIndex
-                    throw new FileLoadException("Corrupt pak PrimaryIndex detected!");
-
-                Reader.BaseStream.Position = PathHashIndexOffset;
-                PathHashIndexData = Reader.ReadBytes((int)PathHashIndexSize);
-                {
-                    if (!DecryptAndValidateIndex(info.bEncryptedIndex != 0, ref PathHashIndexData, key, PathHashIndexHash, out var ComputedHash))
-                        throw new FileLoadException("Corrupt pak PrimaryIndex detected!");
-                }
-
-                PathHashIndexReader = new BinaryReader(new MemoryStream(PathHashIndexData));
-                PathHashIndex = ReadPathHashIndex(PathHashIndexReader);
             }
 
-            var DirectoryIndex = new Dictionary<string, Dictionary<string, int>>();
-            if (!bReadFullDirectoryIndex)
-            {
-                DirectoryIndex = ReadDirectoryIndex(PathHashIndexReader);
-            }
-            if (DirectoryIndex.Count == 0)
-            {
-                if (totalSize < (FullDirectoryIndexOffset + FullDirectoryIndexSize) || FullDirectoryIndexOffset < 0)
-                    throw new FileLoadException("Corrupt pak PrimaryIndex detected!");
-                Reader.BaseStream.Position = FullDirectoryIndexOffset;
-                byte[] FullDirectoryIndexData = Reader.ReadBytes((int)FullDirectoryIndexSize);
+            Reader.BaseStream.Position = position;
+            var directoryIndexData = Reader.ReadBytes((int)directoryIndexSize);
 
-                {
-                    if (!DecryptAndValidateIndex(info.bEncryptedIndex != 0, ref FullDirectoryIndexData, key, FullDirectoryIndexHash, out var ComputedHash))
-                        throw new FileLoadException("Corrupt pak PrimaryIndex detected!");
-                }
-
-                var SecondaryIndexReader = new BinaryReader(new MemoryStream(FullDirectoryIndexData));
-                DirectoryIndex = ReadDirectoryIndex(SecondaryIndexReader);
+            if (info.bEncryptedIndex != 0)
+            {
+                directoryIndexData = AESDecryptor.DecryptAES(directoryIndexData, aesKey);
             }
 
-            var entries = new List<FPakEntry>(NumEntries);
-            foreach (var stringDict in DirectoryIndex)
+            var directoryIndexReader = new BinaryReader(new MemoryStream(directoryIndexData));
+            var directoryEntries = directoryIndexReader.ReadTArray(() => new FPakDirectoryEntry(directoryIndexReader));
+
+            var entries = new List<FPakEntry>(filesNum);
+            foreach (var directoryEntry in directoryEntries)
             {
-                foreach (var stringInt in stringDict.Value)
+                foreach (var hashIndexEntry in directoryEntry.Entries)
                 {
-                    string path = stringDict.Key + stringInt.Key;
-                    FPakEntry entry = GetEntry(mountPoint + path, stringInt.Value, EncodedPakEntries);
-                    entries.Add(entry);
+                    string path = MountPoint + directoryEntry.Directory + hashIndexEntry.Filename;
+                    entries.Add(GetEntry(path, hashIndexEntry.Location, encodedPakEntries));
                 }
             }
             this.FileInfos = entries.ToArray();
@@ -380,53 +306,8 @@ namespace PakReader
                 return new FPakEntry(name, Offset, Size, UncompressedSize, new byte[20], CompressionBlocks, CompressionBlockSize, CompressionMethodIndex, (byte)((Encrypted ? 0x01 : 0x00) | (Deleted ? 0x02 : 0x00)));
             }
             else
-            {
-                pakLocation = -(pakLocation + 1);
+                //pakLocation = -(pakLocation + 1);
                 throw new FileLoadException("list indexes aren't supported");
-            }
-        }
-
-        Dictionary<ulong, int> ReadPathHashIndex(BinaryReader reader)
-        {
-            var ret = new Dictionary<ulong, int>();
-            var keys = reader.ReadTArray(() => (reader.ReadUInt64(), reader.ReadInt32()));
-            foreach (var (k, v) in keys)
-            {
-                ret[k] = v;
-            }
-            return ret;
-        }
-
-        Dictionary<string, Dictionary<string, int>> ReadDirectoryIndex(BinaryReader reader)
-        {
-            var ret = new Dictionary<string, Dictionary<string, int>>();
-            var keys = reader.ReadTArray(() => (reader.ReadFString(), ReadFPakDirectory(reader)));
-            foreach (var (k, v) in keys)
-            {
-                ret[k] = v;
-            }
-            return ret;
-        }
-
-        Dictionary<string, int> ReadFPakDirectory(BinaryReader reader)
-        {
-            var ret = new Dictionary<string, int>();
-            var keys = reader.ReadTArray(() => (reader.ReadFString(), reader.ReadInt32()));
-            foreach (var (k, v) in keys)
-            {
-                ret[k] = v;
-            }
-            return ret;
-        }
-
-        bool DecryptAndValidateIndex(bool bEncryptedIndex, ref byte[] IndexData, byte[] aesKey, FSHAHash ExpectedHash, out FSHAHash OutHash)
-        {
-            if (bEncryptedIndex)
-            {
-                IndexData = AESDecryptor.DecryptAES(IndexData, aesKey);
-            }
-            OutHash = ExpectedHash;
-            return true;
         }
 
         public Stream GetPackageStream(FPakEntry entry)

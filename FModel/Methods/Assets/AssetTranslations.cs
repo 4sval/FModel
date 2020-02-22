@@ -1,6 +1,5 @@
 using FModel.Methods.Auth;
 using FModel.Methods.Utilities;
-using Newtonsoft.Json;
 using PakReader;
 using System;
 using System.Collections.Generic;
@@ -226,7 +225,7 @@ namespace FModel.Methods.Assets
                 string txtNativeString = GetValueFromParam(line, "NativeString=\"", "\",");
 
                 string translations = GetValueFromParam(line, "LocalizedStrings=(", "))");
-                if (!translations.EndsWith(")")) { translations = translations + ")"; }
+                if (!translations.EndsWith(")")) { translations += ")"; }
 
                 if (!HotfixLocResDict.ContainsKey(txtNamespace))
                     HotfixLocResDict[txtNamespace] = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
@@ -248,7 +247,9 @@ namespace FModel.Methods.Assets
                     catch (IndexOutOfRangeException)
                     {
                         string[] langParts = match.Value.Substring(1, match.Value.Length - 2).Split(new string[] { "\", \"" }, StringSplitOptions.None);
-                        HotfixLocResDict[txtNamespace][txtKey][txtNativeString][langParts[0]] = langParts[1];
+                        if (langParts.Length > 1)
+                            // 02/22/2020 legendary trad in spanish is miss-typed and cause crash ("es",Legendario""),
+                            HotfixLocResDict[txtNamespace][txtKey][txtNativeString][langParts[0]] = langParts[1];
                     }
                 }
             }

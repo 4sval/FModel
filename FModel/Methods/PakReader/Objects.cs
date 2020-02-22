@@ -245,19 +245,8 @@ namespace PakReader
         }
     }
 
-    public abstract class BasePakEntry
-    {
-        public long Pos;
-        public long Size;
-        public long UncompressedSize;
-        public bool Encrypted;
-
-        public int StructSize;
-    }
-
     public struct FPakEntry : IEquatable<FPakEntry>
     {
-        const byte Flag_None = 0x00;
         const byte Flag_Encrypted = 0x01;
         const byte Flag_Deleted = 0x02;
 
@@ -338,32 +327,6 @@ namespace PakReader
             StructSize = (int)(reader.BaseStream.Position - StartOffset);
         }
 
-        internal FPakEntry(BinaryReader reader, string mountPoint)
-        {
-            CompressionBlocks = null;
-            CompressionBlockSize = 0;
-            Flags = 0;
-
-            Name = mountPoint + reader.ReadFString(FPakInfo.MAX_PACKAGE_PATH).Replace(".umap", ".uasset");
-
-            var StartOffset = reader.BaseStream.Position;
-
-            Offset = reader.ReadInt64();
-            Size = reader.ReadInt64();
-            UncompressedSize = reader.ReadInt64();
-            CompressionMethodIndex = reader.ReadUInt32();
-            Hash = reader.ReadBytes(20);
-            if (CompressionMethodIndex != 0)
-            {
-                CompressionBlocks = reader.ReadTArray(() => new FPakCompressedBlock(reader));
-            }
-            Flags = reader.ReadByte();
-            CompressionBlockSize = reader.ReadUInt32();
-
-            // Used to seek ahead to the file data instead of parsing the entry again
-            StructSize = (int)(reader.BaseStream.Position - StartOffset);
-        }
-
         internal FPakEntry(string name, long offset, long size, long uncompressedSize, byte[] hash, FPakCompressedBlock[] compressionBlocks, uint compressionBlockSize, uint compressionMethodIndex, byte flags)
         {
             Name = name;
@@ -375,7 +338,7 @@ namespace PakReader
             CompressionBlockSize = compressionBlockSize;
             CompressionMethodIndex = compressionMethodIndex;
             Flags = flags;
-            StructSize = (int)GetSize(PAK_VERSION.PAK_LATEST, compressionMethodIndex, (uint)compressionBlocks.Length);
+            StructSize = compressionBlocks != null ? (int)GetSize(PAK_VERSION.PAK_LATEST, compressionMethodIndex, (uint)compressionBlocks.Length) : 0;
         }
 
         public static long GetSize(PAK_VERSION version, uint CompressionMethodIndex = 0, uint CompressionBlocksCount = 0)
@@ -417,6 +380,32 @@ namespace PakReader
         public override bool Equals(object obj) => Equals((FPakEntry)obj);
 
         public override int GetHashCode() => FProp.Default.FDiffFileSize ? (Name, UncompressedSize).GetHashCode() : (Name).GetHashCode();
+    }
+
+    public struct FPathHashIndexEntry
+    {
+        public string Filename { get; }
+
+        public int Location { get; }
+
+        public FPathHashIndexEntry(BinaryReader reader)
+        {
+            Filename = reader.ReadFString();
+            Location = reader.ReadInt32();
+        }
+    }
+
+    public struct FPakDirectoryEntry
+    {
+        public string Directory { get; }
+
+        public FPathHashIndexEntry[] Entries { get; }
+
+        public FPakDirectoryEntry(BinaryReader reader)
+        {
+            Directory = reader.ReadFString();
+            Entries = reader.ReadTArray(() => new FPathHashIndexEntry(reader));
+        }
     }
 
     public struct FPakCompressedBlock

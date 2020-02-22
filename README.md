@@ -14,7 +14,7 @@
          alt="Releases">
   </a>
   <a href="https://github.com/iAmAsval/FModel/releases/latest">
-    <img src="https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.0.3%20Downloads"
+    <img src="https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.0.4%20Downloads"
          alt="Downloads">
   </a>
   <a href="https://twitter.com/AsvalFN"><img src="https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter"></a>
@@ -138,6 +138,14 @@ For x32 users, you just have to clone or download the repository and build FMode
             </a><br>
             <a href="https://github.com/FunGamesLeaks" title="Github">🔧</a>
             <a href="https://twitter.com/FunGamesLeaks" title="Twitter">🐦</a>
+        </td>
+	<td align="center">
+            <a href="https://github.com/NotOfficer">
+                <img src="https://avatars1.githubusercontent.com/u/29897990?s=200&v=4" width="100px;" alt="Not Officer"/><br>
+                <sub><b>Not Officer</b></sub>
+            </a><br>
+            <a href="https://github.com/NotOfficer" title="Github">🔧</a>
+            <a href="https://twitter.com/Not0fficer" title="Twitter">🐦</a>
         </td>
         <td align="center">
             <a href="https://github.com/PsychoPast">
