@@ -151,7 +151,9 @@ namespace FModel.Methods.Assets.IconCreator.AthenaID
                             uFFTarget.Contains("Reactive") && categoryNameToken.Value<string>() == "Reactive" ||
                             uFFTarget.Contains("Traversal") && categoryNameToken.Value<string>() == "Traversal" ||
                             uFFTarget.Contains("BuiltInEmote") && categoryNameToken.Value<string>() == "Built-in" ||
-                            uFFTarget.Contains("Synced") && categoryNameToken.Value<string>() == "Synced")
+                            uFFTarget.Contains("Synced") && categoryNameToken.Value<string>() == "Synced" || 
+                            uFFTarget.Contains("GearUp") && categoryNameToken.Value<string>() == "Forged" ||
+                            uFFTarget.Contains("Enlightened") && categoryNameToken.Value<string>() == "Enlightened")
                         {
                             GetUFFImage(propertiesArray);
                         }
