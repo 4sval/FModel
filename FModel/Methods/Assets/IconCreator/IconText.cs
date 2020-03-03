@@ -1,4 +1,4 @@
-﻿using FModel.Methods.Assets.IconCreator.AthenaID;
+using FModel.Methods.Assets.IconCreator.AthenaID;
 using FModel.Methods.Assets.IconCreator.HeroID;
 using FModel.Methods.Assets.IconCreator.WeaponID;
 using FModel.Methods.Utilities;
@@ -95,7 +95,7 @@ namespace FModel.Methods.Assets.IconCreator
             }
             if (max_stack_size != null)
             {
-                _maxStackSize = "Max Stack Size: " + max_stack_size.Value<string>();
+                _maxStackSize = "Max Stack Size: " + max_stack_size["struct_type"]["properties"][0]["tag_data"].Value<string>();
             }
             if (ammo_data != null && ammo_data.Value<string>().Contains("Ammo"))
             {
