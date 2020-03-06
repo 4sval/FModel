@@ -125,7 +125,8 @@ namespace FModel.Methods.Assets
 
             if (HotfixLocResDict == null) { SetHotfixedLocResDict(); } //once, no need to do more
 
-            Dictionary<string, Dictionary<string, string>> finalDict = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, Dictionary<string, string>> brFinalDict = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, Dictionary<string, string>> stwFinalDict = new Dictionary<string, Dictionary<string, string>>();
             foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
             {
                 IEnumerable<string> locresFilesPath = PAKsFileInfos.Where(x => x.Name.StartsWith(folder + fileName) && x.Name.Contains($"/{lang}/") && x.Name.EndsWith(".locres")).Select(x => x.Name);
@@ -135,16 +136,30 @@ namespace FModel.Methods.Assets
                         var dict = GetLocResDict(file);
                         foreach (var namespac in dict)
                         {
-                            if (!finalDict.ContainsKey(namespac.Key))
-                                finalDict.Add(namespac.Key, new Dictionary<string, string>());
+                            if (!brFinalDict.ContainsKey(namespac.Key))
+                                brFinalDict.Add(namespac.Key, new Dictionary<string, string>());
 
                             foreach (var key in namespac.Value)
-                                finalDict[namespac.Key].Add(key.Key, key.Value);
+                                brFinalDict[namespac.Key].Add(key.Key, key.Value);
+                        }
+                    }
+                locresFilesPath = PAKsFileInfos.Where(x => x.Name.StartsWith(folder + "Game_StW") && x.Name.Contains($"/{lang}/") && x.Name.EndsWith(".locres")).Select(x => x.Name);
+                if (locresFilesPath.Any())
+                    foreach (string file in locresFilesPath)
+                    {
+                        var dict = GetLocResDict(file);
+                        foreach (var namespac in dict)
+                        {
+                            if (!stwFinalDict.ContainsKey(namespac.Key))
+                                stwFinalDict.Add(namespac.Key, new Dictionary<string, string>());
+
+                            foreach (var key in namespac.Value)
+                                stwFinalDict[namespac.Key].Add(key.Key, key.Value);
                         }
                     }
             }
-            BRLocResDict = finalDict;
-            STWLocResDict = GetLocResDict(path.Replace("Game_BR", "Game_StW"));
+            BRLocResDict = brFinalDict;
+            STWLocResDict = stwFinalDict;
         }
 
         private static Dictionary<string, Dictionary<string, string>> GetLocResDict(string LocResPath)
