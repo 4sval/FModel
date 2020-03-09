@@ -178,7 +178,7 @@ For x32 users, you just have to clone or download the repository and build FMode
 
 This software uses the following open source packages:
 
-- [PakReader](https://github.com/WorkingRobot/PakReader) *Updated Version*
+- [PakReader](https://github.com/WorkingRobot/PakReader)
 - [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
 - [Avalon Edit](http://avalonedit.net/)
 - [Color Picker](https://github.com/drogoganor/ColorPickerWPF)

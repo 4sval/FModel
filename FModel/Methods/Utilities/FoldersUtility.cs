@@ -108,8 +108,20 @@ namespace FModel.Methods.Utilities
         {
             bool bSave = false;
 
-            if (!string.IsNullOrEmpty(FProp.Default.FWatermarkFilePath) &&
-                !File.Exists(FProp.Default.FWatermarkFilePath))
+            if (FProp.Default.FUseWatermark && string.IsNullOrEmpty(FProp.Default.FWatermarkFilePath))
+            {
+                DebugHelper.WriteLine("Watermarking icons enabled but watermark file path is empty, option disabled");
+                FProp.Default.FUseWatermark = false;
+                bSave = true;
+            }
+            if (FProp.Default.FUseChallengeWatermark && string.IsNullOrEmpty(FProp.Default.FBannerFilePath))
+            {
+                DebugHelper.WriteLine("Watermarking challenges enabled but watermark file path is empty, option disabled");
+                FProp.Default.FUseChallengeWatermark = false;
+                bSave = true;
+            }
+
+            if (!string.IsNullOrEmpty(FProp.Default.FWatermarkFilePath) && !File.Exists(FProp.Default.FWatermarkFilePath))
             {
                 FProp.Default.FWatermarkFilePath = string.Empty;
                 FProp.Default.FUseWatermark = false;
@@ -119,8 +131,7 @@ namespace FModel.Methods.Utilities
                 DebugHelper.WriteLine("Watermark file for icons not found, option disabled");
             }
 
-            if (!string.IsNullOrEmpty(FProp.Default.FBannerFilePath) &&
-                !File.Exists(FProp.Default.FBannerFilePath))
+            if (!string.IsNullOrEmpty(FProp.Default.FBannerFilePath) && !File.Exists(FProp.Default.FBannerFilePath))
             {
                 FProp.Default.FBannerFilePath = string.Empty;
                 FProp.Default.FUseChallengeWatermark = false;
