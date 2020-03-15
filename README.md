@@ -132,11 +132,11 @@ For x32 users, you just have to clone or download the repository and build FMode
             <a href="https://twitter.com/MaikyMOficial" title="Twitter">🐦</a>
         </td>
         <td align="center">
-            <a href="https://github.com/FunGamesLeaks">
-                <img src="https://avatars2.githubusercontent.com/u/32957190?s=200&v=4" width="100px;" alt="FunGames"/><br>
-                <sub><b>FunGames</b></sub>
+            <a href="https://github.com/FabianFG">
+                <img src="https://avatars2.githubusercontent.com/u/32957190?s=200&v=4" width="100px;" alt="Fabian"/><br>
+                <sub><b>Fabian</b></sub>
             </a><br>
-            <a href="https://github.com/FunGamesLeaks" title="Github">🔧</a>
+            <a href="https://github.com/FabianFG" title="Github">🔧</a>
             <a href="https://twitter.com/FunGamesLeaks" title="Twitter">🐦</a>
         </td>
 	<td align="center">

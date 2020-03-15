@@ -53,21 +53,25 @@ namespace FModel.Forms
 
                 foreach (PAKInfosEntry Pak in PAKEntries.PAKEntriesList.Where(x => x.bTheDynamicPAK))
                 {
-                    Label PakLabel = new Label();
-                    PakLabel.Content = Path.GetFileNameWithoutExtension(Pak.ThePAKPath);
-                    PakLabel.HorizontalAlignment = HorizontalAlignment.Left;
-                    PakLabel.Margin = new Thickness(2, yPos - 2, 0, 0);
-                    PakLabel.VerticalAlignment = VerticalAlignment.Top;
-                    PakLabel.Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239));
+                    Label PakLabel = new Label
+                    {
+                        Content = Path.GetFileNameWithoutExtension(Pak.ThePAKPath),
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        Margin = new Thickness(2, yPos - 2, 0, 0),
+                        VerticalAlignment = VerticalAlignment.Top,
+                        Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239))
+                    };
 
-                    TextBox PakTextBox = new TextBox();
-                    PakTextBox.Height = 19;
-                    PakTextBox.TextWrapping = TextWrapping.NoWrap;
-                    PakTextBox.AcceptsReturn = false;
-                    PakTextBox.Margin = new Thickness(160, yPos, 5, 0);
-                    PakTextBox.VerticalAlignment = VerticalAlignment.Top;
-                    PakTextBox.Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239));
-                    PakTextBox.Name = $"TxtBox_{Regex.Match(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), @"\d+").Value}";
+                    TextBox PakTextBox = new TextBox
+                    {
+                        Height = 19,
+                        TextWrapping = TextWrapping.NoWrap,
+                        AcceptsReturn = false,
+                        Margin = new Thickness(160, yPos, 5, 0),
+                        VerticalAlignment = VerticalAlignment.Top,
+                        Foreground = new SolidColorBrush(Color.FromRgb(239, 239, 239)),
+                        Name = $"TxtBox_{Regex.Match(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), @"\d+").Value}"
+                    };
 
                     string PAKKeyFromXML = string.Empty;
                     if (AESEntries.AESEntriesList != null && AESEntries.AESEntriesList.Any())
