@@ -114,12 +114,6 @@ namespace FModel.Methods.Utilities
                 FProp.Default.FUseWatermark = false;
                 bSave = true;
             }
-            if (FProp.Default.FUseChallengeWatermark && string.IsNullOrEmpty(FProp.Default.FBannerFilePath))
-            {
-                DebugHelper.WriteLine("Watermarking challenges enabled but watermark file path is empty, option disabled");
-                FProp.Default.FUseChallengeWatermark = false;
-                bSave = true;
-            }
 
             if (!string.IsNullOrEmpty(FProp.Default.FWatermarkFilePath) && !File.Exists(FProp.Default.FWatermarkFilePath))
             {
