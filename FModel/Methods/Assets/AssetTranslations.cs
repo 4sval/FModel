@@ -19,7 +19,7 @@ namespace FModel.Methods.Assets
         public static void SetAssetTranslation(string language)
         {
             string locFolder = "/FortniteGame/Content/Localization/";
-            string locFileNameBase = "Game_BR";
+            string locFileNameBase = "Fortnite";
             switch (language)
             {
                 case "French":

@@ -14,7 +14,7 @@
          alt="Releases">
   </a>
   <a href="https://github.com/iAmAsval/FModel/releases/latest">
-    <img src="https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.0.4.1%20Downloads"
+    <img src="https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.0.4.2%20Downloads"
          alt="Downloads">
   </a>
   <a href="https://twitter.com/AsvalFN"><img src="https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter"></a>
