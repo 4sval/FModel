@@ -265,6 +265,7 @@ namespace FModel.Methods.Assets
                             case "FortAbilityKit":
                             case "FortSchematicItemDefinition":
                             case "FortAccoladeItemDefinition":
+                            case "FortSpyTechItemDefinition":
                                 VisualImage = IconCreator.IconCreator.DrawNormalIconKThx(AssetMainToken["properties"].Value<JArray>());
                                 break;
                             case "FortChallengeBundleItemDefinition":
