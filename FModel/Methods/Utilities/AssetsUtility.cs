@@ -58,7 +58,7 @@ namespace FModel.Methods.Utilities
             {
                 return size.ToString("0 B");
             }
-            readable = readable / 1024;
+            readable /= 1024;
             return readable.ToString("0.## ") + suffix;
         }
 
@@ -111,7 +111,7 @@ namespace FModel.Methods.Utilities
         {
             if (AssetStreamList[0] != null && AssetStreamList.Length >= 2 && AssetStreamList.Length <= 3)
             {
-                return new AssetReader(AssetStreamList[0], AssetStreamList[1], AssetStreamList[2] != null ? AssetStreamList[2]: null); //UASSET -> UEXP -> UBULK IF EXIST
+                return new AssetReader(AssetStreamList[0], AssetStreamList[1], AssetStreamList[2] ?? null); //UASSET -> UEXP -> UBULK IF EXIST
             }
             else { return null; }
         }
@@ -122,6 +122,7 @@ namespace FModel.Methods.Utilities
 
             Stream[] AssetStreamArray = new Stream[3];
 
+            string stringData = string.Empty;
             foreach (FPakEntry entry in entriesList)
             {
                 #region AUTO EXTRACT RAW
@@ -165,23 +166,28 @@ namespace FModel.Methods.Utilities
                         });
                         using (var s = reader.GetPackageStream(entry))
                         using (var r = new StreamReader(s))
-                            return r.ReadToEnd();
+                            stringData = r.ReadToEnd();
+                        break;
                     case ".uproject":
                     case ".uplugin":
                     case ".upluginmanifest":
                         using (var s = reader.GetPackageStream(entry))
                         using (var r = new StreamReader(s))
-                            return r.ReadToEnd();
+                            stringData = r.ReadToEnd();
+                        break;
                     case ".locmeta":
                         using (var s = reader.GetPackageStream(entry))
-                            return JsonConvert.SerializeObject(new LocMetaFile(s), Formatting.Indented);
+                            stringData = JsonConvert.SerializeObject(new LocMetaFile(s), Formatting.Indented);
+                        break;
                     case ".locres":
                         using (var s = reader.GetPackageStream(entry))
-                            return JsonConvert.SerializeObject(new LocResFile(s).Entries, Formatting.Indented);
+                            stringData = JsonConvert.SerializeObject(new LocResFile(s).Entries, Formatting.Indented);
+                        break;
                     case ".udic":
                         using (var s = reader.GetPackageStream(entry))
                         using (var r = new BinaryReader(s))
-                            return JsonConvert.SerializeObject(new UDicFile(r).Header, Formatting.Indented);
+                            stringData = JsonConvert.SerializeObject(new UDicFile(r).Header, Formatting.Indented);
+                        break;
                     case ".bin":
                         if (string.Equals(entry.Name, "/FortniteGame/AssetRegistry.bin") || !entry.Name.Contains("AssetRegistry")) //MEMORY ISSUE
                         {
@@ -189,7 +195,8 @@ namespace FModel.Methods.Utilities
                         }
 
                         using (var s = reader.GetPackageStream(entry))
-                            return JsonConvert.SerializeObject(new AssetRegistryFile(s), Formatting.Indented);
+                            stringData = JsonConvert.SerializeObject(new AssetRegistryFile(s), Formatting.Indented);
+                        break;
                     default:
                         if (entry.Name.EndsWith(".uasset")) { AssetStreamArray[0] = reader.GetPackageStream(entry); }
 
@@ -200,91 +207,88 @@ namespace FModel.Methods.Utilities
                 }
             }
 
-            AssetReader ar = GetAssetReader(AssetStreamArray);
-            if (ar != null)
+            if (string.IsNullOrEmpty(stringData))
             {
-                if (loadImageInBox)
+                AssetReader ar = GetAssetReader(AssetStreamArray);
+                if (ar != null)
                 {
-                    foreach (ExportObject eo in ar.Exports)
-                    {   
-                        switch (eo)
+                    if (loadImageInBox)
+                    {
+                        foreach (ExportObject eo in ar.Exports)
                         {
-                            case Texture2D texture:
-                                SKImage image = texture.GetImage();
-                                if (image != null)
-                                {
-                                    using (var data = image.Encode())
-                                    using (var stream = data.AsStream())
+                            switch (eo)
+                            {
+                                case Texture2D texture:
+                                    SKImage image = texture.GetImage();
+                                    if (image != null)
                                     {
-                                        ImageSource img = ImagesUtility.GetImageSource(stream);
-                                        FWindow.FMain.Dispatcher.InvokeAsync(() =>
+                                        using (var data = image.Encode())
+                                        using (var stream = data.AsStream())
                                         {
-                                            FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)img); //thread safe and fast af
-
-                                            if (FWindow.FMain.MI_Auto_Save_Images.IsChecked) //auto save images
+                                            ImageSource img = ImagesUtility.GetImageSource(stream);
+                                            FWindow.FMain.Dispatcher.InvokeAsync(() =>
                                             {
-                                                ImagesUtility.SaveImage(FProp.Default.FOutput_Path + "\\Icons\\" + FWindow.FCurrentAsset + ".png");
-                                            }
-                                        });
-                                    }
-                                }
-                                return JsonConvert.SerializeObject(texture.textures, Formatting.Indented);
-                            case USoundWave sound:
-                                using (sound)
-                                {
-                                    byte[] s = readSound(sound);
-                                    if (s != null)
-                                    {
-                                        string path = FProp.Default.FOutput_Path + "\\Sounds\\" + FWindow.FCurrentAsset + ".ogg";
-                                        File.WriteAllBytes(path, s);
+                                                FWindow.FMain.ImageBox_Main.Source = BitmapFrame.Create((BitmapSource)img); //thread safe and fast af
 
-                                        //open sound
-                                        if (FProp.Default.FOpenSounds)
-                                        {
-                                            FoldersUtility.OpenWithDefaultProgram(path);
+                                                if (FWindow.FMain.MI_Auto_Save_Images.IsChecked) //auto save images
+                                                {
+                                                    ImagesUtility.SaveImage(FProp.Default.FOutput_Path + "\\Icons\\" + FWindow.FCurrentAsset + ".png");
+                                                }
+                                            });
                                         }
                                     }
+                                    return JsonConvert.SerializeObject(texture.textures, Formatting.Indented);
+                                case USoundWave sound:
+                                    using (sound)
+                                    {
+                                        byte[] s = ReadSound(sound);
+                                        if (s != null)
+                                        {
+                                            string path = FProp.Default.FOutput_Path + "\\Sounds\\" + FWindow.FCurrentAsset + ".ogg";
+                                            File.WriteAllBytes(path, s);
 
-                                    GC.Collect();
-                                    GC.WaitForPendingFinalizers();
-                                    return JsonConvert.SerializeObject(sound.base_object, Formatting.Indented);
-                                }
+                                            //open sound
+                                            if (FProp.Default.FOpenSounds)
+                                            {
+                                                FoldersUtility.OpenWithDefaultProgram(path);
+                                            }
+                                        }
+
+                                        GC.Collect();
+                                        GC.WaitForPendingFinalizers();
+                                        return JsonConvert.SerializeObject(sound.base_object, Formatting.Indented);
+                                    }
+                            }
                         }
                     }
+                    stringData = JsonConvert.SerializeObject(ar.Exports, Formatting.Indented);
                 }
-
-                string stringData = JsonConvert.SerializeObject(ar.Exports, Formatting.Indented);
-
-                #region AUTO SAVE JSON
-                if (FProp.Default.FAutoSaveJson)
-                {
-                    string name = Path.GetFileNameWithoutExtension(entriesList.ElementAt(0).Name);
-                    string path = FProp.Default.FOutput_Path + "\\JSONs\\" + name + ".json";
-                    if (!string.IsNullOrEmpty(stringData))
-                    {
-                        File.WriteAllText(path, stringData);
-                        if (File.Exists(path))
-                        {
-                            DebugHelper.WriteLine("Assets: Successfully saved serialized data of {0}", entriesList.ElementAt(0).Name);
-
-                            new UpdateMyConsole(name, CColors.Blue).Append();
-                            new UpdateMyConsole("'s Json data successfully saved", CColors.White, true).Append();
-                        }
-                        else //just in case
-                        {
-                            DebugHelper.WriteLine("Assets: Couldn't save serialized data of {0}", entriesList.ElementAt(0).Name);
-
-                            new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
-                            new UpdateMyConsole(name, CColors.Blue, true).Append();
-                        }
-                    }
-                }
-                #endregion
-
-                return stringData;
             }
 
-            return string.Empty;
+            #region AUTO SAVE JSON
+            if (FProp.Default.FAutoSaveJson && !string.IsNullOrEmpty(stringData))
+            {
+                string name = Path.GetFileNameWithoutExtension(entriesList.ElementAt(0).Name);
+                string path = FProp.Default.FOutput_Path + "\\JSONs\\" + name + ".json";
+                File.WriteAllText(path, stringData);
+                if (File.Exists(path))
+                {
+                    DebugHelper.WriteLine("Assets: Successfully saved serialized data of {0}", entriesList.ElementAt(0).Name);
+
+                    new UpdateMyConsole(name, CColors.Blue).Append();
+                    new UpdateMyConsole("'s Json data successfully saved", CColors.White, true).Append();
+                }
+                else //just in case
+                {
+                    DebugHelper.WriteLine("Assets: Couldn't save serialized data of {0}", entriesList.ElementAt(0).Name);
+
+                    new UpdateMyConsole("Bruh moment\nCouldn't export ", CColors.White).Append();
+                    new UpdateMyConsole(name, CColors.Blue, true).Append();
+                }
+            }
+            #endregion
+
+            return stringData;
         }
 
         public static string GetAssetJsonDataByPath(string path, bool loadImageInBox = false, string pathEntries = null)
@@ -293,7 +297,7 @@ namespace FModel.Methods.Utilities
             PakReader.PakReader reader = GetPakReader(path);
             if (reader != null)
             {
-                List<FPakEntry> entriesList = GetPakEntries(pathEntries != null ? pathEntries : path);
+                List<FPakEntry> entriesList = GetPakEntries(pathEntries ?? path);
                 if (entriesList != null)
                     jsonData = GetAssetJsonData(reader, entriesList, loadImageInBox);
                 else
@@ -305,7 +309,7 @@ namespace FModel.Methods.Utilities
             return jsonData;
         }
 
-        public static byte[] readSound(USoundWave sound)
+        public static byte[] ReadSound(USoundWave sound)
         {
             if (!sound.bStreaming)
             {
@@ -386,7 +390,7 @@ namespace FModel.Methods.Utilities
 
         public static void ExportAssetData(string fPath = null)
         {
-            string fullPath = fPath == null ? TreeViewUtility.GetFullPath(FWindow.TVItem) + "/" + FWindow.FCurrentAsset : fPath;
+            string fullPath = fPath ?? TreeViewUtility.GetFullPath(FWindow.TVItem) + "/" + FWindow.FCurrentAsset;
             PakReader.PakReader reader = GetPakReader(fullPath);
             if (reader != null)
             {
@@ -428,15 +432,17 @@ namespace FModel.Methods.Utilities
             string prop = FWindow.FMain.AssetPropertiesBox_Main.Text;
             if (!string.IsNullOrEmpty(prop))
             {
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Title = "Save Asset Properties";
-                saveFileDialog.FileName = FWindow.FCurrentAsset;
-                saveFileDialog.InitialDirectory = FProp.Default.FOutput_Path + "\\JSONs\\";
-                saveFileDialog.Filter = "JSON Files (*.json)|*.json";
+                SaveFileDialog saveFileDialog = new SaveFileDialog
+                {
+                    Title = "Save Asset Properties",
+                    FileName = FWindow.FCurrentAsset,
+                    InitialDirectory = FProp.Default.FOutput_Path + "\\JSONs\\",
+                    Filter = "JSON Files (*.json)|*.json"
+                };
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     string path = saveFileDialog.FileName;
-                    File.WriteAllText(path, prop);
+                    File.WriteAllText(Path.ChangeExtension(path, ".json"), prop);
                     if (File.Exists(path))
                     {
                         DebugHelper.WriteLine("SaveAssetProperties: Successfully saved serialized data of {0}", FWindow.FCurrentAsset);

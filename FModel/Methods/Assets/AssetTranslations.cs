@@ -13,8 +13,7 @@ namespace FModel.Methods.Assets
     static class AssetTranslations
     {
         public static Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, string>>>> HotfixLocResDict { get; set; } //namespace -> key -> language -> string
-        public static Dictionary<string, Dictionary<string, string>> BRLocResDict { get; set; } //namespace -> key -> string
-        public static Dictionary<string, Dictionary<string, string>> STWLocResDict { get; set; } //namespace -> key -> string
+        public static Dictionary<string, Dictionary<string, string>> FortniteLocResDict { get; set; } //namespace -> key -> string
 
         public static void SetAssetTranslation(string language)
         {
@@ -104,13 +103,9 @@ namespace FModel.Methods.Assets
             {
                 return ifNotFound;
             }
-            else if (BRLocResDict != null && BRLocResDict.ContainsKey(tNamespace) && BRLocResDict[tNamespace].ContainsKey(tKey))
+            else if (FortniteLocResDict != null && FortniteLocResDict.ContainsKey(tNamespace) && FortniteLocResDict[tNamespace].ContainsKey(tKey))
             {
-                return BRLocResDict[tNamespace][tKey];
-            }
-            else if (STWLocResDict != null && STWLocResDict.ContainsKey(tNamespace) && STWLocResDict[tNamespace].ContainsKey(tKey))
-            {
-                return STWLocResDict[tNamespace][tKey];
+                return FortniteLocResDict[tNamespace][tKey];
             }
             else
             {
@@ -126,7 +121,6 @@ namespace FModel.Methods.Assets
             if (HotfixLocResDict == null) { SetHotfixedLocResDict(); } //once, no need to do more
 
             Dictionary<string, Dictionary<string, string>> brFinalDict = new Dictionary<string, Dictionary<string, string>>();
-            Dictionary<string, Dictionary<string, string>> stwFinalDict = new Dictionary<string, Dictionary<string, string>>();
             foreach (FPakEntry[] PAKsFileInfos in PAKEntries.PAKToDisplay.Values)
             {
                 IEnumerable<string> locresFilesPath = PAKsFileInfos.Where(x => x.Name.StartsWith(folder + fileName) && x.Name.Contains($"/{lang}/") && x.Name.EndsWith(".locres")).Select(x => x.Name);
@@ -143,23 +137,8 @@ namespace FModel.Methods.Assets
                                 brFinalDict[namespac.Key].Add(key.Key, key.Value);
                         }
                     }
-                locresFilesPath = PAKsFileInfos.Where(x => x.Name.StartsWith(folder + "Game_StW") && x.Name.Contains($"/{lang}/") && x.Name.EndsWith(".locres")).Select(x => x.Name);
-                if (locresFilesPath.Any())
-                    foreach (string file in locresFilesPath)
-                    {
-                        var dict = GetLocResDict(file);
-                        foreach (var namespac in dict)
-                        {
-                            if (!stwFinalDict.ContainsKey(namespac.Key))
-                                stwFinalDict.Add(namespac.Key, new Dictionary<string, string>());
-
-                            foreach (var key in namespac.Value)
-                                stwFinalDict[namespac.Key].Add(key.Key, key.Value);
-                        }
-                    }
             }
-            BRLocResDict = brFinalDict;
-            STWLocResDict = stwFinalDict;
+            FortniteLocResDict = brFinalDict;
         }
 
         private static Dictionary<string, Dictionary<string, string>> GetLocResDict(string LocResPath)
