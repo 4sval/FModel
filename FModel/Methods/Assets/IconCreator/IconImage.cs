@@ -91,6 +91,10 @@ namespace FModel.Methods.Assets.IconCreator
 
                 if (assetPathName != null)
                 {
+                    // CID_716_Athena_Commando_M_BlueFlames
+                    if (smallPreviewImage != null && assetPathName.Value<string>().Equals("/Game/UI/Foundation/Textures/Icons/Heroes/Athena/Soldier/T-Soldier-HID-716-Athena-Commando-M-BlueFlames-L.T-Soldier-HID-716-Athena-Commando-M-BlueFlames-L"))
+                        assetPathName = smallPreviewImage["tag_data"]["asset_path_name"];
+
                     string texturePath = FoldersUtility.FixFortnitePath(assetPathName.Value<string>());
                     using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
                     {
