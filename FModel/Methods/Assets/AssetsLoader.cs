@@ -175,7 +175,15 @@ namespace FModel.Methods.Assets
                         {
                             FWindow.FCurrentAsset = Path.GetFileName(target);
                         }
-                        LoadAsset(target);
+
+                        try
+                        {
+                            LoadAsset(target);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            new UpdateMyConsole(ex.Message, CColors.Red, true).Append();
+                        }
                     }
                 }
 
