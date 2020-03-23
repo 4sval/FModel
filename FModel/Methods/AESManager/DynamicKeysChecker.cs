@@ -41,13 +41,14 @@ namespace FModel.Methods.AESManager
                             && !AESEntries.AESEntriesList.Any(w => string.Equals(w.ThePAKName, Path.GetFileNameWithoutExtension(x.ThePAKPath))) //IS NOT ALREADY ADDED
                             ))
                             {
-                                if (KeysDict.ContainsKey(Path.GetFileName(Pak.ThePAKPath)))
+                                string trigger = Pak.ThePAKPath.Substring(Pak.ThePAKPath.IndexOf("FortniteGame")).Replace("\\", "/");
+                                if (KeysDict.ContainsKey(trigger))
                                 {
-                                    KeysManager.Serialize(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), KeysDict[Path.GetFileName(Pak.ThePAKPath)].ToUpperInvariant().Substring(2));
+                                    KeysManager.Serialize(Path.GetFileNameWithoutExtension(Pak.ThePAKPath), KeysDict[trigger].ToUpperInvariant().Substring(2));
 
                                     if (_oldAESEntriesList != null)
                                     {
-                                        if (!_oldAESEntriesList.Any(x => string.Equals(x.ThePAKKey, KeysDict[Path.GetFileName(Pak.ThePAKPath)].ToUpperInvariant().Substring(2))))
+                                        if (!_oldAESEntriesList.Any(x => string.Equals(x.ThePAKKey, KeysDict[trigger].ToUpperInvariant().Substring(2))))
                                         {
                                             new UpdateMyConsole(Path.GetFileName(Pak.ThePAKPath), CColors.Blue).Append();
                                             new UpdateMyConsole(" can now be opened.", CColors.White, true).Append();

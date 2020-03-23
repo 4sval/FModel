@@ -95,7 +95,13 @@ namespace FModel.Methods.Assets.IconCreator
             }
             if (max_stack_size != null)
             {
-                _maxStackSize = "Max Stack Size: " + max_stack_size["struct_type"]["properties"][0]["tag_data"].Value<string>();
+                JToken token = max_stack_size["struct_type"]["properties"][0];
+                if (token["name"].Value<string>().Equals("Value"))
+                    _maxStackSize = "Max Stack Size: " + token["tag_data"].Value<string>();
+                /*else if (token["name"].Value<string>().Equals("Curve"))
+                {
+
+                }*/
             }
             if (ammo_data != null && ammo_data.Value<string>().Contains("Ammo"))
             {

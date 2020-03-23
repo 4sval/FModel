@@ -10,7 +10,7 @@ namespace FModel.Methods.Utilities
     static class EndpointsUtility
     {
         private const string DROPBOX_JSON = "https://cdn.asval.tk/d/FModel/FModel.json";
-        private const string BENBOT_AES = "http://benbotfn.tk:8080/api/aes";
+        private const string BENBOT_AES = "https://benbotfn.tk/api/v1/aes";
 
         public static string GetEndpoint(string url)
         {
@@ -97,7 +97,7 @@ namespace FModel.Methods.Utilities
                             DebugHelper.WriteLine("BenBotAPI: Main AES key not found in endpoint response");
                     }
 
-                    JToken dynamicPaks = JObject.Parse(EndpointContent).SelectToken("additionalKeys");
+                    JToken dynamicPaks = JObject.Parse(EndpointContent).SelectToken("dynamicKeys");
                     return JToken.Parse(dynamicPaks.ToString()).ToString().TrimStart('[').TrimEnd(']');
                 }
                 else
