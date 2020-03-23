@@ -35,8 +35,8 @@ namespace FModel.Methods.Utilities
                     JToken FData = JToken.Parse(EndpointContent);
 
                     //GLOBAL MESSAGES
-                    JArray FGMessages = FData["Global_Messages"][Assembly.GetExecutingAssembly().GetName().Version.ToString()].Value<JArray>();
-                    if (!string.IsNullOrEmpty(FGMessages[0]["Message"].Value<string>()))
+                    JArray FGMessages = FData["Global_Messages"][Assembly.GetExecutingAssembly().GetName().Version.ToString()]?.Value<JArray>();
+                    if (!string.IsNullOrEmpty(FGMessages?[0]["Message"].Value<string>()))
                     {
                         StringBuilder sb = new StringBuilder();
                         foreach (JToken t in FGMessages)
