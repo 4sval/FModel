@@ -32,7 +32,7 @@
         <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="80" Click="Button_Click"/>
         <Label HorizontalAlignment="Left" Margin="10,0,0,11" VerticalAlignment="Bottom" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
             <TextBlock>
-                <Hyperlink NavigateUri="http://benbotfn.tk:8080/api/aes" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FFEFEFEF">Latest Fortnite AES Keys</Hyperlink>
+                <Hyperlink NavigateUri="https://benbotfn.tk/api/v1/aes" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FFEFEFEF">Latest Fortnite AES Keys</Hyperlink>
             </TextBlock>
         </Label>
 

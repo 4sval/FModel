@@ -8,5 +8,6 @@ namespace FModel.Methods.Utilities
         private const string BASE = "pack://application:,,,/";
         public static readonly FontFamily FBurbank = new FontFamily(new Uri(BASE), "./Resources/#Burbank Big Cd Bd");
         public static readonly FontFamily Burbank = new FontFamily(new Uri(BASE), "./Resources/#Burbank Big Cd Bk");
+        public static readonly FontFamily JPBurbank = new FontFamily(new Uri(BASE), "./Resources/#TT-JTCじゃんけんU");
     }
 }

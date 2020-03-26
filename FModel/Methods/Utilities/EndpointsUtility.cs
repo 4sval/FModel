@@ -83,36 +83,39 @@ namespace FModel.Methods.Utilities
                 string EndpointContent = GetEndpoint(BENBOT_AES);
                 if (!string.IsNullOrEmpty(EndpointContent))
                 {
-                    if (string.IsNullOrEmpty(FProp.Default.FPak_MainAES) || reload)
+                    try
                     {
-                        JToken mainKeyToken = JObject.Parse(EndpointContent).SelectToken("mainKey");
-                        if (mainKeyToken != null)
+                        if (string.IsNullOrEmpty(FProp.Default.FPak_MainAES) || reload)
                         {
-                            FProp.Default.FPak_MainAES = $"{mainKeyToken.Value<string>().Substring(2).ToUpperInvariant()}";
-                            FProp.Default.Save();
+                            JToken mainKeyToken = JObject.Parse(EndpointContent).SelectToken("mainKey");
+                            if (mainKeyToken != null)
+                            {
+                                FProp.Default.FPak_MainAES = $"{mainKeyToken.Value<string>().Substring(2).ToUpperInvariant()}";
+                                FProp.Default.Save();
 
-                            DebugHelper.WriteLine("BenBotAPI: Main AES key set to " + mainKeyToken.Value<string>());
+                                DebugHelper.WriteLine("BenBotAPI: Main AES key set to " + mainKeyToken.Value<string>());
+                            }
+                            else
+                                DebugHelper.WriteLine("BenBotAPI: Main AES key not found in endpoint response");
                         }
-                        else
-                            DebugHelper.WriteLine("BenBotAPI: Main AES key not found in endpoint response");
-                    }
 
-                    JToken dynamicPaks = JObject.Parse(EndpointContent).SelectToken("dynamicKeys");
-                    return JToken.Parse(dynamicPaks.ToString()).ToString().TrimStart('[').TrimEnd(']');
-                }
-                else
-                {
-                    DebugHelper.WriteLine("BenBotAPI: Down or Rate Limit Exceeded");
-                    new UpdateMyConsole("API Down or Rate Limit Exceeded", CColors.Blue, true).Append();
-                    return string.Empty;
+                        JToken dynamicPaks = JObject.Parse(EndpointContent).SelectToken("dynamicKeys");
+                        return JToken.Parse(dynamicPaks.ToString()).ToString().TrimStart('[').TrimEnd(']');
+                    }
+                    catch (System.Exception)
+                    {
+                        DebugHelper.WriteLine("BenBotAPI: Down or Rate Limit Exceeded");
+                        new UpdateMyConsole("API Down or Rate Limit Exceeded", CColors.Blue, true).Append();
+                    }
                 }
             }
             else
             {
                 DebugHelper.WriteLine("BenBotAPI: Your internet connection is currently unavailable, can't check for dynamic keys at the moment.");
                 new UpdateMyConsole("Your internet connection is currently unavailable, can't check for dynamic keys at the moment.", CColors.Blue, true).Append();
-                return string.Empty;
             }
+
+            return string.Empty;
         }
     }
 }

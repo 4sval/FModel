@@ -150,12 +150,12 @@ namespace FModel.Methods.Assets.IconCreator
                             if (propertiesArray != null)
                             {
                                 JArray colorsArray = AssetsUtility.GetPropertyTagStruct<JArray>(propertiesArray, "Colors", "properties");
+                                JToken backgroundTextureToken = AssetsUtility.GetPropertyTagText<JToken>(propertiesArray, "BackgroundTexture", "asset_path_name");
                                 if (colorsArray != null)
                                 {
-                                    DrawWithInGameColors(colorsArray, string.Equals(seriesFullPath, "/FortniteGame/Content/Athena/Items/Cosmetics/Series/MarvelSeries.uasset")); //REVERSE COLORS IF MARVEL BECAUSE IT LOOKS WEIRD
+                                    DrawWithInGameColors(colorsArray, backgroundTextureToken == null); //REVERSE COLORS IF NO IMAGE BECAUSE IT LOOKS WEIRD
                                 }
 
-                                JToken backgroundTextureToken = AssetsUtility.GetPropertyTagText<JToken>(propertiesArray, "BackgroundTexture", "asset_path_name");
                                 if (backgroundTextureToken != null)
                                 {
                                     string imagePath = FoldersUtility.FixFortnitePath(backgroundTextureToken.Value<string>());

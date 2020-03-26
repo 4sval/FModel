@@ -3,41 +3,72 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FModel.Forms"
+        xmlns:properties="clr-namespace:FModel.Properties"
         mc:Ignorable="d"
-        Title="About" 
-        Height="180" 
-        Width="550"
         Style="{StaticResource {x:Type Window}}" 
-        ResizeMode="NoResize" 
-        WindowStartupLocation="CenterScreen" 
-        WindowStyle="ToolWindow"
-        ShowInTaskbar="False"
-        >
+        Title="About" SizeToContent="Height" Background="#FF252D36"
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        WindowStyle="ToolWindow" ShowInTaskbar="False"
+        MinHeight="225" Width="600">
     <Grid>
-        <Image Width="127" Height="127" Source="/FModel;component/Resources/Logo.png" Margin="10,10,0,10" HorizontalAlignment="Left"/>
-        <Grid Height="127" Margin="142,10,10,10">
-            <Label x:Name="AboutTitle_Lbl" Content="FModel" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="24" FontWeight="Bold" Margin="0,5,0,0"/>
-            <Label Content="A powerful .PAK file explorer fully dedicated to Fortnite." HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,33,0,0"/>
-            <Label Content="Big thanks to:" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,60,0,0"/>
-            <Label Content="• Waddlesworth • Maiky • FunGames • Not Officer • PsychoPast • TSG • FireMonkey" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,75,0,0" FontSize="11"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="175"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
 
-            <Label HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
-                <TextBlock>
-                    <Hyperlink NavigateUri="https://www.paypal.me/FModel" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FFEFEFEF">Donate</Hyperlink>
-                </TextBlock>
-            </Label>
-            <Label HorizontalAlignment="Center" Margin="10,0,0,10" VerticalAlignment="Bottom" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
-                <TextBlock>
-                    <Hyperlink NavigateUri="https://discord.gg/fdkNYYQ" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FFEFEFEF"><Run Text="Discord"/></Hyperlink>
-                </TextBlock>
-            </Label>
-            <Label HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
-                <TextBlock>
-                    <Hyperlink NavigateUri="https://github.com/iAmAsval/FModel/blob/master/README.md#how-to-use" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FFEFEFEF">How To Use</Hyperlink>
-                </TextBlock>
-            </Label>
+        <Grid Grid.Row="0" Grid.RowSpan="3">
+            <Rectangle>
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="1,0" SpreadMethod="Pad"
+                                             MappingMode="RelativeToBoundingBox" ColorInterpolationMode="SRgbLinearInterpolation">
+                        <GradientStop Color="#FF252D36"/>
+                        <GradientStop Color="#FF232A32" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
         </Grid>
 
+        <Grid Grid.Row="1">
+            <Image Source="/FModel;component/Logo.ico"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="{x:Static properties:Resources.AboutF}"
+                   FontWeight="Bold" Foreground="White" Grid.Row="1"
+                   Grid.Column="2" FontFamily="Calibri" FontSize="22" />
+            <TextBlock Text="{x:Static properties:Resources.AboutFDetails}"
+                   FontWeight="Light" Foreground="White" Grid.Row="2"
+                   Grid.Column="2" TextWrapping="Wrap"/>
+
+            <TextBlock Text="{x:Static properties:Resources.ContributorsF}"
+                   FontWeight="Bold" Foreground="White" Grid.Row="4"
+                   Grid.Column="2" FontFamily="Calibri" FontSize="22" />
+            <TextBlock Text="{x:Static properties:Resources.ContributorsFDetails}"
+                   FontWeight="Light" Foreground="White" Grid.Row="5"
+                   Grid.Column="2" TextWrapping="Wrap"/>
+        </Grid>
     </Grid>
 </Window>

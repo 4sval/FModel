@@ -500,7 +500,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Methods\SyntaxHighlighter\Json.xshd" />
@@ -512,6 +512,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Resource Include="Resources\TT-JTCじゃんけんU &amp; TT-JTCじゃんけんUP.TTC" />
     <Resource Include="Resources\EBCDIC-NoSpecialChar.tbl" />
     <Resource Include="Resources\EBCDIC.tbl" />
     <Resource Include="Resources\BurbankBigCondensed-Black.ttf" />

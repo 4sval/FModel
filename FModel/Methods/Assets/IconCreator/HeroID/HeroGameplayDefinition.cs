@@ -33,7 +33,7 @@ namespace FModel.Methods.Assets.IconCreator.HeroID
                             if (heroGameplayProperties != null)
                             {
                                 _borderY = 518;
-                                _textY = 550;
+                                _textY = Properties.Settings.Default.FLanguage.Equals("Japanese") ? 548 : 550;
                                 _imageY = 519;
 
                                 DrawHeroPerk(heroGameplayProperties);
@@ -154,7 +154,7 @@ namespace FModel.Methods.Assets.IconCreator.HeroID
                                             {
                                                 string displayName = AssetTranslations.SearchTranslation(name_namespace.Value<string>(), name_key.Value<string>(), name_source_string.Value<string>());
 
-                                                Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+                                                Typeface typeface = new Typeface(Properties.Settings.Default.FLanguage.Equals("Japanese") ? TextsUtility.JPBurbank : TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
                                                 FormattedText formattedText =
                                                     new FormattedText(

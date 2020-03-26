@@ -80,7 +80,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             PathFigure dFigure = new PathFigure(dStart, dSegments, true);
             PathGeometry dGeo = new PathGeometry(new[] { dFigure });
 
-            Typeface typeface = new Typeface(TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal);
+            Typeface typeface = new Typeface(FProp.Default.FLanguage.Equals("Japanese") ? TextsUtility.JPBurbank : TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal);
             FormattedText formattedText =
                 new FormattedText(
                     displayName.ToUpperInvariant(),
@@ -145,7 +145,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                     lastfolder.ToUpperInvariant(),
                     CultureInfo.CurrentUICulture,
                     FlowDirection.LeftToRight,
-                    typeface,
+                    new Typeface(TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal),
                     30,
                     SecondaryColor,
                     IconCreator.PPD
@@ -162,7 +162,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             string watermark = FProp.Default.FChallengeWatermark;
             if (watermark.Contains("{BundleName}")) { watermark = watermark.Replace("{BundleName}", displayName); }
             if (watermark.Contains("{Date}")) { watermark = watermark.Replace("{Date}", DateTime.Now.ToString("dd/MM/yyyy")); }
-            typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+            typeface = new Typeface(FProp.Default.FLanguage.Equals("Japanese") ? TextsUtility.JPBurbank : TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
             formattedText =
                 new FormattedText(
                     watermark,
@@ -192,7 +192,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             IconCreator.ICDrawingContext.DrawRectangle(ChallengesUtility.DarkBrush(PrimaryColor, 0.3f), null, new Rect(0, 256, 1024, 144));
             IconCreator.ICDrawingContext.DrawRectangle(linGrBrush, null, new Rect(0, 256, 1024, 144));
 
-            Typeface typeface = new Typeface(TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal);
+            Typeface typeface = new Typeface(FProp.Default.FLanguage.Equals("Japanese") ? TextsUtility.JPBurbank : TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal);
 
             y = 310;
             bool isBundleLevelup = false;
@@ -272,7 +272,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                         );
                 formattedText.TextAlignment = TextAlignment.Left;
                 formattedText.MaxLineCount = 1;
-                Point textLocation = new Point(60, y + 15);
+                Point textLocation = new Point(60, y + (FProp.Default.FLanguage.Equals("Japanese") ? 10 : 15));
 
                 while (formattedText.Width > 800)
                 {
@@ -291,7 +291,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                         "0 /",
                         CultureInfo.CurrentUICulture,
                         FlowDirection.LeftToRight,
-                        typeface,
+                        new Typeface(TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal),
                         15,
                         new SolidColorBrush(Color.FromArgb(255, 255, 255, 255)),
                         IconCreator.PPD
@@ -306,7 +306,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                         entry.TheQuestCount.ToString(),
                         CultureInfo.CurrentUICulture,
                         FlowDirection.LeftToRight,
-                        typeface,
+                        new Typeface(TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal),
                         15,
                         new SolidColorBrush(Color.FromArgb(200, 255, 255, 255)),
                         IconCreator.PPD

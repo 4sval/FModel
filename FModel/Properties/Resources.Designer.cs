@@ -22,7 +22,7 @@ namespace FModel.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace FModel.Properties {
         ///   Retourne l'instance ResourceManager mise en cache utilisée par cette classe.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FModel.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace FModel.Properties {
         ///   les recherches de ressources à l'aide de cette classe de ressource fortement typée.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,9 +61,31 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à About FModel.
+        /// </summary>
+        public static string AboutF {
+            get {
+                return ResourceManager.GetString("AboutF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à FModel is a .PAK file explorer fully dedicated to Fortnite.
+        ///
+        ///Created in March 2019, in order to have unique and personalized functionality, it quickly became popular through leakers who used it to quickly generate images of new cosmetics added to the game.
+        ///Over time, new features got added and new users discovered the program.
+        ///It&apos;s now the most used free software to leak on Fortnite..
+        /// </summary>
+        public static string AboutFDetails {
+            get {
+                return ResourceManager.GetString("AboutFDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à You have reached the end of the file. Do you want to append one byte? This operation cannot be canceled if you continue..
         /// </summary>
-        internal static string AppendByteConfirmationString {
+        public static string AppendByteConfirmationString {
             get {
                 return ResourceManager.GetString("AppendByteConfirmationString", resourceCulture);
             }
@@ -72,7 +94,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
-        internal static byte[] BurbankBigCondensed_Black {
+        public static byte[] BurbankBigCondensed_Black {
             get {
                 object obj = ResourceManager.GetObject("BurbankBigCondensed_Black", resourceCulture);
                 return ((byte[])(obj));
@@ -82,7 +104,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Byte[].
         /// </summary>
-        internal static byte[] BurbankBigCondensed_Bold {
+        public static byte[] BurbankBigCondensed_Bold {
             get {
                 object obj = ResourceManager.GetObject("BurbankBigCondensed_Bold", resourceCulture);
                 return ((byte[])(obj));
@@ -93,7 +115,7 @@ namespace FModel.Properties {
         ///   Recherche une chaîne localisée semblable à The number of bytes in the last block of the program that are actually used. 
         ///If this value is zero, that means the entire last block is used.
         /// </summary>
-        internal static string CBB_EXEFile_BytesInLastBlockString {
+        public static string CBB_EXEFile_BytesInLastBlockString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_BytesInLastBlockString", resourceCulture);
             }
@@ -102,7 +124,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Initial value of the CS register, relative to the segment the program was loaded at..
         /// </summary>
-        internal static string CBB_EXEFile_InitialValueOfCSRegisterString {
+        public static string CBB_EXEFile_InitialValueOfCSRegisterString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_InitialValueOfCSRegisterString", resourceCulture);
             }
@@ -111,7 +133,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Initial value of the IP register..
         /// </summary>
-        internal static string CBB_EXEFile_InitialValueOfIPRegisterString {
+        public static string CBB_EXEFile_InitialValueOfIPRegisterString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_InitialValueOfIPRegisterString", resourceCulture);
             }
@@ -120,7 +142,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Initial value of the SP register..
         /// </summary>
-        internal static string CBB_EXEFile_InitialValueOfSPRegisterString {
+        public static string CBB_EXEFile_InitialValueOfSPRegisterString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_InitialValueOfSPRegisterString", resourceCulture);
             }
@@ -129,7 +151,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à This is the &apos;magic number&apos; of an EXE file..
         /// </summary>
-        internal static string CBB_EXEFile_MagicNumberString {
+        public static string CBB_EXEFile_MagicNumberString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_MagicNumberString", resourceCulture);
             }
@@ -139,7 +161,7 @@ namespace FModel.Properties {
         ///   Recherche une chaîne localisée semblable à Maximum number of paragraphs of additional memory. 
         ///Normally, the OS reserves all the remaining conventional memory for your program, but you can limit it with this field..
         /// </summary>
-        internal static string CBB_EXEFile_MaxNumberOfHeaderParagraphAdditionalMemoryString {
+        public static string CBB_EXEFile_MaxNumberOfHeaderParagraphAdditionalMemoryString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_MaxNumberOfHeaderParagraphAdditionalMemoryString", resourceCulture);
             }
@@ -148,7 +170,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à This program cannot be run in DOS mode....
         /// </summary>
-        internal static string CBB_EXEFile_NotDOSProgramString {
+        public static string CBB_EXEFile_NotDOSProgramString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_NotDOSProgramString", resourceCulture);
             }
@@ -158,7 +180,7 @@ namespace FModel.Properties {
         ///   Recherche une chaîne localisée semblable à Number of blocks in the file that are part of the EXE file. 
         ///If [02-03] is non-zero, only that much of the last block is used..
         /// </summary>
-        internal static string CBB_EXEFile_NumberOfBlockInFileBlockString {
+        public static string CBB_EXEFile_NumberOfBlockInFileBlockString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_NumberOfBlockInFileBlockString", resourceCulture);
             }
@@ -169,7 +191,7 @@ namespace FModel.Properties {
         ///This is the equivalent of the BSS size in a Unix program. 
         ///The program can&apos;t be loaded if there isn&apos;t at least this much memory available to it..
         /// </summary>
-        internal static string CBB_EXEFile_NumberOfHeaderParagraphAdditionalMemoryString {
+        public static string CBB_EXEFile_NumberOfHeaderParagraphAdditionalMemoryString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_NumberOfHeaderParagraphAdditionalMemoryString", resourceCulture);
             }
@@ -178,7 +200,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Number of relocation entries stored after the header. May be zero.
         /// </summary>
-        internal static string CBB_EXEFile_NumberOfRelocationEntriesString {
+        public static string CBB_EXEFile_NumberOfRelocationEntriesString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_NumberOfRelocationEntriesString", resourceCulture);
             }
@@ -187,7 +209,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Offset of the first relocation item in the file..
         /// </summary>
-        internal static string CBB_EXEFile_OffsetOfTheFirstRelocationItemString {
+        public static string CBB_EXEFile_OffsetOfTheFirstRelocationItemString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_OffsetOfTheFirstRelocationItemString", resourceCulture);
             }
@@ -196,7 +218,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Overlay number. Normally zero, meaning that it&apos;s the main program..
         /// </summary>
-        internal static string CBB_EXEFile_OverlayNumberString {
+        public static string CBB_EXEFile_OverlayNumberString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_OverlayNumberString", resourceCulture);
             }
@@ -206,7 +228,7 @@ namespace FModel.Properties {
         ///   Recherche une chaîne localisée semblable à Relative value of the stack segment. 
         ///This value is added to the segment the program was loaded at, and the result is used to initialize the SS register..
         /// </summary>
-        internal static string CBB_EXEFile_RelativeValueOfStackSegmentString {
+        public static string CBB_EXEFile_RelativeValueOfStackSegmentString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_RelativeValueOfStackSegmentString", resourceCulture);
             }
@@ -217,7 +239,7 @@ namespace FModel.Properties {
         ///If set properly, the 16-bit sum of all words in the file should be zero. 
         ///Usually, this isn&apos;t filled in..
         /// </summary>
-        internal static string CBB_EXEFile_WordChecksumString {
+        public static string CBB_EXEFile_WordChecksumString {
             get {
                 return ResourceManager.GetString("CBB_EXEFile_WordChecksumString", resourceCulture);
             }
@@ -226,7 +248,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap clipSize64 {
+        public static System.Drawing.Bitmap clipSize64 {
             get {
                 object obj = ResourceManager.GetObject("clipSize64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -236,7 +258,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap close_file_16x {
+        public static System.Drawing.Bitmap close_file_16x {
             get {
                 object obj = ResourceManager.GetObject("close_file_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -246,7 +268,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap colorpicker1 {
+        public static System.Drawing.Bitmap colorpicker1 {
             get {
                 object obj = ResourceManager.GetObject("colorpicker1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -256,7 +278,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap colorpicker2 {
+        public static System.Drawing.Bitmap colorpicker2 {
             get {
                 object obj = ResourceManager.GetObject("colorpicker2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -264,9 +286,30 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Contributors.
+        /// </summary>
+        public static string ContributorsF {
+            get {
+                return ResourceManager.GetString("ContributorsF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à • Waddlesworth			• Maiky
+        ///• FunGames			• Not Officer
+        ///• PsychoPast			• TSG
+        ///• XTigerHyperX			• FireMonkey.
+        /// </summary>
+        public static string ContributorsFDetails {
+            get {
+                return ResourceManager.GetString("ContributorsFDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Default TBL.
         /// </summary>
-        internal static string DefaultTBLString {
+        public static string DefaultTBLString {
             get {
                 return ResourceManager.GetString("DefaultTBLString", resourceCulture);
             }
@@ -275,7 +318,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap dmg64 {
+        public static System.Drawing.Bitmap dmg64 {
             get {
                 object obj = ResourceManager.GetObject("dmg64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -341,7 +384,7 @@ namespace FModel.Properties {
         ///37=&lt;EOT&gt;
         ///38 [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
-        internal static string EBCDIC {
+        public static string EBCDIC {
             get {
                 return ResourceManager.GetString("EBCDIC", resourceCulture);
             }
@@ -435,7 +478,7 @@ namespace FModel.Properties {
         ///54=.
         ///55 [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
-        internal static string EBCDIC_NoSpecialChar {
+        public static string EBCDIC_NoSpecialChar {
             get {
                 return ResourceManager.GetString("EBCDIC_NoSpecialChar", resourceCulture);
             }
@@ -444,7 +487,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à &amp;lt;end&amp;gt;.
         /// </summary>
-        internal static string EndTagString {
+        public static string EndTagString {
             get {
                 return ResourceManager.GetString("EndTagString", resourceCulture);
             }
@@ -453,7 +496,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Do you want to close the current file and open :.
         /// </summary>
-        internal static string FileDroppingConfirmationString {
+        public static string FileDroppingConfirmationString {
             get {
                 return ResourceManager.GetString("FileDroppingConfirmationString", resourceCulture);
             }
@@ -462,7 +505,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Fill selection with byte.
         /// </summary>
-        internal static string FillSelectionAloneString {
+        public static string FillSelectionAloneString {
             get {
                 return ResourceManager.GetString("FillSelectionAloneString", resourceCulture);
             }
@@ -471,7 +514,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à First byte.
         /// </summary>
-        internal static string FirstByteString {
+        public static string FirstByteString {
             get {
                 return ResourceManager.GetString("FirstByteString", resourceCulture);
             }
@@ -480,7 +523,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_16x {
+        public static System.Drawing.Bitmap folder_16x {
             get {
                 object obj = ResourceManager.GetObject("folder_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -490,7 +533,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap info_16x {
+        public static System.Drawing.Bitmap info_16x {
             get {
                 object obj = ResourceManager.GetObject("info_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -500,7 +543,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Kb.
         /// </summary>
-        internal static string KBTagString {
+        public static string KBTagString {
             get {
                 return ResourceManager.GetString("KBTagString", resourceCulture);
             }
@@ -509,7 +552,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à &amp;lt;ln&amp;gt;.
         /// </summary>
-        internal static string LineTagString {
+        public static string LineTagString {
             get {
                 return ResourceManager.GetString("LineTagString", resourceCulture);
             }
@@ -518,7 +561,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Logo {
+        public static System.Drawing.Bitmap Logo {
             get {
                 object obj = ResourceManager.GetObject("Logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -528,7 +571,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         /// </summary>
-        internal static System.Drawing.Icon Logo_Icon {
+        public static System.Drawing.Icon Logo_Icon {
             get {
                 object obj = ResourceManager.GetObject("Logo_Icon", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -538,7 +581,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Mb.
         /// </summary>
-        internal static string MBTagString {
+        public static string MBTagString {
             get {
                 return ResourceManager.GetString("MBTagString", resourceCulture);
             }
@@ -547,7 +590,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap open_16x {
+        public static System.Drawing.Bitmap open_16x {
             get {
                 object obj = ResourceManager.GetObject("open_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -557,7 +600,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Paste operation reached the end of the file. Do you want to extend the file to complete the operation? This operation cannot be canceled if you continue..
         /// </summary>
-        internal static string PasteExtendByteConfirmationString {
+        public static string PasteExtendByteConfirmationString {
             get {
                 return ResourceManager.GetString("PasteExtendByteConfirmationString", resourceCulture);
             }
@@ -566,7 +609,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Paste from clipboard.
         /// </summary>
-        internal static string PasteFromClipboardString {
+        public static string PasteFromClipboardString {
             get {
                 return ResourceManager.GetString("PasteFromClipboardString", resourceCulture);
             }
@@ -575,7 +618,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap reload64 {
+        public static System.Drawing.Bitmap reload64 {
             get {
                 object obj = ResourceManager.GetObject("reload64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -585,7 +628,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Replace with byte.
         /// </summary>
-        internal static string ReplaceWithByteString {
+        public static string ReplaceWithByteString {
             get {
                 return ResourceManager.GetString("ReplaceWithByteString", resourceCulture);
             }
@@ -594,7 +637,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap save_16x {
+        public static System.Drawing.Bitmap save_16x {
             get {
                 object obj = ResourceManager.GetObject("save_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -604,7 +647,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap settings_16x {
+        public static System.Drawing.Bitmap settings_16x {
             get {
                 object obj = ResourceManager.GetObject("settings_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -614,7 +657,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap T_Icon_Pets_64 {
+        public static System.Drawing.Bitmap T_Icon_Pets_64 {
             get {
                 object obj = ResourceManager.GetObject("T_Icon_Pets_64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -624,7 +667,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap T_Icon_Quests_64 {
+        public static System.Drawing.Bitmap T_Icon_Quests_64 {
             get {
                 object obj = ResourceManager.GetObject("T_Icon_Quests_64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -634,7 +677,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Template_AC_F {
+        public static System.Drawing.Bitmap Template_AC_F {
             get {
                 object obj = ResourceManager.GetObject("Template_AC_F", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -644,7 +687,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Template_AC_N {
+        public static System.Drawing.Bitmap Template_AC_N {
             get {
                 object obj = ResourceManager.GetObject("Template_AC_N", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -654,7 +697,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Template_Challenge {
+        public static System.Drawing.Bitmap Template_Challenge {
             get {
                 object obj = ResourceManager.GetObject("Template_Challenge", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -664,7 +707,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Template_D_F {
+        public static System.Drawing.Bitmap Template_D_F {
             get {
                 object obj = ResourceManager.GetObject("Template_D_F", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -674,7 +717,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Template_D_N {
+        public static System.Drawing.Bitmap Template_D_N {
             get {
                 object obj = ResourceManager.GetObject("Template_D_N", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -684,7 +727,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Template_F_F {
+        public static System.Drawing.Bitmap Template_F_F {
             get {
                 object obj = ResourceManager.GetObject("Template_F_F", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -694,7 +737,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Template_F_N {
+        public static System.Drawing.Bitmap Template_F_N {
             get {
                 object obj = ResourceManager.GetObject("Template_F_N", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -704,7 +747,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Template_M_F {
+        public static System.Drawing.Bitmap Template_M_F {
             get {
                 object obj = ResourceManager.GetObject("Template_M_F", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -714,7 +757,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Template_M_N {
+        public static System.Drawing.Bitmap Template_M_N {
             get {
                 object obj = ResourceManager.GetObject("Template_M_N", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -722,9 +765,19 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une ressource localisée de type System.Byte[].
+        /// </summary>
+        public static byte[] TT_JTCじゃんけんU___TT_JTCじゃんけんUP {
+            get {
+                object obj = ResourceManager.GetObject("TT_JTCじゃんけんU___TT_JTCじゃんけんUP", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap unknown512 {
+        public static System.Drawing.Bitmap unknown512 {
             get {
                 object obj = ResourceManager.GetObject("unknown512", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -734,7 +787,7 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à An error occured when writing..
         /// </summary>
-        internal static string WritingErrorExeptionString {
+        public static string WritingErrorExeptionString {
             get {
                 return ResourceManager.GetString("WritingErrorExeptionString", resourceCulture);
             }

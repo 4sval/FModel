@@ -65,7 +65,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     bmp.EndInit();
                     bmp.Freeze();
 
-                    Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+                    Typeface typeface = new Typeface(Properties.Settings.Default.FLanguage.Equals("Japanese") ? TextsUtility.JPBurbank : TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
                     FormattedText formattedText =
                         new FormattedText(
                             $"{AssetTranslations.SearchTranslation("", "6EA26D1A4252034FBD869A90F9A6E49A", "Reload Time")} ({AssetTranslations.SearchTranslation("", "6BA53D764BA5CC13E821D2A807A72365", "seconds")}) : {ReloadTime.Value<string>()}".ToUpperInvariant(),
@@ -80,7 +80,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     formattedText.MaxTextWidth = 515;
                     formattedText.MaxLineCount = 1;
 
-                    Point textLocation = new Point(0, 587 - formattedText.Height);
+                    Point textLocation = new Point(0, (Properties.Settings.Default.FLanguage.Equals("Japanese") ? 585 : 587) - formattedText.Height);
 
                     IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
                     IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(12, 560, 24, 24));
@@ -99,7 +99,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     bmp.EndInit();
                     bmp.Freeze();
 
-                    Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+                    Typeface typeface = new Typeface(Properties.Settings.Default.FLanguage.Equals("Japanese") ? TextsUtility.JPBurbank : TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
                     FormattedText formattedText =
                         new FormattedText(
                             $"{AssetTranslations.SearchTranslation("", "068239DD4327B36124498C9C5F61C038", "Magazine Size")} : {ClipSize.Value<string>()}".ToUpperInvariant(),
@@ -114,7 +114,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     formattedText.MaxTextWidth = 515;
                     formattedText.MaxLineCount = 1;
 
-                    Point textLocation = new Point(0, 624 - formattedText.Height);
+                    Point textLocation = new Point(0, (Properties.Settings.Default.FLanguage.Equals("Japanese") ? 622 : 624) - formattedText.Height);
 
                     IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
                     IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(12, 598, 24, 24));
@@ -133,7 +133,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     bmp.EndInit();
                     bmp.Freeze();
 
-                    Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+                    Typeface typeface = new Typeface(Properties.Settings.Default.FLanguage.Equals("Japanese") ? TextsUtility.JPBurbank : TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
                     FormattedText formattedText =
                         new FormattedText(
                             $"{AssetTranslations.SearchTranslation("", "BF7E3CF34A9ACFF52E95EAAD4F09F133", "Damage to Player")} : {DmgPB.Value<string>()}".ToUpperInvariant(),
@@ -148,7 +148,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                     formattedText.MaxTextWidth = 515;
                     formattedText.MaxLineCount = 1;
 
-                    Point textLocation = new Point(0, 661 - formattedText.Height);
+                    Point textLocation = new Point(0, (Properties.Settings.Default.FLanguage.Equals("Japanese") ? 659 : 661) - formattedText.Height);
 
                     IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
                     IconCreator.ICDrawingContext.DrawImage(bmp, new Rect(12, 634, 24, 24));

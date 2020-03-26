@@ -14,12 +14,12 @@
          alt="Releases">
   </a>
   <a href="https://github.com/iAmAsval/FModel/releases/latest">
-    <img src="https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.0.4.2%20Downloads"
+    <img src="https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.0.4.3%20Downloads"
          alt="Downloads">
   </a>
   <a href="https://twitter.com/AsvalFN"><img src="https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter"></a>
   <a href="https://discord.gg/fdkNYYQ">
-      <img src="https://img.shields.io/discord/637265123144237061.svg?label=Discord&logo=discord&color=778cd4">
+      <img src="https://discordapp.com/api/guilds/637265123144237061/widget.png?style=shield">
   </a>
   
   <h6 align="center">This project is not my full time job, donations are greatly appreciated.</h6>
@@ -162,6 +162,14 @@ For x32 users, you just have to clone or download the repository and build FMode
             </a><br>
             <a href="https://github.com/AyeTSG" title="Github">🔧</a>
             <a href="https://twitter.com/AyeTSG" title="Twitter">🐦</a>
+        </td>
+	<td align="center">
+            <a href="https://github.com/XTigerHyperX">
+                <img src="https://avatars2.githubusercontent.com/u/49372767?s=200&v=4" width="100px;" alt="XTigerHyperX"/><br/>
+                <sub><b>XTigerHyperX</b></sub>
+            </a><br>
+            <a href="https://github.com/XTigerHyperX" title="Github">🔧</a>
+            <a href="https://twitter.com/XTigerHyperX" title="Twitter">🐦</a>
         </td>
         <td align="center">
             <a href="https://github.com/ItsFireMonkey">

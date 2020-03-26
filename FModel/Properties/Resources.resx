@@ -294,4 +294,26 @@ Usually, this isn't filled in.</value>
   <data name="Template_AC_N" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Template_AC_N.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="TT_JTCじゃんけんU___TT_JTCじゃんけんUP" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TT-JTCじゃんけんU &amp; TT-JTCじゃんけんUP.TTC;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="AboutF" xml:space="preserve">
+    <value>About FModel</value>
+  </data>
+  <data name="AboutFDetails" xml:space="preserve">
+    <value>FModel is a .PAK file explorer fully dedicated to Fortnite.
+
+Created in March 2019, in order to have unique and personalized functionality, it quickly became popular through leakers who used it to quickly generate images of new cosmetics added to the game.
+Over time, new features got added and new users discovered the program.
+It's now the most used free software to leak on Fortnite.</value>
+  </data>
+  <data name="ContributorsF" xml:space="preserve">
+    <value>Contributors</value>
+  </data>
+  <data name="ContributorsFDetails" xml:space="preserve">
+    <value>• Waddlesworth			• Maiky
+• FunGames			• Not Officer
+• PsychoPast			• TSG
+• XTigerHyperX			• FireMonkey</value>
+  </data>
 </root>

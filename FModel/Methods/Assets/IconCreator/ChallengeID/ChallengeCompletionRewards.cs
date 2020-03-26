@@ -90,7 +90,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
 
         private static void DrawCompletionText(string completionCount, SolidColorBrush PrimaryColor, SolidColorBrush SecondaryColor, int y)
         {
-            Typeface typeface = new Typeface(TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal);
+            Typeface typeface = new Typeface(FProp.Default.FLanguage.Equals("Japanese") ? TextsUtility.JPBurbank : TextsUtility.Burbank, FontStyles.Normal, FontWeights.Black, FontStretches.Normal);
 
             #region DESIGN
             IconCreator.ICDrawingContext.DrawRectangle(ChallengesUtility.DarkBrush(PrimaryColor, 0.3f), null, new Rect(0, y, 1024, 90));
@@ -239,7 +239,7 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
             formattedText.TextAlignment = TextAlignment.Left;
             formattedText.MaxTextWidth = 800;
             formattedText.MaxLineCount = 1;
-            Point textLocation = new Point(60, y + 23);
+            Point textLocation = new Point(60, y + (FProp.Default.FLanguage.Equals("Japanese") ? 17 : 23));
             IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
         }
     }

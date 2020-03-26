@@ -55,7 +55,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                                 {
                                     string displayName = AssetTranslations.SearchTranslation(name_namespace.Value<string>(), name_key.Value<string>(), name_source_string.Value<string>());
 
-                                    Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+                                    Typeface typeface = new Typeface(Properties.Settings.Default.FLanguage.Equals("Japanese") ? TextsUtility.JPBurbank : TextsUtility.FBurbank, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
                                     FormattedText formattedText =
                                         new FormattedText(
@@ -71,7 +71,7 @@ namespace FModel.Methods.Assets.IconCreator.WeaponID
                                     formattedText.MaxTextWidth = 515;
                                     formattedText.MaxLineCount = 1;
 
-                                    Point textLocation = new Point(0, 550 - formattedText.Height);
+                                    Point textLocation = new Point(0, (Properties.Settings.Default.FLanguage.Equals("Japanese") ? 548 : 550) - formattedText.Height);
 
                                     IconCreator.ICDrawingContext.DrawText(formattedText, textLocation);
                                 }
