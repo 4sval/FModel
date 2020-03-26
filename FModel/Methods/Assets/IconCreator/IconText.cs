@@ -255,6 +255,8 @@ namespace FModel.Methods.Assets.IconCreator
         {
             Typeface typeface = new Typeface(TextsUtility.FBurbank, FontStyles.Normal, string.Equals(FProp.Default.FLanguage, "Japanese") ? FontWeights.Black : FontWeights.Normal, FontStretches.Normal);
             double size = string.Equals(FProp.Default.FRarity_Design, "Flat") || string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? 50 : 45;
+            Typeface typefaceJapanese = new Typeface(new FontFamily("TT-JTCじゃんけんU"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+
 
             FormattedText formattedText =
                 new FormattedText(
@@ -266,6 +268,20 @@ namespace FModel.Methods.Assets.IconCreator
                     Brushes.White,
                     IconCreator.PPD
                     );
+            if (FProp.Default.FLanguage == "Japanese")
+            {
+                formattedText =
+                 new FormattedText(
+                     string.Equals(FProp.Default.FRarity_Design, "Minimalist") || string.Equals(FProp.Default.FLanguage, "Russian") ? DisplayName.ToUpperInvariant() : DisplayName,
+                     CultureInfo.CurrentUICulture,
+                     FlowDirection.LeftToRight,
+                     typefaceJapanese,
+                     size,
+                     Brushes.White,
+                     IconCreator.PPD
+                     );
+            }
+
             if (string.Equals(FProp.Default.FRarity_Design, "Flat"))
             {
                 formattedText.TextAlignment = TextAlignment.Right;
@@ -294,17 +310,32 @@ namespace FModel.Methods.Assets.IconCreator
         private static void DrawDescription(string Description)
         {
             Typeface typeface = new Typeface(new FontFamily("Arial"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+            Typeface typefaceJapanese = new Typeface(new FontFamily("TT-JTCじゃんけんU"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
-            FormattedText formattedText =
-                new FormattedText(
-                    Description,
-                    CultureInfo.CurrentUICulture,
-                    FlowDirection.LeftToRight,
-                    typeface,
-                    string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? 18 : 13,
-                    Brushes.White,
-                    IconCreator.PPD
-                    );
+                FormattedText formattedText =
+                    new FormattedText(
+                        Description,
+                        CultureInfo.CurrentUICulture,
+                        FlowDirection.LeftToRight,
+                        typeface,
+                        string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? 18 : 13,
+                        Brushes.White,
+                        IconCreator.PPD
+                        );
+            
+            if (FProp.Default.FLanguage == "Japanese")
+            {
+                formattedText =
+                    new FormattedText(
+                        Description,
+                        CultureInfo.CurrentUICulture,
+                        FlowDirection.LeftToRight,
+                        typefaceJapanese,
+                        string.Equals(FProp.Default.FRarity_Design, "Minimalist") ? 18 : 13,
+                        Brushes.White,
+                        IconCreator.PPD
+                        );
+            }
             if (string.Equals(FProp.Default.FRarity_Design, "Flat"))
             {
                 formattedText.TextAlignment = TextAlignment.Right;
