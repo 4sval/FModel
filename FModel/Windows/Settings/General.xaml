@@ -106,7 +106,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="10" />
                     </Grid.RowDefinitions>
-                    
+
                     <TextBlock Text="{x:Static properties:Resources.FyiTitle}"
                                FontWeight="Bold" Foreground="White" Grid.Row="1"
                                FontFamily="Calibri" FontSize="18"/>
@@ -120,13 +120,16 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    
+
                     <CheckBox Grid.Row="0" Margin="5"
                           Content="{x:Static properties:Resources.ReloadAesKeysAtLaunch}"
                           IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=ReloadAesKeys, Mode=TwoWay}"/>
                     <CheckBox Grid.Row="1" Margin="5"
                           Content="{x:Static properties:Resources.AutoOpenSounds}"
                           IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoOpenSounds, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="1" Margin="5,29,5,-19"
+                        Content="{x:Static properties:Resources.EnableDiscordRPC}"
+                        IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=EnableDiscordRPC, Mode=TwoWay}"/>
                 </Grid>
             </Grid>
         </GroupBox>
