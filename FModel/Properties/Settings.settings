@@ -2,183 +2,110 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="FModel.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="FPak_Path" Type="System.String" Scope="User">
+    <Setting Name="PakPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="FOutput_Path" Type="System.String" Scope="User">
+    <Setting Name="OutputPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="FPak_MainAES" Type="System.String" Scope="User">
+    <Setting Name="UpdateSettings" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ReloadAesKeys" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AutoOpenSounds" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="StaticAesKeys" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="FRarity_Design" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Default</Value>
+    <Setting Name="DynamicAesKeys" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="FLanguage" Type="System.String" Scope="User">
-      <Value Profile="(Default)">English</Value>
+    <Setting Name="GridParentTop" Type="System.String" Scope="User">
+      <Value Profile="(Default)">11*</Value>
     </Setting>
-    <Setting Name="FIsFeatured" Type="System.Boolean" Scope="User">
+    <Setting Name="GridParentBottom" Type="System.String" Scope="User">
+      <Value Profile="(Default)">10*</Value>
+    </Setting>
+    <Setting Name="GridChildTopLeft" Type="System.String" Scope="User">
+      <Value Profile="(Default)">2*</Value>
+    </Setting>
+    <Setting Name="GridChildTopCenter" Type="System.String" Scope="User">
+      <Value Profile="(Default)">3*</Value>
+    </Setting>
+    <Setting Name="GridChildTopRight" Type="System.String" Scope="User">
+      <Value Profile="(Default)">2*</Value>
+    </Setting>
+    <Setting Name="GridChildBottomLeft" Type="System.String" Scope="User">
+      <Value Profile="(Default)">6*</Value>
+    </Setting>
+    <Setting Name="GridChildBottomCenter" Type="System.String" Scope="User">
+      <Value Profile="(Default)">11*</Value>
+    </Setting>
+    <Setting Name="GridChildBottomRight" Type="System.String" Scope="User">
+      <Value Profile="(Default)">6*</Value>
+    </Setting>
+    <Setting Name="AutoExport" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="FUseWatermark" Type="System.Boolean" Scope="User">
+    <Setting Name="AutoSave" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="FWatermarkFilePath" Type="System.String" Scope="User">
+    <Setting Name="AutoSaveImage" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="CustomGoTos" Type="System.String" Scope="User">
+      <Value Profile="(Default)">[{"Header":"Cosmetics","DirectoryPath":"FortniteGame/Content/Athena/Items/Cosmetics/"},{"Header":"Challenges","DirectoryPath":"FortniteGame/Content/Athena/Items/ChallengeBundles/"},{"Header":"Emotes [Audio]","DirectoryPath":"FortniteGame/Content/Athena/Sounds/Emotes/"},{"Header":"Music Packs [Audio]","DirectoryPath":"FortniteGame/Content/Athena/Sounds/MusicPacks/"},{"Header":"Weapons","DirectoryPath":"FortniteGame/Content/Athena/Items/Weapons/"},{"Header":"Strings","DirectoryPath":"FortniteGame/Content/Localization/"}]</Value>
+    </Setting>
+    <Setting Name="AssetsLanguage" Type="System.Int64" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="AssetsIconDesign" Type="System.Int64" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="UseGameColors" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UseItemShopIcon" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UseIconWatermark" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="IconWatermarkPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="FWatermarkOpacity" Type="System.Int32" Scope="User">
+    <Setting Name="IconWatermarkX" Type="System.Int64" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="FWatermarkScale" Type="System.Double" Scope="User">
+    <Setting Name="IconWatermarkY" Type="System.Int64" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="FWatermarkXPos" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">3</Value>
+    <Setting Name="IconWatermarkOpacity" Type="System.Int64" Scope="User">
+      <Value Profile="(Default)">255</Value>
     </Setting>
-    <Setting Name="FWatermarkYPos" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">3</Value>
+    <Setting Name="IconWatermarkScale" Type="System.Int64" Scope="User">
+      <Value Profile="(Default)">512</Value>
     </Setting>
-    <Setting Name="FChallengeWatermark" Type="System.String" Scope="User">
+    <Setting Name="UseChallengeBanner" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ChallengeBannerPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ChallengeBannerWatermark" Type="System.String" Scope="User">
       <Value Profile="(Default)">{BundleName} - {Date}</Value>
     </Setting>
-    <Setting Name="FUseChallengeWatermark" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="ChallengeBannerOpacity" Type="System.Int64" Scope="User">
+      <Value Profile="(Default)">255</Value>
     </Setting>
-    <Setting Name="FBannerFilePath" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+    <Setting Name="ChallengeBannerPrimaryColor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1C2026</Value>
     </Setting>
-    <Setting Name="FBannerOpacity" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="FDiffFileSize" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="HeaderVisibility" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ReadOnly" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="StatusBarVisibility" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="FPrimaryColor" Type="System.String" Scope="User">
-      <Value Profile="(Default)">21:32:43</Value>
-    </Setting>
-    <Setting Name="FSecondaryColor" Type="System.String" Scope="User">
-      <Value Profile="(Default)">29:161:242</Value>
-    </Setting>
-    <Setting Name="FUpdateSettings" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ReloadAES" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="FOpenSounds" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="FAutoExtractRaw" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="FAutoSaveJson" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="FAutoSaveImg" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="FUM_AssetsType" Type="System.String" Scope="User">
-      <Value Profile="(Default)">{
-  "[BR] Cosmetics": {
-    "Path": "/FortniteGame/Content/Athena/Items/Cosmetics/",
-    "isChecked": "True"
-  },
-  "[BR] Cosmetics Variants": {
-    "Path": "/FortniteGame/Content/Athena/Items/CosmeticVariantTokens/",
-    "isChecked": "True"
-  },
-  "[BR] Banners": {
-    "Path": "/FortniteGame/Content/Athena/Items/BannerToken/",
-    "isChecked": "True"
-  },
-  "[BR] Challenges": {
-    "Path": "/FortniteGame/Content/Athena/Items/ChallengeBundles/",
-    "isChecked": "True"
-  },
-  "[BR] Consumables": {
-    "Path": "/FortniteGame/Content/Athena/Items/Consumables/",
-    "isChecked": "False"
-  },
-  "[BR] Traps": {
-    "Path": "/FortniteGame/Content/Athena/Items/Traps/",
-    "isChecked": "False"
-  },
-  "[BR] Weapons": {
-    "Path": "/FortniteGame/Content/Athena/Items/Weapons/",
-    "isChecked": "True"
-  },
-  "[BR] 2D Assets": {
-    "Path": "/FortniteGame/Content/2dAssets/",
-    "isChecked": "True"
-  },
-  "[BR] Featured Images": {
-    "Path": "/FortniteGame/Content/UI/Foundation/Textures/BattleRoyale/FeaturedItems/",
-    "isChecked": "False"
-  },
-  "[STW] Heroes": {
-    "Path": "/FortniteGame/Content/Heroes/",
-    "isChecked": "False"
-  },
-  "[STW] Defenders": {
-    "Path": "/FortniteGame/Content/Items/Defenders/",
-    "isChecked": "False"
-  },
-  "[STW] Schematics": {
-    "Path": "/FortniteGame/Content/Items/Schematics/",
-    "isChecked": "False"
-  },
-  "[STW] Traps": {
-    "Path": "/FortniteGame/Content/Items/Traps/",
-    "isChecked": "False"
-  },
-  "[STW] Weapons": {
-    "Path": "/FortniteGame/Content/Items/Weapons/",
-    "isChecked": "False"
-  },
-  "[STW] Ingredients": {
-    "Path": "/FortniteGame/Content/Items/Ingredients/",
-    "isChecked": "False"
-  },
-  "[STW] Persistent Resources": {
-    "Path": "/FortniteGame/Content/Items/PersistentResources/",
-    "isChecked": "False"
-  },
-  "[STW] CardPacks": {
-    "Path": "/FortniteGame/Content/Items/CardPacks/",
-    "isChecked": "False"
-  },
-  "Tokens": {
-    "Path": "/FortniteGame/Content/Items/Tokens/",
-    "isChecked": "False"
-  },
-  "Icons": {
-    "Path": "/FortniteGame/Content/UI/Foundation/Textures/Icons/",
-    "isChecked": "False"
-  },
-  "Additional Banners": {
-    "Path": "/FortniteGame/Content/UI/Foundation/Textures/Banner/",
-    "isChecked": "False"
-  },
-  "Additional Loading Screens": {
-    "Path": "/FortniteGame/Content/UI/Foundation/Textures/LoadingScreens/",
-    "isChecked": "False"
-  }
-}</Value>
-    </Setting>
-    <Setting Name="ELauncherToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="ELauncherExpiration" Type="System.Int64" Scope="User">
-      <Value Profile="(Default)">0</Value>
+    <Setting Name="ChallengeBannerSecondaryColor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">2848A3</Value>
     </Setting>
   </Settings>
 </SettingsFile>

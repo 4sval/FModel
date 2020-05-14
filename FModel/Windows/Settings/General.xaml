@@ -1,0 +1,138 @@
+﻿<Window x:Class="FModel.Windows.Settings.General"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:properties="clr-namespace:FModel.Properties"
+        mc:Ignorable="d"
+        Style="{StaticResource {x:Type Window}}"
+        Title="{x:Static properties:Resources.GeneralSettings}" MinWidth="600"
+        WindowStartupLocation="CenterScreen" Icon="/FModel;component/FModel.ico" 
+        ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" UseLayoutRounding="True"
+        Loaded="OnLoaded" Closing="OnClosing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Header="{x:Static properties:Resources.PakFiles}" Grid.Row="1" Grid.Column="1" BorderBrush="#7F748198" VerticalAlignment="Top">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="5"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="1" Grid.Column="1"
+                       Content="{x:Static properties:Resources.Path}"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <TextBox Grid.Row="1" Grid.Column="2"
+                         Text="{Binding Source={x:Static properties:Settings.Default}, Path=PakPath, Mode=TwoWay}"
+                         TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF" Margin="5,3,5,0"/>
+                <Button Grid.Row="1" Grid.Column="3" Content="..." Height="20" Width="20" VerticalAlignment="Top" Margin="5,3,5,0" Click="OnInputClick"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="{x:Static properties:Resources.Extraction}" Grid.Row="2" Grid.Column="1" BorderBrush="#7F748198" VerticalAlignment="Top">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="5"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="1" Grid.Column="1"
+                       Content="{x:Static properties:Resources.Path}"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <TextBox Grid.Row="1" Grid.Column="2"
+                         Text="{Binding Source={x:Static properties:Settings.Default}, Path=OutputPath, Mode=TwoWay}"
+                         TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="#FFEFEFEF" Margin="5,3,5,0"/>
+                <Button Grid.Row="1" Grid.Column="3" Content="..." Height="20" Width="20" VerticalAlignment="Top" Margin="5,3,5,0" Click="OnOutputClick"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="{x:Static properties:Resources.Assets}" Grid.Row="3" Grid.Column="1" BorderBrush="#7F748198" VerticalAlignment="Top">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="5"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="1" Grid.Column="1"
+                       Content="{x:Static properties:Resources.Language}"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <ComboBox x:Name="Languages_CbBox" Grid.Row="1" Grid.Column="2"
+                          BorderBrush="#7F748198" Background="#FF333C46"
+                          Height="20" VerticalAlignment="Top" Margin="0,3,0,0"/>
+
+                <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="10" />
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="{x:Static properties:Resources.FyiTitle}"
+                               FontWeight="Bold" Foreground="White" Grid.Row="1"
+                               FontFamily="Calibri" FontSize="18"/>
+                    <TextBlock Text="{x:Static properties:Resources.FyiDetails}"
+                               FontWeight="Light" Foreground="White" Grid.Row="2"
+                               TextWrapping="Wrap" FontSize="11" MaxWidth="350"/>
+                </Grid>
+
+                <Grid Grid.Row="1" Grid.Column="4" Grid.RowSpan="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <CheckBox Grid.Row="0" Margin="5"
+                          Content="{x:Static properties:Resources.ReloadAesKeysAtLaunch}"
+                          IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=ReloadAesKeys, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="1" Margin="5"
+                          Content="{x:Static properties:Resources.AutoOpenSounds}"
+                          IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoOpenSounds, Mode=TwoWay}"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+
+        <Button Grid.Row="5" Grid.Column="1"
+                Content="{x:Static properties:Resources.OK}"
+                HorizontalAlignment="Right" Width="80" Click="OnClick"/>
+    </Grid>
+</Window>

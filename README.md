@@ -1,118 +1,59 @@
-﻿<h1 align="center">
-  <br>
-  <a href="https://github.com/iAmAsval/FModel"><img src="https://github.com/iAmAsval/FModel/blob/master/Images/Logo.png" alt="FModel" width="200"></a>
-  <br>
-  FModel
-  <br>
-</h1>
+# FModel
 
-<h4 align="center">A powerful .PAK file explorer fully dedicated to Fortnite.</h4>
+<img src="https://cdn.asval.tk/i/FModel.png" align="right" alt="FModel Logo" width="128" height="128">
 
-<p align="center">
-  <a href="https://github.com/iAmAsval/FModel/releases/latest">
-    <img src="https://img.shields.io/github/v/release/iamasval/fmodel?label=Release"
-         alt="Releases">
-  </a>
-  <a href="https://github.com/iAmAsval/FModel/releases/latest">
-    <img src="https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.0.4.3%20Downloads"
-         alt="Downloads">
-  </a>
-  <a href="https://twitter.com/AsvalFN"><img src="https://img.shields.io/badge/Twitter-@AsvalFN-1da1f2.svg?logo=twitter"></a>
-  <a href="https://discord.gg/fdkNYYQ">
-      <img src="https://discordapp.com/api/guilds/637265123144237061/widget.png?style=shield">
-  </a>
-  
-  <h6 align="center">This project is not my full time job, donations are greatly appreciated.</h6>
-  <p align="center">
-    <a href="https://www.paypal.me/FModel">
-      <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">
-    </a>
-    <a href="https://wakatime.com/badge/github/iAmAsval/FModel">
-      <img src="https://wakatime.com/badge/github/iAmAsval/FModel.svg">
-    </a>
-  </p>
-</p>
+Created in March 2019, FModel is a .PAK file explorer fully dedicated to Fortnite but also work with some other Unreal Engine's games. It quickly became popular through leakers who used it to quickly generate images of new cosmetics added to the game.
+Over time, new features got added and new users discovered the program.
 
-------
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation-)
+- [Acknowledgments](#acknowledgments)
+- [Support](#support-)
+
+## Introduction
+
+[![Discord](https://discordapp.com/api/guilds/637265123144237061/widget.png?style=shield)](https://discord.gg/fdkNYYQ)
+
+Load one or several .PAK files, see assets properties, create icons for cosmetics, challenges, and much more. Built with C#, FModel is the most feature-rich software to leak on Fortnite and is 100% free.
 
 <p align="center">
-  <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="#download">Download</a> •
-  <a href="#contributors">Contributors</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#license">License</a>
+  <img src="https://cdn.asval.tk/i/2020-05/OAoZxW39Jv.gif">
 </p>
 
-![demo](https://github.com/iAmAsval/FModel/blob/master/Images/FModel_Demo.gif)
+## Features
 
-## Key Features
+A few of the things you can do with FModel:
 
 * .PAK Files
-  - Load one or all of them
-  - Load the difference between 2 Fortnite versions
-  - Load difference and auto generate & save icons for you
-  - Backup your current files
+  - Load all
+  - Load one
+  - Load new assets
+  - Load modified assets
+  - Load new and modified assets
+  - Backup all assets
 * Assets
-  - Extract and show the deserialized json string
-  - Save JSON string
+  - Extract properties
   - Export RAW data
-  - Copy asset path
-  - Get asset properties
-* Filter & Search assets by their name
-* Icon Generation
-  - Battle Royale Cosmetics
-  - Battle Royale Challenges
-  - Save The World Heroes
-  - Save The World Defenders
-  - Weapons
-  - Schematics
-  - Other various assets
-  - Supports for 15 different languages
-* Save images
-* Merge images
-* Hex Viewer
-* Sound Player
-* Night Mode
+  - Copy path / name
+* Icons
+  - All BR / STW cosmetics and challenges
+  - 15 different languages available
+* Audio Player
+  - OGG / WAV files
+  
+## Installation [![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.1.0)](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)
 
-## How To Use
+To use FModel, you need to have [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-3.1.3-windows-x64-installer) installed on your computer
+* **[Download](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)** the latest version.
+* **Extract FModel.exe** somewhere on your PC and launch it
+  * It is preferable to create a new folder, once you're gonna launch the executable, a folder `Output` will be created next to FModel.exe.
 
-To run this program, you'll need [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/net472) or newer installed on your computer. Once it's done, you can download the latest release [here](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip).
+## Acknowledgments
 
-1. Extract `FModel.exe` and `libSkiaSharp.dll` somewhere - __double click on FModel.exe__
-2. The path to your Fortnite .PAK files should be automatically detected but you can still set it manually - __click on Load and then on Settings__
-3. You'll need the AES key in order to read the files - __click on AES Manager and enter the key under Static Key__
-4. You can now load one or all .PAK files
-5. Navigate through the tree to find the Asset you want
-
-### Difference Mode
-
-The difference mode can check new files between 2 different Fortnite versions. You'll need at least one backup file to be able to compare your current .PAK files and the backup file.
-
-1. You can target file size check on the settings window if you want - __click on Load, Settings, and then check Diff w/ File Size__
-2. Enable the difference mode - __click on Load and then on Difference Mode__
-3. Compare files - __click on Load and then on Load Difference__
-4. It's gonna check you current .PAK files and then ask you for the backup file - __choose the backup file__
-5. You can now see the difference between your backup file and you current files
-
-### Update Mode
-
-The update mode can check new files between 2 different Fortnite versions and auto extract assets of your choice. You'll need at least one backup file to be able to compare your current .PAK files and the backup file.
-
-1. You can target file size check on the settings window if you want - __click on Load, Settings, and then check Diff w/ File Size__
-2. Enable the difference mode - __click on Load and then on Difference Mode__
-3. Enable the update mode - __click on Load and then on Update Mode__
-4. Choose assets to extract - __click on the asset type you wanna auto extract and then on OK__
-5. Compare files - __click on Load and then on Load And Extract Difference__
-6. It's gonna check you current .PAK files and then ask you for the backup file - __choose the backup file__
-7. You can see the difference between your backup file and you current files and it's also gonna auto extract the assets you selected
-
-## Download
-
-You can download the latest version of FModel for Windows x64 [here](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip).
-For x32 users, you just have to clone or download the repository and build FModel on Visual Studio, make sure to target x32 Platforms in the solution properties. __THERE WILL BE NO SUPPORT FOR x32 USERS AT ALL BECAUSE I WON'T HELP USERS THAT CAN'T EVEN PLAY THE GAME__. It's a waste of time for those who have real issues.
-
-## Contributors
+### Contributors
 
 <table>
     <tr>
@@ -172,34 +113,38 @@ For x32 users, you just have to clone or download the repository and build FMode
             <a href="https://twitter.com/XTigerHyperX" title="Twitter">🐦</a>
         </td>
         <td align="center">
-            <a href="https://github.com/ItsFireMonkey">
+            <a href="https://github.com/iFireMonkey">
                 <img src="https://avatars2.githubusercontent.com/u/38590471?s=200&v=4" width="100px;" alt="FireMonkey"/><br/>
                 <sub><b>FireMonkey</b></sub>
             </a><br>
-            <a href="https://github.com/ItsFireMonkey" title="Github">🔧</a>
+            <a href="https://github.com/iFireMonkey" title="Github">🔧</a>
             <a href="https://twitter.com/iFireMonkey" title="Twitter">🐦</a>
         </td>
     </tr>
 </table>
 
-## Credits
+### Credits
 
 This software uses the following open source packages:
 
+- [Audion.CSCore](https://github.com/tjscience/audion.cscore)
+- [Autoupdater.NET.Official](https://github.com/ravibpatel/AutoUpdater.NET)
+- [AvalonEdit](https://github.com/icsharpcode/AvalonEdit)
+- [CSCore](https://github.com/filoe/cscore)
+- [DiscordRichPresence](https://github.com/Lachee/discord-rpc-csharp)
+- [Extended.Wpf.Toolkit](https://github.com/xceedsoftware/wpftoolkit)
+- [K4os.Compression.LZ4.Streams](https://github.com/MiloszKrajewski/K4os.Compression.LZ4)
+- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+- [NVorbis](https://github.com/NVorbis/NVorbis)
+- [Ookii.Dialogs.Wpf](https://github.com/augustoproiete/ookii-dialogs-wpf)
 - [PakReader](https://github.com/WorkingRobot/PakReader)
-- [AutoUpdater.NET](https://github.com/ravibpatel/AutoUpdater.NET)
-- [Avalon Edit](http://avalonedit.net/)
-- [Color Picker](https://github.com/drogoganor/ColorPickerWPF)
-- [Hex Editor](https://github.com/abbaye/WpfHexEditorControl)
-- [Html Agility Pack (HAP)](https://html-agility-pack.net/)
-- [Newtonsoft Json.NET](https://www.newtonsoft.com/json)
-- [Ookii Dialogs](https://github.com/caioproiete/ookii-dialogs-wpf)
-- [RestSharp](http://http://restsharp.org//)
 - [SkiaSharp](https://github.com/mono/SkiaSharp)
-- [WPFThemes DarkBlend](https://github.com/DanPristupov/WpfExpressionBlendTheme)
-- [Writeable Bitmap Extensions](https://github.com/reneschulte/WriteableBitmapEx)
+- [ToastNotifications](https://github.com/rafallopatka/ToastNotifications)
+- [MaterialDesignIcons](https://materialdesignicons.com/)
 
-## Support
+## Support [![](https://wakatime.com/badge/github/iAmAsval/FModel.svg)](https://wakatime.com/badge/github/iAmAsval/FModel)
+
+This project is not my full time job, donations are greatly appreciated.
 
 <a href="https://www.paypal.me/FModel">
   <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">
@@ -208,7 +153,3 @@ This software uses the following open source packages:
 ## You may also like...
 
 - [UModel](https://github.com/gildor2/UEViewer) - **THE** Unreal Engine Viewer
-
-## License
-
-MIT

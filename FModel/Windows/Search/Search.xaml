@@ -1,0 +1,67 @@
+﻿<Window x:Class="FModel.Windows.Search.Search"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:properties="clr-namespace:FModel.Properties"
+        mc:Ignorable="d"
+        Style="{StaticResource {x:Type Window}}"
+        Title="{x:Static properties:Resources.Search}" Height="700" Width="1100"
+        WindowStartupLocation="CenterScreen" Icon="/FModel;component/FModel.ico"
+        Loaded="OnLoaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,5,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0"
+                       Content="{x:Static properties:Resources.Filter}"
+                       HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,7,5,5"/>
+            <TextBox x:Name="AssetFilter_TxtBox" Grid.Column="1" TextWrapping="NoWrap"
+                     VerticalAlignment="Top" Foreground="#FFEFEFEF" Margin="5,3,0,0"
+                     TextChanged="OnFilterTextChanged"/>
+            <Button x:Name="GoTo_Btn" Content="{x:Static properties:Resources.GoTo}"
+                    Grid.Column="3" Height="19" Padding="10,0,10,0"
+                    HorizontalAlignment="Left" IsEnabled="False" Click="OnGoToClick"/>
+            <TextBlock x:Name="TotalAssets_Lbl" Grid.Column="4"
+                       Text="{x:Static properties:Resources.TotalAssetsLoaded}"
+                       FontWeight="Normal" Foreground="White" FontFamily="Calibri"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" FontStyle="Italic"
+                       Padding="0,4,0,0" Margin="0,0,20,0"/>
+        </Grid>
+
+        <DataGrid x:Name="Assets_DtGrd" Grid.Row="1" IsReadOnly="True"
+                  AutoGenerateColumns="True" AutoGeneratingColumn="OnAutoGeneratingColumn"
+                  ColumnHeaderHeight="24" SelectionChanged="OnSelectedItemChanged">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{x:Static properties:Resources.GoTo}" Click="OnGoToClick">
+                        <MenuItem.Icon>
+                            <Image Source="/FModel;component/Resources/share.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="{x:Static properties:Resources.FCopy}">
+                        <MenuItem.Icon>
+                            <Image Source="/FModel;component/Resources/content-copy.png"/>
+                        </MenuItem.Icon>
+                        <MenuItem x:Name="CM_Copy_DPath" Header="{x:Static properties:Resources.DirectoryPath}" Click="CM_Copy_DPath_Click"/>
+                        <MenuItem x:Name="CM_Copy_FPath" Header="{x:Static properties:Resources.FilePath}" Click="CM_Copy_FPath_Click"/>
+                        <MenuItem x:Name="CM_Copy_FPath_NoExt" Header="{x:Static properties:Resources.FilePathNoExt}" Click="CM_Copy_FPath_NoExt_Click"/>
+                        <MenuItem x:Name="CM_Copy_FName" Header="{x:Static properties:Resources.FileName}" Click="CM_Copy_FName_Click"/>
+                        <MenuItem x:Name="CM_Copy_FName_NoExt" Header="{x:Static properties:Resources.FileNameNoExt}" Click="CM_Copy_FName_NoExt_Click"/>
+                    </MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+    </Grid>
+</Window>

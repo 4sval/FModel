@@ -70,7 +70,7 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à FModel is a .PAK file explorer fully dedicated to Fortnite.
+        ///   Recherche une chaîne localisée semblable à FModel is a .PAK file explorer fully dedicated to Fortnite but also work with some other Unreal Engine&apos;s games.
         ///
         ///Created in March 2019, in order to have unique and personalized functionality, it quickly became popular through leakers who used it to quickly generate images of new cosmetics added to the game.
         ///Over time, new features got added and new users discovered the program.
@@ -83,21 +83,287 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à You have reached the end of the file. Do you want to append one byte? This operation cannot be canceled if you continue..
+        ///   Recherche une chaîne localisée semblable à You&apos;re about to download {0} which has a size of {1}.
         /// </summary>
-        public static string AppendByteConfirmationString {
+        public static string AboutToDownload {
             get {
-                return ResourceManager.GetString("AppendByteConfirmationString", resourceCulture);
+                return ResourceManager.GetString("AboutToDownload", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Byte[].
+        ///   Recherche une chaîne localisée semblable à Add.
         /// </summary>
-        public static byte[] BurbankBigCondensed_Black {
+        public static string Add {
             get {
-                object obj = ResourceManager.GetObject("BurbankBigCondensed_Black", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add Directory.
+        /// </summary>
+        public static string AddDirectory {
+            get {
+                return ResourceManager.GetString("AddDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add Separator.
+        /// </summary>
+        public static string AddSeparator {
+            get {
+                return ResourceManager.GetString("AddSeparator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à AES.
+        /// </summary>
+        public static string AES {
+            get {
+                return ResourceManager.GetString("AES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à AES Key.
+        /// </summary>
+        public static string AesKey {
+            get {
+                return ResourceManager.GetString("AesKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Keys have been updated.
+        /// </summary>
+        public static string AesKeysUpdated {
+            get {
+                return ResourceManager.GetString("AesKeysUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à &apos;{0}&apos; is not working with &apos;{1}&apos;.
+        /// </summary>
+        public static string AesNotWorking {
+            get {
+                return ResourceManager.GetString("AesNotWorking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        public static System.Drawing.Icon alert {
+            get {
+                object obj = ResourceManager.GetObject("alert", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à All Documents.
+        /// </summary>
+        public static string AllDocuments {
+            get {
+                return ResourceManager.GetString("AllDocuments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à All Files.
+        /// </summary>
+        public static string AllFiles {
+            get {
+                return ResourceManager.GetString("AllFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap alpha_a_box {
+            get {
+                object obj = ResourceManager.GetObject("alpha_a_box", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Analyzing {0}.
+        /// </summary>
+        public static string Analyzing {
+            get {
+                return ResourceManager.GetString("Analyzing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        public static System.Drawing.Icon api {
+            get {
+                object obj = ResourceManager.GetObject("api", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        public static System.Drawing.Icon api_off {
+            get {
+                object obj = ResourceManager.GetObject("api_off", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Arabic.
+        /// </summary>
+        public static string Arabic {
+            get {
+                return ResourceManager.GetString("Arabic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Asset.
+        /// </summary>
+        public static string Asset {
+            get {
+                return ResourceManager.GetString("Asset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Assets.
+        /// </summary>
+        public static string Assets {
+            get {
+                return ResourceManager.GetString("Assets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Audio.
+        /// </summary>
+        public static string Audio {
+            get {
+                return ResourceManager.GetString("Audio", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Audio Devices.
+        /// </summary>
+        public static string AudioDevices {
+            get {
+                return ResourceManager.GetString("AudioDevices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Audio Player.
+        /// </summary>
+        public static string AudioPlayer {
+            get {
+                return ResourceManager.GetString("AudioPlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Auto.
+        /// </summary>
+        public static string Auto {
+            get {
+                return ResourceManager.GetString("Auto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Auto open sounds.
+        /// </summary>
+        public static string AutoOpenSounds {
+            get {
+                return ResourceManager.GetString("AutoOpenSounds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à B.
+        /// </summary>
+        public static string B {
+            get {
+                return ResourceManager.GetString("B", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap backup_restore {
+            get {
+                object obj = ResourceManager.GetObject("backup_restore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Backup PAKs.
+        /// </summary>
+        public static string BackupPaks {
+            get {
+                return ResourceManager.GetString("BackupPaks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Backups.
+        /// </summary>
+        public static string Backups {
+            get {
+                return ResourceManager.GetString("Backups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Banner.
+        /// </summary>
+        public static string Banner {
+            get {
+                return ResourceManager.GetString("Banner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à BenBot API.
+        /// </summary>
+        public static string BenBotApi {
+            get {
+                return ResourceManager.GetString("BenBotApi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap bug {
+            get {
+                object obj = ResourceManager.GetObject("bug", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Bugs Report.
+        /// </summary>
+        public static string BugsReport {
+            get {
+                return ResourceManager.GetString("BugsReport", resourceCulture);
             }
         }
         
@@ -112,145 +378,47 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à The number of bytes in the last block of the program that are actually used. 
-        ///If this value is zero, that means the entire last block is used.
+        ///   Recherche une chaîne localisée semblable à Bytes Per Second.
         /// </summary>
-        public static string CBB_EXEFile_BytesInLastBlockString {
+        public static string BytesPerSecond {
             get {
-                return ResourceManager.GetString("CBB_EXEFile_BytesInLastBlockString", resourceCulture);
+                return ResourceManager.GetString("BytesPerSecond", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Initial value of the CS register, relative to the segment the program was loaded at..
+        ///   Recherche une chaîne localisée semblable à Cancel.
         /// </summary>
-        public static string CBB_EXEFile_InitialValueOfCSRegisterString {
+        public static string Cancel {
             get {
-                return ResourceManager.GetString("CBB_EXEFile_InitialValueOfCSRegisterString", resourceCulture);
+                return ResourceManager.GetString("Cancel", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Initial value of the IP register..
+        ///   Recherche une chaîne localisée semblable à Canceled!.
         /// </summary>
-        public static string CBB_EXEFile_InitialValueOfIPRegisterString {
+        public static string Canceled {
             get {
-                return ResourceManager.GetString("CBB_EXEFile_InitialValueOfIPRegisterString", resourceCulture);
+                return ResourceManager.GetString("Canceled", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Initial value of the SP register..
+        ///   Recherche une chaîne localisée semblable à Case Sensitive.
         /// </summary>
-        public static string CBB_EXEFile_InitialValueOfSPRegisterString {
+        public static string CaseSensitive {
             get {
-                return ResourceManager.GetString("CBB_EXEFile_InitialValueOfSPRegisterString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à This is the &apos;magic number&apos; of an EXE file..
-        /// </summary>
-        public static string CBB_EXEFile_MagicNumberString {
-            get {
-                return ResourceManager.GetString("CBB_EXEFile_MagicNumberString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Maximum number of paragraphs of additional memory. 
-        ///Normally, the OS reserves all the remaining conventional memory for your program, but you can limit it with this field..
-        /// </summary>
-        public static string CBB_EXEFile_MaxNumberOfHeaderParagraphAdditionalMemoryString {
-            get {
-                return ResourceManager.GetString("CBB_EXEFile_MaxNumberOfHeaderParagraphAdditionalMemoryString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à This program cannot be run in DOS mode....
-        /// </summary>
-        public static string CBB_EXEFile_NotDOSProgramString {
-            get {
-                return ResourceManager.GetString("CBB_EXEFile_NotDOSProgramString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Number of blocks in the file that are part of the EXE file. 
-        ///If [02-03] is non-zero, only that much of the last block is used..
-        /// </summary>
-        public static string CBB_EXEFile_NumberOfBlockInFileBlockString {
-            get {
-                return ResourceManager.GetString("CBB_EXEFile_NumberOfBlockInFileBlockString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Number of paragraphs of additional memory that the program will need.
-        ///This is the equivalent of the BSS size in a Unix program. 
-        ///The program can&apos;t be loaded if there isn&apos;t at least this much memory available to it..
-        /// </summary>
-        public static string CBB_EXEFile_NumberOfHeaderParagraphAdditionalMemoryString {
-            get {
-                return ResourceManager.GetString("CBB_EXEFile_NumberOfHeaderParagraphAdditionalMemoryString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Number of relocation entries stored after the header. May be zero.
-        /// </summary>
-        public static string CBB_EXEFile_NumberOfRelocationEntriesString {
-            get {
-                return ResourceManager.GetString("CBB_EXEFile_NumberOfRelocationEntriesString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Offset of the first relocation item in the file..
-        /// </summary>
-        public static string CBB_EXEFile_OffsetOfTheFirstRelocationItemString {
-            get {
-                return ResourceManager.GetString("CBB_EXEFile_OffsetOfTheFirstRelocationItemString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Overlay number. Normally zero, meaning that it&apos;s the main program..
-        /// </summary>
-        public static string CBB_EXEFile_OverlayNumberString {
-            get {
-                return ResourceManager.GetString("CBB_EXEFile_OverlayNumberString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Relative value of the stack segment. 
-        ///This value is added to the segment the program was loaded at, and the result is used to initialize the SS register..
-        /// </summary>
-        public static string CBB_EXEFile_RelativeValueOfStackSegmentString {
-            get {
-                return ResourceManager.GetString("CBB_EXEFile_RelativeValueOfStackSegmentString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Word checksum. 
-        ///If set properly, the 16-bit sum of all words in the file should be zero. 
-        ///Usually, this isn&apos;t filled in..
-        /// </summary>
-        public static string CBB_EXEFile_WordChecksumString {
-            get {
-                return ResourceManager.GetString("CBB_EXEFile_WordChecksumString", resourceCulture);
+                return ResourceManager.GetString("CaseSensitive", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap clipSize64 {
+        public static System.Drawing.Bitmap cast_audio {
             get {
-                object obj = ResourceManager.GetObject("clipSize64", resourceCulture);
+                object obj = ResourceManager.GetObject("cast_audio", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -258,9 +426,83 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap close_file_16x {
+        public static System.Drawing.Bitmap challenge_theme_creator {
             get {
-                object obj = ResourceManager.GetObject("close_file_16x", resourceCulture);
+                object obj = ResourceManager.GetObject("challenge_theme_creator", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Challenges&apos; Custom Banner.
+        /// </summary>
+        public static string ChallengesCustomBanner {
+            get {
+                return ResourceManager.GetString("ChallengesCustomBanner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Challenges&apos; Theme Creator.
+        /// </summary>
+        public static string ChallengesThemeCreator {
+            get {
+                return ResourceManager.GetString("ChallengesThemeCreator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Change Game.
+        /// </summary>
+        public static string ChangeGame {
+            get {
+                return ResourceManager.GetString("ChangeGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Changelog.
+        /// </summary>
+        public static string Changelog {
+            get {
+                return ResourceManager.GetString("Changelog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        public static System.Drawing.Icon check_circle {
+            get {
+                object obj = ResourceManager.GetObject("check_circle", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Chinese (Simplified).
+        /// </summary>
+        public static string Chinese {
+            get {
+                return ResourceManager.GetString("Chinese", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Clear.
+        /// </summary>
+        public static string Clear {
+            get {
+                return ResourceManager.GetString("Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ColorPickerOne {
+            get {
+                object obj = ResourceManager.GetObject("ColorPickerOne", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -268,9 +510,37 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap colorpicker1 {
+        public static System.Drawing.Bitmap ColorPickerTwo {
             get {
-                object obj = ResourceManager.GetObject("colorpicker1", resourceCulture);
+                object obj = ResourceManager.GetObject("ColorPickerTwo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Colors.
+        /// </summary>
+        public static string Colors {
+            get {
+                return ResourceManager.GetString("Colors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Compression.
+        /// </summary>
+        public static string Compression {
+            get {
+                return ResourceManager.GetString("Compression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap content_copy {
+            get {
+                object obj = ResourceManager.GetObject("content_copy", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -278,9 +548,9 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap colorpicker2 {
+        public static System.Drawing.Bitmap content_save {
             get {
-                object obj = ResourceManager.GetObject("colorpicker2", resourceCulture);
+                object obj = ResourceManager.GetObject("content_save", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -307,225 +577,276 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Default TBL.
+        ///   Recherche une chaîne localisée semblable à Copied!.
         /// </summary>
-        public static string DefaultTBLString {
+        public static string CopySuccess {
             get {
-                return ResourceManager.GetString("DefaultTBLString", resourceCulture);
+                return ResourceManager.GetString("CopySuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Could not create directory.
+        /// </summary>
+        public static string CouldNotCreateDirectory {
+            get {
+                return ResourceManager.GetString("CouldNotCreateDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Error while creating {0}.
+        /// </summary>
+        public static string CreateError {
+            get {
+                return ResourceManager.GetString("CreateError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à {0} successfully created.
+        /// </summary>
+        public static string CreateSuccess {
+            get {
+                return ResourceManager.GetString("CreateSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Current Document.
+        /// </summary>
+        public static string CurrentDocument {
+            get {
+                return ResourceManager.GetString("CurrentDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à File not found, challenges&apos; custom theme disabled.
+        /// </summary>
+        public static string CustomBannerNotFound {
+            get {
+                return ResourceManager.GetString("CustomBannerNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à {0} successfully exported.
+        /// </summary>
+        public static string DataExported {
+            get {
+                return ResourceManager.GetString("DataExported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Data successfully saved.
+        /// </summary>
+        public static string DataSaved {
+            get {
+                return ResourceManager.GetString("DataSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Default.
+        /// </summary>
+        public static string Default {
+            get {
+                return ResourceManager.GetString("Default", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap dmg64 {
+        public static System.Drawing.Bitmap delete_forever {
             get {
-                object obj = ResourceManager.GetObject("dmg64", resourceCulture);
+                object obj = ResourceManager.GetObject("delete_forever", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à 00=&lt;NUL&gt;
-        ///01=&lt;SOH&gt;
-        ///02=&lt;STX&gt;
-        ///03=&lt;ETX&gt;
-        ///04=&lt;PF&gt;
-        ///05=&lt;HT&gt;
-        ///06=&lt;LC&gt;
-        ///07=&lt;DEL&gt;
-        ///08=&lt;GE&gt;
-        ///09=&lt;RLF&gt;
-        ///0A=&lt;SMM&gt;
-        ///0B=&lt;VT&gt;
-        ///0C=&lt;FF&gt;
-        ///0D=&lt;CR&gt;
-        ///0E=&lt;SO&gt;
-        ///0F=&lt;SI&gt;
-        ///10=&lt;DLE&gt;
-        ///11=&lt;DC1&gt;
-        ///12=&lt;DC2&gt;
-        ///13=&lt;TM&gt;
-        ///14=&lt;RES&gt;
-        ///15=&lt;NL&gt;
-        ///16=&lt;BS&gt;
-        ///17=&lt;IL&gt;
-        ///18=&lt;CAN&gt;
-        ///19=&lt;EM&gt;
-        ///1A=&lt;CC&gt;
-        ///1B=&lt;CU1&gt;
-        ///1C=&lt;IFS&gt;
-        ///1D=&lt;IGS&gt;
-        ///1E=&lt;IRS&gt;
-        ///1F=&lt;IUS&gt;
-        ///20=&lt;DS&gt;
-        ///21=&lt;SOS&gt;
-        ///22=&lt;FS&gt;
-        ///23=.
-        ///24=&lt;BYP&gt;
-        ///25=&lt;LF&gt;
-        ///26=&lt;ETB&gt;
-        ///27=&lt;ESC&gt;
-        ///28=.
-        ///29=.
-        ///2A=&lt;SM&gt;
-        ///2B=&lt;CU2&gt;
-        ///2C=.
-        ///2D=&lt;ENQ&gt;
-        ///2E=&lt;ACK&gt;
-        ///2F=&lt;BEL&gt;
-        ///30=.
-        ///31=.
-        ///32=&lt;SYN&gt;
-        ///33=.
-        ///34=&lt;PN&gt;
-        ///35=&lt;RS&gt;
-        ///36=&lt;UC&gt;
-        ///37=&lt;EOT&gt;
-        ///38 [le reste de la chaîne a été tronqué]&quot;;.
+        ///   Recherche une chaîne localisée semblable à Design.
         /// </summary>
-        public static string EBCDIC {
+        public static string Design {
             get {
-                return ResourceManager.GetString("EBCDIC", resourceCulture);
+                return ResourceManager.GetString("Design", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à 00=.
-        ///01=.
-        ///02=.
-        ///03=.
-        ///04=.
-        ///05=.
-        ///06=.
-        ///07=.
-        ///08=.
-        ///09=.
-        ///0A=.
-        ///0B=.
-        ///0C=.
-        ///0D=.
-        ///0E=.
-        ///0F=.
-        ///10=.
-        ///11=.
-        ///12=.
-        ///13=.
-        ///14=.
-        ///15=.
-        ///16=.
-        ///17=.
-        ///18=.
-        ///19=.
-        ///1A=.
-        ///1B=.
-        ///1C=.
-        ///1D=.
-        ///1E=.
-        ///1F=.
-        ///20=.
-        ///21=.
-        ///22=.
-        ///23=.
-        ///24=.
-        ///25=.
-        ///26=.
-        ///27=.
-        ///28=.
-        ///29=.
-        ///2A=.
-        ///2B=.
-        ///2C=.
-        ///2D=.
-        ///2E=.
-        ///2F=.
-        ///30=.
-        ///31=.
-        ///32=.
-        ///33=.
-        ///34=.
-        ///35=.
-        ///36=.
-        ///37=.
-        ///38=.
-        ///39=.
-        ///3A=.
-        ///3B=.
-        ///3C=.
-        ///3D=.
-        ///3E=.
-        ///3F=.
-        ///40=.
-        ///41=.
-        ///42=.
-        ///43=.
-        ///44=.
-        ///45=.
-        ///46=.
-        ///47=.
-        ///48=.
-        ///49=.
-        ///4A=¢
-        ///4B=.
-        ///4C=&lt;
-        ///4D=(
-        ///4E=+
-        ///4F=|
-        ///50=&amp;
-        ///51=.
-        ///52=.
-        ///53=.
-        ///54=.
-        ///55 [le reste de la chaîne a été tronqué]&quot;;.
+        ///   Recherche une chaîne localisée semblable à Difference.
         /// </summary>
-        public static string EBCDIC_NoSpecialChar {
+        public static string Difference {
             get {
-                return ResourceManager.GetString("EBCDIC_NoSpecialChar", resourceCulture);
+                return ResourceManager.GetString("Difference", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à &amp;lt;end&amp;gt;.
+        ///   Recherche une chaîne localisée semblable à Directories.
         /// </summary>
-        public static string EndTagString {
+        public static string Directories {
             get {
-                return ResourceManager.GetString("EndTagString", resourceCulture);
+                return ResourceManager.GetString("Directories", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Do you want to close the current file and open :.
+        ///   Recherche une chaîne localisée semblable à Directory Name.
         /// </summary>
-        public static string FileDroppingConfirmationString {
+        public static string DirectoryName {
             get {
-                return ResourceManager.GetString("FileDroppingConfirmationString", resourceCulture);
+                return ResourceManager.GetString("DirectoryName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Fill selection with byte.
+        ///   Recherche une chaîne localisée semblable à Directory Path.
         /// </summary>
-        public static string FillSelectionAloneString {
+        public static string DirectoryPath {
             get {
-                return ResourceManager.GetString("FillSelectionAloneString", resourceCulture);
+                return ResourceManager.GetString("DirectoryPath", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à First byte.
+        ///   Recherche une chaîne localisée semblable à Disabled.
         /// </summary>
-        public static string FirstByteString {
+        public static string Disabled {
             get {
-                return ResourceManager.GetString("FirstByteString", resourceCulture);
+                return ResourceManager.GetString("Disabled", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap folder_16x {
+        public static System.Drawing.Bitmap discord {
             get {
-                object obj = ResourceManager.GetObject("folder_16x", resourceCulture);
+                object obj = ResourceManager.GetObject("discord", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Discord Server.
+        /// </summary>
+        public static string DiscordServer {
+            get {
+                return ResourceManager.GetString("DiscordServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Donate.
+        /// </summary>
+        public static string Donate {
+            get {
+                return ResourceManager.GetString("Donate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Donators.
+        /// </summary>
+        public static string DonatorsF {
+            get {
+                return ResourceManager.GetString("DonatorsF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à • Yanteh				• FunGames
+        ///• HYPEX				• Alexander.
+        /// </summary>
+        public static string DonatorsFDetails {
+            get {
+                return ResourceManager.GetString("DonatorsFDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Error while downloading {0}.
+        /// </summary>
+        public static string DownloadError {
+            get {
+                return ResourceManager.GetString("DownloadError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Downloading.
+        /// </summary>
+        public static string Downloading {
+            get {
+                return ResourceManager.GetString("Downloading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à {0} successfully downloaded.
+        /// </summary>
+        public static string DownloadSuccess {
+            get {
+                return ResourceManager.GetString("DownloadSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Duration.
+        /// </summary>
+        public static string Duration {
+            get {
+                return ResourceManager.GetString("Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à {0} is not working with {1}.
+        /// </summary>
+        public static string DynamicKeyNotWorking {
+            get {
+                return ResourceManager.GetString("DynamicKeyNotWorking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Dynamic Keys.
+        /// </summary>
+        public static string DynamicKeys {
+            get {
+                return ResourceManager.GetString("DynamicKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit Directory.
+        /// </summary>
+        public static string EditDirectory {
+            get {
+                return ResourceManager.GetString("EditDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        public static System.Drawing.Icon egl2 {
+            get {
+                object obj = ResourceManager.GetObject("egl2", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap EIconDesign_Default {
+            get {
+                object obj = ResourceManager.GetObject("EIconDesign_Default", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -533,37 +854,157 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap info_16x {
+        public static System.Drawing.Bitmap EIconDesign_Flat {
             get {
-                object obj = ResourceManager.GetObject("info_16x", resourceCulture);
+                object obj = ResourceManager.GetObject("EIconDesign_Flat", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Kb.
-        /// </summary>
-        public static string KBTagString {
-            get {
-                return ResourceManager.GetString("KBTagString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à &amp;lt;ln&amp;gt;.
-        /// </summary>
-        public static string LineTagString {
-            get {
-                return ResourceManager.GetString("LineTagString", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Logo {
+        public static System.Drawing.Bitmap EIconDesign_Mini {
             get {
-                object obj = ResourceManager.GetObject("Logo", resourceCulture);
+                object obj = ResourceManager.GetObject("EIconDesign_Mini", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap EIconDesign_NoText {
+            get {
+                object obj = ResourceManager.GetObject("EIconDesign_NoText", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Enabled.
+        /// </summary>
+        public static string Enabled {
+            get {
+                return ResourceManager.GetString("Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Encrypted.
+        /// </summary>
+        public static string Encrypted {
+            get {
+                return ResourceManager.GetString("Encrypted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à English.
+        /// </summary>
+        public static string English {
+            get {
+                return ResourceManager.GetString("English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Error.
+        /// </summary>
+        public static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Exit.
+        /// </summary>
+        public static string Exit {
+            get {
+                return ResourceManager.GetString("Exit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Export.
+        /// </summary>
+        public static string Export {
+            get {
+                return ResourceManager.GetString("Export", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Extract.
+        /// </summary>
+        public static string Extract {
+            get {
+                return ResourceManager.GetString("Extract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Extract Directory.
+        /// </summary>
+        public static string ExtractDirectory {
+            get {
+                return ResourceManager.GetString("ExtractDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Extraction.
+        /// </summary>
+        public static string Extraction {
+            get {
+                return ResourceManager.GetString("Extraction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à FBKP Files (*.fbkp)|*.fbkp|All Files (*.*)|*.*.
+        /// </summary>
+        public static string FbkpFilter {
+            get {
+                return ResourceManager.GetString("FbkpFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Copy.
+        /// </summary>
+        public static string FCopy {
+            get {
+                return ResourceManager.GetString("FCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à File.
+        /// </summary>
+        public static string FFile {
+            get {
+                return ResourceManager.GetString("FFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap file {
+            get {
+                object obj = ResourceManager.GetObject("file", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap file_export {
+            get {
+                object obj = ResourceManager.GetObject("file_export", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -571,75 +1012,19 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         /// </summary>
-        public static System.Drawing.Icon Logo_Icon {
+        public static System.Drawing.Icon file_image {
             get {
-                object obj = ResourceManager.GetObject("Logo_Icon", resourceCulture);
+                object obj = ResourceManager.GetObject("file_image", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Mb.
-        /// </summary>
-        public static string MBTagString {
-            get {
-                return ResourceManager.GetString("MBTagString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap open_16x {
+        public static System.Drawing.Bitmap file_multiple {
             get {
-                object obj = ResourceManager.GetObject("open_16x", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Paste operation reached the end of the file. Do you want to extend the file to complete the operation? This operation cannot be canceled if you continue..
-        /// </summary>
-        public static string PasteExtendByteConfirmationString {
-            get {
-                return ResourceManager.GetString("PasteExtendByteConfirmationString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Paste from clipboard.
-        /// </summary>
-        public static string PasteFromClipboardString {
-            get {
-                return ResourceManager.GetString("PasteFromClipboardString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap reload64 {
-            get {
-                object obj = ResourceManager.GetObject("reload64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Replace with byte.
-        /// </summary>
-        public static string ReplaceWithByteString {
-            get {
-                return ResourceManager.GetString("ReplaceWithByteString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap save_16x {
-            get {
-                object obj = ResourceManager.GetObject("save_16x", resourceCulture);
+                object obj = ResourceManager.GetObject("file_multiple", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -647,9 +1032,1463 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap settings_16x {
+        public static System.Drawing.Bitmap file_restore {
             get {
-                object obj = ResourceManager.GetObject("settings_16x", resourceCulture);
+                object obj = ResourceManager.GetObject("file_restore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à File Count.
+        /// </summary>
+        public static string FileCount {
+            get {
+                return ResourceManager.GetString("FileCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à File Name.
+        /// </summary>
+        public static string FileName {
+            get {
+                return ResourceManager.GetString("FileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à File Name w/o Extension.
+        /// </summary>
+        public static string FileNameNoExt {
+            get {
+                return ResourceManager.GetString("FileNameNoExt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à File Path.
+        /// </summary>
+        public static string FilePath {
+            get {
+                return ResourceManager.GetString("FilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à File Path w/o Extension.
+        /// </summary>
+        public static string FilePathNoExt {
+            get {
+                return ResourceManager.GetString("FilePathNoExt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Files.
+        /// </summary>
+        public static string Files {
+            get {
+                return ResourceManager.GetString("Files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Filter.
+        /// </summary>
+        public static string Filter {
+            get {
+                return ResourceManager.GetString("Filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Find.
+        /// </summary>
+        public static string Find {
+            get {
+                return ResourceManager.GetString("Find", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Find And Replace.
+        /// </summary>
+        public static string FindAndReplace {
+            get {
+                return ResourceManager.GetString("FindAndReplace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Find Next.
+        /// </summary>
+        public static string FindNext {
+            get {
+                return ResourceManager.GetString("FindNext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Flat.
+        /// </summary>
+        public static string Flat {
+            get {
+                return ResourceManager.GetString("Flat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à FModel Launcher.
+        /// </summary>
+        public static string FLauncher {
+            get {
+                return ResourceManager.GetString("FLauncher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap fmodel {
+            get {
+                object obj = ResourceManager.GetObject("fmodel", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap folder_download {
+            get {
+                object obj = ResourceManager.GetObject("folder_download", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap folder_open {
+            get {
+                object obj = ResourceManager.GetObject("folder_open", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        public static System.Drawing.Icon fortnite {
+            get {
+                object obj = ResourceManager.GetObject("fortnite", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à French.
+        /// </summary>
+        public static string French {
+            get {
+                return ResourceManager.GetString("French", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à The selected language will be the one used for icons creation.
+        /// </summary>
+        public static string FyiDetails {
+            get {
+                return ResourceManager.GetString("FyiDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à FYI:.
+        /// </summary>
+        public static string FyiTitle {
+            get {
+                return ResourceManager.GetString("FyiTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap gamepad_variant {
+            get {
+                object obj = ResourceManager.GetObject("gamepad_variant", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Games.
+        /// </summary>
+        public static string Games {
+            get {
+                return ResourceManager.GetString("Games", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à GB.
+        /// </summary>
+        public static string GB {
+            get {
+                return ResourceManager.GetString("GB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à General.
+        /// </summary>
+        public static string General {
+            get {
+                return ResourceManager.GetString("General", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à General Settings.
+        /// </summary>
+        public static string GeneralSettings {
+            get {
+                return ResourceManager.GetString("GeneralSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à German.
+        /// </summary>
+        public static string German {
+            get {
+                return ResourceManager.GetString("German", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap github_circle {
+            get {
+                object obj = ResourceManager.GetObject("github_circle", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Go To.
+        /// </summary>
+        public static string GoTo {
+            get {
+                return ResourceManager.GetString("GoTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Guid.
+        /// </summary>
+        public static string Guid {
+            get {
+                return ResourceManager.GetString("Guid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Hello.
+        /// </summary>
+        public static string Hello {
+            get {
+                return ResourceManager.GetString("Hello", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Help.
+        /// </summary>
+        public static string Help {
+            get {
+                return ResourceManager.GetString("Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Hue, Saturation, Value.
+        /// </summary>
+        public static string Hsv {
+            get {
+                return ResourceManager.GetString("Hsv", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Hue.
+        /// </summary>
+        public static string Hue {
+            get {
+                return ResourceManager.GetString("Hue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Icon.
+        /// </summary>
+        public static string Icon {
+            get {
+                return ResourceManager.GetString("Icon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap icon_creator {
+            get {
+                object obj = ResourceManager.GetObject("icon_creator", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Icon Creator.
+        /// </summary>
+        public static string IconCreator {
+            get {
+                return ResourceManager.GetString("IconCreator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Icon Watermark.
+        /// </summary>
+        public static string IconWatermark {
+            get {
+                return ResourceManager.GetString("IconWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à File not found, watermarking disabled.
+        /// </summary>
+        public static string IconWatermarkNotFound {
+            get {
+                return ResourceManager.GetString("IconWatermarkNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Idling.
+        /// </summary>
+        public static string Idling {
+            get {
+                return ResourceManager.GetString("Idling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap image_filter_black_white {
+            get {
+                object obj = ResourceManager.GetObject("image_filter_black_white", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap image_move {
+            get {
+                object obj = ResourceManager.GetObject("image_move", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Images.
+        /// </summary>
+        public static string Images {
+            get {
+                return ResourceManager.GetString("Images", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Image successfully saved.
+        /// </summary>
+        public static string ImageSaved {
+            get {
+                return ResourceManager.GetString("ImageSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Images Merger.
+        /// </summary>
+        public static string ImagesMerger {
+            get {
+                return ResourceManager.GetString("ImagesMerger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Include.
+        /// </summary>
+        public static string Include {
+            get {
+                return ResourceManager.GetString("Include", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap information {
+            get {
+                object obj = ResourceManager.GetObject("information", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Byte[].
+        /// </summary>
+        public static byte[] Ini {
+            get {
+                object obj = ResourceManager.GetObject("Ini", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Initializing.
+        /// </summary>
+        public static string Initializing {
+            get {
+                return ResourceManager.GetString("Initializing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Language set to {0}.
+        /// </summary>
+        public static string InternationalizationStatus {
+            get {
+                return ResourceManager.GetString("InternationalizationStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Is Part Of.
+        /// </summary>
+        public static string IsPartOf {
+            get {
+                return ResourceManager.GetString("IsPartOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Italian.
+        /// </summary>
+        public static string Italian {
+            get {
+                return ResourceManager.GetString("Italian", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Japanese.
+        /// </summary>
+        public static string Japanese {
+            get {
+                return ResourceManager.GetString("Japanese", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Byte[].
+        /// </summary>
+        public static byte[] Json {
+            get {
+                object obj = ResourceManager.GetObject("Json", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à JSON Files (*.json)|*.json.
+        /// </summary>
+        public static string JsonFilter {
+            get {
+                return ResourceManager.GetString("JsonFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à KB.
+        /// </summary>
+        public static string KB {
+            get {
+                return ResourceManager.GetString("KB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap key {
+            get {
+                object obj = ResourceManager.GetObject("key", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Korean.
+        /// </summary>
+        public static string Korean {
+            get {
+                return ResourceManager.GetString("Korean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Language.
+        /// </summary>
+        public static string Language {
+            get {
+                return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Listening - {0}.
+        /// </summary>
+        public static string Listening {
+            get {
+                return ResourceManager.GetString("Listening", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Load All.
+        /// </summary>
+        public static string LoadAll {
+            get {
+                return ResourceManager.GetString("LoadAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Loading.
+        /// </summary>
+        public static string Loading {
+            get {
+                return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Loading Mode.
+        /// </summary>
+        public static string LoadingMode {
+            get {
+                return ResourceManager.GetString("LoadingMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Load Modified Files.
+        /// </summary>
+        public static string LoadModifiedFiles {
+            get {
+                return ResourceManager.GetString("LoadModifiedFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Load New Files.
+        /// </summary>
+        public static string LoadNewFiles {
+            get {
+                return ResourceManager.GetString("LoadNewFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Load New and Modified Files.
+        /// </summary>
+        public static string LoadNewModifiedFiles {
+            get {
+                return ResourceManager.GetString("LoadNewModifiedFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        public static System.Drawing.Icon lock_open_variant {
+            get {
+                object obj = ResourceManager.GetObject("lock_open_variant", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap magnify {
+            get {
+                object obj = ResourceManager.GetObject("magnify", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Main PAKs:.
+        /// </summary>
+        public static string MainPaks {
+            get {
+                return ResourceManager.GetString("MainPaks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Match Whole Word.
+        /// </summary>
+        public static string MatchWholeWord {
+            get {
+                return ResourceManager.GetString("MatchWholeWord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à MB.
+        /// </summary>
+        public static string MB {
+            get {
+                return ResourceManager.GetString("MB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Media.
+        /// </summary>
+        public static string Media {
+            get {
+                return ResourceManager.GetString("Media", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Minimalist.
+        /// </summary>
+        public static string Minimalist {
+            get {
+                return ResourceManager.GetString("Minimalist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Modified Files.
+        /// </summary>
+        public static string ModifiedFiles {
+            get {
+                return ResourceManager.GetString("ModifiedFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à {0} mounted to {1}.
+        /// </summary>
+        public static string MountedPakTo {
+            get {
+                return ResourceManager.GetString("MountedPakTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Mount Point.
+        /// </summary>
+        public static string MountPoint {
+            get {
+                return ResourceManager.GetString("MountPoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Name.
+        /// </summary>
+        public static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à New Files.
+        /// </summary>
+        public static string NewFiles {
+            get {
+                return ResourceManager.GetString("NewFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à New and Modified Files.
+        /// </summary>
+        public static string NewModifiedFiles {
+            get {
+                return ResourceManager.GetString("NewModifiedFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à No.
+        /// </summary>
+        public static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à There are currently no data to export.
+        /// </summary>
+        public static string NoDataToExport {
+            get {
+                return ResourceManager.GetString("NoDataToExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à There are currently no data to save.
+        /// </summary>
+        public static string NoDataToSave {
+            get {
+                return ResourceManager.GetString("NoDataToSave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à There is currently no image to save.
+        /// </summary>
+        public static string NoImageToSave {
+            get {
+                return ResourceManager.GetString("NoImageToSave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Your internet connection is currently not working.
+        /// </summary>
+        public static string NoInternet {
+            get {
+                return ResourceManager.GetString("NoInternet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à No Text.
+        /// </summary>
+        public static string NoText {
+            get {
+                return ResourceManager.GetString("NoText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Offsets.
+        /// </summary>
+        public static string Offsets {
+            get {
+                return ResourceManager.GetString("Offsets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à OGG Files (*.ogg)|*.ogg|WAV Files (*.wav)|*.wav|All Files (*.*)|*.*.
+        /// </summary>
+        public static string OggFilter {
+            get {
+                return ResourceManager.GetString("OggFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à OK.
+        /// </summary>
+        public static string OK {
+            get {
+                return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Opacity.
+        /// </summary>
+        public static string Opacity {
+            get {
+                return ResourceManager.GetString("Opacity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Open.
+        /// </summary>
+        public static string Open {
+            get {
+                return ResourceManager.GetString("Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Open Image.
+        /// </summary>
+        public static string OpenImage {
+            get {
+                return ResourceManager.GetString("OpenImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Open Output Folder.
+        /// </summary>
+        public static string OpenOutputFolder {
+            get {
+                return ResourceManager.GetString("OpenOutputFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Options.
+        /// </summary>
+        public static string Options {
+            get {
+                return ResourceManager.GetString("Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à PAK.
+        /// </summary>
+        public static string PAK {
+            get {
+                return ResourceManager.GetString("PAK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à {0} can now be opened.
+        /// </summary>
+        public static string PakCanBeOpened {
+            get {
+                return ResourceManager.GetString("PakCanBeOpened", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à {0} is locked by another process.
+        /// </summary>
+        public static string PakFileLocked {
+            get {
+                return ResourceManager.GetString("PakFileLocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à PAK Files.
+        /// </summary>
+        public static string PakFiles {
+            get {
+                return ResourceManager.GetString("PakFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Fortnite PAK files auto-detected.
+        /// </summary>
+        public static string PakFilesAutoDetected {
+            get {
+                return ResourceManager.GetString("PakFilesAutoDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Parsing of {0} types isn&apos;t supported yet..
+        /// </summary>
+        public static string ParsingNotSupported {
+            get {
+                return ResourceManager.GetString("ParsingNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Path.
+        /// </summary>
+        public static string Path {
+            get {
+                return ResourceManager.GetString("Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à .PAK Files Auto Detected.
+        /// </summary>
+        public static string PathAutoDetected {
+            get {
+                return ResourceManager.GetString("PathAutoDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à FModel Path(s) Changed.
+        /// </summary>
+        public static string PathChanged {
+            get {
+                return ResourceManager.GetString("PathChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à FModel is about to restart because you applied your new path(s).
+        /// </summary>
+        public static string PathChangedRestart {
+            get {
+                return ResourceManager.GetString("PathChangedRestart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap pause {
+            get {
+                object obj = ResourceManager.GetObject("pause", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap paypal {
+            get {
+                object obj = ResourceManager.GetObject("paypal", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap pencil {
+            get {
+                object obj = ResourceManager.GetObject("pencil", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap play {
+            get {
+                object obj = ResourceManager.GetObject("play", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap playlist_plus {
+            get {
+                object obj = ResourceManager.GetObject("playlist_plus", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à PNG Files (*.png)|*.png|All Files (*.*)|*.*.
+        /// </summary>
+        public static string PngFilter {
+            get {
+                return ResourceManager.GetString("PngFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Polish.
+        /// </summary>
+        public static string Polish {
+            get {
+                return ResourceManager.GetString("Polish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Popup.
+        /// </summary>
+        public static string Popup {
+            get {
+                return ResourceManager.GetString("Popup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Portuguese (Brazil).
+        /// </summary>
+        public static string PortugueseBrazil {
+            get {
+                return ResourceManager.GetString("PortugueseBrazil", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap power {
+            get {
+                object obj = ResourceManager.GetObject("power", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Preview.
+        /// </summary>
+        public static string Preview {
+            get {
+                return ResourceManager.GetString("Preview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Primary.
+        /// </summary>
+        public static string Primary {
+            get {
+                return ResourceManager.GetString("Primary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Processing.
+        /// </summary>
+        public static string Processing {
+            get {
+                return ResourceManager.GetString("Processing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap progress_download {
+            get {
+                object obj = ResourceManager.GetObject("progress_download", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Rarity.
+        /// </summary>
+        public static string Rarity {
+            get {
+                return ResourceManager.GetString("Rarity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Rate Limit Exceeded.
+        /// </summary>
+        public static string RateLimited {
+            get {
+                return ResourceManager.GetString("RateLimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap refresh {
+            get {
+                object obj = ResourceManager.GetObject("refresh", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Regular Expression.
+        /// </summary>
+        public static string RegularExpression {
+            get {
+                return ResourceManager.GetString("RegularExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Reload AES keys at launch.
+        /// </summary>
+        public static string ReloadAesKeysAtLaunch {
+            get {
+                return ResourceManager.GetString("ReloadAesKeysAtLaunch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Remember game.
+        /// </summary>
+        public static string RememberGame {
+            get {
+                return ResourceManager.GetString("RememberGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Remove.
+        /// </summary>
+        public static string Remove {
+            get {
+                return ResourceManager.GetString("Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Remove Directory.
+        /// </summary>
+        public static string RemoveDirectory {
+            get {
+                return ResourceManager.GetString("RemoveDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Removed or renamed cosmetics:.
+        /// </summary>
+        public static string RemovedRenamedCosmetics {
+            get {
+                return ResourceManager.GetString("RemovedRenamedCosmetics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Replace.
+        /// </summary>
+        public static string Replace {
+            get {
+                return ResourceManager.GetString("Replace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Replace All.
+        /// </summary>
+        public static string ReplaceAll {
+            get {
+                return ResourceManager.GetString("ReplaceAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Replace With:.
+        /// </summary>
+        public static string ReplaceWith {
+            get {
+                return ResourceManager.GetString("ReplaceWith", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Restore Layout.
+        /// </summary>
+        public static string RestoreLayout {
+            get {
+                return ResourceManager.GetString("RestoreLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Red, Green, Blue, Alpha.
+        /// </summary>
+        public static string Rgba {
+            get {
+                return ResourceManager.GetString("Rgba", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Russian.
+        /// </summary>
+        public static string Russian {
+            get {
+                return ResourceManager.GetString("Russian", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Save.
+        /// </summary>
+        public static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Save Image.
+        /// </summary>
+        public static string SaveImage {
+            get {
+                return ResourceManager.GetString("SaveImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à {0} successfully saved.
+        /// </summary>
+        public static string SaveSuccess {
+            get {
+                return ResourceManager.GetString("SaveSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Scale.
+        /// </summary>
+        public static string Scale {
+            get {
+                return ResourceManager.GetString("Scale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Search.
+        /// </summary>
+        public static string Search {
+            get {
+                return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Search In:.
+        /// </summary>
+        public static string SearchIn {
+            get {
+                return ResourceManager.GetString("SearchIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Search Up.
+        /// </summary>
+        public static string SearchUp {
+            get {
+                return ResourceManager.GetString("SearchUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Secondary.
+        /// </summary>
+        public static string Secondary {
+            get {
+                return ResourceManager.GetString("Secondary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Select a file.
+        /// </summary>
+        public static string SelectFile {
+            get {
+                return ResourceManager.GetString("SelectFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Select a folder.
+        /// </summary>
+        public static string SelectFolder {
+            get {
+                return ResourceManager.GetString("SelectFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Settings.
+        /// </summary>
+        public static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap settings1 {
+            get {
+                object obj = ResourceManager.GetObject("settings1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap share {
+            get {
+                object obj = ResourceManager.GetObject("share", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap share_all {
+            get {
+                object obj = ResourceManager.GetObject("share_all", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap sign_direction {
+            get {
+                object obj = ResourceManager.GetObject("sign_direction", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap sign_direction_plus {
+            get {
+                object obj = ResourceManager.GetObject("sign_direction_plus", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap sign_direction_remove {
+            get {
+                object obj = ResourceManager.GetObject("sign_direction_remove", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Spanish.
+        /// </summary>
+        public static string Spanish {
+            get {
+                return ResourceManager.GetString("Spanish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Spanish (Latin America).
+        /// </summary>
+        public static string SpanishLatin {
+            get {
+                return ResourceManager.GetString("SpanishLatin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Refresh.
+        /// </summary>
+        public static string SRefresh {
+            get {
+                return ResourceManager.GetString("SRefresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à State.
+        /// </summary>
+        public static string State {
+            get {
+                return ResourceManager.GetString("State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Static Key.
+        /// </summary>
+        public static string StaticKey {
+            get {
+                return ResourceManager.GetString("StaticKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à {0} is not working with your PAK files.
+        /// </summary>
+        public static string StaticKeyNotWorking {
+            get {
+                return ResourceManager.GetString("StaticKeyNotWorking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Stop.
+        /// </summary>
+        public static string Stop {
+            get {
+                return ResourceManager.GetString("Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap stop1 {
+            get {
+                object obj = ResourceManager.GetObject("stop1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Success.
+        /// </summary>
+        public static string Success {
+            get {
+                return ResourceManager.GetString("Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap T_ClipSize_Weapon_Stats {
+            get {
+                object obj = ResourceManager.GetObject("T_ClipSize_Weapon_Stats", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap T_DamagePerBullet_Weapon_Stats {
+            get {
+                object obj = ResourceManager.GetObject("T_DamagePerBullet_Weapon_Stats", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -677,9 +2516,9 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Template_AC_F {
+        public static System.Drawing.Bitmap T_Placeholder_Challenge_Image {
             get {
-                object obj = ResourceManager.GetObject("Template_AC_F", resourceCulture);
+                object obj = ResourceManager.GetObject("T_Placeholder_Challenge_Image", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -687,9 +2526,9 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Template_AC_N {
+        public static System.Drawing.Bitmap T_Placeholder_Item_Image {
             get {
-                object obj = ResourceManager.GetObject("Template_AC_N", resourceCulture);
+                object obj = ResourceManager.GetObject("T_Placeholder_Item_Image", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -697,9 +2536,226 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Template_Challenge {
+        public static System.Drawing.Bitmap T_ReloadTime_Weapon_Stats {
             get {
-                object obj = ResourceManager.GetObject("Template_Challenge", resourceCulture);
+                object obj = ResourceManager.GetObject("T_ReloadTime_Weapon_Stats", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à TB.
+        /// </summary>
+        public static string TB {
+            get {
+                return ResourceManager.GetString("TB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Text to Find:.
+        /// </summary>
+        public static string TextToFind {
+            get {
+                return ResourceManager.GetString("TextToFind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Time Elapsed {0}ms.
+        /// </summary>
+        public static string TimeElapsed {
+            get {
+                return ResourceManager.GetString("TimeElapsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Loaded {0} assets.
+        /// </summary>
+        public static string TotalAssetsLoaded {
+            get {
+                return ResourceManager.GetString("TotalAssetsLoaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Total Size.
+        /// </summary>
+        public static string TotalSize {
+            get {
+                return ResourceManager.GetString("TotalSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Chinese (Traditional).
+        /// </summary>
+        public static string TraditionalChinese {
+            get {
+                return ResourceManager.GetString("TraditionalChinese", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Translators.
+        /// </summary>
+        public static string TranslatorsF {
+            get {
+                return ResourceManager.GetString("TranslatorsF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à • EN: Asval#2291			• FR: Asval#2291
+        ///• DE: FunGames#6822		• IT: Angry Cat#5581
+        ///• ES: Maiky.M#9879		• ES-419: Maiky.M#9879
+        ///• AR: PsychoPast#0001		• JA: FNJPNews#7820
+        ///• KO: 				• PL:
+        ///• PT-BR: 				• RU: Seawod#4311
+        ///• TR: 				• ZH-CN:
+        ///• ZH-Hant:.
+        /// </summary>
+        public static string TranslatorsFDetails {
+            get {
+                return ResourceManager.GetString("TranslatorsFDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Turkish.
+        /// </summary>
+        public static string Turkish {
+            get {
+                return ResourceManager.GetString("Turkish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à An unhandled exception occurred: {0}.
+        /// </summary>
+        public static string UnhandledExceptionOccured {
+            get {
+                return ResourceManager.GetString("UnhandledExceptionOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Update.
+        /// </summary>
+        public static string Update {
+            get {
+                return ResourceManager.GetString("Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Update Available.
+        /// </summary>
+        public static string UpdateAvailable {
+            get {
+                return ResourceManager.GetString("UpdateAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à FModel {0} is available. You are using version {1}. Do you want to update the application now?.
+        /// </summary>
+        public static string UpdateAvailableConfirm {
+            get {
+                return ResourceManager.GetString("UpdateAvailableConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Update Check Failed.
+        /// </summary>
+        public static string UpdateCheckFailed {
+            get {
+                return ResourceManager.GetString("UpdateCheckFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à There is a problem reaching the update server, please check your internet connection or try again later..
+        /// </summary>
+        public static string UpdateReachServerProblem {
+            get {
+                return ResourceManager.GetString("UpdateReachServerProblem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Use game colors.
+        /// </summary>
+        public static string UseGameColors {
+            get {
+                return ResourceManager.GetString("UseGameColors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Use item shop icon.
+        /// </summary>
+        public static string UseItemShopIcon {
+            get {
+                return ResourceManager.GetString("UseItemShopIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Use Watermark.
+        /// </summary>
+        public static string UseWatermark {
+            get {
+                return ResourceManager.GetString("UseWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        public static System.Drawing.Icon valorant_live {
+            get {
+                object obj = ResourceManager.GetObject("valorant_live", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Version.
+        /// </summary>
+        public static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap view_dashboard {
+            get {
+                object obj = ResourceManager.GetObject("view_dashboard", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Volume.
+        /// </summary>
+        public static string Volume {
+            get {
+                return ResourceManager.GetString("Volume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap volume_minus {
+            get {
+                object obj = ResourceManager.GetObject("volume_minus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -707,9 +2763,9 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Template_D_F {
+        public static System.Drawing.Bitmap volume_mute {
             get {
-                object obj = ResourceManager.GetObject("Template_D_F", resourceCulture);
+                object obj = ResourceManager.GetObject("volume_mute", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -717,79 +2773,84 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Template_D_N {
+        public static System.Drawing.Bitmap volume_plus {
             get {
-                object obj = ResourceManager.GetObject("Template_D_N", resourceCulture);
+                object obj = ResourceManager.GetObject("volume_plus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Waiting.
+        /// </summary>
+        public static string Waiting {
+            get {
+                return ResourceManager.GetString("Waiting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Warning.
+        /// </summary>
+        public static string Warning {
+            get {
+                return ResourceManager.GetString("Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Watermark.
+        /// </summary>
+        public static string Watermark {
+            get {
+                return ResourceManager.GetString("Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        /// </summary>
+        public static System.Drawing.Icon wifi_strength_off {
+            get {
+                object obj = ResourceManager.GetObject("wifi_strength_off", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Wildcards.
+        /// </summary>
+        public static string Wildcards {
+            get {
+                return ResourceManager.GetString("Wildcards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Yes.
+        /// </summary>
+        public static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Yes (Show the Changelog).
+        /// </summary>
+        public static string YesShowChangelog {
+            get {
+                return ResourceManager.GetString("YesShowChangelog", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Template_F_F {
+        public static System.Drawing.Bitmap zip_box {
             get {
-                object obj = ResourceManager.GetObject("Template_F_F", resourceCulture);
+                object obj = ResourceManager.GetObject("zip_box", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Template_F_N {
-            get {
-                object obj = ResourceManager.GetObject("Template_F_N", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Template_M_F {
-            get {
-                object obj = ResourceManager.GetObject("Template_M_F", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap Template_M_N {
-            get {
-                object obj = ResourceManager.GetObject("Template_M_N", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Byte[].
-        /// </summary>
-        public static byte[] TT_JTCじゃんけんU___TT_JTCじゃんけんUP {
-            get {
-                object obj = ResourceManager.GetObject("TT_JTCじゃんけんU___TT_JTCじゃんけんUP", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap unknown512 {
-            get {
-                object obj = ResourceManager.GetObject("unknown512", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à An error occured when writing..
-        /// </summary>
-        public static string WritingErrorExeptionString {
-            get {
-                return ResourceManager.GetString("WritingErrorExeptionString", resourceCulture);
             }
         }
     }

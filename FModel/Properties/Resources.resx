@@ -117,195 +117,177 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Template_D_F" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Template_D_F.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Template_D_N" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Template_D_N.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Template_F_F" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Template_F_F.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Template_F_N" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Template_F_N.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Template_M_F" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Template_M_F.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Template_M_N" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Template_M_N.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="T_Icon_Pets_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T-Icon-Pets-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="T_Icon_Quests_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T-Icon-Quests-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="clipSize64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\clipSize64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="dmg64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\dmg64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="reload64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\reload64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="unknown512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\unknown512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="BurbankBigCondensed_Bold" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\BurbankBigCondensed-Bold.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="BurbankBigCondensed_Black" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\BurbankBigCondensed-Black.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Template_Challenge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Template_Challenge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="colorpicker1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\colorpicker1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="colorpicker2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\colorpicker2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="EBCDIC" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\EBCDIC.tbl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="EBCDIC_NoSpecialChar" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\EBCDIC-NoSpecialChar.tbl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="AppendByteConfirmationString" xml:space="preserve">
-    <value>You have reached the end of the file. Do you want to append one byte? This operation cannot be canceled if you continue.</value>
-  </data>
-  <data name="DefaultTBLString" xml:space="preserve">
-    <value>Default TBL</value>
-  </data>
-  <data name="FileDroppingConfirmationString" xml:space="preserve">
-    <value>Do you want to close the current file and open :</value>
-  </data>
-  <data name="FillSelectionAloneString" xml:space="preserve">
-    <value>Fill selection with byte</value>
-  </data>
-  <data name="FirstByteString" xml:space="preserve">
-    <value>First byte</value>
-  </data>
-  <data name="KBTagString" xml:space="preserve">
-    <value>Kb</value>
-  </data>
-  <data name="MBTagString" xml:space="preserve">
-    <value>Mb</value>
-  </data>
-  <data name="PasteExtendByteConfirmationString" xml:space="preserve">
-    <value>Paste operation reached the end of the file. Do you want to extend the file to complete the operation? This operation cannot be canceled if you continue.</value>
-  </data>
-  <data name="PasteFromClipboardString" xml:space="preserve">
-    <value>Paste from clipboard</value>
-  </data>
-  <data name="ReplaceWithByteString" xml:space="preserve">
-    <value>Replace with byte</value>
-  </data>
-  <data name="CBB_EXEFile_BytesInLastBlockString" xml:space="preserve">
-    <value>The number of bytes in the last block of the program that are actually used. 
-If this value is zero, that means the entire last block is used</value>
-  </data>
-  <data name="CBB_EXEFile_InitialValueOfCSRegisterString" xml:space="preserve">
-    <value>Initial value of the CS register, relative to the segment the program was loaded at.</value>
-  </data>
-  <data name="CBB_EXEFile_InitialValueOfIPRegisterString" xml:space="preserve">
-    <value>Initial value of the IP register.</value>
-  </data>
-  <data name="CBB_EXEFile_InitialValueOfSPRegisterString" xml:space="preserve">
-    <value>Initial value of the SP register.</value>
-  </data>
-  <data name="CBB_EXEFile_MagicNumberString" xml:space="preserve">
-    <value>This is the 'magic number' of an EXE file.</value>
-  </data>
-  <data name="CBB_EXEFile_MaxNumberOfHeaderParagraphAdditionalMemoryString" xml:space="preserve">
-    <value>Maximum number of paragraphs of additional memory. 
-Normally, the OS reserves all the remaining conventional memory for your program, but you can limit it with this field.</value>
-  </data>
-  <data name="CBB_EXEFile_NotDOSProgramString" xml:space="preserve">
-    <value>This program cannot be run in DOS mode...</value>
-  </data>
-  <data name="CBB_EXEFile_NumberOfBlockInFileBlockString" xml:space="preserve">
-    <value>Number of blocks in the file that are part of the EXE file. 
-If [02-03] is non-zero, only that much of the last block is used.</value>
-  </data>
-  <data name="CBB_EXEFile_NumberOfHeaderParagraphAdditionalMemoryString" xml:space="preserve">
-    <value>Number of paragraphs of additional memory that the program will need.
-This is the equivalent of the BSS size in a Unix program. 
-The program can't be loaded if there isn't at least this much memory available to it.</value>
-  </data>
-  <data name="CBB_EXEFile_NumberOfRelocationEntriesString" xml:space="preserve">
-    <value>Number of relocation entries stored after the header. May be zero</value>
-  </data>
-  <data name="CBB_EXEFile_OffsetOfTheFirstRelocationItemString" xml:space="preserve">
-    <value>Offset of the first relocation item in the file.</value>
-  </data>
-  <data name="CBB_EXEFile_OverlayNumberString" xml:space="preserve">
-    <value>Overlay number. Normally zero, meaning that it's the main program.</value>
-  </data>
-  <data name="CBB_EXEFile_RelativeValueOfStackSegmentString" xml:space="preserve">
-    <value>Relative value of the stack segment. 
-This value is added to the segment the program was loaded at, and the result is used to initialize the SS register.</value>
-  </data>
-  <data name="CBB_EXEFile_WordChecksumString" xml:space="preserve">
-    <value>Word checksum. 
-If set properly, the 16-bit sum of all words in the file should be zero. 
-Usually, this isn't filled in.</value>
-  </data>
-  <data name="EndTagString" xml:space="preserve">
-    <value>&amp;lt;end&amp;gt;</value>
-  </data>
-  <data name="LineTagString" xml:space="preserve">
-    <value>&amp;lt;ln&amp;gt;</value>
-  </data>
-  <data name="WritingErrorExeptionString" xml:space="preserve">
-    <value>An error occured when writing.</value>
-  </data>
-  <data name="Logo_Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Logo-Icon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="close_file_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\close_file_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="info_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\info_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="open_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\open_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="save_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\save_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="settings_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\settings_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Template_AC_F" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Template_AC_F.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Template_AC_N" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Template_AC_N.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="TT_JTCじゃんけんU___TT_JTCじゃんけんUP" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\TT-JTCじゃんけんU &amp; TT-JTCじゃんけんUP.TTC;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="AboutF" xml:space="preserve">
     <value>About FModel</value>
   </data>
   <data name="AboutFDetails" xml:space="preserve">
-    <value>FModel is a .PAK file explorer fully dedicated to Fortnite.
+    <value>FModel is a .PAK file explorer fully dedicated to Fortnite but also work with some other Unreal Engine's games.
 
 Created in March 2019, in order to have unique and personalized functionality, it quickly became popular through leakers who used it to quickly generate images of new cosmetics added to the game.
 Over time, new features got added and new users discovered the program.
 It's now the most used free software to leak on Fortnite.</value>
+    <comment>Need feedback kthx</comment>
+  </data>
+  <data name="AboutToDownload" xml:space="preserve">
+    <value>You're about to download {0} which has a size of {1}</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="AddDirectory" xml:space="preserve">
+    <value>Add Directory</value>
+  </data>
+  <data name="AddSeparator" xml:space="preserve">
+    <value>Add Separator</value>
+  </data>
+  <data name="AES" xml:space="preserve">
+    <value>AES</value>
+    <comment>Do not change this</comment>
+  </data>
+  <data name="AesKey" xml:space="preserve">
+    <value>AES Key</value>
+  </data>
+  <data name="AesKeysUpdated" xml:space="preserve">
+    <value>Keys have been updated</value>
+  </data>
+  <data name="AesNotWorking" xml:space="preserve">
+    <value>'{0}' is not working with '{1}'</value>
+    <comment>[Exception] 0 is the key and 1 is the file name</comment>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="alert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\alert.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AllDocuments" xml:space="preserve">
+    <value>All Documents</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="AllFiles" xml:space="preserve">
+    <value>All Files</value>
+  </data>
+  <data name="alpha_a_box" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\alpha-a-box.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Analyzing" xml:space="preserve">
+    <value>Analyzing {0}</value>
+  </data>
+  <data name="api" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\api.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="api_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\api-off.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Arabic" xml:space="preserve">
+    <value>Arabic</value>
+  </data>
+  <data name="Asset" xml:space="preserve">
+    <value>Asset</value>
+  </data>
+  <data name="Assets" xml:space="preserve">
+    <value>Assets</value>
+  </data>
+  <data name="Audio" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="AudioDevices" xml:space="preserve">
+    <value>Audio Devices</value>
+  </data>
+  <data name="AudioPlayer" xml:space="preserve">
+    <value>Audio Player</value>
+  </data>
+  <data name="Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="AutoOpenSounds" xml:space="preserve">
+    <value>Auto open sounds</value>
+  </data>
+  <data name="B" xml:space="preserve">
+    <value>B</value>
+    <comment>Byte</comment>
+  </data>
+  <data name="BackupPaks" xml:space="preserve">
+    <value>Backup PAKs</value>
+    <comment>Backups Menu Item</comment>
+  </data>
+  <data name="Backups" xml:space="preserve">
+    <value>Backups</value>
+  </data>
+  <data name="backup_restore" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\backup-restore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Banner" xml:space="preserve">
+    <value>Banner</value>
+  </data>
+  <data name="BenBotApi" xml:space="preserve">
+    <value>BenBot API</value>
+  </data>
+  <data name="bug" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bug.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BugsReport" xml:space="preserve">
+    <value>Bugs Report</value>
+  </data>
+  <data name="BurbankBigCondensed_Bold" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BurbankBigCondensed-Bold.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BytesPerSecond" xml:space="preserve">
+    <value>Bytes Per Second</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Canceled" xml:space="preserve">
+    <value>Canceled!</value>
+  </data>
+  <data name="CaseSensitive" xml:space="preserve">
+    <value>Case Sensitive</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="cast_audio" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cast-audio.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ChallengesCustomBanner" xml:space="preserve">
+    <value>Challenges' Custom Banner</value>
+  </data>
+  <data name="ChallengesThemeCreator" xml:space="preserve">
+    <value>Challenges' Theme Creator</value>
+    <comment>Settings Menu Item</comment>
+  </data>
+  <data name="challenge_theme_creator" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\challenge-theme-creator.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ChangeGame" xml:space="preserve">
+    <value>Change Game</value>
+  </data>
+  <data name="Changelog" xml:space="preserve">
+    <value>Changelog</value>
+  </data>
+  <data name="check_circle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\check-circle.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Chinese" xml:space="preserve">
+    <value>Chinese (Simplified)</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="ColorPickerOne" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ColorPickerOne.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ColorPickerTwo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ColorPickerTwo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Colors" xml:space="preserve">
+    <value>Colors</value>
+  </data>
+  <data name="Compression" xml:space="preserve">
+    <value>Compression</value>
+  </data>
+  <data name="content_copy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\content-copy.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="content_save" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\content-save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ContributorsF" xml:space="preserve">
     <value>Contributors</value>
@@ -315,5 +297,788 @@ It's now the most used free software to leak on Fortnite.</value>
 • FunGames			• Not Officer
 • PsychoPast			• TSG
 • XTigerHyperX			• FireMonkey</value>
+    <comment>Do not translate</comment>
+  </data>
+  <data name="CopySuccess" xml:space="preserve">
+    <value>Copied!</value>
+  </data>
+  <data name="CouldNotCreateDirectory" xml:space="preserve">
+    <value>Could not create directory</value>
+  </data>
+  <data name="CreateError" xml:space="preserve">
+    <value>Error while creating {0}</value>
+  </data>
+  <data name="CreateSuccess" xml:space="preserve">
+    <value>{0} successfully created</value>
+  </data>
+  <data name="CurrentDocument" xml:space="preserve">
+    <value>Current Document</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="CustomBannerNotFound" xml:space="preserve">
+    <value>File not found, challenges' custom theme disabled</value>
+  </data>
+  <data name="DataExported" xml:space="preserve">
+    <value>{0} successfully exported</value>
+  </data>
+  <data name="DataSaved" xml:space="preserve">
+    <value>Data successfully saved</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="delete_forever" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\delete-forever.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Design" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="Difference" xml:space="preserve">
+    <value>Difference</value>
+  </data>
+  <data name="Directories" xml:space="preserve">
+    <value>Directories</value>
+  </data>
+  <data name="DirectoryName" xml:space="preserve">
+    <value>Directory Name</value>
+  </data>
+  <data name="DirectoryPath" xml:space="preserve">
+    <value>Directory Path</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="discord" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\discord.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DiscordServer" xml:space="preserve">
+    <value>Discord Server</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>Donate</value>
+  </data>
+  <data name="DonatorsF" xml:space="preserve">
+    <value>Donators</value>
+  </data>
+  <data name="DonatorsFDetails" xml:space="preserve">
+    <value>• Yanteh				• FunGames
+• HYPEX				• Alexander</value>
+    <comment>Do not translate</comment>
+  </data>
+  <data name="DownloadError" xml:space="preserve">
+    <value>Error while downloading {0}</value>
+  </data>
+  <data name="Downloading" xml:space="preserve">
+    <value>Downloading</value>
+  </data>
+  <data name="DownloadSuccess" xml:space="preserve">
+    <value>{0} successfully downloaded</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="DynamicKeyNotWorking" xml:space="preserve">
+    <value>{0} is not working with {1}</value>
+    <comment>{0} is the beginning of the key</comment>
+  </data>
+  <data name="DynamicKeys" xml:space="preserve">
+    <value>Dynamic Keys</value>
+  </data>
+  <data name="EditDirectory" xml:space="preserve">
+    <value>Edit Directory</value>
+  </data>
+  <data name="egl2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\egl2.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EIconDesign_Default" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EIconDesign_Default.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EIconDesign_Flat" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EIconDesign_Flat.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EIconDesign_Mini" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EIconDesign_Mini.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EIconDesign_NoText" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EIconDesign_NoText.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Encrypted" xml:space="preserve">
+    <value>Encrypted</value>
+    <comment>Example -&gt; Encrypted: Yes/No</comment>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Extract" xml:space="preserve">
+    <value>Extract</value>
+  </data>
+  <data name="ExtractDirectory" xml:space="preserve">
+    <value>Extract Directory</value>
+  </data>
+  <data name="Extraction" xml:space="preserve">
+    <value>Extraction</value>
+  </data>
+  <data name="FbkpFilter" xml:space="preserve">
+    <value>FBKP Files (*.fbkp)|*.fbkp|All Files (*.*)|*.*</value>
+  </data>
+  <data name="FCopy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="FFile" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="file" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FileCount" xml:space="preserve">
+    <value>File Count</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="FileNameNoExt" xml:space="preserve">
+    <value>File Name w/o Extension</value>
+  </data>
+  <data name="FilePath" xml:space="preserve">
+    <value>File Path</value>
+  </data>
+  <data name="FilePathNoExt" xml:space="preserve">
+    <value>File Path w/o Extension</value>
+  </data>
+  <data name="Files" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="file_export" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\file-export.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="file_image" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\file-image.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="file_multiple" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\file-multiple.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="file_restore" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\file-restore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="Find" xml:space="preserve">
+    <value>Find</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="FindAndReplace" xml:space="preserve">
+    <value>Find And Replace</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="FindNext" xml:space="preserve">
+    <value>Find Next</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="Flat" xml:space="preserve">
+    <value>Flat</value>
+    <comment>Rarity Design</comment>
+  </data>
+  <data name="FLauncher" xml:space="preserve">
+    <value>FModel Launcher</value>
+  </data>
+  <data name="fmodel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fmodel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="folder_download" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder-download.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="folder_open" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder-open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fortnite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fortnite.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="French" xml:space="preserve">
+    <value>French</value>
+  </data>
+  <data name="FyiDetails" xml:space="preserve">
+    <value>The selected language will be the one used for icons creation</value>
+  </data>
+  <data name="FyiTitle" xml:space="preserve">
+    <value>FYI:</value>
+  </data>
+  <data name="gamepad_variant" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gamepad-variant.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Games" xml:space="preserve">
+    <value>Games</value>
+  </data>
+  <data name="GB" xml:space="preserve">
+    <value>GB</value>
+    <comment>GigaByte</comment>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+    <comment>Settings Menu Item</comment>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>General Settings</value>
+  </data>
+  <data name="German" xml:space="preserve">
+    <value>German</value>
+  </data>
+  <data name="github_circle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\github-circle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GoTo" xml:space="preserve">
+    <value>Go To</value>
+  </data>
+  <data name="Guid" xml:space="preserve">
+    <value>Guid</value>
+  </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Hello</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Hsv" xml:space="preserve">
+    <value>Hue, Saturation, Value</value>
+  </data>
+  <data name="Hue" xml:space="preserve">
+    <value>Hue</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="IconCreator" xml:space="preserve">
+    <value>Icon Creator</value>
+    <comment>Settings Menu Item</comment>
+  </data>
+  <data name="IconWatermark" xml:space="preserve">
+    <value>Icon Watermark</value>
+  </data>
+  <data name="IconWatermarkNotFound" xml:space="preserve">
+    <value>File not found, watermarking disabled</value>
+  </data>
+  <data name="icon_creator" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon-creator.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Idling" xml:space="preserve">
+    <value>Idling</value>
+  </data>
+  <data name="Images" xml:space="preserve">
+    <value>Images</value>
+  </data>
+  <data name="ImageSaved" xml:space="preserve">
+    <value>Image successfully saved</value>
+  </data>
+  <data name="ImagesMerger" xml:space="preserve">
+    <value>Images Merger</value>
+  </data>
+  <data name="image_filter_black_white" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image-filter-black-white.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="image_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image-move.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Include" xml:space="preserve">
+    <value>Include</value>
+  </data>
+  <data name="information" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\information.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ini" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ini.xshd;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Initializing" xml:space="preserve">
+    <value>Initializing</value>
+  </data>
+  <data name="InternationalizationStatus" xml:space="preserve">
+    <value>Language set to {0}</value>
+  </data>
+  <data name="IsPartOf" xml:space="preserve">
+    <value>Is Part Of</value>
+  </data>
+  <data name="Italian" xml:space="preserve">
+    <value>Italian</value>
+  </data>
+  <data name="Japanese" xml:space="preserve">
+    <value>Japanese</value>
+  </data>
+  <data name="Json" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Json.xshd;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="JsonFilter" xml:space="preserve">
+    <value>JSON Files (*.json)|*.json</value>
+  </data>
+  <data name="KB" xml:space="preserve">
+    <value>KB</value>
+    <comment>KiloByte</comment>
+  </data>
+  <data name="key" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\key.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Korean" xml:space="preserve">
+    <value>Korean</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Listening" xml:space="preserve">
+    <value>Listening - {0}</value>
+  </data>
+  <data name="LoadAll" xml:space="preserve">
+    <value>Load All</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="LoadingMode" xml:space="preserve">
+    <value>Loading Mode</value>
+  </data>
+  <data name="LoadModifiedFiles" xml:space="preserve">
+    <value>Load Modified Files</value>
+  </data>
+  <data name="LoadNewFiles" xml:space="preserve">
+    <value>Load New Files</value>
+  </data>
+  <data name="LoadNewModifiedFiles" xml:space="preserve">
+    <value>Load New and Modified Files</value>
+  </data>
+  <data name="lock_open_variant" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\lock-open-variant.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="magnify" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\magnify.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MainPaks" xml:space="preserve">
+    <value>Main PAKs:</value>
+  </data>
+  <data name="MatchWholeWord" xml:space="preserve">
+    <value>Match Whole Word</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="MB" xml:space="preserve">
+    <value>MB</value>
+    <comment>MegaByte</comment>
+  </data>
+  <data name="Media" xml:space="preserve">
+    <value>Media</value>
+  </data>
+  <data name="Minimalist" xml:space="preserve">
+    <value>Minimalist</value>
+    <comment>Rarity Design</comment>
+  </data>
+  <data name="ModifiedFiles" xml:space="preserve">
+    <value>Modified Files</value>
+  </data>
+  <data name="MountedPakTo" xml:space="preserve">
+    <value>{0} mounted to {1}</value>
+  </data>
+  <data name="MountPoint" xml:space="preserve">
+    <value>Mount Point</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NewFiles" xml:space="preserve">
+    <value>New Files</value>
+  </data>
+  <data name="NewModifiedFiles" xml:space="preserve">
+    <value>New and Modified Files</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="NoDataToExport" xml:space="preserve">
+    <value>There are currently no data to export</value>
+  </data>
+  <data name="NoDataToSave" xml:space="preserve">
+    <value>There are currently no data to save</value>
+  </data>
+  <data name="NoImageToSave" xml:space="preserve">
+    <value>There is currently no image to save</value>
+  </data>
+  <data name="NoInternet" xml:space="preserve">
+    <value>Your internet connection is currently not working</value>
+  </data>
+  <data name="NoText" xml:space="preserve">
+    <value>No Text</value>
+    <comment>Rarity Design</comment>
+  </data>
+  <data name="Offsets" xml:space="preserve">
+    <value>Offsets</value>
+  </data>
+  <data name="OggFilter" xml:space="preserve">
+    <value>OGG Files (*.ogg)|*.ogg|WAV Files (*.wav)|*.wav|All Files (*.*)|*.*</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Opacity" xml:space="preserve">
+    <value>Opacity</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="OpenImage" xml:space="preserve">
+    <value>Open Image</value>
+  </data>
+  <data name="OpenOutputFolder" xml:space="preserve">
+    <value>Open Output Folder</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="PAK" xml:space="preserve">
+    <value>PAK</value>
+    <comment>Do not translate</comment>
+  </data>
+  <data name="PakCanBeOpened" xml:space="preserve">
+    <value>{0} can now be opened</value>
+  </data>
+  <data name="PakFileLocked" xml:space="preserve">
+    <value>{0} is locked by another process</value>
+  </data>
+  <data name="PakFiles" xml:space="preserve">
+    <value>PAK Files</value>
+  </data>
+  <data name="PakFilesAutoDetected" xml:space="preserve">
+    <value>Fortnite PAK files auto-detected</value>
+  </data>
+  <data name="ParsingNotSupported" xml:space="preserve">
+    <value>Parsing of {0} types isn't supported yet.</value>
+  </data>
+  <data name="Path" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="PathAutoDetected" xml:space="preserve">
+    <value>.PAK Files Auto Detected</value>
+  </data>
+  <data name="PathChanged" xml:space="preserve">
+    <value>FModel Path(s) Changed</value>
+    <comment>General Settings Window</comment>
+  </data>
+  <data name="PathChangedRestart" xml:space="preserve">
+    <value>FModel is about to restart because you applied your new path(s)</value>
+    <comment>General Settings Window</comment>
+  </data>
+  <data name="pause" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="paypal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\paypal.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pencil" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pencil.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="play" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\play.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="playlist_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\playlist-plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PngFilter" xml:space="preserve">
+    <value>PNG Files (*.png)|*.png|All Files (*.*)|*.*</value>
+  </data>
+  <data name="Polish" xml:space="preserve">
+    <value>Polish</value>
+  </data>
+  <data name="Popup" xml:space="preserve">
+    <value>Popup</value>
+    <comment>Rarity Design</comment>
+  </data>
+  <data name="PortugueseBrazil" xml:space="preserve">
+    <value>Portuguese (Brazil)</value>
+  </data>
+  <data name="power" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\power.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Primary" xml:space="preserve">
+    <value>Primary</value>
+    <comment>Color</comment>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Processing</value>
+  </data>
+  <data name="progress_download" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\progress-download.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Rarity" xml:space="preserve">
+    <value>Rarity</value>
+  </data>
+  <data name="RateLimited" xml:space="preserve">
+    <value>Rate Limit Exceeded</value>
+  </data>
+  <data name="refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\refresh.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RegularExpression" xml:space="preserve">
+    <value>Regular Expression</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="ReloadAesKeysAtLaunch" xml:space="preserve">
+    <value>Reload AES keys at launch</value>
+  </data>
+  <data name="RememberGame" xml:space="preserve">
+    <value>Remember game</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="RemoveDirectory" xml:space="preserve">
+    <value>Remove Directory</value>
+  </data>
+  <data name="RemovedRenamedCosmetics" xml:space="preserve">
+    <value>Removed or renamed cosmetics:</value>
+  </data>
+  <data name="Replace" xml:space="preserve">
+    <value>Replace</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="ReplaceAll" xml:space="preserve">
+    <value>Replace All</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="ReplaceWith" xml:space="preserve">
+    <value>Replace With:</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="RestoreLayout" xml:space="preserve">
+    <value>Restore Layout</value>
+    <comment>Settings Menu Item</comment>
+  </data>
+  <data name="Rgba" xml:space="preserve">
+    <value>Red, Green, Blue, Alpha</value>
+  </data>
+  <data name="Russian" xml:space="preserve">
+    <value>Russian</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SaveImage" xml:space="preserve">
+    <value>Save Image</value>
+  </data>
+  <data name="SaveSuccess" xml:space="preserve">
+    <value>{0} successfully saved</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>Scale</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SearchIn" xml:space="preserve">
+    <value>Search In:</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="SearchUp" xml:space="preserve">
+    <value>Search Up</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="Secondary" xml:space="preserve">
+    <value>Secondary</value>
+    <comment>Color</comment>
+  </data>
+  <data name="SelectFile" xml:space="preserve">
+    <value>Select a file</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Select a folder</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+    <comment>Settings Menu Header</comment>
+  </data>
+  <data name="settings1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="share" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\share.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="share_all" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\share-all.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sign_direction" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sign-direction.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sign_direction_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sign-direction-plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sign_direction_remove" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sign-direction-remove.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Spanish" xml:space="preserve">
+    <value>Spanish</value>
+  </data>
+  <data name="SpanishLatin" xml:space="preserve">
+    <value>Spanish (Latin America)</value>
+  </data>
+  <data name="SRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="StaticKey" xml:space="preserve">
+    <value>Static Key</value>
+  </data>
+  <data name="StaticKeyNotWorking" xml:space="preserve">
+    <value>{0} is not working with your PAK files</value>
+    <comment>{0} is the beginning of the key</comment>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="stop1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\stop.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="TB" xml:space="preserve">
+    <value>TB</value>
+    <comment>TeraByte</comment>
+  </data>
+  <data name="TextToFind" xml:space="preserve">
+    <value>Text to Find:</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="TimeElapsed" xml:space="preserve">
+    <value>Time Elapsed {0}ms</value>
+  </data>
+  <data name="TotalAssetsLoaded" xml:space="preserve">
+    <value>Loaded {0} assets</value>
+  </data>
+  <data name="TotalSize" xml:space="preserve">
+    <value>Total Size</value>
+  </data>
+  <data name="TraditionalChinese" xml:space="preserve">
+    <value>Chinese (Traditional)</value>
+  </data>
+  <data name="TranslatorsF" xml:space="preserve">
+    <value>Translators</value>
+  </data>
+  <data name="TranslatorsFDetails" xml:space="preserve">
+    <value>• EN: Asval#2291			• FR: Asval#2291
+• DE: FunGames#6822		• IT: Angry Cat#5581
+• ES: Maiky.M#9879		• ES-419: Maiky.M#9879
+• AR: PsychoPast#0001		• JA: FNJPNews#7820
+• KO: 				• PL:
+• PT-BR: 				• RU: Seawod#4311
+• TR: 				• ZH-CN:
+• ZH-Hant:</value>
+    <comment>Do not translate</comment>
+  </data>
+  <data name="Turkish" xml:space="preserve">
+    <value>Turkish</value>
+  </data>
+  <data name="T_ClipSize_Weapon_Stats" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T_ClipSize_Weapon_Stats.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_DamagePerBullet_Weapon_Stats" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T_DamagePerBullet_Weapon_Stats.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_Icon_Pets_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T-Icon-Pets-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_Icon_Quests_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T-Icon-Quests-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_Placeholder_Challenge_Image" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T_Placeholder_Challenge_Image.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_Placeholder_Item_Image" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T_Placeholder_Item_Image.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="T_ReloadTime_Weapon_Stats" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\T_ReloadTime_Weapon_Stats.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UnhandledExceptionOccured" xml:space="preserve">
+    <value>An unhandled exception occurred: {0}</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="UseGameColors" xml:space="preserve">
+    <value>Use game colors</value>
+  </data>
+  <data name="UseItemShopIcon" xml:space="preserve">
+    <value>Use item shop icon</value>
+  </data>
+  <data name="UseWatermark" xml:space="preserve">
+    <value>Use Watermark</value>
+  </data>
+  <data name="valorant_live" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\valorant.live.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="view_dashboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\view-dashboard.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Volume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="volume_minus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\volume-minus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="volume_mute" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\volume-mute.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="volume_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\volume-plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Waiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Watermark" xml:space="preserve">
+    <value>Watermark</value>
+  </data>
+  <data name="wifi_strength_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wifi-strength-off.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Wildcards" xml:space="preserve">
+    <value>Wildcards</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="zip_box" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\zip-box.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Update Available</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Update Check Failed</value>
+  </data>
+  <data name="YesShowChangelog" xml:space="preserve">
+    <value>Yes (Show the Changelog)</value>
+  </data>
+  <data name="UpdateReachServerProblem" xml:space="preserve">
+    <value>There is a problem reaching the update server, please check your internet connection or try again later.</value>
+  </data>
+  <data name="UpdateAvailableConfirm" xml:space="preserve">
+    <value>FModel {0} is available. You are using version {1}. Do you want to update the application now?</value>
   </data>
 </root>

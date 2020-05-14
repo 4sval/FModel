@@ -1,0 +1,113 @@
+﻿<Window x:Class="FModel.Windows.SoundPlayer.AudioPlayer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:properties="clr-namespace:FModel.Properties"
+        mc:Ignorable="d"
+        Style="{StaticResource {x:Type Window}}"
+        Title="{x:Static properties:Resources.AudioPlayer}" Height="300" MinHeight="300" Width="1000" MinWidth="1000"
+        WindowStartupLocation="CenterScreen" Icon="/FModel;component/FModel.ico"
+        Closed="OnClosed">
+    <Grid>
+        <Grid Margin="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TabControl Grid.Row="0" Grid.Column="0" BorderBrush="{x:Null}">
+                <TabItem x:Name="AudioPlayer_TabItm" Header="{x:Static properties:Resources.FFile}">
+                    <Grid>
+                        <Grid.Background>
+                            <LinearGradientBrush EndPoint="0.25,0.9" StartPoint="0.75,1">
+                                <GradientStop Color="#FF252D36" Offset="0"/>
+                                <GradientStop Color="#FF252E38" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="5"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="1" Grid.Row="1" Content="{x:Static properties:Resources.AudioDevices}"/>
+                        <Label Grid.Column="1" Grid.Row="2" Content="{x:Static properties:Resources.Name}"/>
+                        <Label Grid.Column="1" Grid.Row="3" Content="{x:Static properties:Resources.BytesPerSecond}"/>
+                        <Label Grid.Column="1" Grid.Row="4" Content="{x:Static properties:Resources.Duration}"/>
+                        <Label Grid.Column="1" Grid.Row="5" Content="{x:Static properties:Resources.Volume}"/>
+                        <Button Grid.Column="3" Grid.Row="7" Height="20" Width="40" Click="OnPlayPauseClick"
+                                HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,50,-1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="1"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Image x:Name="PlayPauseImg" Grid.Column="1" Source="/FModel;component/Resources/play.png"
+                       Width="14" Stretch="UniformToFill" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                            </Grid>
+                        </Button>
+                        <Button Grid.Column="3" Grid.Row="7" Height="20" Width="40" Click="OnStopClick"
+                                HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,-1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="1"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Image Grid.Column="1" Source="/FModel;component/Resources/stop.png"
+                       Width="14" Stretch="UniformToFill" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                            </Grid>
+                        </Button>
+                        <Button Grid.Column="1" Grid.Row="7" Content="{x:Static properties:Resources.Open}"
+                                Click="OnOpenClick" Height="19" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+
+                        <TextBox Grid.Column="3" Grid.Row="1" TextWrapping="NoWrap"
+                                 Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding Device.Name, Mode=TwoWay}"/>
+                        <TextBox Grid.Column="3" Grid.Row="2" TextWrapping="NoWrap"
+                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding Content, Mode=TwoWay}"/>
+                        <TextBox Grid.Column="3" Grid.Row="3" TextWrapping="NoWrap"
+                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding Bytes, Mode=TwoWay}"/>
+                        <TextBox Grid.Column="3" Grid.Row="4" TextWrapping="NoWrap"
+                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding Duration, Mode=TwoWay}"/>
+                        <Slider Grid.Column="3" Grid.Row="5"
+                                Style="{StaticResource Horizontal_Slider}" TickPlacement="None" VerticalAlignment="Center"
+                                Minimum="0" Maximum="1" TickFrequency="0.1" Value="{Binding Volume, Mode=TwoWay}"
+                                Thumb.DragCompleted="UpdateVolume"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+
+            <Grid Grid.Row="2" Grid.Column="2" Margin="10,20,10,0" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="1"/>
+                </Grid.RowDefinitions>
+
+                <ContentControl x:Name="Clock" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                <ContentControl x:Name="Spectrum" Grid.Row="0"/>
+                <ContentControl x:Name="Time" Grid.Row="1"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

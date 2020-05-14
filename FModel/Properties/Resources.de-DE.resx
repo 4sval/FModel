@@ -1,0 +1,843 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AboutF" xml:space="preserve">
+    <value>Über FModel</value>
+  </data>
+  <data name="AboutFDetails" xml:space="preserve">
+    <value>FModel ist ein .Pak Datei Explorer, der hauptsächlich für Fortnite optimiert ist. Er funktioniert aber auch mit anderen Unreal Engine Spielen.
+
+FModel wurde im März 2019 erstellt, um einzigartige und personalisierte Funktionen zu bieten und wurde unter Leakern, die FModel benutzten, um Bilder von den neuen kosmetischen Gegenständen zu generieren, schnell beliebt.
+Im Laufe der Zeit wurden immer mehr Funktionen hinzugefügt und neue Benutzer lernten FModel kennen.
+Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leaken.</value>
+    <comment>Need feedback kthx</comment>
+  </data>
+  <data name="AboutToDownload" xml:space="preserve">
+    <value>Du bist dabei {0} mit einer Größe von {1} herunterzuladen</value>
+  </data>
+  <data name="AddDirectory" xml:space="preserve">
+    <value>Ordner hinzufügen</value>
+  </data>
+  <data name="AddSeparator" xml:space="preserve">
+    <value>Trennzeichen hinzufügen</value>
+  </data>
+  <data name="AesKey" xml:space="preserve">
+    <value>AES-Schlüssel</value>
+  </data>
+  <data name="AesKeysUpdated" xml:space="preserve">
+    <value>AES-Schlüssel wurden aktualisiert</value>
+  </data>
+  <data name="AesNotWorking" xml:space="preserve">
+    <value>'{0}' funktioniert nicht mit '{1}'</value>
+    <comment>[Exception] 0 is the key and 1 is the file name</comment>
+  </data>
+  <data name="AllDocuments" xml:space="preserve">
+    <value>Alle Dokumente</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="AllFiles" xml:space="preserve">
+    <value>Alle Dateien</value>
+  </data>
+  <data name="Analyzing" xml:space="preserve">
+    <value>{0} wird analysiert</value>
+  </data>
+  <data name="Arabic" xml:space="preserve">
+    <value>Arabisch</value>
+  </data>
+  <data name="Asset" xml:space="preserve">
+    <value>Asset-Datei</value>
+  </data>
+  <data name="Assets" xml:space="preserve">
+    <value>Asset-Dateien</value>
+  </data>
+  <data name="AudioDevices" xml:space="preserve">
+    <value>Audio Geräte</value>
+  </data>
+  <data name="Auto" xml:space="preserve">
+    <value>Automatisch</value>
+  </data>
+  <data name="AutoOpenSounds" xml:space="preserve">
+    <value>Audio-Dateien automatisch öffnen</value>
+  </data>
+  <data name="BackupPaks" xml:space="preserve">
+    <value>Backup der PAKs erstellen</value>
+    <comment>Backups Menu Item</comment>
+  </data>
+  <data name="BugsReport" xml:space="preserve">
+    <value>Fehlerbericht</value>
+  </data>
+  <data name="BytesPerSecond" xml:space="preserve">
+    <value>Bytes pro Sekunde</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Canceled" xml:space="preserve">
+    <value>Abgebrochen!</value>
+  </data>
+  <data name="CaseSensitive" xml:space="preserve">
+    <value>Groß- und Kleinschreibung beachten</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="ChallengesCustomBanner" xml:space="preserve">
+    <value>Eigenes Banner für Herausforderungen</value>
+  </data>
+  <data name="ChallengesThemeCreator" xml:space="preserve">
+    <value>Theme-Ersteller für Herausforderungen</value>
+    <comment>Settings Menu Item</comment>
+  </data>
+  <data name="ChangeGame" xml:space="preserve">
+    <value>Spiel ändern</value>
+  </data>
+  <data name="Changelog" xml:space="preserve">
+    <value>Änderungsprotokoll</value>
+  </data>
+  <data name="Chinese" xml:space="preserve">
+    <value>Chinesisch (Vereinfacht)</value>
+  </data>
+  <data name="Colors" xml:space="preserve">
+    <value>Farben</value>
+  </data>
+  <data name="Compression" xml:space="preserve">
+    <value>Komprimierung</value>
+  </data>
+  <data name="ContributorsF" xml:space="preserve">
+    <value>Mitwirkende</value>
+  </data>
+  <data name="CopySuccess" xml:space="preserve">
+    <value>Kopiert!</value>
+  </data>
+  <data name="CouldNotCreateDirectory" xml:space="preserve">
+    <value>Konnte Ordner nicht erstellen</value>
+  </data>
+  <data name="CreateError" xml:space="preserve">
+    <value>Fehler bei der Erstellung von {0}</value>
+  </data>
+  <data name="CreateSuccess" xml:space="preserve">
+    <value>{0} erfolgreicht erstellt</value>
+  </data>
+  <data name="CurrentDocument" xml:space="preserve">
+    <value>Aktuelles Dokument</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="CustomBannerNotFound" xml:space="preserve">
+    <value>Datei nicht gefunden. Eigenes Theme für Herausforderungen deaktiviert</value>
+  </data>
+  <data name="DataExported" xml:space="preserve">
+    <value>{0} erfolgreich exportiert</value>
+  </data>
+  <data name="DataSaved" xml:space="preserve">
+    <value>Daten erfolgreich gespeichert</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Design" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="Difference" xml:space="preserve">
+    <value>Unterschied</value>
+  </data>
+  <data name="Directories" xml:space="preserve">
+    <value>Ordner</value>
+  </data>
+  <data name="DirectoryName" xml:space="preserve">
+    <value>Ordnername</value>
+  </data>
+  <data name="DirectoryPath" xml:space="preserve">
+    <value>Ordnerpfad</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Deaktiviert</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>Spenden</value>
+  </data>
+  <data name="DonatorsF" xml:space="preserve">
+    <value>Spenden</value>
+  </data>
+  <data name="DownloadError" xml:space="preserve">
+    <value>Fehler während dem Herunterladen {0}</value>
+  </data>
+  <data name="Downloading" xml:space="preserve">
+    <value>Herunterladen</value>
+  </data>
+  <data name="DownloadSuccess" xml:space="preserve">
+    <value>{0} wurde erfolgreich heruntergeladen</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="DynamicKeyNotWorking" xml:space="preserve">
+    <value>{0} funktioniert nicht mit {1}</value>
+    <comment>{0} is the beginning of the key</comment>
+  </data>
+  <data name="DynamicKeys" xml:space="preserve">
+    <value>Dynamischer AES-Schlüssel</value>
+  </data>
+  <data name="EditDirectory" xml:space="preserve">
+    <value>Ordner bearbeiten</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Aktiviert</value>
+  </data>
+  <data name="Encrypted" xml:space="preserve">
+    <value>Verschlüsselt</value>
+    <comment>sentence example: 200 Encrypted files</comment>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>Englisch</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Exportieren</value>
+  </data>
+  <data name="Extract" xml:space="preserve">
+    <value>Extrahieren</value>
+  </data>
+  <data name="ExtractDirectory" xml:space="preserve">
+    <value>Ordner extrahieren</value>
+  </data>
+  <data name="Extraction" xml:space="preserve">
+    <value>Ausgabe</value>
+  </data>
+  <data name="FbkpFilter" xml:space="preserve">
+    <value>FBKP Dateien (*.fbkp)|*.fbkp|Alle Dateien (*.*)|*.*</value>
+  </data>
+  <data name="FCopy" xml:space="preserve">
+    <value>Kopieren</value>
+  </data>
+  <data name="FFile" xml:space="preserve">
+    <value>Datei</value>
+  </data>
+  <data name="FileCount" xml:space="preserve">
+    <value>Anzahl Dateien</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>Dateiname</value>
+  </data>
+  <data name="FileNameNoExt" xml:space="preserve">
+    <value>Dateiname ohne Endung</value>
+  </data>
+  <data name="FilePath" xml:space="preserve">
+    <value>Dateipfad</value>
+  </data>
+  <data name="FilePathNoExt" xml:space="preserve">
+    <value>Dateipfad ohne Endung</value>
+  </data>
+  <data name="Files" xml:space="preserve">
+    <value>Dateien</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filtern</value>
+  </data>
+  <data name="Find" xml:space="preserve">
+    <value>Suchen</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="FindAndReplace" xml:space="preserve">
+    <value>Suchen und Ersetzen</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="FindNext" xml:space="preserve">
+    <value>Nächstes finden</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="Flat" xml:space="preserve">
+    <value>Flach</value>
+    <comment>Rarity Design</comment>
+  </data>
+  <data name="French" xml:space="preserve">
+    <value>Französisch</value>
+  </data>
+  <data name="FyiDetails" xml:space="preserve">
+    <value>Die ausgewählte Sprache wird zur Erstellung von Icons benutzt</value>
+  </data>
+  <data name="FyiTitle" xml:space="preserve">
+    <value>Zur Information:</value>
+  </data>
+  <data name="Games" xml:space="preserve">
+    <value>Spiele</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>Allgemein</value>
+    <comment>Settings Menu Item</comment>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>Allgemeine Einstellungen</value>
+  </data>
+  <data name="German" xml:space="preserve">
+    <value>Deutsch</value>
+  </data>
+  <data name="GoTo" xml:space="preserve">
+    <value>Gehe zu</value>
+  </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Hallo</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Hilfe</value>
+  </data>
+  <data name="Hsv" xml:space="preserve">
+    <value>Farbton, Sättigung, Wert</value>
+  </data>
+  <data name="Hue" xml:space="preserve">
+    <value>Farbton</value>
+  </data>
+  <data name="IconCreator" xml:space="preserve">
+    <value>Icon-Ersteller</value>
+    <comment>Settings Menu Item</comment>
+  </data>
+  <data name="IconWatermark" xml:space="preserve">
+    <value>Icon-Wasserzeichen</value>
+  </data>
+  <data name="IconWatermarkNotFound" xml:space="preserve">
+    <value>Datei nicht gefunden, Wasserzeichen deaktiviert</value>
+  </data>
+  <data name="Idling" xml:space="preserve">
+    <value>Leerlauf</value>
+  </data>
+  <data name="ImageSaved" xml:space="preserve">
+    <value>Bild erfolgreich gespeichert</value>
+  </data>
+  <data name="ImagesMerger" xml:space="preserve">
+    <value>Bild-Merger</value>
+  </data>
+  <data name="Include" xml:space="preserve">
+    <value>Dateityp</value>
+  </data>
+  <data name="Initializing" xml:space="preserve">
+    <value>Wird initialisiert</value>
+  </data>
+  <data name="InternationalizationStatus" xml:space="preserve">
+    <value>Sprache auf {0} gesetzt</value>
+  </data>
+  <data name="IsPartOf" xml:space="preserve">
+    <value>Ist Teil von</value>
+  </data>
+  <data name="Italian" xml:space="preserve">
+    <value>Italienisch</value>
+  </data>
+  <data name="Japanese" xml:space="preserve">
+    <value>Japanisch</value>
+  </data>
+  <data name="JsonFilter" xml:space="preserve">
+    <value>JSON Dateien (*.json)|*.json</value>
+  </data>
+  <data name="Korean" xml:space="preserve">
+    <value>Koreanisch</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="Listening" xml:space="preserve">
+    <value>Hört zu - {0}</value>
+  </data>
+  <data name="LoadAll" xml:space="preserve">
+    <value>Alle Laden</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Laden</value>
+  </data>
+  <data name="LoadingMode" xml:space="preserve">
+    <value>Lademodus</value>
+  </data>
+  <data name="LoadModifiedFiles" xml:space="preserve">
+    <value>Lade bearbeitete Dateien</value>
+  </data>
+  <data name="LoadNewFiles" xml:space="preserve">
+    <value>Lade neue Dateien</value>
+  </data>
+  <data name="LoadNewModifiedFiles" xml:space="preserve">
+    <value>Lade bearbeitete und neue Dateien</value>
+  </data>
+  <data name="MainPaks" xml:space="preserve">
+    <value>Haupt-PAKs:</value>
+  </data>
+  <data name="MatchWholeWord" xml:space="preserve">
+    <value>Ganzes Wort überprüfen</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="Media" xml:space="preserve">
+    <value>Medien</value>
+  </data>
+  <data name="Minimalist" xml:space="preserve">
+    <value>Minimalistisch</value>
+    <comment>Rarity Design</comment>
+  </data>
+  <data name="ModifiedFiles" xml:space="preserve">
+    <value>Bearbeitete Dateien</value>
+  </data>
+  <data name="MountedPakTo" xml:space="preserve">
+    <value>{0} gemounted auf {1}</value>
+  </data>
+  <data name="MountPoint" xml:space="preserve">
+    <value>Mount-Punkt</value>
+  </data>
+  <data name="NewFiles" xml:space="preserve">
+    <value>Neue Dateien</value>
+  </data>
+  <data name="NewModifiedFiles" xml:space="preserve">
+    <value>Neue und bearbeitete Dateien</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="NoDataToExport" xml:space="preserve">
+    <value>Es gibt aktuell keine Daten zu exportieren</value>
+  </data>
+  <data name="NoDataToSave" xml:space="preserve">
+    <value>Es gibt aktuell keine Daten zu speichern</value>
+  </data>
+  <data name="NoImageToSave" xml:space="preserve">
+    <value>Es gibt aktuell kein Bild zu speichern</value>
+  </data>
+  <data name="NoInternet" xml:space="preserve">
+    <value>Deine Internet-Verbindung funktioniert gerade nicht</value>
+  </data>
+  <data name="NoText" xml:space="preserve">
+    <value>Kein Text</value>
+    <comment>Rarity Design</comment>
+  </data>
+  <data name="OggFilter" xml:space="preserve">
+    <value>OGG Dateien (*.ogg)|*.ogg|WAV Dateien (*.wav)|*.wav|Alle Dateien (*.*)|*.*</value>
+  </data>
+  <data name="Opacity" xml:space="preserve">
+    <value>Deckkraft</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Öffnen</value>
+  </data>
+  <data name="OpenImage" xml:space="preserve">
+    <value>Bild öffnen</value>
+  </data>
+  <data name="OpenOutputFolder" xml:space="preserve">
+    <value>Ausgabeordner öffnen</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Optionen</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="PakCanBeOpened" xml:space="preserve">
+    <value>{0} kann jetzt geöffnet werden</value>
+  </data>
+  <data name="PakFileLocked" xml:space="preserve">
+    <value>{0} wird von einem anderen Prozess blockiert</value>
+  </data>
+  <data name="PakFiles" xml:space="preserve">
+    <value>PAK-Dateien</value>
+  </data>
+  <data name="PakFilesAutoDetected" xml:space="preserve">
+    <value>Fortnite PAK-Dateien wurden automatisch erkannt</value>
+  </data>
+  <data name="ParsingNotSupported" xml:space="preserve">
+    <value>Das Parsen von {0}-Typen wird noch nicht unterstützt</value>
+  </data>
+  <data name="Path" xml:space="preserve">
+    <value>Pfad</value>
+  </data>
+  <data name="PathAutoDetected" xml:space="preserve">
+    <value>.PAK-Dateien wurden automatisch erkannt</value>
+  </data>
+  <data name="PathChanged" xml:space="preserve">
+    <value>FModel Pfad(e) wurde(n) geändert</value>
+    <comment>General Settings Window</comment>
+  </data>
+  <data name="PathChangedRestart" xml:space="preserve">
+    <value>FModel startet sich neu, um den neuen Pfad anzuwenden</value>
+    <comment>General Settings Window</comment>
+  </data>
+  <data name="PngFilter" xml:space="preserve">
+    <value>PNG Dateien (*.png)|*.png|Alle Dateien (*.*)|*.*</value>
+  </data>
+  <data name="Polish" xml:space="preserve">
+    <value>Polnisch</value>
+  </data>
+  <data name="Popup" xml:space="preserve">
+    <value>Pop-up</value>
+    <comment>Rarity Design</comment>
+  </data>
+  <data name="PortugueseBrazil" xml:space="preserve">
+    <value>Portugiesisch (Brasilien)</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Vorschau</value>
+  </data>
+  <data name="Primary" xml:space="preserve">
+    <value>Primär</value>
+    <comment>Color</comment>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Wird verarbeitet</value>
+  </data>
+  <data name="Rarity" xml:space="preserve">
+    <value>Seltenheit</value>
+  </data>
+  <data name="RateLimited" xml:space="preserve">
+    <value>Rate Limit überschritten</value>
+  </data>
+  <data name="ReloadAesKeysAtLaunch" xml:space="preserve">
+    <value>AES-Schlüssel beim Start neuladen</value>
+  </data>
+  <data name="RememberGame" xml:space="preserve">
+    <value>Spiel merken</value>
+  </data>
+  <data name="RemoveDirectory" xml:space="preserve">
+    <value>Ordner entfernen</value>
+  </data>
+  <data name="RemovedRenamedCosmetics" xml:space="preserve">
+    <value>Entfernte oder umbenannte kosmetische Gegenstände</value>
+  </data>
+  <data name="Replace" xml:space="preserve">
+    <value>Ersetzen</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="ReplaceAll" xml:space="preserve">
+    <value>Alle ersetzen</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="ReplaceWith" xml:space="preserve">
+    <value>Ersetzen mit:</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="RestoreLayout" xml:space="preserve">
+    <value>Layout wiederherstellen</value>
+    <comment>Settings Menu Item</comment>
+  </data>
+  <data name="Rgba" xml:space="preserve">
+    <value>Rot, Grün, Blau, Alpha</value>
+  </data>
+  <data name="Russian" xml:space="preserve">
+    <value>Russisch</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="SaveImage" xml:space="preserve">
+    <value>Bild speichern</value>
+  </data>
+  <data name="SaveSuccess" xml:space="preserve">
+    <value>{0} erfolgreich</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>Skalieren</value>
+    <comment>F</comment>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Suchen</value>
+  </data>
+  <data name="SearchIn" xml:space="preserve">
+    <value>Suchen in:</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="SearchUp" xml:space="preserve">
+    <value>Rückwärts suchen</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="Secondary" xml:space="preserve">
+    <value>Sekundär</value>
+    <comment>Color</comment>
+  </data>
+  <data name="SelectFile" xml:space="preserve">
+    <value>Wähle eine Datei</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Wähle einen Ordner</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Einstellungen</value>
+    <comment>Settings Menu Header</comment>
+  </data>
+  <data name="Spanish" xml:space="preserve">
+    <value>Spanisch</value>
+  </data>
+  <data name="SpanishLatin" xml:space="preserve">
+    <value>Spanisch (Lateinamerika)</value>
+  </data>
+  <data name="SRefresh" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>Zustand</value>
+  </data>
+  <data name="StaticKey" xml:space="preserve">
+    <value>Statischer AES-Schlüssel</value>
+  </data>
+  <data name="StaticKeyNotWorking" xml:space="preserve">
+    <value>{0} funktioniert nicht mit deinen PAK-Dateien</value>
+    <comment>{0} is the beginning of the key</comment>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Stoppen</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Erfolg</value>
+  </data>
+  <data name="TextToFind" xml:space="preserve">
+    <value>Zu findender Text:</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="TimeElapsed" xml:space="preserve">
+    <value>Verstrichene Zeit {0} ms</value>
+  </data>
+  <data name="TotalAssetsLoaded" xml:space="preserve">
+    <value>{0} Asset-Dateien geladen</value>
+  </data>
+  <data name="TotalSize" xml:space="preserve">
+    <value>Gesamte Größe</value>
+  </data>
+  <data name="TraditionalChinese" xml:space="preserve">
+    <value>Chinesisch (Traditionell)</value>
+  </data>
+  <data name="TranslatorsF" xml:space="preserve">
+    <value>Übersetzer</value>
+  </data>
+  <data name="Turkish" xml:space="preserve">
+    <value>Türkisch</value>
+  </data>
+  <data name="UnhandledExceptionOccured" xml:space="preserve">
+    <value>Eine nicht behandelte Ausnahme ist aufgetreten: {0}</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="UseGameColors" xml:space="preserve">
+    <value>Verwende Farben aus dem Spiel</value>
+  </data>
+  <data name="UseItemShopIcon" xml:space="preserve">
+    <value>Verwende das Shop-Icon</value>
+  </data>
+  <data name="UseWatermark" xml:space="preserve">
+    <value>Verwende Wasserzeichen</value>
+  </data>
+  <data name="Volume" xml:space="preserve">
+    <value>Lautstärke</value>
+  </data>
+  <data name="Waiting" xml:space="preserve">
+    <value>Warten</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warnung</value>
+  </data>
+  <data name="Watermark" xml:space="preserve">
+    <value>Wasserzeichen</value>
+  </data>
+  <data name="Wildcards" xml:space="preserve">
+    <value>Platzhalter</value>
+    <comment>Find &amp; Replace Window</comment>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Images" xml:space="preserve">
+    <value>Bilder</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Entfernen</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Hinzufügen</value>
+  </data>
+  <data name="AES" xml:space="preserve">
+    <value>AES</value>
+  </data>
+  <data name="Audio" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="AudioPlayer" xml:space="preserve">
+    <value>Audio Player</value>
+  </data>
+  <data name="B" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="Backups" xml:space="preserve">
+    <value>Backups</value>
+  </data>
+  <data name="Banner" xml:space="preserve">
+    <value>Banner</value>
+  </data>
+  <data name="BenBotApi" xml:space="preserve">
+    <value>BenBot API</value>
+  </data>
+  <data name="DiscordServer" xml:space="preserve">
+    <value>Discord Server</value>
+  </data>
+  <data name="FLauncher" xml:space="preserve">
+    <value>FModel Launcher</value>
+  </data>
+  <data name="GB" xml:space="preserve">
+    <value>GB</value>
+  </data>
+  <data name="Guid" xml:space="preserve">
+    <value>Guid</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="KB" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="MB" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Offsets" xml:space="preserve">
+    <value>Offsets</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="PAK" xml:space="preserve">
+    <value>PAK</value>
+  </data>
+  <data name="RegularExpression" xml:space="preserve">
+    <value>Regular Expression</value>
+  </data>
+  <data name="TB" xml:space="preserve">
+    <value>TB</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Update verfügbar</value>
+  </data>
+  <data name="UpdateAvailableConfirm" xml:space="preserve">
+    <value>FModel {0} ist jetzt verfügbar. Du benutzt Version {1}. Willst du FModel jetzt aktualisieren?</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Update Überprüfung fehlgeschlagen</value>
+  </data>
+  <data name="UpdateReachServerProblem" xml:space="preserve">
+    <value>Der Update Server kann nicht erreicht werden. Bitte überprüfe deine Internetverbindung oder versuche es später erneut.</value>
+  </data>
+  <data name="YesShowChangelog" xml:space="preserve">
+    <value>Ja (Änderungsprotokoll Anzeigen)</value>
+  </data>
+</root>

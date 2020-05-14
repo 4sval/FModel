@@ -12,8 +12,8 @@ namespace FModel.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.4.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.5.0.0")]
+    public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
@@ -26,402 +26,420 @@ namespace FModel.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FPak_Path {
+        public string PakPath {
             get {
-                return ((string)(this["FPak_Path"]));
+                return ((string)(this["PakPath"]));
             }
             set {
-                this["FPak_Path"] = value;
+                this["PakPath"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FOutput_Path {
+        public string OutputPath {
             get {
-                return ((string)(this["FOutput_Path"]));
+                return ((string)(this["OutputPath"]));
             }
             set {
-                this["FOutput_Path"] = value;
+                this["OutputPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UpdateSettings {
+            get {
+                return ((bool)(this["UpdateSettings"]));
+            }
+            set {
+                this["UpdateSettings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ReloadAesKeys {
+            get {
+                return ((bool)(this["ReloadAesKeys"]));
+            }
+            set {
+                this["ReloadAesKeys"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoOpenSounds {
+            get {
+                return ((bool)(this["AutoOpenSounds"]));
+            }
+            set {
+                this["AutoOpenSounds"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FPak_MainAES {
+        public string StaticAesKeys {
             get {
-                return ((string)(this["FPak_MainAES"]));
+                return ((string)(this["StaticAesKeys"]));
             }
             set {
-                this["FPak_MainAES"] = value;
+                this["StaticAesKeys"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
-        public string FRarity_Design {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DynamicAesKeys {
             get {
-                return ((string)(this["FRarity_Design"]));
+                return ((string)(this["DynamicAesKeys"]));
             }
             set {
-                this["FRarity_Design"] = value;
+                this["DynamicAesKeys"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("English")]
-        public string FLanguage {
+        [global::System.Configuration.DefaultSettingValueAttribute("11*")]
+        public string GridParentTop {
             get {
-                return ((string)(this["FLanguage"]));
+                return ((string)(this["GridParentTop"]));
             }
             set {
-                this["FLanguage"] = value;
+                this["GridParentTop"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10*")]
+        public string GridParentBottom {
+            get {
+                return ((string)(this["GridParentBottom"]));
+            }
+            set {
+                this["GridParentBottom"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2*")]
+        public string GridChildTopLeft {
+            get {
+                return ((string)(this["GridChildTopLeft"]));
+            }
+            set {
+                this["GridChildTopLeft"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3*")]
+        public string GridChildTopCenter {
+            get {
+                return ((string)(this["GridChildTopCenter"]));
+            }
+            set {
+                this["GridChildTopCenter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2*")]
+        public string GridChildTopRight {
+            get {
+                return ((string)(this["GridChildTopRight"]));
+            }
+            set {
+                this["GridChildTopRight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6*")]
+        public string GridChildBottomLeft {
+            get {
+                return ((string)(this["GridChildBottomLeft"]));
+            }
+            set {
+                this["GridChildBottomLeft"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("11*")]
+        public string GridChildBottomCenter {
+            get {
+                return ((string)(this["GridChildBottomCenter"]));
+            }
+            set {
+                this["GridChildBottomCenter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6*")]
+        public string GridChildBottomRight {
+            get {
+                return ((string)(this["GridChildBottomRight"]));
+            }
+            set {
+                this["GridChildBottomRight"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FIsFeatured {
+        public bool AutoExport {
             get {
-                return ((bool)(this["FIsFeatured"]));
+                return ((bool)(this["AutoExport"]));
             }
             set {
-                this["FIsFeatured"] = value;
+                this["AutoExport"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FUseWatermark {
+        public bool AutoSave {
             get {
-                return ((bool)(this["FUseWatermark"]));
+                return ((bool)(this["AutoSave"]));
             }
             set {
-                this["FUseWatermark"] = value;
+                this["AutoSave"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoSaveImage {
+            get {
+                return ((bool)(this["AutoSaveImage"]));
+            }
+            set {
+                this["AutoSaveImage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"[{""Header"":""Cosmetics"",""DirectoryPath"":""FortniteGame/Content/Athena/Items/Cosmetics/""},{""Header"":""Challenges"",""DirectoryPath"":""FortniteGame/Content/Athena/Items/ChallengeBundles/""},{""Header"":""Emotes [Audio]"",""DirectoryPath"":""FortniteGame/Content/Athena/Sounds/Emotes/""},{""Header"":""Music Packs [Audio]"",""DirectoryPath"":""FortniteGame/Content/Athena/Sounds/MusicPacks/""},{""Header"":""Weapons"",""DirectoryPath"":""FortniteGame/Content/Athena/Items/Weapons/""},{""Header"":""Strings"",""DirectoryPath"":""FortniteGame/Content/Localization/""}]")]
+        public string CustomGoTos {
+            get {
+                return ((string)(this["CustomGoTos"]));
+            }
+            set {
+                this["CustomGoTos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public long AssetsLanguage {
+            get {
+                return ((long)(this["AssetsLanguage"]));
+            }
+            set {
+                this["AssetsLanguage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public long AssetsIconDesign {
+            get {
+                return ((long)(this["AssetsIconDesign"]));
+            }
+            set {
+                this["AssetsIconDesign"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseGameColors {
+            get {
+                return ((bool)(this["UseGameColors"]));
+            }
+            set {
+                this["UseGameColors"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseItemShopIcon {
+            get {
+                return ((bool)(this["UseItemShopIcon"]));
+            }
+            set {
+                this["UseItemShopIcon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseIconWatermark {
+            get {
+                return ((bool)(this["UseIconWatermark"]));
+            }
+            set {
+                this["UseIconWatermark"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FWatermarkFilePath {
+        public string IconWatermarkPath {
             get {
-                return ((string)(this["FWatermarkFilePath"]));
+                return ((string)(this["IconWatermarkPath"]));
             }
             set {
-                this["FWatermarkFilePath"] = value;
+                this["IconWatermarkPath"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int FWatermarkOpacity {
+        public long IconWatermarkX {
             get {
-                return ((int)(this["FWatermarkOpacity"]));
+                return ((long)(this["IconWatermarkX"]));
             }
             set {
-                this["FWatermarkOpacity"] = value;
+                this["IconWatermarkX"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double FWatermarkScale {
+        public long IconWatermarkY {
             get {
-                return ((double)(this["FWatermarkScale"]));
+                return ((long)(this["IconWatermarkY"]));
             }
             set {
-                this["FWatermarkScale"] = value;
+                this["IconWatermarkY"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3")]
-        public double FWatermarkXPos {
+        [global::System.Configuration.DefaultSettingValueAttribute("255")]
+        public long IconWatermarkOpacity {
             get {
-                return ((double)(this["FWatermarkXPos"]));
+                return ((long)(this["IconWatermarkOpacity"]));
             }
             set {
-                this["FWatermarkXPos"] = value;
+                this["IconWatermarkOpacity"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3")]
-        public double FWatermarkYPos {
+        [global::System.Configuration.DefaultSettingValueAttribute("512")]
+        public long IconWatermarkScale {
             get {
-                return ((double)(this["FWatermarkYPos"]));
+                return ((long)(this["IconWatermarkScale"]));
             }
             set {
-                this["FWatermarkYPos"] = value;
+                this["IconWatermarkScale"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseChallengeBanner {
+            get {
+                return ((bool)(this["UseChallengeBanner"]));
+            }
+            set {
+                this["UseChallengeBanner"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ChallengeBannerPath {
+            get {
+                return ((string)(this["ChallengeBannerPath"]));
+            }
+            set {
+                this["ChallengeBannerPath"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("{BundleName} - {Date}")]
-        public string FChallengeWatermark {
+        public string ChallengeBannerWatermark {
             get {
-                return ((string)(this["FChallengeWatermark"]));
+                return ((string)(this["ChallengeBannerWatermark"]));
             }
             set {
-                this["FChallengeWatermark"] = value;
+                this["ChallengeBannerWatermark"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FUseChallengeWatermark {
+        [global::System.Configuration.DefaultSettingValueAttribute("255")]
+        public long ChallengeBannerOpacity {
             get {
-                return ((bool)(this["FUseChallengeWatermark"]));
+                return ((long)(this["ChallengeBannerOpacity"]));
             }
             set {
-                this["FUseChallengeWatermark"] = value;
+                this["ChallengeBannerOpacity"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FBannerFilePath {
+        [global::System.Configuration.DefaultSettingValueAttribute("1C2026")]
+        public string ChallengeBannerPrimaryColor {
             get {
-                return ((string)(this["FBannerFilePath"]));
+                return ((string)(this["ChallengeBannerPrimaryColor"]));
             }
             set {
-                this["FBannerFilePath"] = value;
+                this["ChallengeBannerPrimaryColor"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int FBannerOpacity {
+        [global::System.Configuration.DefaultSettingValueAttribute("2848A3")]
+        public string ChallengeBannerSecondaryColor {
             get {
-                return ((int)(this["FBannerOpacity"]));
+                return ((string)(this["ChallengeBannerSecondaryColor"]));
             }
             set {
-                this["FBannerOpacity"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FDiffFileSize {
-            get {
-                return ((bool)(this["FDiffFileSize"]));
-            }
-            set {
-                this["FDiffFileSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool HeaderVisibility {
-            get {
-                return ((bool)(this["HeaderVisibility"]));
-            }
-            set {
-                this["HeaderVisibility"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ReadOnly {
-            get {
-                return ((bool)(this["ReadOnly"]));
-            }
-            set {
-                this["ReadOnly"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool StatusBarVisibility {
-            get {
-                return ((bool)(this["StatusBarVisibility"]));
-            }
-            set {
-                this["StatusBarVisibility"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("21:32:43")]
-        public string FPrimaryColor {
-            get {
-                return ((string)(this["FPrimaryColor"]));
-            }
-            set {
-                this["FPrimaryColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("29:161:242")]
-        public string FSecondaryColor {
-            get {
-                return ((string)(this["FSecondaryColor"]));
-            }
-            set {
-                this["FSecondaryColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool FUpdateSettings {
-            get {
-                return ((bool)(this["FUpdateSettings"]));
-            }
-            set {
-                this["FUpdateSettings"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ReloadAES {
-            get {
-                return ((bool)(this["ReloadAES"]));
-            }
-            set {
-                this["ReloadAES"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool FOpenSounds {
-            get {
-                return ((bool)(this["FOpenSounds"]));
-            }
-            set {
-                this["FOpenSounds"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FAutoExtractRaw {
-            get {
-                return ((bool)(this["FAutoExtractRaw"]));
-            }
-            set {
-                this["FAutoExtractRaw"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FAutoSaveJson {
-            get {
-                return ((bool)(this["FAutoSaveJson"]));
-            }
-            set {
-                this["FAutoSaveJson"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FAutoSaveImg {
-            get {
-                return ((bool)(this["FAutoSaveImg"]));
-            }
-            set {
-                this["FAutoSaveImg"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("{\r\n  \"[BR] Cosmetics\": {\r\n    \"Path\": \"/FortniteGame/Content/Athena/Items/Cosmeti" +
-            "cs/\",\r\n    \"isChecked\": \"True\"\r\n  },\r\n  \"[BR] Cosmetics Variants\": {\r\n    \"Path\"" +
-            ": \"/FortniteGame/Content/Athena/Items/CosmeticVariantTokens/\",\r\n    \"isChecked\":" +
-            " \"True\"\r\n  },\r\n  \"[BR] Banners\": {\r\n    \"Path\": \"/FortniteGame/Content/Athena/It" +
-            "ems/BannerToken/\",\r\n    \"isChecked\": \"True\"\r\n  },\r\n  \"[BR] Challenges\": {\r\n    \"" +
-            "Path\": \"/FortniteGame/Content/Athena/Items/ChallengeBundles/\",\r\n    \"isChecked\":" +
-            " \"True\"\r\n  },\r\n  \"[BR] Consumables\": {\r\n    \"Path\": \"/FortniteGame/Content/Athen" +
-            "a/Items/Consumables/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[BR] Traps\": {\r\n    \"" +
-            "Path\": \"/FortniteGame/Content/Athena/Items/Traps/\",\r\n    \"isChecked\": \"False\"\r\n " +
-            " },\r\n  \"[BR] Weapons\": {\r\n    \"Path\": \"/FortniteGame/Content/Athena/Items/Weapon" +
-            "s/\",\r\n    \"isChecked\": \"True\"\r\n  },\r\n  \"[BR] 2D Assets\": {\r\n    \"Path\": \"/Fortni" +
-            "teGame/Content/2dAssets/\",\r\n    \"isChecked\": \"True\"\r\n  },\r\n  \"[BR] Featured Imag" +
-            "es\": {\r\n    \"Path\": \"/FortniteGame/Content/UI/Foundation/Textures/BattleRoyale/F" +
-            "eaturedItems/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[STW] Heroes\": {\r\n    \"Path\"" +
-            ": \"/FortniteGame/Content/Heroes/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[STW] Def" +
-            "enders\": {\r\n    \"Path\": \"/FortniteGame/Content/Items/Defenders/\",\r\n    \"isChecke" +
-            "d\": \"False\"\r\n  },\r\n  \"[STW] Schematics\": {\r\n    \"Path\": \"/FortniteGame/Content/I" +
-            "tems/Schematics/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[STW] Traps\": {\r\n    \"Pat" +
-            "h\": \"/FortniteGame/Content/Items/Traps/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[S" +
-            "TW] Weapons\": {\r\n    \"Path\": \"/FortniteGame/Content/Items/Weapons/\",\r\n    \"isChe" +
-            "cked\": \"False\"\r\n  },\r\n  \"[STW] Ingredients\": {\r\n    \"Path\": \"/FortniteGame/Conte" +
-            "nt/Items/Ingredients/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"[STW] Persistent Res" +
-            "ources\": {\r\n    \"Path\": \"/FortniteGame/Content/Items/PersistentResources/\",\r\n   " +
-            " \"isChecked\": \"False\"\r\n  },\r\n  \"[STW] CardPacks\": {\r\n    \"Path\": \"/FortniteGame/" +
-            "Content/Items/CardPacks/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n  \"Tokens\": {\r\n    \"" +
-            "Path\": \"/FortniteGame/Content/Items/Tokens/\",\r\n    \"isChecked\": \"False\"\r\n  },\r\n " +
-            " \"Icons\": {\r\n    \"Path\": \"/FortniteGame/Content/UI/Foundation/Textures/Icons/\",\r" +
-            "\n    \"isChecked\": \"False\"\r\n  },\r\n  \"Additional Banners\": {\r\n    \"Path\": \"/Fortni" +
-            "teGame/Content/UI/Foundation/Textures/Banner/\",\r\n    \"isChecked\": \"False\"\r\n  },\r" +
-            "\n  \"Additional Loading Screens\": {\r\n    \"Path\": \"/FortniteGame/Content/UI/Founda" +
-            "tion/Textures/LoadingScreens/\",\r\n    \"isChecked\": \"False\"\r\n  }\r\n}")]
-        public string FUM_AssetsType {
-            get {
-                return ((string)(this["FUM_AssetsType"]));
-            }
-            set {
-                this["FUM_AssetsType"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ELauncherToken {
-            get {
-                return ((string)(this["ELauncherToken"]));
-            }
-            set {
-                this["ELauncherToken"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public long ELauncherExpiration {
-            get {
-                return ((long)(this["ELauncherExpiration"]));
-            }
-            set {
-                this["ELauncherExpiration"] = value;
+                this["ChallengeBannerSecondaryColor"] = value;
             }
         }
     }

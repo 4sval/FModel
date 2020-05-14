@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Syntaxdefinition for Json by alek kowalczyk
+Update by zuijin in 2019.12.20
+-->
+
+<SyntaxDefinition name="Json" extensions=".json" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Position" foreground="#E06C75" exampleText=""/>
+  <Color name="Special" foreground="#FF9CAC" exampleText=""/>
+  <Color name="Bool" foreground="#61AFEF" exampleText=""/>
+  <Color name="Number" foreground="#F78C6C" exampleText=""/>
+  <Color name="String" foreground="#C3E88D" exampleText=""/>
+  <Color name="Null" foreground="#7F848E" exampleText=""/>
+  <Color name="FieldName" foreground="#FFCB6B" exampleText=""/>
+  <Color name="Punctuation" foreground="#89DDFF" exampleText=""/>
+
+  <RuleSet name="String">
+    <Span begin="\\" end="."/>
+  </RuleSet>
+
+  <RuleSet name="Object">
+    <Span color="Position" multiline="false">
+      <Begin>"Position"</Begin>
+      <End></End>
+    </Span>
+    <Span color="Special" multiline="false">
+      <Begin>"Value"</Begin>
+      <End></End>
+    </Span>
+    <Span color="FieldName" ruleSet="String">
+      <Begin>"</Begin>
+      <End>"</End>
+    </Span>
+    <Span color="FieldName" ruleSet="String">
+      <Begin>'</Begin>
+      <End>'</End>
+    </Span>
+    <Span color="Punctuation" ruleSet="Expression">
+      <Begin>:</Begin>
+    </Span>
+    <Span color="Punctuation">
+      <Begin>,</Begin>
+    </Span>
+  </RuleSet>
+
+  <RuleSet name="Array">
+    <Import ruleSet="Expression"/>
+    <Span color="Punctuation">
+      <Begin>,</Begin>
+    </Span>
+  </RuleSet>
+
+  <RuleSet name="Expression">
+    <Keywords color="Bool" >
+      <Word>true</Word>
+      <Word>false</Word>
+    </Keywords>
+    <Keywords color="Null" >
+      <Word>null</Word>
+    </Keywords>
+    <Span color="String" ruleSet="String">
+      <Begin>"</Begin>
+      <End>"</End>
+    </Span>
+    <Span color="String" ruleSet="String">
+      <Begin>'</Begin>
+      <End>'</End>
+    </Span>
+    <Span color="Punctuation" ruleSet="Object" multiline="true">
+      <Begin>\{</Begin>
+      <End>\}</End>
+    </Span>
+    <Span color="Punctuation" ruleSet="Array" multiline="true">
+      <Begin>\[</Begin>
+      <End>\]</End>
+    </Span>
+    <Rule color="Number">
+      \b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?
+    </Rule>
+  </RuleSet>
+
+  <RuleSet>
+    <Import ruleSet="Expression"/>
+  </RuleSet>
+</SyntaxDefinition>

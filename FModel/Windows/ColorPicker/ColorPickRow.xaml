@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="FModel.Windows.ColorPicker.ColorPickRow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:properties="clr-namespace:FModel.Properties"
+             mc:Ignorable="d" 
+             d:DesignHeight="28" d:DesignWidth="188" Height="28"
+             VerticalContentAlignment="Center">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="28"  />
+            <ColumnDefinition Width="*" MinWidth="76" />
+            <ColumnDefinition Width="84"  />
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Border BorderBrush="Black" BorderThickness="1">
+                <Grid x:Name="ColorDisplayGrid" Background="#FFFFFFFF" />
+            </Border>
+        </Grid>
+
+        <TextBlock x:Name="HexLabel" Grid.Column="1"
+                   Text="#FFFFFFFF" Margin="8,0,4,0"
+                   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+        <Button x:Name="PickColorButton"  Grid.Column="2"
+                Content="Pick..." Margin="0,0,0,0" Height="28"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Click="PickColorButton_OnClick"/>
+    </Grid>
+</UserControl>

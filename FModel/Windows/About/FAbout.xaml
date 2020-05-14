@@ -1,0 +1,102 @@
+﻿<Window x:Class="FModel.Windows.About.FAbout"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:properties="clr-namespace:FModel.Properties"
+        mc:Ignorable="d"
+        Style="{StaticResource {x:Type Window}}"
+        Title="{x:Static properties:Resources.AboutF}"
+        MinHeight="225" Width="600" WindowStartupLocation="CenterScreen"
+        Icon="/FModel;component/FModel.ico" ResizeMode="NoResize"
+        SizeToContent="Height" Background="#FF252D36">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="175"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Grid.RowSpan="3">
+            <Rectangle>
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="1,0" SpreadMethod="Pad"
+                                             MappingMode="RelativeToBoundingBox" ColorInterpolationMode="SRgbLinearInterpolation">
+                        <GradientStop Color="#FF252D36"/>
+                        <GradientStop Color="#FF232A32" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Image Source="/FModel;component/Resources/fmodel.png"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="{x:Static properties:Resources.AboutF}"
+                   FontWeight="Bold" Foreground="White" Grid.Row="1"
+                   Grid.Column="2" FontFamily="Calibri" FontSize="22" />
+            <TextBlock Text="{x:Static properties:Resources.AboutFDetails}"
+                   FontWeight="Light" Foreground="White" Grid.Row="2"
+                   Grid.Column="2" TextWrapping="Wrap"/>
+
+            <TextBlock Text="{x:Static properties:Resources.ContributorsF}"
+                   FontWeight="Bold" Foreground="White" Grid.Row="4"
+                   Grid.Column="2" FontFamily="Calibri" FontSize="22" />
+            <TextBlock Text="{x:Static properties:Resources.ContributorsFDetails}"
+                   FontWeight="Light" Foreground="White" Grid.Row="5"
+                   Grid.Column="2" TextWrapping="Wrap"/>
+
+            <TextBlock Text="{x:Static properties:Resources.DonatorsF}"
+                   FontWeight="Bold" Foreground="White" Grid.Row="7"
+                   Grid.Column="2" FontFamily="Calibri" FontSize="22" />
+            <TextBlock Text="{x:Static properties:Resources.DonatorsFDetails}"
+                   FontWeight="Light" Foreground="White" Grid.Row="8"
+                   Grid.Column="2" TextWrapping="Wrap"/>
+
+            <Grid Grid.Row="10" Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{x:Static properties:Resources.TranslatorsF}" Grid.Column="0"
+                               FontWeight="Bold" Foreground="White" HorizontalAlignment="Left"
+                               FontFamily="Calibri" FontSize="22"/>
+                <Path Grid.Column="1"
+                        Data="M22,24L16.75,19L17.38,21H4.5A2.5,2.5 0 0,1 2,18.5V3.5A2.5,2.5 0 0,1 4.5,1H19.5A2.5,2.5 0 0,1 22,3.5V24M12,6.8C9.32,6.8 7.44,7.95 7.44,7.95C8.47,7.03 10.27,6.5 10.27,6.5L10.1,6.33C8.41,6.36 6.88,7.53 6.88,7.53C5.16,11.12 5.27,14.22 5.27,14.22C6.67,16.03 8.75,15.9 8.75,15.9L9.46,15C8.21,14.73 7.42,13.62 7.42,13.62C7.42,13.62 9.3,14.9 12,14.9C14.7,14.9 16.58,13.62 16.58,13.62C16.58,13.62 15.79,14.73 14.54,15L15.25,15.9C15.25,15.9 17.33,16.03 18.73,14.22C18.73,14.22 18.84,11.12 17.12,7.53C17.12,7.53 15.59,6.36 13.9,6.33L13.73,6.5C13.73,6.5 15.53,7.03 16.56,7.95C16.56,7.95 14.68,6.8 12,6.8M9.93,10.59C10.58,10.59 11.11,11.16 11.1,11.86C11.1,12.55 10.58,13.13 9.93,13.13C9.29,13.13 8.77,12.55 8.77,11.86C8.77,11.16 9.28,10.59 9.93,10.59M14.1,10.59C14.75,10.59 15.27,11.16 15.27,11.86C15.27,12.55 14.75,13.13 14.1,13.13C13.46,13.13 12.94,12.55 12.94,11.86C12.94,11.16 13.45,10.59 14.1,10.59Z"
+                        Fill="#FFEFEFEF" RenderTransformOrigin="0.1,0.75">
+                    <Path.RenderTransform>
+                        <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+                    </Path.RenderTransform>
+                </Path>
+            </Grid>
+            <TextBlock Text="{x:Static properties:Resources.TranslatorsFDetails}"
+                   FontWeight="Light" Foreground="White" Grid.Row="11"
+                   Grid.Column="2" TextWrapping="Wrap"/>
+        </Grid>
+    </Grid>
+</Window>

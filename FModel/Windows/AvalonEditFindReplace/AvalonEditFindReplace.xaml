@@ -1,0 +1,70 @@
+﻿<Window x:Class="FModel.Windows.AvalonEditFindReplace.AvalonEditFindReplace"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:properties="clr-namespace:FModel.Properties"
+        mc:Ignorable="d"
+        Title="{x:Static properties:Resources.FindAndReplace}" Height="Auto" MinWidth="300" 
+        ResizeMode="NoResize" SizeToContent="WidthAndHeight" KeyDown="Window_KeyDown" 
+        Style="{StaticResource {x:Type Window}}" ShowInTaskbar="False" 
+        Topmost="False" FocusManager.IsFocusScope="True"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="boolToVis" />
+        <DataTemplate x:Key="FindPageTemplate">
+            <StackPanel>
+                <TextBlock Margin="3" Text="{x:Static properties:Resources.TextToFind}"/>
+                <ContentPresenter Content="{Binding }" />
+                <StackPanel DataContext="{Binding DataContext}" Margin="3">
+                    <TextBlock Visibility="{Binding ShowSearchIn,Converter={StaticResource boolToVis}}" Text="{x:Static properties:Resources.SearchIn}"/>
+                    <ComboBox Margin="0,0,0,5" 
+                              Visibility="{Binding ShowSearchIn,Converter={StaticResource boolToVis}}"
+                              HorizontalAlignment="Stretch" BorderBrush="#7F748198">
+                        <ComboBoxItem Content="{x:Static properties:Resources.CurrentDocument}"/>
+                        <ComboBoxItem Content="{x:Static properties:Resources.AllDocuments}"/>
+                    </ComboBox>
+                    <Expander Header="{x:Static properties:Resources.Options}" IsExpanded="False" Background="#FF252D36" BorderBrush="#7F748198">
+                        <StackPanel>
+                            <CheckBox Margin="1" Name="chkCaseSensitive" IsChecked="{Binding CaseSensitive, Mode=TwoWay}" BorderBrush="#7F748198" Background="#FF333C46" Content="{x:Static properties:Resources.CaseSensitive}"/>
+                            <CheckBox Margin="1" Name="chkSearchUp" IsChecked="{Binding SearchUp, Mode=TwoWay}" BorderBrush="#7F748198" Background="#FF333C46" Content="{x:Static properties:Resources.SearchUp}"/>
+                            <CheckBox Margin="1" Name="chkWholeWord" IsChecked="{Binding WholeWord, Mode=TwoWay}" BorderBrush="#7F748198" Background="#FF333C46" Content="{x:Static properties:Resources.MatchWholeWord}"/>
+                            <CheckBox Margin="1" Name="chkRegex" IsChecked="{Binding UseRegEx, Mode=TwoWay}" BorderBrush="#7F748198" Background="#FF333C46" Content="{x:Static properties:Resources.RegularExpression}"/>
+                            <CheckBox Margin="1" Name="chkWildcards" IsChecked="{Binding UseWildcards, Mode=TwoWay}" BorderBrush="#7F748198" Background="#FF333C46" Content="{x:Static properties:Resources.Wildcards}"/>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid >
+        <TabControl Name="tabMain" Height="Auto" Background="#FF1C2026" BorderBrush="#7F748198">
+            <TabItem Header="{x:Static properties:Resources.Find}" Name="tabFind" ContentTemplate="{StaticResource FindPageTemplate}" Visibility="{Binding AllowReplace, Converter={StaticResource boolToVis}}">
+                <StackPanel>
+                    <TextBox Margin="3" Name="txtFind" AcceptsReturn="{Binding AcceptsReturn}" Text="{Binding TextToFind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="#FFEFEFEF"/>
+                    <Button Margin="3" Padding="5,1,5,1" IsDefault="True" HorizontalAlignment="Right" MinWidth="65" Click="FindNextClick" Content="{x:Static properties:Resources.FindNext}"/>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="{x:Static properties:Resources.Replace}" Name="tabReplace"  ContentTemplate="{StaticResource FindPageTemplate}" Visibility="{Binding AllowReplace, Converter={StaticResource boolToVis}}">
+                <StackPanel>
+                    <TextBox Margin="3" Name="txtFind2" AcceptsReturn="{Binding AcceptsReturn}" Text="{Binding TextToFind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="#FFEFEFEF"/>
+                    <TextBlock Margin="3" Text="{x:Static properties:Resources.ReplaceWith}"/>
+                    <TextBox Margin="3" Name="txtReplace" AcceptsReturn="{Binding AcceptsReturn}" Text="{Binding ReplacementText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Foreground="#FFEFEFEF"></TextBox>
+                    <Grid HorizontalAlignment="Stretch" Height="19" Margin="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0" HorizontalAlignment="Left" Click="FindNextClick" Content="{x:Static properties:Resources.FindNext}" Padding="5,1,5,1"/>
+                        <Button Grid.Column="2" HorizontalAlignment="Center" Click="ReplaceClick" Content="{x:Static properties:Resources.Replace}" Padding="5,1,5,1"/>
+                        <Button Grid.Column="4" HorizontalAlignment="Right" Click="ReplaceAllClick" Content="{x:Static properties:Resources.ReplaceAll}" Padding="5,1,5,1"/>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

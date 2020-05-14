@@ -1,0 +1,45 @@
+﻿<Window x:Class="FModel.Windows.UserInput.GoToUserInput"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:properties="clr-namespace:FModel.Properties"
+        mc:Ignorable="d"
+        Style="{StaticResource {x:Type Window}}"
+        Title="{x:Static properties:Resources.AddDirectory}"
+        WindowStartupLocation="CenterScreen" Icon="/FModel;component/FModel.ico"
+        MinWidth="500" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0"
+                       Content="{x:Static properties:Resources.DirectoryName}"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <TextBox x:Name="DName_TxtBox" Grid.Row="0" Grid.Column="1" TextWrapping="NoWrap"
+                             VerticalAlignment="Top" Foreground="#FFEFEFEF" Margin="5,3,0,0" KeyDown="DName_TxtBox_KeyDown"/>
+
+        <Label Grid.Row="1" Grid.Column="0"
+                       Content="{x:Static properties:Resources.DirectoryPath}"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <TextBox x:Name="DPath_TxtBox" Grid.Row="1" Grid.Column="1" TextWrapping="NoWrap"
+                             VerticalAlignment="Top" Foreground="#FFEFEFEF" Margin="5,3,0,0" KeyDown="DPath_TxtBox_KeyDown"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="1"
+                   Text="{x:Static properties:Resources.CaseSensitive}"
+                   FontWeight="Light" Foreground="#FFE5C07B" MaxWidth="300"
+                   TextWrapping="Wrap" FontSize="11" HorizontalAlignment="Left" Margin="5,0,0,0"/>
+
+        <Button Grid.Row="3" Grid.Column="1"
+                Content="{x:Static properties:Resources.OK}"
+                HorizontalAlignment="Right" Width="80" Click="OnClick"/>
+    </Grid>
+</Window>

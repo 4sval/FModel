@@ -1,0 +1,11 @@
+﻿<UserControl x:Class="FModel.Windows.SoundPlayer.UserControls.SpectrumAnalyzer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:visualization="clr-namespace:FModel.Windows.SoundPlayer.Visualization"
+             mc:Ignorable="d">
+    <Grid>
+        <visualization:SpectrumAnalyzer x:Name="NotSpectrumAnalyzer" FrequencyBarCount="100" SpectrumScalingStrategy="Linear" FrequencyBarBrush="#FFFFCB6B" />
+    </Grid>
+</UserControl>
