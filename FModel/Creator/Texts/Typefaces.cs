@@ -30,9 +30,9 @@ namespace FModel.Creator.Texts
         private const string _NOTO_SANS_ARABIC_REGULAR = "NotoSansArabic-Regular";
         private const string _NOTO_SANS_JP_BOLD = "NotoSansJP-Bold";
         private const string _NOTO_SANS_KR_REGULAR = "NotoSansKR-Regular";
-        private const string _NOTO_SANS_SC_BLACK = "NotoSansSC-Black"; // traditional chinese fortnite
+        private const string _NOTO_SANS_SC_BLACK = "NotoSansSC-Black"; // simplified chinese fortnite
         private const string _NOTO_SANS_SC_REGULAR = "NotoSansSC-Regular";
-        private const string _NOTO_SANS_TC_BLACK = "NotoSansTC-Black"; // simplified chinese fortnite
+        private const string _NOTO_SANS_TC_BLACK = "NotoSansTC-Black"; // traditional chinese fortnite
         private const string _NOTO_SANS_TC_REGULAR = "NotoSansTC-Regular";
         private const string _BURBANK_SMALL_BLACK = "burbanksmall-black";
         private const string _BURBANK_SMALL_BOLD = "burbanksmall-bold";
@@ -58,8 +58,8 @@ namespace FModel.Creator.Texts
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _BURBANK_BIG_REGULAR_BOLD :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NIS_JYAU :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Arabic ? _NOTO_SANS_ARABIC_BLACK :
-                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTO_SANS_SC_BLACK :
-                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_TC_BLACK :
+                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTO_SANS_TC_BLACK :
+                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_SC_BLACK :
                 string.Empty);
             if (!namePath.Equals(_BASE_PATH))
             {
@@ -73,8 +73,8 @@ namespace FModel.Creator.Texts
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _NOTO_SANS_KR_REGULAR :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NOTO_SANS_JP_BOLD :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Arabic ? _NOTO_SANS_ARABIC_REGULAR :
-                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTO_SANS_SC_REGULAR :
-                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_TC_REGULAR :
+                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTO_SANS_TC_REGULAR :
+                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_SC_REGULAR :
                 _NOTO_SANS_REGULAR);
             t = Utils.GetPropertyArraySegmentByte(descriptionPath);
             if (t != null && t.Length == 3)
@@ -86,8 +86,8 @@ namespace FModel.Creator.Texts
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _BURBANK_BIG_REGULAR_BOLD :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NIS_JYAU :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Arabic ? _NOTO_SANS_ARABIC_BLACK :
-                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTO_SANS_SC_BLACK :
-                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_TC_BLACK :
+                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTO_SANS_TC_BLACK :
+                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_SC_BLACK :
                 string.Empty);
             if (!bundleNamePath.Equals(_BASE_PATH))
             {
