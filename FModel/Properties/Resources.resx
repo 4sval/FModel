@@ -1081,4 +1081,8 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="UpdateAvailableConfirm" xml:space="preserve">
     <value>FModel {0} is available. You are using version {1}. Do you want to update the application now?</value>
   </data>
+  <data name="EnableDiscordRPC" xml:space="preserve">
+    <value>Enable Discord RPC</value>
+    <comment>Should Discord Rich Presence be enabled?</comment>
+  </data>
 </root>
