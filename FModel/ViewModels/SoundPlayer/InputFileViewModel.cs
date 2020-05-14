@@ -1,4 +1,5 @@
 ﻿using FModel.Windows.SoundPlayer.Visualization;
+using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace FModel.ViewModels.SoundPlayer
@@ -32,18 +33,18 @@ namespace FModel.ViewModels.SoundPlayer
 
     public class InputFileViewModel : PropertyChangedBase
     {
-        private Device _device = Device.GetDefaultDevice();
+        private ObservableCollection<Device> _devices = new ObservableCollection<Device>(Device.GetOutputDevices());
         private bool _isEnabled = true;
         private string _content;
         private string _bytes;
         private string _duration;
         private float _volume = 0.5f;
 
-        public Device Device
+        public ObservableCollection<Device> Devices
         {
-            get { return _device; }
+            get { return _devices; }
 
-            set { this.SetProperty(ref this._device, value); }
+            set { this.SetProperty(ref this._devices, value); }
         }
         public bool IsEnabled
         {

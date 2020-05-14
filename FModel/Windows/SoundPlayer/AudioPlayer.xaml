@@ -81,8 +81,8 @@
                         <Button Grid.Column="1" Grid.Row="7" Content="{x:Static properties:Resources.Open}"
                                 Click="OnOpenClick" Height="19" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
 
-                        <TextBox Grid.Column="3" Grid.Row="1" TextWrapping="NoWrap"
-                                 Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding Device.Name, Mode=TwoWay}"/>
+                        <ComboBox x:Name="AudioDevices_CmbBox" Grid.Column="3" Grid.Row="1"
+                                  DisplayMemberPath="Name" SelectionChanged="OnSelectionChanged"/>
                         <TextBox Grid.Column="3" Grid.Row="2" TextWrapping="NoWrap"
                                              Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding Content, Mode=TwoWay}"/>
                         <TextBox Grid.Column="3" Grid.Row="3" TextWrapping="NoWrap"

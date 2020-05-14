@@ -86,6 +86,18 @@ namespace FModel.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string AudioPlayerDevice {
+            get {
+                return ((string)(this["AudioPlayerDevice"]));
+            }
+            set {
+                this["AudioPlayerDevice"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string StaticAesKeys {
             get {
                 return ((string)(this["StaticAesKeys"]));

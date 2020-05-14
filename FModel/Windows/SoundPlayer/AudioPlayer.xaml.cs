@@ -4,7 +4,9 @@ using FModel.Windows.SoundPlayer.Visualization;
 using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace FModel.Windows.SoundPlayer
@@ -36,7 +38,10 @@ namespace FModel.Windows.SoundPlayer
         {
             DiscordIntegration.SaveCurrentPresence();
             AudioPlayer_TabItm.DataContext = InputFileVm.inputFileViewModel;
-            output = new OutputSource(InputFileVm.inputFileViewModel.Device);
+            AudioDevices_CmbBox.ItemsSource = InputFileVm.inputFileViewModel.Devices;
+            AudioDevices_CmbBox.SelectedItem = InputFileVm.inputFileViewModel.Devices.Where(x => x.DeviceId == Properties.Settings.Default.AudioPlayerDevice).FirstOrDefault();
+            if (AudioDevices_CmbBox.SelectedIndex < 0) AudioDevices_CmbBox.SelectedIndex = 0;
+
             if (spectrumAnalyzer == null)
                 spectrumAnalyzer = new UserControls.SpectrumAnalyzer(output);
             if (timeline == null)
@@ -105,6 +110,20 @@ namespace FModel.Windows.SoundPlayer
                 output.Stop();
                 InputFileVm.inputFileViewModel.Reset();
                 PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/play.png"));
+            }
+        }
+
+        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox c && c.SelectedItem is Device d)
+            {
+                Properties.Settings.Default.AudioPlayerDevice = d.DeviceId;
+                Properties.Settings.Default.Save();
+
+                if (output == null)
+                    output = new OutputSource(d);
+                else
+                    output.SwapDevice(d);
             }
         }
     }
