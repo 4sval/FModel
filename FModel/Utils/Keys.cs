@@ -52,7 +52,7 @@ namespace FModel.Utils
                                 {
                                     // i can use TestAesKey here but that means it's gonna test here then right after to set the key
                                     // so a try catch when setting the key seems better
-                                    menuItem.PakFile.AesKey = sKey.ToBytesKey();
+                                    menuItem.PakFile.AesKey = sKey.Trim().ToBytesKey();
                                 }
                                 catch (System.Exception e)
                                 {
@@ -72,7 +72,7 @@ namespace FModel.Utils
                             {
                                 // i can use TestAesKey here but that means it's gonna test here then right after to set the key
                                 // so a try catch when setting the key seems better
-                                menuItem.PakFile.AesKey = dKey.ToBytesKey();
+                                menuItem.PakFile.AesKey = dKey.Trim().ToBytesKey();
                             }
                             catch (System.Exception e)
                             {

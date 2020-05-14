@@ -482,6 +482,35 @@ namespace FModel.Windows.SoundPlayer.Visualization
             return false;
         }
 
+        public bool SwapDevice(Device d)
+        {
+            if (_soundOut != null)
+            {
+                bool wasPlaying = IsPlaying;
+                bool wasPaused = Paused;
+                TimeSpan pos = Position;
+                outputDevice = d;
+
+                if (wasPlaying || wasPaused)
+                {
+                    _soundOut.Stop();
+                }
+
+                LoadSoundOut();
+                _waveSource.SetPosition(pos);
+
+                if (wasPlaying)
+                    _soundOut.Play();
+                else if (wasPaused)
+                {
+                    _soundOut.Play();
+                    _soundOut.Pause();
+                }
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region Events
