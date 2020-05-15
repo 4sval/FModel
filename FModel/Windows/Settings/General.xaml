@@ -119,6 +119,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <CheckBox Grid.Row="0" Margin="5"
@@ -127,9 +128,9 @@
                     <CheckBox Grid.Row="1" Margin="5"
                           Content="{x:Static properties:Resources.AutoOpenSounds}"
                           IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoOpenSounds, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="1" Margin="5,29,5,-19"
-                        Content="{x:Static properties:Resources.EnableDiscordRPC}"
-                        IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=EnableDiscordRPC, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="2" Margin="5"
+                        Content="{x:Static properties:Resources.UseDiscordRpc}"
+                        IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseDiscordRpc, Mode=TwoWay}"/>
                 </Grid>
             </Grid>
         </GroupBox>

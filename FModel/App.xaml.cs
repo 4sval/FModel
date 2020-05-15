@@ -1,6 +1,5 @@
 ﻿using FModel.Discord;
 using FModel.Logger;
-using FModel.Properties;
 using FModel.Utils;
 using FModel.ViewModels.StatusBar;
 using FModel.Windows.DarkMessageBox;
@@ -38,11 +37,8 @@ namespace FModel
             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Culture]", Thread.CurrentThread.CurrentUICulture);
 
             StatusBarVm.statusBarViewModel.Set(FModel.Properties.Resources.Initializing, FModel.Properties.Resources.Loading);
-
-            if (FModel.Properties.Settings.Default.EnableDiscordRPC)
-            {
+            if (FModel.Properties.Settings.Default.UseDiscordRpc)
                 DiscordIntegration.StartClient();
-            }
 
             base.OnStartup(e);
         }

@@ -805,4 +805,7 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="CaseSensitive" xml:space="preserve">
     <value>Sensibile alle maiuscole e minuscole</value>
   </data>
+  <data name="UseDiscordRpc" xml:space="preserve">
+    <value>Usa Discord RPC</value>
+  </data>
 </root>

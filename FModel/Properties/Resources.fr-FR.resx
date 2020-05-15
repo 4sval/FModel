@@ -847,4 +847,7 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   <data name="YesShowChangelog" xml:space="preserve">
     <value>Oui (Voir le Changelog)</value>
   </data>
+  <data name="UseDiscordRpc" xml:space="preserve">
+    <value>Utiliser Discord RPC</value>
+  </data>
 </root>

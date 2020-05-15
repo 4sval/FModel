@@ -21,6 +21,7 @@ namespace FModel.Discord
         private static RichPresence _presence;
 
         public static void Dispose() => _client.Dispose();
+        public static void Deinitialize() => _client.Deinitialize();
         private static void Initialize()
         {
             _client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };

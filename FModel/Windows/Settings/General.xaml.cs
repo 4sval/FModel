@@ -1,4 +1,5 @@
-﻿using FModel.Logger;
+﻿using FModel.Discord;
+using FModel.Logger;
 using FModel.Utils;
 using FModel.ViewModels.ComboBox;
 using FModel.Windows.DarkMessageBox;
@@ -18,6 +19,7 @@ namespace FModel.Windows.Settings
     {
         private string _inputPath;
         private string _outputPath;
+        private bool _useDiscordRpc;
 
         public General()
         {
@@ -33,12 +35,16 @@ namespace FModel.Windows.Settings
         {
             _inputPath = Properties.Settings.Default.PakPath;
             _outputPath = Properties.Settings.Default.OutputPath;
+            _useDiscordRpc = Properties.Settings.Default.UseDiscordRpc;
             Languages_CbBox.ItemsSource = ComboBoxVm.languageCbViewModel;
             Languages_CbBox.SelectedItem = ComboBoxVm.languageCbViewModel.Where(x => x.Id == Properties.Settings.Default.AssetsLanguage).FirstOrDefault();
         }
 
         private async Task SaveAndExit()
         {
+            if (_useDiscordRpc && !Properties.Settings.Default.UseDiscordRpc) // previously enabled
+                DiscordIntegration.Deinitialize();
+
             if (Properties.Settings.Default.AssetsLanguage != Languages_CbBox.SelectedIndex)
             {
                 Properties.Settings.Default.AssetsLanguage = Languages_CbBox.SelectedIndex;

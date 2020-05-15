@@ -840,4 +840,7 @@ Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leake
   <data name="YesShowChangelog" xml:space="preserve">
     <value>Ja (Änderungsprotokoll Anzeigen)</value>
   </data>
+  <data name="UseDiscordRpc" xml:space="preserve">
+    <value>Verwende Discord RPC</value>
+  </data>
 </root>
