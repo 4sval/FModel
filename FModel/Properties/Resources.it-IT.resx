@@ -808,4 +808,7 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="UseDiscordRpc" xml:space="preserve">
     <value>Usa Discord RPC</value>
   </data>
+  <data name="SaveDirectory" xml:space="preserve">
+    <value>Salva Directory</value>
+  </data>
 </root>

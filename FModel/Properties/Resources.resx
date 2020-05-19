@@ -1085,4 +1085,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>Use Discord RPC</value>
     <comment>Should Discord Rich Presence be enabled?</comment>
   </data>
+  <data name="SaveDirectory" xml:space="preserve">
+    <value>Save Directory</value>
+  </data>
 </root>

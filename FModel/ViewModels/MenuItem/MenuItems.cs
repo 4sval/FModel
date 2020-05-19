@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FModel.Windows.UserInput;
+using Newtonsoft.Json;
 using PakReader.Pak;
 using PakReader.Parsers.Objects;
 using System;
@@ -56,6 +57,46 @@ namespace FModel.ViewModels.MenuItem
                     };
                     customGoTos.Add(mi);
                 }
+            }
+        }
+
+        public static void AddCustomGoTo() => AddCustomGoTo(string.Empty, string.Empty);
+        public static void AddCustomGoTo(string name, string dir)
+        {
+            var input = new GoToUserInput(name, dir);
+            if ((bool)input.ShowDialog())
+            {
+                var newDir = new GotoMenuItemViewModel
+                {
+                    Header = input.Name,
+                    DirectoryPath = input.Directory
+                };
+                newDir.Childrens = new ObservableCollection<GotoMenuItemViewModel>
+                {
+                    new GotoMenuItemViewModel
+                    {
+                        Header = Properties.Resources.GoTo,
+                        Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/share.png", UriKind.Relative)) },
+                        Parent = newDir
+                    },
+                    new GotoMenuItemViewModel
+                    {
+                        Header = Properties.Resources.EditDirectory,
+                        Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/pencil.png", UriKind.Relative)) },
+                        Parent = newDir
+                    },
+                    new GotoMenuItemViewModel
+                    {
+                        Header = Properties.Resources.RemoveDirectory,
+                        Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/delete-forever.png", UriKind.Relative)) },
+                        StaysOpenOnClick = true,
+                        Parent = newDir
+                    }
+                };
+
+                customGoTos.Add(newDir);
+                Properties.Settings.Default.CustomGoTos = JsonConvert.SerializeObject(MenuItems.customGoTos.Skip(2), Formatting.None);
+                Properties.Settings.Default.Save();
             }
         }
 

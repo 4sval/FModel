@@ -385,6 +385,11 @@ namespace FModel
             if (FModel_AssetsPathTree.HasItems && FModel_AssetsPathTree.SelectedItem is TreeviewViewModel treeItem)
                 await SortedTreeviewVm.ExtractFolder(treeItem).ConfigureAwait(false);
         }
+        private void FModel_MI_Directory_Save_Click(object sender, RoutedEventArgs e)
+        {
+            if (FModel_AssetsPathTree.HasItems && FModel_AssetsPathTree.SelectedItem is TreeviewViewModel treeItem)
+                MenuItems.AddCustomGoTo(treeItem.Header, treeItem.GetFullPath().Substring(1) + "/");
+        }
         private async void CM_Asset_Save_Click(object sender, RoutedEventArgs e)
         {
             if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0 && FModel_AssetsList.SelectedItem is ListBoxViewModel selectedItem)
@@ -403,28 +408,28 @@ namespace FModel
         {
             if (FModel_AssetsPathTree.HasItems && FModel_AssetsPathTree.SelectedItem is TreeviewViewModel treeItem)
                 Assets.Copy(treeItem.GetFullPath().Substring(1) + "/");
-            else if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0 && FModel_AssetsList.SelectedItem is ListBoxViewModel listItem)
-                Assets.Copy(listItem.PakEntry.GetPathWithoutFile());
+            else if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0)
+                Assets.Copy(FModel_AssetsList.SelectedItems, ECopy.PathNoFile);
         }
         private void CM_Copy_FPath_Click(object sender, RoutedEventArgs e)
         {
-            if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0 && FModel_AssetsList.SelectedItem is ListBoxViewModel selectedItem)
-                Assets.Copy(selectedItem.PakEntry, ECopy.Path);
+            if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0)
+                Assets.Copy(FModel_AssetsList.SelectedItems, ECopy.Path);
         }
         private void CM_Copy_FName_Click(object sender, RoutedEventArgs e)
         {
-            if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0 && FModel_AssetsList.SelectedItem is ListBoxViewModel selectedItem)
-                Assets.Copy(selectedItem.PakEntry, ECopy.File);
+            if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0)
+                Assets.Copy(FModel_AssetsList.SelectedItems, ECopy.File);
         }
         private void CM_Copy_FPath_NoExt_Click(object sender, RoutedEventArgs e)
         {
-            if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0 && FModel_AssetsList.SelectedItem is ListBoxViewModel selectedItem)
-                Assets.Copy(selectedItem.PakEntry, ECopy.PathNoExt);
+            if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0)
+                Assets.Copy(FModel_AssetsList.SelectedItems, ECopy.PathNoExt);
         }
         private void CM_Copy_FName_NoExt_Click(object sender, RoutedEventArgs e)
         {
-            if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0 && FModel_AssetsList.SelectedItem is ListBoxViewModel selectedItem)
-                Assets.Copy(selectedItem.PakEntry, ECopy.FileNoExt);
+            if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0)
+                Assets.Copy(FModel_AssetsList.SelectedItems, ECopy.FileNoExt);
         }
         #endregion
     }

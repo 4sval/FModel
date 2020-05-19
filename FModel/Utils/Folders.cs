@@ -40,10 +40,10 @@ namespace FModel.Utils
                 _ => string.Empty,
             };
 
-    /// <summary>
-    /// if OutputPath is empty the .Exe directory will be OutputPath
-    /// </summary>
-    private static void FixNoOutputPath()
+        /// <summary>
+        /// if OutputPath is empty the .Exe directory will be OutputPath
+        /// </summary>
+        private static void FixNoOutputPath()
         {
             if (string.IsNullOrEmpty(Properties.Settings.Default.OutputPath))
             {

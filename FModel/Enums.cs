@@ -27,6 +27,7 @@
     {
         Path,
         PathNoExt,
+        PathNoFile,
         File,
         FileNoExt
     }

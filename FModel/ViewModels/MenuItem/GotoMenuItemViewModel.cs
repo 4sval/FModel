@@ -111,44 +111,7 @@ namespace FModel.ViewModels.MenuItem
         }
 
         private bool DirectoryAddCanExecute() => Header.Equals(Properties.Resources.AddDirectory);
-        private void AddDirectory()
-        {
-            var input = new GoToUserInput();
-            if ((bool)input.ShowDialog())
-            {
-                var newDir = new GotoMenuItemViewModel
-                {
-                    Header = input.Name,
-                    DirectoryPath = input.Directory
-                };
-                newDir.Childrens = new ObservableCollection<GotoMenuItemViewModel>
-                {
-                    new GotoMenuItemViewModel
-                    {
-                        Header = Properties.Resources.GoTo,
-                        Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/share.png", UriKind.Relative)) },
-                        Parent = newDir
-                    },
-                    new GotoMenuItemViewModel
-                    {
-                        Header = Properties.Resources.EditDirectory,
-                        Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/pencil.png", UriKind.Relative)) },
-                        Parent = newDir
-                    },
-                    new GotoMenuItemViewModel
-                    {
-                        Header = Properties.Resources.RemoveDirectory,
-                        Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/delete-forever.png", UriKind.Relative)) },
-                        StaysOpenOnClick = true,
-                        Parent = newDir
-                    }
-                };
-                
-                MenuItems.customGoTos.Add(newDir);
-                Properties.Settings.Default.CustomGoTos = JsonConvert.SerializeObject(MenuItems.customGoTos.Skip(2), Formatting.None);
-                Properties.Settings.Default.Save();
-            }
-        }
+        private void AddDirectory() => MenuItems.AddCustomGoTo();
 
         private bool DirectoryEditCanExecute() => Header.Equals(Properties.Resources.EditDirectory);
         private void EditDirectory()

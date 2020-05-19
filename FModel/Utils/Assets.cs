@@ -22,6 +22,8 @@ using FModel.ViewModels.Buttons;
 using System.Threading;
 using static FModel.Creator.Creator;
 using SkiaSharp;
+using System.Text;
+using FModel.ViewModels.DataGrid;
 
 namespace FModel.Utils
 {
@@ -379,7 +381,26 @@ namespace FModel.Utils
             }
         }
 
-        public static void Copy(FPakEntry entry, ECopy mode)
+        public static void Copy(IList entries, ECopy mode)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (entries[0] is ListBoxViewModel)
+            {
+                foreach (ListBoxViewModel selectedItem in entries)
+                {
+                    sb.AppendLine(Copy(selectedItem.PakEntry, mode));
+                }
+            }
+            else if (entries[0] is DataGridViewModel)
+            {
+                foreach (DataGridViewModel selectedItem in entries)
+                {
+                    sb.AppendLine(Copy(selectedItem.Name, mode));
+                }
+            }
+            Copy(sb.ToString().Trim());
+        }
+        public static string Copy(FPakEntry entry, ECopy mode)
         {
             if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out var r))
             {
@@ -388,27 +409,30 @@ namespace FModel.Utils
                     toCopy += entry.Name;
                 else if (mode == ECopy.PathNoExt)
                     toCopy += entry.GetPathWithoutExtension();
+                else if (mode == ECopy.PathNoFile)
+                    toCopy += entry.GetPathWithoutFile();
                 else if (mode == ECopy.File)
                     toCopy = entry.GetNameWithExtension();
                 else if (mode == ECopy.FileNoExt)
                     toCopy = entry.GetNameWithoutExtension();
-
-                Copy(toCopy);
+                return toCopy;
             }
+            return string.Empty;
         }
-        public static void Copy(string fullPath, ECopy mode)
+        public static string Copy(string fullPath, ECopy mode)
         {
             string toCopy = string.Empty;
             if (mode == ECopy.Path)
                 toCopy = fullPath;
             else if (mode == ECopy.PathNoExt)
                 toCopy = fullPath.Substring(0, fullPath.LastIndexOf("."));
+            else if (mode == ECopy.PathNoFile)
+                toCopy = fullPath.Substring(0, fullPath.LastIndexOf("/") + 1);
             else if (mode == ECopy.File)
                 toCopy = fullPath.Substring(fullPath.LastIndexOf("/") + 1);
             else if (mode == ECopy.FileNoExt)
                 toCopy = fullPath.Substring(fullPath.LastIndexOf("/") + 1, fullPath.LastIndexOf(".") - (fullPath.LastIndexOf("/") + 1));
-
-            Copy(toCopy);
+            return toCopy;
         }
         public static void Copy(string toCopy)
         {

@@ -91,28 +91,28 @@ namespace FModel.Windows.Search
 
         private void CM_Copy_DPath_Click(object sender, RoutedEventArgs e)
         {
-            if (Assets_DtGrd.HasItems && Assets_DtGrd.SelectedIndex >= 0 && Assets_DtGrd.SelectedItem is DataGridViewModel selectedItem)
-                Assets.Copy(selectedItem.Name.Substring(0, selectedItem.Name.LastIndexOf("/") + 1));
+            if (Assets_DtGrd.HasItems && Assets_DtGrd.SelectedIndex >= 0)
+                Assets.Copy(Assets_DtGrd.SelectedItems, ECopy.PathNoFile);
         }
         private void CM_Copy_FPath_Click(object sender, RoutedEventArgs e)
         {
-            if (Assets_DtGrd.HasItems && Assets_DtGrd.SelectedIndex >= 0 && Assets_DtGrd.SelectedItem is DataGridViewModel selectedItem)
-                Assets.Copy(selectedItem.Name, ECopy.Path);
+            if (Assets_DtGrd.HasItems && Assets_DtGrd.SelectedIndex >= 0)
+                Assets.Copy(Assets_DtGrd.SelectedItems, ECopy.Path);
         }
         private void CM_Copy_FName_Click(object sender, RoutedEventArgs e)
         {
-            if (Assets_DtGrd.HasItems && Assets_DtGrd.SelectedIndex >= 0 && Assets_DtGrd.SelectedItem is DataGridViewModel selectedItem)
-                Assets.Copy(selectedItem.Name, ECopy.File);
+            if (Assets_DtGrd.HasItems && Assets_DtGrd.SelectedIndex >= 0)
+                Assets.Copy(Assets_DtGrd.SelectedItems, ECopy.File);
         }
         private void CM_Copy_FPath_NoExt_Click(object sender, RoutedEventArgs e)
         {
-            if (Assets_DtGrd.HasItems && Assets_DtGrd.SelectedIndex >= 0 && Assets_DtGrd.SelectedItem is DataGridViewModel selectedItem)
-                Assets.Copy(selectedItem.Name, ECopy.PathNoExt);
+            if (Assets_DtGrd.HasItems && Assets_DtGrd.SelectedIndex >= 0)
+                Assets.Copy(Assets_DtGrd.SelectedItems, ECopy.PathNoExt);
         }
         private void CM_Copy_FName_NoExt_Click(object sender, RoutedEventArgs e)
         {
-            if (Assets_DtGrd.HasItems && Assets_DtGrd.SelectedIndex >= 0 && Assets_DtGrd.SelectedItem is DataGridViewModel selectedItem)
-                Assets.Copy(selectedItem.Name, ECopy.FileNoExt);
+            if (Assets_DtGrd.HasItems && Assets_DtGrd.SelectedIndex >= 0)
+                Assets.Copy(Assets_DtGrd.SelectedItems, ECopy.FileNoExt);
         }
 
         private void OnSelectedItemChanged(object sender, SelectionChangedEventArgs e)

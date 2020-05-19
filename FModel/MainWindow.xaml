@@ -210,6 +210,11 @@
                                         <Image Source="Resources/share-all.png"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
+                                <MenuItem x:Name="FModel_MI_Directory_Save" Header="{x:Static properties:Resources.SaveDirectory}" Click="FModel_MI_Directory_Save_Click">
+                                    <MenuItem.Icon>
+                                        <Image Source="Resources/content-save.png"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
                                 <Separator/>
                                 <MenuItem Header="{x:Static properties:Resources.FCopy}">
                                     <MenuItem.Icon>
