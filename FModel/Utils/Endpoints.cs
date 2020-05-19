@@ -47,8 +47,8 @@ namespace FModel.Utils
         {
             if (url.Equals(BENBOT_HOTFIXES) && !string.IsNullOrEmpty(query))
                 url += $"?lang={Uri.EscapeDataString(query)}";
-            /*else if (url.Equals(BENBOT_AES) && !string.IsNullOrEmpty(query))
-                url += $"?version={Uri.EscapeDataString(query)}";*/
+            else if (url.Equals(BENBOT_AES) && !string.IsNullOrEmpty(query))
+                url += $"?version={Uri.EscapeDataString(query)}";
 
             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[Endpoints]", "[GET]", url);
             using (HttpClient client = new HttpClient { Timeout = TimeSpan.FromSeconds(3) })
