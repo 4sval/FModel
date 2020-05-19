@@ -15,6 +15,7 @@ using PakReader.Parsers.Objects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -253,12 +254,22 @@ namespace FModel.ViewModels.MenuItem
 
                 var oldFilesTemp = new Dictionary<string, FPakEntry>();
                 using FileStream fileStream = new FileStream(ofd.FileName, FileMode.Open);
-                using LZ4DecoderStream compressionStream = LZ4Stream.Decode(fileStream);
-                using (var target = new MemoryStream())
+                BinaryReader checkReader = new BinaryReader(fileStream);
+                bool isLz4 = checkReader.ReadUInt32() == 0x184D2204u;
+                fileStream.Seek(0, SeekOrigin.Begin);
+                var target = new MemoryStream();
+                if (isLz4)
                 {
+                    using LZ4DecoderStream compressionStream = LZ4Stream.Decode(fileStream);
                     compressionStream.CopyTo(target);
+                }
+                else
+                {
+                    fileStream.CopyTo(target);
+                }
+                using (target)
+                {
                     target.Position = 0;
-
                     using BinaryReader reader = new BinaryReader(target);
                     while (reader.BaseStream.Position < reader.BaseStream.Length)
                     {
