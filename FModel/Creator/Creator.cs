@@ -90,7 +90,7 @@ namespace FModel.Creator
                 case "FortWeaponMeleeDualWieldItemDefinition":
                 case "FortDailyRewardScheduleTokenDefinition":
                     {
-                        BaseIcon icon = new BaseIcon(export, exportType, assetName);
+                        BaseIcon icon = new BaseIcon(export, exportType, ref assetName);
                         int height = icon.Size + icon.AdditionalSize;
                         using (var ret = new SKBitmap(icon.Size, height, SKColorType.Rgba8888, SKAlphaType.Opaque))
                         using (var c = new SKCanvas(ret))

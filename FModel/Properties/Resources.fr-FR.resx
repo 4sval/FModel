@@ -853,4 +853,7 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   <data name="SaveDirectory" xml:space="preserve">
     <value>Sauvegarder le Répertoire</value>
   </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Copier l'Image</value>
+  </data>
 </root>

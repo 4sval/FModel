@@ -69,7 +69,7 @@ namespace FModel.Creator
         ///         1. order doesn't matter
         ///         2. the importance here is to get the description before gameplay tags
         /// </summary>
-        public BaseIcon(IUExport export, string exportType, string assetName) : this()
+        public BaseIcon(IUExport export, string exportType, ref string assetName) : this()
         {
             // rarity
             if (export.GetExport<ObjectProperty>("Series") is ObjectProperty series)
@@ -81,7 +81,7 @@ namespace FModel.Creator
 
             // image
             if (Properties.Settings.Default.UseItemShopIcon &&
-                DisplayAssetImage.GetDisplayAssetImage(this, export.GetExport<SoftObjectProperty>("DisplayAssetPath"), assetName))
+                DisplayAssetImage.GetDisplayAssetImage(this, export.GetExport<SoftObjectProperty>("DisplayAssetPath"), ref assetName))
             { } // ^^^^ will return false if image not found, if so, we try to get the normal icon
             else if (export.GetExport<ObjectProperty>("HeroDefinition", "WeaponDefinition") is ObjectProperty itemDef)
                 LargeSmallImage.GetPreviewImage(this, itemDef, assetName);

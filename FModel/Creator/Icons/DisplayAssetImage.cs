@@ -6,7 +6,7 @@ namespace FModel.Creator.Icons
 {
     static class DisplayAssetImage
     {
-        public static bool GetDisplayAssetImage(BaseIcon icon, SoftObjectProperty o, string assetName)
+        public static bool GetDisplayAssetImage(BaseIcon icon, SoftObjectProperty o, ref string assetName)
         {
             string imageType = "DetailsImage";
             switch ("DA_Featured_" + assetName)
@@ -44,6 +44,7 @@ namespace FModel.Creator.Icons
                         if (!resourceObject.Value.Resource.OuterIndex.Resource.ObjectName.String.Contains("/Game/Athena/Prototype/Textures/"))
                         {
                             icon.IconImage = Utils.GetObjectTexture(resourceObject);
+                            assetName = "DA_Featured_" + assetName;
                             return true;
                         }
                     }

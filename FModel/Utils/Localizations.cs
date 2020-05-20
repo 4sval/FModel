@@ -58,10 +58,10 @@ namespace FModel.Utils
                             foreach (var namespac in new LocResReader(asset).Entries)
                             {
                                 if (!_fortniteLocalizationDict.ContainsKey(namespac.Key))
-                                    _fortniteLocalizationDict.Add(namespac.Key, new Dictionary<string, string>());
+                                    _fortniteLocalizationDict[namespac.Key] = new Dictionary<string, string>();
 
                                 foreach (var key in namespac.Value)
-                                    _fortniteLocalizationDict[namespac.Key].Add(key.Key, key.Value);
+                                    _fortniteLocalizationDict[namespac.Key][key.Key] = key.Value;
                             }
                         }
                     }

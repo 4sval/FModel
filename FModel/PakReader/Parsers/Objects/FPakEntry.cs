@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ionic.Zlib;
+using System;
 using System.IO;
 
 namespace PakReader.Parsers.Objects
@@ -133,8 +134,6 @@ namespace PakReader.Parsers.Objects
 
         public ArraySegment<byte> GetData(Stream stream, byte[] key)
         {
-            if (CompressionMethodIndex != 0)
-                throw new NotImplementedException("Decompression not yet implemented");
             lock (stream)
             {
                 stream.Position = Offset + StructSize;
@@ -142,13 +141,21 @@ namespace PakReader.Parsers.Objects
                 {
                     var data = new byte[(Size & 15) == 0 ? Size : ((Size / 16) + 1) * 16];
                     stream.Read(data);
-                    return new ArraySegment<byte>(AESDecryptor.DecryptAES(data, key), 0, (int)UncompressedSize);
+
+                    if (CompressionMethodIndex == 1)
+                        return new ArraySegment<byte>(AESDecryptor.DecryptAES(ZlibStream.UncompressBuffer(data), key), 0, (int)UncompressedSize);
+                    else
+                        return new ArraySegment<byte>(AESDecryptor.DecryptAES(data, key), 0, (int)UncompressedSize);
                 }
                 else
                 {
                     var data = new byte[UncompressedSize];
                     stream.Read(data);
-                    return new ArraySegment<byte>(data);
+
+                    if (CompressionMethodIndex == 1)
+                        return new ArraySegment<byte>(ZlibStream.UncompressBuffer(data));
+                    else
+                        return new ArraySegment<byte>(data);
                 }
             }
         }

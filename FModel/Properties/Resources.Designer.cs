@@ -577,6 +577,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Copy Image.
+        /// </summary>
+        public static string CopyImage {
+            get {
+                return ResourceManager.GetString("CopyImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Copied!.
         /// </summary>
         public static string CopySuccess {
@@ -1771,6 +1780,15 @@ namespace FModel.Properties {
         public static string NoDataToSave {
             get {
                 return ResourceManager.GetString("NoDataToSave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à There is currently no image to copy.
+        /// </summary>
+        public static string NoImageToCopy {
+            get {
+                return ResourceManager.GetString("NoImageToCopy", resourceCulture);
             }
         }
         

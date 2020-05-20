@@ -94,6 +94,18 @@ namespace FModel.ViewModels.ImageBox
             }
         }
 
+        public static void Copy(this ImageBoxViewModel vm)
+        {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                if (vm.Image != null)
+                {
+                    Clipboard.SetImage(vm.Image);
+                }
+                else Globals.gNotifier.ShowCustomMessage(Properties.Resources.Error, Properties.Resources.NoImageToCopy);
+            });
+        }
+
         public static void Save(this ImageBoxViewModel vm, bool autoSave)
         {
             Application.Current.Dispatcher.Invoke(delegate

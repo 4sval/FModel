@@ -182,6 +182,7 @@ namespace FModel
             else Globals.gNotifier.ShowCustomMessage(Properties.Resources.Error, Properties.Resources.NoDataToExport);
         }
         private void FModel_MI_Assets_Save_Click(object sender, RoutedEventArgs e) => AvalonEditVm.avalonEditViewModel.Save(false);
+        private void FModel_MI_Assets_CopyImage_Click(object sender, RoutedEventArgs e) => ImageBoxVm.imageBoxViewModel.Copy();
         private void FModel_MI_Assets_SaveImage_Click(object sender, RoutedEventArgs e) => ImageBoxVm.imageBoxViewModel.Save(false);
         private void FModel_MI_Assets_OpenOutputFolder_Click(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { FileName = Properties.Settings.Default.OutputPath, UseShellExecute = true });
         private void FModel_MI_Assets_ImageMerger_Click(object sender, RoutedEventArgs e)
