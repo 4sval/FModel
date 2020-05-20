@@ -8,14 +8,15 @@
     <StartupObject>FModel.App</StartupObject>
     <Authors>Asval</Authors>
     <Company></Company>
-    <AssemblyVersion>3.1.0.0</AssemblyVersion>
-    <FileVersion>3.1.0.0</FileVersion>
+    <AssemblyVersion>3.1.0.1</AssemblyVersion>
+    <FileVersion>3.1.0.1</FileVersion>
     <PackageIcon>FModel.ico</PackageIcon>
     <PackageIconUrl />
     <PackageProjectUrl>https://github.com/iAmAsval/FModel</PackageProjectUrl>
     <Description></Description>
     <Version>3.1.0</Version>
     <Platforms>x64</Platforms>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

@@ -37,6 +37,9 @@ namespace FModel.Grabber.Paks
             {
                 foreach (string pak in Directory.GetFiles(Properties.Settings.Default.PakPath, "*.pak"))
                 {
+                    if (pak.Contains("pakChunkEarly-WindowsClient.pak"))
+                        continue;
+                    
                     if (!Utils.Paks.IsFileReadLocked(new FileInfo(pak)))
                     {
                         PakFileReader pakFile = new PakFileReader(pak);
