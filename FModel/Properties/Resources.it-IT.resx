@@ -811,4 +811,13 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="SaveDirectory" xml:space="preserve">
     <value>Salva Directory</value>
   </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Copia Immagine</value>
+  </data>
+  <data name="UseFEnglish" xml:space="preserve">
+    <value>Usa FModel in inglese</value>
+  </data>
+  <data name="NoImageToCopy" xml:space="preserve">
+    <value>Al momento non ci sono immagini da copiare</value>
+  </data>
 </root>

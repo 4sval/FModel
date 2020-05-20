@@ -117,707 +117,676 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Wildcards" xml:space="preserve">
-    <value>أحرف البدل</value>
-  </data>
   <data name="AboutF" xml:space="preserve">
-    <value>حول FModel</value>
-  </data>
-  <data name="AboutFDetails" xml:space="preserve">
-    <value>FModel is a .PAK file explorer fully dedicated to Fortnite but also work with some other Unreal Engine's games.
-
-Created in March 2019, in order to have unique and personalized functionality, it quickly became popular through leakers who used it to quickly generate images of new cosmetics added to the game.
-Over time, new features got added and new users discovered the program.
-It's now the most used free software to leak on Fortnite.</value>
-  </data>
-  <data name="AboutToDownload" xml:space="preserve">
-    <value>أنت على وشك تنزيل {0} بحجم {1}</value>
+    <value>О Fmodel</value>
   </data>
   <data name="Add" xml:space="preserve">
-    <value>أضف</value>
+    <value>Добавить</value>
   </data>
   <data name="AddDirectory" xml:space="preserve">
-    <value>أضف المجلد</value>
-  </data>
-  <data name="AddSeparator" xml:space="preserve">
-    <value>إضافة فاصل</value>
+    <value>Все директории</value>
   </data>
   <data name="AES" xml:space="preserve">
     <value>AES</value>
   </data>
   <data name="AesKey" xml:space="preserve">
-    <value>مفتاح AES</value>
+    <value>Ключ AES</value>
   </data>
   <data name="AesKeysUpdated" xml:space="preserve">
-    <value>تم تحديث المفاتيح</value>
+    <value>AES ключи были обновлены</value>
   </data>
   <data name="AesNotWorking" xml:space="preserve">
-    <value>'{0}' لا يعمل مع '{1}'</value>
+    <value>'{0}' не работает с '{1}'</value>
   </data>
   <data name="AllDocuments" xml:space="preserve">
-    <value>كافة المستندات</value>
+    <value>Все документы</value>
   </data>
   <data name="AllFiles" xml:space="preserve">
-    <value>كل الملفات</value>
-  </data>
-  <data name="Analyzing" xml:space="preserve">
-    <value>تحليل {0}</value>
+    <value>Все файлы</value>
   </data>
   <data name="Arabic" xml:space="preserve">
-    <value>اللغة العربية</value>
-  </data>
-  <data name="Asset" xml:space="preserve">
-    <value>Asset</value>
-  </data>
-  <data name="Assets" xml:space="preserve">
-    <value>Assets</value>
+    <value>Арабский</value>
   </data>
   <data name="Audio" xml:space="preserve">
-    <value>صوت</value>
+    <value>Аудио</value>
   </data>
   <data name="AudioDevices" xml:space="preserve">
-    <value>أجهزة الصوت</value>
-  </data>
-  <data name="AudioPlayer" xml:space="preserve">
-    <value>مشغل الصوت</value>
+    <value>Звуковые устройства</value>
   </data>
   <data name="Auto" xml:space="preserve">
-    <value>تلقاءي</value>
-  </data>
-  <data name="AutoOpenSounds" xml:space="preserve">
-    <value>افتح الأصوات تلقائيا</value>
+    <value>Автоматически</value>
   </data>
   <data name="B" xml:space="preserve">
     <value>B</value>
   </data>
   <data name="BackupPaks" xml:space="preserve">
-    <value>Backup PAKs</value>
+    <value>Создать бэкап паков</value>
   </data>
   <data name="Backups" xml:space="preserve">
-    <value>Backups</value>
+    <value>Бэкапы</value>
   </data>
   <data name="Banner" xml:space="preserve">
-    <value>شعار</value>
+    <value>Баннер</value>
   </data>
   <data name="BenBotApi" xml:space="preserve">
     <value>BenBot API</value>
   </data>
   <data name="BugsReport" xml:space="preserve">
-    <value>Bugs Report</value>
+    <value>Сообщить об ошибке</value>
   </data>
   <data name="BytesPerSecond" xml:space="preserve">
-    <value>بايت في الثانية</value>
+    <value>Байтов в секунду</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>إلغاء</value>
+    <value>Отмена</value>
   </data>
   <data name="Canceled" xml:space="preserve">
-    <value>ملغى</value>
-  </data>
-  <data name="CaseSensitive" xml:space="preserve">
-    <value>Case Sensitive</value>
+    <value>Отмененно!</value>
   </data>
   <data name="ChallengesCustomBanner" xml:space="preserve">
-    <value>Challenges' Custom Banner</value>
+    <value>Кастомный баннер для испытаний</value>
   </data>
   <data name="ChallengesThemeCreator" xml:space="preserve">
-    <value>Challenges' Theme Creator</value>
+    <value>Редактор тем для испытаний</value>
   </data>
   <data name="ChangeGame" xml:space="preserve">
-    <value>تغيير اللعبة</value>
+    <value>Изменить игру</value>
   </data>
   <data name="Changelog" xml:space="preserve">
-    <value>التغيير</value>
+    <value>Список изменений</value>
   </data>
   <data name="Chinese" xml:space="preserve">
-    <value>اللغة الصينية (المبسطة)</value>
+    <value>Китайский (Упрощенный)</value>
   </data>
   <data name="Clear" xml:space="preserve">
-    <value>امسح</value>
+    <value>Очистить</value>
   </data>
   <data name="Colors" xml:space="preserve">
-    <value>الألوان</value>
-  </data>
-  <data name="Compression" xml:space="preserve">
-    <value>Compression</value>
-  </data>
-  <data name="ContributorsF" xml:space="preserve">
-    <value>المساهمون</value>
+    <value>Цвета</value>
   </data>
   <data name="CopySuccess" xml:space="preserve">
-    <value>نسخ</value>
+    <value>Скопированно!</value>
   </data>
   <data name="CouldNotCreateDirectory" xml:space="preserve">
-    <value>لا يمكن إنشاء مجلد</value>
+    <value>Не удалось создать директорию</value>
   </data>
   <data name="CreateError" xml:space="preserve">
-    <value>خطأ أثناء إنشاء {0}</value>
+    <value>Ошибка вовремя создания {0}</value>
   </data>
   <data name="CreateSuccess" xml:space="preserve">
-    <value>تم إنشاء {0} بنجاح</value>
+    <value>{0} успешно создан</value>
   </data>
   <data name="CurrentDocument" xml:space="preserve">
-    <value>الوثيقة الحالية</value>
+    <value>Текщий документ</value>
   </data>
   <data name="CustomBannerNotFound" xml:space="preserve">
-    <value>File not found, challenges' custom theme disabled</value>
+    <value>Файлы не найден, кастомная тема для испытаний отключена</value>
   </data>
   <data name="DataExported" xml:space="preserve">
-    <value>تم تصدير {0} بنجاح</value>
+    <value>{0} успешно экспортирован</value>
   </data>
   <data name="DataSaved" xml:space="preserve">
-    <value>تم حفظ البيانات بنجاح</value>
+    <value>Данные успешно сохранены</value>
   </data>
   <data name="Default" xml:space="preserve">
-    <value>افتراضي</value>
+    <value>Стандартный</value>
   </data>
   <data name="Design" xml:space="preserve">
-    <value>التصميم</value>
-  </data>
-  <data name="Difference" xml:space="preserve">
-    <value>فرق</value>
+    <value>Дизайн</value>
   </data>
   <data name="Directories" xml:space="preserve">
-    <value>المجلدات</value>
+    <value>Директории</value>
   </data>
   <data name="DirectoryName" xml:space="preserve">
-    <value>إسم الملف</value>
-  </data>
-  <data name="DirectoryPath" xml:space="preserve">
-    <value>مسار الملف</value>
+    <value>Имя директории</value>
   </data>
   <data name="Disabled" xml:space="preserve">
-    <value>معطل</value>
+    <value>Отключено</value>
   </data>
   <data name="DiscordServer" xml:space="preserve">
-    <value>Discord Server</value>
+    <value>Discord сервер</value>
   </data>
   <data name="Donate" xml:space="preserve">
-    <value>تبرع</value>
+    <value>Поддержка(донат)</value>
   </data>
   <data name="DonatorsF" xml:space="preserve">
-    <value>المتبرعون</value>
+    <value>Донатеры</value>
   </data>
   <data name="DownloadError" xml:space="preserve">
-    <value>خطأ أثناء تنزيل {0}</value>
+    <value>Ошибка во время загрузки {0}</value>
   </data>
   <data name="Downloading" xml:space="preserve">
-    <value>التنزيل</value>
+    <value>Загружается</value>
   </data>
   <data name="DownloadSuccess" xml:space="preserve">
-    <value>تم تنزيل {0} بنجاح</value>
-  </data>
-  <data name="Duration" xml:space="preserve">
-    <value>المدة الزمنية</value>
+    <value>{0} усепшно загружен</value>
   </data>
   <data name="DynamicKeyNotWorking" xml:space="preserve">
-    <value>{0} لا يعمل مع {1}</value>
+    <value>{0} не работает с {1}</value>
   </data>
   <data name="DynamicKeys" xml:space="preserve">
-    <value>المفاتيح الديناميكية</value>
+    <value>Динамические ключи</value>
   </data>
   <data name="EditDirectory" xml:space="preserve">
-    <value>تحرير المجلد</value>
+    <value>Изменить директорию</value>
   </data>
   <data name="Enabled" xml:space="preserve">
-    <value>ممكّن</value>
-  </data>
-  <data name="Encrypted" xml:space="preserve">
-    <value>مشفر</value>
+    <value>Включено</value>
   </data>
   <data name="English" xml:space="preserve">
-    <value>اللغة الإنكليزية</value>
+    <value>Английский</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>خطأ</value>
+    <value>Ошибка</value>
   </data>
   <data name="Exit" xml:space="preserve">
-    <value>خروج</value>
+    <value>Выход</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>تصدير</value>
-  </data>
-  <data name="Extract" xml:space="preserve">
-    <value>استخراج</value>
-  </data>
-  <data name="ExtractDirectory" xml:space="preserve">
-    <value>استخراج المجلد</value>
-  </data>
-  <data name="Extraction" xml:space="preserve">
-    <value>استخلاص</value>
+    <value>Экспортировать</value>
   </data>
   <data name="FbkpFilter" xml:space="preserve">
-    <value>FBKP Files (*.fbkp)|*.fbkp|All Files (*.*)|*.*</value>
+    <value>FBKP Файлы (*.fbkp)|*.fbkp|Все файлы (*.*)|*.*</value>
   </data>
   <data name="FCopy" xml:space="preserve">
-    <value>نسخ</value>
+    <value>Скопировать</value>
   </data>
   <data name="FFile" xml:space="preserve">
-    <value>ملف</value>
+    <value>Файл</value>
   </data>
   <data name="FileCount" xml:space="preserve">
-    <value>عدد الملفات</value>
+    <value>Количество файлов</value>
   </data>
   <data name="FileName" xml:space="preserve">
-    <value>اسم الملف</value>
+    <value>Имя файла</value>
   </data>
   <data name="FileNameNoExt" xml:space="preserve">
-    <value>اسم الملف بدون ملحق</value>
-  </data>
-  <data name="FilePath" xml:space="preserve">
-    <value>مسار الملف</value>
-  </data>
-  <data name="FilePathNoExt" xml:space="preserve">
-    <value>مسار الملف بدون ملحق</value>
+    <value>Имя файла без расширения</value>
   </data>
   <data name="Files" xml:space="preserve">
-    <value>الملفات</value>
+    <value>Файлы</value>
   </data>
   <data name="Filter" xml:space="preserve">
-    <value>Filter</value>
+    <value>Фильтр</value>
   </data>
   <data name="Find" xml:space="preserve">
-    <value>تجد</value>
+    <value>Найти</value>
   </data>
   <data name="FindAndReplace" xml:space="preserve">
-    <value>بحث واستبدال</value>
+    <value>Найти и заменить</value>
   </data>
   <data name="FindNext" xml:space="preserve">
-    <value>بحث عن التالي</value>
+    <value>Найти следующий</value>
   </data>
   <data name="Flat" xml:space="preserve">
-    <value>مسطحة</value>
+    <value>Плоский</value>
   </data>
   <data name="FLauncher" xml:space="preserve">
-    <value>FModel Launcher</value>
+    <value>Лаунчер FModel</value>
   </data>
   <data name="French" xml:space="preserve">
-    <value>اللغة الفرنسية</value>
+    <value>Французкий</value>
   </data>
   <data name="FyiDetails" xml:space="preserve">
-    <value>ستكون اللغة المحددة هي اللغة المستخدمة لإنشاء الرموز</value>
-  </data>
-  <data name="FyiTitle" xml:space="preserve">
-    <value>لمعلوماتك</value>
+    <value>Выбранный язык будет использоваться во время создания иконок</value>
   </data>
   <data name="Games" xml:space="preserve">
-    <value>ألعاب</value>
+    <value>Игры</value>
   </data>
   <data name="GB" xml:space="preserve">
     <value>GB</value>
   </data>
   <data name="General" xml:space="preserve">
-    <value>عام</value>
+    <value>Основное</value>
   </data>
   <data name="GeneralSettings" xml:space="preserve">
-    <value>الاعدادات العامة</value>
+    <value>Основные настройки</value>
   </data>
   <data name="German" xml:space="preserve">
-    <value>اللغة الالمانية</value>
-  </data>
-  <data name="GoTo" xml:space="preserve">
-    <value>اذهب إلى</value>
-  </data>
-  <data name="Guid" xml:space="preserve">
-    <value>Guid</value>
+    <value>Немецкий</value>
   </data>
   <data name="Hello" xml:space="preserve">
-    <value>مرحبا</value>
+    <value>Здравсвтуйте</value>
   </data>
   <data name="Help" xml:space="preserve">
-    <value>مساعدة</value>
-  </data>
-  <data name="Hsv" xml:space="preserve">
-    <value>Hue, Saturation, Value</value>
-  </data>
-  <data name="Hue" xml:space="preserve">
-    <value>Hue</value>
+    <value>Помощь</value>
   </data>
   <data name="Icon" xml:space="preserve">
-    <value>أيقونة</value>
+    <value>Иконка</value>
   </data>
   <data name="IconCreator" xml:space="preserve">
-    <value>خالق الأيقونة</value>
+    <value>Редактор иконки</value>
   </data>
   <data name="IconWatermark" xml:space="preserve">
-    <value>Icon Watermark</value>
+    <value>Изображение водяного знака</value>
   </data>
   <data name="IconWatermarkNotFound" xml:space="preserve">
-    <value>File not found, watermarking disabled</value>
-  </data>
-  <data name="Idling" xml:space="preserve">
-    <value>Idling</value>
+    <value>Файл не найден, водяной знак отключен</value>
   </data>
   <data name="Images" xml:space="preserve">
-    <value>الصور</value>
+    <value>Изображение</value>
   </data>
   <data name="ImageSaved" xml:space="preserve">
-    <value>تم حفظ الصورة بنجاح</value>
+    <value>Изображение успешно сохранено</value>
   </data>
   <data name="ImagesMerger" xml:space="preserve">
-    <value>دمج الصور</value>
-  </data>
-  <data name="Include" xml:space="preserve">
-    <value>تتضمن</value>
+    <value>Редактор изображений</value>
   </data>
   <data name="Initializing" xml:space="preserve">
-    <value>بدأ</value>
+    <value>Инициализация</value>
   </data>
   <data name="InternationalizationStatus" xml:space="preserve">
-    <value>تم تغيير اللغة إلى {0}</value>
-  </data>
-  <data name="IsPartOf" xml:space="preserve">
-    <value>جزء من</value>
+    <value>Установлен {0} язык</value>
   </data>
   <data name="Italian" xml:space="preserve">
-    <value>إيطالي</value>
+    <value>Итальянский</value>
   </data>
   <data name="Japanese" xml:space="preserve">
-    <value>اللغة اليابانية</value>
+    <value>Японский</value>
   </data>
   <data name="JsonFilter" xml:space="preserve">
-    <value>JSON Files (*.json)|*.json</value>
+    <value>Файлы JSON (*.json)|*.json</value>
   </data>
   <data name="KB" xml:space="preserve">
     <value>KB</value>
   </data>
   <data name="Korean" xml:space="preserve">
-    <value>اللغة الكورية</value>
+    <value>Корейский</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>لغة</value>
-  </data>
-  <data name="Listening" xml:space="preserve">
-    <value>الاستماع - {0}</value>
+    <value>Язык</value>
   </data>
   <data name="LoadAll" xml:space="preserve">
-    <value>تحميل الكل</value>
+    <value>Загрузить все</value>
   </data>
   <data name="Loading" xml:space="preserve">
-    <value>Loading</value>
+    <value>Загрузка</value>
   </data>
   <data name="LoadingMode" xml:space="preserve">
-    <value>Loading Mode</value>
+    <value>Режим загрузки</value>
   </data>
   <data name="LoadModifiedFiles" xml:space="preserve">
-    <value>تحميل الملفات المعدلة</value>
+    <value>Загрузить измененные файлы</value>
   </data>
   <data name="LoadNewFiles" xml:space="preserve">
-    <value>تحميل ملفات جديدة</value>
+    <value>Загрузить новые файлы</value>
   </data>
   <data name="LoadNewModifiedFiles" xml:space="preserve">
-    <value>تحميل الملفات الجديدة والمعدلة</value>
+    <value>Загрузить новые и измененные файлы</value>
   </data>
   <data name="MainPaks" xml:space="preserve">
-    <value>Main PAKs:</value>
-  </data>
-  <data name="MatchWholeWord" xml:space="preserve">
-    <value>تطابق الكلمة بالكامل</value>
+    <value>Основные паки:</value>
   </data>
   <data name="MB" xml:space="preserve">
     <value>MB</value>
   </data>
   <data name="Media" xml:space="preserve">
-    <value>وسائل الإعلام</value>
+    <value>Медиафайлы</value>
   </data>
   <data name="Minimalist" xml:space="preserve">
-    <value>الحد الأدنى</value>
+    <value>Минималистичный</value>
   </data>
   <data name="ModifiedFiles" xml:space="preserve">
-    <value>الملفات المعدلة</value>
-  </data>
-  <data name="MountedPakTo" xml:space="preserve">
-    <value>{0} mounted to {1}</value>
-  </data>
-  <data name="MountPoint" xml:space="preserve">
-    <value>Mount Point</value>
+    <value>Измененные файлы</value>
   </data>
   <data name="Name" xml:space="preserve">
-    <value>اسم</value>
+    <value>Имя</value>
   </data>
   <data name="NewFiles" xml:space="preserve">
-    <value>ملفات جديدة</value>
+    <value>Новые файлы</value>
   </data>
   <data name="NewModifiedFiles" xml:space="preserve">
-    <value>الملفات الجديدة والمعدلة</value>
+    <value>Новые и измененные файлы</value>
   </data>
   <data name="No" xml:space="preserve">
-    <value>لا</value>
-  </data>
-  <data name="NoDataToExport" xml:space="preserve">
-    <value>لا يوجد حاليا بيانات للتصدير</value>
-  </data>
-  <data name="NoDataToSave" xml:space="preserve">
-    <value>لا يوجد حاليا بيانات لحفظها</value>
-  </data>
-  <data name="NoImageToSave" xml:space="preserve">
-    <value>لا يوجد حاليا صورة لحفظها</value>
-  </data>
-  <data name="NoInternet" xml:space="preserve">
-    <value>اتصالك بالإنترنت لا يعمل حاليًا</value>
+    <value>No</value>
   </data>
   <data name="NoText" xml:space="preserve">
-    <value>لا يوجد نص</value>
-  </data>
-  <data name="Offsets" xml:space="preserve">
-    <value>Offsets</value>
+    <value>Нет текста</value>
   </data>
   <data name="OggFilter" xml:space="preserve">
-    <value>OGG Files (*.ogg)|*.ogg|WAV Files (*.wav)|*.wav|All Files (*.*)|*.*</value>
+    <value>Файлы OGG (*.ogg)|*.ogg|Файлы WAV (*.wav)|*.wav|Все файлы (*.*)|*.*</value>
   </data>
   <data name="OK" xml:space="preserve">
-    <value>حسنا</value>
+    <value>OK</value>
   </data>
   <data name="Opacity" xml:space="preserve">
-    <value>التعتيم</value>
+    <value>Прозрачность</value>
   </data>
   <data name="Open" xml:space="preserve">
-    <value>افتح</value>
+    <value>Открыть</value>
   </data>
   <data name="OpenImage" xml:space="preserve">
-    <value>افتح الصورة</value>
+    <value>Открыть изображение</value>
   </data>
   <data name="OpenOutputFolder" xml:space="preserve">
-    <value>افتح مجلد الإخراج</value>
+    <value>Открыть папку экспорта</value>
   </data>
   <data name="Options" xml:space="preserve">
-    <value>خيارات</value>
+    <value>Опции</value>
   </data>
   <data name="PAK" xml:space="preserve">
     <value>PAK</value>
   </data>
   <data name="PakCanBeOpened" xml:space="preserve">
-    <value>يمكن فتح {0} الآن</value>
+    <value>{0} сейчас доступен</value>
   </data>
   <data name="PakFileLocked" xml:space="preserve">
-    <value>{0} is locked by another process</value>
+    <value>{0} заблокировано другим процессом</value>
   </data>
   <data name="PakFiles" xml:space="preserve">
-    <value>PAK Files</value>
+    <value>Файлы паков</value>
   </data>
   <data name="PakFilesAutoDetected" xml:space="preserve">
-    <value>Fortnite PAK files auto-detected</value>
-  </data>
-  <data name="ParsingNotSupported" xml:space="preserve">
-    <value>Parsing of {0} types isn't supported yet.</value>
-  </data>
-  <data name="Path" xml:space="preserve">
-    <value>مسار</value>
+    <value>Файлы паков Фортнайта автоматически найдены</value>
   </data>
   <data name="PathAutoDetected" xml:space="preserve">
-    <value>.PAK Files Auto Detected</value>
-  </data>
-  <data name="PathChanged" xml:space="preserve">
-    <value>تم تغيير مسار (مسارات) FModel</value>
-  </data>
-  <data name="PathChangedRestart" xml:space="preserve">
-    <value>FModel على وشك إعادة التشغيل لأنك طبقت المسار (المسارات) الجديدة</value>
+    <value>.PAK файлы обнаружены автоматически</value>
   </data>
   <data name="PngFilter" xml:space="preserve">
-    <value>PNG Files (*.png)|*.png|All Files (*.*)|*.*</value>
+    <value>PNG Файлы (*.png)|*.png|Все Файлы (*.*)|*.*</value>
   </data>
   <data name="Polish" xml:space="preserve">
-    <value>اللغة البولندية</value>
-  </data>
-  <data name="Popup" xml:space="preserve">
-    <value>Popup</value>
+    <value>Польский</value>
   </data>
   <data name="PortugueseBrazil" xml:space="preserve">
-    <value>اللغة البرتغالية (البرازيل)</value>
+    <value>Португальский (Бразильский)</value>
   </data>
   <data name="Preview" xml:space="preserve">
-    <value>عرض مسبق</value>
+    <value>Предварительный просмотр</value>
   </data>
   <data name="Primary" xml:space="preserve">
-    <value>أساسي</value>
-  </data>
-  <data name="Processing" xml:space="preserve">
-    <value>Processing</value>
+    <value>Начальный</value>
   </data>
   <data name="Rarity" xml:space="preserve">
-    <value>Rarity</value>
-  </data>
-  <data name="RateLimited" xml:space="preserve">
-    <value>Rate Limit Exceeded</value>
-  </data>
-  <data name="RegularExpression" xml:space="preserve">
-    <value>Regular Expression</value>
+    <value>Редкость</value>
   </data>
   <data name="ReloadAesKeysAtLaunch" xml:space="preserve">
-    <value>إعادة تحميل مفاتيح AES عند الإطلاق</value>
+    <value>Обновлять ключи AES во время запуска программы</value>
   </data>
   <data name="RememberGame" xml:space="preserve">
-    <value>تذكر اللعبة</value>
+    <value>Запомнить игру</value>
   </data>
   <data name="Remove" xml:space="preserve">
-    <value>إزالة</value>
+    <value>Удалить</value>
   </data>
   <data name="RemoveDirectory" xml:space="preserve">
-    <value>إزالة المجلد</value>
+    <value>Удалить директорию</value>
   </data>
   <data name="RemovedRenamedCosmetics" xml:space="preserve">
-    <value>مستحضرات التجميل التي تمت إزالتها أو إعادة تسميتها:</value>
+    <value>Удаленные или переименованные предметы:</value>
   </data>
   <data name="Replace" xml:space="preserve">
-    <value>استبدل</value>
+    <value>Заменить</value>
   </data>
   <data name="ReplaceAll" xml:space="preserve">
-    <value>استبدال الكل</value>
-  </data>
-  <data name="ReplaceWith" xml:space="preserve">
-    <value>استبدل ب:</value>
+    <value>Заменить все</value>
   </data>
   <data name="RestoreLayout" xml:space="preserve">
-    <value>استرجع التصميم</value>
+    <value>Восстановить расположение</value>
   </data>
   <data name="Rgba" xml:space="preserve">
-    <value>أحمر ، أخضر ، أزرق ، ألفا</value>
+    <value>Красный, Зелёный, Синий, Прозрачность</value>
   </data>
   <data name="Russian" xml:space="preserve">
-    <value>اللغة الروسية</value>
+    <value>Русский</value>
   </data>
   <data name="Save" xml:space="preserve">
-    <value>حفظ</value>
+    <value>Сохранить</value>
   </data>
   <data name="SaveImage" xml:space="preserve">
-    <value>احفظ الصورة</value>
+    <value>Сохранить изображение</value>
   </data>
   <data name="SaveSuccess" xml:space="preserve">
-    <value>تم حفظ {0} بنجاح</value>
-  </data>
-  <data name="Scale" xml:space="preserve">
-    <value>مقياس</value>
+    <value>{0} успешно сохранено</value>
   </data>
   <data name="Search" xml:space="preserve">
-    <value>بحث</value>
-  </data>
-  <data name="SearchIn" xml:space="preserve">
-    <value>بحث في:</value>
-  </data>
-  <data name="SearchUp" xml:space="preserve">
-    <value>البحث عن</value>
+    <value>Искать</value>
   </data>
   <data name="Secondary" xml:space="preserve">
-    <value>ثانوي</value>
+    <value>Вторичный</value>
   </data>
   <data name="SelectFile" xml:space="preserve">
-    <value>حدد ملف</value>
+    <value>Найти файл</value>
   </data>
   <data name="SelectFolder" xml:space="preserve">
-    <value>حدد مجلدًا</value>
+    <value>Указать папку</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>الإعدادات</value>
+    <value>Настройки</value>
   </data>
   <data name="Spanish" xml:space="preserve">
-    <value>اللغة الأسبانية</value>
+    <value>Испанский</value>
   </data>
   <data name="SpanishLatin" xml:space="preserve">
-    <value>الإسبانية (أمريكا اللاتينية)</value>
+    <value>Испнский (Латиноамериканский)</value>
   </data>
   <data name="SRefresh" xml:space="preserve">
-    <value>Refresh</value>
-  </data>
-  <data name="State" xml:space="preserve">
-    <value>حالة</value>
+    <value>Обновить</value>
   </data>
   <data name="StaticKey" xml:space="preserve">
-    <value>مفتاح ثابت</value>
+    <value>Статичкеский ключ</value>
   </data>
   <data name="StaticKeyNotWorking" xml:space="preserve">
-    <value>{0} لا يعمل مع ملفات PAK الخاصة بك</value>
+    <value>{0} не работает с вашими паками</value>
   </data>
   <data name="Stop" xml:space="preserve">
-    <value>قف</value>
+    <value>Остановить</value>
   </data>
   <data name="Success" xml:space="preserve">
-    <value>نجاح</value>
+    <value>Успешно</value>
   </data>
   <data name="TB" xml:space="preserve">
     <value>TB</value>
   </data>
   <data name="TextToFind" xml:space="preserve">
-    <value>نص للبحث:</value>
+    <value>Текст для поиска:</value>
   </data>
   <data name="TimeElapsed" xml:space="preserve">
-    <value>الوقت المنقضي {0} مللي ثانية</value>
-  </data>
-  <data name="TotalAssetsLoaded" xml:space="preserve">
-    <value>تم تحميل أصول {0}</value>
+    <value>Прошло времени {0}мс</value>
   </data>
   <data name="TotalSize" xml:space="preserve">
-    <value>الحجم الإجمالي</value>
+    <value>Общий размер</value>
   </data>
   <data name="TraditionalChinese" xml:space="preserve">
-    <value>اللغة الصينية</value>
+    <value>Китайский (Традиционный)</value>
   </data>
   <data name="TranslatorsF" xml:space="preserve">
-    <value>المترجمون</value>
+    <value>Переводчики</value>
   </data>
   <data name="Turkish" xml:space="preserve">
-    <value>اللغة التركية</value>
-  </data>
-  <data name="UnhandledExceptionOccured" xml:space="preserve">
-    <value>An unhandled exception occurred: {0}</value>
+    <value>Турецкий</value>
   </data>
   <data name="Update" xml:space="preserve">
-    <value>تحديث</value>
+    <value>Обновить</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
-    <value>تحديث متوفر</value>
+    <value>Доступно обновление</value>
   </data>
   <data name="UpdateAvailableConfirm" xml:space="preserve">
-    <value>FModel {0} متاح. أنت تستخدم الإصدار {1}. هل تريد تحديث التطبيق الآن؟</value>
+    <value>Доступна новая версия Fmodel {0}. Вы используйте версию {1}. Хотите обновить версию сейчас?</value>
   </data>
   <data name="UpdateCheckFailed" xml:space="preserve">
-    <value>فشل التحقق من التحديث</value>
+    <value>При проверке обновления произошла ошибка</value>
   </data>
   <data name="UpdateReachServerProblem" xml:space="preserve">
-    <value>هناك مشكلة في الوصول إلى خادم التحديث ، يرجى التحقق من اتصالك بالإنترنت أو إعادة المحاولة لاحقًا.</value>
+    <value>Возникла проблема при попытке подключения к серверу обновлений, пожалуйста проверьте своё соединение с интернетом или попробуйте позже</value>
   </data>
   <data name="UseGameColors" xml:space="preserve">
-    <value>استخدم ألوان اللعبة</value>
+    <value>Использовать цвета из игры</value>
   </data>
   <data name="UseItemShopIcon" xml:space="preserve">
-    <value>استخدم أيقونة محل الأدوات</value>
+    <value>Использовать иконки магазина</value>
   </data>
   <data name="UseWatermark" xml:space="preserve">
-    <value>watermark استخدم</value>
+    <value>Использовать водяной знак</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>الإصدار</value>
+    <value>Версия</value>
   </data>
   <data name="Volume" xml:space="preserve">
-    <value>الصوت</value>
+    <value>Громкость звука</value>
   </data>
   <data name="Waiting" xml:space="preserve">
-    <value>انتظار</value>
+    <value>Ожидание</value>
   </data>
   <data name="Warning" xml:space="preserve">
-    <value>تحذير</value>
+    <value>Внимание</value>
   </data>
   <data name="Watermark" xml:space="preserve">
-    <value>Watermark</value>
+    <value>Водяной знак</value>
   </data>
   <data name="YesShowChangelog" xml:space="preserve">
-    <value>نعم (عرض سجل التغيير)</value>
+    <value>Да (Посмотреть список изменений)</value>
   </data>
   <data name="Yes" xml:space="preserve">
-    <value>نعم</value>
+    <value>Да</value>
+  </data>
+  <data name="AboutToDownload" xml:space="preserve">
+    <value>Вы собираетесь загрузить {0}, размер которого {1}</value>
+  </data>
+  <data name="AddSeparator" xml:space="preserve">
+    <value>Добавить перегородку</value>
+  </data>
+  <data name="Analyzing" xml:space="preserve">
+    <value>Анализ {0}</value>
+  </data>
+  <data name="Asset" xml:space="preserve">
+    <value>Информация</value>
+  </data>
+  <data name="Assets" xml:space="preserve">
+    <value>Функции</value>
+  </data>
+  <data name="AudioPlayer" xml:space="preserve">
+    <value>Аудиоплеер</value>
+  </data>
+  <data name="AutoOpenSounds" xml:space="preserve">
+    <value>Автоматически открывать звуки</value>
+  </data>
+  <data name="CaseSensitive" xml:space="preserve">
+    <value>С учетом регистра</value>
+  </data>
+  <data name="Compression" xml:space="preserve">
+    <value>Сжатие</value>
+  </data>
+  <data name="ContributorsF" xml:space="preserve">
+    <value>Помощники</value>
+  </data>
+  <data name="Difference" xml:space="preserve">
+    <value>Отличающиеся</value>
+  </data>
+  <data name="DirectoryPath" xml:space="preserve">
+    <value>Путь директории</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Длительность</value>
+  </data>
+  <data name="Encrypted" xml:space="preserve">
+    <value>Зашифрованный</value>
+  </data>
+  <data name="Extract" xml:space="preserve">
+    <value>Извлечь</value>
+  </data>
+  <data name="ExtractDirectory" xml:space="preserve">
+    <value>Открыть директорию</value>
+  </data>
+  <data name="Extraction" xml:space="preserve">
+    <value>Извлечение</value>
+  </data>
+  <data name="FilePath" xml:space="preserve">
+    <value>Путь файла</value>
+  </data>
+  <data name="GoTo" xml:space="preserve">
+    <value>Перейти</value>
+  </data>
+  <data name="Hsv" xml:space="preserve">
+    <value>Оттенок, Насыщенность, Значение</value>
+  </data>
+  <data name="Hue" xml:space="preserve">
+    <value>Оттенок</value>
+  </data>
+  <data name="Include" xml:space="preserve">
+    <value>Форматы</value>
+  </data>
+  <data name="IsPartOf" xml:space="preserve">
+    <value>Находится в</value>
+  </data>
+  <data name="Listening" xml:space="preserve">
+    <value>Прослушиватся - {0}</value>
+  </data>
+  <data name="MountedPakTo" xml:space="preserve">
+    <value>{0} пермещено в {1}</value>
+  </data>
+  <data name="MountPoint" xml:space="preserve">
+    <value>Путь к файлам</value>
+  </data>
+  <data name="NoDataToExport" xml:space="preserve">
+    <value>На данный момент нет данных для экспорта</value>
+  </data>
+  <data name="NoDataToSave" xml:space="preserve">
+    <value>В настоящее время нет данных для сохранения</value>
+  </data>
+  <data name="NoImageToSave" xml:space="preserve">
+    <value>На данный момент нет изображения для сохранения</value>
+  </data>
+  <data name="NoInternet" xml:space="preserve">
+    <value>У вас имеются пробелмы с подключением к интеренету</value>
+  </data>
+  <data name="Offsets" xml:space="preserve">
+    <value>Смещение</value>
+  </data>
+  <data name="ParsingNotSupported" xml:space="preserve">
+    <value>Просмотр {0} файлов на данный момент не поддерижвается.</value>
+  </data>
+  <data name="Path" xml:space="preserve">
+    <value>Путь</value>
+  </data>
+  <data name="PathChanged" xml:space="preserve">
+    <value>Путь к FModel был изменен</value>
+  </data>
+  <data name="PathChangedRestart" xml:space="preserve">
+    <value>FModel требует перезапуска, потому что вы указали новый путь</value>
+  </data>
+  <data name="Popup" xml:space="preserve">
+    <value>Всплывающее</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Обработка</value>
+  </data>
+  <data name="ReplaceWith" xml:space="preserve">
+    <value>Заменить на</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>Размер</value>
+  </data>
+  <data name="SearchIn" xml:space="preserve">
+    <value>Поиск в</value>
+  </data>
+  <data name="SearchUp" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>Положение</value>
+  </data>
+  <data name="UnhandledExceptionOccured" xml:space="preserve">
+    <value>Произошла непредвиденная ошибка: {0}</value>
   </data>
   <data name="UseDiscordRpc" xml:space="preserve">
-    <value>استخدم Discord RPC</value>
+    <value>Использовать Discord RPC</value>
   </data>
   <data name="SaveDirectory" xml:space="preserve">
-    <value>احفظ المجلد</value>
+    <value>Сохранить дерикторию</value>
   </data>
   <data name="NoImageToCopy" xml:space="preserve">
-    <value>لا يوجد حاليا صورة لنسخها</value>
+    <value>Нет изображения для копирования</value>
   </data>
   <data name="CopyImage" xml:space="preserve">
-    <value>انسخ الصورة</value>
+    <value>Скопировать изображение</value>
+  </data>
+  <data name="FyiTitle" xml:space="preserve">
+    <value>Для Вашей информации:</value>
   </data>
   <data name="UseFEnglish" xml:space="preserve">
-    <value>استخدم Fmodel باللغة الإنجليزية</value>
+    <value>Использовать FModel на Английском</value>
   </data>
 </root>

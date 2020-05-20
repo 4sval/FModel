@@ -9,7 +9,9 @@
         xmlns:utils="clr-namespace:FModel.Utils"
         mc:Ignorable="d"
         Style="{StaticResource {x:Type Window}}"
-        Title="FModel" Height="800" MinHeight="800" Width="1300" MinWidth="1300"
+        Title="FModel"
+        Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={utils:Screens}, ConverterParameter='0.80' }"
+        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={utils:Screens}, ConverterParameter='0.75' }"
         WindowStartupLocation="CenterScreen" Icon="FModel.ico"
         Loaded="OnLoaded" Closing="OnClosing">
     <Window.CommandBindings>

@@ -26,7 +26,8 @@ namespace FModel
         {
             StartTimer = Stopwatch.StartNew();
 
-            //Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
+            if (FModel.Properties.Settings.Default.UseEnglish)
+                Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
 
             DebugHelper.Init(LogsFilePath);
             DebugHelper.WriteLine("{0} {1}", "[FModel]", "––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––");

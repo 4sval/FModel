@@ -141,23 +141,24 @@ namespace PakReader.Parsers.Objects
                 {
                     var data = new byte[(Size & 15) == 0 ? Size : ((Size / 16) + 1) * 16];
                     stream.Read(data);
+                    byte[] decrypted = AESDecryptor.DecryptAES(data, key);
 
-                    if (CompressionMethodIndex == 1)
-                        return new ArraySegment<byte>(AESDecryptor.DecryptAES(ZlibStream.UncompressBuffer(data), key), 0, (int)UncompressedSize);
-                    else
-                        return new ArraySegment<byte>(AESDecryptor.DecryptAES(data, key), 0, (int)UncompressedSize);
+                    if ((ECompressionFlags)CompressionMethodIndex == ECompressionFlags.COMPRESS_ZLIB) // zlib and pray
+                        decrypted = ZlibStream.UncompressBuffer(decrypted);
+                    return new ArraySegment<byte>(decrypted, 0, (int)UncompressedSize);
                 }
                 else
                 {
                     var data = new byte[UncompressedSize];
                     stream.Read(data);
-
-                    if (CompressionMethodIndex == 1)
+                    
+                    if ((ECompressionFlags)CompressionMethodIndex == ECompressionFlags.COMPRESS_ZLIB) // zlib and pray
                         return new ArraySegment<byte>(ZlibStream.UncompressBuffer(data));
-                    else
+                    else if ((ECompressionFlags)CompressionMethodIndex == ECompressionFlags.COMPRESS_None)
                         return new ArraySegment<byte>(data);
                 }
             }
+            throw new NotImplementedException("Decompression not yet implemented");
         }
 
         public static long GetSize(EPakVersion version, uint CompressionMethodIndex = 0, uint CompressionBlocksCount = 0)

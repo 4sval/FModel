@@ -302,6 +302,18 @@ namespace FModel.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseEnglish {
+            get {
+                return ((bool)(this["UseEnglish"]));
+            }
+            set {
+                this["UseEnglish"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool UseGameColors {
             get {
                 return ((bool)(this["UseGameColors"]));

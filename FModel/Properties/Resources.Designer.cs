@@ -2722,6 +2722,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Use FModel in English.
+        /// </summary>
+        public static string UseFEnglish {
+            get {
+                return ResourceManager.GetString("UseFEnglish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Use game colors.
         /// </summary>
         public static string UseGameColors {

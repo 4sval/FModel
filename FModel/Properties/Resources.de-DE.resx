@@ -841,6 +841,18 @@ Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leake
     <value>Ja (Änderungsprotokoll Anzeigen)</value>
   </data>
   <data name="UseDiscordRpc" xml:space="preserve">
-    <value>Verwende Discord RPC</value>
+    <value>Discord RPC benutzen</value>
+  </data>
+  <data name="SaveDirectory" xml:space="preserve">
+    <value>Speicherordner</value>
+  </data>
+  <data name="NoImageToCopy" xml:space="preserve">
+    <value>Es gibt aktuell kein Bild zum kopieren</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Bild kopieren</value>
+  </data>
+  <data name="UseFEnglish" xml:space="preserve">
+    <value>FModel in Englisch benutzen</value>
   </data>
 </root>

@@ -1094,4 +1094,7 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="NoImageToCopy" xml:space="preserve">
     <value>There is currently no image to copy</value>
   </data>
+  <data name="UseFEnglish" xml:space="preserve">
+    <value>Use FModel in English</value>
+  </data>
 </root>

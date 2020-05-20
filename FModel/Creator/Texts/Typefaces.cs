@@ -11,10 +11,10 @@ namespace FModel.Creator.Texts
 #pragma warning disable IDE0051
         private const string _BASE_PATH = "/Game/UI/Foundation/Fonts/";
         private const string _ASIA_ERINM = "AsiaERINM"; // korean fortnite
-        private const string _BURBANK_BIG_CONDENSED_BLACK = "BurbankBigCondensed-Black";
+        private const string _BURBANK_BIG_CONDENSED_BLACK = "BurbankBigCondensed-Black"; // russian
         private readonly Uri _BURBANK_BIG_CONDENSED_BOLD = new Uri("pack://application:,,,/Resources/BurbankBigCondensed-Bold.ttf"); // other languages fortnite unofficial
         private const string _BURBANK_BIG_REGULAR_BLACK = "BurbankBigRegular-Black";
-        private const string _BURBANK_BIG_REGULAR_BOLD = "BurbankBigRegular-Bold"; // official fortnite but it's too big so i use it for russian only
+        private const string _BURBANK_BIG_REGULAR_BOLD = "BurbankBigRegular-Bold"; // official fortnite ig
         private const string _BURBANK_SMALL_MEDIUM = "BurbankSmall-Medium";
         private const string _DROID_SANS_FORTNITE_SUBSET = "DroidSans-Fortnite-Subset";
         private const string _NIS_JYAU = "NIS_JYAU"; // japanese fortnite
@@ -55,7 +55,7 @@ namespace FModel.Creator.Texts
 
             string namePath = _BASE_PATH + (
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _ASIA_ERINM :
-                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _BURBANK_BIG_REGULAR_BOLD :
+                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _BURBANK_BIG_CONDENSED_BLACK :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NIS_JYAU :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Arabic ? _NOTO_SANS_ARABIC_BLACK :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTO_SANS_TC_BLACK :
@@ -83,7 +83,7 @@ namespace FModel.Creator.Texts
 
             string bundleNamePath = _BASE_PATH + (
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _ASIA_ERINM :
-                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _BURBANK_BIG_REGULAR_BOLD :
+                Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _BURBANK_BIG_CONDENSED_BLACK :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NIS_JYAU :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Arabic ? _NOTO_SANS_ARABIC_BLACK :
                 Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTO_SANS_TC_BLACK :

@@ -856,4 +856,10 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   <data name="CopyImage" xml:space="preserve">
     <value>Copier l'Image</value>
   </data>
+  <data name="NoImageToCopy" xml:space="preserve">
+    <value>Il n'y a actuellement aucune image à copier</value>
+  </data>
+  <data name="UseFEnglish" xml:space="preserve">
+    <value>Utiliser FModel en Anglais</value>
+  </data>
 </root>
