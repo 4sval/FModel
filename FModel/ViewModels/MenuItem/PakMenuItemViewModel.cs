@@ -291,7 +291,7 @@ namespace FModel.ViewModels.MenuItem
                 var newFiles = new Dictionary<string, FPakEntry>();
                 foreach (var fileReader in Globals.CachedPakFiles)
                     foreach (var files in fileReader.Value)
-                        newFiles.Add(files.Key, files.Value);
+                        newFiles[files.Key] = files.Value;
 
                 Paks.Merge(oldFilesTemp, out var oldFiles, string.Empty);
 
