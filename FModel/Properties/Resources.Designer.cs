@@ -768,8 +768,9 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à • Yanteh				• FunGames
-        ///• HYPEX				• Alexander.
+        ///   Recherche une chaîne localisée semblable à • Yanteh				• Maiky
+        ///• FunGames			• HYPEX
+        ///• Alexander.
         /// </summary>
         public static string DonatorsFDetails {
             get {

@@ -11,7 +11,7 @@
         Style="{StaticResource {x:Type Window}}"
         Title="FModel"
         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={utils:Screens}, ConverterParameter='0.80' }"
-        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={utils:Screens}, ConverterParameter='0.75' }"
+        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={utils:Screens}, ConverterParameter='0.70' }"
         WindowStartupLocation="CenterScreen" Icon="FModel.ico"
         Loaded="OnLoaded" Closing="OnClosing">
     <Window.CommandBindings>

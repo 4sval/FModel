@@ -252,22 +252,19 @@ namespace FModel.ViewModels.MenuItem
                 DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PakMenuItemViewModel]", "[Loader]", $"Backup file is {n}");
 
                 var oldFilesTemp = new Dictionary<string, FPakEntry>();
-                using FileStream fileStream = new FileStream(ofd.FileName, FileMode.Open);
-                BinaryReader checkReader = new BinaryReader(fileStream);
-                bool isLz4 = checkReader.ReadUInt32() == 0x184D2204u;
-                fileStream.Seek(0, SeekOrigin.Begin);
-                var target = new MemoryStream();
-                if (isLz4)
+                using (FileStream fileStream = new FileStream(ofd.FileName, FileMode.Open))
+                using (BinaryReader checkReader = new BinaryReader(fileStream))
+                using (MemoryStream target = new MemoryStream())
                 {
-                    using LZ4DecoderStream compressionStream = LZ4Stream.Decode(fileStream);
-                    compressionStream.CopyTo(target);
-                }
-                else
-                {
-                    fileStream.CopyTo(target);
-                }
-                using (target)
-                {
+                    bool isLz4 = checkReader.ReadUInt32() == 0x184D2204u;
+                    fileStream.Seek(0, SeekOrigin.Begin);
+                    if (isLz4)
+                    {
+                        using LZ4DecoderStream compressionStream = LZ4Stream.Decode(fileStream);
+                        compressionStream.CopyTo(target);
+                    }
+                    else fileStream.CopyTo(target);
+
                     target.Position = 0;
                     using BinaryReader reader = new BinaryReader(target);
                     while (reader.BaseStream.Position < reader.BaseStream.Length)

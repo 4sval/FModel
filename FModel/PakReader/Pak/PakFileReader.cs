@@ -443,11 +443,11 @@ namespace PakReader.Pak
         {
             if (!string.IsNullOrEmpty(path) && Entries.TryGetValue(CaseSensitive ? path : path.ToLowerInvariant(), out var entry))
             {
-                ret1 = entry.GetData(Stream, AesKey);
+                ret1 = entry.GetData(Stream, AesKey, Info.CompressionMethods);
                 if (entry.HasUexp())
                 {
-                    ret2 = entry.Uexp.GetData(Stream, AesKey);
-                    ret3 = entry.HasUbulk() ? entry.Ubulk.GetData(Stream, AesKey) : null;
+                    ret2 = entry.Uexp.GetData(Stream, AesKey, Info.CompressionMethods);
+                    ret3 = entry.HasUbulk() ? entry.Ubulk.GetData(Stream, AesKey, Info.CompressionMethods) : null;
                     return true;
                 }
                 else // return a fail but keep the uasset data
@@ -479,7 +479,7 @@ namespace PakReader.Pak
             return false;
         }
 
-        public ReadOnlyMemory<byte> GetFile(string path) => Entries[CaseSensitive ? path : path.ToLowerInvariant()].GetData(Stream, AesKey);
+        public ReadOnlyMemory<byte> GetFile(string path) => Entries[CaseSensitive ? path : path.ToLowerInvariant()].GetData(Stream, AesKey, Info.CompressionMethods);
 
         // IReadOnlyDictionary implementation (to prevent writing to the Entries dictionary
 
