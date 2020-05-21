@@ -53,7 +53,7 @@ namespace FModel.Utils
                         {
                             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[Localizations]", "[GameDict]", $"Feeding with {KvP.Value.Name} from {KvP.Value.PakFileName} Miam Miam!");
 
-                            using var asset = Assets.GetMemoryStream(mount + KvP.Value.GetPathWithoutExtension());
+                            using var asset = Assets.GetMemoryStream(fileReader.FileName, mount + KvP.Value.GetPathWithoutExtension());
                             asset.Position = 0;
                             foreach (var namespac in new LocResReader(asset).Entries)
                             {
@@ -61,7 +61,8 @@ namespace FModel.Utils
                                     _fortniteLocalizationDict[namespac.Key] = new Dictionary<string, string>();
 
                                 foreach (var key in namespac.Value)
-                                    _fortniteLocalizationDict[namespac.Key][key.Key] = key.Value;
+                                    if (!string.IsNullOrEmpty(key.Value))
+                                        _fortniteLocalizationDict[namespac.Key][key.Key] = key.Value;
                             }
                         }
                     }

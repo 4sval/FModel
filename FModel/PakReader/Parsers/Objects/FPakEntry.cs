@@ -143,8 +143,16 @@ namespace PakReader.Parsers.Objects
                     stream.Read(data, 0, data.Length);
                     byte[] decrypted = AESDecryptor.DecryptAES(data, key);
 
-                    if (CompressionMethodIndex != 0U) Decompress(stream, compressionMethods, decrypted);
-                    return new ArraySegment<byte>(decrypted, 0, (int)UncompressedSize);
+                    if (CompressionMethodIndex != 0U)
+                    {
+                        using var m = new MemoryStream(decrypted, 0, decrypted.Length)
+                        {
+                            Position = 0
+                        };
+                        Decompress(m, compressionMethods, decrypted);
+                    }
+
+                    return new ArraySegment<byte>(decrypted, 0, decrypted.Length <= (int)UncompressedSize ? decrypted.Length : (int)UncompressedSize);
                 }
                 else
                 {

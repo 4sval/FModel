@@ -1,6 +1,7 @@
 ﻿using FModel.Utils;
 using FModel.ViewModels.DataGrid;
 using FModel.ViewModels.ListBox;
+using PakReader.Pak;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -70,9 +71,9 @@ namespace FModel.ViewModels.Treeview
                 var m = Regex.Match(entry.Name, $"{fullPath}/*", RegexOptions.IgnoreCase);
                 if (m.Success)
                 {
-                    foreach (var entries in Globals.CachedPakFiles.Values)
+                    if (Globals.CachedPakFiles.TryGetValue(entry.PakFile, out PakFileReader pak))
                     {
-                        if (entries.TryGetValue("/" + entry.Name.Substring(0, entry.Name.LastIndexOf(".")), out var pakEntry)) // remove the extension to get the entry
+                        if (pak.TryGetValue("/" + entry.Name.Substring(0, entry.Name.LastIndexOf(".")), out var pakEntry)) // remove the extension to get the entry
                         {
                             entriesToExtract.Add(new ListBoxViewModel
                             {

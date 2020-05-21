@@ -72,7 +72,7 @@ namespace FModel.Utils
                             {
                                 case ".ini":
                                     {
-                                        using var asset = GetMemoryStream(mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         using var reader = new StreamReader(asset);
                                         AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), selected.PakEntry.GetNameWithExtension(), AvalonEditVm.IniHighlighter);
@@ -82,7 +82,7 @@ namespace FModel.Utils
                                 case ".uplugin":
                                 case ".upluginmanifest":
                                     {
-                                        using var asset = GetMemoryStream(mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         using var reader = new StreamReader(asset);
                                         AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), selected.PakEntry.GetNameWithExtension());
@@ -90,21 +90,21 @@ namespace FModel.Utils
                                     }
                                 case ".locmeta":
                                     {
-                                        using var asset = GetMemoryStream(mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new LocMetaReader(asset), Formatting.Indented), selected.PakEntry.GetNameWithExtension());
                                         break;
                                     }
                                 case ".locres":
                                     {
-                                        using var asset = GetMemoryStream(mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new LocResReader(asset).Entries, Formatting.Indented), selected.PakEntry.GetNameWithExtension());
                                         break;
                                     }
                                 case ".udic":
                                     {
-                                        using var asset = GetMemoryStream(mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new FOodleDictionaryArchive(asset).Header, Formatting.Indented), selected.PakEntry.GetNameWithExtension());
                                         break;
@@ -115,7 +115,7 @@ namespace FModel.Utils
                                         !selected.PakEntry.Name.Equals("FortniteGame/AssetRegistry.bin") && // this file is 85mb...
                                         selected.PakEntry.Name.Contains("AssetRegistry")) // only parse AssetRegistry (basically the ones in dynamic paks)
                                         {
-                                            using var asset = GetMemoryStream(mount + selected.PakEntry.GetPathWithoutExtension());
+                                            using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                             asset.Position = 0;
                                             AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new FAssetRegistryState(asset), Formatting.Indented), selected.PakEntry.GetNameWithExtension());
                                         }
@@ -123,7 +123,7 @@ namespace FModel.Utils
                                     }
                                 case ".png":
                                     {
-                                        using var asset = GetMemoryStream(mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         ImageBoxVm.imageBoxViewModel.Set(SKBitmap.Decode(asset), selected.PakEntry.GetNameWithExtension());
                                         break;
@@ -153,12 +153,11 @@ namespace FModel.Utils
             TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        public static MemoryStream GetMemoryStream(string pathWithoutExtension)
+        public static MemoryStream GetMemoryStream(string pakName, string pathWithoutExtension)
         {
-            foreach (PakFileReader pak in Globals.CachedPakFiles.Values)
+            if (Globals.CachedPakFiles.TryGetValue(pakName, out PakFileReader pak))
             {
-                if (!pak.Initialized) continue; // this should never happen because he can't be cached if not initialized
-                if (!pak.TryGetFile(pathWithoutExtension, out ArraySegment<byte> uasset, out _, out _))
+                if (pak.Initialized && !pak.TryGetFile(pathWithoutExtension, out ArraySegment<byte> uasset, out _, out _))
                 {
                     if (uasset != null)
                     {
@@ -255,10 +254,9 @@ namespace FModel.Utils
                 return true;
             }
 
-            foreach (PakFileReader pak in Globals.CachedPakFiles.Values)
+            if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out PakFileReader pak))
             {
-                if (!pak.Initialized) continue; // this should never happen because he can't be cached if not initialized
-                if (pak.TryGetFile(mount + entry.GetPathWithoutExtension(), out ArraySegment<byte> uasset, out ArraySegment<byte> uexp, out ArraySegment<byte> ubulk))
+                if (pak.Initialized && pak.TryGetFile(mount + entry.GetPathWithoutExtension(), out ArraySegment<byte> uasset, out ArraySegment<byte> uexp, out ArraySegment<byte> ubulk))
                 {
                     package = new PakPackage(uasset, uexp, ubulk);
                     _CachedFiles[entry] = new Dictionary<PakPackage, ArraySegment<byte>[]>
@@ -288,10 +286,9 @@ namespace FModel.Utils
                 return true;
             }
 
-            foreach (PakFileReader pak in Globals.CachedPakFiles.Values)
+            if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out PakFileReader pak))
             {
-                if (!pak.Initialized) continue; // this should never happen because he can't be cached if not initialized
-                if (pak.TryGetFile(mount + entry.GetPathWithoutExtension(), out ArraySegment<byte> uasset, out ArraySegment<byte> uexp, out ArraySegment<byte> ubulk))
+                if (pak.Initialized && pak.TryGetFile(mount + entry.GetPathWithoutExtension(), out ArraySegment<byte> uasset, out ArraySegment<byte> uexp, out ArraySegment<byte> ubulk))
                 {
                     arraySegment = new ArraySegment<byte>[] { uasset, uexp, ubulk };
                     return true;
@@ -363,7 +360,7 @@ namespace FModel.Utils
                             string name = Path.GetFileName(fullPath);
                             Directory.CreateDirectory(basePath + entry.GetPathWithoutFile());
 
-                            using var data = GetMemoryStream(r.MountPoint + entry.GetPathWithoutExtension());
+                            using var data = GetMemoryStream(entry.PakFileName, r.MountPoint + entry.GetPathWithoutExtension());
                             using var stream = new FileStream(fullPath, FileMode.Create, FileAccess.Write);
                             data.WriteTo(stream);
 
