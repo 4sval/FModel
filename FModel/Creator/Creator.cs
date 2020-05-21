@@ -122,6 +122,19 @@ namespace FModel.Creator
                         }
                         return true;
                     }
+                case "FortMtxOfferData":
+                    {
+                        BaseOffer icon = new BaseOffer(export);
+                        using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Opaque))
+                        using (var c = new SKCanvas(ret))
+                        {
+                            icon.Draw(c);
+
+                            Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                        }
+                        return true;
+                    }
                 case "FortItemSeriesDefinition":
                     {
                         BaseIcon icon = new BaseIcon();
