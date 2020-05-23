@@ -83,7 +83,7 @@ namespace FModel
                 AeConfiguration();
 
                 if (t.Exception != null) Tasks.TaskCompleted(t.Exception);
-                else StatusBarVm.statusBarViewModel.Set($"{Properties.Resources.Hello} {Environment.UserName} !", Properties.Resources.State);
+                else StatusBarVm.statusBarViewModel.Set($"{Properties.Resources.Hello} {Environment.UserName}!", Properties.Resources.State);
 
                 App.StartTimer.Stop();
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Startup Time]", $"{App.StartTimer.ElapsedMilliseconds}ms");
