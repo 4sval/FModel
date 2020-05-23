@@ -1085,4 +1085,10 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
     <value>Usar Discord RPC</value>
     <comment>Should Discord Rich Presence be enabled?</comment>
   </data>
+  <data name="NoImageToCopy" xml:space="preserve">
+    <value>Actualmente no hay imagen para copiar</value>
+  </data>
+  <data name="UseFEnglish" xml:space="preserve">
+    <value>Usar FModel en Inglés</value>
+  </data>
 </root>
