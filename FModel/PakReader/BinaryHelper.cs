@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace PakReader
 {
     static class BinaryHelper
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long Align(long val, long alignment)
+        {
+            return val + alignment - 1 & ~(alignment - 1);
+        }
+
         public static uint Flip(uint value) => (value & 0x000000FFU) << 24 | (value & 0x0000FF00U) << 8 |
          (value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24;
 

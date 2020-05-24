@@ -8,7 +8,8 @@
     xmlns:core="clr-namespace:ToastNotifications.Core;assembly=ToastNotifications"
     mc:Ignorable="d" Background="#FF232930"
     d:DesignHeight="60" d:DesignWidth="250"
-    d:DataContext="{d:DesignInstance vm:NotifierViewModel, IsDesignTimeCreatable=False}">
+    d:DataContext="{d:DesignInstance vm:NotifierViewModel, IsDesignTimeCreatable=False}"
+    MouseLeftButtonUp="NotificationDisplayPart_MouseLeftButtonUp">
     <Grid>
         <Border BorderThickness="2" BorderBrush="#7F748198">
             <Grid Margin="4">
@@ -20,11 +21,14 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <Image Grid.RowSpan="2" Source="{Binding Icon}"/>
                 <TextBlock Text="{Binding Title}" FontWeight="Bold" Foreground="White" Grid.Column="2" FontFamily="Calibri" />
                 <TextBlock Text="{Binding Message}" FontWeight="Light" Foreground="White" Grid.Row="1" Grid.Column="2" TextWrapping="Wrap"/>
+                <Image x:Name="OpenPath_Img" Grid.Row="2" Grid.Column="2" Source="/Resources/open-in-new.png" Visibility="Hidden"
+                       Width="12" Height="12" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
             </Grid>
         </Border>
     </Grid>

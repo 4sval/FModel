@@ -8,6 +8,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -19,44 +20,48 @@ namespace FModel.Grabber.Paks
         {
             PopulateBase();
 
-            if (string.IsNullOrEmpty(Properties.Settings.Default.PakPath))
+            await Task.Run(() =>
             {
-                var launcher = new FLauncher();
-                if ((bool)launcher.ShowDialog())
+                if (string.IsNullOrEmpty(Properties.Settings.Default.PakPath))
                 {
-                    Properties.Settings.Default.PakPath = launcher.Path;
-                    Properties.Settings.Default.Save();
-                }
-            }
-
-            // define the current game thank to the pak path
-            Folders.SetGameName(Properties.Settings.Default.PakPath);
-
-            // Add Pak Files
-            if (Directory.Exists(Properties.Settings.Default.PakPath))
-            {
-                foreach (string pak in Directory.GetFiles(Properties.Settings.Default.PakPath, "*.pak"))
-                {
-                    if (!Utils.Paks.IsFileReadLocked(new FileInfo(pak)))
+                    var launcher = new FLauncher();
+                    if ((bool)launcher.ShowDialog())
                     {
-                        PakFileReader pakFile = new PakFileReader(pak);
-                        DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Registering]", $"{pakFile.FileName} with GUID {pakFile.Info.EncryptionKeyGuid.Hex}");
+                        Properties.Settings.Default.PakPath = launcher.Path;
+                        Properties.Settings.Default.Save();
+                    }
+                }
 
-                        MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                // define the current game thank to the pak path
+                Folders.SetGameName(Properties.Settings.Default.PakPath);
+
+                // Add Pak Files
+                if (Directory.Exists(Properties.Settings.Default.PakPath))
+                {
+                    foreach (string pak in Directory.GetFiles(Properties.Settings.Default.PakPath, "*.pak"))
+                    {
+                        if (!Utils.Paks.IsFileReadLocked(new FileInfo(pak)))
                         {
-                            PakFile = pakFile,
-                            IsEnabled = false
-                        });
-                    }
-                    else
-                    {
-                        Globals.gNotifier.ShowCustomMessage(Properties.Resources.PakFiles, string.Format(Properties.Resources.PakFileLocked, Path.GetFileNameWithoutExtension(pak)));
-                        DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Locked]", pak);
+                            PakFileReader pakFile = new PakFileReader(pak);
+                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Registering]", $"{pakFile.FileName} with GUID {pakFile.Info.EncryptionKeyGuid.Hex}");
+
+                            Application.Current.Dispatcher.Invoke(delegate
+                            {
+                                MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                                {
+                                    PakFile = pakFile,
+                                    IsEnabled = false
+                                });
+                            });
+                        }
+                        else
+                        {
+                            FConsole.AppendText(string.Format(Properties.Resources.PakFileLocked, Path.GetFileNameWithoutExtension(pak)), FColors.Red, true);
+                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Locked]", pak);
+                        }
                     }
                 }
-            }
-
-            await Task.CompletedTask.ConfigureAwait(false);
+            });
         }
 
         private static void PopulateBase()

@@ -71,7 +71,7 @@ namespace FModel.ViewModels.AvalonEdit
                             if (File.Exists(saveFileDialog.FileName))
                             {
                                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AvalonEditViewModel]", $"{vm.OwerName} successfully saved");
-                                Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, Properties.Resources.DataSaved);
+                                Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, Properties.Resources.DataSaved, string.Empty, saveFileDialog.FileName);
                             }
                         }
                     }

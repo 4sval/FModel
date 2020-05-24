@@ -11,11 +11,12 @@ namespace FModel.ViewModels.Notifier
 
         public override NotificationDisplayPart DisplayPart => _displayPart ?? (_displayPart = new CustomNotifier(this));
 
-        public NotifierViewModel(string title, string message, string icon, MessageOptions messageOptions) : base(message, messageOptions)
+        public NotifierViewModel(string title, string message, string icon, string path, MessageOptions messageOptions) : base(message, messageOptions)
         {
             Title = title;
             Message = message;
             Icon = icon;
+            Path = path;
         }
 
         private string _title;
@@ -47,6 +48,17 @@ namespace FModel.ViewModels.Notifier
             set
             {
                 _icon = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _path;
+        public string Path
+        {
+            get { return _path; }
+            set
+            {
+                _path = value;
                 OnPropertyChanged();
             }
         }

@@ -145,7 +145,7 @@ namespace FModel.ViewModels.ImageBox
                             if (File.Exists(saveFileDialog.FileName))
                             {
                                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AvalonEditViewModel]", $"{vm.Name} successfully saved");
-                                Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, Properties.Resources.ImageSaved);
+                                Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, Properties.Resources.ImageSaved, string.Empty, saveFileDialog.FileName);
                             }
                         }
                     }

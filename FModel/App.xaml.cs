@@ -26,10 +26,11 @@ namespace FModel
         {
             StartTimer = Stopwatch.StartNew();
 
-            if (FModel.Properties.Settings.Default.UseEnglish)
+            DebugHelper.Init(LogsFilePath); // get old settings too
+
+            if (FModel.Properties.Settings.Default.UseEnglish) // use old settings here
                 Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
 
-            DebugHelper.Init(LogsFilePath);
             DebugHelper.WriteLine("{0} {1}", "[FModel]", "––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––");
             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Version]", Assembly.GetExecutingAssembly().GetName().Version.ToString());
             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Build]", Globals.Build);
@@ -64,7 +65,7 @@ namespace FModel
         {
             string errorMessage = string.Format(FModel.Properties.Resources.UnhandledExceptionOccured, e.Exception.Message);
             DebugHelper.WriteException(e.Exception, "thrown in App.xaml.cs by OnDispatcherUnhandledException");
-            DarkMessageBoxHelper.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            DarkMessageBoxHelper.Show(errorMessage, FModel.Properties.Resources.Error, MessageBoxButton.OK, MessageBoxImage.Error);
             e.Handled = true;
         }
 

@@ -417,18 +417,17 @@ namespace PakReader.Pak
                     // Get the right pointer to start copying the CompressionBlocks information from.
 
                     // Alignment of the compressed blocks
-                    var CompressedBlockAlignment = Encrypted ? AESDecryptor.BLOCK_SIZE : 1;
+                    var CompressedBlockAlignment = Encrypted ? 16 : 1;
 
                     // CompressedBlockOffset is the starting offset. Everything else can be derived from there.
                     long CompressedBlockOffset = BaseOffset + FPakEntry.GetSize(EPakVersion.LATEST, CompressionMethodIndex, CompressionBlocksCount);
                     for (int CompressionBlockIndex = 0; CompressionBlockIndex < CompressionBlocks.Length; ++CompressionBlockIndex)
                     {
-                        CompressionBlocks[CompressionBlockIndex] = new FPakCompressedBlock(CompressedBlockOffset, CompressedBlockOffset + BitConverter.ToUInt32(encodedPakEntries, pakLocation));
-                        pakLocation += sizeof(uint);
-                        {
-                            var toAlign = CompressionBlocks[CompressionBlockIndex].CompressedEnd - CompressionBlocks[CompressionBlockIndex].CompressedStart;
-                            CompressedBlockOffset += toAlign + CompressedBlockAlignment - (toAlign % CompressedBlockAlignment);
-                        }
+                        FPakCompressedBlock CompressionBlock = new FPakCompressedBlock(CompressedBlockOffset, CompressedBlockOffset + BitConverter.ToUInt32(encodedPakEntries, pakLocation));
+                        CompressionBlocks[CompressionBlockIndex] = CompressionBlock;
+                        CompressedBlockOffset += BinaryHelper.Align(CompressionBlock.CompressedEnd - CompressionBlock.CompressedStart, CompressedBlockAlignment);
+
+                        pakLocation += 4;
                     }
                 }
                 return new FPakEntry(this.FileName, name, Offset, Size, UncompressedSize, new byte[20], CompressionBlocks, CompressionBlockSize, CompressionMethodIndex, (byte)((Encrypted ? 0x01 : 0x00) | (Deleted ? 0x02 : 0x00)));

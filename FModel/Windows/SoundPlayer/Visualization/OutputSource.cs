@@ -60,6 +60,8 @@ namespace FModel.Windows.SoundPlayer.Visualization
             set
             {
                 volume = value;
+                Properties.Settings.Default.AudioPlayerVolume = volume.ToString();
+                Properties.Settings.Default.Save();
 
                 if (_soundOut != null)
                 {

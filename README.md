@@ -131,6 +131,7 @@ This software uses the following open source packages:
 - [Autoupdater.NET.Official](https://github.com/ravibpatel/AutoUpdater.NET)
 - [AvalonEdit](https://github.com/icsharpcode/AvalonEdit)
 - [CSCore](https://github.com/filoe/cscore)
+- [DotNetZip](https://github.com/haf/DotNetZip.Semverd)
 - [DiscordRichPresence](https://github.com/Lachee/discord-rpc-csharp)
 - [Extended.Wpf.Toolkit](https://github.com/xceedsoftware/wpftoolkit)
 - [K4os.Compression.LZ4.Streams](https://github.com/MiloszKrajewski/K4os.Compression.LZ4)

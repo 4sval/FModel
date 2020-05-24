@@ -1,5 +1,6 @@
 ﻿using FModel.Windows.SoundPlayer.Visualization;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows;
 
 namespace FModel.ViewModels.SoundPlayer
@@ -38,7 +39,7 @@ namespace FModel.ViewModels.SoundPlayer
         private string _content;
         private string _bytes;
         private string _duration;
-        private float _volume = 0.5f;
+        private float _volume = float.Parse(Properties.Settings.Default.AudioPlayerVolume, CultureInfo.InvariantCulture.NumberFormat);
 
         public ObservableCollection<Device> Devices
         {

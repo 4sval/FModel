@@ -58,7 +58,7 @@ namespace FModel.Utils
                                 {
                                     mainError = true;
                                     StatusBarVm.statusBarViewModel.Set(e.Message, Properties.Resources.Error);
-                                    FConsole.AppendText(string.Format(Properties.Resources.StaticKeyNotWorking, $"0x{sKey}"), FColors.Red);
+                                    FConsole.AppendText(string.Format(Properties.Resources.StaticKeyNotWorking, $"0x{sKey}"), FColors.Red, true);
                                     DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"0x{sKey} is NOT!!!! working with user's pak files");
                                 }
                             }
@@ -82,7 +82,7 @@ namespace FModel.Utils
                             }
                         }
 
-                        menuItem.IsEnabled = menuItem.PakFile.AesKey != null;
+                        menuItem.IsEnabled = menuItem.PakFile.AesKey != null || !menuItem.PakFile.Info.bEncryptedIndex;
                     }
                 }
             }

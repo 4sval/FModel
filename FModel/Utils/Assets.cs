@@ -344,7 +344,7 @@ namespace FModel.Utils
                                         if (autoSave)
                                             FConsole.AppendText(string.Format(Properties.Resources.DataExported, name), FColors.Green, true);
                                         else
-                                            Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, string.Format(Properties.Resources.DataExported, name));
+                                            Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, string.Format(Properties.Resources.DataExported, name), string.Empty, fullPath);
                                     }
                                 }
                             }
@@ -370,7 +370,7 @@ namespace FModel.Utils
                                 if (autoSave)
                                     FConsole.AppendText(string.Format(Properties.Resources.DataExported, name), FColors.Green, true);
                                 else
-                                    Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, string.Format(Properties.Resources.DataExported, name));
+                                    Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, string.Format(Properties.Resources.DataExported, name, string.Empty, fullPath));
                             }
                         }
                         break;

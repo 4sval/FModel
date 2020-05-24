@@ -122,7 +122,7 @@ namespace FModel.ViewModels.MenuItem
                 {
                     DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[CDN]", $"Downloaded {Header} in {downloadTimer.ElapsedMilliseconds} ms");
                     StatusBarVm.statusBarViewModel.Set(string.Format(Properties.Resources.DownloadSuccess, Header), Properties.Resources.Success);
-                    Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, string.Format(Properties.Resources.DownloadSuccess, Header), "/FModel;component/Resources/check-circle.ico");
+                    Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, string.Format(Properties.Resources.DownloadSuccess, Header), "/FModel;component/Resources/check-circle.ico", path);
                 }
                 else
                 {
@@ -202,7 +202,7 @@ namespace FModel.ViewModels.MenuItem
                 {
                     DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[BackupMenuItemViewModel]", "[Create]", $"{_backupFileName} successfully created");
                     StatusBarVm.statusBarViewModel.Set(string.Format(Properties.Resources.CreateSuccess, _backupFileName), Properties.Resources.Success);
-                    Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, string.Format(Properties.Resources.CreateSuccess, _backupFileName), "/FModel;component/Resources/check-circle.ico");
+                    Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, string.Format(Properties.Resources.CreateSuccess, _backupFileName), "/FModel;component/Resources/check-circle.ico", _backupFilePath);
                 }
                 else
                 {

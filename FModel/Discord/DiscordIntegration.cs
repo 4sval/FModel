@@ -50,8 +50,8 @@ namespace FModel.Discord
             {
                 Assets = _assets,
                 Timestamps = _baseTimestamp,
-                Details = string.IsNullOrEmpty(detail) ? _presence.Details : detail,
-                State = string.IsNullOrEmpty(state) ? _presence.State : state
+                Details = string.IsNullOrEmpty(detail) ? _presence?.Details : detail,
+                State = string.IsNullOrEmpty(state) ? _presence?.State : state
             });
             _client.Invoke();
         }

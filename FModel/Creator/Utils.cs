@@ -58,6 +58,10 @@ namespace FModel.Creator
         public static SKBitmap GetSoftObjectTexture(SoftObjectProperty s) => GetTexture(s.Value.AssetPathName.String);
         public static SKBitmap GetTexture(string s)
         {
+            // FortniteGame/Content/Catalog/DisplayAssets/DA_BattlePassBundle_2020.uasset
+            if (s.Equals("/Game/UI/Foundation/Textures/BattleRoyale/FeaturedItems/Outfit/T_UI_InspectScreen_annualPass"))
+                s += "_1024";
+
             PakPackage p = GetPropertyPakPackage(s);
             if (p.HasExport() && !p.Equals(default))
             {

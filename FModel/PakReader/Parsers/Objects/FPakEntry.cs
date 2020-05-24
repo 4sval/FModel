@@ -136,52 +136,67 @@ namespace PakReader.Parsers.Objects
         {
             lock (stream)
             {
-                stream.Position = Offset + StructSize;
-                if (Encrypted)
+                if (CompressionMethodIndex == 0U)
                 {
-                    var data = new byte[(Size & 15) == 0 ? Size : ((Size / 16) + 1) * 16];
-                    stream.Read(data, 0, data.Length);
-                    byte[] decrypted = AESDecryptor.DecryptAES(data, key);
-
-                    if (CompressionMethodIndex != 0U)
+                    stream.Position = Offset + StructSize;
+                    if (Encrypted)
                     {
-                        using var m = new MemoryStream(decrypted, 0, decrypted.Length)
-                        {
-                            Position = 0
-                        };
-                        Decompress(m, compressionMethods, decrypted);
+                        var data = new byte[(Size & 15) == 0 ? Size : (Size / 16 + 1) * 16];
+                        stream.Read(data, 0, data.Length);
+                        return new ArraySegment<byte>(AESDecryptor.DecryptAES(data, key), 0, (int)UncompressedSize);
                     }
-
-                    return new ArraySegment<byte>(decrypted, 0, decrypted.Length <= (int)UncompressedSize ? decrypted.Length : (int)UncompressedSize);
+                    else
+                    {
+                        var data = new byte[UncompressedSize];
+                        stream.Read(data, 0, data.Length);
+                        return new ArraySegment<byte>(data);
+                    }
                 }
                 else
                 {
                     var data = new byte[UncompressedSize];
-                    if (CompressionMethodIndex == 0U)
-                        stream.Read(data, 0, data.Length);
-                    else
-                        Decompress(stream, compressionMethods, data);
-
+                    Decompress(stream, key, compressionMethods, data);
                     return new ArraySegment<byte>(data);
                 }
             }
             throw new NotImplementedException("Decompression not yet implemented");
         }
 
-        private void Decompress(Stream stream, string[] compressionMethods, byte[] outData)
+        private void Decompress(Stream stream, byte[] key, string[] compressionMethods, byte[] outData)
         {
             if (compressionMethods == null || compressionMethods.Length == 0)
-                throw new IndexOutOfRangeException("CompressionMethods are null or empty");
+                throw new ArgumentOutOfRangeException(nameof(compressionMethods), "CompressionMethods are null or empty");
 
-            var compressionMethod = compressionMethods[CompressionMethodIndex - 1]; // -1 because we dont have 'NAME_None' in the array
-            Stream compressionStream = compressionMethod.ToLower() switch
+            string compressionMethod = compressionMethods[CompressionMethodIndex - 1]; // -1 because we dont have 'NAME_None' in the array
+            int bytesRead = 0;
+            for (int i = 0; i < CompressionBlocks.Length; i++)
             {
-                "zlib" => new ZlibStream(stream, CompressionMode.Decompress, true),
-                "gzip" => new GZipStream(stream, CompressionMode.Decompress, true),
-                _ => throw new NotImplementedException($"Decompression not yet implemented ({compressionMethod})")
-            };
-            compressionStream.Read(outData, 0, outData.Length);
-            compressionStream.Dispose();
+                stream.Position = Offset + CompressionBlocks[i].CompressedStart;
+                int uncompressedSize = (int)Math.Min(CompressionBlockSize, outData.Length - bytesRead);
+
+                byte[] blockBbuffer;
+                if (Encrypted)
+                {
+                    blockBbuffer = new byte[BinaryHelper.Align(CompressionBlocks[i].Size, AESDecryptor.BLOCK_SIZE)];
+                    stream.Read(blockBbuffer, 0, blockBbuffer.Length);
+                    blockBbuffer = AESDecryptor.DecryptAES(blockBbuffer, key);
+                }
+                else
+                {
+                    blockBbuffer = new byte[CompressionBlocks[i].Size];
+                    stream.Read(blockBbuffer, 0, blockBbuffer.Length);
+                }
+
+                using var blockMs = new MemoryStream(blockBbuffer, false);
+                using Stream compressionStream = compressionMethod switch
+                {
+                    "Zlib" => new ZlibStream(blockMs, CompressionMode.Decompress),
+                    "Gzip" => new GZipStream(blockMs, CompressionMode.Decompress),
+                    _ => throw new NotImplementedException($"Decompression not yet implemented ({compressionMethod})")
+                };
+
+                bytesRead += compressionStream.Read(outData, bytesRead, uncompressedSize);
+            }
         }
 
         public static long GetSize(EPakVersion version, uint CompressionMethodIndex = 0, uint CompressionBlocksCount = 0)

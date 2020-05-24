@@ -105,7 +105,7 @@ namespace PakReader
 
                     reader.ReadUInt32(); // SourceStringHash
 
-                    string EntryLocalizedString = string.Empty;
+                    string EntryLocalizedString;
                     if (VersionNumber >= Version.COMPACT)
                     {
                         int LocalizedStringIndex = reader.ReadInt32();
@@ -130,18 +130,16 @@ namespace PakReader
                         }
                         else
                         {
-                            //throw new IOException($"LocRes has an invalid localized string index for namespace '{Namespace}' and key '{Key}'. This entry will have no translation.");
+                            throw new IOException($"LocRes has an invalid localized string index for namespace '{Namespace}' and key '{Key}'. This entry will have no translation.");
                         }
                     }
                     else
                     {
                         EntryLocalizedString = reader.ReadFString();
                     }
-
-                    if (Key != null) Entries.Add(Key, EntryLocalizedString);
+                    Entries.Add(Key, EntryLocalizedString);
                 }
-
-                if (Namespace != null) this.Entries.Add(Namespace, Entries);
+                this.Entries.Add(Namespace, Entries);
             }
         }
 
