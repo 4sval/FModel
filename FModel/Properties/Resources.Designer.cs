@@ -884,6 +884,16 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap EIconDesign_NoBackground {
+            get {
+                object obj = ResourceManager.GetObject("EIconDesign_NoBackground", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap EIconDesign_NoText {
             get {
                 object obj = ResourceManager.GetObject("EIconDesign_NoText", resourceCulture);
@@ -1763,6 +1773,15 @@ namespace FModel.Properties {
         public static string No {
             get {
                 return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à No Background.
+        /// </summary>
+        public static string NoBackground {
+            get {
+                return ResourceManager.GetString("NoBackground", resourceCulture);
             }
         }
         

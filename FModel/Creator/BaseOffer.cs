@@ -26,27 +26,42 @@ namespace FModel.Creator
 
         public BaseOffer(IUExport export) : this()
         {
-            if (export.TryGetValue("DetailsImage", out var v1) && v1 is StructProperty s &&
-                s.Value is UObject typeImage && typeImage.TryGetValue("ResourceObject", out var v2) && v2 is ObjectProperty resourceObject)
+            if (export.GetExport<StructProperty>("DetailsImage", "TileImage") is StructProperty typeImage)
             {
-                IconImage = Utils.GetObjectTexture(resourceObject);
-            }
-
-            if (export.TryGetValue("Gradient", out var g) && g is StructProperty r && r.Value is UObject gradient)
-            {
-                if (gradient.TryGetValue("Start", out var s1) && s1 is StructProperty t1 && t1.Value is FLinearColor start &&
-                    gradient.TryGetValue("Stop", out var s2) && s2 is StructProperty t2 && t2.Value is FLinearColor stop)
+                if (typeImage.Value is UObject t && t.TryGetValue("ResourceObject", out var v) && v is ObjectProperty resourceObject)
                 {
-                    RarityBackgroundColors = new SKColor[2] { SKColor.Parse(stop.Hex), SKColor.Parse(start.Hex) };
+                    IconImage = Utils.GetObjectTexture(resourceObject);
                 }
             }
 
-            if (export.TryGetValue("Background", out var b) && b is StructProperty a && a.Value is FLinearColor background)
-                RarityBorderColor = SKColor.Parse(background.Hex);
+            if (export.GetExport<StructProperty>("Gradient") is StructProperty gradient)
+            {
+                if (gradient.Value is UObject g &&
+                    g.TryGetValue("Start", out var s1) && s1 is StructProperty t1 && t1.Value is FLinearColor start &&
+                    g.TryGetValue("Stop", out var s2) && s2 is StructProperty t2 && t2.Value is FLinearColor stop)
+                {
+                    RarityBackgroundColors = new SKColor[2] { SKColor.Parse(start.Hex), SKColor.Parse(stop.Hex) };
+                }
+            }
+
+            if (export.GetExport<StructProperty>("Background") is StructProperty background)
+            {
+                if (background.Value is FLinearColor b)
+                {
+                    RarityBorderColor = SKColor.Parse(b.Hex);
+                }
+            }
         }
 
-        public void Draw(SKCanvas c)
+        public void DrawBackground(SKCanvas c)
         {
+            if (RarityBackgroundColors[0] == RarityBackgroundColors[1])
+                RarityBackgroundColors[0] = RarityBorderColor;
+
+            RarityBackgroundColors[0].ToHsl(out var _, out var _, out var l1);
+            RarityBackgroundColors[1].ToHsl(out var _, out var _, out var l2);
+            bool reverse = l1 > l2;
+
             // border
             c.DrawRect(new SKRect(0, 0, Size, Size),
                 new SKPaint
@@ -64,10 +79,13 @@ namespace FModel.Creator
                     Shader = SKShader.CreateRadialGradient(
                         new SKPoint(Size / 2, Size / 2),
                         Size / 5 * 4,
-                        RarityBackgroundColors,
+                        new SKColor[2] { reverse ? RarityBackgroundColors[0] : RarityBackgroundColors[1], reverse ? RarityBackgroundColors[1] : RarityBackgroundColors[0] },
                         SKShaderTileMode.Clamp)
                 });
+        }
 
+        public void DrawImage(SKCanvas c)
+        {
             c.DrawBitmap(IconImage ?? FallbackImage, new SKRect(Margin, Margin, Size - Margin, Size - Margin),
                 new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
         }

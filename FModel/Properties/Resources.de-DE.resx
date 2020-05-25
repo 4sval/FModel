@@ -855,4 +855,7 @@ Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leake
   <data name="UseFEnglish" xml:space="preserve">
     <value>FModel in Englisch benutzen</value>
   </data>
+  <data name="NoBackground" xml:space="preserve">
+    <value>Kein Hintergrund</value>
+  </data>
 </root>

@@ -820,4 +820,7 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="UseFEnglish" xml:space="preserve">
     <value>استخدم Fmodel باللغة الإنجليزية</value>
   </data>
+  <data name="NoBackground" xml:space="preserve">
+    <value>أي خلفية</value>
+  </data>
 </root>

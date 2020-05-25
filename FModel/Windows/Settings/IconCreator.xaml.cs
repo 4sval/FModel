@@ -129,7 +129,7 @@ namespace FModel.Windows.Settings
             if (Designs_CbBox.HasItems && Designs_CbBox.SelectedIndex >= 0 && Designs_CbBox.SelectedItem is ComboBoxViewModel selectedItem)
             {
                 using SKBitmap rarityBase = SKBitmap.Decode(Application.GetResourceStream(new Uri($"pack://application:,,,/Resources/EIconDesign_{(EIconDesign)selectedItem.Property}.png")).Stream);
-                using var ret = new SKBitmap(512, 512, SKColorType.Rgba8888, SKAlphaType.Opaque);
+                using var ret = new SKBitmap(512, 512, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(ret);
                 c.DrawBitmap(rarityBase, new SKRect(0, 0, 512, 512),
                     new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });

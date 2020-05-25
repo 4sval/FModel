@@ -26,9 +26,10 @@ namespace FModel.ViewModels.ComboBox
         public static ObservableCollection<ComboBoxViewModel> designCbViewModel = new ObservableCollection<ComboBoxViewModel>
         {
             new ComboBoxViewModel { Id = 0, Content = Properties.Resources.Default, Property = EIconDesign.Default },
-            new ComboBoxViewModel { Id = 1, Content = Properties.Resources.NoText, Property = EIconDesign.NoText },
-            new ComboBoxViewModel { Id = 2, Content = Properties.Resources.Minimalist, Property = EIconDesign.Mini },
-            new ComboBoxViewModel { Id = 3, Content = Properties.Resources.Flat, Property = EIconDesign.Flat }
+            new ComboBoxViewModel { Id = 1, Content = Properties.Resources.NoBackground, Property = EIconDesign.NoBackground },
+            new ComboBoxViewModel { Id = 2, Content = Properties.Resources.NoText, Property = EIconDesign.NoText },
+            new ComboBoxViewModel { Id = 3, Content = Properties.Resources.Minimalist, Property = EIconDesign.Mini },
+            new ComboBoxViewModel { Id = 4, Content = Properties.Resources.Flat, Property = EIconDesign.Flat }
         };
 
         public static ObservableCollection<ComboBoxViewModel> gamesCbViewModel = new ObservableCollection<ComboBoxViewModel>();

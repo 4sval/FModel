@@ -54,6 +54,7 @@
     public enum EIconDesign : long
     {
         Default,
+        NoBackground,
         NoText,
         Mini,
         Flat

@@ -820,4 +820,7 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="NoImageToCopy" xml:space="preserve">
     <value>Al momento non ci sono immagini da copiare</value>
   </data>
+  <data name="NoBackground" xml:space="preserve">
+    <value>Nessuno Sfondo</value>
+  </data>
 </root>

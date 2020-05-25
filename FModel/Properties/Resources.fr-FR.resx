@@ -862,4 +862,7 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   <data name="UseFEnglish" xml:space="preserve">
     <value>Utiliser FModel en Anglais</value>
   </data>
+  <data name="NoBackground" xml:space="preserve">
+    <value>Pas de fond</value>
+  </data>
 </root>

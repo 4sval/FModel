@@ -92,29 +92,37 @@ namespace FModel.Creator
                     {
                         BaseIcon icon = new BaseIcon(export, exportType, ref assetName);
                         int height = icon.Size + icon.AdditionalSize;
-                        using (var ret = new SKBitmap(icon.Size, height, SKColorType.Rgba8888, SKAlphaType.Opaque))
+                        using (var ret = new SKBitmap(icon.Size, height, SKColorType.Rgba8888, SKAlphaType.Premul))
                         using (var c = new SKCanvas(ret))
                         {
-                            Rarity.DrawRarity(c, icon);
-                            LargeSmallImage.DrawPreviewImage(c, icon);
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
+                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
                             {
-                                Text.DrawBackground(c, icon);
-                                Text.DrawDisplayName(c, icon);
-                                Text.DrawDescription(c, icon);
-                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.Mini)
-                                {
-                                    if (!icon.ShortDescription.Equals(icon.DisplayName) && !icon.ShortDescription.Equals(icon.Description))
-                                        Text.DrawToBottom(c, icon, ETextSide.Left, icon.ShortDescription);
-                                    Text.DrawToBottom(c, icon, ETextSide.Right, icon.CosmeticSource);
-                                }
+                                Rarity.DrawRarity(c, icon);
                             }
-                            UserFacingFlag.DrawUserFacingFlags(c, icon);
 
-                            // has more things to show
-                            if (height > icon.Size)
+                            LargeSmallImage.DrawPreviewImage(c, icon);
+
+                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
                             {
-                                Statistics.DrawStats(c, icon);
+                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
+                                {
+                                    Text.DrawBackground(c, icon);
+                                    Text.DrawDisplayName(c, icon);
+                                    Text.DrawDescription(c, icon);
+                                    if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.Mini)
+                                    {
+                                        if (!icon.ShortDescription.Equals(icon.DisplayName) && !icon.ShortDescription.Equals(icon.Description))
+                                            Text.DrawToBottom(c, icon, ETextSide.Left, icon.ShortDescription);
+                                        Text.DrawToBottom(c, icon, ETextSide.Right, icon.CosmeticSource);
+                                    }
+                                }
+                                UserFacingFlag.DrawUserFacingFlags(c, icon);
+
+                                // has more things to show
+                                if (height > icon.Size)
+                                {
+                                    Statistics.DrawStats(c, icon);
+                                }
                             }
 
                             Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
@@ -125,10 +133,14 @@ namespace FModel.Creator
                 case "FortMtxOfferData":
                     {
                         BaseOffer icon = new BaseOffer(export);
-                        using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Opaque))
+                        using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Premul))
                         using (var c = new SKCanvas(ret))
                         {
-                            icon.Draw(c);
+                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                            {
+                                icon.DrawBackground(c);
+                            }
+                            icon.DrawImage(c);
 
                             Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
                             ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
