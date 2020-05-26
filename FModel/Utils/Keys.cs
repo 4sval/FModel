@@ -1,7 +1,6 @@
 ﻿using FModel.Logger;
 using FModel.ViewModels.MenuItem;
 using FModel.ViewModels.StatusBar;
-using FModel.Windows.CustomNotifier;
 using Newtonsoft.Json;
 using PakReader;
 using PakReader.Parsers.Objects;
@@ -77,7 +76,7 @@ namespace FModel.Utils
                             catch (System.Exception e)
                             {
                                 StatusBarVm.statusBarViewModel.Set(e.Message, Properties.Resources.Error);
-                                FConsole.AppendText(string.Format(Properties.Resources.DynamicKeyNotWorking, $"0x{dKey}", menuItem.PakFile.FileName), FColors.Red);
+                                FConsole.AppendText(string.Format(Properties.Resources.DynamicKeyNotWorking, $"0x{dKey}", menuItem.PakFile.FileName), FColors.Red, true);
                                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"0x{dKey} is NOT!!!! working with {menuItem.PakFile.FileName}");
                             }
                         }

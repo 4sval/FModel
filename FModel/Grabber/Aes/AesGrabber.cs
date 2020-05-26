@@ -10,7 +10,7 @@ namespace FModel.Grabber.Aes
 {
     static class AesGrabber
     {
-        public static async Task<bool> Load(bool forceReload = false, bool forceReloadMain = false)
+        public static async Task<bool> Load(bool forceReload = false)
         {
             if (Globals.Game == EGame.Fortnite && MenuItems.pakFiles.AtLeastOnePak())
             {
@@ -27,7 +27,7 @@ namespace FModel.Grabber.Aes
                     BenResponse benResponse = await AesData.GetData().ConfigureAwait(false);
                     if (benResponse != null)
                     {
-                        if (forceReloadMain || !staticKeys.TryGetValue(Globals.Game.ToString(), out var _) && !string.IsNullOrEmpty(benResponse.MainKey))
+                        if (!string.IsNullOrEmpty(benResponse.MainKey))
                         {
                             string mainKey = $"0x{benResponse.MainKey.Substring(2).ToUpper()}";
                             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"BenBot Main key is {mainKey}");

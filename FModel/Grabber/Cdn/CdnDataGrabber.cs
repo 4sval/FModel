@@ -25,13 +25,16 @@ namespace FModel.Grabber.Cdn
 
         public static async Task PopulateBackups()
         {
-            // Backup PAKs Menu Item
-            MenuItems.backupFiles.Add(new BackupMenuItemViewModel
+            Application.Current.Dispatcher.Invoke(delegate
             {
-                Header = Properties.Resources.BackupPaks,
-                Icon = new Image { Source = new BitmapImage(new Uri("Resources/backup-restore.png", UriKind.Relative)) }
+                // Backup PAKs Menu Item
+                MenuItems.backupFiles.Add(new BackupMenuItemViewModel
+                {
+                    Header = Properties.Resources.BackupPaks,
+                    Icon = new Image { Source = new BitmapImage(new Uri("Resources/backup-restore.png", UriKind.Relative)) }
+                });
+                MenuItems.backupFiles.Add(new Separator { });
             });
-            MenuItems.backupFiles.Add(new Separator { });
 
             List<BackupMenuItemViewModel> backupsInfos = await GetBackups().ConfigureAwait(false);
             if (backupsInfos.Any())

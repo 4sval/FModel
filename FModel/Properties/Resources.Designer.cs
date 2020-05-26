@@ -2656,12 +2656,11 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à • EN: Asval#2291			• FR: Asval#2291
         ///• DE: FunGames#6822		• IT: Angry Cat#5581
-        ///• ES: Maiky.M#9879		• ES-419: Maiky.M#9879
-        ///• AR: PsychoPast#0001		• JA: FNJPNews#7820
-        ///• KO: 				• PL:
-        ///• PT-BR: 				• RU: Seawod#4311
-        ///• TR: 				• ZH-CN:
-        ///• ZH-Hant:.
+        ///• ES: Maiky.M#9879		• AR: PsychoPast#0001
+        ///• JA: FNJPNews#7820		• KO:
+        ///• PL:				• PT-BR:
+        ///• RU: Seawod#4311		• TR:
+        ///• ZH-CN:				• ZH-Hant:.
         /// </summary>
         public static string TranslatorsFDetails {
             get {

@@ -292,13 +292,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="ContributorsF" xml:space="preserve">
     <value>Contributors</value>
   </data>
-  <data name="ContributorsFDetails" xml:space="preserve">
-    <value>• Waddlesworth			• Maiky
-• FunGames			• Not Officer
-• PsychoPast			• TSG
-• XTigerHyperX			• FireMonkey</value>
-    <comment>Do not translate</comment>
-  </data>
   <data name="CopySuccess" xml:space="preserve">
     <value>¡Copiado!</value>
   </data>
@@ -359,11 +352,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   </data>
   <data name="DonatorsF" xml:space="preserve">
     <value>Donadores</value>
-  </data>
-  <data name="DonatorsFDetails" xml:space="preserve">
-    <value>• Yanteh				• FunGames
-• HYPEX				• Alexander</value>
-    <comment>Do not translate</comment>
   </data>
   <data name="DownloadError" xml:space="preserve">
     <value>Error al descargar {0}</value>
@@ -972,17 +960,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   </data>
   <data name="TranslatorsF" xml:space="preserve">
     <value>Traductores</value>
-  </data>
-  <data name="TranslatorsFDetails" xml:space="preserve">
-    <value>• EN: Asval#2291			• FR: Asval#2291
-• DE: FunGames#6822		• IT: Angry Cat#5581
-• ES: Maiky.M#9879		• ES-419: Maiky.M#9879
-• AR: PsychoPast#0001		• JA: FNJPNews#7820
-• KO: 				• PL:
-• PT-BR: 				• RU: Seawod#4311
-• TR: 				• ZH-CN:
-• ZH-Hant:</value>
-    <comment>Do not translate</comment>
   </data>
   <data name="Turkish" xml:space="preserve">
     <value>Turco</value>

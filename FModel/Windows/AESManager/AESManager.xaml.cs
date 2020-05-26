@@ -121,7 +121,7 @@ namespace FModel.Windows.AESManager
         {
             if (Globals.Game == EGame.Fortnite)
             {
-                bool success = await AesGrabber.Load(true, true).ConfigureAwait(false);
+                bool success = await AesGrabber.Load(true).ConfigureAwait(false);
                 if (success)
                 {
                     Application.Current.Dispatcher.Invoke(delegate

@@ -1,7 +1,6 @@
 ﻿using FModel.Logger;
 using FModel.Utils;
 using FModel.ViewModels.MenuItem;
-using FModel.Windows.CustomNotifier;
 using FModel.Windows.Launcher;
 using PakReader.Pak;
 using System;
@@ -104,17 +103,21 @@ namespace FModel.Grabber.Paks
                     StaysOpenOnClick = true
                 }
             };
-            MenuItems.pakFiles.Add(parent);
 
-            // Load All
-            MenuItems.pakFiles.Add(new PakMenuItemViewModel
+            Application.Current.Dispatcher.Invoke(delegate
             {
-                Header = Properties.Resources.LoadAll,
-                Icon = new Image { Source = new BitmapImage(new Uri("Resources/folder-download.png", UriKind.Relative)) }
-            });
+                MenuItems.pakFiles.Add(parent);
 
-            // Separator
-            MenuItems.pakFiles.Add(new Separator { });
+                // Load All
+                MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                {
+                    Header = Properties.Resources.LoadAll,
+                    Icon = new Image { Source = new BitmapImage(new Uri("Resources/folder-download.png", UriKind.Relative)) }
+                });
+
+                // Separator
+                MenuItems.pakFiles.Add(new Separator { });
+            });
         }
     }
 }

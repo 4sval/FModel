@@ -72,11 +72,7 @@ namespace FModel
             DebugHelper.WriteUserSettings();
             Folders.CheckWatermarks();
 
-            await Task.WhenAll(
-                PaksGrabber.PopulateMenu(),
-                AesGrabber.Load(Properties.Settings.Default.ReloadAesKeys),
-                CdnDataGrabber.DoCDNStuff()
-            ).ContinueWith(t =>
+            await Task.WhenAll(Init()).ContinueWith(t =>
             {
                 Keys.NoKeyGoodBye();
                 MenuItems.FeedCustomGoTos();
@@ -89,6 +85,13 @@ namespace FModel
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Startup Time]", $"{App.StartTimer.ElapsedMilliseconds}ms");
             },
             TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
+        private async Task Init()
+        {
+            await PaksGrabber.PopulateMenu().ConfigureAwait(false);
+            await AesGrabber.Load(Properties.Settings.Default.ReloadAesKeys).ConfigureAwait(false);
+            await CdnDataGrabber.DoCDNStuff().ConfigureAwait(false);
         }
 
         private void AeConfiguration()
