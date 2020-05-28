@@ -1068,4 +1068,7 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="UseFEnglish" xml:space="preserve">
     <value>Usar FModel en Inglés</value>
   </data>
+  <data name="NoBackground" xml:space="preserve">
+    <value>Sin fondo</value>
+  </data>
 </root>
