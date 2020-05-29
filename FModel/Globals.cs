@@ -41,8 +41,10 @@ namespace FModel
         public const string Yellow = "#E5C07B";
         public const string Purple = "#C678DD";
         public const string Blue = "#61AFEF";
+        public const string Discord = "#8B9BD4";
         public const string Green = "#98C379";
         public const string LightGray = "#BBBBBB";
         public const string DarkGray = "#9B9B9B";
+        public const string White = "#EFEFEF";
     }
 }

@@ -82,8 +82,7 @@ namespace FModel.Windows.SoundPlayer
 
         private void UpdateVolume(object sender, RoutedEventArgs e)
         {
-            if (output.HasMedia)
-                output.Volume = InputFileVm.inputFileViewModel.Volume;
+            if (output.HasMedia) output.Volume = InputFileVm.inputFileViewModel.Volume;
         }
 
         private void OnPlayPauseClick(object sender, RoutedEventArgs e)

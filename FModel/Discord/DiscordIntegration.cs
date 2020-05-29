@@ -58,8 +58,11 @@ namespace FModel.Discord
 
         public static void Restore()
         {
-            _client.SetPresence(_presence);
-            _client.Invoke();
+            if (_presence != null)
+            {
+                _client.SetPresence(_presence);
+                _client.Invoke();
+            }
         }
 
         public static void SaveCurrentPresence() => _presence = _client.CurrentPresence;

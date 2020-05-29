@@ -51,6 +51,7 @@ namespace PakReader.Parsers.Objects
                 "VectorMaterialInput" => new FVectorMaterialInput(reader),
                 "ColorMaterialInput" => new FColorMaterialInput(reader),
                 "ExpressionInput" => new FMaterialInput(reader),
+                //"RawCurveTracks" => new FRawCurveTracks(reader),
                 _ => new UObject(reader, true),
             };
         }

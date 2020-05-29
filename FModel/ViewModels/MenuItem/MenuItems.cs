@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -95,18 +96,22 @@ namespace FModel.ViewModels.MenuItem
                 };
 
                 customGoTos.Add(newDir);
-                Properties.Settings.Default.CustomGoTos = JsonConvert.SerializeObject(MenuItems.customGoTos.Skip(2), Formatting.None);
+                Properties.Settings.Default.CustomGoTos = JsonConvert.SerializeObject(customGoTos.Skip(2), Formatting.None);
                 Properties.Settings.Default.Save();
             }
         }
 
         // PLEASE DON'T USE THIS FOR BACKUP FILES
         // comment methods you don't use, thx
-        public static bool AtLeastOnePak(this ObservableCollection<dynamic> o) => o.Any(x => !x.GetType().Equals(typeof(Separator)) && x.PakFile != null);
-        public static IEnumerable<PakMenuItemViewModel> GetMenuItemWithPakFiles(this ObservableCollection<dynamic> o) => o.Where(x => !x.GetType().Equals(typeof(Separator)) && x.PakFile != null).Select(x => (PakMenuItemViewModel)x);
-        public static int GetPakCount(this ObservableCollection<dynamic> o) => o.GetMenuItemWithPakFiles().Count();
-        public static IEnumerable<PakFileReader> GetPakFileReaders(this ObservableCollection<dynamic> o) => o.GetMenuItemWithPakFiles().Select(x => x.PakFile);
-        //public static IEnumerable<PakFileReader> GetStaticPakFileReaders(this ObservableCollection<dynamic> o) => o.GetPakFileReaders().Where(x => x.Info.EncryptionKeyGuid.Equals(new FGuid(0u, 0u, 0u, 0u)));
-        public static IEnumerable<PakFileReader> GetDynamicPakFileReaders(this ObservableCollection<dynamic> o) => o.GetPakFileReaders().Where(x => !x.Info.EncryptionKeyGuid.Equals(new FGuid(0u, 0u, 0u, 0u)));
+        public static bool AtLeastOnePak(this ObservableCollection<dynamic> o) => 
+            Application.Current.Dispatcher.Invoke(() => o.Any(x => !x.GetType().Equals(typeof(Separator)) && x.PakFile != null));
+        public static IEnumerable<PakMenuItemViewModel> GetMenuItemWithPakFiles(this ObservableCollection<dynamic> o) => 
+            Application.Current.Dispatcher.Invoke(() => o.Where(x => !x.GetType().Equals(typeof(Separator)) && x.PakFile != null).Select(x => (PakMenuItemViewModel)x));
+        public static int GetPakCount(this ObservableCollection<dynamic> o) =>
+            Application.Current.Dispatcher.Invoke(() => o.GetMenuItemWithPakFiles().Count());
+        public static IEnumerable<PakFileReader> GetPakFileReaders(this ObservableCollection<dynamic> o) =>
+            Application.Current.Dispatcher.Invoke(() => o.GetMenuItemWithPakFiles().Select(x => x.PakFile));
+        public static IEnumerable<PakFileReader> GetDynamicPakFileReaders(this ObservableCollection<dynamic> o) =>
+            Application.Current.Dispatcher.Invoke(() => o.GetPakFileReaders().Where(x => !x.Info.EncryptionKeyGuid.Equals(new FGuid(0u, 0u, 0u, 0u))));
     }
 }
