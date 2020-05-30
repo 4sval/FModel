@@ -65,19 +65,6 @@ namespace FModel.Utils
             return string.Empty;
         }
 
-        public static string GetEGL2PakFilesPath()
-        {
-            foreach (DriveInfo drive in DriveInfo.GetDrives())
-            {
-                string path = $"{drive.Name}FortniteGame\\Content\\Paks";
-                if (Directory.Exists(path))
-                    return path;
-            }
-
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[EGL2]", "Fortnite not found");
-            return string.Empty;
-        }
-
         public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files, string mount)
         {
             files = new Dictionary<string, FPakEntry>();
