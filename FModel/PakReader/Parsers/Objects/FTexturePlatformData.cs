@@ -23,9 +23,9 @@ namespace PakReader.Parsers.Objects
 
             Mips = reader.ReadTArray(() => new FTexture2DMipMap(reader, ubulk, bulkOffset));
             
-            if (reader.ReadInt32() != 0)
+            if (FModel.Globals.Game.ActualGame == FModel.EGame.Valorant || FModel.Globals.Game.Version > EPakVersion.FNAME_BASED_COMPRESSION_METHOD)
             {
-                throw new FileLoadException("Too lazy to add virtual textures right now");
+                if (reader.ReadInt32() != 0) throw new FileLoadException("Too lazy to add virtual textures right now");
             }
         }
     }

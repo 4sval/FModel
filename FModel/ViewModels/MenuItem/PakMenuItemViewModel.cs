@@ -193,7 +193,7 @@ namespace FModel.ViewModels.MenuItem
 
                 foreach (PakFileReader pakFile in MenuItems.pakFiles.GetPakFileReaders())
                 {
-                    if (pakFile.AesKey == null)
+                    if (pakFile.Info.bEncryptedIndex && pakFile.AesKey == null)
                         continue;
 
                     if (!Globals.CachedPakFiles.ContainsKey(pakFile.FileName))
@@ -218,7 +218,7 @@ namespace FModel.ViewModels.MenuItem
                         mode == EPakLoader.New ? Properties.Resources.NewFiles :
                         mode == EPakLoader.Modified ? Properties.Resources.ModifiedFiles :
                         mode == EPakLoader.NewModified ? Properties.Resources.NewModifiedFiles :
-                        mode == EPakLoader.Single ? Header.Substring(0, Header.LastIndexOf("-WindowsClient.pak")) :
+                        mode == EPakLoader.Single ? Header :
                         string.Empty
                         ));
 

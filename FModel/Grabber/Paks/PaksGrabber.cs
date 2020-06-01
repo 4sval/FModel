@@ -42,6 +42,7 @@ namespace FModel.Grabber.Paks
                         if (!Utils.Paks.IsFileReadLocked(new FileInfo(pak)))
                         {
                             PakFileReader pakFile = new PakFileReader(pak);
+                            Globals.Game.Version = pakFile.Info.Version;
                             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Registering]", $"{pakFile.FileName} with GUID {pakFile.Info.EncryptionKeyGuid.Hex}");
 
                             Application.Current.Dispatcher.Invoke(delegate
@@ -103,21 +104,17 @@ namespace FModel.Grabber.Paks
                     StaysOpenOnClick = true
                 }
             };
+            MenuItems.pakFiles.Add(parent);
 
-            Application.Current.Dispatcher.Invoke(delegate
+            // Load All
+            MenuItems.pakFiles.Add(new PakMenuItemViewModel
             {
-                MenuItems.pakFiles.Add(parent);
-
-                // Load All
-                MenuItems.pakFiles.Add(new PakMenuItemViewModel
-                {
-                    Header = Properties.Resources.LoadAll,
-                    Icon = new Image { Source = new BitmapImage(new Uri("Resources/folder-download.png", UriKind.Relative)) }
-                });
-
-                // Separator
-                MenuItems.pakFiles.Add(new Separator { });
+                Header = Properties.Resources.LoadAll,
+                Icon = new Image { Source = new BitmapImage(new Uri("Resources/folder-download.png", UriKind.Relative)) }
             });
+
+            // Separator
+            MenuItems.pakFiles.Add(new Separator { });
         }
     }
 }

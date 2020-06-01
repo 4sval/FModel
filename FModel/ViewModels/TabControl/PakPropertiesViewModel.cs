@@ -16,7 +16,7 @@ namespace FModel.ViewModels.TabControl
                 vm.PakName = pakFileReader.FileName;
                 vm.Version = ((int)pakFileReader.Info.Version).ToString();
                 vm.MountPoint = pakFileReader.MountPoint;
-                vm.AesKey = pakFileReader.AesKey.ToStringKey();
+                vm.AesKey = pakFileReader.AesKey?.ToStringKey();
                 vm.Guid = pakFileReader.Info.EncryptionKeyGuid.Hex;
                 vm.FileCount = (pakFileReader as IReadOnlyDictionary<string, FPakEntry>).Count.ToString();
             });

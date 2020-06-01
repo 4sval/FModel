@@ -39,7 +39,7 @@ namespace FModel.Windows.AESManager
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
                     dynamicAesKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.DynamicAesKeys);
 
-                if (staticKeys.TryGetValue(Globals.Game.ToString(), out var sKey))
+                if (staticKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var sKey))
                 {
                     StaticKey_TxtBox.Text = sKey;
                     DebugHelper.WriteLine("{0} {1} {2} {3} {4}", "[FModel]", "[Window]", "[AES Manager]", "[GET]", $"Main PAKs with key: {sKey}");
@@ -94,7 +94,7 @@ namespace FModel.Windows.AESManager
             if (!string.IsNullOrEmpty(Properties.Settings.Default.StaticAesKeys))
                 staticKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.StaticAesKeys);
 
-            staticKeys[Globals.Game.ToString()] = StaticKey_TxtBox.Text;
+            staticKeys[Globals.Game.ActualGame.ToString()] = StaticKey_TxtBox.Text;
             DebugHelper.WriteLine("{0} {1} {2} {3} {4}", "[FModel]", "[Window]", "[AES Manager]", "[SET]", $"Main PAKs with key: {StaticKey_TxtBox.Text}");
 
             Dictionary<string, string> dynamicKeys = new Dictionary<string, string>();
@@ -119,7 +119,7 @@ namespace FModel.Windows.AESManager
 
         private async void RefreshOnClick(object sender, RoutedEventArgs e)
         {
-            if (Globals.Game == EGame.Fortnite)
+            if (Globals.Game.ActualGame == EGame.Fortnite)
             {
                 bool success = await AesGrabber.Load(true).ConfigureAwait(false);
                 if (success)
@@ -134,7 +134,7 @@ namespace FModel.Windows.AESManager
                         if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
                             dynamicAesKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.DynamicAesKeys);
 
-                        if (staticKeys.TryGetValue(Globals.Game.ToString(), out var sKey))
+                        if (staticKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var sKey))
                         {
                             StaticKey_TxtBox.Text = sKey;
                             DebugHelper.WriteLine("{0} {1} {2} {3} {4}", "[FModel]", "[Window]", "[AES Manager]", "[UPDATE]", $"Main PAKs with key: {sKey}");

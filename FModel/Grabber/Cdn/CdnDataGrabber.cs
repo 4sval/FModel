@@ -69,7 +69,7 @@ namespace FModel.Grabber.Cdn
 
             if (_data != null)
             {
-                return JsonConvert.DeserializeObject<List<BackupMenuItemViewModel>>(JsonConvert.SerializeObject(_data.Backups[Globals.Game.ToString()]));
+                return JsonConvert.DeserializeObject<List<BackupMenuItemViewModel>>(JsonConvert.SerializeObject(_data.Backups[Globals.Game.ActualGame.ToString()]));
             }
             return new List<BackupMenuItemViewModel>();
         }

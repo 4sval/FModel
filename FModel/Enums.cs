@@ -4,7 +4,8 @@
     {
         Unknown,
         Fortnite,
-        Valorant
+        Valorant,
+        DeadByDaylight
     }
 
     public enum EFModel

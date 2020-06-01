@@ -67,7 +67,10 @@ namespace PakReader.Parsers.Objects
             }
             else
             {
-                CompressionMethodIndex = reader.ReadUInt32();
+                if (FModel.Globals.Game.ActualGame != FModel.EGame.Valorant && Version == EPakVersion.FNAME_BASED_COMPRESSION_METHOD)
+                    CompressionMethodIndex = reader.ReadByte();
+                else
+                    CompressionMethodIndex = reader.ReadUInt32();
             }
             if (Version <= EPakVersion.INITIAL)
             {

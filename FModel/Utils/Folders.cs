@@ -21,22 +21,24 @@ namespace FModel.Utils
             {
                 string p = pakPath.Substring(0, index);
                 string game = p.Substring(p.LastIndexOf("\\") + 1);
-                Globals.Game = game switch
+                Globals.Game.ActualGame = game switch
                 {
                     "FortniteGame" => EGame.Fortnite,
                     "ShooterGame" => EGame.Valorant,
+                    "DeadByDaylight" => EGame.DeadByDaylight,
                     _ => EGame.Unknown,
                 };
             }
         }
 
-        public static string GetGameName() => GetGameName(Globals.Game);
+        public static string GetGameName() => GetGameName(Globals.Game.ActualGame);
         public static string GetGameName(EGame game) =>
             game switch
             {
                 EGame.Unknown => string.Empty,
                 EGame.Fortnite => "FortniteGame",
                 EGame.Valorant => "ShooterGame",
+                EGame.DeadByDaylight => "DeadByDaylight",
                 _ => string.Empty,
             };
 

@@ -32,7 +32,7 @@ namespace FModel.Utils
                     if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
                         dynamicKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.DynamicAesKeys);
 
-                    bool isMainKey = staticKeys.TryGetValue(Globals.Game.ToString(), out var _);
+                    bool isMainKey = staticKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var _);
                     bool mainError = false; // used to avoid notifications about all static paks not working with the key
 
                     StatusBarVm.statusBarViewModel.Reset();
@@ -44,7 +44,7 @@ namespace FModel.Utils
                         if (!mainError && isMainKey)
                         {
                             if (menuItem.PakFile.Info.EncryptionKeyGuid.Equals(new FGuid(0u, 0u, 0u, 0u)) &&
-                                staticKeys.TryGetValue(Globals.Game.ToString(), out var sKey))
+                                staticKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var sKey))
                             {
                                 sKey = sKey.StartsWith("0x") ? sKey.Substring(2).ToUpperInvariant() : sKey.ToUpperInvariant();
                                 try

@@ -44,12 +44,12 @@ namespace FModel.Utils
                     {
                         Match m = null;
                         string mount = fileReader.MountPoint;
-                        if (Globals.Game == EGame.Fortnite)
+                        if (Globals.Game.ActualGame == EGame.Fortnite)
                             m = Regex.Match(mount + KvP.Value.Name, $"{Folders.GetGameName()}/Content/Localization/Fortnite.*?/{langCode}/Fortnite.*", RegexOptions.IgnoreCase);
-                        else if (Globals.Game == EGame.Valorant)
+                        else if (Globals.Game.ActualGame == EGame.Valorant)
                             m = Regex.Match(mount + KvP.Value.Name, $"{Folders.GetGameName()}/Content/Localization/Game/{langCode}/Game.locres", RegexOptions.IgnoreCase);
 
-                        if (m.Success)
+                        if (m != null && m.Success)
                         {
                             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[Localizations]", "[GameDict]", $"Feeding with {KvP.Value.Name} from {KvP.Value.PakFileName} Miam Miam!");
 
@@ -70,7 +70,7 @@ namespace FModel.Utils
             // online
             if (_hotfixLocalizationDict.Count <= 0)
             {
-                if (Globals.Game == EGame.Fortnite && NetworkInterface.GetIsNetworkAvailable())
+                if (Globals.Game.ActualGame == EGame.Fortnite && NetworkInterface.GetIsNetworkAvailable())
                 {
                     var hotfix = await Endpoints.GetJsonEndpoint<Dictionary<string, Dictionary<string, string>>>(Endpoints.BENBOT_HOTFIXES, GetLanguageCode()).ConfigureAwait(false);
                     if (hotfix?.Count > 0)
@@ -115,7 +115,7 @@ namespace FModel.Utils
         private static string GetLanguageCode() => GetLanguageCode((ELanguage)Properties.Settings.Default.AssetsLanguage);
         private static string GetLanguageCode(ELanguage lang)
         {
-            if (Globals.Game == EGame.Fortnite)
+            if (Globals.Game.ActualGame == EGame.Fortnite)
                 return lang switch
                 {
                     ELanguage.English => "en",
@@ -135,7 +135,7 @@ namespace FModel.Utils
                     ELanguage.TraditionalChinese => "zh-Hant",
                     _ => "en",
                 };
-            else if (Globals.Game == EGame.Valorant)
+            else if (Globals.Game.ActualGame == EGame.Valorant)
                 return lang switch
                 {
                     //Indonesian id-ID

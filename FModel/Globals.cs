@@ -1,4 +1,5 @@
 ﻿using PakReader.Pak;
+using PakReader.Parsers.Objects;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -23,7 +24,7 @@ namespace FModel
         });
         public static bool bSearch = false; // trigger the event to select a file thank to the search window
         public static string sSearch = string.Empty; // this will be the file name triggered
-        public static EGame Game = EGame.Unknown;
+        public static FGame Game = new FGame(EGame.Unknown, EPakVersion.LATEST);
         public const EFModel Build =
 #if RELEASE
             EFModel.Release;
@@ -32,6 +33,18 @@ namespace FModel
 #else
             EFModel.Unknown;
 #endif
+    }
+
+    public class FGame
+    {
+        public EGame ActualGame;
+        public EPakVersion Version;
+
+        public FGame(EGame game, EPakVersion version)
+        {
+            ActualGame = game;
+            Version = version;
+        }
     }
 
     static class FColors
