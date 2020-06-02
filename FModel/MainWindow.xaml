@@ -207,12 +207,17 @@
                     <TreeView x:Name="FModel_AssetsPathTree" SelectedItemChanged="OnSelectedPathChanged">
                         <TreeView.ContextMenu>
                             <ContextMenu>
-                                <MenuItem x:Name="FModel_MI_Directory_Extract" Header="{x:Static properties:Resources.ExtractDirectory}" Click="FModel_MI_Directory_Extract_Click">
+                                <MenuItem x:Name="FModel_MI_Directory_Extract" Header="{x:Static properties:Resources.Extract}" Click="FModel_MI_Directory_Extract_Click">
                                     <MenuItem.Icon>
                                         <Image Source="Resources/share-all.png"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem x:Name="FModel_MI_Directory_Save" Header="{x:Static properties:Resources.SaveDirectory}" Click="FModel_MI_Directory_Save_Click">
+                                <MenuItem x:Name="FModel_MI_Directory_Export" Header="{x:Static properties:Resources.Export}" Click="FModel_MI_Directory_Export_Click">
+                                    <MenuItem.Icon>
+                                        <Image Source="Resources/file-export.png"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem x:Name="FModel_MI_Directory_Save" Header="{x:Static properties:Resources.Save}" Click="FModel_MI_Directory_Save_Click">
                                     <MenuItem.Icon>
                                         <Image Source="Resources/sign-direction-plus.png"/>
                                     </MenuItem.Icon>

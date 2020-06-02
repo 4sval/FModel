@@ -389,6 +389,11 @@ namespace FModel
             if (FModel_AssetsPathTree.HasItems && FModel_AssetsPathTree.SelectedItem is TreeviewViewModel treeItem)
                 await SortedTreeviewVm.ExtractFolder(treeItem).ConfigureAwait(false);
         }
+        private async void FModel_MI_Directory_Export_Click(object sender, RoutedEventArgs e)
+        {
+            if (FModel_AssetsPathTree.HasItems && FModel_AssetsPathTree.SelectedItem is TreeviewViewModel treeItem)
+                await SortedTreeviewVm.ExportFolder(treeItem).ConfigureAwait(false);
+        }
         private void FModel_MI_Directory_Save_Click(object sender, RoutedEventArgs e)
         {
             if (FModel_AssetsPathTree.HasItems && FModel_AssetsPathTree.SelectedItem is TreeviewViewModel treeItem)

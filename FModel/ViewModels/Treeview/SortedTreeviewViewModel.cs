@@ -1,13 +1,17 @@
 ﻿using FModel.Utils;
+using FModel.ViewModels.Buttons;
 using FModel.ViewModels.DataGrid;
 using FModel.ViewModels.ListBox;
+using FModel.ViewModels.StatusBar;
 using PakReader.Pak;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
@@ -87,6 +91,46 @@ namespace FModel.ViewModels.Treeview
 
             if (entriesToExtract.Any())
                 await Assets.GetUserSelection(entriesToExtract);
+        }
+
+        public static async Task ExportFolder(TreeviewViewModel treeItem)
+        {
+            string fullPath = treeItem.GetFullPath().Substring(1);
+            Stopwatch timer = Stopwatch.StartNew();
+            ExtractStopVm.stopViewModel.IsEnabled = true;
+            ExtractStopVm.extractViewModel.IsEnabled = false;
+            StatusBarVm.statusBarViewModel.Set(string.Empty, Properties.Resources.Loading);
+            Tasks.TokenSource = new CancellationTokenSource();
+
+            await Task.Run(() =>
+            {
+                foreach (var entry in DataGridVm.dataGridViewModel) // current loaded pak files
+                {
+                    if (Tasks.TokenSource.IsCancellationRequested)
+                        throw new TaskCanceledException(Properties.Resources.Canceled);
+
+                    var m = Regex.Match(entry.Name, $"{fullPath}/*", RegexOptions.IgnoreCase);
+                    if (m.Success)
+                    {
+                        if (Globals.CachedPakFiles.TryGetValue(entry.PakFile, out PakFileReader pak))
+                        {
+                            if (pak.TryGetValue("/" + entry.Name.Substring(0, entry.Name.LastIndexOf(".")), out var pakEntry)) // remove the extension to get the entry
+                            {
+                                Assets.Export(pakEntry, true);
+                            }
+                        }
+                    }
+                }
+            }).ContinueWith(t =>
+            {
+                timer.Stop();
+                ExtractStopVm.stopViewModel.IsEnabled = false;
+                ExtractStopVm.extractViewModel.IsEnabled = true;
+
+                if (t.Exception != null) Tasks.TaskCompleted(t.Exception);
+                else StatusBarVm.statusBarViewModel.Set(string.Format(Properties.Resources.TimeElapsed, timer.ElapsedMilliseconds), Properties.Resources.Success);
+            },
+            TaskScheduler.FromCurrentSynchronizationContext());
         }
     }
 

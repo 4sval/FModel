@@ -213,7 +213,7 @@ namespace FModel.ViewModels.MenuItem
             {
                 DiscordIntegration.Update(
                     $"{Globals.CachedPakFiles.Count}/{MenuItems.pakFiles.GetPakCount()} {Properties.Resources.PakFiles}",
-                    string.Format("{0} - {1}", Globals.Game,
+                    string.Format("{0} - {1}", Globals.Game.ActualGame,
                         mode == EPakLoader.All ? Properties.Resources.AllFiles :
                         mode == EPakLoader.New ? Properties.Resources.NewFiles :
                         mode == EPakLoader.Modified ? Properties.Resources.ModifiedFiles :

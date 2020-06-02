@@ -956,6 +956,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Export Directory.
+        /// </summary>
+        public static string ExportDirectory {
+            get {
+                return ResourceManager.GetString("ExportDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Extract.
         /// </summary>
         public static string Extract {
