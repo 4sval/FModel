@@ -101,10 +101,6 @@ namespace FModel.Utils
                 return dRet;
             }
 
-            // i guess this save times
-            if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.English)
-                return defaultText;
-
             if (_fortniteLocalizationDict.Count > 0 &&
                 _fortniteLocalizationDict.TryGetValue(sNamespace, out var dict) &&
                 dict.TryGetValue(sKey, out var ret))
