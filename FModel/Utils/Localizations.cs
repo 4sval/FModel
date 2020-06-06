@@ -44,10 +44,13 @@ namespace FModel.Utils
                     {
                         Match m = null;
                         string mount = fileReader.MountPoint;
+                        string gameName = Folders.GetGameName();
                         if (Globals.Game.ActualGame == EGame.Fortnite)
-                            m = Regex.Match(mount + KvP.Value.Name, $"{Folders.GetGameName()}/Content/Localization/Fortnite.*?/{langCode}/Fortnite.*", RegexOptions.IgnoreCase);
+                            m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/Fortnite.*?/{langCode}/Fortnite.*", RegexOptions.IgnoreCase);
                         else if (Globals.Game.ActualGame == EGame.Valorant)
-                            m = Regex.Match(mount + KvP.Value.Name, $"{Folders.GetGameName()}/Content/Localization/Game/{langCode}/Game.locres", RegexOptions.IgnoreCase);
+                            m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/Game/{langCode}/Game.locres", RegexOptions.IgnoreCase);
+                        else if (Globals.Game.ActualGame == EGame.DeadByDaylight)
+                            m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/{gameName}/{langCode}/{gameName}.locres", RegexOptions.IgnoreCase);
 
                         if (m != null && m.Success)
                         {
@@ -157,6 +160,27 @@ namespace FModel.Utils
                     ELanguage.Turkish => "tr-TR",
                     ELanguage.Chinese => "zh-CN",
                     ELanguage.TraditionalChinese => "zh-TW",
+                    _ => "en",
+                };
+            else if (Globals.Game.ActualGame == EGame.DeadByDaylight)
+                return lang switch
+                {
+                    //Thailand th
+                    ELanguage.English => "en",
+                    ELanguage.French => "fr",
+                    ELanguage.German => "de",
+                    ELanguage.Italian => "it",
+                    ELanguage.Spanish => "es",
+                    ELanguage.SpanishLatin => "es-MX",
+                    ELanguage.Arabic => "ar",
+                    ELanguage.Japanese => "ja",
+                    ELanguage.Korean => "ko",
+                    ELanguage.Polish => "pl",
+                    ELanguage.PortugueseBrazil => "pt-BR",
+                    ELanguage.Russian => "ru",
+                    ELanguage.Turkish => "tr",
+                    ELanguage.Chinese => "zh-Hans",
+                    ELanguage.TraditionalChinese => "zh-Hant",
                     _ => "en",
                 };
             else

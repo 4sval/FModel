@@ -65,7 +65,7 @@ namespace PakReader.Parsers
 
                     if (pos + Export.SerialSize != Position)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Didn't read {Export.ObjectName} ({ObjectClassName}) correctly (at {Position}, should be {pos + Export.SerialSize}, {pos + Export.SerialSize - Position} behind)");
+                        System.Diagnostics.Debug.WriteLine($"[ExportType=${ObjectClassName.String}] Didn't read {Export.ObjectName} correctly (at {Position}, should be {pos + Export.SerialSize}, {pos + Export.SerialSize - Position} behind)");
                     }
                 }
             }
