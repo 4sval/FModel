@@ -23,12 +23,15 @@ namespace FModel.Grabber.Paks
             {
                 if (string.IsNullOrEmpty(Properties.Settings.Default.PakPath))
                 {
-                    var launcher = new FLauncher();
-                    if ((bool)launcher.ShowDialog())
+                    Application.Current.Dispatcher.Invoke(delegate
                     {
-                        Properties.Settings.Default.PakPath = launcher.Path;
-                        Properties.Settings.Default.Save();
-                    }
+                        var launcher = new FLauncher();
+                        if ((bool)launcher.ShowDialog())
+                        {
+                            Properties.Settings.Default.PakPath = launcher.Path;
+                            Properties.Settings.Default.Save();
+                        }
+                    });
                 }
 
                 // define the current game thank to the pak path

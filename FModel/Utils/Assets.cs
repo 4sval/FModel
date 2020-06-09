@@ -239,7 +239,9 @@ namespace FModel.Utils
                 }
 
                 // Creator Image
-                if (TryDrawIcon(entry.Name, p.GetFirstExportType(), p.GetFirstExport()))
+                if (Globals.Game.ActualGame == EGame.Valorant && TryDrawValorantIcon(entry.Name, p.GetSecondExportType(), p.GetSecondExport()))
+                    return p;
+                else if (TryDrawIcon(entry.Name, p.GetFirstExportType(), p.GetFirstExport()))
                     return p;
             }
 

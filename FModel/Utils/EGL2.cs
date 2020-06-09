@@ -25,9 +25,9 @@ namespace FModel.Utils
 
                 int stringLength = reader.ReadUInt16BE();
                 string cacheDirectory = Encoding.UTF8.GetString(reader.ReadBytes(stringLength));
-                if (Directory.Exists(cacheDirectory + "\\game\\FortniteGame\\Content\\Paks"))
+                if (Directory.Exists(cacheDirectory + "\\fn\\FortniteGame\\Content\\Paks"))
                 {
-                    return cacheDirectory + "\\game\\FortniteGame\\Content\\Paks";
+                    return cacheDirectory + "\\fn\\FortniteGame\\Content\\Paks";
                 }
             }
 

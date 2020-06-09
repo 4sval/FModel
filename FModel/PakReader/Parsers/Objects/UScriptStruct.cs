@@ -11,6 +11,7 @@ namespace PakReader.Parsers.Objects
         internal UScriptStruct(PackageReader reader, FName structName) : this(reader, structName.String) { }
         internal UScriptStruct(PackageReader reader, string structName)
         {
+            //System.Diagnostics.Debug.WriteLine(structName);
             Struct = structName switch
             {
                 "LevelSequenceObjectReferenceMap" => new FLevelSequenceObjectReferenceMap(reader),

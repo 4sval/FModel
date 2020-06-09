@@ -322,7 +322,15 @@ namespace FModel.ViewModels.MenuItem
                         break;
                 }
 
-                var deleted = oldFiles.Where(kvp => !newFiles.TryGetValue(kvp.Key, out var _) && kvp.Key.StartsWith("/FortniteGame/Content/Athena/Items/Cosmetics/")).ToDictionary(x => x.Key, x => x.Value);
+                string cosmeticsPath;
+                if (Globals.Game.ActualGame == EGame.Fortnite)
+                    cosmeticsPath = $"/{Folders.GetGameName()}/Content/Athena/Items/Cosmetics/";
+                else if (Globals.Game.ActualGame == EGame.Valorant)
+                    cosmeticsPath = $"/{Folders.GetGameName()}/Content/Labels/";
+                else
+                    cosmeticsPath = "/gqdozqhndpioqgnq/"; // just corrupting it so it doesn't trigger all assets
+
+                var deleted = oldFiles.Where(kvp => !newFiles.TryGetValue(kvp.Key, out var _) && kvp.Key.StartsWith(cosmeticsPath)).ToDictionary(x => x.Key, x => x.Value);
                 if (deleted.Count > 0)
                 {
                     FConsole.AppendText(Properties.Resources.RemovedRenamedCosmetics, FColors.Red, true);

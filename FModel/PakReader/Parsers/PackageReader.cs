@@ -49,6 +49,7 @@ namespace PakReader.Parsers
                         ObjectClassName = ImportMap[Export.ClassIndex.AsImport].ObjectName;
                     else
                         throw new FileLoadException("Can't get class name"); // Shouldn't reach this unless the laws of math have bent to MagmaReef's will
+                    if (ObjectClassName.String.Equals("BlueprintGeneratedClass")) continue;
 
                     var pos = Position = Export.SerialOffset - PackageFileSummary.TotalHeaderSize;
                     ExportTypes[i] = ObjectClassName.String;
@@ -65,7 +66,7 @@ namespace PakReader.Parsers
 
                     if (pos + Export.SerialSize != Position)
                     {
-                        System.Diagnostics.Debug.WriteLine($"[ExportType=${ObjectClassName.String}] Didn't read {Export.ObjectName} correctly (at {Position}, should be {pos + Export.SerialSize}, {pos + Export.SerialSize - Position} behind)");
+                        System.Diagnostics.Debug.WriteLine($"[ExportType={ObjectClassName.String}] Didn't read {Export.ObjectName} correctly (at {Position}, should be {pos + Export.SerialSize}, {pos + Export.SerialSize - Position} behind)");
                     }
                 }
             }

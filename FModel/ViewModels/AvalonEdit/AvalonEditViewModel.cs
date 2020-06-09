@@ -48,12 +48,12 @@ namespace FModel.ViewModels.AvalonEdit
                 {
                     if (autoSave)
                     {
-                        string path = Properties.Settings.Default.OutputPath + "\\JSONs\\" + Path.ChangeExtension(vm.OwerName, ".json");
+                        string path = Folders.GetUniqueFilePath(Properties.Settings.Default.OutputPath + "\\JSONs\\" + Path.ChangeExtension(vm.OwerName, ".json"));
                         File.WriteAllText(path, vm.Document.Text);
                         if (File.Exists(path))
                         {
                             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AvalonEditViewModel]", $"{vm.OwerName} successfully saved");
-                            FConsole.AppendText(string.Format(Properties.Resources.SaveSuccess, Path.ChangeExtension(vm.OwerName, ".json")), FColors.Green, true);
+                            FConsole.AppendText(string.Format(Properties.Resources.SaveSuccess, Path.GetFileName(path)), FColors.Green, true);
                         }
                     }
                     else
