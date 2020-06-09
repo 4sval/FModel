@@ -31,7 +31,7 @@ namespace FModel.Windows.Launcher
             Games_CbBox.ItemsSource = ComboBoxVm.gamesCbViewModel;
             GamesPath_TxtBox.Text = Properties.Settings.Default.PakPath;
 
-            (_, string _, string fortniteFilesPath) = Paks.GetFortnitePakFilesPath();
+            string fortniteFilesPath = Paks.GetFortnitePakFilesPath();
             if (!string.IsNullOrEmpty(fortniteFilesPath))
             {
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"Fortnite found at {fortniteFilesPath}");
@@ -53,6 +53,14 @@ namespace FModel.Windows.Launcher
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[RiotClientInstalls.json]", $"Valorant found at {valorantFilesPath}");
                 Globals.gNotifier.ShowCustomMessage("Valorant", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/valorant.live.ico");
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Valorant", Property = valorantFilesPath });
+            }
+
+            string borderlands3FilesPath = Paks.GetBorderlands3PakFilesPath();
+            if (!string.IsNullOrEmpty(borderlands3FilesPath))
+            {
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"Borderlands 3 found at {borderlands3FilesPath}");
+                Globals.gNotifier.ShowCustomMessage("Borderlands 3", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/borderlands3.ico");
+                ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Borderlands 3", Property = borderlands3FilesPath });
             }
 
             Games_CbBox.SelectedItem = ComboBoxVm.gamesCbViewModel.Where(x => x.Property.ToString() == Properties.Settings.Default.PakPath).FirstOrDefault();

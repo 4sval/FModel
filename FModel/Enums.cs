@@ -5,7 +5,8 @@
         Unknown,
         Fortnite,
         Valorant,
-        DeadByDaylight
+        DeadByDaylight,
+        Borderlands3
     }
 
     public enum EFModel

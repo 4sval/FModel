@@ -14,7 +14,7 @@ namespace FModel.Grabber.Aes
         {
             if (NetworkInterface.GetIsNetworkAvailable())
             {
-                (_, string fortniteVersion, string _) = Utils.Paks.GetFortnitePakFilesPath();
+                (_, string fortniteVersion, string _) = Utils.Paks.GetUEGameFilesPath("Fortnite");
                 BenResponse data = await Endpoints.GetJsonEndpoint<BenResponse>(Endpoints.BENBOT_AES, fortniteVersion).ConfigureAwait(false);
                 return data;
             }

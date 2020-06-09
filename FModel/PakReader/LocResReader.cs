@@ -87,13 +87,10 @@ namespace PakReader
                 {
                     reader.ReadUInt32(); // StrHash
                 }
-                var Namespace = reader.ReadFString();
+                string Namespace = reader.ReadFString();
 
-                var Entries = new Dictionary<string, string>();
-
-                // Read key count
                 uint KeyCount = reader.ReadUInt32();
-
+                Dictionary<string, string> Entries = new Dictionary<string, string>((int)KeyCount);
                 for (uint j = 0; j < KeyCount; j++)
                 {
                     // Read key
@@ -139,7 +136,7 @@ namespace PakReader
                     }
                     Entries.Add(Key, EntryLocalizedString);
                 }
-                this.Entries.Add(Namespace, Entries);
+                this.Entries.Add(Namespace ?? "", Entries);
             }
         }
 

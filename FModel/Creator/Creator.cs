@@ -7,7 +7,6 @@ using FModel.ViewModels.ImageBox;
 using PakReader.Parsers.Class;
 using SkiaSharp;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace FModel.Creator
 {
@@ -200,28 +199,6 @@ namespace FModel.Creator
                         return true;
                     }
             }
-            return false;
-        }
-
-        public static bool TryDrawValorantIcon(string assetPath, string exportType, IUExport export)
-        {
-            var d = new DirectoryInfo(assetPath);
-            string assetName = d.Name;
-            string assetFolder = d.Parent.Name;
-
-            //if (Regex.Match(exportType, $"{assetName.Substring(0, assetName.LastIndexOf("."))}_C", RegexOptions.IgnoreCase).Success)
-            //{
-            //    BaseValorant icon = new BaseValorant(export, assetFolder, ref assetName);
-            //    using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Premul))
-            //    using (var c = new SKCanvas(ret))
-            //    {
-                    
-
-            //        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
-            //        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
-            //    }
-            //    return true;
-            //}
             return false;
         }
     }

@@ -45,6 +45,19 @@ namespace FModel
             ActualGame = game;
             Version = version;
         }
+
+        public string GetName()
+        {
+            return ActualGame switch
+            {
+                EGame.Fortnite => "Fortnite",
+                EGame.Valorant => "Valorant",
+                EGame.DeadByDaylight => "Dead By Daylight",
+                EGame.Borderlands3 => "Borderlands 3",
+                EGame.Unknown => "Unknown",
+                _ => "Unknown",
+            };
+        }
     }
 
     static class FColors

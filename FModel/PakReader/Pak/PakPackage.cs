@@ -64,11 +64,9 @@ namespace PakReader.Pak
         }
 
         public string GetFirstExportType() => ExportTypes[0];
-        public string GetSecondExportType() => ExportTypes.Length > 1 ? ExportTypes[1] : GetFirstExportType();
 
         public IUExport[] GetAllExports() => Exports;
         public IUExport GetFirstExport() => Exports[0];
-        public IUExport GetSecondExport() => Exports.Length > 1 ? Exports[1] : GetFirstExport();
 
         public T GetExport<T>() where T : IUExport
         {

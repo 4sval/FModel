@@ -15,7 +15,7 @@ namespace FModel.Utils
         /// 3. AppFilesPath
         /// </summary>
         /// <returns></returns>
-        public static (string, string, string) GetFortnitePakFilesPath()
+        public static (string, string, string) GetUEGameFilesPath(string game)
         {
             foreach (DriveInfo drive in DriveInfo.GetDrives())
             {
@@ -28,17 +28,26 @@ namespace FModel.Utils
                     {
                         foreach (InstallationList installationList in launcherDat.InstallationList)
                         {
-                            if (installationList.AppName.Equals("Fortnite"))
-                                return (installationList.AppName, installationList.AppVersion, $"{installationList.InstallLocation}\\FortniteGame\\Content\\Paks");
+                            if (installationList.AppName.Equals(game))
+                                return (installationList.AppName, installationList.AppVersion, installationList.InstallLocation);
                         }
 
-                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", "Fortnite not found");
+                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"{game} not found");
                     }
                 }
             }
 
             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", "File not found");
             return (string.Empty, string.Empty, string.Empty);
+        }
+
+        public static string GetFortnitePakFilesPath()
+        {
+            (_, string _, string fortniteFilesPath) = GetUEGameFilesPath("Fortnite");
+            if (!string.IsNullOrEmpty(fortniteFilesPath))
+                return $"{fortniteFilesPath}\\FortniteGame\\Content\\Paks";
+            else
+                return string.Empty;
         }
 
         public static string GetValorantPakFilesPath()
@@ -63,6 +72,15 @@ namespace FModel.Utils
 
             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[RiotClientInstalls.json]", "File not found");
             return string.Empty;
+        }
+
+        public static string GetBorderlands3PakFilesPath()
+        {
+            (_, string _, string borderlands3FilesPath) = GetUEGameFilesPath("Catnip");
+            if (!string.IsNullOrEmpty(borderlands3FilesPath))
+                return $"{borderlands3FilesPath}\\OakGame\\Content\\Paks";
+            else
+                return string.Empty;
         }
 
         public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files, string mount)

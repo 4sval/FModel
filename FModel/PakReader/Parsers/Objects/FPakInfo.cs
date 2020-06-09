@@ -64,9 +64,6 @@ namespace PakReader.Parsers.Objects
             IndexSize = reader.ReadInt64();
             IndexHash = new FSHAHash(reader);
 
-            // I'd do some version checking here, but I'd rather not care to check that you loaded a pak file from 2003
-            // https://github.com/EpicGames/UnrealEngine/blob/8b6414ae4bca5f93b878afadcc41ab518b09984f/Engine/Source/Runtime/PakFile/Public/IPlatformFilePak.h#L185
-
             if (Version < EPakVersion.FNAME_BASED_COMPRESSION_METHOD)
             {
                 CompressionMethods = new string[] { "Zlib", "Gzip", "Oodle" };

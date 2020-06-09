@@ -1106,4 +1106,7 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="ExportDirectory" xml:space="preserve">
     <value>Export Directory</value>
   </data>
+  <data name="borderlands3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\borderlands3.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

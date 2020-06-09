@@ -27,6 +27,7 @@ namespace FModel.Utils
                     "FortniteGame" => EGame.Fortnite,
                     "ShooterGame" => EGame.Valorant,
                     "DeadByDaylight" => EGame.DeadByDaylight,
+                    "OakGame" => EGame.Borderlands3,
                     _ => EGame.Unknown,
                 };
             }
@@ -40,6 +41,7 @@ namespace FModel.Utils
                 EGame.Fortnite => "FortniteGame",
                 EGame.Valorant => "ShooterGame",
                 EGame.DeadByDaylight => "DeadByDaylight",
+                EGame.Borderlands3 => "OakGame",
                 _ => string.Empty,
             };
 
