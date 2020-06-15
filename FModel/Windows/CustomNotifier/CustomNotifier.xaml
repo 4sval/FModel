@@ -7,7 +7,7 @@
     xmlns:vm="clr-namespace:FModel.ViewModels.Notifier"
     xmlns:core="clr-namespace:ToastNotifications.Core;assembly=ToastNotifications"
     mc:Ignorable="d"
-    d:DesignHeight="60" d:DesignWidth="250" MaxWidth="250" MaxHeight="60" Background="#FF232930"
+    d:DesignHeight="60" d:DesignWidth="250" MaxWidth="250" MaxHeight="70" Background="#FF232930"
     d:DataContext="{d:DesignInstance vm:NotifierViewModel, IsDesignTimeCreatable=False}"
     MouseLeftButtonUp="NotificationDisplayPart_MouseLeftButtonUp">
     <Grid>

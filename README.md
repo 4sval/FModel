@@ -9,7 +9,7 @@ Over time, new features got added and new users discovered the program.
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [Installation](#installation-)
+- [Installation](#installation--)
 - [Acknowledgments](#acknowledgments)
 - [Support](#support-)
 
@@ -44,7 +44,7 @@ A few of the things you can do with FModel:
 * Audio Player
   - OGG / WAV files
   
-## Installation [![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total.svg?label=v3.1.0)](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)
+## Installation [![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total?label=latest-release&logo=GitHub)](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip) [![](https://img.shields.io/github/downloads/iAmAsval/FModel/total?label=all-releases&logo=GitHub)](https://github.com/iAmAsval/FModel/releases)
 
 To use FModel, you need to have [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-3.1.3-windows-x64-installer) installed on your computer
 * **[Download](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)** the latest version.

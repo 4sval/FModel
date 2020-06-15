@@ -18,9 +18,6 @@ namespace PakReader.Parsers.PropertyTagData
                 "DoubleProperty" => new DoubleProperty(reader, tag),
                 "ArrayProperty" => new ArrayProperty(reader, tag),
                 "StructProperty" => new StructProperty(reader, tag),
-                // No code in UE4 source despite these being technically serializable properties
-                //"VectorProperty" => new VectorProperty(reader, tag),
-                //"RotatorProperty" => new RotatorProperty(reader, tag),
                 "StrProperty" => new StrProperty(reader, tag),
                 "TextProperty" => new TextProperty(reader, tag),
                 "InterfaceProperty" => new InterfaceProperty(reader, tag),

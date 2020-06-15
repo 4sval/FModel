@@ -21,7 +21,7 @@ namespace PakReader.Parsers.Objects
                 "Vector4" => new FVector4(reader),
                 "Vector2D" => new FVector2D(reader),
                 "Box2D" => new FBox2D(reader),
-                "Box" => new FVector(reader),
+                "Box" => new FBox(reader),
                 "Vector" => new FVector(reader),
                 "Rotator" => new FRotator(reader),
                 "IntPoint" => new FIntPoint(reader),
