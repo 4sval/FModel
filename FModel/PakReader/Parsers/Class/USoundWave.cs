@@ -10,7 +10,7 @@ namespace PakReader.Parsers.Class
     {
         public bool bCooked;
         /** Whether this sound can be streamed to avoid increased memory usage. If using Stream Caching, use Loading Behavior instead to control memory usage. */
-        public bool bStreaming = false;
+        public bool bStreaming = true;
         /** Uncompressed wav data 16 bit in mono or stereo - stereo not allowed for multichannel data */
         public FByteBulkData RawData;
         /** GUID used to uniquely identify this node so it can be found in the DDC */
@@ -21,10 +21,6 @@ namespace PakReader.Parsers.Class
         public FName AudioFormat;
         /** audio data. */
         public FStreamedAudioChunk[] Chunks;
-        /** Cached sample rate for displaying in the tools */
-        //public int SampleRate;
-        /** Number of channels of multichannel data; 1 or 2 for regular mono and stereo files */
-        //public int NumChannels;
 
         byte[] sound;
         public byte[] Sound

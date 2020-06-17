@@ -55,7 +55,7 @@ namespace FModel
         }
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            FModelVersion_TxtBlck.Text += Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
+            FModelVersion_TxtBlck.Text += Assembly.GetExecutingAssembly().GetName().Version.ToString();
             FModel_StsBar.DataContext = StatusBarVm.statusBarViewModel;
             FModel_AvalonEdit.DataContext = AvalonEditVm.avalonEditViewModel;
             FModel_ImgBox.DataContext = ImageBoxVm.imageBoxViewModel;

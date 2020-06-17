@@ -39,7 +39,7 @@ namespace FModel.ViewModels.SoundPlayer
         private string _content;
         private string _bytes;
         private string _duration;
-        private float _volume = float.Parse(Properties.Settings.Default.AudioPlayerVolume);
+        private float _volume = float.TryParse(Properties.Settings.Default.AudioPlayerVolume, out var v) ? v : 0.5f;
 
         public ObservableCollection<Device> Devices
         {

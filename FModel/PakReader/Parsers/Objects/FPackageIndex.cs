@@ -14,12 +14,20 @@ namespace PakReader.Parsers.Objects
     {
         [JsonIgnore]
         public readonly int Index;
-        public FObjectResource Resource =>
-                    !IsNull ?
-                     IsImport ?
-                         Reader.ImportMap[AsImport] :
-        (FObjectResource)Reader.ExportMap[AsExport]
-                     : null;
+        public FObjectResource Resource
+        {
+            get
+            {
+                if (!IsNull)
+                {
+                    if (IsImport && AsImport < Reader.ImportMap.Length)
+                        return Reader.ImportMap[AsImport];
+                    else if (IsImport && AsExport < Reader.ExportMap.Length)
+                        return Reader.ExportMap[AsExport];
+                }
+                return null;
+            }
+        }
 
         readonly PackageReader Reader;
 

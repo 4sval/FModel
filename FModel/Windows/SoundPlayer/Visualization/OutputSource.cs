@@ -53,7 +53,7 @@ namespace FModel.Windows.SoundPlayer.Visualization
             }
         }
 
-        private float volume = float.Parse(Properties.Settings.Default.AudioPlayerVolume);
+        private float volume = float.TryParse(Properties.Settings.Default.AudioPlayerVolume, out var v) ? v : 0.5f;
         public float Volume
         {
             get { return _soundOut == null ? 0.0f : _soundOut.Volume; }
