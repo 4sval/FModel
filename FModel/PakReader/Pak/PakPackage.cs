@@ -81,10 +81,15 @@ namespace PakReader.Pak
         public T GetIndexedExport<T>(int index) where T : IUExport
         {
             var exports = Exports;
+            int foundCount = 0;
             for (int i = 0; i < exports.Length; i++)
             {
-                if (i == index && exports[i] is T)
-                    return (T)exports[i];
+                if (exports[i] is T)
+                {
+                    if (foundCount == index)
+                        return (T)exports[i];
+                    foundCount++;
+                }
             }
             return default;
         }
