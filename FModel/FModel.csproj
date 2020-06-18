@@ -78,6 +78,7 @@
     <None Remove="Resources\key.png" />
     <None Remove="Resources\lock-open-variant.ico" />
     <None Remove="Resources\magnify.png" />
+    <None Remove="Resources\minecraftdungeons.ico" />
     <None Remove="Resources\open-in-new.png" />
     <None Remove="Resources\pause.png" />
     <None Remove="Resources\paypal.png" />
@@ -181,6 +182,7 @@
     <Resource Include="Resources\key.png" />
     <Resource Include="Resources\lock-open-variant.ico" />
     <Resource Include="Resources\magnify.png" />
+    <Resource Include="Resources\minecraftdungeons.ico" />
     <Resource Include="Resources\open-in-new.png" />
     <Resource Include="Resources\pause.png" />
     <Resource Include="Resources\paypal.png" />

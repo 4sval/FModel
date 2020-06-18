@@ -28,6 +28,7 @@ namespace FModel.Utils
                     "ShooterGame" => EGame.Valorant,
                     "DeadByDaylight" => EGame.DeadByDaylight,
                     "OakGame" => EGame.Borderlands3,
+                    "Dungeons" => EGame.MinecraftDungeons,
                     _ => EGame.Unknown,
                 };
             }
@@ -42,6 +43,7 @@ namespace FModel.Utils
                 EGame.Valorant => "ShooterGame",
                 EGame.DeadByDaylight => "DeadByDaylight",
                 EGame.Borderlands3 => "OakGame",
+                EGame.MinecraftDungeons => "Dungeons",
                 _ => string.Empty,
             };
 

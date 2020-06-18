@@ -6,7 +6,8 @@
         Fortnite,
         Valorant,
         DeadByDaylight,
-        Borderlands3
+        Borderlands3,
+        MinecraftDungeons
     }
 
     public enum EFModel
