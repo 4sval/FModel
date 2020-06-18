@@ -71,6 +71,14 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Minecraft Dungeons", Property = minecraftdungeonsFilesPath });
             }
 
+            string battlebreakersFilesPath = Paks.GetBattleBreakersPakFilesPath();
+            if (!string.IsNullOrEmpty(battlebreakersFilesPath))
+            {
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"Battle Breakers found at {battlebreakersFilesPath}");
+                Globals.gNotifier.ShowCustomMessage("Battle Breakers", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/battlebreakers.ico");
+                ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Battle Breakers", Property = battlebreakersFilesPath });
+            }
+
 
             Games_CbBox.SelectedItem = ComboBoxVm.gamesCbViewModel.Where(x => x.Property.ToString() == Properties.Settings.Default.PakPath).FirstOrDefault();
         }

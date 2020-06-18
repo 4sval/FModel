@@ -101,6 +101,15 @@ namespace FModel.Utils
             return string.Empty;
         }
 
+        public static string GetBattleBreakersPakFilesPath()
+        {
+            (_, string _, string battlebreakersFilesPath) = GetUEGameFilesPath("WorldExplorersLive");
+            if (!string.IsNullOrEmpty(battlebreakersFilesPath))
+                return $"{battlebreakersFilesPath}\\WorldExplorers\\Content\\Paks";
+            else
+                return string.Empty;
+        }
+
         public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files, string mount)
         {
             files = new Dictionary<string, FPakEntry>();
