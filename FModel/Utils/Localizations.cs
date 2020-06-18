@@ -53,6 +53,8 @@ namespace FModel.Utils
                             m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/{gameName}/{langCode}/{gameName}.locres", RegexOptions.IgnoreCase);
                         else if (Globals.Game.ActualGame == EGame.MinecraftDungeons)
                             m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/Game/{langCode}/Game.locres", RegexOptions.IgnoreCase);
+                        else if (Globals.Game.ActualGame == EGame.BattleBreakers)
+                            m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/Game/{langCode}/Game.locres", RegexOptions.IgnoreCase);
 
                         if (m != null && m.Success)
                         {
@@ -198,6 +200,20 @@ namespace FModel.Utils
                     ELanguage.Polish => "pl-PL",
                     ELanguage.PortugueseBrazil => "pt-BR",
                     ELanguage.Russian => "ru-RU",
+                    _ => "en"
+                };
+            else if (Globals.Game.ActualGame == EGame.BattleBreakers)
+                return lang switch
+                {
+                    ELanguage.English => "en",
+                    ELanguage.Russian => "ru",
+                    ELanguage.French => "fr",
+                    ELanguage.Spanish => "es",
+                    ELanguage.Italian => "it",
+                    ELanguage.Japanese => "ja",
+                    ELanguage.Korean => "ko",
+                    ELanguage.PortugueseBrazil => "pt-BR",
+                    ELanguage.Chinese => "zh-Hans",
                     _ => "en"
                 };
             else

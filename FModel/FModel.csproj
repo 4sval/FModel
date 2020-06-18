@@ -38,6 +38,7 @@
     <None Remove="Resources\api-off.ico" />
     <None Remove="Resources\api.ico" />
     <None Remove="Resources\backup-restore.png" />
+    <None Remove="Resources\battlebreakers.ico" />
     <None Remove="Resources\borderlands3.ico" />
     <None Remove="Resources\bug.png" />
     <None Remove="Resources\BurbankBigCondensed-Bold.ttf" />
@@ -144,6 +145,7 @@
     <Resource Include="Resources\api-off.ico" />
     <Resource Include="Resources\api.ico" />
     <Resource Include="Resources\backup-restore.png" />
+    <Resource Include="Resources\battlebreakers.ico" />
     <Resource Include="Resources\borderlands3.ico" />
     <Resource Include="Resources\bug.png" />
     <Resource Include="Resources\BurbankBigCondensed-Bold.ttf" />
