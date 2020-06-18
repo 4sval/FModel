@@ -105,6 +105,22 @@ To use FModel, you need to have [.NET Core 3.1](https://dotnet.microsoft.com/dow
             <a href="https://twitter.com/AyeTSG" title="Twitter">🐦</a>
         </td>
 	<td align="center">
+            <a href="https://github.com/JacksonPlayz">
+                <img src="https://avatars2.githubusercontent.com/u/18062275?s=200&v=4" width="100px;" alt="Jackson"/><br/>
+                <sub><b>Jackson</b></sub>
+            </a><br>
+            <a href="https://github.com/JacksonPlayz" title="Github">🔧</a>
+            <a href="https://twitter.com/NotJaackson" title="Twitter">🐦</a>
+        </td>
+	<td align="center">
+            <a href="https://github.com/GMatrixGames">
+                <img src="https://avatars2.githubusercontent.com/u/25112532?s=200&v=4" width="100px;" alt="GMatrixGames"/><br/>
+                <sub><b>GMatrixGames</b></sub>
+            </a><br>
+            <a href="https://github.com/GMatrixGames" title="Github">🔧</a>
+            <a href="https://twitter.com/GMatrixGames" title="Twitter">🐦</a>
+        </td>
+	<td align="center">
             <a href="https://github.com/XTigerHyperX">
                 <img src="https://avatars2.githubusercontent.com/u/49372767?s=200&v=4" width="100px;" alt="XTigerHyperX"/><br/>
                 <sub><b>XTigerHyperX</b></sub>

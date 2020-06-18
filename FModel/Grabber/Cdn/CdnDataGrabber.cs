@@ -67,9 +67,9 @@ namespace FModel.Grabber.Cdn
             if (_data == null)
                 _data = await CdnData.GetData().ConfigureAwait(false);
 
-            if (_data != null)
+            if (_data != null && _data.Backups.TryGetValue(Globals.Game.ActualGame.ToString(), out var backups))
             {
-                return JsonConvert.DeserializeObject<List<BackupMenuItemViewModel>>(JsonConvert.SerializeObject(_data.Backups[Globals.Game.ActualGame.ToString()]));
+                return JsonConvert.DeserializeObject<List<BackupMenuItemViewModel>>(JsonConvert.SerializeObject(backups));
             }
             return new List<BackupMenuItemViewModel>();
         }

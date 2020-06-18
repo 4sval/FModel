@@ -10,7 +10,7 @@ namespace PakReader.Parsers.Class
     {
         public bool bCooked;
         /** Whether this sound can be streamed to avoid increased memory usage. If using Stream Caching, use Loading Behavior instead to control memory usage. */
-        public bool bStreaming = true;
+        public bool bStreaming;
         /** Uncompressed wav data 16 bit in mono or stereo - stereo not allowed for multichannel data */
         public FByteBulkData RawData;
         /** GUID used to uniquely identify this node so it can be found in the DDC */
@@ -53,6 +53,9 @@ namespace PakReader.Parsers.Class
 
         internal USoundWave(PackageReader reader, Stream ubulk, long ubulkOffset) : base(reader)
         {
+            // if UE4.25+ && Windows -> True
+            bStreaming = FModel.Globals.Game.Version >= EPakVersion.PATH_HASH_INDEX ? true : false;
+
             bCooked = reader.ReadInt32() != 0;
             if (this.TryGetValue("bStreaming", out var v) && v is BoolProperty b)
                 bStreaming = b.Value;

@@ -34,6 +34,7 @@ namespace FModel.Utils
                         }
 
                         DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"{game} not found");
+                        return (string.Empty, string.Empty, string.Empty);
                     }
                 }
             }
@@ -93,9 +94,9 @@ namespace FModel.Utils
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", install);
                 var launcherSettings = JsonConvert.DeserializeObject<LauncherSettings>(File.ReadAllText(install));
                 
-                if (launcherSettings.productLibraryDir != null) 
-                    if(!string.IsNullOrEmpty(launcherSettings.productLibraryDir))
-                        return $"{launcherSettings.productLibraryDir}\\dungeons\\dungeons\\Dungeons\\Content\\Paks";
+                if (launcherSettings.productLibraryDir != null && !string.IsNullOrEmpty(launcherSettings.productLibraryDir))
+                    return $"{launcherSettings.productLibraryDir}\\dungeons\\dungeons\\Dungeons\\Content\\Paks";
+
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Minecraft Dungeons not found");
             }
             return string.Empty;
