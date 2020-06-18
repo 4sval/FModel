@@ -51,6 +51,8 @@ namespace FModel.Utils
                             m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/Game/{langCode}/Game.locres", RegexOptions.IgnoreCase);
                         else if (Globals.Game.ActualGame == EGame.DeadByDaylight)
                             m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/{gameName}/{langCode}/{gameName}.locres", RegexOptions.IgnoreCase);
+                        else if (Globals.Game.ActualGame == EGame.MinecraftDungeons)
+                            m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/Game/{langCode}/Game.locres", RegexOptions.IgnoreCase);
 
                         if (m != null && m.Success)
                         {
@@ -178,6 +180,25 @@ namespace FModel.Utils
                     ELanguage.Chinese => "zh-Hans",
                     ELanguage.TraditionalChinese => "zh-Hant",
                     _ => "en",
+                };
+            else if (Globals.Game.ActualGame == EGame.MinecraftDungeons)
+                return lang switch
+                {
+                    //Swedish sv-SE
+                    //Mexican Spanish es-MX
+                    //Portugal Portuguese pt-PT
+                    //British English en-GB
+                    ELanguage.English => "en",
+                    ELanguage.French => "fr-FR",
+                    ELanguage.German => "de-DE",
+                    ELanguage.Italian => "it-IT",
+                    ELanguage.Spanish => "es-ES",
+                    ELanguage.Japanese => "ja-JP",
+                    ELanguage.Korean => "ko-KR",
+                    ELanguage.Polish => "pl-PL",
+                    ELanguage.PortugueseBrazil => "pt-BR",
+                    ELanguage.Russian => "ru-RU",
+                    _ => "en"
                 };
             else
                 return "en";
