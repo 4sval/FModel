@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using PakReader.Parsers.Objects;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace FModel.Utils
 {
@@ -81,6 +82,23 @@ namespace FModel.Utils
                 return $"{borderlands3FilesPath}\\OakGame\\Content\\Paks";
             else
                 return string.Empty;
+        }
+        
+        public static string GetMinecraftDungeonsPakFilesPath()
+        {
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var install = $"{appData}/.minecraft_dungeons/launcher_settings.json";
+            if (File.Exists(install))
+            { 
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", install);
+                var launcherSettings = JsonConvert.DeserializeObject<LauncherSettings>(File.ReadAllText(install));
+                
+                if (launcherSettings.productLibraryDir != null) 
+                    if(!string.IsNullOrEmpty(launcherSettings.productLibraryDir))
+                        return $"{launcherSettings.productLibraryDir}\\dungeons\\dungeons\\Dungeons\\Content\\Paks";
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Minecraft Dungeons not found");
+            }
+            return string.Empty;
         }
 
         public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files, string mount)

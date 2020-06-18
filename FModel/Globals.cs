@@ -54,6 +54,7 @@ namespace FModel
                 EGame.Valorant => "Valorant",
                 EGame.DeadByDaylight => "Dead By Daylight",
                 EGame.Borderlands3 => "Borderlands 3",
+                EGame.MinecraftDungeons => "Minecraft Dungeons",
                 EGame.Unknown => "Unknown",
                 _ => "Unknown",
             };
