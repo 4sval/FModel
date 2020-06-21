@@ -150,7 +150,7 @@ namespace FModel.ViewModels.MenuItem
                 using BinaryWriter writer = new BinaryWriter(compressionStream);
                 foreach (PakFileReader pakFile in MenuItems.pakFiles.GetPakFileReaders())
                 {
-                    if (pakFile.AesKey == null)
+                    if (pakFile.Info.bEncryptedIndex && pakFile.AesKey == null)
                         continue;
 
                     if (!Globals.CachedPakFiles.ContainsKey(pakFile.FileName))
