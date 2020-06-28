@@ -461,7 +461,7 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
     <value>Fichier introuvable, filigrane désactivé</value>
   </data>
   <data name="Idling" xml:space="preserve">
-    <value>En Attente</value>
+    <value>{0} - En Attente</value>
   </data>
   <data name="Images" xml:space="preserve">
     <value>Images</value>
@@ -864,5 +864,11 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   </data>
   <data name="NoBackground" xml:space="preserve">
     <value>Pas de fond</value>
+  </data>
+  <data name="JsonType" xml:space="preserve">
+    <value>Type de JSON</value>
+  </data>
+  <data name="WithPosition" xml:space="preserve">
+    <value>Avec Position</value>
   </data>
 </root>

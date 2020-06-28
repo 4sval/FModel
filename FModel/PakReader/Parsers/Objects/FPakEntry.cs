@@ -17,7 +17,6 @@ namespace PakReader.Parsers.Objects
         public readonly long Offset;
         public readonly long Size;
         public readonly long UncompressedSize;
-        public readonly byte[] Hash; // why isn't this an FShaHash?
         public readonly FPakCompressedBlock[] CompressionBlocks;
         public readonly uint CompressionBlockSize;
         public readonly uint CompressionMethodIndex;
@@ -72,12 +71,8 @@ namespace PakReader.Parsers.Objects
                 else
                     CompressionMethodIndex = reader.ReadUInt32();
             }
-            if (Version <= EPakVersion.INITIAL)
-            {
-                // Timestamp of type FDateTime, but the serializer only reads to the Ticks property (int64)
-                reader.ReadInt64();
-            }
-            Hash = reader.ReadBytes(20);
+            if (Version <= EPakVersion.INITIAL) reader.ReadInt64(); // Timestamp
+            reader.ReadBytes(20); // Hash
             if (Version >= EPakVersion.COMPRESSION_ENCRYPTION)
             {
                 if (CompressionMethodIndex != 0)
@@ -108,7 +103,7 @@ namespace PakReader.Parsers.Objects
             Size = reader.ReadInt64();
             UncompressedSize = reader.ReadInt64();
             CompressionMethodIndex = reader.ReadUInt32();
-            Hash = reader.ReadBytes(20);
+            reader.ReadBytes(20); // Hash
             if (CompressionMethodIndex != 0)
             {
                 CompressionBlocks = reader.ReadTArray(() => new FPakCompressedBlock(reader));
@@ -120,14 +115,13 @@ namespace PakReader.Parsers.Objects
             StructSize = (int)(reader.BaseStream.Position - StartOffset);
         }
 
-        internal FPakEntry(string pakName, string name, long offset, long size, long uncompressedSize, byte[] hash, FPakCompressedBlock[] compressionBlocks, uint compressionBlockSize, uint compressionMethodIndex, byte flags)
+        internal FPakEntry(string pakName, string name, long offset, long size, long uncompressedSize, FPakCompressedBlock[] compressionBlocks, uint compressionBlockSize, uint compressionMethodIndex, byte flags)
         {
             PakFileName = pakName;
             Name = name;
             Offset = offset;
             Size = size;
             UncompressedSize = uncompressedSize;
-            Hash = hash;
             CompressionBlocks = compressionBlocks;
             CompressionBlockSize = compressionBlockSize;
             CompressionMethodIndex = compressionMethodIndex;

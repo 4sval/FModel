@@ -416,7 +416,7 @@ Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leake
     <value>Datei nicht gefunden, Wasserzeichen deaktiviert</value>
   </data>
   <data name="Idling" xml:space="preserve">
-    <value>Leerlauf</value>
+    <value>{0} - Leerlauf</value>
   </data>
   <data name="ImageSaved" xml:space="preserve">
     <value>Bild erfolgreich gespeichert</value>

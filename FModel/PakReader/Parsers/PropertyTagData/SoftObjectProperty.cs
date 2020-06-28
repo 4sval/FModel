@@ -11,5 +11,7 @@ namespace PakReader.Parsers.PropertyTagData
             if (readType == ReadType.MAP)
                 reader.Position += 16 - (reader.Position - Position); // skip ahead, putting the total bytes read to 16
         }
+
+        public FSoftObjectPath GetValue() => Value;
     }
 }

@@ -440,7 +440,7 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
     <value>File non trovato, filigrana disabilitata</value>
   </data>
   <data name="Idling" xml:space="preserve">
-    <value>Nessun incarico assegnato</value>
+    <value>{0} - Nessun incarico assegnato</value>
   </data>
   <data name="Images" xml:space="preserve">
     <value>Immagini</value>

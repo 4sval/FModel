@@ -55,6 +55,12 @@
         TraditionalChinese
     }
 
+    public enum EJsonType: long
+    {
+        Default,
+        Positioned
+    }
+
     public enum EIconDesign : long
     {
         Default,

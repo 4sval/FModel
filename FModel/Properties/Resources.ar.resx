@@ -446,7 +446,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>File not found, watermarking disabled</value>
   </data>
   <data name="Idling" xml:space="preserve">
-    <value>Idling</value>
+    <value>{0} - Idling</value>
   </data>
   <data name="Images" xml:space="preserve">
     <value>الصور</value>

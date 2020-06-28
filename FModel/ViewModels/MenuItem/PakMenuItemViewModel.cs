@@ -279,7 +279,7 @@ namespace FModel.ViewModels.MenuItem
                         int compressionMethodIndex = reader.ReadInt32();
 
                         // we only need name and uncompressedSize to compare
-                        FPakEntry entry = new FPakEntry("CatsWillDominateTheWorld.pak", name, offset, size, uncompressedSize, new byte[20], null, 0, (uint)compressionMethodIndex, 0);
+                        FPakEntry entry = new FPakEntry("CatsWillDominateTheWorld.pak", name, offset, size, uncompressedSize, null, 0, (uint)compressionMethodIndex, 0);
                         oldFilesTemp[entry.Name] = entry;
                     }
                 }

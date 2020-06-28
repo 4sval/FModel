@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace PakReader.Parsers.Objects
 {
@@ -35,6 +36,20 @@ namespace PakReader.Parsers.Objects
         {
             Index = reader.ReadInt32();
             Reader = reader;
+        }
+
+        public object GetValue()
+        {
+            if (Resource != null)
+            {
+                var ret = new Dictionary<string, object>
+                {
+                    ["ObjectName"] = Resource.ObjectName.String,
+                    ["OuterIndex"] = Resource.OuterIndex.GetValue()
+                };
+                return ret;
+            }
+            return null;
         }
 
         [JsonIgnore]

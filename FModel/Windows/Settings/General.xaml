@@ -81,6 +81,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -99,21 +100,12 @@
                           BorderBrush="#7F748198" Background="#FF333C46"
                           Height="20" VerticalAlignment="Top" Margin="0,3,0,0"/>
 
-                <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,0,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="10"/>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="10" />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="{x:Static properties:Resources.FyiTitle}"
-                               FontWeight="Bold" Foreground="White" Grid.Row="1"
-                               FontFamily="Calibri" FontSize="18"/>
-                    <TextBlock Text="{x:Static properties:Resources.FyiDetails}"
-                               FontWeight="Light" Foreground="White" Grid.Row="2"
-                               TextWrapping="Wrap" FontSize="11" MaxWidth="350"/>
-                </Grid>
+                <Label Grid.Row="2" Grid.Column="1"
+                       Content="{x:Static properties:Resources.JsonType}"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <ComboBox x:Name="Json_CbBox" Grid.Row="2" Grid.Column="2"
+                          BorderBrush="#7F748198" Background="#FF333C46"
+                          Height="20" VerticalAlignment="Top" Margin="0,3,0,0"/>
 
                 <Grid Grid.Row="1" Grid.Column="4" Grid.RowSpan="3">
                     <Grid.RowDefinitions>

@@ -9,5 +9,7 @@ namespace PakReader.Parsers.PropertyTagData
             Position = reader.Position;
             Value = reader.ReadFString();
         }
+
+        public string GetValue() => Value;
     }
 }

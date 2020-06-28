@@ -38,7 +38,7 @@ namespace FModel.Discord
             {
                 Assets = _assets,
                 Timestamps = _baseTimestamp,
-                State = Properties.Resources.Idling
+                State = string.Format(Properties.Resources.Idling, Globals.Game.GetName())
             });
             Initialize();
             SaveCurrentPresence();

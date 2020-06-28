@@ -430,7 +430,7 @@ namespace PakReader.Pak
                         pakLocation += 4;
                     }
                 }
-                return new FPakEntry(this.FileName, name, Offset, Size, UncompressedSize, new byte[20], CompressionBlocks, CompressionBlockSize, CompressionMethodIndex, (byte)((Encrypted ? 0x01 : 0x00) | (Deleted ? 0x02 : 0x00)));
+                return new FPakEntry(this.FileName, name, Offset, Size, UncompressedSize, CompressionBlocks, CompressionBlockSize, CompressionMethodIndex, (byte)((Encrypted ? 0x01 : 0x00) | (Deleted ? 0x02 : 0x00)));
             }
             else
             {

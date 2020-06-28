@@ -23,6 +23,12 @@ namespace FModel.ViewModels.ComboBox
             new ComboBoxViewModel { Id = 14, Content = Properties.Resources.TraditionalChinese, Property = ELanguage.TraditionalChinese }
         };
 
+        public static ObservableCollection<ComboBoxViewModel> jsonCbViewModel = new ObservableCollection<ComboBoxViewModel>
+        {
+            new ComboBoxViewModel { Id = 0, Content = Properties.Resources.Default, Property = EJsonType.Default },
+            new ComboBoxViewModel { Id = 1, Content = Properties.Resources.WithPosition, Property = EJsonType.Positioned }
+        };
+
         public static ObservableCollection<ComboBoxViewModel> designCbViewModel = new ObservableCollection<ComboBoxViewModel>
         {
             new ComboBoxViewModel { Id = 0, Content = Properties.Resources.Default, Property = EIconDesign.Default },

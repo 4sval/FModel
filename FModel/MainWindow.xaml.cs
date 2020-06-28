@@ -90,6 +90,7 @@ namespace FModel
         private async Task Init()
         {
             await PaksGrabber.PopulateMenu().ConfigureAwait(false);
+            if (Properties.Settings.Default.UseDiscordRpc) DiscordIntegration.StartClient();
             await AesGrabber.Load(Properties.Settings.Default.ReloadAesKeys).ConfigureAwait(false);
             await CdnDataGrabber.DoCDNStuff().ConfigureAwait(false);
         }

@@ -71,6 +71,9 @@
     <Setting Name="AssetsLanguage" Type="System.Int64" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+	<Setting Name="AssetsJsonType" Type="System.Int64" Scope="User">
+	  <Value Profile="(Default)">0</Value>
+	</Setting>
     <Setting Name="AssetsIconDesign" Type="System.Int64" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>

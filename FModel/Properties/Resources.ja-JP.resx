@@ -214,7 +214,7 @@
     <value>新規および変更されたファイルを読み込む</value>
   </data>
   <data name="Idling" xml:space="preserve">
-    <value>アイドリング</value>
+    <value>{0} - アイドリング</value>
   </data>
   <data name="NoText" xml:space="preserve">
     <value>テキストなし</value>

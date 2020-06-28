@@ -10,14 +10,14 @@ using System.IO;
 
 namespace FModel.Creator
 {
-    static class Creator
+    static class FortniteCreator
     {
         /// <summary>
         /// we draw based on the fist export type of the asset, no need to check others it's a waste of time
         /// i don't cache images because i don't wanna store a lot of SKCanvas in the memory
         /// </summary>
         /// <returns>true if an icon has been drawn</returns>
-        public static bool TryDrawIcon(string assetPath, string exportType, IUExport export)
+        public static bool TryDrawFortniteIcon(string assetPath, string exportType, IUExport export)
         {
             var d = new DirectoryInfo(assetPath);
             string assetName = d.Name;

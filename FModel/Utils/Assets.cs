@@ -20,10 +20,11 @@ using System.Windows;
 using FModel.Windows.CustomNotifier;
 using FModel.ViewModels.Buttons;
 using System.Threading;
-using static FModel.Creator.Creator;
 using SkiaSharp;
 using System.Text;
 using FModel.ViewModels.DataGrid;
+using static FModel.Creator.FortniteCreator;
+using static FModel.Creator.ValorantCreator;
 
 namespace FModel.Utils
 {
@@ -173,7 +174,9 @@ namespace FModel.Utils
         {
             PakPackage p = GetPakPackage(entry, mount, loadContent);
             if (!p.Equals(default))
-                return JsonConvert.SerializeObject(p.GetAllExports(), Formatting.Indented);
+            {
+                return p.JsonData;
+            }
             return string.Empty;
         }
 
@@ -238,8 +241,10 @@ namespace FModel.Utils
                     return p;
                 }
 
-                // Creator Image
-                if (TryDrawIcon(entry.Name, p.GetFirstExportType(), p.GetFirstExport()))
+                // Image Creator
+                if (Globals.Game.ActualGame == EGame.Fortnite && TryDrawFortniteIcon(entry.Name, p.ExportTypes[0].String, p.Exports[0]))
+                    return p;
+                else if (Globals.Game.ActualGame == EGame.Valorant && TryDrawValorantIcon(entry.Name, p.Exports.Length > 1 ? p.Exports[1] : p.Exports[0]))
                     return p;
             }
 

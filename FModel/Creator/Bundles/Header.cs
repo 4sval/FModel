@@ -85,9 +85,9 @@ namespace FModel.Creator.Bundles
         {
             if (displayStyle.Value is UObject o)
             {
-                if (!Properties.Settings.Default.UseChallengeBanner && o.TryGetValue(out var c1, "PrimaryColor", "Context_LimitedTimeColor") && c1 is StructProperty s1 && s1.Value is FLinearColor primaryColor)
+                if (!Properties.Settings.Default.UseChallengeBanner && o.TryGetValue(out var c1, "PrimaryColor") && c1 is StructProperty s1 && s1.Value is FLinearColor primaryColor)
                     PrimaryColor = SKColor.Parse(primaryColor.Hex);
-                if (!Properties.Settings.Default.UseChallengeBanner && o.TryGetValue(out var c2, "SecondaryColor", "Context_BaseColor") && c2 is StructProperty s2 && s2.Value is FLinearColor secondaryColor)
+                if (!Properties.Settings.Default.UseChallengeBanner && o.TryGetValue(out var c2, "SecondaryColor") && c2 is StructProperty s2 && s2.Value is FLinearColor secondaryColor)
                     SecondaryColor = SKColor.Parse(secondaryColor.Hex);
                 if (!Properties.Settings.Default.UseChallengeBanner && o.TryGetValue("AccentColor", out var c3) && c3 is StructProperty s3 && s3.Value is FLinearColor accentColor)
                 {

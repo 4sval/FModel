@@ -116,7 +116,10 @@ namespace FModel.Utils
             files = new Dictionary<string, FPakEntry>();
             foreach (FPakEntry entry in tempFiles.Values)
             {
-                if (files.ContainsKey(mount + entry.GetPathWithoutExtension()) || entry.GetExtension().Equals(".uptnl"))
+                if (files.ContainsKey(mount + entry.GetPathWithoutExtension()) ||
+                    entry.GetExtension().Equals(".uptnl") ||
+                    entry.GetExtension().Equals(".uexp") ||
+                    entry.GetExtension().Equals(".ubulk"))
                     continue;
 
                 if (entry.IsUE4Package()) // if .uasset

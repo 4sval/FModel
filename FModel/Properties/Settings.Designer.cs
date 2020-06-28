@@ -302,6 +302,18 @@ namespace FModel.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public long AssetsJsonType {
+            get {
+                return ((long)(this["AssetsJsonType"]));
+            }
+            set {
+                this["AssetsJsonType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public long AssetsIconDesign {
             get {
                 return ((long)(this["AssetsIconDesign"]));

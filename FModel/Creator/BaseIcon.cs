@@ -1,4 +1,4 @@
-﻿using FModel.Creator.Icons;
+using FModel.Creator.Icons;
 using FModel.Creator.Rarities;
 using FModel.Creator.Stats;
 using FModel.Creator.Texts;

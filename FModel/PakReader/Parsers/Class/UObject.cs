@@ -9,10 +9,7 @@ namespace PakReader.Parsers.Class
 {
     public class UObject : IUExport, IUStruct
     {
-        public FObjectExport ExportInfo { get; internal set; }
         readonly Dictionary<string, object> Dict;
-
-        readonly FGuid GUID;
 
         // https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp#L930
         public UObject(PackageReader reader) : this(reader, reader.ExportMap.Sum(e => e.SerialSize), false) { }
@@ -23,7 +20,7 @@ namespace PakReader.Parsers.Class
         // https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp#L2197
         internal UObject(PackageReader reader, long maxSize, bool structFallback)
         {
-            var props = new Dictionary<string, object>();
+            var properties = new Dictionary<string, object>();
             int i = 1;
 
             while (true)
@@ -33,27 +30,65 @@ namespace PakReader.Parsers.Class
                     break;
 
                 var pos = reader.Position;
-                if (props.ContainsKey(Tag.Name.String)) // FortniteGame/Content/Balance/RarityData.uasset i really need this
-                    props[$"{Tag.Name.String}_NK{i++}"] = BaseProperty.ReadProperty(reader, Tag, Tag.Type, ReadType.NORMAL) ?? null; // NK = NewKey
-                else
-                    props[Tag.Name.String] = BaseProperty.ReadProperty(reader, Tag, Tag.Type, ReadType.NORMAL) ?? null;
-                if (props[Tag.Name.String] is null)
-                    break;
+                var obj = BaseProperty.ReadAsObject(reader, Tag, Tag.Type, ReadType.NORMAL) ?? null;
+
+                var key = properties.ContainsKey(Tag.Name.String) ? $"{Tag.Name.String}_NK{i++}" : Tag.Name.String;
+                properties[key] = obj;
+                if (obj == null) break;
 
                 if (Tag.Size + pos != reader.Position)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Didn't read {Tag.Type.String} correctly (at {reader.Position}, should be {Tag.Size + pos}, {Tag.Size + pos - reader.Position} behind)");
+#if DEBUG
+                    System.Diagnostics.Debug.WriteLine($"Didn't read {key} correctly (at {reader.Position}, should be {Tag.Size + pos}, {Tag.Size + pos - reader.Position} behind)");
+#endif
                     reader.Position = Tag.Size + pos;
                 }
             }
-            Dict = props;
+            Dict = properties;
 
             if (!structFallback && reader.ReadInt32() != 0 && reader.Position + 16 <= maxSize)
             {
-                GUID = new FGuid(reader);
+                new FGuid(reader);
             }
         }
 
+        public Dictionary<string, object> GetValue()
+        {
+            var ret = new Dictionary<string, object>(Dict.Count);
+            foreach (KeyValuePair<string, object> KvP in Dict)
+            {
+                if (KvP.Value == null)
+                    ret[KvP.Key] = null;
+                else
+                    ret[KvP.Key] = KvP.Value.GetType().Name switch
+                    {
+                        "ByteProperty" => ((ByteProperty)KvP.Value).GetValue(),
+                        "BoolProperty" => ((BoolProperty)KvP.Value).GetValue(),
+                        "IntProperty" => ((IntProperty)KvP.Value).GetValue(),
+                        "FloatProperty" => ((FloatProperty)KvP.Value).GetValue(),
+                        "ObjectProperty" => ((ObjectProperty)KvP.Value).GetValue(),
+                        "NameProperty" => ((NameProperty)KvP.Value).GetValue(),
+                        "DoubleProperty" => ((DoubleProperty)KvP.Value).GetValue(),
+                        "ArrayProperty" => ((ArrayProperty)KvP.Value).GetValue(),
+                        "StructProperty" => ((StructProperty)KvP.Value).GetValue(),
+                        "StrProperty" => ((StrProperty)KvP.Value).GetValue(),
+                        "TextProperty" => ((TextProperty)KvP.Value).GetValue(),
+                        "InterfaceProperty" => ((InterfaceProperty)KvP.Value).GetValue(),
+                        "SoftObjectProperty" => ((SoftObjectProperty)KvP.Value).GetValue(),
+                        "UInt64Property" => ((UInt64Property)KvP.Value).GetValue(),
+                        "UInt32Property" => ((UInt32Property)KvP.Value).GetValue(),
+                        "UInt16Property" => ((UInt16Property)KvP.Value).GetValue(),
+                        "Int64Property" => ((Int64Property)KvP.Value).GetValue(),
+                        "Int16Property" => ((Int16Property)KvP.Value).GetValue(),
+                        "Int8Property" => ((Int8Property)KvP.Value).GetValue(),
+                        "MapProperty" => ((MapProperty)KvP.Value).GetValue(),
+                        "SetProperty" => ((SetProperty)KvP.Value).GetValue(),
+                        "EnumProperty" => ((EnumProperty)KvP.Value).GetValue(),
+                        _ => KvP.Value,
+                    };
+            }
+            return ret;
+        }
         public object this[string key] => Dict[key];
         public IEnumerable<string> Keys => Dict.Keys;
         public IEnumerable<object> Values => Dict.Values;

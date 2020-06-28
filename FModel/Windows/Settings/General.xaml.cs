@@ -40,6 +40,8 @@ namespace FModel.Windows.Settings
             _useEnglish = Properties.Settings.Default.UseEnglish;
             Languages_CbBox.ItemsSource = ComboBoxVm.languageCbViewModel;
             Languages_CbBox.SelectedItem = ComboBoxVm.languageCbViewModel.Where(x => x.Id == Properties.Settings.Default.AssetsLanguage).FirstOrDefault();
+            Json_CbBox.ItemsSource = ComboBoxVm.jsonCbViewModel;
+            Json_CbBox.SelectedItem = ComboBoxVm.jsonCbViewModel.Where(x => x.Id == Properties.Settings.Default.AssetsJsonType).FirstOrDefault();
         }
 
         private async Task SaveAndExit()
@@ -52,7 +54,11 @@ namespace FModel.Windows.Settings
                 Properties.Settings.Default.AssetsLanguage = Languages_CbBox.SelectedIndex;
                 await Localizations.SetLocalization(Properties.Settings.Default.AssetsLanguage, true).ConfigureAwait(false);
             }
-
+            if (Properties.Settings.Default.AssetsJsonType != Json_CbBox.SelectedIndex)
+            {
+                Properties.Settings.Default.AssetsJsonType = Json_CbBox.SelectedIndex;
+                Assets.ClearCachedFiles();
+            }
 
             if (!_inputPath.Equals(Properties.Settings.Default.PakPath) ||
                 !_outputPath.Equals(Properties.Settings.Default.OutputPath) ||

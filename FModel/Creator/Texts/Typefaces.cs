@@ -9,7 +9,7 @@ namespace FModel.Creator.Texts
     public class Typefaces
     {
 #pragma warning disable IDE0051
-        private const string _BASE_PATH = "/Game/UI/Foundation/Fonts/";
+        private const string _FORTNITE_BASE_PATH = "/Game/UI/Foundation/Fonts/";
         private const string _ASIA_ERINM = "AsiaERINM"; // korean fortnite
         private const string _BURBANK_BIG_CONDENSED_BLACK = "BurbankBigCondensed-Black"; // russian
         private readonly Uri _BURBANK_BIG_CONDENSED_BOLD = new Uri("pack://application:,,,/Resources/BurbankBigCondensed-Bold.ttf"); // other languages fortnite unofficial
@@ -36,6 +36,10 @@ namespace FModel.Creator.Texts
         private const string _NOTO_SANS_TC_REGULAR = "NotoSansTC-Regular";
         private const string _BURBANK_SMALL_BLACK = "burbanksmall-black";
         private const string _BURBANK_SMALL_BOLD = "burbanksmall-bold";
+
+        private const string _VALORANT_BASE_PATH = "/Game/UI/Fonts/FinalFonts/";
+        private const string _DINNEXT_W1G_BOLD = "DINNextW1G-Bold";
+        private const string _DINNEXT_W1G_REGULAR = "DINNextW1G-Regular";
 #pragma warning restore IDE0051
 
         public SKTypeface DefaultTypeface; // used as default font for all untranslated strings (item source, ...)
@@ -50,12 +54,12 @@ namespace FModel.Creator.Texts
             {
                 DefaultTypeface = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD).Stream);
 
-                ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(_BASE_PATH + _BURBANK_BIG_CONDENSED_BLACK);
+                ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(_FORTNITE_BASE_PATH + _BURBANK_BIG_CONDENSED_BLACK);
                 if (t != null && t.Length == 3)
                     BundleDefaultTypeface = SKTypeface.FromStream(t[2].AsStream());
                 else BundleDefaultTypeface = DefaultTypeface;
 
-                string namePath = _BASE_PATH + (
+                string namePath = _FORTNITE_BASE_PATH + (
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _ASIA_ERINM :
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _BURBANK_BIG_CONDENSED_BLACK :
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NIS_JYAU :
@@ -63,7 +67,7 @@ namespace FModel.Creator.Texts
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTO_SANS_TC_BLACK :
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_SC_BLACK :
                     string.Empty);
-                if (!namePath.Equals(_BASE_PATH))
+                if (!namePath.Equals(_FORTNITE_BASE_PATH))
                 {
                     t = Utils.GetPropertyArraySegmentByte(namePath);
                     if (t != null && t.Length == 3)
@@ -71,7 +75,7 @@ namespace FModel.Creator.Texts
                 }
                 else DisplayNameTypeface = DefaultTypeface;
 
-                string descriptionPath = _BASE_PATH + (
+                string descriptionPath = _FORTNITE_BASE_PATH + (
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _NOTO_SANS_KR_REGULAR :
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NOTO_SANS_JP_BOLD :
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Arabic ? _NOTO_SANS_ARABIC_REGULAR :
@@ -83,7 +87,7 @@ namespace FModel.Creator.Texts
                     DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
                 else DescriptionTypeface = DefaultTypeface;
 
-                string bundleNamePath = _BASE_PATH + (
+                string bundleNamePath = _FORTNITE_BASE_PATH + (
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _ASIA_ERINM :
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _BURBANK_BIG_CONDENSED_BLACK :
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NIS_JYAU :
@@ -91,13 +95,23 @@ namespace FModel.Creator.Texts
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTO_SANS_TC_BLACK :
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_SC_BLACK :
                     string.Empty);
-                if (!bundleNamePath.Equals(_BASE_PATH))
+                if (!bundleNamePath.Equals(_FORTNITE_BASE_PATH))
                 {
                     t = Utils.GetPropertyArraySegmentByte(bundleNamePath);
                     if (t != null && t.Length == 3)
                         BundleDisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
                 }
                 else BundleDisplayNameTypeface = BundleDefaultTypeface;
+            }
+            else if (Globals.Game.ActualGame == EGame.Valorant)
+            {
+                ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _DINNEXT_W1G_BOLD);
+                if (t != null && t.Length == 3)
+                    DisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
+
+                t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _DINNEXT_W1G_REGULAR);
+                if (t != null && t.Length == 3)
+                    DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
             }
         }
 

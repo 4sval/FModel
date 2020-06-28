@@ -22,6 +22,7 @@ namespace FModel.Windows.Search
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             AssetFilter_TxtBox.Focus();
+            AssetFilter_TxtBox.SelectAll();
             TotalAssets_Lbl.Text = string.Format(Properties.Resources.TotalAssetsLoaded, DataGridVm.dataGridViewModel.Count.ToString("# ### ###", new NumberFormatInfo { NumberGroupSeparator = " " }).Trim());
             Assets_DtGrd.ItemsSource = DataGridVm.dataGridViewModel;
         }

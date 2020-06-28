@@ -17,7 +17,9 @@ namespace FModel.Creator.Texts
         public static string GetTextPropertyBase(TextProperty t)
         {
             if (t.Value is FText text)
-                if (text.Text is FTextHistory.Base b)
+                if (text.Text is FTextHistory.None n)
+                    return n.CultureInvariantString;
+                else if (text.Text is FTextHistory.Base b)
                     return b.SourceString.Replace("<Emphasized>", string.Empty).Replace("</>", string.Empty);
                 else if (text.Text is FTextHistory.StringTableEntry s)
                 {

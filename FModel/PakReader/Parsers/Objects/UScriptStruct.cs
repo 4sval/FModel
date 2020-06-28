@@ -46,6 +46,7 @@ namespace PakReader.Parsers.Objects
                 "MovieSceneFrameRange" => new FMovieSceneFrameRange(reader),
                 "MovieSceneEvaluationKey" => new FMovieSceneEvaluationKey(reader),
                 "MovieSceneFloatValue" => new FRichCurveKey(reader),
+                "MovieSceneFloatChannel" => new FMovieSceneFloatChannel(reader),
                 "MovieSceneEvaluationTemplate" => new FMovieSceneEvaluationTemplate(reader),
                 "SkeletalMeshSamplingLODBuiltData" => new FSkeletalMeshSamplingLODBuiltData(reader),
                 //"BodyInstance" => new FBodyInstance(reader), // if uncommented, can't parse .umap

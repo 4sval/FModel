@@ -38,8 +38,11 @@ namespace FModel.Creator
             if (export.GetExport<TextProperty>("OptionDescription") is TextProperty optionDescription)
             {
                 OptionDescription = Text.GetTextPropertyBase(optionDescription);
-                Height += (int)descriptionPaint.TextSize * Helper.SplitLines(OptionDescription, descriptionPaint, Width - Margin).Length;
-                Height += (int)descriptionPaint.TextSize;
+                if (!string.IsNullOrEmpty(OptionDescription))
+                {
+                    Height += (int)descriptionPaint.TextSize * Helper.SplitLines(OptionDescription, descriptionPaint, Width - Margin).Length;
+                    Height += (int)descriptionPaint.TextSize;
+                }
             }
 
             if (export.GetExport<ArrayProperty>("OptionValues") is ArrayProperty optionValues)

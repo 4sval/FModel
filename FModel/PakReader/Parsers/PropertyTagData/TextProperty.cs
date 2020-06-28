@@ -9,5 +9,7 @@ namespace PakReader.Parsers.PropertyTagData
             Position = reader.Position;
             Value = new FText(reader);
         }
+
+        public FText GetValue() => Value;
     }
 }

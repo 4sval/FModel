@@ -1419,7 +1419,7 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Idling.
+        ///   Recherche une chaîne localisée semblable à {0} - Idling.
         /// </summary>
         public static string Idling {
             get {
@@ -1564,6 +1564,15 @@ namespace FModel.Properties {
         public static string JsonFilter {
             get {
                 return ResourceManager.GetString("JsonFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à JSON Type.
+        /// </summary>
+        public static string JsonType {
+            get {
+                return ResourceManager.GetString("JsonType", resourceCulture);
             }
         }
         
@@ -2906,6 +2915,15 @@ namespace FModel.Properties {
         public static string Wildcards {
             get {
                 return ResourceManager.GetString("Wildcards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à With Position.
+        /// </summary>
+        public static string WithPosition {
+            get {
+                return ResourceManager.GetString("WithPosition", resourceCulture);
             }
         }
         

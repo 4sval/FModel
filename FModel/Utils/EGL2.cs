@@ -8,7 +8,7 @@ namespace FModel.Utils
     static class EGL2
     {
         const uint FILE_CONFIG_MAGIC = 0x279B21E6;
-        const ushort FILE_CONFIG_VERSION = (ushort)ESettingsVersion.Version13;
+        const ushort FILE_CONFIG_VERSION = (ushort)ESettingsVersion.Latest;
 
         public static string GetEGL2PakFilesPath()
         {
@@ -18,10 +18,10 @@ namespace FModel.Utils
                 using Stream stream = new BufferedStream(new FileInfo(configFile).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
                 using BinaryReader reader = new BinaryReader(stream, Encoding.Default);
                 if (reader.ReadUInt32() != FILE_CONFIG_MAGIC)
-                    throw new FileLoadException("Invalid file magic");
+                    throw new FileLoadException("Invalid EGL2 Config Magic");
 
-                if (reader.ReadUInt16BE() != FILE_CONFIG_VERSION)
-                    throw new FileLoadException("Invalid egl2 version");
+                if (reader.ReadUInt16BE() < FILE_CONFIG_VERSION)
+                    throw new FileLoadException("Invalid EGL2 Config Version");
 
                 int stringLength = reader.ReadUInt16BE();
                 string cacheDirectory = Encoding.UTF8.GetString(reader.ReadBytes(stringLength));

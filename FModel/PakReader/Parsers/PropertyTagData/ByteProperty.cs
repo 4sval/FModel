@@ -16,5 +16,7 @@ namespace PakReader.Parsers.PropertyTagData
                 _ => throw new ArgumentOutOfRangeException(nameof(readType)),
             };
         }
+
+        public byte GetValue() => Value;
     }
 }

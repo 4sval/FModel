@@ -15,8 +15,8 @@ namespace PakReader.Parsers
         public FObjectImport[] ImportMap { get; }
         public FObjectExport[] ExportMap { get; }
 
-        public IUExport[] Exports { get; }
-        public string[] ExportTypes { get; }
+        public IUExport[] DataExports { get; }
+        public FName[] DataExportTypes { get; }
 
         public PackageReader(string path) : this(path + ".uasset", path + ".uexp", path + ".ubulk") { }
         public PackageReader(string uasset, string uexp, string ubulk) : this(File.OpenRead(uasset), File.OpenRead(uexp), File.Exists(ubulk) ? File.OpenRead(ubulk) : null) { }
@@ -30,45 +30,41 @@ namespace PakReader.Parsers
             NameMap = SerializeNameMap();
             ImportMap = SerializeImportMap();
             ExportMap = SerializeExportMap();
-            Exports = new IUExport[ExportMap.Length];
-            ExportTypes = new string[ExportMap.Length];
+            DataExports = new IUExport[ExportMap.Length];
+            DataExportTypes = new FName[ExportMap.Length];
             Loader = uexp;
             for(int i = 0; i < ExportMap.Length; i++)
             {
-                var Export = ExportMap[i];
-                // Serialize everything, not just specifically assets
-                // if (Export.bIsAsset)
+                FName ObjectClassName;
+                if (ExportMap[i].ClassIndex.IsNull)
+                    ObjectClassName = DataExportTypes[i] = ReadFName(); // check if this is true, I don't know if Fortnite ever uses this
+                else if (ExportMap[i].ClassIndex.IsExport)
+                    ObjectClassName = DataExportTypes[i] = ExportMap[ExportMap[i].ClassIndex.AsExport].ObjectName;
+                else if (ExportMap[i].ClassIndex.IsImport)
+                    ObjectClassName = DataExportTypes[i] = ImportMap[ExportMap[i].ClassIndex.AsImport].ObjectName;
+                else
+                    throw new FileLoadException("Can't get class name"); // Shouldn't reach this unless the laws of math have bent to MagmaReef's will
+
+                if (ObjectClassName.String.Equals("BlueprintGeneratedClass")) continue;
+
+                var pos = Position = ExportMap[i].SerialOffset - PackageFileSummary.TotalHeaderSize;
+                DataExports[i] = ObjectClassName.String switch
                 {
-                    // We need to get the class name from the import/export maps
-                    FName ObjectClassName;
-                    if (Export.ClassIndex.IsNull)
-                        ObjectClassName = ReadFName(); // check if this is true, I don't know if Fortnite ever uses this
-                    else if (Export.ClassIndex.IsExport)
-                        ObjectClassName = ExportMap[Export.ClassIndex.AsExport].ObjectName;
-                    else if (Export.ClassIndex.IsImport)
-                        ObjectClassName = ImportMap[Export.ClassIndex.AsImport].ObjectName;
-                    else
-                        throw new FileLoadException("Can't get class name"); // Shouldn't reach this unless the laws of math have bent to MagmaReef's will
-                    if (ObjectClassName.String.Equals("BlueprintGeneratedClass")) continue;
+                    "Texture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
+                    "CurveTable" => new UCurveTable(this),
+                    "DataTable" => new UDataTable(this),
+                    "FontFace" => new UFontFace(this, ubulk),
+                    "SoundWave" => new USoundWave(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
+                    "StringTable" => new UStringTable(this),
+                    _ => new UObject(this),
+                };
 
-                    var pos = Position = Export.SerialOffset - PackageFileSummary.TotalHeaderSize;
-                    ExportTypes[i] = ObjectClassName.String;
-                    Exports[i] = ObjectClassName.String switch
-                    {
-                        "Texture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
-                        "CurveTable" => new UCurveTable(this),
-                        "DataTable" => new UDataTable(this),
-                        "FontFace" => new UFontFace(this, ubulk),
-                        "SoundWave" => new USoundWave(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
-                        "StringTable" => new UStringTable(this),
-                        _ => new UObject(this),
-                    };
-
-                    if (pos + Export.SerialSize != Position)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[ExportType={ObjectClassName.String}] Didn't read {Export.ObjectName} correctly (at {Position}, should be {pos + Export.SerialSize}, {pos + Export.SerialSize - Position} behind)");
-                    }
+#if DEBUG
+                if (pos + ExportMap[i].SerialSize != Position)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ExportType={ObjectClassName.String}] Didn't read {ExportMap[i].ObjectName} correctly (at {Position}, should be {pos + ExportMap[i].SerialSize}, {pos + ExportMap[i].SerialSize - Position} behind)");
                 }
+#endif
             }
             return;
         }

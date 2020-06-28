@@ -1,4 +1,5 @@
 ﻿using PakReader.Parsers.Objects;
+using System.Collections.Generic;
 
 namespace PakReader.Parsers.PropertyTagData
 {
@@ -9,5 +10,7 @@ namespace PakReader.Parsers.PropertyTagData
             Position = reader.Position;
             Value = new FPackageIndex(reader);
         }
+
+        public object GetValue() => Value.GetValue();
     }
 }
