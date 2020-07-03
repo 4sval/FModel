@@ -1,4 +1,6 @@
-﻿namespace PakReader.Parsers.Objects
+﻿using System.Collections.Generic;
+
+namespace PakReader.Parsers.Objects
 {
     public readonly struct FSoftObjectPath : IUStruct
     {
@@ -11,6 +13,15 @@
         {
             AssetPathName = reader.ReadFName();
             SubPathString = reader.ReadFString();
+        }
+
+        public Dictionary<string, string> GetValue()
+        {
+            return new Dictionary<string, string>
+            {
+                ["AssetPathName"] = AssetPathName.String,
+                ["SubPathString"] = SubPathString
+            };
         }
     }
 }

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
 using Newtonsoft.Json;
 using PakReader.Parsers;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
 
 namespace PakReader.Pak
 {
@@ -29,7 +27,7 @@ namespace PakReader.Pak
                             ExportType = ExportTypes[i].String,
                             ExportValue = (FModel.EJsonType)FModel.Properties.Settings.Default.AssetsJsonType switch
                             {
-                                FModel.EJsonType.Default => GetJsonDict(Exports[i]),
+                                FModel.EJsonType.Default => Exports[i].GetJsonDict(),
                                 _ => Exports[i]
                             }
                         };
@@ -89,49 +87,6 @@ namespace PakReader.Pak
             UExp = exp;
             UBulk = bulk;
             exports = new ExportList();
-        }
-
-        private Dictionary<string, object> GetJsonDict(IUExport export)
-        {
-            if (export != null)
-            {
-                var ret = new Dictionary<string, object>(export.Count);
-                foreach (KeyValuePair<string, object> KvP in export)
-                {
-                    if (KvP.Value == null)
-                        ret[KvP.Key] = null;
-                    else
-                        ret[KvP.Key] = KvP.Value.GetType().Name switch
-                        {
-                            "ByteProperty" => ((ByteProperty)KvP.Value).GetValue(),
-                            "BoolProperty" => ((BoolProperty)KvP.Value).GetValue(),
-                            "IntProperty" => ((IntProperty)KvP.Value).GetValue(),
-                            "FloatProperty" => ((FloatProperty)KvP.Value).GetValue(),
-                            "ObjectProperty" => ((ObjectProperty)KvP.Value).GetValue(),
-                            "NameProperty" => ((NameProperty)KvP.Value).GetValue(),
-                            "DoubleProperty" => ((DoubleProperty)KvP.Value).GetValue(),
-                            "ArrayProperty" => ((ArrayProperty)KvP.Value).GetValue(),
-                            "StructProperty" => ((StructProperty)KvP.Value).GetValue(),
-                            "StrProperty" => ((StrProperty)KvP.Value).GetValue(),
-                            "TextProperty" => ((TextProperty)KvP.Value).GetValue(),
-                            "InterfaceProperty" => ((InterfaceProperty)KvP.Value).GetValue(),
-                            "SoftObjectProperty" => ((SoftObjectProperty)KvP.Value).GetValue(),
-                            "UInt64Property" => ((UInt64Property)KvP.Value).GetValue(),
-                            "UInt32Property" => ((UInt32Property)KvP.Value).GetValue(),
-                            "UInt16Property" => ((UInt16Property)KvP.Value).GetValue(),
-                            "Int64Property" => ((Int64Property)KvP.Value).GetValue(),
-                            "Int16Property" => ((Int16Property)KvP.Value).GetValue(),
-                            "Int8Property" => ((Int8Property)KvP.Value).GetValue(),
-                            "MapProperty" => ((MapProperty)KvP.Value).GetValue(),
-                            "SetProperty" => ((SetProperty)KvP.Value).GetValue(),
-                            "EnumProperty" => ((EnumProperty)KvP.Value).GetValue(),
-                            "UObject" => ((UObject)KvP.Value).GetValue(),
-                            _ => KvP.Value,
-                        };
-                }
-                return ret;
-            }
-            return null;
         }
 
         public T GetExport<T>() where T : IUExport

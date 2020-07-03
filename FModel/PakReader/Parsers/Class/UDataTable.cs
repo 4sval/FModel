@@ -17,8 +17,15 @@ namespace PakReader.Parsers.Class
             RowMap = new Dictionary<string, object>();
             for (int i = 0; i < NumRows; i++)
             {
-                var RowName = reader.ReadFName();
-                RowMap[RowName.String] = new UObject(reader, true);
+                int num = 1;
+                string RowName = reader.ReadFName().String;
+                string baseName = RowName;
+                while (RowMap.ContainsKey(RowName))
+                {
+                    RowName = $"{baseName}_NK{num++:00}";
+                }
+
+                RowMap[RowName] = new UObject(reader, true);
             }
         }
 

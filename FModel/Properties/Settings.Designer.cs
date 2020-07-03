@@ -290,6 +290,18 @@ namespace FModel.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public long ProgramLanguage {
+            get {
+                return ((long)(this["ProgramLanguage"]));
+            }
+            set {
+                this["ProgramLanguage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public long AssetsLanguage {
             get {
                 return ((long)(this["AssetsLanguage"]));
@@ -320,18 +332,6 @@ namespace FModel.Properties {
             }
             set {
                 this["AssetsIconDesign"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UseEnglish {
-            get {
-                return ((bool)(this["UseEnglish"]));
-            }
-            set {
-                this["UseEnglish"] = value;
             }
         }
         

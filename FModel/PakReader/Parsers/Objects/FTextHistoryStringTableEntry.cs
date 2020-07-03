@@ -1,4 +1,6 @@
-﻿namespace PakReader.Parsers.Objects
+﻿using System.Collections.Generic;
+
+namespace PakReader.Parsers.Objects
 {
     public partial class FTextHistory
     {
@@ -13,6 +15,15 @@
             {
                 TableId = reader.ReadFName();
                 Key = reader.ReadFString();
+            }
+
+            public Dictionary<string, string> GetValue()
+            {
+                return new Dictionary<string, string>
+                {
+                    ["TableId"] = TableId.String,
+                    ["Key"] = Key
+                };
             }
         }
     }

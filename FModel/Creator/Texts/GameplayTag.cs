@@ -1,4 +1,5 @@
-﻿using FModel.Creator.Icons;
+﻿using FModel.Creator.Fortnite;
+using FModel.Creator.Icons;
 using FModel.Utils;
 using PakReader.Pak;
 using PakReader.Parsers.Class;

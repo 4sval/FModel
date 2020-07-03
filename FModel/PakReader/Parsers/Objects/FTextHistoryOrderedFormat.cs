@@ -1,4 +1,6 @@
-﻿namespace PakReader.Parsers.Objects
+﻿using System.Collections.Generic;
+
+namespace PakReader.Parsers.Objects
 {
     public partial class FTextHistory
     {
@@ -17,6 +19,21 @@
                 {
                     Arguments[i] = new FFormatArgumentValue(reader);
                 }
+            }
+
+            public Dictionary<string, object> GetValue()
+            {
+                var array = new Dictionary<string, object>[Arguments.Length];
+                for (int i = 0; i < array.Length; i++)
+                {
+                    array[i] = Arguments[i].GetValue();
+                }
+
+                return new Dictionary<string, object>
+                {
+                    ["SourceFmt"] = SourceFmt.GetValue(),
+                    ["Arguments"] = array,
+                };
             }
         }
     }

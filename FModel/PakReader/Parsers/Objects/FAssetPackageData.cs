@@ -1,4 +1,6 @@
-﻿namespace PakReader.Parsers.Objects
+﻿using System.Collections.Generic;
+
+namespace PakReader.Parsers.Objects
 {
     public readonly struct FAssetPackageData : IUStruct
     {
@@ -19,6 +21,17 @@
                 CookedHash = new FMD5Hash(reader.Loader);
             else
                 CookedHash = default;
+        }
+
+        public Dictionary<string, object> GetValue()
+        {
+            return new Dictionary<string, object>
+            {
+                ["PackageName"] = PackageName.String,
+                ["DiskSize"] = DiskSize,
+                ["PackageGuid"] = PackageGuid.Hex,
+                ["CookedHash"] = CookedHash
+            };
         }
     }
 }

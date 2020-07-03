@@ -1,10 +1,8 @@
-﻿using PakReader.Parsers.Objects;
-
-namespace PakReader.Parsers.PropertyTagData
+﻿namespace PakReader.Parsers.PropertyTagData
 {
     public sealed class DoubleProperty : BaseProperty<double>
     {
-        internal DoubleProperty(PackageReader reader, FPropertyTag tag)
+        internal DoubleProperty(PackageReader reader)
         {
             Position = reader.Position;
             Value = reader.ReadDouble();

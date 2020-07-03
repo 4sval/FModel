@@ -1,13 +1,11 @@
-﻿using FModel.Creator;
-using FModel.Creator.Bundles;
+﻿using FModel.Creator.Bundles;
+using FModel.Creator.Fortnite;
 using FModel.Logger;
-using FModel.Utils;
 using FModel.Windows.ColorPicker;
 using Microsoft.Win32;
 using SkiaSharp;
 using System;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;

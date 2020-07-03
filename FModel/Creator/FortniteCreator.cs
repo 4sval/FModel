@@ -1,4 +1,5 @@
 ﻿using FModel.Creator.Bundles;
+using FModel.Creator.Fortnite;
 using FModel.Creator.Icons;
 using FModel.Creator.Rarities;
 using FModel.Creator.Stats;

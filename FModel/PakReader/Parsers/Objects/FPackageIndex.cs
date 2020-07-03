@@ -13,7 +13,6 @@ namespace PakReader.Parsers.Objects
      */
     public readonly struct FPackageIndex
     {
-        [JsonIgnore]
         public readonly int Index;
         public FObjectResource Resource
         {
@@ -42,14 +41,13 @@ namespace PakReader.Parsers.Objects
         {
             if (Resource != null)
             {
-                var ret = new Dictionary<string, object>
+                return new Dictionary<string, object>
                 {
                     ["ObjectName"] = Resource.ObjectName.String,
                     ["OuterIndex"] = Resource.OuterIndex.GetValue()
                 };
-                return ret;
             }
-            return null;
+            return Index;
         }
 
         [JsonIgnore]

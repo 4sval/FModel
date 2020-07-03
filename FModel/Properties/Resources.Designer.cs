@@ -110,15 +110,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Add Separator.
-        /// </summary>
-        public static string AddSeparator {
-            get {
-                return ResourceManager.GetString("AddSeparator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à AES.
         /// </summary>
         public static string AES {
@@ -249,15 +240,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Audio.
-        /// </summary>
-        public static string Audio {
-            get {
-                return ResourceManager.GetString("Audio", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Audio Devices.
         /// </summary>
         public static string AudioDevices {
@@ -336,15 +318,6 @@ namespace FModel.Properties {
         public static string Banner {
             get {
                 return ResourceManager.GetString("Banner", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à BenBot API.
-        /// </summary>
-        public static string BenBotApi {
-            get {
-                return ResourceManager.GetString("BenBotApi", resourceCulture);
             }
         }
         
@@ -696,15 +669,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Difference.
-        /// </summary>
-        public static string Difference {
-            get {
-                return ResourceManager.GetString("Difference", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Directories.
         /// </summary>
         public static string Directories {
@@ -948,15 +912,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Exit.
-        /// </summary>
-        public static string Exit {
-            get {
-                return ResourceManager.GetString("Exit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Export.
         /// </summary>
         public static string Export {
@@ -966,29 +921,11 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Export Directory.
-        /// </summary>
-        public static string ExportDirectory {
-            get {
-                return ResourceManager.GetString("ExportDirectory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Extract.
         /// </summary>
         public static string Extract {
             get {
                 return ResourceManager.GetString("Extract", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Extract Directory.
-        /// </summary>
-        public static string ExtractDirectory {
-            get {
-                return ResourceManager.GetString("ExtractDirectory", resourceCulture);
             }
         }
         
@@ -1232,24 +1169,6 @@ namespace FModel.Properties {
         public static string French {
             get {
                 return ResourceManager.GetString("French", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à The selected language will be the one used for icons creation.
-        /// </summary>
-        public static string FyiDetails {
-            get {
-                return ResourceManager.GetString("FyiDetails", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à FYI:.
-        /// </summary>
-        public static string FyiTitle {
-            get {
-                return ResourceManager.GetString("FyiTitle", resourceCulture);
             }
         }
         
@@ -1724,15 +1643,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Media.
-        /// </summary>
-        public static string Media {
-            get {
-                return ResourceManager.GetString("Media", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Minimalist.
         /// </summary>
         public static string Minimalist {
@@ -1976,15 +1886,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Fortnite PAK files auto-detected.
-        /// </summary>
-        public static string PakFilesAutoDetected {
-            get {
-                return ResourceManager.GetString("PakFilesAutoDetected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Parsing of {0} types isn&apos;t supported yet..
         /// </summary>
         public static string ParsingNotSupported {
@@ -2098,15 +1999,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Popup.
-        /// </summary>
-        public static string Popup {
-            get {
-                return ResourceManager.GetString("Popup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Portuguese (Brazil).
         /// </summary>
         public static string PortugueseBrazil {
@@ -2172,15 +2064,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Rate Limit Exceeded.
-        /// </summary>
-        public static string RateLimited {
-            get {
-                return ResourceManager.GetString("RateLimited", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap refresh {
@@ -2205,15 +2088,6 @@ namespace FModel.Properties {
         public static string ReloadAesKeysAtLaunch {
             get {
                 return ResourceManager.GetString("ReloadAesKeysAtLaunch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Remember game.
-        /// </summary>
-        public static string RememberGame {
-            get {
-                return ResourceManager.GetString("RememberGame", resourceCulture);
             }
         }
         
@@ -2304,15 +2178,6 @@ namespace FModel.Properties {
         public static string Save {
             get {
                 return ResourceManager.GetString("Save", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Save Directory.
-        /// </summary>
-        public static string SaveDirectory {
-            get {
-                return ResourceManager.GetString("SaveDirectory", resourceCulture);
             }
         }
         
@@ -2683,12 +2548,9 @@ namespace FModel.Properties {
         
         /// <summary>
         ///   Recherche une chaîne localisée semblable à • EN: Asval#2291			• FR: Asval#2291
-        ///• DE: FunGames#6822		• IT: Angry Cat#5581
+        ///• DE: FunGames#6822		• IT: arianaglande#5581
         ///• ES: Maiky.M#9879		• AR: PsychoPast#0001
-        ///• JA: FNJPNews#7820		• KO:
-        ///• PL:				• PT-BR:
-        ///• RU: Seawod#4311		• TR:
-        ///• ZH-CN:				• ZH-Hant:.
+        ///• JA: FNJPNews#7820		• RU: Seawod#4311.
         /// </summary>
         public static string TranslatorsFDetails {
             get {
@@ -2711,15 +2573,6 @@ namespace FModel.Properties {
         public static string UnhandledExceptionOccured {
             get {
                 return ResourceManager.GetString("UnhandledExceptionOccured", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Update.
-        /// </summary>
-        public static string Update {
-            get {
-                return ResourceManager.GetString("Update", resourceCulture);
             }
         }
         
@@ -2919,7 +2772,7 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à With Position.
+        ///   Recherche une chaîne localisée semblable à Position / Value.
         /// </summary>
         public static string WithPosition {
             get {

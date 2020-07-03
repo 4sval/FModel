@@ -1,10 +1,8 @@
-﻿using PakReader.Parsers.Objects;
-
-namespace PakReader.Parsers.PropertyTagData
+﻿namespace PakReader.Parsers.PropertyTagData
 {
     public sealed class UInt32Property : BaseProperty<uint>
     {
-        internal UInt32Property(PackageReader reader, FPropertyTag tag)
+        internal UInt32Property(PackageReader reader)
         {
             Position = reader.Position;
             Value = reader.ReadUInt32();

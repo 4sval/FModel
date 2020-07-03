@@ -1,4 +1,5 @@
-﻿using PakReader.Pak;
+﻿using FModel.Creator.Fortnite;
+using PakReader.Pak;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;

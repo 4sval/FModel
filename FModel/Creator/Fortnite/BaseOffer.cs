@@ -5,7 +5,7 @@ using SkiaSharp;
 using System;
 using System.Windows;
 
-namespace FModel.Creator
+namespace FModel.Creator.Fortnite
 {
     public class BaseOffer
     {

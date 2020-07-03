@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using PakReader.Parsers.Objects;
 
@@ -21,7 +21,7 @@ namespace PakReader.Parsers.PropertyTagData
             var dict = new Dictionary<object, object>(NumEntries);
             for (int i = 0; i < NumEntries; i++)
             {
-                dict[ReadAsValue(reader, tag, tag.InnerType, ReadType.MAP)] = BaseProperty.ReadAsObject(reader, tag, tag.ValueType, ReadType.MAP);
+                dict[ReadAsValue(reader, tag, tag.ValueType, ReadType.MAP)] = ReadAsObject(reader, tag, tag.ValueType, ReadType.MAP);
             }
             Value = dict;
         }
@@ -29,37 +29,35 @@ namespace PakReader.Parsers.PropertyTagData
         public Dictionary<object, object> GetValue()
         {
             var ret = new Dictionary<object, object>(Value.Count);
-            foreach (KeyValuePair<object, object> KvP in Value)
+            foreach (var (key, value) in Value)
             {
-                if (KvP.Value == null)
-                    ret[KvP.Key] = null;
-                else
-                    ret[KvP.Key] = KvP.Value.GetType().Name switch
-                    {
-                        "ByteProperty" => ((ByteProperty)KvP.Value).GetValue(),
-                        "BoolProperty" => ((BoolProperty)KvP.Value).GetValue(),
-                        "IntProperty" => ((IntProperty)KvP.Value).GetValue(),
-                        "FloatProperty" => ((FloatProperty)KvP.Value).GetValue(),
-                        "ObjectProperty" => ((ObjectProperty)KvP.Value).GetValue(),
-                        "NameProperty" => ((NameProperty)KvP.Value).GetValue(),
-                        "DoubleProperty" => ((DoubleProperty)KvP.Value).GetValue(),
-                        "ArrayProperty" => ((ArrayProperty)KvP.Value).GetValue(),
-                        "StructProperty" => ((StructProperty)KvP.Value).GetValue(),
-                        "StrProperty" => ((StrProperty)KvP.Value).GetValue(),
-                        "TextProperty" => ((TextProperty)KvP.Value).GetValue(),
-                        "InterfaceProperty" => ((InterfaceProperty)KvP.Value).GetValue(),
-                        "SoftObjectProperty" => ((SoftObjectProperty)KvP.Value).GetValue(),
-                        "UInt64Property" => ((UInt64Property)KvP.Value).GetValue(),
-                        "UInt32Property" => ((UInt32Property)KvP.Value).GetValue(),
-                        "UInt16Property" => ((UInt16Property)KvP.Value).GetValue(),
-                        "Int64Property" => ((Int64Property)KvP.Value).GetValue(),
-                        "Int16Property" => ((Int16Property)KvP.Value).GetValue(),
-                        "Int8Property" => ((Int8Property)KvP.Value).GetValue(),
-                        "MapProperty" => ((MapProperty)KvP.Value).GetValue(),
-                        "SetProperty" => ((SetProperty)KvP.Value).GetValue(),
-                        "EnumProperty" => ((EnumProperty)KvP.Value).GetValue(),
-                        _ => KvP.Value,
-                    };
+                ret[key] = value switch
+                {
+                    ByteProperty byteProperty => byteProperty.GetValue(),
+                    BoolProperty boolProperty => boolProperty.GetValue(),
+                    IntProperty intProperty => intProperty.GetValue(),
+                    FloatProperty floatProperty => floatProperty.GetValue(),
+                    ObjectProperty objectProperty => objectProperty.GetValue(),
+                    NameProperty nameProperty => nameProperty.GetValue(),
+                    DelegateProperty delegateProperty => delegateProperty.GetValue(),
+                    DoubleProperty doubleProperty => doubleProperty.GetValue(),
+                    ArrayProperty arrayProperty => arrayProperty.GetValue(),
+                    StructProperty structProperty => structProperty.GetValue(),
+                    StrProperty strProperty => strProperty.GetValue(),
+                    TextProperty textProperty => textProperty.GetValue(),
+                    InterfaceProperty interfaceProperty => interfaceProperty.GetValue(),
+                    SoftObjectProperty softObjectProperty => softObjectProperty.GetValue(),
+                    UInt64Property uInt64Property => uInt64Property.GetValue(),
+                    UInt32Property uInt32Property => uInt32Property.GetValue(),
+                    UInt16Property uInt16Property => uInt16Property.GetValue(),
+                    Int64Property int64Property => int64Property.GetValue(),
+                    Int16Property int16Property => int16Property.GetValue(),
+                    Int8Property int8Property => int8Property.GetValue(),
+                    MapProperty mapProperty => mapProperty.GetValue(),
+                    SetProperty setProperty => setProperty.GetValue(),
+                    EnumProperty enumProperty => enumProperty.GetValue(),
+                    _ => value,
+                };
             }
             return ret;
         }

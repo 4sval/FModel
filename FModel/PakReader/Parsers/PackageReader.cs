@@ -35,36 +35,39 @@ namespace PakReader.Parsers
             Loader = uexp;
             for(int i = 0; i < ExportMap.Length; i++)
             {
-                FName ObjectClassName;
-                if (ExportMap[i].ClassIndex.IsNull)
-                    ObjectClassName = DataExportTypes[i] = ReadFName(); // check if this is true, I don't know if Fortnite ever uses this
-                else if (ExportMap[i].ClassIndex.IsExport)
-                    ObjectClassName = DataExportTypes[i] = ExportMap[ExportMap[i].ClassIndex.AsExport].ObjectName;
-                else if (ExportMap[i].ClassIndex.IsImport)
-                    ObjectClassName = DataExportTypes[i] = ImportMap[ExportMap[i].ClassIndex.AsImport].ObjectName;
-                else
-                    throw new FileLoadException("Can't get class name"); // Shouldn't reach this unless the laws of math have bent to MagmaReef's will
-
-                if (ObjectClassName.String.Equals("BlueprintGeneratedClass")) continue;
-
-                var pos = Position = ExportMap[i].SerialOffset - PackageFileSummary.TotalHeaderSize;
-                DataExports[i] = ObjectClassName.String switch
+                FObjectExport Export = ExportMap[i];
                 {
-                    "Texture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
-                    "CurveTable" => new UCurveTable(this),
-                    "DataTable" => new UDataTable(this),
-                    "FontFace" => new UFontFace(this, ubulk),
-                    "SoundWave" => new USoundWave(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
-                    "StringTable" => new UStringTable(this),
-                    _ => new UObject(this),
-                };
+                    FName ExportType;
+                    if (Export.ClassIndex.IsNull)
+                        ExportType = DataExportTypes[i] = ReadFName(); // check if this is true, I don't know if Fortnite ever uses this
+                    else if (Export.ClassIndex.IsExport)
+                        ExportType = DataExportTypes[i] = ExportMap[Export.ClassIndex.AsExport].SuperIndex.Resource.ObjectName;
+                    else if (Export.ClassIndex.IsImport)
+                        ExportType = DataExportTypes[i] = ImportMap[Export.ClassIndex.AsImport].ObjectName;
+                    else
+                        throw new FileLoadException("Can't get class name"); // Shouldn't reach this unless the laws of math have bent to MagmaReef's will
+
+                    if (ExportType.String.Equals("BlueprintGeneratedClass")) continue;
+
+                    var pos = Position = Export.SerialOffset - PackageFileSummary.TotalHeaderSize;
+                    DataExports[i] = ExportType.String switch
+                    {
+                        "Texture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
+                        "CurveTable" => new UCurveTable(this),
+                        "DataTable" => new UDataTable(this),
+                        "FontFace" => new UFontFace(this, ubulk),
+                        "SoundWave" => new USoundWave(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
+                        "StringTable" => new UStringTable(this),
+                        _ => new UObject(this),
+                    };
 
 #if DEBUG
-                if (pos + ExportMap[i].SerialSize != Position)
-                {
-                    System.Diagnostics.Debug.WriteLine($"[ExportType={ObjectClassName.String}] Didn't read {ExportMap[i].ObjectName} correctly (at {Position}, should be {pos + ExportMap[i].SerialSize}, {pos + ExportMap[i].SerialSize - Position} behind)");
-                }
+                    if (pos + Export.SerialSize != Position)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[ExportType={ExportType.String}] Didn't read {Export.ObjectName} correctly (at {Position}, should be {pos + Export.SerialSize}, {pos + Export.SerialSize - Position} behind)");
+                    }
 #endif
+                }
             }
             return;
         }
@@ -129,7 +132,10 @@ namespace PakReader.Parsers
             {
                 return new FName(NameMap[NameIndex], NameIndex, Number);
             }
-            throw new FileLoadException($"Bad Name Index: {NameIndex}/{NameMap.Length} - Loader Position: {Loader.BaseStream.Position}");
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine($"Bad Name Index: {NameIndex}/{NameMap.Length} - Loader Position: {Loader.BaseStream.Position}");
+#endif
+            return default;
         }
 
 

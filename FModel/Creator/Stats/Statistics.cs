@@ -1,4 +1,5 @@
-﻿using FModel.Creator.Texts;
+﻿using FModel.Creator.Fortnite;
+using FModel.Creator.Texts;
 using FModel.Utils;
 using PakReader.Pak;
 using PakReader.Parsers.Class;

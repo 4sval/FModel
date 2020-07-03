@@ -11,6 +11,16 @@ namespace PakReader.Parsers.Objects
         {
             GameplayTags = reader.ReadTArray(() => reader.ReadFName());
         }
+
+        public string[] GetValue()
+        {
+            var ret = new string[GameplayTags.Length];
+            for (int i = 0; i < ret.Length; i++)
+            {
+                ret[i] = GameplayTags[i].String;
+            }
+            return ret;
+        }
     }
 
     public static class FGameplayTagContainerExtension

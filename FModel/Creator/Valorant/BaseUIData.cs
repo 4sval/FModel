@@ -3,7 +3,7 @@ using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 
-namespace FModel.Creator
+namespace FModel.Creator.Valorant
 {
     public class BaseUIData
     {
@@ -37,6 +37,7 @@ namespace FModel.Creator
             if (export.GetExport<TextProperty>("Description") is TextProperty description)
             {
                 Description = Text.GetTextPropertyBase(description);
+                if (Description != null && Description.Equals(DisplayName)) Description = string.Empty;
                 if (!string.IsNullOrEmpty(Description))
                 {
                     Height += (int)descriptionPaint.TextSize * Helper.SplitLines(Description, descriptionPaint, Width - Margin).Length;
@@ -44,7 +45,7 @@ namespace FModel.Creator
                 }
             }
 
-            if (export.GetExport<ObjectProperty>("FullRender", "VerticalPromoImage", "LargeIcon", "DisplayIcon") is ObjectProperty icon)
+            if (export.GetExport<ObjectProperty>("ListViewIcon", "FullRender", "VerticalPromoImage", "LargeIcon", "DisplayIcon") is ObjectProperty icon)
             {
                 SKBitmap raw = Utils.GetObjectTexture(icon);
                 if (raw != null)
@@ -83,8 +84,9 @@ namespace FModel.Creator
             Helper.DrawMultilineText(c, Description, Width, Margin, ETextSide.Left,
                 new SKRect(Margin, textSize + 25, Width - Margin, Height - 25), descriptionPaint, out var yPos);
 
-            c.DrawBitmap(IconImage, new SKRect(0, yPos, Width, Height),
-                new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
+            if (IconImage != null)
+                c.DrawBitmap(IconImage, new SKRect(0, yPos, Width, Height),
+                    new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
         }
     }
 }

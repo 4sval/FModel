@@ -5,7 +5,7 @@ using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System.Collections.Generic;
 
-namespace FModel.Creator
+namespace FModel.Creator.Fortnite
 {
     public class Options
     {

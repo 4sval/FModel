@@ -1,4 +1,5 @@
-﻿using FModel.Creator.Texts;
+﻿using FModel.Creator.Fortnite;
+using FModel.Creator.Texts;
 using SkiaSharp;
 
 namespace FModel.Creator.Bundles

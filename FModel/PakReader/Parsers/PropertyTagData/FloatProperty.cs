@@ -1,10 +1,8 @@
-﻿using PakReader.Parsers.Objects;
-
-namespace PakReader.Parsers.PropertyTagData
+﻿namespace PakReader.Parsers.PropertyTagData
 {
     public sealed class FloatProperty : BaseProperty<float>
     {
-        internal FloatProperty(PackageReader reader, FPropertyTag tag)
+        internal FloatProperty(PackageReader reader)
         {
             Position = reader.Position;
             Value = reader.ReadFloat();

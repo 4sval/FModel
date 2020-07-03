@@ -1,4 +1,6 @@
-﻿namespace PakReader.Parsers.Objects
+﻿using System.Collections.Generic;
+
+namespace PakReader.Parsers.Objects
 {
     public partial class FTextHistory
     {
@@ -19,6 +21,18 @@
                 TimeStyle = (EDateTimeStyle)reader.ReadByte();
                 TimeZone = reader.ReadFString();
                 TargetCulture = reader.ReadFString();
+            }
+
+            public Dictionary<string, object> GetValue()
+            {
+                return new Dictionary<string, object>
+                {
+                    ["SourceDateTime"] = SourceDateTime.Ticks,
+                    ["DateStyle"] = DateStyle,
+                    ["TimeStyle"] = TimeStyle,
+                    ["TimeZone"] = TimeZone,
+                    ["TargetCulture"] = TargetCulture,
+                };
             }
         }
     }

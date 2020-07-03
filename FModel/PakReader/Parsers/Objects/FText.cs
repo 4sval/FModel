@@ -56,5 +56,18 @@ namespace PakReader.Parsers.Objects
                     break;
             }
         }
+
+        public object GetValue()
+        {
+            return Text switch
+            {
+                FTextHistory.DateTime dateTime => dateTime.GetValue(),
+                FTextHistory.OrderedFormat orderedFormat => orderedFormat.GetValue(),
+                FTextHistory.FormatNumber formatNumber => formatNumber.GetValue(),
+                FTextHistory.StringTableEntry stringTableEntry => stringTableEntry.GetValue(),
+                FTextHistory.None none => none.CultureInvariantString,
+                _ => Text
+            };
+        }
     }
 }

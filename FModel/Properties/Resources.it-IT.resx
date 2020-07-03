@@ -136,9 +136,6 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="AddDirectory" xml:space="preserve">
     <value>Aggiungi Directory</value>
   </data>
-  <data name="AddSeparator" xml:space="preserve">
-    <value>Aggiungi Separatore</value>
-  </data>
   <data name="AES" xml:space="preserve">
     <value>AES</value>
   </data>
@@ -169,9 +166,6 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="Assets" xml:space="preserve">
     <value>Assets</value>
   </data>
-  <data name="Audio" xml:space="preserve">
-    <value>Audio</value>
-  </data>
   <data name="AudioDevices" xml:space="preserve">
     <value>Periferica Audio</value>
   </data>
@@ -195,9 +189,6 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   </data>
   <data name="Banner" xml:space="preserve">
     <value>Banner</value>
-  </data>
-  <data name="BenBotApi" xml:space="preserve">
-    <value>BenBot API</value>
   </data>
   <data name="BugsReport" xml:space="preserve">
     <value>Segnala un bug</value>
@@ -268,9 +259,6 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="Design" xml:space="preserve">
     <value>Design</value>
   </data>
-  <data name="Difference" xml:space="preserve">
-    <value>Differenza</value>
-  </data>
   <data name="Directories" xml:space="preserve">
     <value>Directories</value>
   </data>
@@ -325,17 +313,11 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="Error" xml:space="preserve">
     <value>Errore</value>
   </data>
-  <data name="Exit" xml:space="preserve">
-    <value>Esci</value>
-  </data>
   <data name="Export" xml:space="preserve">
     <value>Esporta</value>
   </data>
   <data name="Extract" xml:space="preserve">
     <value>Estrai</value>
-  </data>
-  <data name="ExtractDirectory" xml:space="preserve">
-    <value>Estrai directory</value>
   </data>
   <data name="Extraction" xml:space="preserve">
     <value>Estrazione</value>
@@ -387,12 +369,6 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   </data>
   <data name="French" xml:space="preserve">
     <value>Francese</value>
-  </data>
-  <data name="FyiDetails" xml:space="preserve">
-    <value>La lingua selezionata è la stessa che sarà utilizzata per la creazione delle icone</value>
-  </data>
-  <data name="FyiTitle" xml:space="preserve">
-    <value>Per tua informazione:</value>
   </data>
   <data name="Games" xml:space="preserve">
     <value>Giochi</value>
@@ -511,9 +487,6 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="MB" xml:space="preserve">
     <value>MB</value>
   </data>
-  <data name="Media" xml:space="preserve">
-    <value>Media</value>
-  </data>
   <data name="Minimalist" xml:space="preserve">
     <value>Minimalista</value>
   </data>
@@ -589,9 +562,6 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="PakFiles" xml:space="preserve">
     <value>Files PAK</value>
   </data>
-  <data name="PakFilesAutoDetected" xml:space="preserve">
-    <value>I files PAK di Fortnite saranno automaticamente rilevati</value>
-  </data>
   <data name="ParsingNotSupported" xml:space="preserve">
     <value>L'analisi dei tipi {0} non è ancora supportata</value>
   </data>
@@ -613,9 +583,6 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="Polish" xml:space="preserve">
     <value>Polacco</value>
   </data>
-  <data name="Popup" xml:space="preserve">
-    <value>Popup</value>
-  </data>
   <data name="PortugueseBrazil" xml:space="preserve">
     <value>Portoghese (Brasile)</value>
   </data>
@@ -631,17 +598,11 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="Rarity" xml:space="preserve">
     <value>Rarità</value>
   </data>
-  <data name="RateLimited" xml:space="preserve">
-    <value>Limite sorpassato</value>
-  </data>
   <data name="RegularExpression" xml:space="preserve">
     <value>Espressione Regolare</value>
   </data>
   <data name="ReloadAesKeysAtLaunch" xml:space="preserve">
     <value>Ricarica le chiavi AES all'avvio</value>
-  </data>
-  <data name="RememberGame" xml:space="preserve">
-    <value>Ricorda gioco</value>
   </data>
   <data name="Remove" xml:space="preserve">
     <value>Rimuovi</value>
@@ -754,9 +715,6 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="UnhandledExceptionOccured" xml:space="preserve">
     <value>Si è verificato un errore non previsto: {0}</value>
   </data>
-  <data name="Update" xml:space="preserve">
-    <value>Aggiorna</value>
-  </data>
   <data name="UseGameColors" xml:space="preserve">
     <value>Usa i colori di gioco</value>
   </data>
@@ -807,9 +765,6 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   </data>
   <data name="UseDiscordRpc" xml:space="preserve">
     <value>Usa Discord RPC</value>
-  </data>
-  <data name="SaveDirectory" xml:space="preserve">
-    <value>Salva Directory</value>
   </data>
   <data name="CopyImage" xml:space="preserve">
     <value>Copia Immagine</value>

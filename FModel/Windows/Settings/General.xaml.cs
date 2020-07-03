@@ -20,7 +20,6 @@ namespace FModel.Windows.Settings
         private string _inputPath;
         private string _outputPath;
         private bool _useDiscordRpc;
-        private bool _useEnglish;
 
         public General()
         {
@@ -37,7 +36,8 @@ namespace FModel.Windows.Settings
             _inputPath = Properties.Settings.Default.PakPath;
             _outputPath = Properties.Settings.Default.OutputPath;
             _useDiscordRpc = Properties.Settings.Default.UseDiscordRpc;
-            _useEnglish = Properties.Settings.Default.UseEnglish;
+            FLanguages_CbBox.ItemsSource = ComboBoxVm.programLanguageCbViewModel;
+            FLanguages_CbBox.SelectedItem = ComboBoxVm.programLanguageCbViewModel.Where(x => x.Id == Properties.Settings.Default.ProgramLanguage).FirstOrDefault();
             Languages_CbBox.ItemsSource = ComboBoxVm.languageCbViewModel;
             Languages_CbBox.SelectedItem = ComboBoxVm.languageCbViewModel.Where(x => x.Id == Properties.Settings.Default.AssetsLanguage).FirstOrDefault();
             Json_CbBox.ItemsSource = ComboBoxVm.jsonCbViewModel;
@@ -62,8 +62,9 @@ namespace FModel.Windows.Settings
 
             if (!_inputPath.Equals(Properties.Settings.Default.PakPath) ||
                 !_outputPath.Equals(Properties.Settings.Default.OutputPath) ||
-                _useEnglish != Properties.Settings.Default.UseEnglish)
+                Properties.Settings.Default.ProgramLanguage != FLanguages_CbBox.SelectedIndex)
             {
+                Properties.Settings.Default.ProgramLanguage = FLanguages_CbBox.SelectedIndex;
                 DarkMessageBoxHelper.Show(Properties.Resources.PathChangedRestart, Properties.Resources.PathChanged, MessageBoxButton.OK, MessageBoxImage.Information);
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Restarting]", "Path(s) changed");
 

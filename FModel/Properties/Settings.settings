@@ -68,6 +68,9 @@
     <Setting Name="CustomGoTos" Type="System.String" Scope="User">
       <Value Profile="(Default)">[{"Header":"Cosmetics","DirectoryPath":"FortniteGame/Content/Athena/Items/Cosmetics/"},{"Header":"Challenges","DirectoryPath":"FortniteGame/Content/Athena/Items/ChallengeBundles/"},{"Header":"Emotes [Audio]","DirectoryPath":"FortniteGame/Content/Athena/Sounds/Emotes/"},{"Header":"Music Packs [Audio]","DirectoryPath":"FortniteGame/Content/Athena/Sounds/MusicPacks/"},{"Header":"Weapons","DirectoryPath":"FortniteGame/Content/Athena/Items/Weapons/"},{"Header":"Strings","DirectoryPath":"FortniteGame/Content/Localization/"}]</Value>
     </Setting>
+	<Setting Name="ProgramLanguage" Type="System.Int64" Scope="User">
+		<Value Profile="(Default)">0</Value>
+	</Setting>
     <Setting Name="AssetsLanguage" Type="System.Int64" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
@@ -76,9 +79,6 @@
 	</Setting>
     <Setting Name="AssetsIconDesign" Type="System.Int64" Scope="User">
       <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="UseEnglish" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="UseGameColors" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

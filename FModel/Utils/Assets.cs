@@ -244,7 +244,7 @@ namespace FModel.Utils
                 // Image Creator
                 if (Globals.Game.ActualGame == EGame.Fortnite && TryDrawFortniteIcon(entry.Name, p.ExportTypes[0].String, p.Exports[0]))
                     return p;
-                else if (Globals.Game.ActualGame == EGame.Valorant && TryDrawValorantIcon(entry.Name, p.Exports.Length > 1 ? p.Exports[1] : p.Exports[0]))
+                else if (Globals.Game.ActualGame == EGame.Valorant && TryDrawValorantIcon(entry.Name, p.ExportTypes.Length > 1 ? p.ExportTypes[1].String : p.ExportTypes[0].String, p.Exports.Length > 1 ? p.Exports[1] : p.Exports[0]))
                     return p;
             }
 

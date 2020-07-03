@@ -37,9 +37,10 @@ namespace FModel.Creator.Texts
         private const string _BURBANK_SMALL_BLACK = "burbanksmall-black";
         private const string _BURBANK_SMALL_BOLD = "burbanksmall-bold";
 
-        private const string _VALORANT_BASE_PATH = "/Game/UI/Fonts/FinalFonts/";
-        private const string _DINNEXT_W1G_BOLD = "DINNextW1G-Bold";
-        private const string _DINNEXT_W1G_REGULAR = "DINNextW1G-Regular";
+        private const string _VALORANT_BASE_PATH = "/Game/";
+        private const string _TUNGSTEN_BOLD = "Tungsten-Bold";
+        private const string _DINNEXT_W1G_LIGHT = "UI/Fonts/FinalFonts/DINNextW1G-Light";
+        private const string _DINNEXT_W1G_BOLD = "UI/Fonts/FinalFonts/DINNextW1G-Bold";
 #pragma warning restore IDE0051
 
         public SKTypeface DefaultTypeface; // used as default font for all untranslated strings (item source, ...)
@@ -105,11 +106,15 @@ namespace FModel.Creator.Texts
             }
             else if (Globals.Game.ActualGame == EGame.Valorant)
             {
-                ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _DINNEXT_W1G_BOLD);
+                ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _TUNGSTEN_BOLD);
                 if (t != null && t.Length == 3)
                     DisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
 
-                t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _DINNEXT_W1G_REGULAR);
+                t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _DINNEXT_W1G_BOLD);
+                if (t != null && t.Length == 3)
+                    BundleDefaultTypeface = SKTypeface.FromStream(t[2].AsStream());
+
+                t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _DINNEXT_W1G_LIGHT);
                 if (t != null && t.Length == 3)
                     DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
             }

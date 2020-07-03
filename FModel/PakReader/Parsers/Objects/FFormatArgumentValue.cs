@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PakReader.Parsers.Objects
 {
@@ -18,6 +19,19 @@ namespace PakReader.Parsers.Objects
                 EFormatArgumentType.Double => reader.ReadDouble(),
                 EFormatArgumentType.Float => reader.ReadFloat(),
                 _ => throw new NotImplementedException(string.Format(FModel.Properties.Resources.ParsingNotSupported, Type)),
+            };
+        }
+
+        public Dictionary<string, object> GetValue()
+        {
+            return new Dictionary<string, object>
+            {
+                ["Type"] = Type,
+                ["Value"] = Value switch
+                {
+                    FText fText => fText.GetValue(),
+                    _ => Value,
+                }
             };
         }
     }

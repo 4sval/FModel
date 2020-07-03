@@ -1,6 +1,6 @@
-﻿using FModel.Discord;
-using FModel.Logger;
+﻿using FModel.Logger;
 using FModel.Utils;
+using FModel.ViewModels.ComboBox;
 using FModel.ViewModels.StatusBar;
 using FModel.Windows.DarkMessageBox;
 using System;
@@ -28,8 +28,7 @@ namespace FModel
 
             DebugHelper.Init(LogsFilePath); // get old settings too
 
-            if (FModel.Properties.Settings.Default.UseEnglish) // use old settings here
-                Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(ProgramLang.GetProgramLang());
 
             DebugHelper.WriteLine("{0} {1}", "[FModel]", "––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––");
             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Version]", Assembly.GetExecutingAssembly().GetName().Version.ToString());

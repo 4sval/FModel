@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace FModel.Creator
+namespace FModel.Creator.Fortnite
 {
     public class BaseIcon
     {

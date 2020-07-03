@@ -14,7 +14,7 @@ namespace PakReader.Parsers.Objects
             internal Base(PackageReader reader)
             {
                 Namespace = reader.ReadFString() ?? string.Empty; // namespaces are sometimes null
-                Key = reader.ReadFString();
+                Key = reader.ReadFString() ?? string.Empty;
                 SourceString = Localizations.GetLocalization(Namespace, Key, reader.ReadFString());
             }
         }

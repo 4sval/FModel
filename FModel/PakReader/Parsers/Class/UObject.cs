@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,18 +21,18 @@ namespace PakReader.Parsers.Class
         internal UObject(PackageReader reader, long maxSize, bool structFallback)
         {
             var properties = new Dictionary<string, object>();
-            int i = 1;
+            int num = 1;
 
             while (true)
             {
                 var Tag = new FPropertyTag(reader);
-                if (Tag.Name.IsNone)
+                if (Tag.Name.IsNone || Tag.Name.String == null)
                     break;
 
                 var pos = reader.Position;
                 var obj = BaseProperty.ReadAsObject(reader, Tag, Tag.Type, ReadType.NORMAL) ?? null;
 
-                var key = properties.ContainsKey(Tag.Name.String) ? $"{Tag.Name.String}_NK{i++}" : Tag.Name.String;
+                var key = properties.ContainsKey(Tag.Name.String) ? $"{Tag.Name.String}_NK{num++:00}" : Tag.Name.String;
                 properties[key] = obj;
                 if (obj == null) break;
 
@@ -52,43 +52,6 @@ namespace PakReader.Parsers.Class
             }
         }
 
-        public Dictionary<string, object> GetValue()
-        {
-            var ret = new Dictionary<string, object>(Dict.Count);
-            foreach (KeyValuePair<string, object> KvP in Dict)
-            {
-                if (KvP.Value == null)
-                    ret[KvP.Key] = null;
-                else
-                    ret[KvP.Key] = KvP.Value.GetType().Name switch
-                    {
-                        "ByteProperty" => ((ByteProperty)KvP.Value).GetValue(),
-                        "BoolProperty" => ((BoolProperty)KvP.Value).GetValue(),
-                        "IntProperty" => ((IntProperty)KvP.Value).GetValue(),
-                        "FloatProperty" => ((FloatProperty)KvP.Value).GetValue(),
-                        "ObjectProperty" => ((ObjectProperty)KvP.Value).GetValue(),
-                        "NameProperty" => ((NameProperty)KvP.Value).GetValue(),
-                        "DoubleProperty" => ((DoubleProperty)KvP.Value).GetValue(),
-                        "ArrayProperty" => ((ArrayProperty)KvP.Value).GetValue(),
-                        "StructProperty" => ((StructProperty)KvP.Value).GetValue(),
-                        "StrProperty" => ((StrProperty)KvP.Value).GetValue(),
-                        "TextProperty" => ((TextProperty)KvP.Value).GetValue(),
-                        "InterfaceProperty" => ((InterfaceProperty)KvP.Value).GetValue(),
-                        "SoftObjectProperty" => ((SoftObjectProperty)KvP.Value).GetValue(),
-                        "UInt64Property" => ((UInt64Property)KvP.Value).GetValue(),
-                        "UInt32Property" => ((UInt32Property)KvP.Value).GetValue(),
-                        "UInt16Property" => ((UInt16Property)KvP.Value).GetValue(),
-                        "Int64Property" => ((Int64Property)KvP.Value).GetValue(),
-                        "Int16Property" => ((Int16Property)KvP.Value).GetValue(),
-                        "Int8Property" => ((Int8Property)KvP.Value).GetValue(),
-                        "MapProperty" => ((MapProperty)KvP.Value).GetValue(),
-                        "SetProperty" => ((SetProperty)KvP.Value).GetValue(),
-                        "EnumProperty" => ((EnumProperty)KvP.Value).GetValue(),
-                        _ => KvP.Value,
-                    };
-            }
-            return ret;
-        }
         public object this[string key] => Dict[key];
         public IEnumerable<string> Keys => Dict.Keys;
         public IEnumerable<object> Values => Dict.Values;

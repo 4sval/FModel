@@ -2,8 +2,47 @@
 
 namespace FModel.ViewModels.ComboBox
 {
+    static class ProgramLang
+    {
+        private static readonly string _Default = "en-US";
+        private static readonly string _French = "fr-FR";
+        private static readonly string _German = "de-DE";
+        private static readonly string _Italian = "it-IT";
+        private static readonly string _Spanish = "es";
+        private static readonly string _Arabic = "ar";
+        private static readonly string _Japanese = "ja-JP";
+        private static readonly string _Russian = "ru-RU";
+
+        public static string GetProgramLang()
+        {
+            return Properties.Settings.Default.ProgramLanguage switch
+            {
+                7 => _Russian,
+                6 => _Japanese,
+                5 => _Arabic,
+                4 => _Spanish,
+                3 => _Italian,
+                2 => _German,
+                1 => _French,
+                _ => _Default
+            };
+        }
+    }
+
     static class ComboBoxVm
     {
+        public static ObservableCollection<ComboBoxViewModel> programLanguageCbViewModel = new ObservableCollection<ComboBoxViewModel>
+        {
+            new ComboBoxViewModel { Id = 0, Content = Properties.Resources.English },
+            new ComboBoxViewModel { Id = 1, Content = Properties.Resources.French },
+            new ComboBoxViewModel { Id = 2, Content = Properties.Resources.German },
+            new ComboBoxViewModel { Id = 3, Content = Properties.Resources.Italian },
+            new ComboBoxViewModel { Id = 4, Content = Properties.Resources.Spanish },
+            new ComboBoxViewModel { Id = 5, Content = Properties.Resources.Arabic },
+            new ComboBoxViewModel { Id = 6, Content = Properties.Resources.Japanese },
+            new ComboBoxViewModel { Id = 7, Content = Properties.Resources.Russian }
+        };
+
         public static ObservableCollection<ComboBoxViewModel> languageCbViewModel = new ObservableCollection<ComboBoxViewModel>
         {
             new ComboBoxViewModel { Id = 0, Content = Properties.Resources.English, Property = ELanguage.English },

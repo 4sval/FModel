@@ -1,4 +1,6 @@
-﻿namespace PakReader.Parsers.Objects
+﻿using System.Collections.Generic;
+
+namespace PakReader.Parsers.Objects
 {
     public readonly struct FAssetIdentifier : IUStruct
     {
@@ -36,5 +38,16 @@
                 ValueName = reader.ReadFName();
             }
         }
-	}
+
+        public Dictionary<string, string> GetValue()
+        {
+            return new Dictionary<string, string>
+            {
+                ["PackageName"] = PackageName.String,
+                ["PrimaryAssetType"] = PrimaryAssetType.String,
+                ["ObjectName"] = ObjectName.String,
+                ["ValueName"] = ValueName.String
+            };
+        }
+    }
 }

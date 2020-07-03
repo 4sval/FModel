@@ -16,6 +16,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="10"/>
@@ -26,7 +27,42 @@
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
 
-        <GroupBox Header="{x:Static properties:Resources.PakFiles}" Grid.Row="1" Grid.Column="1" BorderBrush="#7F748198" VerticalAlignment="Top">
+        <GroupBox Header="FModel" Grid.Row="1" Grid.Column="1" BorderBrush="#7F748198" VerticalAlignment="Top">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="5"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="1" Grid.Column="1"
+                       Content="{x:Static properties:Resources.Language}"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <ComboBox x:Name="FLanguages_CbBox" Grid.Row="1" Grid.Column="2"
+                          BorderBrush="#7F748198" Background="#FF333C46"
+                          Height="20" VerticalAlignment="Top" Margin="0,3,0,0"/>
+
+                <Grid Grid.Row="1" Grid.Column="4" Grid.RowSpan="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Grid.Row="0" Margin="5,7,5,5"
+                        Content="{x:Static properties:Resources.UseDiscordRpc}"
+                        IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseDiscordRpc, Mode=TwoWay}"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="{x:Static properties:Resources.PakFiles}" Grid.Row="2" Grid.Column="1" BorderBrush="#7F748198" VerticalAlignment="Top">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="5"/>
@@ -51,7 +87,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="{x:Static properties:Resources.Extraction}" Grid.Row="2" Grid.Column="1" BorderBrush="#7F748198" VerticalAlignment="Top">
+        <GroupBox Header="{x:Static properties:Resources.Extraction}" Grid.Row="3" Grid.Column="1" BorderBrush="#7F748198" VerticalAlignment="Top">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="5"/>
@@ -76,7 +112,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="{x:Static properties:Resources.Assets}" Grid.Row="3" Grid.Column="1" BorderBrush="#7F748198" VerticalAlignment="Top">
+        <GroupBox Header="{x:Static properties:Resources.Assets}" Grid.Row="4" Grid.Column="1" BorderBrush="#7F748198" VerticalAlignment="Top">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="5"/>
@@ -111,26 +147,19 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <CheckBox Grid.Row="0" Margin="5"
+                    <CheckBox Grid.Row="0" Margin="5,6.5,5,5"
                           Content="{x:Static properties:Resources.ReloadAesKeysAtLaunch}"
                           IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=ReloadAesKeys, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="1" Margin="5"
+                    <CheckBox Grid.Row="1" Margin="5,6.5,5,5"
                           Content="{x:Static properties:Resources.AutoOpenSounds}"
                           IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoOpenSounds, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="2" Margin="5" Content="{x:Static properties:Resources.UseFEnglish}"
-                              IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseEnglish, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="3" Margin="5"
-                        Content="{x:Static properties:Resources.UseDiscordRpc}"
-                        IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseDiscordRpc, Mode=TwoWay}"/>
                 </Grid>
             </Grid>
         </GroupBox>
 
-        <Button Grid.Row="5" Grid.Column="1"
+        <Button Grid.Row="6" Grid.Column="1"
                 Content="{x:Static properties:Resources.OK}"
                 HorizontalAlignment="Right" Width="80" Click="OnClick"/>
     </Grid>

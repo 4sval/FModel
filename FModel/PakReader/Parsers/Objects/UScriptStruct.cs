@@ -11,7 +11,9 @@ namespace PakReader.Parsers.Objects
         internal UScriptStruct(PackageReader reader, FName structName) : this(reader, structName.String) { }
         internal UScriptStruct(PackageReader reader, string structName)
         {
+#if DEBUG
             //System.Diagnostics.Debug.WriteLine(structName);
+#endif
             Struct = structName switch
             {
                 "LevelSequenceObjectReferenceMap" => new FLevelSequenceObjectReferenceMap(reader),
@@ -49,7 +51,6 @@ namespace PakReader.Parsers.Objects
                 "MovieSceneFloatChannel" => new FMovieSceneFloatChannel(reader),
                 "MovieSceneEvaluationTemplate" => new FMovieSceneEvaluationTemplate(reader),
                 "SkeletalMeshSamplingLODBuiltData" => new FSkeletalMeshSamplingLODBuiltData(reader),
-                //"BodyInstance" => new FBodyInstance(reader), // if uncommented, can't parse .umap
                 "VectorMaterialInput" => new FVectorMaterialInput(reader),
                 "ColorMaterialInput" => new FColorMaterialInput(reader),
                 "ExpressionInput" => new FMaterialInput(reader),

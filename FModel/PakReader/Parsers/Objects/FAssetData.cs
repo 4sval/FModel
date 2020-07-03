@@ -1,4 +1,6 @@
-﻿namespace PakReader.Parsers.Objects
+﻿using System.Collections.Generic;
+
+namespace PakReader.Parsers.Objects
 {
     public readonly struct FAssetData : IUStruct
     {
@@ -31,6 +33,21 @@
 			TagsAndValues = new FAssetDataTagMapSharedView(reader);
 			ChunkIDs = reader.Loader.ReadTArray(() => reader.Loader.ReadInt32());
 			PackageFlags = reader.Loader.ReadInt32();
+		}
+
+		public Dictionary<string, object> GetValue()
+		{
+			return new Dictionary<string, object>
+			{
+				["ObjectPath"] = ObjectPath.String,
+				["PackageName"] = PackageName.String,
+				["PackagePath"] = PackagePath.String,
+				["AssetName"] = AssetName.String,
+				["AssetClass"] = AssetClass.String,
+				["TagsAndValues"] = TagsAndValues.Map,
+				["ChunkIDs"] = ChunkIDs,
+				["PackageFlags"] = PackageFlags
+			};
 		}
 	}
 }
