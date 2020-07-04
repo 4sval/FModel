@@ -142,7 +142,6 @@ namespace FModel.Utils
                 return lang switch
                 {
                     //Indonesian id-ID
-                    //Mexican Spanish es-MX
                     //Thailand th-TH
                     //Vietnam vi-VN
                     ELanguage.English => "en-US",
@@ -150,7 +149,7 @@ namespace FModel.Utils
                     ELanguage.German => "de-DE",
                     ELanguage.Italian => "it-IT",
                     ELanguage.Spanish => "es-ES",
-                    ELanguage.SpanishLatin => "es-419",
+                    ELanguage.SpanishLatin => "es-MX",
                     ELanguage.Arabic => "ar-AE",
                     ELanguage.Japanese => "ja-JP",
                     ELanguage.Korean => "ko-KR",

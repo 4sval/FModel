@@ -39,7 +39,15 @@ namespace FModel.Creator.Texts
 
         private const string _VALORANT_BASE_PATH = "/Game/";
         private const string _TUNGSTEN_BOLD = "Tungsten-Bold";
+        private const string _DINNEXT_LTARABIC_HEAVY = "UI/Fonts/FinalFonts/LOCFonts/DIN_Next_Arabic/DINNextLTArabic-Heavy";
+        private const string _TUNGSTEN_CYRILLIC = "UI/Fonts/FinalFonts/LOCFonts/LOC_Tungsten/Cyrillic_Tungsten";
+        private const string _TUNGSTEN_JAPANESE = "UI/Fonts/FinalFonts/LOCFonts/LOC_Tungsten/JP_Tungsten";
+        private const string _TUNGSTEN_KOREAN = "UI/Fonts/FinalFonts/LOCFonts/LOC_Tungsten/KR_Tungsten";
+        private const string _TUNGSTEN_SIMPLIFIED_CHINESE = "UI/Fonts/FinalFonts/LOCFonts/LOC_Tungsten/zh-CN_Tungsten";
+        private const string _TUNGSTEN_TRADITIONAL_CHINESE = "UI/Fonts/FinalFonts/LOCFonts/LOC_Tungsten/zh-TW_Tungsten";
         private const string _DINNEXT_W1G_LIGHT = "UI/Fonts/FinalFonts/DINNextW1G-Light";
+        private const string _DINNEXT_LTARABIC_LIGHT = "UI/Fonts/FinalFonts/LOCFonts/DIN_Next_Arabic/DINNextLTArabic-Light";
+        private const string _NOTOSANS_CJK_LIGHT = "UI/Fonts/FinalFonts/LOCFonts/CJK/NotoSansCJK-Light"; // chinese, japanese, korean
         private const string _DINNEXT_W1G_BOLD = "UI/Fonts/FinalFonts/DINNextW1G-Bold";
 #pragma warning restore IDE0051
 
@@ -51,14 +59,17 @@ namespace FModel.Creator.Texts
 
         public Typefaces()
         {
+            DefaultTypeface = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD).Stream);
+            BundleDefaultTypeface = DefaultTypeface;
+            DisplayNameTypeface = DefaultTypeface;
+            DescriptionTypeface = DefaultTypeface;
+            BundleDisplayNameTypeface = DefaultTypeface;
+
             if (Globals.Game.ActualGame == EGame.Fortnite)
             {
-                DefaultTypeface = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD).Stream);
-
                 ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(_FORTNITE_BASE_PATH + _BURBANK_BIG_CONDENSED_BLACK);
                 if (t != null && t.Length == 3)
                     BundleDefaultTypeface = SKTypeface.FromStream(t[2].AsStream());
-                else BundleDefaultTypeface = DefaultTypeface;
 
                 string namePath = _FORTNITE_BASE_PATH + (
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _ASIA_ERINM :
@@ -74,7 +85,6 @@ namespace FModel.Creator.Texts
                     if (t != null && t.Length == 3)
                         DisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
                 }
-                else DisplayNameTypeface = DefaultTypeface;
 
                 string descriptionPath = _FORTNITE_BASE_PATH + (
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _NOTO_SANS_KR_REGULAR :
@@ -86,7 +96,6 @@ namespace FModel.Creator.Texts
                 t = Utils.GetPropertyArraySegmentByte(descriptionPath);
                 if (t != null && t.Length == 3)
                     DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
-                else DescriptionTypeface = DefaultTypeface;
 
                 string bundleNamePath = _FORTNITE_BASE_PATH + (
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _ASIA_ERINM :
@@ -102,21 +111,35 @@ namespace FModel.Creator.Texts
                     if (t != null && t.Length == 3)
                         BundleDisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
                 }
-                else BundleDisplayNameTypeface = BundleDefaultTypeface;
             }
             else if (Globals.Game.ActualGame == EGame.Valorant)
             {
-                ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _TUNGSTEN_BOLD);
+                string namePath = _VALORANT_BASE_PATH + (
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _TUNGSTEN_KOREAN :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _TUNGSTEN_CYRILLIC :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _TUNGSTEN_JAPANESE :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Arabic ? _DINNEXT_LTARABIC_HEAVY :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _TUNGSTEN_TRADITIONAL_CHINESE :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _TUNGSTEN_SIMPLIFIED_CHINESE :
+                    _TUNGSTEN_BOLD);
+                ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(namePath);
                 if (t != null && t.Length == 3)
                     DisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
+
+                string descriptionPath = _VALORANT_BASE_PATH + (
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _NOTOSANS_CJK_LIGHT :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NOTOSANS_CJK_LIGHT :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Arabic ? _DINNEXT_LTARABIC_LIGHT :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? _NOTOSANS_CJK_LIGHT :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTOSANS_CJK_LIGHT :
+                    _DINNEXT_W1G_LIGHT);
+                t = Utils.GetPropertyArraySegmentByte(descriptionPath);
+                if (t != null && t.Length == 3)
+                    DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
 
                 t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _DINNEXT_W1G_BOLD);
                 if (t != null && t.Length == 3)
                     BundleDefaultTypeface = SKTypeface.FromStream(t[2].AsStream());
-
-                t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _DINNEXT_W1G_LIGHT);
-                if (t != null && t.Length == 3)
-                    DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
             }
         }
 

@@ -33,28 +33,19 @@ namespace FModel.Creator
                 case "ArmorUIData":
                 case "SprayUIData":
                 case "ThemeUIData":
-                case "SeasonUIData":
-                case "MissionUIData":
                 case "ContractUIData":
                 case "CurrencyUIData":
                 case "GameModeUIData":
-                case "ObjectiveUIData":
                 case "CharacterUIData":
                 case "SprayLevelUIData":
                 case "EquippableUIData":
                 case "PlayerCardUIData":
-                case "ContentTierUIData":
-                case "PlayerTitleUIData":
                 case "Gun_UIData_Base_C":
                 case "CharacterRoleUIData":
-                case "StorefrontItemUIData":
-                case "SprayEquipSlotUIData":
                 case "EquippableSkinUIData":
-                case "ContractChapterUIData":
                 case "EquippableCharmUIData":
                 case "EquippableSkinLevelUIData":
                 case "EquippableSkinChromaUIData":
-                case "EquippableAttachmentUIData":
                 case "EquippableCharmLevelUIData":
                     {
                         BaseUIData icon = new BaseUIData(export);

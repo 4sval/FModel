@@ -12,16 +12,16 @@ namespace FModel.Creator.Valorant
             IsAntialias = true,
             FilterQuality = SKFilterQuality.High,
             Typeface = Text.TypeFaces.DescriptionTypeface,
-            TextSize = 13,
+            TextSize = 19.5f,
             Color = SKColors.White,
         };
 
         public SKBitmap IconImage;
         public string DisplayName;
         public string Description;
-        public int Width = 512; // keep it 512 (or a multiple of 512) if you don't want blurry icons
-        public int Height = 64;
-        public int Margin = 2;
+        public int Width = 768; // keep it 512 (or a multiple of 512) if you don't want blurry icons
+        public int Height = 96;
+        public int Margin = 3;
 
         public BaseUIData()
         {
@@ -33,11 +33,11 @@ namespace FModel.Creator.Valorant
         public BaseUIData(IUExport export) : this()
         {
             if (export.GetExport<TextProperty>("DisplayName") is TextProperty displayName)
-                DisplayName = Text.GetTextPropertyBase(displayName);
+                DisplayName = Text.GetTextPropertyBase(displayName) ?? "";
             if (export.GetExport<TextProperty>("Description") is TextProperty description)
             {
-                Description = Text.GetTextPropertyBase(description);
-                if (Description != null && Description.Equals(DisplayName)) Description = string.Empty;
+                Description = Text.GetTextPropertyBase(description) ?? "";
+                if (Description.Equals(DisplayName)) Description = string.Empty;
                 if (!string.IsNullOrEmpty(Description))
                 {
                     Height += (int)descriptionPaint.TextSize * Helper.SplitLines(Description, descriptionPaint, Width - Margin).Length;
@@ -45,14 +45,14 @@ namespace FModel.Creator.Valorant
                 }
             }
 
-            if (export.GetExport<ObjectProperty>("ListViewIcon", "FullRender", "VerticalPromoImage", "LargeIcon", "DisplayIcon") is ObjectProperty icon)
+            if (export.GetExport<ObjectProperty>("StoreFeaturedImage", "FullRender", "VerticalPromoImage", "LargeIcon", "DisplayIcon2", "DisplayIcon") is ObjectProperty icon)
             {
                 SKBitmap raw = Utils.GetObjectTexture(icon);
                 if (raw != null)
                 {
-                    int coef = Width / raw.Width;
-                    int sizeX = raw.Width * coef;
-                    int sizeY = raw.Height * coef;
+                    float coef = (float)Width / (float)raw.Width;
+                    int sizeX = (int)(raw.Width * coef);
+                    int sizeY = (int)(raw.Height * coef);
                     Height += sizeY;
                     IconImage = raw.Resize(sizeX, sizeY);
                 }
@@ -61,7 +61,7 @@ namespace FModel.Creator.Valorant
 
         public void Draw(SKCanvas c)
         {
-            int textSize = 45;
+            float textSize = 67.5f;
             SKPaint namePaint = new SKPaint
             {
                 IsAntialias = true,
@@ -82,7 +82,7 @@ namespace FModel.Creator.Valorant
 
             // wrap if too long
             Helper.DrawMultilineText(c, Description, Width, Margin, ETextSide.Left,
-                new SKRect(Margin, textSize + 25, Width - Margin, Height - 25), descriptionPaint, out var yPos);
+                new SKRect(Margin, textSize + 37.5f, Width - Margin, Height - 37.5f), descriptionPaint, out var yPos);
 
             if (IconImage != null)
                 c.DrawBitmap(IconImage, new SKRect(0, yPos, Width, Height),
