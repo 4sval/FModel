@@ -76,7 +76,7 @@ namespace FModel.Utils
                                         using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         using var reader = new StreamReader(asset);
-                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), selected.PakEntry.GetNameWithExtension(), AvalonEditVm.IniHighlighter);
+                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.PakEntry.Name, AvalonEditVm.IniHighlighter);
                                         break;
                                     }
                                 case ".uproject":
@@ -86,28 +86,28 @@ namespace FModel.Utils
                                         using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         using var reader = new StreamReader(asset);
-                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), selected.PakEntry.GetNameWithExtension());
+                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.PakEntry.Name);
                                         break;
                                     }
                                 case ".locmeta":
                                     {
                                         using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
-                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new LocMetaReader(asset), Formatting.Indented), selected.PakEntry.GetNameWithExtension());
+                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new LocMetaReader(asset), Formatting.Indented), mount + selected.PakEntry.Name);
                                         break;
                                     }
                                 case ".locres":
                                     {
                                         using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
-                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new LocResReader(asset).Entries, Formatting.Indented), selected.PakEntry.GetNameWithExtension());
+                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new LocResReader(asset).Entries, Formatting.Indented), mount + selected.PakEntry.Name);
                                         break;
                                     }
                                 case ".udic":
                                     {
                                         using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
-                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new FOodleDictionaryArchive(asset).Header, Formatting.Indented), selected.PakEntry.GetNameWithExtension());
+                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new FOodleDictionaryArchive(asset).Header, Formatting.Indented), mount + selected.PakEntry.Name);
                                         break;
                                     }
                                 case ".bin":
@@ -118,7 +118,7 @@ namespace FModel.Utils
                                         {
                                             using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                             asset.Position = 0;
-                                            AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new FAssetRegistryState(asset), Formatting.Indented), selected.PakEntry.GetNameWithExtension());
+                                            AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new FAssetRegistryState(asset), Formatting.Indented), mount + selected.PakEntry.Name);
                                         }
                                         break;
                                     }
@@ -126,14 +126,14 @@ namespace FModel.Utils
                                     {
                                         using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
-                                        ImageBoxVm.imageBoxViewModel.Set(SKBitmap.Decode(asset), selected.PakEntry.GetNameWithExtension());
+                                        ImageBoxVm.imageBoxViewModel.Set(SKBitmap.Decode(asset), mount + selected.PakEntry.Name);
                                         break;
                                     }
                                 case ".ushaderbytecode":
                                 case ".pck":
                                     break;
                                 default:
-                                    AvalonEditVm.avalonEditViewModel.Set(GetJsonProperties(selected.PakEntry, mount, true), selected.PakEntry.GetNameWithExtension());
+                                    AvalonEditVm.avalonEditViewModel.Set(GetJsonProperties(selected.PakEntry, mount, true), mount + selected.PakEntry.Name);
                                     break;
                             }
 
@@ -199,7 +199,8 @@ namespace FModel.Utils
                 var s = p.GetExport<USoundWave>();
                 if (s != null && (s.AudioFormat.String.Equals("OGG") || s.AudioFormat.String.Equals("OGG10000-1-1-1-1-1")))
                 {
-                    string path = Properties.Settings.Default.OutputPath + "\\Sounds\\" + entry.GetNameWithoutExtension() + ".ogg";
+                    string path = Properties.Settings.Default.OutputPath + "\\Sounds\\" + mount + entry.GetPathWithoutExtension() + ".ogg";
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
                     if (File.Exists(path))
                     {
                         if (!Paks.IsFileWriteLocked(new FileInfo(path))) // aka isn't already being played, rewrite it
@@ -233,7 +234,8 @@ namespace FModel.Utils
                 }
                 else if (s != null) // ADPCM and others
                 {
-                    string path = Properties.Settings.Default.OutputPath + "\\Sounds\\" + entry.GetNameWithoutExtension() + "." + s.AudioFormat.String.ToLowerInvariant();
+                    string path = Properties.Settings.Default.OutputPath + "\\Sounds\\" + mount + entry.GetPathWithoutExtension() + "." + s.AudioFormat.String.ToLowerInvariant();
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
                     using var stream = new FileStream(path, FileMode.Create, FileAccess.Write);
                     using var writer = new BinaryWriter(stream);
                     writer.Write(s.Sound);

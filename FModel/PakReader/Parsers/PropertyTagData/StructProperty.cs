@@ -22,7 +22,6 @@ namespace PakReader.Parsers.PropertyTagData
                 FAssetPackageData fAssetPackageData => fAssetPackageData.GetValue(),
                 FGameplayTagContainer fGameplayTagContainer => fGameplayTagContainer.GetValue(),
                 FSoftObjectPath fSoftObjectPath => fSoftObjectPath.GetValue(),
-                FDateTime fDateTime => fDateTime.Ticks,
                 FGuid fGuid => fGuid.Hex,
                 _ => Value
             };

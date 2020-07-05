@@ -17,12 +17,13 @@ namespace FModel.ViewModels.AvalonEdit
     static class AvalonEditVm
     {
         public static readonly AvalonEditViewModel avalonEditViewModel = new AvalonEditViewModel();
-        public static void Set(this AvalonEditViewModel vm, string assetProperties, string ownerName, IHighlightingDefinition format = null)
+        public static void Set(this AvalonEditViewModel vm, string assetProperties, string ownerPath, IHighlightingDefinition format = null)
         {
             Application.Current.Dispatcher.Invoke(delegate
             {
                 vm.Document = new TextDocument(assetProperties);
-                vm.OwerName = ownerName;
+                vm.OwnerName = Path.GetFileName(ownerPath);
+                vm.OwnerPath = Path.GetDirectoryName(ownerPath);
                 vm.Highlighter = format ?? JsonHighlighter;
             });
 
@@ -33,7 +34,7 @@ namespace FModel.ViewModels.AvalonEdit
             Application.Current.Dispatcher.Invoke(delegate
             {
                 vm.Document = new TextDocument();
-                vm.OwerName = string.Empty;
+                vm.OwnerName = string.Empty;
                 vm.Highlighter = JsonHighlighter;
             });
         }
@@ -48,21 +49,25 @@ namespace FModel.ViewModels.AvalonEdit
                 {
                     if (autoSave)
                     {
-                        string path = Folders.GetUniqueFilePath(Properties.Settings.Default.OutputPath + "\\JSONs\\" + Path.ChangeExtension(vm.OwerName, ".json"));
-                        File.WriteAllText(path, vm.Document.Text);
-                        if (File.Exists(path))
+                        string path = Properties.Settings.Default.OutputPath + "\\JSONs" + vm.OwnerPath + "\\";
+                        string file = Folders.GetUniqueFilePath(path + Path.ChangeExtension(vm.OwnerName, ".json"));
+
+                        Directory.CreateDirectory(path);
+                        File.WriteAllText(file, vm.Document.Text);
+                        if (File.Exists(file))
                         {
-                            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AvalonEditViewModel]", $"{vm.OwerName} successfully saved");
-                            FConsole.AppendText(string.Format(Properties.Resources.SaveSuccess, Path.GetFileName(path)), FColors.Green, true);
+                            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AvalonEditViewModel]", $"{vm.OwnerName} successfully saved");
+                            FConsole.AppendText(string.Format(Properties.Resources.SaveSuccess, Path.GetFileName(file)), FColors.Green, true);
                         }
                     }
                     else
                     {
+                        Directory.CreateDirectory(Properties.Settings.Default.OutputPath + "\\JSONs" + vm.OwnerPath);
                         var saveFileDialog = new SaveFileDialog
                         {
                             Title = Properties.Resources.Save,
-                            FileName = Path.ChangeExtension(vm.OwerName, ".json"),
-                            InitialDirectory = Properties.Settings.Default.OutputPath + "\\JSONs\\",
+                            FileName = Path.ChangeExtension(vm.OwnerName, ".json"),
+                            InitialDirectory = Properties.Settings.Default.OutputPath + "\\JSONs" + vm.OwnerPath,
                             Filter = Properties.Resources.JsonFilter
                         };
                         if ((bool)saveFileDialog.ShowDialog())
@@ -70,7 +75,7 @@ namespace FModel.ViewModels.AvalonEdit
                             File.WriteAllText(saveFileDialog.FileName, vm.Document.Text);
                             if (File.Exists(saveFileDialog.FileName))
                             {
-                                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AvalonEditViewModel]", $"{vm.OwerName} successfully saved");
+                                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AvalonEditViewModel]", $"{vm.OwnerName} successfully saved");
                                 Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, Properties.Resources.DataSaved, string.Empty, saveFileDialog.FileName);
                             }
                         }
@@ -116,11 +121,18 @@ namespace FModel.ViewModels.AvalonEdit
     public class AvalonEditViewModel : PropertyChangedBase
     {
         private string _ownerName; // used to get the name of the file when saving or exporting
-        public string OwerName
+        public string OwnerName
         {
             get { return _ownerName; }
 
             set { this.SetProperty(ref this._ownerName, value); }
+        }
+        private string _ownerPath;
+        public string OwnerPath
+        {
+            get { return _ownerPath; }
+
+            set { this.SetProperty(ref this._ownerPath, value); }
         }
         private TextDocument _document;
         public TextDocument Document

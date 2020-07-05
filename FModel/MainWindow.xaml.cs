@@ -404,7 +404,7 @@ namespace FModel
         {
             if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0 && FModel_AssetsList.SelectedItem is ListBoxViewModel selectedItem)
             {
-                if (selectedItem.Content.Equals(AvalonEditVm.avalonEditViewModel.OwerName)) // if selected item is actually displayed, just save
+                if (selectedItem.Content.Equals(AvalonEditVm.avalonEditViewModel.OwnerName)) // if selected item is actually displayed, just save
                     AvalonEditVm.avalonEditViewModel.Save(false);
                 else // extract (aka display) and save
                 {
