@@ -30,6 +30,7 @@ namespace FModel.Utils
                     "OakGame" => EGame.Borderlands3,
                     "Dungeons" => EGame.MinecraftDungeons,
                     "WorldExplorers" => EGame.BattleBreakers,
+                    "g3" => EGame.Spellbreak,
                     _ => EGame.Unknown,
                 };
             }
@@ -46,6 +47,7 @@ namespace FModel.Utils
                 EGame.Borderlands3 => "OakGame",
                 EGame.MinecraftDungeons => "Dungeons",
                 EGame.BattleBreakers => "WorldExplorers",
+                EGame.Spellbreak => "g3",
                 _ => string.Empty,
             };
 

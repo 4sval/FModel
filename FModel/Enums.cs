@@ -8,7 +8,8 @@
         DeadByDaylight,
         Borderlands3,
         MinecraftDungeons,
-        BattleBreakers
+        BattleBreakers,
+        Spellbreak
     }
 
     public enum EFModel

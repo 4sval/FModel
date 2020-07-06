@@ -95,6 +95,7 @@
     <None Remove="Resources\sign-direction-plus.png" />
     <None Remove="Resources\sign-direction-remove.png" />
     <None Remove="Resources\sign-direction.png" />
+    <None Remove="Resources\spellbreak.ico" />
     <None Remove="Resources\stop.png" />
     <None Remove="Resources\T-Icon-Pets-64.png" />
     <None Remove="Resources\T-Icon-Quests-64.png" />
@@ -200,6 +201,7 @@
     <Resource Include="Resources\sign-direction-plus.png" />
     <Resource Include="Resources\sign-direction-remove.png" />
     <Resource Include="Resources\sign-direction.png" />
+    <Resource Include="Resources\spellbreak.ico" />
     <Resource Include="Resources\stop.png" />
     <Resource Include="Resources\T-Icon-Pets-64.png" />
     <Resource Include="Resources\T-Icon-Quests-64.png" />
