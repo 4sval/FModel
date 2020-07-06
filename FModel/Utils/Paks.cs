@@ -111,6 +111,15 @@ namespace FModel.Utils
                 return string.Empty;
         }
 
+        public static string GetSpellbreakPakFilesPath()
+        {
+            (_, string _, string spellbreakFilesPath) = GetUEGameFilesPath("Newt");
+            if (!string.IsNullOrEmpty(spellbreakFilesPath))
+                return $"{spellbreakFilesPath}\\g3\\Content\\Paks";
+            else
+                return string.Empty;
+        }
+
         public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files, string mount)
         {
             files = new Dictionary<string, FPakEntry>();
