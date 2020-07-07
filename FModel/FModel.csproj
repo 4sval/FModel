@@ -110,6 +110,7 @@
     <None Remove="Resources\volume-mute.png" />
     <None Remove="Resources\volume-plus.png" />
     <None Remove="Resources\wifi-strength-off.ico" />
+    <None Remove="Resources\Xml.xshd" />
     <None Remove="Resources\zip-box.png" />
     <None Include="FModel.ico">
       <Pack>True</Pack>
@@ -120,6 +121,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Ini.xshd" />
     <EmbeddedResource Include="Resources\Json.xshd" />
+    <EmbeddedResource Include="Resources\Xml.xshd" />
   </ItemGroup>
 
   <ItemGroup>

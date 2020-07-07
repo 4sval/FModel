@@ -32,11 +32,20 @@ namespace PakReader.Parsers.Class
             {
                 var data = new List<FTexturePlatformData>(1); // Probably gonna be only one texture anyway
                 var PixelFormatName = reader.ReadFName();
-                while (!PixelFormatName.IsNone)
+                if (FModel.Globals.Game.Version < EPakVersion.INDEX_ENCRYPTION)
                 {
-                    _ = reader.ReadInt64(); // SkipOffset
+                    _ = reader.ReadInt32(); // SkipOffset
                     data.Add(new FTexturePlatformData(reader, ubulk, bulkOffset));
-                    PixelFormatName = reader.ReadFName();
+                    reader.ReadFName();
+                }
+                else
+                {
+                    while (!PixelFormatName.IsNone)
+                    {
+                        _ = reader.ReadInt64(); // SkipOffset
+                        data.Add(new FTexturePlatformData(reader, ubulk, bulkOffset));
+                        PixelFormatName = reader.ReadFName();
+                    }
                 }
                 PlatformDatas = data.ToArray();
             }

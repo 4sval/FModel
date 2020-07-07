@@ -50,7 +50,7 @@ namespace PakReader.Parsers.Objects
                 "MovieSceneFloatValue" => new FRichCurveKey(reader),
                 "MovieSceneFloatChannel" => new FMovieSceneFloatChannel(reader),
                 "MovieSceneEvaluationTemplate" => new FMovieSceneEvaluationTemplate(reader),
-                "SkeletalMeshSamplingLODBuiltData" => new FSkeletalMeshSamplingLODBuiltData(reader),
+                //"SkeletalMeshSamplingLODBuiltData" => new FSkeletalMeshSamplingLODBuiltData(reader),
                 "VectorMaterialInput" => new FVectorMaterialInput(reader),
                 "ColorMaterialInput" => new FColorMaterialInput(reader),
                 "ExpressionInput" => new FMaterialInput(reader),

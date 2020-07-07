@@ -87,6 +87,7 @@ namespace FModel.ViewModels.AvalonEdit
 
         public static readonly IHighlightingDefinition JsonHighlighter = LoadHighlighter("Json.xshd");
         public static readonly IHighlightingDefinition IniHighlighter = LoadHighlighter("Ini.xshd");
+        public static readonly IHighlightingDefinition XmlHighlighter = LoadHighlighter("Xml.xshd");
         public static IHighlightingDefinition LoadHighlighter(string resourceName)
         {
             Assembly executingAssembly = Assembly.GetExecutingAssembly();

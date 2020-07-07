@@ -80,7 +80,7 @@ namespace FModel.Windows.Launcher
             }
 
             string spellbreakerFilesPath = Paks.GetSpellbreakPakFilesPath();
-            if (!string.IsNullOrEmpty(battlebreakersFilesPath))
+            if (!string.IsNullOrEmpty(spellbreakerFilesPath))
             {
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"Spellbreak found at {spellbreakerFilesPath}");
                 Globals.gNotifier.ShowCustomMessage("Spellbreak", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/spellbreak.ico");

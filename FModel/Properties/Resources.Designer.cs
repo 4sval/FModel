@@ -2781,6 +2781,16 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une ressource localisée de type System.Byte[].
+        /// </summary>
+        public static byte[] Xml {
+            get {
+                object obj = ResourceManager.GetObject("Xml", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Yes.
         /// </summary>
         public static string Yes {

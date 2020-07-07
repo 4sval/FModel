@@ -1,8 +1,11 @@
 using FModel.Discord;
+using FModel.ViewModels.ListBox;
 using FModel.ViewModels.SoundPlayer;
 using FModel.Windows.SoundPlayer.Visualization;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -20,6 +23,7 @@ namespace FModel.Windows.SoundPlayer
         private UserControls.SpectrumAnalyzer spectrumAnalyzer;
         private UserControls.Timeline timeline;
         private UserControls.Timeclock timeclock;
+        private string _oldPlayedSound = string.Empty;
 
         public AudioPlayer()
         {
@@ -31,12 +35,14 @@ namespace FModel.Windows.SoundPlayer
         private void OnClosed(object sender, EventArgs e)
         {
             output.Stop();
+            ListBoxVm.soundFiles.Clear();
             DiscordIntegration.Restore();
             InputFileVm.inputFileViewModel.Reset();
         }
         private void Startup()
         {
             DiscordIntegration.SaveCurrentPresence();
+            Sound_LstBox.ItemsSource = ListBoxVm.soundFiles;
             AudioPlayer_TabItm.DataContext = InputFileVm.inputFileViewModel;
             AudioDevices_CmbBox.ItemsSource = InputFileVm.inputFileViewModel.Devices;
             AudioDevices_CmbBox.SelectedItem = InputFileVm.inputFileViewModel.Devices.Where(x => x.DeviceId == Properties.Settings.Default.AudioPlayerDevice).FirstOrDefault();
@@ -54,30 +60,69 @@ namespace FModel.Windows.SoundPlayer
             Time.Content = timeline;
         }
 
-        private void OnOpenClick(object sender, RoutedEventArgs e)
+        private void OnAddClick(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog
             {
                 Title = Properties.Resources.SelectFile,
                 Filter = Properties.Resources.OggFilter,
+                Multiselect = true,
                 InitialDirectory = Properties.Settings.Default.OutputPath + "\\Sounds\\"
             };
             if ((bool)ofd.ShowDialog())
-                LoadFile(ofd.FileName);
+            {
+                foreach (string file in ofd.FileNames)
+                    LoadFile(file);
+            }
+        }
+
+        public void LoadFiles(Dictionary<string, byte[]> files, string gameFolder)
+        {
+            Focus();
+
+            ListBoxVm.soundFiles.Clear();
+            foreach (var (key, value) in files)
+            {
+                ListBoxVm.soundFiles.Add(new ListBoxViewModel2
+                {
+                    Content = key,
+                    Data = value,
+                    FullPath = string.Empty,
+                    Folder = gameFolder
+                });
+            }
         }
 
         public void LoadFile(string filepath)
         {
             Focus();
 
-            output.Stop();
-            output.Load(filepath);
-            output.Play();
+            var item = new ListBoxViewModel2
+            {
+                Content = Path.GetFileName(filepath),
+                Data = null,
+                FullPath = filepath,
+                Folder = string.Empty
+            };
+            ListBoxVm.soundFiles.Add(item);
 
-            string name = Path.GetFileName(filepath);
-            InputFileVm.inputFileViewModel.Set(name, output);
-            DiscordIntegration.Update(string.Empty, string.Format(Properties.Resources.Listening, name));
-            PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/pause.png"));
+            if (ListBoxVm.soundFiles.Count == 1) // auto play if one in queue
+            {
+                output.Stop();
+                output.Load(filepath);
+                output.Play();
+                Sound_LstBox.SelectedIndex = 0;
+
+                string name = Path.GetFileName(filepath);
+                InputFileVm.inputFileViewModel.Set(name, output);
+                DiscordIntegration.Update(string.Empty, string.Format(Properties.Resources.Listening, name));
+                PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/pause.png"));
+            }
+            else
+            {
+                Sound_LstBox.SelectedIndex = ListBoxVm.soundFiles.IndexOf(item);
+                Sound_LstBox.ScrollIntoView(item);
+            }
         }
 
         private void UpdateVolume(object sender, RoutedEventArgs e)
@@ -89,7 +134,18 @@ namespace FModel.Windows.SoundPlayer
         {
             if (output.HasMedia)
             {
-                if (output.IsPlaying)
+                if (!output.FileName.Equals(_oldPlayedSound))
+                {
+                    output.Stop();
+                    output.Load(_oldPlayedSound);
+                    output.Play();
+
+                    string name = Path.GetFileName(_oldPlayedSound);
+                    InputFileVm.inputFileViewModel.Set(name, output);
+                    DiscordIntegration.Update(string.Empty, string.Format(Properties.Resources.Listening, name));
+                    PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/pause.png"));
+                }
+                else if (output.IsPlaying)
                 {
                     output.Pause();
                     PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/play.png"));
@@ -97,6 +153,19 @@ namespace FModel.Windows.SoundPlayer
                 else if (output.Paused)
                 {
                     output.Resume();
+                    PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/pause.png"));
+                }
+            }
+            else
+            {
+                if (Sound_LstBox.SelectedIndex > -1 && Sound_LstBox.SelectedItem is ListBoxViewModel2 selected)
+                {
+                    output.Stop();
+                    output.Load(selected.FullPath);
+                    output.Play();
+
+                    InputFileVm.inputFileViewModel.Set(selected.Content, output);
+                    DiscordIntegration.Update(string.Empty, string.Format(Properties.Resources.Listening, selected.Content));
                     PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/pause.png"));
                 }
             }
@@ -123,6 +192,47 @@ namespace FModel.Windows.SoundPlayer
                     output = new OutputSource(d);
                 else
                     output.SwapDevice(d);
+            }
+        }
+
+        private void OnSelectedItemChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ListBox listBox && listBox.SelectedItem is ListBoxViewModel2 selectedItem)
+            {
+                // vgmstream convert on select
+                if (string.IsNullOrEmpty(selectedItem.FullPath) && selectedItem.Data != null)
+                {
+                    string file = Properties.Settings.Default.OutputPath + "\\vgmstream\\test.exe";
+                    if (File.Exists(file))
+                    {
+                        string folder = Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\";
+                        Directory.CreateDirectory(folder);
+                        File.WriteAllBytes(folder + selectedItem.Content, selectedItem.Data);
+                        string newFile = Path.ChangeExtension(folder + selectedItem.Content, ".wav");
+                        var vgmstream = Process.Start(new ProcessStartInfo
+                        { 
+                            FileName = file,
+                            Arguments = $"-o \"{newFile}\" \"{folder + selectedItem.Content}\"",
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            CreateNoWindow = true
+                        });
+                        vgmstream.WaitForExit();
+                        if (vgmstream.ExitCode == 0)
+                        {
+                            ListBoxVm.soundFiles.Remove(selectedItem);
+                            _oldPlayedSound = newFile;
+                            LoadFile(newFile);
+                        }
+                    }
+                }
+                else if (!_oldPlayedSound.Equals(selectedItem.FullPath))
+                    _oldPlayedSound = selectedItem.FullPath;
+
+                if (output.HasMedia && output.FileName.Equals(_oldPlayedSound))
+                    PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/pause.png"));
+                else
+                    PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/play.png"));
             }
         }
     }

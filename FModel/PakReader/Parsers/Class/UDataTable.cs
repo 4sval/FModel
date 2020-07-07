@@ -18,7 +18,7 @@ namespace PakReader.Parsers.Class
             for (int i = 0; i < NumRows; i++)
             {
                 int num = 1;
-                string RowName = reader.ReadFName().String;
+                string RowName = reader.ReadFName().String ?? "";
                 string baseName = RowName;
                 while (RowMap.ContainsKey(RowName))
                 {

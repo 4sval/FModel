@@ -12,6 +12,10 @@ namespace FModel.Windows.SoundPlayer.Visualization
     public class OutputSource : ISource, IDisposable
     {
         private string _filename;
+        public string FileName
+        {
+            get { return _filename; }
+        }
         private Uri _uri;
         private IWaveSource _waveSource;
         private ISampleSource _sampleSource;

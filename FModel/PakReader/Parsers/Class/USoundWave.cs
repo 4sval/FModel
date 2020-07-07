@@ -54,7 +54,7 @@ namespace PakReader.Parsers.Class
         internal USoundWave(PackageReader reader, Stream ubulk, long ubulkOffset) : base(reader)
         {
             // if UE4.25+ && Windows -> True
-            bStreaming = FModel.Globals.Game.Version >= EPakVersion.PATH_HASH_INDEX ? true : false;
+            bStreaming = FModel.Globals.Game.Version >= EPakVersion.PATH_HASH_INDEX;
 
             bCooked = reader.ReadInt32() != 0;
             if (this.TryGetValue("bStreaming", out var v) && v is BoolProperty b)

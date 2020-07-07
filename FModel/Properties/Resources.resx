@@ -1063,4 +1063,7 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="WithPosition" xml:space="preserve">
     <value>Position / Value</value>
   </data>
+  <data name="Xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Xml.xshd;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

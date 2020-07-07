@@ -25,6 +25,7 @@ using System.Text;
 using FModel.ViewModels.DataGrid;
 using static FModel.Creator.FortniteCreator;
 using static FModel.Creator.ValorantCreator;
+using FModel.PakReader;
 
 namespace FModel.Utils
 {
@@ -72,11 +73,20 @@ namespace FModel.Utils
                             switch (selected.PakEntry.GetExtension())
                             {
                                 case ".ini":
+                                case ".txt":
                                     {
                                         using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         using var reader = new StreamReader(asset);
                                         AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.PakEntry.Name, AvalonEditVm.IniHighlighter);
+                                        break;
+                                    }
+                                case ".xml":
+                                    {
+                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
+                                        asset.Position = 0;
+                                        using var reader = new StreamReader(asset);
+                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.PakEntry.Name, AvalonEditVm.XmlHighlighter);
                                         break;
                                     }
                                 case ".uproject":
@@ -132,6 +142,21 @@ namespace FModel.Utils
                                 case ".ushaderbytecode":
                                 case ".pck":
                                     break;
+                                case ".bnk":
+                                    {
+                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
+                                        asset.Position = 0;
+                                        BnkReader bnk = new BnkReader(new BinaryReader(asset));
+                                        Application.Current.Dispatcher.Invoke(delegate
+                                        {
+                                            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Window]", $"Opening Audio Player for {selected.PakEntry.GetNameWithExtension()}");
+                                            if (!FWindows.IsWindowOpen<Window>(Properties.Resources.AudioPlayer))
+                                                new AudioPlayer().LoadFiles(bnk.AudioFiles, selected.PakEntry.GetPathWithoutFile());
+                                            else
+                                                ((AudioPlayer)FWindows.GetOpenedWindow<Window>(Properties.Resources.AudioPlayer)).LoadFiles(bnk.AudioFiles, selected.PakEntry.GetPathWithoutFile());
+                                        });
+                                        break;
+                                    }
                                 default:
                                     AvalonEditVm.avalonEditViewModel.Set(GetJsonProperties(selected.PakEntry, mount, true), mount + selected.PakEntry.Name);
                                     break;
