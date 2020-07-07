@@ -257,6 +257,17 @@ namespace FModel.Utils
                     }
                     return p;
                 }
+                else if (s != null && (s.AudioFormat.String.Equals("OPUS") || s.AudioFormat.String.Equals("ADPCM")))
+                {
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Window]", $"Opening Audio Player for {entry.GetNameWithExtension()}");
+                        if (!FWindows.IsWindowOpen<Window>(Properties.Resources.AudioPlayer))
+                            new AudioPlayer().LoadFiles(new Dictionary<string, byte[]>(1) {{ entry.GetNameWithoutExtension() + "." + s.AudioFormat.String.ToLowerInvariant(), s.Sound }}, entry.GetPathWithoutFile());
+                        else
+                            ((AudioPlayer)FWindows.GetOpenedWindow<Window>(Properties.Resources.AudioPlayer)).LoadFiles(new Dictionary<string, byte[]>(1) { { entry.GetNameWithoutExtension() + "." + s.AudioFormat.String.ToLowerInvariant(), s.Sound } }, entry.GetPathWithoutFile());
+                    });
+                }
                 else if (s != null) // ADPCM and others
                 {
                     string path = Properties.Settings.Default.OutputPath + "\\Sounds\\" + mount + entry.GetPathWithoutExtension() + "." + s.AudioFormat.String.ToLowerInvariant();

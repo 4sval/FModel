@@ -11,6 +11,7 @@ namespace PakReader.Parsers.Objects
 
         // Magic                                        //   4 bytes
         public readonly EPakVersion Version;            //   4 bytes
+        public readonly int SubVersion;
         public readonly long IndexOffset;               //   8 bytes
         public readonly long IndexSize;                 //   8 bytes
         public readonly FSHAHash IndexHash;             //  20 bytes
@@ -46,10 +47,11 @@ namespace PakReader.Parsers.Objects
             // Serialize if version is at least EPakVersion.ENCRYPTION_KEY_GUID
             EncryptionKeyGuid = new FGuid(reader);
             bEncryptedIndex = reader.ReadByte() != 0;
-            
+
             if (reader.ReadUInt32() != PAK_FILE_MAGIC)
             {
                 Version = EPakVersion.INVALID;
+                SubVersion = 0;
                 IndexOffset = 0;
                 IndexSize = 0;
                 IndexHash = default;
@@ -60,6 +62,12 @@ namespace PakReader.Parsers.Objects
             }
 
             Version = (EPakVersion)reader.ReadInt32();
+            int b;
+            if (maxNumCompressionMethods == 5 && Version == EPakVersion.FNAME_BASED_COMPRESSION_METHOD) // UE4.23
+                b = (((int)Version) << 4) | (1);
+            else
+                b = (((int)Version) << 4) | (0);
+            SubVersion = b & 15;
             IndexOffset = reader.ReadInt64();
             IndexSize = reader.ReadInt64();
             IndexHash = new FSHAHash(reader);

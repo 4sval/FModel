@@ -24,7 +24,7 @@ namespace PakReader.Parsers.Objects
 
         public readonly int StructSize;
 
-        internal FPakEntry(BinaryReader reader, EPakVersion Version, bool caseSensitive, string pakName)
+        internal FPakEntry(BinaryReader reader, EPakVersion Version, int SubVersion, bool caseSensitive, string pakName)
         {
             CompressionBlocks = null;
             CompressionBlockSize = 0;
@@ -66,7 +66,7 @@ namespace PakReader.Parsers.Objects
             }
             else
             {
-                if (FModel.Globals.Game.ActualGame != FModel.EGame.Valorant && Version == EPakVersion.FNAME_BASED_COMPRESSION_METHOD)
+                if (Version == EPakVersion.FNAME_BASED_COMPRESSION_METHOD && SubVersion == 0)
                     CompressionMethodIndex = reader.ReadByte();
                 else
                     CompressionMethodIndex = reader.ReadUInt32();

@@ -161,7 +161,7 @@ namespace PakReader.Pak
             else
             {
                 // https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/PakFile/Private/IPlatformFilePak.cpp#L4509
-                MountPoint = IndexReader.ReadFString();
+                MountPoint = IndexReader.ReadFString() ?? "";
                 if (MountPoint.StartsWith("../../.."))
                 {
                     MountPoint = MountPoint.Substring(8);
@@ -180,7 +180,7 @@ namespace PakReader.Pak
                 tempFiles = new Dictionary<string, FPakEntry>(NumEntries);
                 for (int i = 0; i < NumEntries; i++)
                 {
-                    var entry = new FPakEntry(IndexReader, Info.Version, CaseSensitive, FileName);
+                    var entry = new FPakEntry(IndexReader, Info.Version, Info.SubVersion, CaseSensitive, FileName);
                     // if there is no filter OR the filter passes
                     if (filter == null || filter.CheckFilter(MountPoint + entry.Name, CaseSensitive))
                     {
