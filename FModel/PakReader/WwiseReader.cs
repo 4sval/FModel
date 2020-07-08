@@ -20,6 +20,7 @@ namespace FModel.PakReader
         private const uint _DIDX_ID = 0x58444944;
         private const uint _DATA_ID = 0x41544144;
         private const uint _HIRC_ID = 0x43524948;
+        private const uint _RIFF_ID = 0x46464952;
         private const uint _STID_ID = 0x44495453;
         private const uint _STMG_ID = 0x474D5453;
         private const uint _ENVS_ID = 0x53564E45;
@@ -28,6 +29,7 @@ namespace FModel.PakReader
 
         public WwiseReader(BinaryReader reader)
         {
+            Random rnd = new Random();
             DIDXSection didxSection = null;
             DATASection dataSection = null;
             HIRCSection hircSection = null;
@@ -58,6 +60,10 @@ namespace FModel.PakReader
                         break;
                     case _HIRC_ID:
                         hircSection = new HIRCSection(reader);
+                        break;
+                    case _RIFF_ID:
+                        reader.BaseStream.Seek(Position - sizeof(uint) - sizeof(uint), SeekOrigin.Begin);
+                        AudioFiles[$"{rnd.Next(1000000, 9999999)}.wem"] = reader.ReadBytes(Convert.ToInt32(SectionLength));
                         break;
                     case _STID_ID:
                         stidSection = new STIDSection(reader);
