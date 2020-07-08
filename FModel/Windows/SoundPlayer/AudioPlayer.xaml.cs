@@ -1,3 +1,4 @@
+using CSCore.SoundOut;
 using FModel.Discord;
 using FModel.ViewModels.ListBox;
 using FModel.ViewModels.SoundPlayer;
@@ -190,9 +191,42 @@ namespace FModel.Windows.SoundPlayer
                 Properties.Settings.Default.Save();
 
                 if (output == null)
+                {
                     output = new OutputSource(d);
+                    output.SourcePropertyChangedEvent += Output_SourcePropertyChangedEvent;
+                }
                 else
                     output.SwapDevice(d);
+            }
+        }
+
+        private void Output_SourcePropertyChangedEvent(object sender, SourcePropertyChangedEventArgs e)
+        {
+            switch (e.Property)
+            {
+                case ESourceProperty.PlaybackState:
+                    if (output != null && output.Position == output.Length && (PlaybackState)e.Value == PlaybackState.Stopped)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/play.png"));
+                        });
+
+                        var selected = ListBoxVm.soundFiles.Where(x => x.FullPath.Equals(output.FileName)).FirstOrDefault();
+                        if (selected is ListBoxViewModel2 s)
+                        {
+                            int index = ListBoxVm.soundFiles.IndexOf(s);
+                            if (index < ListBoxVm.soundFiles.Count - 1)
+                            {
+                                Application.Current.Dispatcher.Invoke(delegate
+                                {
+                                    Sound_LstBox.SelectedIndex = index + 1;
+                                    OnPlayPauseClick(sender, null);
+                                });
+                            }
+                        }
+                    }
+                    break;
             }
         }
 

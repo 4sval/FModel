@@ -132,15 +132,6 @@ namespace FModel.Utils
                                         }
                                         break;
                                     }
-                                case ".png":
-                                    {
-                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
-                                        asset.Position = 0;
-                                        ImageBoxVm.imageBoxViewModel.Set(SKBitmap.Decode(asset), mount + selected.PakEntry.Name);
-                                        break;
-                                    }
-                                case ".ushaderbytecode":
-                                    break;
                                 case ".bnk":
                                 case ".pck":
                                     {
@@ -157,6 +148,15 @@ namespace FModel.Utils
                                         });
                                         break;
                                     }
+                                case ".png":
+                                    {
+                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
+                                        asset.Position = 0;
+                                        ImageBoxVm.imageBoxViewModel.Set(SKBitmap.Decode(asset), mount + selected.PakEntry.Name);
+                                        break;
+                                    }
+                                case ".ushaderbytecode":
+                                    break;
                                 default:
                                     AvalonEditVm.avalonEditViewModel.Set(GetJsonProperties(selected.PakEntry, mount, true), mount + selected.PakEntry.Name);
                                     break;

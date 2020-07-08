@@ -21,16 +21,20 @@ namespace PakReader.Parsers.Objects
             var BulkDataOffsetInFile = reader.ReadInt64();
 
             Data = null;
-            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_ForceInlinePayload) != 0)
+            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_ForceInlinePayload) != 0 && ElementCount > 0)
             {
                 Data = reader.ReadBytes((int)ElementCount);
             }
             
             if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadInSeperateFile) != 0)
             {
-                ubulk.Position = BulkDataOffsetInFile + ubulkOffset;
-                Data = new byte[ElementCount];
-                ubulk.Read(Data, 0, (int)ElementCount);
+                if (ubulk != null)
+                {
+                    ubulk.Position = BulkDataOffsetInFile + ubulkOffset;
+                    Data = new byte[ElementCount];
+                    ubulk.Read(Data, 0, (int)ElementCount);
+                }
+                //else throw new FileLoadException("No ubulk specified for texture");
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace PakReader.Parsers.Objects
@@ -25,7 +25,7 @@ namespace PakReader.Parsers.Objects
             
             if (FModel.Globals.Game.ActualGame == FModel.EGame.Valorant || FModel.Globals.Game.Version > EPakVersion.FNAME_BASED_COMPRESSION_METHOD)
             {
-                if (reader.ReadInt32() != 0) throw new FileLoadException("Too lazy to add virtual textures right now");
+                if (reader.ReadInt32() != 0) throw new FileLoadException("VirtualTextures are not supported");
             }
         }
     }

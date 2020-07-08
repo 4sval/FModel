@@ -2,7 +2,6 @@
 using CSCore.DSP;
 using CSCore.SoundOut;
 using CSCore.Streams;
-using FModel.ViewModels.SoundPlayer;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
