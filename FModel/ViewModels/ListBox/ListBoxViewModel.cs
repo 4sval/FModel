@@ -1,14 +1,13 @@
 ﻿using FModel.Utils;
 using PakReader.Parsers.Objects;
 using System;
-using System.Collections.ObjectModel;
 
 namespace FModel.ViewModels.ListBox
 {
     static class ListBoxVm
     {
         public static ObservableSortedList<ListBoxViewModel> gameFiles = new ObservableSortedList<ListBoxViewModel>();
-        public static ObservableCollection<ListBoxViewModel2> soundFiles = new ObservableCollection<ListBoxViewModel2>();
+        public static ObservableSortedList<ListBoxViewModel2> soundFiles = new ObservableSortedList<ListBoxViewModel2>();
     }
 
     public class ListBoxViewModel : PropertyChangedBase, IComparable
@@ -37,8 +36,15 @@ namespace FModel.ViewModels.ListBox
         }
     }
 
-    public class ListBoxViewModel2 : PropertyChangedBase
+    public class ListBoxViewModel2 : PropertyChangedBase, IComparable
     {
+        public int CompareTo(object o)
+        {
+            ListBoxViewModel2 a = this;
+            ListBoxViewModel2 b = o as ListBoxViewModel2;
+            return string.CompareOrdinal(a.Content, b.Content);
+        }
+
         private string _content;
         public string Content
         {

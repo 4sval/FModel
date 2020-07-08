@@ -80,12 +80,8 @@ namespace FModel.Windows.SoundPlayer
         {
             Focus();
 
-            if (files.Count > 5)
-            {
-                ListBoxVm.soundFiles.Clear();
-                if (output.HasMedia) output.Stop();
-            }
-
+            ListBoxVm.soundFiles.Clear();
+            if (output.HasMedia) output.Stop();
             foreach (var (key, value) in files)
             {
                 ListBoxVm.soundFiles.Add(new ListBoxViewModel2

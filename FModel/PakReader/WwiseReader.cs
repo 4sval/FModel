@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace FModel.PakReader
 {
@@ -11,23 +12,28 @@ namespace FModel.PakReader
     /// STIDSection holds the .wem files name in a dictionary where the key is the .wem file id from DATASection
     /// i see no use (for FModel) in other sections atm
     /// </summary>
-    public class BnkReader
+    public class WwiseReader
     {
+        private const uint _AKPK_ID = 0x4B504B41;
         private const uint _BKHD_ID = 0x44484B42;
+        private const uint _INIT_ID = 0x54494E49;
         private const uint _DIDX_ID = 0x58444944;
         private const uint _DATA_ID = 0x41544144;
         private const uint _HIRC_ID = 0x43524948;
         private const uint _STID_ID = 0x44495453;
         private const uint _STMG_ID = 0x474D5453;
+        private const uint _ENVS_ID = 0x53564E45;
+        private const uint _PLAT_ID = 0x54414C50;
         public Dictionary<string, byte[]> AudioFiles;
 
-        public BnkReader(BinaryReader reader)
+        public WwiseReader(BinaryReader reader)
         {
             DIDXSection didxSection = null;
             DATASection dataSection = null;
             HIRCSection hircSection = null;
             STIDSection stidSection = null;
-            STMGSection stmgSection = null;
+            //STMGSection stmgSection = null;
+            PLATSection platSection = null;
             AudioFiles = new Dictionary<string, byte[]>();
 
             while (reader.BaseStream.Position < reader.BaseStream.Length)
@@ -37,8 +43,12 @@ namespace FModel.PakReader
                 long Position = reader.BaseStream.Position;
                 switch (SectionIdentifier)
                 {
+                    case _AKPK_ID:
+                        break;
                     case _BKHD_ID:
                         BKHDSection _ = new BKHDSection(reader);
+                        break;
+                    case _INIT_ID:
                         break;
                     case _DIDX_ID:
                         didxSection = new DIDXSection(reader, Position + SectionLength);
@@ -53,11 +63,22 @@ namespace FModel.PakReader
                         stidSection = new STIDSection(reader);
                         break;
                     case _STMG_ID:
-                        stmgSection = new STMGSection(reader);
+                        //stmgSection = new STMGSection(reader); //broken
+                        break;
+                    case _ENVS_ID:
+                        break;
+                    case _PLAT_ID:
+                        platSection = new PLATSection(reader);
                         break;
                 }
 
-                reader.BaseStream.Seek(Position + SectionLength, SeekOrigin.Begin);
+                if (reader.BaseStream.Position != Position + SectionLength)
+                {
+#if DEBUG
+                    System.Diagnostics.Debug.WriteLine($" Didn't read 0x{SectionIdentifier:X} correctly (at {reader.BaseStream.Position}, should be {Position + SectionLength})");
+#endif
+                    reader.BaseStream.Seek(Position + SectionLength, SeekOrigin.Begin);
+                }
             }
 
             if (didxSection != null && dataSection != null && didxSection.WemFilesRef.Count == dataSection.WemFiles.Count)
@@ -71,6 +92,7 @@ namespace FModel.PakReader
                     AudioFiles[key] = dataSection.WemFiles[i];
                 }
             }
+            // valorant event sound uses the HIRCSection but i don't understand how to get the actual audio atm
         }
 
         public class BKHDSection
@@ -219,7 +241,7 @@ namespace FModel.PakReader
                 VolumeThreshold = reader.ReadSingle();
                 MaxVoiceInstances = reader.ReadUInt16();
                 StateGroupNumber = reader.ReadUInt32();
-                StateGroups = new StateGroupObject[Convert.ToInt32(StateGroups)];
+                StateGroups = new StateGroupObject[Convert.ToInt32(StateGroupNumber)];
                 for (int i = 0; i < StateGroups.Length; i++)
                 {
                     StateGroups[i] = new StateGroupObject(reader);
@@ -316,6 +338,17 @@ namespace FModel.PakReader
                     Id = reader.ReadUInt32();
                     DefaultValue = reader.ReadSingle();
                 }
+            }
+        }
+
+        public class PLATSection
+        {
+            public string Platform;
+
+            public PLATSection(BinaryReader reader)
+            {
+                uint length = reader.ReadUInt32();
+                Platform = Encoding.UTF8.GetString(reader.ReadBytes(Convert.ToInt32(length)).AsSpan(..^1));
             }
         }
     }

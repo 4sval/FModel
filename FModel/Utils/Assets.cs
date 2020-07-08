@@ -140,20 +140,20 @@ namespace FModel.Utils
                                         break;
                                     }
                                 case ".ushaderbytecode":
-                                case ".pck":
                                     break;
                                 case ".bnk":
+                                case ".pck":
                                     {
                                         using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
-                                        BnkReader bnk = new BnkReader(new BinaryReader(asset));
+                                        WwiseReader bnk = new WwiseReader(new BinaryReader(asset));
                                         Application.Current.Dispatcher.Invoke(delegate
                                         {
                                             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Window]", $"Opening Audio Player for {selected.PakEntry.GetNameWithExtension()}");
                                             if (!FWindows.IsWindowOpen<Window>(Properties.Resources.AudioPlayer))
-                                                new AudioPlayer().LoadFiles(bnk.AudioFiles, selected.PakEntry.GetPathWithoutFile());
+                                                new AudioPlayer().LoadFiles(bnk.AudioFiles, mount + selected.PakEntry.GetPathWithoutFile());
                                             else
-                                                ((AudioPlayer)FWindows.GetOpenedWindow<Window>(Properties.Resources.AudioPlayer)).LoadFiles(bnk.AudioFiles, selected.PakEntry.GetPathWithoutFile());
+                                                ((AudioPlayer)FWindows.GetOpenedWindow<Window>(Properties.Resources.AudioPlayer)).LoadFiles(bnk.AudioFiles, mount + selected.PakEntry.GetPathWithoutFile());
                                         });
                                         break;
                                     }
