@@ -680,7 +680,7 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
     <value>Offsets</value>
   </data>
   <data name="OggFilter" xml:space="preserve">
-    <value>Archivos OGG (*.ogg)|*.ogg|Archivos WAV (*.wav)|*.wav|Todos los archivos (*.*)|*.*</value>
+    <value>Archivos OGG (*.ogg)|*.ogg|Archivos WAV (*.wav)|*.wav|Archivos WEM (*.wem)|*.wem|Archivos ADPCM (*.adpcm)|*.adpcm|Todos los archivos (*.*)|*.*</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>

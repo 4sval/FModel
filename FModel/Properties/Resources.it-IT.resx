@@ -530,7 +530,7 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
     <value>Offsets</value>
   </data>
   <data name="OggFilter" xml:space="preserve">
-    <value>Files OGG (*.ogg)|*.ogg|Files WAV (*.wav)|*.wav|Tutti i Files (*.*)|*.*</value>
+    <value>Files OGG (*.ogg)|*.ogg|Files WAV (*.wav)|*.wav|Files WEM (*.wem)|*.wem|Files ADPCM (*.adpcm)|*.adpcm|Tutti i Files (*.*)|*.*</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>

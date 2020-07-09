@@ -63,7 +63,7 @@ namespace FModel.PakReader
                         break;
                     case _RIFF_ID:
                         reader.BaseStream.Seek(Position - sizeof(uint) - sizeof(uint), SeekOrigin.Begin);
-                        AudioFiles[$"{rnd.Next(1000000, 9999999)}.wem"] = reader.ReadBytes(Convert.ToInt32(SectionLength));
+                        AudioFiles[$"{rnd.Next(1000000, 9999999)}.wem"] = reader.ReadBytes(Convert.ToInt32(SectionLength) + sizeof(uint) + sizeof(uint));
                         break;
                     case _STID_ID:
                         stidSection = new STIDSection(reader);
@@ -76,12 +76,17 @@ namespace FModel.PakReader
                     case _PLAT_ID:
                         platSection = new PLATSection(reader);
                         break;
+#if DEBUG
+                    default:
+                        System.Diagnostics.Debug.WriteLine($"Unknown section 0x{SectionIdentifier:X} at {Position - sizeof(uint) - sizeof(uint)}");
+                        break;
+#endif
                 }
 
                 if (reader.BaseStream.Position != Position + SectionLength)
                 {
 #if DEBUG
-                    System.Diagnostics.Debug.WriteLine($" Didn't read 0x{SectionIdentifier:X} correctly (at {reader.BaseStream.Position}, should be {Position + SectionLength})");
+                    System.Diagnostics.Debug.WriteLine($"Didn't read 0x{SectionIdentifier:X} correctly (at {reader.BaseStream.Position}, should be {Position + SectionLength})");
 #endif
                     reader.BaseStream.Seek(Position + SectionLength, SeekOrigin.Begin);
                 }

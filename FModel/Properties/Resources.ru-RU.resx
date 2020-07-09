@@ -430,7 +430,7 @@
     <value>Нет текста</value>
   </data>
   <data name="OggFilter" xml:space="preserve">
-    <value>Файлы OGG (*.ogg)|*.ogg|Файлы WAV (*.wav)|*.wav|Все файлы (*.*)|*.*</value>
+    <value>Файлы OGG (*.ogg)|*.ogg|Файлы WAV (*.wav)|*.wav|Файлы WEM (*.wem)|*.wem|Файлы ADPCM (*.adpcm)|*.adpcm|Все файлы (*.*)|*.*</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>

@@ -73,7 +73,25 @@ namespace FModel.Windows.SoundPlayer
             if ((bool)ofd.ShowDialog())
             {
                 foreach (string file in ofd.FileNames)
-                    LoadFile(file);
+                {
+                    switch (Path.GetExtension(file))
+                    {
+                        case ".adpcm":
+                        case ".wem":
+                            Focus();
+                            ListBoxVm.soundFiles.Add(new ListBoxViewModel2
+                            {
+                                Content = Path.GetFileName(file),
+                                Data = File.ReadAllBytes(file),
+                                FullPath = string.Empty,
+                                Folder = string.Empty
+                            });
+                            break;
+                        default:
+                            LoadFile(file);
+                            break;
+                    }
+                }
             }
         }
 
@@ -253,9 +271,10 @@ namespace FModel.Windows.SoundPlayer
                             CreateNoWindow = true
                         });
                         vgmstream.WaitForExit();
-                        if (vgmstream.ExitCode == 0)
+                        ListBoxVm.soundFiles.Remove(selectedItem);
+                        File.Delete(folder + selectedItem.Content);
+                        if (vgmstream.ExitCode == 0 && File.Exists(newFile))
                         {
-                            ListBoxVm.soundFiles.Remove(selectedItem);
                             _oldPlayedSound = newFile;
                             LoadFile(newFile);
                         }

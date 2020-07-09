@@ -1788,7 +1788,7 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à OGG Files (*.ogg)|*.ogg|WAV Files (*.wav)|*.wav|All Files (*.*)|*.*.
+        ///   Recherche une chaîne localisée semblable à OGG Files (*.ogg)|*.ogg|WAV Files (*.wav)|*.wav|WEM Files (*.wem)|*.wem|ADPCM Files (*.adpcm)|*.adpcm|All Files (*.*)|*.*.
         /// </summary>
         public static string OggFilter {
             get {

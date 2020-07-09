@@ -535,9 +535,6 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="Offsets" xml:space="preserve">
     <value>Offsets</value>
   </data>
-  <data name="OggFilter" xml:space="preserve">
-    <value>OGG Files (*.ogg)|*.ogg|WAV Files (*.wav)|*.wav|All Files (*.*)|*.*</value>
-  </data>
   <data name="OK" xml:space="preserve">
     <value>حسنا</value>
   </data>

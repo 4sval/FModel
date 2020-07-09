@@ -21,7 +21,7 @@ namespace PakReader.Parsers.PropertyTagData
             var dict = new Dictionary<object, object>(NumEntries);
             for (int i = 0; i < NumEntries; i++)
             {
-                dict[ReadAsValue(reader, tag, tag.ValueType, ReadType.MAP)] = ReadAsObject(reader, tag, tag.ValueType, ReadType.MAP);
+                dict[ReadAsValue(reader, tag, tag.InnerType, ReadType.MAP)] = ReadAsObject(reader, tag, tag.ValueType, ReadType.MAP);
             }
             Value = dict;
         }

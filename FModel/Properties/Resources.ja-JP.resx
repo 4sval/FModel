@@ -653,7 +653,7 @@
     <value>ディレクトリ</value>
   </data>
   <data name="OggFilter" xml:space="preserve">
-    <value>OGGファイル (*.ogg)|*.ogg|WAVファイル (*.wav)|*.wav|全てのファイル (*.*)|*.*</value>
+    <value>OGGファイル (*.ogg)|*.ogg|WAVファイル (*.wav)|*.wav|WEMファイル (*.wem)|*.wem|ADPCMファイル (*.adpcm)|*.adpcm|全てのファイル (*.*)|*.*</value>
   </data>
   <data name="UseGameColors" xml:space="preserve">
     <value>ゲームの色を使用する</value>

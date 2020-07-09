@@ -556,7 +556,7 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
     <value>Offsets</value>
   </data>
   <data name="OggFilter" xml:space="preserve">
-    <value>Fichiers OGG (*.ogg)|*.ogg|Fichiers WAV (*.wav)|*.wav|Tous les Fichiers (*.*)|*.*</value>
+    <value>Fichiers OGG (*.ogg)|*.ogg|Fichiers WAV (*.wav)|*.wav|Fichiers WEM (*.wem)|*.wem|Fichiers ADPCM (*.adpcm)|*.adpcm|Tous les Fichiers (*.*)|*.*</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>

@@ -500,7 +500,7 @@ Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leake
     <comment>Rarity Design</comment>
   </data>
   <data name="OggFilter" xml:space="preserve">
-    <value>OGG Dateien (*.ogg)|*.ogg|WAV Dateien (*.wav)|*.wav|Alle Dateien (*.*)|*.*</value>
+    <value>OGG Dateien (*.ogg)|*.ogg|WAV Dateien (*.wav)|*.wav|WEM Dateien (*.wem)|*.wem|ADPCM Dateien (*.adpcm)|*.adpcm|Alle Dateien (*.*)|*.*</value>
   </data>
   <data name="Opacity" xml:space="preserve">
     <value>Deckkraft</value>
