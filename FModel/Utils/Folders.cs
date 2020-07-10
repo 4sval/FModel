@@ -31,6 +31,7 @@ namespace FModel.Utils
                     "Dungeons" => EGame.MinecraftDungeons,
                     "WorldExplorers" => EGame.BattleBreakers,
                     "g3" => EGame.Spellbreak,
+                    "StateOfDecay2" => EGame.StateOfDecay2,
                     _ => EGame.Unknown,
                 };
             }
@@ -48,6 +49,7 @@ namespace FModel.Utils
                 EGame.MinecraftDungeons => "Dungeons",
                 EGame.BattleBreakers => "WorldExplorers",
                 EGame.Spellbreak => "g3",
+                EGame.StateOfDecay2 => "StateOfDecay2",
                 _ => string.Empty,
             };
 

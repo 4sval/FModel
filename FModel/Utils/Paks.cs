@@ -76,6 +76,24 @@ namespace FModel.Utils
             return string.Empty;
         }
 
+        public static (string, string, string) GetUWPPakFilesPath(string game)
+        {
+            // WIP
+
+            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[]", "File not found");
+            return (string.Empty, string.Empty, string.Empty);
+        }
+
+        public static string GetStateOfDecay2PakFilesPath()
+        {
+            // WIP - DO NOT USE
+            (_, string _, string sod2PakFilesPath) = GetUWPPakFilesPath("Microsoft.Dayton_1.3544.68.2_x64__8wekyb3d8bbwe");
+            if (!string.IsNullOrEmpty(sod2PakFilesPath))
+                return $"{sod2PakFilesPath}\\StateOfDecay2\\Content\\Paks";
+            else
+                return string.Empty;
+        }
+
         public static string GetBorderlands3PakFilesPath()
         {
             (_, string _, string borderlands3FilesPath) = GetUEGameFilesPath("Catnip");

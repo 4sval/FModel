@@ -231,6 +231,19 @@ namespace FModel.Utils
                     ELanguage.Chinese => "zh-Hans",
                     _ => "en"
                 };
+            else if (Globals.Game.ActualGame == EGame.StateOfDecay2)
+                return lang switch
+                {
+                    ELanguage.English => "en-US",
+                    ELanguage.AustralianEnglish => "en-AU",
+                    ELanguage.Russian => "ru-RU",
+                    ELanguage.PortugueseBrazil => "pt-BR",
+                    ELanguage.Italian => "it-IT",
+                    ELanguage.French => "fr-FR",
+                    ELanguage.SpanishLatin => "es-MX",
+                    ELanguage.German => "de-DE",
+                    _ => "en"
+                };
             else
                 return "en";
         }

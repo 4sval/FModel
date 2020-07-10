@@ -87,6 +87,15 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Spellbreak", Property = spellbreakerFilesPath });
             }
 
+            string sod2Path = Paks.GetStateOfDecay2PakFilesPath();
+            if (!string.IsNullOrEmpty(sod2Path))
+            {
+                // WIP - DO NOT USE
+                //DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"Spellbreak found at {spellbreakerFilesPath}");
+                //Globals.gNotifier.ShowCustomMessage("Spellbreak", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/spellbreak.ico");
+                //ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Spellbreak", Property = spellbreakerFilesPath });
+            }
+
             Games_CbBox.SelectedItem = ComboBoxVm.gamesCbViewModel.Where(x => x.Property.ToString() == Properties.Settings.Default.PakPath).FirstOrDefault();
         }
 
