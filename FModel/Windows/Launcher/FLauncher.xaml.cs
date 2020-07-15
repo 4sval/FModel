@@ -90,10 +90,10 @@ namespace FModel.Windows.Launcher
             string sod2Path = Paks.GetStateOfDecay2PakFilesPath();
             if (!string.IsNullOrEmpty(sod2Path))
             {
-                // WIP - DO NOT USE
-                //DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"Spellbreak found at {spellbreakerFilesPath}");
-                //Globals.gNotifier.ShowCustomMessage("Spellbreak", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/spellbreak.ico");
-                //ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Spellbreak", Property = spellbreakerFilesPath });
+                // WIP
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]", $"State of Decay 2 found at {sod2Path}");
+                Globals.gNotifier.ShowCustomMessage("State of Decay 2", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/sod2.ico");
+                ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "State of Decay 2", Property = sod2Path });
             }
 
             Games_CbBox.SelectedItem = ComboBoxVm.gamesCbViewModel.Where(x => x.Property.ToString() == Properties.Settings.Default.PakPath).FirstOrDefault();

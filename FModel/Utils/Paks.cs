@@ -30,10 +30,12 @@ namespace FModel.Utils
                         foreach (InstallationList installationList in launcherDat.InstallationList)
                         {
                             if (installationList.AppName.Equals(game))
-                                return (installationList.AppName, installationList.AppVersion, installationList.InstallLocation);
+                                return (installationList.AppName, installationList.AppVersion,
+                                    installationList.InstallLocation);
                         }
 
-                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"{game} not found");
+                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]",
+                            $"{game} not found");
                         return (string.Empty, string.Empty, string.Empty);
                     }
                 }
@@ -69,7 +71,7 @@ namespace FModel.Utils
             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]", "Folder not found");
             return (string.Empty, string.Empty);
         }
-        
+
         public static string GetFortnitePakFilesPath()
         {
             (_, string _, string fortniteFilesPath) = GetUEGameFilesPath("Fortnite");
@@ -94,7 +96,8 @@ namespace FModel.Utils
                             if (KvP.Key.Contains("VALORANT/live/"))
                                 return $"{KvP.Key.Replace("/", "\\")}ShooterGame\\Content\\Paks";
 
-                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[RiotClientInstalls.json]", "Valorant not found");
+                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[RiotClientInstalls.json]",
+                            "Valorant not found");
                     }
                 }
             }
@@ -106,14 +109,17 @@ namespace FModel.Utils
         public static string GetStateOfDecay2PakFilesPath()
         {
             // WIP
-            (_, string _, string sod2PakFilesPath) = (null, null, null);
+            (_, string sod2UWPPakFilesPath) = (string.Empty, string.Empty);
+            (_, string _, string sod2PakFilesPath) = (string.Empty, string.Empty, string.Empty);
             if (!GetUWPPakFilesPath("Microsoft.Dayton_1.3544.68.2_x64__8wekyb3d8bbwe").Equals(null))
-                (_, sod2PakFilesPath) = GetUWPPakFilesPath("Microsoft.Dayton_1.3544.68.2_x64__8wekyb3d8bbwe");
+                (_, sod2UWPPakFilesPath) = GetUWPPakFilesPath("Microsoft.Dayton_1.3544.68.2_x64__8wekyb3d8bbwe");
             else
                 (_, _, sod2PakFilesPath) = GetUEGameFilesPath("<Unknown Epic Games Name>");
 
             if (!string.IsNullOrEmpty(sod2PakFilesPath))
                 return $"{sod2PakFilesPath}\\StateOfDecay2\\Content\\Paks";
+            else if (!string.IsNullOrEmpty(sod2UWPPakFilesPath))
+                return $"{sod2UWPPakFilesPath}\\StateOfDecay2\\Content\\Paks";
             return string.Empty;
         }
 
@@ -125,21 +131,24 @@ namespace FModel.Utils
             else
                 return string.Empty;
         }
-        
+
         public static string GetMinecraftDungeonsPakFilesPath()
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var install = $"{appData}/.minecraft_dungeons/launcher_settings.json";
             if (File.Exists(install))
-            { 
+            {
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", install);
                 var launcherSettings = JsonConvert.DeserializeObject<LauncherSettings>(File.ReadAllText(install));
-                
-                if (launcherSettings.productLibraryDir != null && !string.IsNullOrEmpty(launcherSettings.productLibraryDir))
+
+                if (launcherSettings.productLibraryDir != null &&
+                    !string.IsNullOrEmpty(launcherSettings.productLibraryDir))
                     return $"{launcherSettings.productLibraryDir}\\dungeons\\dungeons\\Dungeons\\Content\\Paks";
 
-                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Minecraft Dungeons not found");
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]",
+                    "Minecraft Dungeons not found");
             }
+
             return string.Empty;
         }
 
@@ -161,7 +170,8 @@ namespace FModel.Utils
                 return string.Empty;
         }
 
-        public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files, string mount)
+        public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files,
+            string mount)
         {
             files = new Dictionary<string, FPakEntry>();
             foreach (FPakEntry entry in tempFiles.Values)
