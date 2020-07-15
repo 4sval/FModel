@@ -43,6 +43,33 @@ namespace FModel.Utils
             return (string.Empty, string.Empty, string.Empty);
         }
 
+        // This method is in testing and is not recommended to be used other than for development purposes
+        public static (string, string) GetUWPPakFilesPath(string game)
+        {
+            var dir = "C:\\Program Files\\WindowsApps\\";
+            try
+            {
+                if (Directory.Exists(dir))
+                {
+                    DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]", "Folder as been found");
+                    foreach (var directory in Directory.GetDirectories(dir))
+                        if (directory.Equals(game))
+                            return (game, directory);
+
+                    DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]", $"{game} not found");
+                    return (string.Empty, string.Empty);
+                }
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]",
+                    $"{dir} can't be accessed without permission changes to the folder.");
+            }
+
+            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]", "Folder not found");
+            return (string.Empty, string.Empty);
+        }
+        
         public static string GetFortnitePakFilesPath()
         {
             (_, string _, string fortniteFilesPath) = GetUEGameFilesPath("Fortnite");
@@ -76,22 +103,18 @@ namespace FModel.Utils
             return string.Empty;
         }
 
-        public static (string, string, string) GetUWPPakFilesPath(string game)
-        {
-            // WIP
-
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[]", "File not found");
-            return (string.Empty, string.Empty, string.Empty);
-        }
-
         public static string GetStateOfDecay2PakFilesPath()
         {
-            // WIP - DO NOT USE
-            (_, string _, string sod2PakFilesPath) = GetUWPPakFilesPath("Microsoft.Dayton_1.3544.68.2_x64__8wekyb3d8bbwe");
+            // WIP
+            (_, string _, string sod2PakFilesPath) = (null, null, null);
+            if (!GetUWPPakFilesPath("Microsoft.Dayton_1.3544.68.2_x64__8wekyb3d8bbwe").Equals(null))
+                (_, sod2PakFilesPath) = GetUWPPakFilesPath("Microsoft.Dayton_1.3544.68.2_x64__8wekyb3d8bbwe");
+            else
+                (_, _, sod2PakFilesPath) = GetUEGameFilesPath("<Unknown Epic Games Name>");
+
             if (!string.IsNullOrEmpty(sod2PakFilesPath))
                 return $"{sod2PakFilesPath}\\StateOfDecay2\\Content\\Paks";
-            else
-                return string.Empty;
+            return string.Empty;
         }
 
         public static string GetBorderlands3PakFilesPath()

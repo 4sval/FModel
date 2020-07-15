@@ -13,7 +13,8 @@ namespace PakReader.Parsers.Objects
 
         internal FSkeletalMeshAreaWeightedTriangleSampler(PackageReader reader)
         {
-            throw new NotImplementedException(string.Format(FModel.Properties.Resources.ParsingNotSupported, "FSkeletalMeshAreaWeightedTriangleSampler"));
+            throw new NotImplementedException(string.Format(FModel.Properties.Resources.ParsingNotSupported,
+                "FSkeletalMeshAreaWeightedTriangleSampler"));
         }
     }
 }
