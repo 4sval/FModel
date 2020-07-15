@@ -9,7 +9,8 @@
         Borderlands3,
         MinecraftDungeons,
         BattleBreakers,
-        Spellbreak
+        Spellbreak,
+        StateOfDecay2 // WIP
     }
 
     public enum EFModel
@@ -41,6 +42,7 @@
     {
         English,
         French,
+        AustralianEnglish,
         German,
         Italian,
         Spanish,

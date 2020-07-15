@@ -57,6 +57,7 @@ namespace FModel
                 EGame.MinecraftDungeons => "Minecraft Dungeons",
                 EGame.BattleBreakers => "Battle Breakers",
                 EGame.Spellbreak => "Spellbreak",
+                EGame.StateOfDecay2 => "State of Decay 2",
                 EGame.Unknown => "Unknown",
                 _ => "Unknown",
             };
