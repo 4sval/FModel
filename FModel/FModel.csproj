@@ -97,6 +97,7 @@
     <None Remove="Resources\sign-direction.png" />
     <None Remove="Resources\spellbreak.ico" />
     <None Remove="Resources\stop.png" />
+	<None Remove="Resources\sod2.ico" />
     <None Remove="Resources\T-Icon-Pets-64.png" />
     <None Remove="Resources\T-Icon-Quests-64.png" />
     <None Remove="Resources\T_ClipSize_Weapon_Stats.png" />
@@ -205,6 +206,7 @@
     <Resource Include="Resources\sign-direction.png" />
     <Resource Include="Resources\spellbreak.ico" />
     <Resource Include="Resources\stop.png" />
+	<Resource Include="Resources\sod2.ico" />
     <Resource Include="Resources\T-Icon-Pets-64.png" />
     <Resource Include="Resources\T-Icon-Quests-64.png" />
     <Resource Include="Resources\T_ClipSize_Weapon_Stats.png" />
