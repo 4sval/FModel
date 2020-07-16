@@ -58,6 +58,7 @@ namespace FModel
                 EGame.BattleBreakers => "Battle Breakers",
                 EGame.Spellbreak => "Spellbreak",
                 EGame.StateOfDecay2 => "State of Decay 2",
+                EGame.TheCycleEA => "The Cycle (Early Access)",
                 EGame.Unknown => "Unknown",
                 _ => "Unknown",
             };
