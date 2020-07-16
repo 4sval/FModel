@@ -47,7 +47,7 @@ namespace FModel.Creator.Bundles
                         paint.TextSize = l >= 5 ? 30 : 35;
                         paint.TextAlign = SKTextAlign.Right;
                         paint.Color = SKColor.Parse(q.Reward.RewardFillColor);
-                        paint.ImageFilter = SKImageFilter.CreateDropShadow(0, 0, 5, 5, SKColor.Parse(q.Reward.RewardBorderColor).WithAlpha(200), SKDropShadowImageFilterShadowMode.DrawShadowAndForeground);
+                        paint.ImageFilter = SKImageFilter.CreateDropShadow(0, 0, 5, 5, SKColor.Parse(q.Reward.RewardBorderColor).WithAlpha(200));
                         c.DrawText(q.Reward.RewardQuantity.ToString(), new SKPoint(icon.Width - 85, y + 47.5F), paint);
                         c.DrawBitmap(q.Reward.RewardIcon, new SKPoint(icon.Width - 30 - q.Reward.RewardIcon.Width, y + 12.5F),
                             new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.High });
@@ -98,7 +98,7 @@ namespace FModel.Creator.Bundles
                         paint.TextAlign = SKTextAlign.Right;
                         paint.Color = SKColor.Parse(r.Reward.RewardFillColor);
                         paint.Typeface = Text.TypeFaces.BundleDefaultTypeface;
-                        paint.ImageFilter = SKImageFilter.CreateDropShadow(0, 0, 5, 5, SKColor.Parse(r.Reward.RewardBorderColor).WithAlpha(200), SKDropShadowImageFilterShadowMode.DrawShadowAndForeground);
+                        paint.ImageFilter = SKImageFilter.CreateDropShadow(0, 0, 5, 5, SKColor.Parse(r.Reward.RewardBorderColor).WithAlpha(200));
                         c.DrawText(r.Reward.RewardQuantity.ToString(), new SKPoint(icon.Width - 85, y + 47.5F), paint);
                         c.DrawBitmap(r.Reward.RewardIcon, new SKPoint(icon.Width - 30 - r.Reward.RewardIcon.Width, y + 12.5F),
                             new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.High });

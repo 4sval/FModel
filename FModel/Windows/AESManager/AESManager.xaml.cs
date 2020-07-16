@@ -35,9 +35,13 @@ namespace FModel.Windows.AESManager
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.StaticAesKeys))
                     staticKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.StaticAesKeys);
 
-                Dictionary<string, string> dynamicAesKeys = new Dictionary<string, string>();
-                if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
-                    dynamicAesKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.DynamicAesKeys);
+                Dictionary<string, Dictionary<string, string>> dynamicAesKeys = new Dictionary<string, Dictionary<string, string>>();
+                try
+                {
+                    if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
+                        dynamicAesKeys = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(Properties.Settings.Default.DynamicAesKeys);
+                }
+                catch (JsonSerializationException) { /* Needed for the transition bewteen global dynamic keys and "per game" dynamic keys */ }
 
                 if (staticKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var sKey))
                 {
@@ -57,7 +61,11 @@ namespace FModel.Windows.AESManager
                 {
                     gridRow++;
                     string trigger = $"{Properties.Settings.Default.PakPath.Substring(Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName())).Replace("\\", "/")}/{pak.FileName}";
-                    string key = dynamicAesKeys.ContainsKey(trigger) ? dynamicAesKeys[trigger] : "";
+                    string key;
+                    if (dynamicAesKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict) && gameDict.TryGetValue(trigger, out var dKey))
+                        key = dKey;
+                    else
+                        key = "";
                     DebugHelper.WriteLine("{0} {1} {2} {3} {4}", "[FModel]", "[Window]", "[AES Manager]", "[GET]", $"{pak.FileName} with key: {key}");
 
                     DynamicKeys_Grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -97,20 +105,28 @@ namespace FModel.Windows.AESManager
             staticKeys[Globals.Game.ActualGame.ToString()] = StaticKey_TxtBox.Text;
             DebugHelper.WriteLine("{0} {1} {2} {3} {4}", "[FModel]", "[Window]", "[AES Manager]", "[SET]", $"Main PAKs with key: {StaticKey_TxtBox.Text}");
 
-            Dictionary<string, string> dynamicKeys = new Dictionary<string, string>();
+            Dictionary<string, Dictionary<string, string>> dynamicAesKeys = new Dictionary<string, Dictionary<string, string>>();
+            try
+            {
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
+                    dynamicAesKeys = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(Properties.Settings.Default.DynamicAesKeys);
+            }
+            catch (JsonSerializationException) { /* Needed for the transition bewteen global dynamic keys and "per game" dynamic keys */ }
+
+            dynamicAesKeys[Globals.Game.ActualGame.ToString()] = new Dictionary<string, string>();
             foreach (PakFileReader pak in MenuItems.pakFiles.GetDynamicPakFileReaders())
             {
                 string trigger = $"{Properties.Settings.Default.PakPath.Substring(Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName())).Replace("\\", "/")}/{pak.FileName}";
                 TextBox textBox = DependencyObjects.FindChild<TextBox>(this, $"pakchunk{Regex.Match(pak.FileName[0..^4], @"\d+").Value}");
                 if (!string.IsNullOrEmpty(textBox.Text))
                 {
-                    dynamicKeys[trigger] = textBox.Text;
+                    dynamicAesKeys[Globals.Game.ActualGame.ToString()][trigger] = textBox.Text;
                     DebugHelper.WriteLine("{0} {1} {2} {3} {4}", "[FModel]", "[Window]", "[AES Manager]", "[SET]", $"{pak.FileName} with key: {textBox.Text}");
                 }
             }
 
             Properties.Settings.Default.StaticAesKeys = JsonConvert.SerializeObject(staticKeys, Formatting.None);
-            Properties.Settings.Default.DynamicAesKeys = JsonConvert.SerializeObject(dynamicKeys, Formatting.None);
+            Properties.Settings.Default.DynamicAesKeys = JsonConvert.SerializeObject(dynamicAesKeys, Formatting.None);
             Properties.Settings.Default.Save();
             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Window]", "Closing AES Manager");
 
@@ -130,9 +146,13 @@ namespace FModel.Windows.AESManager
                         if (!string.IsNullOrEmpty(Properties.Settings.Default.StaticAesKeys))
                             staticKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.StaticAesKeys);
 
-                        Dictionary<string, string> dynamicAesKeys = new Dictionary<string, string>();
-                        if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
-                            dynamicAesKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.DynamicAesKeys);
+                        Dictionary<string, Dictionary<string, string>> dynamicAesKeys = new Dictionary<string, Dictionary<string, string>>();
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
+                                dynamicAesKeys = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(Properties.Settings.Default.DynamicAesKeys);
+                        }
+                        catch (JsonSerializationException) { /* Needed for the transition bewteen global dynamic keys and "per game" dynamic keys */ }
 
                         if (staticKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var sKey))
                         {
@@ -143,7 +163,11 @@ namespace FModel.Windows.AESManager
                         foreach (PakFileReader pak in MenuItems.pakFiles.GetDynamicPakFileReaders())
                         {
                             string trigger = $"{Properties.Settings.Default.PakPath.Substring(Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName())).Replace("\\", "/")}/{pak.FileName}";
-                            string key = dynamicAesKeys.ContainsKey(trigger) ? dynamicAesKeys[trigger] : "";
+                            string key;
+                            if (dynamicAesKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict) && gameDict.TryGetValue(trigger, out var dKey))
+                                key = dKey;
+                            else
+                                key = "";
                             DebugHelper.WriteLine("{0} {1} {2} {3} {4}", "[FModel]", "[Window]", "[AES Manager]", "[UPDATE]", $"{pak.FileName} with key: {key}");
 
                             TextBox textBox = DependencyObjects.FindChild<TextBox>(this, $"pakchunk{Regex.Match(pak.FileName[0..^4], @"\d+").Value}");

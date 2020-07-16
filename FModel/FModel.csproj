@@ -100,6 +100,7 @@
     <None Remove="Resources\sod2.ico" />
     <None Remove="Resources\T-Icon-Pets-64.png" />
     <None Remove="Resources\T-Icon-Quests-64.png" />
+    <None Remove="Resources\trello.png" />
     <None Remove="Resources\T_ClipSize_Weapon_Stats.png" />
     <None Remove="Resources\T_DamagePerBullet_Weapon_Stats.png" />
     <None Remove="Resources\T_Placeholder_Challenge_Image.png" />
@@ -131,15 +132,15 @@
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.150" />
     <PackageReference Include="DotNetZip" Version="1.13.8" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="3.8.1" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.1" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.1.11" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NVorbis" Version="0.10.1" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="1.1.0" />
-    <PackageReference Include="SkiaSharp" Version="1.68.3" />
+    <PackageReference Include="SkiaSharp" Version="2.80.0" />
     <PackageReference Include="ToastNotifications" Version="2.5.1" />
     <PackageReference Include="ToastNotifications.Messages" Version="2.5.1" />
-    <PackageReference Include="WriteableBitmapEx" Version="1.6.5" />
+    <PackageReference Include="WriteableBitmapEx" Version="1.6.7" />
   </ItemGroup>
 
   <ItemGroup>
@@ -209,6 +210,7 @@
     <Resource Include="Resources\sod2.ico" />
     <Resource Include="Resources\T-Icon-Pets-64.png" />
     <Resource Include="Resources\T-Icon-Quests-64.png" />
+    <Resource Include="Resources\trello.png" />
     <Resource Include="Resources\T_ClipSize_Weapon_Stats.png" />
     <Resource Include="Resources\T_DamagePerBullet_Weapon_Stats.png" />
     <Resource Include="Resources\T_Placeholder_Challenge_Image.png" />

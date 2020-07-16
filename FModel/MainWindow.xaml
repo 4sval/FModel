@@ -169,6 +169,11 @@
                         <Image Source="Resources/bug.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem x:Name="FModel_MI_Help_Trello" Header="{x:Static properties:Resources.Trello}" Click="FModel_MI_Help_Trello_Click">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/trello.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem x:Name="FModel_MI_Help_Discord" Header="{x:Static properties:Resources.DiscordServer}" Click="FModel_MI_Help_Discord_Click">
                     <MenuItem.Icon>
                         <Image Source="Resources/discord.png"/>

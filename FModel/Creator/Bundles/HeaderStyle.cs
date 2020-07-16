@@ -30,13 +30,13 @@ namespace FModel.Creator.Bundles
                     c.DrawBitmap(icon.DisplayStyle.CustomBackground, new SKRect(0, 0, icon.HeaderHeight, icon.HeaderHeight),
                         new SKPaint { 
                             IsAntialias = true, FilterQuality = SKFilterQuality.High, BlendMode = SKBlendMode.Screen,
-                            ImageFilter = SKImageFilter.CreateDropShadow(2.5F, 0, 20, 0, icon.DisplayStyle.SecondaryColor.WithAlpha(25), SKDropShadowImageFilterShadowMode.DrawShadowAndForeground)
+                            ImageFilter = SKImageFilter.CreateDropShadow(2.5F, 0, 20, 0, icon.DisplayStyle.SecondaryColor.WithAlpha(25))
                         });
 
                 c.DrawBitmap(icon.DisplayStyle.DisplayImage, new SKRect(0, 0, icon.HeaderHeight, icon.HeaderHeight),
                     new SKPaint {
                         IsAntialias = true, FilterQuality = SKFilterQuality.High,
-                        ImageFilter = SKImageFilter.CreateDropShadow(-2.5F, 0, 20, 0, icon.DisplayStyle.SecondaryColor.WithAlpha(50), SKDropShadowImageFilterShadowMode.DrawShadowAndForeground)
+                        ImageFilter = SKImageFilter.CreateDropShadow(-2.5F, 0, 20, 0, icon.DisplayStyle.SecondaryColor.WithAlpha(50))
                     });
             }
 
@@ -50,7 +50,7 @@ namespace FModel.Creator.Bundles
             pathTop.Close();
             c.DrawPath(pathTop, new SKPaint {
                 IsAntialias = true, FilterQuality = SKFilterQuality.High, Color = icon.DisplayStyle.SecondaryColor,
-                ImageFilter = SKImageFilter.CreateDropShadow(-5, -5, 0, 0, icon.DisplayStyle.AccentColor.WithAlpha(75), SKDropShadowImageFilterShadowMode.DrawShadowAndForeground)
+                ImageFilter = SKImageFilter.CreateDropShadow(-5, -5, 0, 0, icon.DisplayStyle.AccentColor.WithAlpha(75))
             });
 
             c.DrawRect(new SKRect(0, icon.HeaderHeight, icon.Width, icon.HeaderHeight + icon.AdditionalSize), new SKPaint

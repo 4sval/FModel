@@ -28,9 +28,13 @@ namespace FModel.Utils
                     if (!string.IsNullOrEmpty(Properties.Settings.Default.StaticAesKeys))
                         staticKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.StaticAesKeys);
 
-                    Dictionary<string, string> dynamicKeys = new Dictionary<string, string>();
-                    if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
-                        dynamicKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.DynamicAesKeys);
+                    Dictionary<string, Dictionary<string, string>> dynamicKeys = new Dictionary<string, Dictionary<string, string>>();
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
+                            dynamicKeys = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(Properties.Settings.Default.DynamicAesKeys);
+                    }
+                    catch (JsonSerializationException) { /* Needed for the transition bewteen global dynamic keys and "per game" dynamic keys */ }
 
                     bool isMainKey = staticKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var _);
                     bool mainError = false; // used to avoid notifications about all static paks not working with the key
@@ -64,7 +68,7 @@ namespace FModel.Utils
                         }
 
                         string trigger = $"{Properties.Settings.Default.PakPath.Substring(Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName())).Replace("\\", "/")}/{menuItem.PakFile.FileName}";
-                        if (dynamicKeys.TryGetValue(trigger, out var key))
+                        if (dynamicKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict) && gameDict.TryGetValue(trigger, out var key))
                         {
                             string dKey = key.StartsWith("0x") ? key.Substring(2).ToUpperInvariant() : key.ToUpperInvariant();
                             try

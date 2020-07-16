@@ -9,7 +9,7 @@
         Style="{StaticResource {x:Type Window}}"
         Title="{x:Static properties:Resources.AudioPlayer}"
         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={utils:Screens}, ConverterParameter='0.50' }"
-        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={utils:Screens}, ConverterParameter='0.50' }"
+        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={utils:Screens}, ConverterParameter='0.65' }"
         WindowStartupLocation="CenterScreen" Icon="/FModel;component/FModel.ico"
         Closed="OnClosed">
     <Grid>

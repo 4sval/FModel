@@ -20,9 +20,13 @@ namespace FModel.Grabber.Aes
                     if (!string.IsNullOrEmpty(Properties.Settings.Default.StaticAesKeys))
                         staticKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.StaticAesKeys);
 
-                    Dictionary<string, string> oldDynamicKeys = new Dictionary<string, string>();
-                    if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
-                        oldDynamicKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(Properties.Settings.Default.DynamicAesKeys);
+                    Dictionary<string, Dictionary<string, string>> oldDynamicKeys = new Dictionary<string, Dictionary<string, string>>();
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(Properties.Settings.Default.DynamicAesKeys))
+                            oldDynamicKeys = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(Properties.Settings.Default.DynamicAesKeys);
+                    }
+                    catch (JsonSerializationException) { /* Needed for the transition bewteen global dynamic keys and "per game" dynamic keys */ }
 
                     BenResponse benResponse = await AesData.GetData().ConfigureAwait(false);
                     if (benResponse != null)
@@ -35,23 +39,26 @@ namespace FModel.Grabber.Aes
                             Properties.Settings.Default.StaticAesKeys = JsonConvert.SerializeObject(staticKeys, Formatting.None);
                         }
 
-                        string dynamicKeys = JsonConvert.SerializeObject(benResponse.DynamicKeys, Formatting.None);
-                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"BenBot Dynamic keys are {dynamicKeys}");
-                        Properties.Settings.Default.DynamicAesKeys = dynamicKeys;
+                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"BenBot Dynamic keys are {benResponse.DynamicKeys}");
+                        oldDynamicKeys[Globals.Game.ActualGame.ToString()] = benResponse.DynamicKeys;
+                        Properties.Settings.Default.DynamicAesKeys = JsonConvert.SerializeObject(oldDynamicKeys, Formatting.None);
                         Properties.Settings.Default.Save();
 
-                        Dictionary<string, string> difference = benResponse.DynamicKeys
-                            .Where(x => !oldDynamicKeys.ContainsKey(x.Key) || !oldDynamicKeys[x.Key].Equals(x.Value))
-                            .ToDictionary(x => x.Key, x => x.Value);
-                        foreach (KeyValuePair<string, string> KvP in difference)
+                        if (oldDynamicKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict))
                         {
-                            Globals.gNotifier.ShowCustomMessage(
-                                Properties.Resources.PakFiles,
-                                string.Format(
-                                    Properties.Resources.PakCanBeOpened,
-                                    KvP.Key.Substring(KvP.Key.IndexOf("Paks/") + "Paks/".Length)),
-                                "/FModel;component/Resources/lock-open-variant.ico");
-                            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"{KvP.Key} with key {KvP.Value} can be opened");
+                            Dictionary<string, string> difference = benResponse.DynamicKeys
+                                .Where(x => !gameDict.ContainsKey(x.Key) || !gameDict[x.Key].Equals(x.Value))
+                                .ToDictionary(x => x.Key, x => x.Value);
+                            foreach (KeyValuePair<string, string> KvP in difference)
+                            {
+                                Globals.gNotifier.ShowCustomMessage(
+                                    Properties.Resources.PakFiles,
+                                    string.Format(
+                                        Properties.Resources.PakCanBeOpened,
+                                        KvP.Key.Substring(KvP.Key.IndexOf("Paks/") + "Paks/".Length)),
+                                    "/FModel;component/Resources/lock-open-variant.ico");
+                                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"{KvP.Key} with key {KvP.Value} can be opened");
+                            }
                         }
 
                         return true;

@@ -2560,6 +2560,25 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Trello.
+        /// </summary>
+        public static string Trello {
+            get {
+                return ResourceManager.GetString("Trello", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap trello1 {
+            get {
+                object obj = ResourceManager.GetObject("trello1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Turkish.
         /// </summary>
         public static string Turkish {
