@@ -232,13 +232,6 @@
   <data name="ContributorsF" xml:space="preserve">
     <value>贡献者</value>
   </data>
-  <data name="ContributorsFDetails" xml:space="preserve">
-    <value>• Waddlesworth			• Maiky
-• FunGames			• Not Officer
-• PsychoPast			• TSG
-• GMatrixGames			• Jackson
-• XTigerHyperX			• FireMonkey</value>
-  </data>
   <data name="CopyImage" xml:space="preserve">
     <value>复制图片</value>
   </data>
@@ -292,12 +285,6 @@
   </data>
   <data name="DonatorsF" xml:space="preserve">
     <value>捐助者名单</value>
-  </data>
-  <data name="DonatorsFDetails" xml:space="preserve">
-    <value>• Yanteh				• Maiky
-• FunGames			• HYPEX
-• Alexander			• Netu
-• SexyNutella</value>
   </data>
   <data name="DownloadError" xml:space="preserve">
     <value>下载{0}时出错</value>
@@ -736,13 +723,6 @@
   </data>
   <data name="TranslatorsF" xml:space="preserve">
     <value>译者名单</value>
-  </data>
-  <data name="TranslatorsFDetails" xml:space="preserve">
-    <value>• EN: Asval#2291			• FR: Asval#2291
-• DE: FunGames#6822		• IT: arianaglande#5581
-• ES: Maiky.M#9879		• AR: PsychoPast#0001
-• JA: FNJPNews#7820		• RU: Seawod#4311
-• CN: GMatrixGames#6929</value>
   </data>
   <data name="Trello" xml:space="preserve">
     <value>特雷洛</value>
