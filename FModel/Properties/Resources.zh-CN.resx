@@ -433,7 +433,7 @@
   <data name="Include" xml:space="preserve">
     <value>包括</value>
   </data>
-  <data name="InernationalizationStatus" xml:space="preserve">
+  <data name="InternationalizationStatus" xml:space="preserve">
     <value>语言设置为{0}</value>
   </data>
   <data name="Initializing" xml:space="preserve">
