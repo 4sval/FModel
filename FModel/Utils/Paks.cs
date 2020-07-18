@@ -132,6 +132,15 @@ namespace FModel.Utils
                 return string.Empty;
         }
 
+        public static string GetTheCyclePakFilesPath()
+        {
+            (_, string _, string theCycleFilesPath) = GetUEGameFilesPath("AzaleaAlpha"); // TODO: Change when out of alpha
+            if (!string.IsNullOrEmpty(theCycleFilesPath))
+                return $"{theCycleFilesPath}\\Prospect\\Content\\Paks";
+            else
+                return string.Empty;
+        }
+
         public static string GetMinecraftDungeonsPakFilesPath()
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

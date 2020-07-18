@@ -87,6 +87,14 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Spellbreak", Property = spellbreakerFilesPath });
             }
 
+            string theCyclePath = Paks.GetTheCyclePakFilesPath();
+            if (!string.IsNullOrEmpty(theCyclePath))
+            {
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"The Cycle found at {theCyclePath}");
+                Globals.gNotifier.ShowCustomMessage("The Cycle (EA)", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/thecycle.ico");
+                ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "The Cycle (Early Access)", Property = theCyclePath });
+            }
+
             string sod2Path = Paks.GetStateOfDecay2PakFilesPath();
             if (!string.IsNullOrEmpty(sod2Path))
             {
