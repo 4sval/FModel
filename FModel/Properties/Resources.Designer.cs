@@ -551,6 +551,7 @@ namespace FModel.Properties {
         ///   Recherche une chaîne localisée semblable à • Waddlesworth			• Maiky
         ///• FunGames			• Not Officer
         ///• PsychoPast			• TSG
+        ///• GMatrixGames			• Jackson
         ///• XTigerHyperX			• FireMonkey.
         /// </summary>
         public static string ContributorsFDetails {

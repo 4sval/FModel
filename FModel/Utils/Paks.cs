@@ -62,7 +62,7 @@ namespace FModel.Utils
                     return (string.Empty, string.Empty);
                 }
             }
-            catch (UnauthorizedAccessException e)
+            catch (UnauthorizedAccessException)
             {
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]",
                     $"{dir} can't be accessed without permission changes to the folder.");

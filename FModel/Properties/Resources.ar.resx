@@ -775,4 +775,10 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="NoBackground" xml:space="preserve">
     <value>أي خلفية</value>
   </data>
+  <data name="JsonType" xml:space="preserve">
+    <value>نوع JSON</value>
+  </data>
+  <data name="WithPosition" xml:space="preserve">
+    <value>الوظيفة / القيمة</value>
+  </data>
 </root>

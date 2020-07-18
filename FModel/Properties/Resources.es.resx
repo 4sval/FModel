@@ -1028,4 +1028,13 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="NoBackground" xml:space="preserve">
     <value>Sin fondo</value>
   </data>
+  <data name="JsonType" xml:space="preserve">
+    <value>Tipo JSON</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Copiar imagen</value>
+  </data>
+  <data name="WithPosition" xml:space="preserve">
+    <value>Posición / Valor</value>
+  </data>
 </root>

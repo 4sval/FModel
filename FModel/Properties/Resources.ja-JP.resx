@@ -763,4 +763,25 @@
   <data name="EditDirectory" xml:space="preserve">
     <value>ディレクトリを編集</value>
   </data>
+  <data name="JsonType" xml:space="preserve">
+    <value>JSONタイプ</value>
+  </data>
+  <data name="NoBackground" xml:space="preserve">
+    <value>背景なし</value>
+  </data>
+  <data name="NoImageToCopy" xml:space="preserve">
+    <value>現在、コピーする画像はありません</value>
+  </data>
+  <data name="UseFEnglish" xml:space="preserve">
+    <value>FModelを英語で使用する</value>
+  </data>
+  <data name="UseDiscordRpc" xml:space="preserve">
+    <value>Discord RPCを使用する</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>画像をコピー</value>
+  </data>
+  <data name="WithPosition" xml:space="preserve">
+    <value>位置/値</value>
+  </data>
 </root>

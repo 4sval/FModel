@@ -778,4 +778,10 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="NoBackground" xml:space="preserve">
     <value>Nessuno Sfondo</value>
   </data>
+  <data name="JsonType" xml:space="preserve">
+    <value>Tipo JSON</value>
+  </data>
+  <data name="WithPosition" xml:space="preserve">
+    <value>Posizione / Valore</value>
+  </data>
 </root>

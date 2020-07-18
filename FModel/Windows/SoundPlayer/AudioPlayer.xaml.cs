@@ -1,5 +1,6 @@
 using CSCore.SoundOut;
 using FModel.Discord;
+using FModel.PakReader;
 using FModel.ViewModels.ListBox;
 using FModel.ViewModels.SoundPlayer;
 using FModel.Windows.SoundPlayer.Visualization;
@@ -86,6 +87,12 @@ namespace FModel.Windows.SoundPlayer
                                 FullPath = string.Empty,
                                 Folder = string.Empty
                             });
+                            break;
+                        case ".bnk":
+                        case ".pck":
+                            Focus();
+                            WwiseReader bnk = new WwiseReader(new BinaryReader(new BufferedStream(new FileInfo(file).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))));
+                            LoadFiles(bnk.AudioFiles, "");
                             break;
                         default:
                             LoadFile(file);

@@ -39,11 +39,6 @@ namespace FModel.Grabber.Aes
                             Properties.Settings.Default.StaticAesKeys = JsonConvert.SerializeObject(staticKeys, Formatting.None);
                         }
 
-                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"BenBot Dynamic keys are {benResponse.DynamicKeys}");
-                        oldDynamicKeys[Globals.Game.ActualGame.ToString()] = benResponse.DynamicKeys;
-                        Properties.Settings.Default.DynamicAesKeys = JsonConvert.SerializeObject(oldDynamicKeys, Formatting.None);
-                        Properties.Settings.Default.Save();
-
                         if (oldDynamicKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict))
                         {
                             Dictionary<string, string> difference = benResponse.DynamicKeys
@@ -60,6 +55,11 @@ namespace FModel.Grabber.Aes
                                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"{KvP.Key} with key {KvP.Value} can be opened");
                             }
                         }
+
+                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"BenBot Dynamic keys are {benResponse.DynamicKeys}");
+                        oldDynamicKeys[Globals.Game.ActualGame.ToString()] = benResponse.DynamicKeys;
+                        Properties.Settings.Default.DynamicAesKeys = JsonConvert.SerializeObject(oldDynamicKeys, Formatting.None);
+                        Properties.Settings.Default.Save();
 
                         return true;
                     }

@@ -20,7 +20,7 @@ namespace FModel.PakReader
         private const uint _DIDX_ID = 0x58444944;
         private const uint _DATA_ID = 0x41544144;
         private const uint _HIRC_ID = 0x43524948;
-        private const uint _RIFF_ID = 0x46464952;
+        //private const uint _RIFF_ID = 0x46464952;
         private const uint _STID_ID = 0x44495453;
         private const uint _STMG_ID = 0x474D5453;
         private const uint _ENVS_ID = 0x53564E45;
@@ -29,7 +29,7 @@ namespace FModel.PakReader
 
         public WwiseReader(BinaryReader reader)
         {
-            Random rnd = new Random();
+            AKPKSection akpkSection = null;
             DIDXSection didxSection = null;
             DATASection dataSection = null;
             HIRCSection hircSection = null;
@@ -46,11 +46,13 @@ namespace FModel.PakReader
                 switch (SectionIdentifier)
                 {
                     case _AKPK_ID:
+                        akpkSection = new AKPKSection(reader);
                         break;
                     case _BKHD_ID:
-                        BKHDSection _ = new BKHDSection(reader);
+                        BKHDSection _A = new BKHDSection(reader);
                         break;
                     case _INIT_ID:
+                        INITSection _B = new INITSection(reader);
                         break;
                     case _DIDX_ID:
                         didxSection = new DIDXSection(reader, Position + SectionLength);
@@ -60,10 +62,6 @@ namespace FModel.PakReader
                         break;
                     case _HIRC_ID:
                         hircSection = new HIRCSection(reader);
-                        break;
-                    case _RIFF_ID:
-                        reader.BaseStream.Seek(Position - sizeof(uint) - sizeof(uint), SeekOrigin.Begin);
-                        AudioFiles[$"{rnd.Next(1000000, 9999999)}.wem"] = reader.ReadBytes(Convert.ToInt32(SectionLength) + sizeof(uint) + sizeof(uint));
                         break;
                     case _STID_ID:
                         stidSection = new STIDSection(reader);
@@ -103,7 +101,121 @@ namespace FModel.PakReader
                     AudioFiles[key] = dataSection.WemFiles[i];
                 }
             }
-            // valorant event sound uses the HIRCSection but i don't understand how to get the actual audio atm
+            if (akpkSection != null)
+            {
+                foreach (var folder in akpkSection.Folders)
+                    foreach (var entry in folder.Entries)
+                        if (!entry.IsSoundBank)
+                        {
+                            string key = $"{entry.Path.ToUpper()}_{entry.NameHash}.wem";
+                            if (stidSection != null && stidSection.SoundBanks.TryGetValue(entry.NameHash, out string name))
+                                key = name;
+
+                            reader.BaseStream.Seek(entry.Offset, SeekOrigin.Begin);
+                            AudioFiles[key] = reader.ReadBytes(Convert.ToInt32(entry.Size));
+                        }
+            }
+            // valorant event sound uses the HIRCSection but i don't understand how to get the actual audio from it atm
+        }
+
+        /// <summary>
+        /// https://github.com/Nibre/HaloWwise/blob/master/HaloWwise/PackManager.cs
+        /// </summary>
+        public class AKPKSection
+        {
+            public uint FolderListLength;
+            public uint BankTableLength;
+            public uint SoundTableLength;
+            public uint FolderNumber;
+            public Folder[] Folders;
+
+            public AKPKSection(BinaryReader reader)
+            {
+                reader.ReadUInt32(); // Skip
+                FolderListLength = reader.ReadUInt32();
+                BankTableLength = reader.ReadUInt32();
+                SoundTableLength = reader.ReadUInt32();
+                reader.ReadUInt32(); // Skip
+
+                FolderNumber = reader.ReadUInt32();
+                Folders = new Folder[FolderNumber];
+                /* idk how to explain how to do it in another way */
+                for (int i = 0; i < Folders.Length; i++)
+                {
+                    Folders[i] = new Folder(reader);
+                }
+                for (int i = 0; i < Folders.Length; i++)
+                {
+                    Folders[i].SetName(reader);
+                }
+
+                for (int i = 0; i < Folders.Length; i++)
+                {
+                    uint EntryLength = reader.ReadUInt32();
+                    Folders[Folders[i].Id].Entries = new Folder.Entry[EntryLength];
+                    for (int j = 0; j < Folders[Folders[i].Id].Entries.Length; j++)
+                    {
+                        Folder.Entry entry = new Folder.Entry(reader);
+                        entry.Path = Folders[entry.FolderID].Name;
+
+                        long rememberMe = reader.BaseStream.Position;
+                        reader.BaseStream.Seek(entry.Offset, SeekOrigin.Begin);
+                        entry.IsSoundBank = reader.ReadUInt32() == _BKHD_ID;
+                        reader.BaseStream.Seek(rememberMe, SeekOrigin.Begin);
+
+                        Folders[Folders[i].Id].Entries[j] = entry;
+                    }
+                }
+            }
+
+            public class Folder
+            {
+                public uint NameOffset;
+                public uint Id;
+                public string Name;
+                public Entry[] Entries;
+
+                public Folder(BinaryReader reader)
+                {
+                    NameOffset = reader.ReadUInt32();
+                    Id = reader.ReadUInt32();
+                }
+
+                public void SetName(BinaryReader reader)
+                {
+                    StringBuilder builder = new StringBuilder();
+                    while (true)
+                    {
+                        char a = reader.ReadChar();
+                        reader.ReadChar(); // always a null byte
+                        if (a == 0x0)
+                            break;
+                        else
+                            builder.Append(a);
+                    }
+                    Name = builder.ToString().Trim();
+                }
+
+                public class Entry
+                {
+                    public uint NameHash;
+                    public uint FolderID;
+                    public uint Size;
+                    public uint OffsetMultiplier;
+                    public uint Offset;
+                    public string Path;
+                    public bool IsSoundBank;
+
+                    public Entry(BinaryReader reader)
+                    {
+                        NameHash = reader.ReadUInt32();
+                        OffsetMultiplier = reader.ReadUInt32();
+                        Size = reader.ReadUInt32();
+                        Offset = reader.ReadUInt32() * OffsetMultiplier;
+                        FolderID = reader.ReadUInt32();
+                    }
+                }
+            }
         }
 
         public class BKHDSection
@@ -115,6 +227,40 @@ namespace FModel.PakReader
             {
                 Version = reader.ReadUInt32();
                 Id = reader.ReadUInt32();
+            }
+        }
+
+        /// <summary>
+        /// this is 100% guessed
+        /// </summary>
+        public class INITSection
+        {
+            public uint ObjectNumber;
+            public InitObject[] Objects;
+
+            public INITSection(BinaryReader reader)
+            {
+                ObjectNumber = reader.ReadUInt32();
+                Objects = new InitObject[ObjectNumber];
+                for (int i = 0; i < Objects.Length; i++)
+                {
+                    Objects[i] = new InitObject(reader);
+                }
+            }
+
+            public class InitObject
+            {
+                public ushort UnknownA;
+                public ushort UnknownB;
+                public string Object;
+
+                public InitObject(BinaryReader reader)
+                {
+                    UnknownA = reader.ReadUInt16();
+                    UnknownB = reader.ReadUInt16();
+                    uint length = reader.ReadUInt32();
+                    Object = Encoding.UTF8.GetString(reader.ReadBytes(Convert.ToInt32(length)).AsSpan(..^1));
+                }
             }
         }
 
@@ -240,7 +386,7 @@ namespace FModel.PakReader
         {
             public float VolumeThreshold;
             public ushort MaxVoiceInstances;
-            public uint StateGroupNumber;
+            public ushort StateGroupNumber;
             public StateGroupObject[] StateGroups;
             public uint SwitchGroupNumber;
             public SwitchGroupObject[] SwitchGroups;
@@ -251,7 +397,7 @@ namespace FModel.PakReader
             {
                 VolumeThreshold = reader.ReadSingle();
                 MaxVoiceInstances = reader.ReadUInt16();
-                StateGroupNumber = reader.ReadUInt32();
+                StateGroupNumber = reader.ReadUInt16();
                 StateGroups = new StateGroupObject[Convert.ToInt32(StateGroupNumber)];
                 for (int i = 0; i < StateGroups.Length; i++)
                 {

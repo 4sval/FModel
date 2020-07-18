@@ -812,4 +812,10 @@ Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leake
   <data name="NoBackground" xml:space="preserve">
     <value>Kein Hintergrund</value>
   </data>
+  <data name="JsonType" xml:space="preserve">
+    <value>JSON-Typ</value>
+  </data>
+  <data name="WithPosition" xml:space="preserve">
+    <value>Position / Wert</value>
+  </data>
 </root>
