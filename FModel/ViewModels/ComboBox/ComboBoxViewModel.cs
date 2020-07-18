@@ -12,11 +12,13 @@ namespace FModel.ViewModels.ComboBox
         private static readonly string _Arabic = "ar";
         private static readonly string _Japanese = "ja-JP";
         private static readonly string _Russian = "ru-RU";
+        private static readonly string _ChineseSimp = "zh-CN";
 
         public static string GetProgramLang()
         {
             return Properties.Settings.Default.ProgramLanguage switch
             {
+                8 => _ChineseSimp,
                 7 => _Russian,
                 6 => _Japanese,
                 5 => _Arabic,
@@ -40,7 +42,8 @@ namespace FModel.ViewModels.ComboBox
             new ComboBoxViewModel { Id = 4, Content = Properties.Resources.Spanish },
             new ComboBoxViewModel { Id = 5, Content = Properties.Resources.Arabic },
             new ComboBoxViewModel { Id = 6, Content = Properties.Resources.Japanese },
-            new ComboBoxViewModel { Id = 7, Content = Properties.Resources.Russian }
+            new ComboBoxViewModel { Id = 7, Content = Properties.Resources.Russian },
+            new ComboBoxViewModel { Id = 8, Content = Properties.Resources.Chinese }
         };
 
         public static ObservableCollection<ComboBoxViewModel> languageCbViewModel = new ObservableCollection<ComboBoxViewModel>

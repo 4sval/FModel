@@ -1,0 +1,810 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AboutF" xml:space="preserve">
+    <value>关于FModel</value>
+  </data>
+  <data name="AboutFDetails" xml:space="preserve">
+    <value>FModel是.PAK文件浏览器，完全专用于堡垒之夜，但它也可以与其他一些虚幻引擎游戏一起使用。
+
+为了具有独特和个性化的功能，它于2019年3月创建，并通过数据挖掘者迅速流行起来，数据挖掘者使用它来快速生成添加到游戏中的新化妆品的图像。
+随着时间的流逝，添加了新功能，新用户发现了该程序。
+现在，它是用于查看堡垒之夜文件的最常用免费软件。</value>
+  </data>
+  <data name="AboutToDownload" xml:space="preserve">
+    <value>您即将下载大小为{1}的{0}</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>添</value>
+  </data>
+  <data name="AddDirectory" xml:space="preserve">
+    <value>添加目录</value>
+  </data>
+  <data name="AES" xml:space="preserve">
+    <value>AES</value>
+  </data>
+  <data name="AesKey" xml:space="preserve">
+    <value>AES密钥</value>
+  </data>
+  <data name="AesKeysUpdated" xml:space="preserve">
+    <value>加密密钥已更新</value>
+  </data>
+  <data name="AesNotWorking" xml:space="preserve">
+    <value>'{0}'不适用于' {1}'</value>
+  </data>
+  <data name="AllDocuments" xml:space="preserve">
+    <value>所有文件资料</value>
+  </data>
+  <data name="AllFiles" xml:space="preserve">
+    <value>所有的文件</value>
+  </data>
+  <data name="Analyzing" xml:space="preserve">
+    <value>分析{0}</value>
+  </data>
+  <data name="Arabic" xml:space="preserve">
+    <value>阿拉伯语的</value>
+  </data>
+  <data name="Asset" xml:space="preserve">
+    <value>一项资产</value>
+  </data>
+  <data name="Assets" xml:space="preserve">
+    <value>资产</value>
+  </data>
+  <data name="AudioDevices" xml:space="preserve">
+    <value>音频设备</value>
+  </data>
+  <data name="AudioPlayer" xml:space="preserve">
+    <value>音频播放器</value>
+  </data>
+  <data name="Auto" xml:space="preserve">
+    <value>自动</value>
+  </data>
+  <data name="AutoOpenSounds" xml:space="preserve">
+    <value>自动打开声音文件</value>
+  </data>
+  <data name="B" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="BackupPaks" xml:space="preserve">
+    <value>备份PAKs</value>
+  </data>
+  <data name="Backups" xml:space="preserve">
+    <value>备份</value>
+  </data>
+  <data name="Banner" xml:space="preserve">
+    <value>旗帜</value>
+  </data>
+  <data name="BugsReport" xml:space="preserve">
+    <value>问题报告</value>
+  </data>
+  <data name="BytesPerSecond" xml:space="preserve">
+    <value>每秒字节数</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Canceled" xml:space="preserve">
+    <value>停了！</value>
+  </data>
+  <data name="CaseSensitive" xml:space="preserve">
+    <value>区分大小写</value>
+  </data>
+  <data name="ChallengesCustomBanner" xml:space="preserve">
+    <value>任务的自定义横幅</value>
+  </data>
+  <data name="ChallengesThemeCreator" xml:space="preserve">
+    <value>任务的自定义主题创建者</value>
+  </data>
+  <data name="ChangeGame" xml:space="preserve">
+    <value>改变游戏</value>
+  </data>
+  <data name="Changelog" xml:space="preserve">
+    <value>变更日志</value>
+  </data>
+  <data name="Chinese" xml:space="preserve">
+    <value>中文（简体版）</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>明确</value>
+  </data>
+  <data name="Colors" xml:space="preserve">
+    <value>色彩</value>
+  </data>
+  <data name="Compression" xml:space="preserve">
+    <value>压缩类型</value>
+  </data>
+  <data name="ContributorsF" xml:space="preserve">
+    <value>贡献者</value>
+  </data>
+  <data name="ContributorsFDetails" xml:space="preserve">
+    <value>• Waddlesworth			• Maiky
+• FunGames			• Not Officer
+• PsychoPast			• TSG
+• GMatrixGames			• Jackson
+• XTigerHyperX			• FireMonkey</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>复制图片</value>
+  </data>
+  <data name="CopySuccess" xml:space="preserve">
+    <value>复制成功！</value>
+  </data>
+  <data name="CouldNotCreateDirectory" xml:space="preserve">
+    <value>无法创建目录</value>
+  </data>
+  <data name="CreateError" xml:space="preserve">
+    <value>创建{0}时出错</value>
+  </data>
+  <data name="CreateSuccess" xml:space="preserve">
+    <value>{0}已成功创建</value>
+  </data>
+  <data name="CurrentDocument" xml:space="preserve">
+    <value>当前文件资料</value>
+  </data>
+  <data name="CustomBannerNotFound" xml:space="preserve">
+    <value>找不到文件，任务的自定义主题已禁用</value>
+  </data>
+  <data name="DataExported" xml:space="preserve">
+    <value>{0}已成功导出</value>
+  </data>
+  <data name="DataSaved" xml:space="preserve">
+    <value>数据已成功保存</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>默认</value>
+  </data>
+  <data name="Design" xml:space="preserve">
+    <value>设计</value>
+  </data>
+  <data name="Directories" xml:space="preserve">
+    <value>文件目录</value>
+  </data>
+  <data name="DirectoryName" xml:space="preserve">
+    <value>目录名</value>
+  </data>
+  <data name="DirectoryPath" xml:space="preserve">
+    <value>目录路径</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>残障人士</value>
+  </data>
+  <data name="DiscordServer" xml:space="preserve">
+    <value>Discord聊天室</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>捐</value>
+  </data>
+  <data name="DonatorsF" xml:space="preserve">
+    <value>捐助者名单</value>
+  </data>
+  <data name="DonatorsFDetails" xml:space="preserve">
+    <value>• Yanteh				• Maiky
+• FunGames			• HYPEX
+• Alexander			• Netu
+• SexyNutella</value>
+  </data>
+  <data name="DownloadError" xml:space="preserve">
+    <value>下载{0}时出错</value>
+  </data>
+  <data name="Downloading" xml:space="preserve">
+    <value>正在下载</value>
+  </data>
+  <data name="DownloadSuccess" xml:space="preserve">
+    <value>{0}已成功下载</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>持续时间</value>
+  </data>
+  <data name="DynamicKeyNotWorking" xml:space="preserve">
+    <value>'{0}'不适用于' {1}'</value>
+  </data>
+  <data name="DynamicKeys" xml:space="preserve">
+    <value>动态加密密钥</value>
+  </data>
+  <data name="EditDirectory" xml:space="preserve">
+    <value>编辑资料夹</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>已启用</value>
+  </data>
+  <data name="Encrypted" xml:space="preserve">
+    <value>加密的</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>英语</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>出口</value>
+  </data>
+  <data name="Extract" xml:space="preserve">
+    <value>提取</value>
+  </data>
+  <data name="Extraction" xml:space="preserve">
+    <value>萃取</value>
+  </data>
+  <data name="FCopy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="FFile" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="FileCount" xml:space="preserve">
+    <value>档案数量</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>文档名称</value>
+  </data>
+  <data name="FileNameNoExt" xml:space="preserve">
+    <value>不含扩展名的文件名</value>
+  </data>
+  <data name="FilePath" xml:space="preserve">
+    <value>文件路径</value>
+  </data>
+  <data name="FilePathNoExt" xml:space="preserve">
+    <value>没有扩展名的文件路径</value>
+  </data>
+  <data name="Files" xml:space="preserve">
+    <value>档案</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>过滤</value>
+  </data>
+  <data name="Find" xml:space="preserve">
+    <value>找</value>
+  </data>
+  <data name="FindAndReplace" xml:space="preserve">
+    <value>查找和替换</value>
+  </data>
+  <data name="FindNext" xml:space="preserve">
+    <value>找下一个</value>
+  </data>
+  <data name="Flat" xml:space="preserve">
+    <value>平面</value>
+  </data>
+  <data name="FLauncher" xml:space="preserve">
+    <value>FModel启动器</value>
+  </data>
+  <data name="French" xml:space="preserve">
+    <value>法文</value>
+  </data>
+  <data name="Games" xml:space="preserve">
+    <value>游戏类</value>
+  </data>
+  <data name="GB" xml:space="preserve">
+    <value>GB</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>一般</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>常规设置</value>
+  </data>
+  <data name="German" xml:space="preserve">
+    <value>德语</value>
+  </data>
+  <data name="GoTo" xml:space="preserve">
+    <value>走至</value>
+  </data>
+  <data name="Guid" xml:space="preserve">
+    <value>Guid</value>
+  </data>
+  <data name="Hello" xml:space="preserve">
+    <value>你好</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>救命</value>
+  </data>
+  <data name="Hsv" xml:space="preserve">
+    <value>色相，饱和度，价值</value>
+  </data>
+  <data name="Hue" xml:space="preserve">
+    <value>色相</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>图标</value>
+  </data>
+  <data name="IconCreator" xml:space="preserve">
+    <value>图标制造商</value>
+  </data>
+  <data name="IconWatermark" xml:space="preserve">
+    <value>图标水印</value>
+  </data>
+  <data name="IconWatermarkNotFound" xml:space="preserve">
+    <value>找不到文件，水印已禁用</value>
+  </data>
+  <data name="Idling" xml:space="preserve">
+    <value>{0}-空转</value>
+  </data>
+  <data name="Images" xml:space="preserve">
+    <value>图片</value>
+  </data>
+  <data name="ImageSaved" xml:space="preserve">
+    <value>图片成功保存</value>
+  </data>
+  <data name="ImagesMerger" xml:space="preserve">
+    <value>图像合并</value>
+  </data>
+  <data name="Include" xml:space="preserve">
+    <value>包括</value>
+  </data>
+  <data name="InernationalizationStatus" xml:space="preserve">
+    <value>语言设置为{0}</value>
+  </data>
+  <data name="Initializing" xml:space="preserve">
+    <value>初始化中</value>
+  </data>
+  <data name="IsPartOf" xml:space="preserve">
+    <value>是一部分</value>
+  </data>
+  <data name="Italian" xml:space="preserve">
+    <value>义大利文</value>
+  </data>
+  <data name="Japanese" xml:space="preserve">
+    <value>倭</value>
+  </data>
+  <data name="JsonFilter" xml:space="preserve">
+    <value>JSON文件（*.json）| *.json</value>
+  </data>
+  <data name="JsonType" xml:space="preserve">
+    <value>JSON类型</value>
+  </data>
+  <data name="KB" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="KbkpFilter" xml:space="preserve">
+    <value>FBKP文件（*.fbkp）| *.fbkp |所有文件（*.*）| *.*</value>
+  </data>
+  <data name="Korean" xml:space="preserve">
+    <value>韩语</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Listening" xml:space="preserve">
+    <value>听力-{0}</value>
+  </data>
+  <data name="LoadAll" xml:space="preserve">
+    <value>全部载入</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>载入中</value>
+  </data>
+  <data name="LoadingMode" xml:space="preserve">
+    <value>加载方式</value>
+  </data>
+  <data name="LoadModifiedFiles" xml:space="preserve">
+    <value>加载更改的文件</value>
+  </data>
+  <data name="LoadNewFiles" xml:space="preserve">
+    <value>载入新文件</value>
+  </data>
+  <data name="LoadNewModifiedFiles" xml:space="preserve">
+    <value>加载新文件和更改的文件</value>
+  </data>
+  <data name="MainPaks" xml:space="preserve">
+    <value>主PAKs：</value>
+  </data>
+  <data name="MatchWholeWord" xml:space="preserve">
+    <value>匹配整个单词</value>
+  </data>
+  <data name="MB" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="Minimalist" xml:space="preserve">
+    <value>简约风格</value>
+  </data>
+  <data name="ModifiedFiles" xml:space="preserve">
+    <value>变更的档案</value>
+  </data>
+  <data name="MountedPakTo" xml:space="preserve">
+    <value>{0}已安装到{1}</value>
+  </data>
+  <data name="MountPoint" xml:space="preserve">
+    <value>安装点</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="NewFiles" xml:space="preserve">
+    <value>新档案</value>
+  </data>
+  <data name="NewModifiedFiles" xml:space="preserve">
+    <value>新文件和更改文件</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>没有</value>
+  </data>
+  <data name="NoBackground" xml:space="preserve">
+    <value>没有背景</value>
+  </data>
+  <data name="NoDataToExport" xml:space="preserve">
+    <value>当前没有要导出的数据</value>
+  </data>
+  <data name="NoDataToSave" xml:space="preserve">
+    <value>当前没有要保存的数据</value>
+  </data>
+  <data name="NoImageToCopy" xml:space="preserve">
+    <value>当前没有要复制的图像</value>
+  </data>
+  <data name="NoImageToSave" xml:space="preserve">
+    <value>当前没有要保存的图像</value>
+  </data>
+  <data name="NoInternet" xml:space="preserve">
+    <value>您没有连接到互联网</value>
+  </data>
+  <data name="NoText" xml:space="preserve">
+    <value>没有文字</value>
+  </data>
+  <data name="Offsets" xml:space="preserve">
+    <value>偏移量</value>
+  </data>
+  <data name="OggFilter" xml:space="preserve">
+    <value>OGG文件（*.ogg）| *.ogg | WAV文件（*.wav）| *.wav | WEM文件（*.wem）| *.wem | ADPCM文件（*.adpcm）| *.adpcm |所有文件（*.*）| *.*</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="Opacity" xml:space="preserve">
+    <value>不透明度</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>开放</value>
+  </data>
+  <data name="OpenImage" xml:space="preserve">
+    <value>开启图片</value>
+  </data>
+  <data name="OpenOutputFolder" xml:space="preserve">
+    <value>打开输出文件夹</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>选件</value>
+  </data>
+  <data name="PAK" xml:space="preserve">
+    <value>PAK</value>
+  </data>
+  <data name="PakCanBeOpened" xml:space="preserve">
+    <value>现在可以查看{0}</value>
+  </data>
+  <data name="PakFileLocked" xml:space="preserve">
+    <value>{0}正在被另一个进程使用</value>
+  </data>
+  <data name="PakFiles" xml:space="preserve">
+    <value>PAK文件</value>
+  </data>
+  <data name="ParsingNotSupported" xml:space="preserve">
+    <value>目前尚不支持{0}文件类型的解析。</value>
+  </data>
+  <data name="Path" xml:space="preserve">
+    <value>路径</value>
+  </data>
+  <data name="PathAutoDetected" xml:space="preserve">
+    <value>.PAK文件已自动找到</value>
+  </data>
+  <data name="PathChanged" xml:space="preserve">
+    <value>FModel路径已更改</value>
+  </data>
+  <data name="PathChangedRestart" xml:space="preserve">
+    <value>FModel将重新启动，因为您应用了新路径</value>
+  </data>
+  <data name="PngFilter" xml:space="preserve">
+    <value>PNG文件（*.png）| *.png |所有文件（*.*）| *.*</value>
+  </data>
+  <data name="Polish" xml:space="preserve">
+    <value>波兰语</value>
+  </data>
+  <data name="PortugueseBrazil" xml:space="preserve">
+    <value>葡萄牙语（巴西）</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>预习</value>
+  </data>
+  <data name="Primary" xml:space="preserve">
+    <value>主要</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>处理中</value>
+  </data>
+  <data name="Rarity" xml:space="preserve">
+    <value>稀有度</value>
+  </data>
+  <data name="RegularExpression" xml:space="preserve">
+    <value>正则表达式</value>
+  </data>
+  <data name="ReloadAesKeysAtLaunch" xml:space="preserve">
+    <value>在启动时重新加载AES加密密钥</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>去掉</value>
+  </data>
+  <data name="RemoveDirectory" xml:space="preserve">
+    <value>删除目录</value>
+  </data>
+  <data name="RemovedRenamedCosmetics" xml:space="preserve">
+    <value>重命名或删除的化妆品</value>
+  </data>
+  <data name="Replace" xml:space="preserve">
+    <value>更换</value>
+  </data>
+  <data name="ReplaceAll" xml:space="preserve">
+    <value>全部替换</value>
+  </data>
+  <data name="ReplaceWith" xml:space="preserve">
+    <value>交换：</value>
+  </data>
+  <data name="RestoreLayout" xml:space="preserve">
+    <value>恢复布局</value>
+  </data>
+  <data name="Rgba" xml:space="preserve">
+    <value>红，绿，蓝，透明</value>
+  </data>
+  <data name="Russian" xml:space="preserve">
+    <value>俄语</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="SaveImage" xml:space="preserve">
+    <value>保存图片</value>
+  </data>
+  <data name="SaveSuccess" xml:space="preserve">
+    <value>{0} 成功保存</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>规模</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="SearchIn" xml:space="preserve">
+    <value>在内部搜索：</value>
+  </data>
+  <data name="SearchUp" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="Secondary" xml:space="preserve">
+    <value>第二</value>
+  </data>
+  <data name="SelectFile" xml:space="preserve">
+    <value>选择一个文件</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>选择一个文件夹</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>组态</value>
+  </data>
+  <data name="Spanish" xml:space="preserve">
+    <value>西班牙文</value>
+  </data>
+  <data name="SpanishLatin" xml:space="preserve">
+    <value>西班牙语（拉丁美洲）</value>
+  </data>
+  <data name="SRefresh" xml:space="preserve">
+    <value>重装</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>州</value>
+  </data>
+  <data name="Static Key" xml:space="preserve">
+    <value>静态密钥</value>
+  </data>
+  <data name="StaticKeyNotWorking" xml:space="preserve">
+    <value>{0}对您的PAK文件不起作用</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="TB" xml:space="preserve">
+    <value>TB</value>
+  </data>
+  <data name="TextToFind" xml:space="preserve">
+    <value>查找文字：</value>
+  </data>
+  <data name="TimeElapsed" xml:space="preserve">
+    <value>经过的时间{0}ms</value>
+  </data>
+  <data name="TotalAssetsLoaded" xml:space="preserve">
+    <value>已加载{0}个资产</value>
+  </data>
+  <data name="TotalSize" xml:space="preserve">
+    <value>总尺寸</value>
+  </data>
+  <data name="TraditionalChinese" xml:space="preserve">
+    <value>中文（传统的）</value>
+  </data>
+  <data name="TranslatorsF" xml:space="preserve">
+    <value>译者名单</value>
+  </data>
+  <data name="TranslatorsFDetails" xml:space="preserve">
+    <value>• EN: Asval#2291			• FR: Asval#2291
+• DE: FunGames#6822		• IT: arianaglande#5581
+• ES: Maiky.M#9879		• AR: PsychoPast#0001
+• JA: FNJPNews#7820		• RU: Seawod#4311
+• CN: GMatrixGames#6929</value>
+  </data>
+  <data name="Trello" xml:space="preserve">
+    <value>特雷洛</value>
+  </data>
+  <data name="Turkish" xml:space="preserve">
+    <value>土耳其语</value>
+  </data>
+  <data name="UnhandledExceptionOccured" xml:space="preserve">
+    <value>发生未处理的异常：{0}</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>有可用更新</value>
+  </data>
+  <data name="UpdateAvailableConfirm" xml:space="preserve">
+    <value>FModel {0}可用。您正在使用版本{1}。您要立即更新应用程序吗？</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>更新检查失败</value>
+  </data>
+  <data name="UpdateReachServerProblem" xml:space="preserve">
+    <value>到达更新服务器时出现问题，请检查您的互联网连接或稍后重试。</value>
+  </data>
+  <data name="UseDiscordRpc" xml:space="preserve">
+    <value>使用Discord RPC</value>
+  </data>
+  <data name="UseFEnglish" xml:space="preserve">
+    <value>英文使用FModel</value>
+  </data>
+  <data name="UseGameColors" xml:space="preserve">
+    <value>使用游戏颜色</value>
+  </data>
+  <data name="UseItemShopIcon" xml:space="preserve">
+    <value>使用道具店图标</value>
+  </data>
+  <data name="UseWatermark" xml:space="preserve">
+    <value>使用水印</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>版</value>
+  </data>
+  <data name="Volume" xml:space="preserve">
+    <value>卷</value>
+  </data>
+  <data name="Waiting" xml:space="preserve">
+    <value>等候</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>通告</value>
+  </data>
+  <data name="Watermark" xml:space="preserve">
+    <value>水印</value>
+  </data>
+  <data name="Wildcards" xml:space="preserve">
+    <value>通配符</value>
+  </data>
+  <data name="WithPosition" xml:space="preserve">
+    <value>头寸/价值</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="YesShowChangelog" xml:space="preserve">
+    <value>是（显示更改日志）</value>
+  </data>
+</root>
