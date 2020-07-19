@@ -96,7 +96,9 @@ namespace FModel.PakReader
                 {
                     string key = $"{didxSection.WemFilesRef[i].Id}.wem";
                     if (stidSection != null && stidSection.SoundBanks.TryGetValue(didxSection.WemFilesRef[i].Id, out string name))
-                        key = name;
+                        key = $"{name}.wem";
+                    else if (Globals.Game.ActualGame == EGame.Valorant && Globals.ValorantWemToName.TryGetValue(didxSection.WemFilesRef[i].Id, out string hardcodedname))
+                        key = $"{hardcodedname}.wem";
 
                     AudioFiles[key] = dataSection.WemFiles[i];
                 }
@@ -105,14 +107,15 @@ namespace FModel.PakReader
             {
                 foreach (var folder in akpkSection.Folders)
                     foreach (var entry in folder.Entries)
-                        if (!entry.IsSoundBank)
+                        if (!entry.IsSoundBank && entry.Data != null)
                         {
                             string key = $"{entry.Path.ToUpper()}_{entry.NameHash}.wem";
                             if (stidSection != null && stidSection.SoundBanks.TryGetValue(entry.NameHash, out string name))
-                                key = name;
+                                key = $"{name}.wem";
+                            else if (Globals.Game.ActualGame == EGame.Valorant && Globals.ValorantWemToName.TryGetValue(entry.NameHash, out string hardcodedname))
+                                key = $"{hardcodedname}.wem";
 
-                            reader.BaseStream.Seek(entry.Offset, SeekOrigin.Begin);
-                            AudioFiles[key] = reader.ReadBytes(Convert.ToInt32(entry.Size));
+                            AudioFiles[key] = entry.Data;
                         }
             }
             // valorant event sound uses the HIRCSection but i don't understand how to get the actual audio from it atm
@@ -160,7 +163,8 @@ namespace FModel.PakReader
 
                         long rememberMe = reader.BaseStream.Position;
                         reader.BaseStream.Seek(entry.Offset, SeekOrigin.Begin);
-                        entry.IsSoundBank = reader.ReadUInt32() == _BKHD_ID;
+                        entry.Data = reader.ReadBytes(Convert.ToInt32(entry.Size));
+                        entry.IsSoundBank = BitConverter.ToUInt32(entry.Data, 0) == _BKHD_ID;
                         reader.BaseStream.Seek(rememberMe, SeekOrigin.Begin);
 
                         Folders[Folders[i].Id].Entries[j] = entry;
@@ -205,6 +209,7 @@ namespace FModel.PakReader
                     public uint Offset;
                     public string Path;
                     public bool IsSoundBank;
+                    public byte[] Data;
 
                     public Entry(BinaryReader reader)
                     {
