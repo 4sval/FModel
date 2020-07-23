@@ -24,6 +24,7 @@ using SkiaSharp;
 using System.Text;
 using FModel.ViewModels.DataGrid;
 using FModel.PakReader;
+using ICSharpCode.AvalonEdit.Highlighting;
 using static FModel.Creator.FortniteCreator;
 using static FModel.Creator.ValorantCreator;
 
@@ -70,33 +71,32 @@ namespace FModel.Utils
                         if (Globals.CachedPakFiles.TryGetValue(selected.PakEntry.PakFileName, out var r))
                         {
                             string mount = r.MountPoint;
-                            switch (selected.PakEntry.GetExtension())
+                            string ext = selected.PakEntry.GetExtension();
+                            switch (ext)
                             {
                                 case ".ini":
                                 case ".txt":
-                                    {
-                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
-                                        asset.Position = 0;
-                                        using var reader = new StreamReader(asset);
-                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.PakEntry.Name, AvalonEditVm.IniHighlighter);
-                                        break;
-                                    }
+                                case ".bat":
                                 case ".xml":
-                                    {
-                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
-                                        asset.Position = 0;
-                                        using var reader = new StreamReader(asset);
-                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.PakEntry.Name, AvalonEditVm.XmlHighlighter);
-                                        break;
-                                    }
+                                case ".h":
                                 case ".uproject":
                                 case ".uplugin":
                                 case ".upluginmanifest":
+                                case ".json":
                                     {
+                                        IHighlightingDefinition syntax = ext switch
+                                        {
+                                            ".ini" => AvalonEditVm.IniHighlighter,
+                                            ".txt" => AvalonEditVm.BaseHighlighter,
+                                            ".bat" => AvalonEditVm.BaseHighlighter,
+                                            ".xml" => AvalonEditVm.XmlHighlighter,
+                                            ".h" => AvalonEditVm.CppHighlighter,
+                                            _ => AvalonEditVm.JsonHighlighter
+                                        };
                                         using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         using var reader = new StreamReader(asset);
-                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.PakEntry.Name);
+                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.PakEntry.Name, syntax);
                                         break;
                                     }
                                 case ".locmeta":

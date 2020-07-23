@@ -40,12 +40,13 @@ namespace FModel.Grabber.Paks
                 // Add Pak Files
                 if (Directory.Exists(Properties.Settings.Default.PakPath))
                 {
-                    foreach (string pak in Directory.GetFiles(Properties.Settings.Default.PakPath, "*.pak"))
+                    string[] paks = Directory.GetFiles(Properties.Settings.Default.PakPath, "*.pak");
+                    for (int i = 0; i < paks.Length; i++)
                     {
-                        if (!Utils.Paks.IsFileReadLocked(new FileInfo(pak)))
+                        if (!Utils.Paks.IsFileReadLocked(new FileInfo(paks[i])))
                         {
-                            PakFileReader pakFile = new PakFileReader(pak);
-                            Globals.Game.Version = pakFile.Info.Version;
+                            PakFileReader pakFile = new PakFileReader(paks[i]);
+                            if (i == 0) Globals.Game.Version = pakFile.Info.Version;
                             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Registering]", $"{pakFile.FileName} with GUID {pakFile.Info.EncryptionKeyGuid.Hex}");
 
                             Application.Current.Dispatcher.Invoke(delegate
@@ -59,8 +60,8 @@ namespace FModel.Grabber.Paks
                         }
                         else
                         {
-                            FConsole.AppendText(string.Format(Properties.Resources.PakFileLocked, Path.GetFileNameWithoutExtension(pak)), FColors.Red, true);
-                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Locked]", pak);
+                            FConsole.AppendText(string.Format(Properties.Resources.PakFileLocked, Path.GetFileNameWithoutExtension(paks[i])), FColors.Red, true);
+                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Locked]", paks[i]);
                         }
                     }
                 }

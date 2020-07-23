@@ -85,6 +85,8 @@ namespace FModel.Creator.Fortnite
             { } // ^^^^ will return false if image not found, if so, we try to get the normal icon
             else if (export.GetExport<ObjectProperty>("HeroDefinition", "WeaponDefinition") is ObjectProperty itemDef)
                 LargeSmallImage.GetPreviewImage(this, itemDef, assetName);
+            else if (export.GetExport<ObjectProperty>("SmallPreviewImage") is ObjectProperty smallPreviewImage)
+                this.IconImage = Utils.GetObjectTexture(smallPreviewImage);
             else if (export.GetExport<SoftObjectProperty>("LargePreviewImage", "SmallPreviewImage", "ItemDisplayAsset") is SoftObjectProperty previewImage)
                 LargeSmallImage.GetPreviewImage(this, previewImage);
             else if (export.GetExport<StructProperty>("IconBrush") is StructProperty iconBrush) // abilities

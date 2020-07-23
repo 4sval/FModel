@@ -38,6 +38,7 @@
     <None Remove="Resources\api-off.ico" />
     <None Remove="Resources\api.ico" />
     <None Remove="Resources\backup-restore.png" />
+    <None Remove="Resources\Base.xshd" />
     <None Remove="Resources\battlebreakers.ico" />
     <None Remove="Resources\borderlands3.ico" />
     <None Remove="Resources\bug.png" />
@@ -49,6 +50,7 @@
     <None Remove="Resources\ColorPickerTwo.png" />
     <None Remove="Resources\content-copy.png" />
     <None Remove="Resources\content-save.png" />
+    <None Remove="Resources\Cpp.xshd" />
     <None Remove="Resources\delete-forever.png" />
     <None Remove="Resources\discord.png" />
     <None Remove="Resources\egl2.ico" />
@@ -122,6 +124,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Base.xshd" />
+    <EmbeddedResource Include="Resources\Cpp.xshd" />
     <EmbeddedResource Include="Resources\Ini.xshd" />
     <EmbeddedResource Include="Resources\Json.xshd" />
     <EmbeddedResource Include="Resources\Xml.xshd" />
@@ -138,7 +142,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NVorbis" Version="0.10.1" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="1.1.0" />
-    <PackageReference Include="SkiaSharp" Version="2.80.0" />
+    <PackageReference Include="SkiaSharp" Version="2.80.1" />
     <PackageReference Include="ToastNotifications" Version="2.5.1" />
     <PackageReference Include="ToastNotifications.Messages" Version="2.5.1" />
     <PackageReference Include="WriteableBitmapEx" Version="1.6.7" />

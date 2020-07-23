@@ -47,8 +47,6 @@ namespace PakReader.Parsers
                     else
                         throw new FileLoadException("Can't get class name"); // Shouldn't reach this unless the laws of math have bent to MagmaReef's will
 
-                    if (ExportType.String.Equals("BlueprintGeneratedClass")) continue;
-
                     var pos = Position = Export.SerialOffset - PackageFileSummary.TotalHeaderSize;
                     DataExports[i] = ExportType.String switch
                     {

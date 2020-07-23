@@ -261,32 +261,11 @@ namespace FModel.Windows.SoundPlayer
             {
                 // vgmstream convert on select
                 if (string.IsNullOrEmpty(selectedItem.FullPath) && selectedItem.Data != null)
-                {
-                    string file = Properties.Settings.Default.OutputPath + "\\vgmstream\\test.exe";
-                    if (File.Exists(file))
+                    if (TryVGMStreamConvert(selectedItem, out string wavFile))
                     {
-                        string folder = Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\";
-                        Directory.CreateDirectory(folder);
-                        File.WriteAllBytes(folder + selectedItem.Content, selectedItem.Data);
-                        string newFile = Path.ChangeExtension(folder + selectedItem.Content, ".wav");
-                        var vgmstream = Process.Start(new ProcessStartInfo
-                        { 
-                            FileName = file,
-                            Arguments = $"-o \"{newFile}\" \"{folder + selectedItem.Content}\"",
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                            CreateNoWindow = true
-                        });
-                        vgmstream.WaitForExit();
-                        ListBoxVm.soundFiles.Remove(selectedItem);
-                        File.Delete(folder + selectedItem.Content);
-                        if (vgmstream.ExitCode == 0 && File.Exists(newFile))
-                        {
-                            _oldPlayedSound = newFile;
-                            LoadFile(newFile);
-                        }
+                        _oldPlayedSound = wavFile;
+                        LoadFile(wavFile);
                     }
-                }
                 else if (!_oldPlayedSound.Equals(selectedItem.FullPath))
                     _oldPlayedSound = selectedItem.FullPath;
 
@@ -295,6 +274,36 @@ namespace FModel.Windows.SoundPlayer
                 else
                     PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/play.png"));
             }
+        }
+
+        /// <summary>
+        /// this sucks honestly but i lost hope with all wav conversion types
+        /// </summary>
+        private bool TryVGMStreamConvert(ListBoxViewModel2 selectedItem, out string wavFilePath)
+        {
+            if (File.Exists(Properties.Settings.Default.OutputPath + "\\vgmstream\\test.exe"))
+            {
+                Directory.CreateDirectory(Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\");
+                File.WriteAllBytes(Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\" + selectedItem.Content, selectedItem.Data);
+
+                wavFilePath = Path.ChangeExtension(Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\" + selectedItem.Content, ".wav");
+                var vgmstream = Process.Start(new ProcessStartInfo
+                {
+                    FileName = Properties.Settings.Default.OutputPath + "\\vgmstream\\test.exe",
+                    Arguments = $"-o \"{wavFilePath}\" \"{Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\" + selectedItem.Content}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
+                });
+                vgmstream.WaitForExit();
+
+                ListBoxVm.soundFiles.Remove(selectedItem);
+                File.Delete(Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\" + selectedItem.Content);
+
+                return vgmstream.ExitCode == 0 && File.Exists(wavFilePath);
+            }
+            wavFilePath = string.Empty;
+            return false;
         }
     }
 }

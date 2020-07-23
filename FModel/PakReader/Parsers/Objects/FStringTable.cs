@@ -19,7 +19,7 @@ namespace PakReader.Parsers.Objects
             };
 
             int NumEntries = reader.ReadInt32();
-            for (int i = 0; i < NumEntries; i++)
+            for (int i = 0; i < NumEntries; ++i)
             {
                 string key = reader.ReadFString();
                 KeysToMetadata[TableNamespace].Add(key, Localizations.GetLocalization(TableNamespace, key, reader.ReadFString()));

@@ -12,7 +12,11 @@ namespace PakReader.Parsers.Objects
         internal FSoftObjectPath(PackageReader reader)
         {
             AssetPathName = reader.ReadFName();
-            SubPathString = reader.ReadFString();
+            SubPathString = string.Empty;
+            if (FModel.Globals.Game.Version >= EPakVersion.RELATIVE_CHUNK_OFFSETS)
+            {
+                SubPathString = reader.ReadFString();
+            }
         }
 
         public Dictionary<string, string> GetValue()

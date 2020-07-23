@@ -35,14 +35,19 @@ namespace FModel.Creator.Icons
         {
             if (obj != null)
             {
-                if (hightRes && obj.TryGetValue("LargePreviewImage", out var sLarge) && sLarge is SoftObjectProperty largePreviewImage)
+                if (hightRes && obj.TryGetValue("LargePreviewImage", out var sLarge) && sLarge is SoftObjectProperty largePreviewImage && !string.IsNullOrEmpty(largePreviewImage.Value.AssetPathName.String))
                 {
                     GetPreviewImage(icon, largePreviewImage);
                     return true;
                 }
-                else if (obj.TryGetValue("SmallPreviewImage", out var sSmall) && sSmall is SoftObjectProperty smallPreviewImage)
+                else if (obj.TryGetValue("SmallPreviewImage", out var sSmall1) && sSmall1 is SoftObjectProperty smallPreviewImage1 && !string.IsNullOrEmpty(smallPreviewImage1.Value.AssetPathName.String))
                 {
-                    GetPreviewImage(icon, smallPreviewImage);
+                    GetPreviewImage(icon, smallPreviewImage1);
+                    return true;
+                }
+                else if (obj.TryGetValue("SmallPreviewImage", out var sSmall2) && sSmall2 is ObjectProperty smallPreviewImage2 && !string.IsNullOrEmpty(smallPreviewImage2.Value.Resource.OuterIndex.Resource.ObjectName.String))
+                {
+                    icon.IconImage = Utils.GetObjectTexture(smallPreviewImage2);
                     return true;
                 }
             }
