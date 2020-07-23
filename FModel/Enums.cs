@@ -43,7 +43,6 @@
     {
         English,
         French,
-        AustralianEnglish,
         German,
         Italian,
         Spanish,
@@ -56,7 +55,8 @@
         Russian,
         Turkish,
         Chinese,
-        TraditionalChinese
+        TraditionalChinese,
+        AustralianEnglish
     }
 
     public enum EJsonType: long

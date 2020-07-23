@@ -1,33 +1,32 @@
-﻿using FModel.Creator.Bundles;
-using FModel.Creator.Fortnite;
+﻿using FModel.Creator.Bases;
+using FModel.Creator.Bundles;
 using FModel.Creator.Icons;
 using FModel.Creator.Rarities;
 using FModel.Creator.Stats;
 using FModel.Creator.Texts;
 using FModel.ViewModels.ImageBox;
 using PakReader.Parsers.Class;
+using PakReader.Parsers.Objects;
 using SkiaSharp;
 using System.IO;
 
 namespace FModel.Creator
 {
-    static class FortniteCreator
+    static class Creator
     {
         /// <summary>
-        /// we draw based on the fist export type of the asset, no need to check others it's a waste of time
         /// i don't cache images because i don't wanna store a lot of SKCanvas in the memory
         /// </summary>
         /// <returns>true if an icon has been drawn</returns>
-        public static bool TryDrawFortniteIcon(string assetPath, string exportType, IUExport export)
+        public static bool TryDrawIcon(string assetPath, FName[] exportTypes, IUExport[] exports)
         {
             var d = new DirectoryInfo(assetPath);
             string assetName = d.Name;
             string assetFolder = d.Parent.Name;
-            if (Text.TypeFaces.NeedReload(false))
-                Text.TypeFaces = new Typefaces(); // when opening bundle creator settings without loading paks first
+            if (Text.TypeFaces.NeedReload(false)) Text.TypeFaces = new Typefaces(); // when opening bundle creator settings without loading paks first
 
-            // please respect my wave if you wanna add a new exportType
-            // Athena first, then Fort, thank you
+            int index = Globals.Game.ActualGame == EGame.Valorant ? 1 : 0;
+            string exportType = exportTypes.Length > index ? exportTypes[index].String : string.Empty;
             switch (exportType)
             {
                 case "AthenaConsumableEmoteItemDefinition":
@@ -91,7 +90,7 @@ namespace FModel.Creator
                 case "FortWeaponMeleeDualWieldItemDefinition":
                 case "FortDailyRewardScheduleTokenDefinition":
                     {
-                        BaseIcon icon = new BaseIcon(export, exportType, ref assetName);
+                        BaseIcon icon = new BaseIcon(exports[index], exportType, ref assetName);
                         int height = icon.Size + icon.AdditionalSize;
                         using (var ret = new SKBitmap(icon.Size, height, SKColorType.Rgba8888, SKAlphaType.Premul))
                         using (var c = new SKCanvas(ret))
@@ -133,7 +132,7 @@ namespace FModel.Creator
                     }
                 case "FortMtxOfferData":
                     {
-                        BaseOffer icon = new BaseOffer(export);
+                        BaseOffer icon = new BaseOffer(exports[index]);
                         using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Premul))
                         using (var c = new SKCanvas(ret))
                         {
@@ -154,7 +153,7 @@ namespace FModel.Creator
                         using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Opaque))
                         using (var c = new SKCanvas(ret))
                         {
-                            Serie.GetRarity(icon, export);
+                            Serie.GetRarity(icon, exports[index]);
                             Rarity.DrawRarity(c, icon);
 
                             Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
@@ -173,7 +172,7 @@ namespace FModel.Creator
                 case "PlaylistUserOptionPrimaryAsset":
                 case "PlaylistUserOptionCollisionProfileEnum":
                     {
-                        BaseUserOption icon = new BaseUserOption(export);
+                        BaseUserOption icon = new BaseUserOption(exports[index]);
                         using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Opaque))
                         using (var c = new SKCanvas(ret))
                         {
@@ -186,7 +185,7 @@ namespace FModel.Creator
                     }
                 case "FortChallengeBundleItemDefinition":
                     {
-                        BaseBundle icon = new BaseBundle(export, assetFolder);
+                        BaseBundle icon = new BaseBundle(exports[index], assetFolder);
                         using (var ret = new SKBitmap(icon.Width, icon.HeaderHeight + icon.AdditionalSize, SKColorType.Rgba8888, SKAlphaType.Opaque))
                         using (var c = new SKCanvas(ret))
                         {
@@ -195,6 +194,46 @@ namespace FModel.Creator
                             QuestStyle.DrawQuests(c, icon);
                             QuestStyle.DrawCompletionRewards(c, icon);
 
+                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                        }
+                        return true;
+                    }
+                case "MapUIData":
+                    {
+                        BaseMapUIData icon = new BaseMapUIData(exports[index]);
+                        using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                        using (var c = new SKCanvas(ret))
+                        {
+                            icon.Draw(c);
+                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                        }
+                        return true;
+                    }
+                case "ArmorUIData":
+                case "SprayUIData":
+                case "ThemeUIData":
+                case "ContractUIData":
+                case "CurrencyUIData":
+                case "GameModeUIData":
+                case "CharacterUIData":
+                case "SprayLevelUIData":
+                case "EquippableUIData":
+                case "PlayerCardUIData":
+                case "Gun_UIData_Base_C":
+                case "CharacterRoleUIData":
+                case "EquippableSkinUIData":
+                case "EquippableCharmUIData":
+                case "EquippableSkinLevelUIData":
+                case "EquippableSkinChromaUIData":
+                case "EquippableCharmLevelUIData":
+                    {
+                        BaseUIData icon = new BaseUIData(exports, index);
+                        using (var ret = new SKBitmap(icon.Width + icon.AdditionalWidth, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                        using (var c = new SKCanvas(ret))
+                        {
+                            icon.Draw(c);
+
+                            Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
                             ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                         }
                         return true;

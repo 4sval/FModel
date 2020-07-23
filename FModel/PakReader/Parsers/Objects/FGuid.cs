@@ -58,6 +58,6 @@ namespace PakReader.Parsers.Objects
         public static bool operator !=(FGuid left, FGuid right) => !left.Equals(right);
 
         // TODO: maybe make this more performant?
-        public override string ToString() => $"{A}-{B}-{C}-{D}";
+        public override string ToString() => $"{A:X8}{B:X8}{C:X8}{D:X8}";
     }
 }

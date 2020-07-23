@@ -6,5 +6,7 @@ namespace FModel.Creator.Stats
     {
         public SKBitmap Icon;
         public string Description;
+        public string DisplayName;
+        public int Height;
     }
 }

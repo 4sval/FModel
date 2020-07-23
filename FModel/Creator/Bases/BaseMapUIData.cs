@@ -3,7 +3,7 @@ using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 
-namespace FModel.Creator.Valorant
+namespace FModel.Creator.Bases
 {
     public class BaseMapUIData
     {

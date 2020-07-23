@@ -5,7 +5,7 @@ using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using System.Collections.Generic;
 
-namespace FModel.Creator.Fortnite
+namespace FModel.Creator.Bases
 {
     public class BaseBundle
     {

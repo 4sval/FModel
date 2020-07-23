@@ -1,4 +1,4 @@
-﻿using FModel.Creator.Fortnite;
+﻿using FModel.Creator.Bases;
 using PakReader.Pak;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.Objects;

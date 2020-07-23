@@ -1,5 +1,5 @@
 ﻿using FModel.Creator.Bundles;
-using FModel.Creator.Fortnite;
+using FModel.Creator.Bases;
 using FModel.Logger;
 using FModel.Windows.ColorPicker;
 using Microsoft.Win32;
