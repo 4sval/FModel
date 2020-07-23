@@ -22,9 +22,11 @@ namespace FModel.Creator.Rarities
                     switch (e?.Value.String)
                     {
                         case "EFortRarity::Common":
+                        case "EFortRarity::Handmade":
                             rarity = EFortRarity.Common;
                             break;
                         case "EFortRarity::Rare":
+                        case "EFortRarity::Sturdy":
                             rarity = EFortRarity.Rare;
                             break;
                         case "EFortRarity::Epic":
@@ -32,12 +34,15 @@ namespace FModel.Creator.Rarities
                             rarity = EFortRarity.Epic;
                             break;
                         case "EFortRarity::Legendary":
+                        case "EFortRarity::Fine":
                             rarity = EFortRarity.Legendary;
                             break;
                         case "EFortRarity::Mythic":
+                        case "EFortRarity::Elegant":
                             rarity = EFortRarity.Mythic;
                             break;
                         case "EFortRarity::Transcendent":
+                        case "EFortRarity::Masterwork":
                             rarity = EFortRarity.Transcendent;
                             break;
                         case "EFortRarity::Unattainable":
@@ -65,10 +70,12 @@ namespace FModel.Creator.Rarities
             switch (e?.Value.String)
             {
                 case "EFortRarity::Common":
+                case "EFortRarity::Handmade":
                     icon.RarityBackgroundColors = new SKColor[2] { SKColor.Parse("6D6D6D"), SKColor.Parse("333333") };
                     icon.RarityBorderColor = new SKColor[2] { SKColor.Parse("9E9E9E"), SKColor.Parse("9E9E9E") };
                     break;
                 case "EFortRarity::Rare":
+                case "EFortRarity::Sturdy":
                     icon.RarityBackgroundColors = new SKColor[2] { SKColor.Parse("3669BB"), SKColor.Parse("133254") };
                     icon.RarityBorderColor = new SKColor[2] { SKColor.Parse("5180EE"), SKColor.Parse("5180EE") };
                     break;
@@ -78,14 +85,17 @@ namespace FModel.Creator.Rarities
                     icon.RarityBorderColor = new SKColor[2] { SKColor.Parse("B251ED"), SKColor.Parse("B251ED") };
                     break;
                 case "EFortRarity::Legendary":
+                case "EFortRarity::Fine":
                     icon.RarityBackgroundColors = new SKColor[2] { SKColor.Parse("C06A38"), SKColor.Parse("5C2814") };
                     icon.RarityBorderColor = new SKColor[2] { SKColor.Parse("EC9650"), SKColor.Parse("EC9650") };
                     break;
                 case "EFortRarity::Mythic":
+                case "EFortRarity::Elegant":
                     icon.RarityBackgroundColors = new SKColor[2] { SKColor.Parse("BA9C36"), SKColor.Parse("594415") };
                     icon.RarityBorderColor = new SKColor[2] { SKColor.Parse("EED951"), SKColor.Parse("EED951") };
                     break;
                 case "EFortRarity::Transcendent":
+                case "EFortRarity::Masterwork":
                     icon.RarityBackgroundColors = new SKColor[2] { SKColor.Parse("D51944"), SKColor.Parse("660522") };
                     icon.RarityBorderColor = new SKColor[2] { SKColor.Parse("FF3F58"), SKColor.Parse("FF3F58") };
                     break;
