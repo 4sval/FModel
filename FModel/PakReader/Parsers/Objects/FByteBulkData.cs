@@ -17,29 +17,28 @@ namespace PakReader.Parsers.Objects
             Data = null;
             if ((BulkDataFlags & 0x20) != 0 || ElementCount == 0)
                 return;
-            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadAtEndOfFile) != 0)
-            {
-                long rememberMe = reader.BaseStream.Position;
-                if (BulkDataOffsetInFile + ElementCount <= reader.BaseStream.Length)
-                {
-                    reader.BaseStream.Seek(BulkDataOffsetInFile, SeekOrigin.Begin);
-                    Data = reader.ReadBytes(ElementCount);
-                }
-                reader.BaseStream.Seek(rememberMe, SeekOrigin.Begin);
-            }
             if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_OptionalPayload) != 0) //.uptnl
                 return;
-            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_ForceInlinePayload) != 0) //.uexp
-                Data = reader.ReadBytes(ElementCount);
-            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadInSeperateFile) != 0) //.ubulk
+
+            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadAtEndOfFile) != 0 &&
+                BulkDataOffsetInFile > 0 && ElementCount > 0 &&
+                BulkDataOffsetInFile + ElementCount <= reader.BaseStream.Length) //.uasset
             {
-                if (ubulk != null)
-                {
-                    ubulk.Position = BulkDataOffsetInFile + ubulkOffset;
-                    Data = new byte[ElementCount];
-                    ubulk.Read(Data, 0, (int)ElementCount);
-                }
-                //else throw new FileLoadException("No ubulk specified for texture");
+                long rememberMe = reader.BaseStream.Position;
+                reader.BaseStream.Seek(BulkDataOffsetInFile, SeekOrigin.Begin);
+                Data = reader.ReadBytes(ElementCount);
+                reader.BaseStream.Seek(rememberMe, SeekOrigin.Begin);
+            }
+            else if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_ForceInlinePayload) != 0) //.uexp
+            {
+                Data = reader.ReadBytes(ElementCount);
+            }
+            else if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadInSeperateFile) != 0 &&
+                ubulk != null && BulkDataOffsetInFile + ubulkOffset >= 0) //.ubulk
+            {
+                ubulk.Position = BulkDataOffsetInFile + ubulkOffset;
+                Data = new byte[ElementCount];
+                ubulk.Read(Data, 0, (int)ElementCount);
             }
         }
     }

@@ -154,6 +154,11 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="{x:Static properties:Resources.Help}">
+                <MenuItem x:Name="FModel_MI_Help_Trello" Header="{x:Static properties:Resources.Trello}" Click="FModel_MI_Help_Trello_Click">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/trello.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem x:Name="FModel_MI_Help_Donate" Header="{x:Static properties:Resources.Donate}" Click="FModel_MI_Help_Donate_Click">
                     <MenuItem.Icon>
                         <Image Source="Resources/paypal.png"/>
@@ -167,11 +172,6 @@
                 <MenuItem x:Name="FModel_MI_Help_BugsReport" Header="{x:Static properties:Resources.BugsReport}" Click="FModel_MI_Help_BugsReport_Click">
                     <MenuItem.Icon>
                         <Image Source="Resources/bug.png"/>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="FModel_MI_Help_Trello" Header="{x:Static properties:Resources.Trello}" Click="FModel_MI_Help_Trello_Click">
-                    <MenuItem.Icon>
-                        <Image Source="Resources/trello.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Help_Discord" Header="{x:Static properties:Resources.DiscordServer}" Click="FModel_MI_Help_Discord_Click">
