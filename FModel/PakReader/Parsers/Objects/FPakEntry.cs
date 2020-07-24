@@ -253,6 +253,7 @@ namespace PakReader.Parsers.Objects
             int stop = Name.LastIndexOf(".") - start;
             return Name.Substring(start, stop);
         }
+        public string GetFirstFolder() => Name.Substring(Name.StartsWith('/') ? 1 : 0, Name.IndexOf('/'));
 
         public override string ToString() => Name;
     }

@@ -267,7 +267,7 @@ namespace FModel.Utils
                             ((AudioPlayer)FWindows.GetOpenedWindow<Window>(Properties.Resources.AudioPlayer)).LoadFiles(new Dictionary<string, byte[]>(1) { { entry.GetNameWithoutExtension() + "." + s.AudioFormat.String.ToLowerInvariant(), s.Sound } }, entry.GetPathWithoutFile());
                     });
                 }
-                else if (s != null) // ADPCM and others
+                else if (s != null)
                 {
                     string path = Properties.Settings.Default.OutputPath + "\\Sounds\\" + mount + entry.GetPathWithoutExtension() + "." + s.AudioFormat.String.ToLowerInvariant();
                     Directory.CreateDirectory(Path.GetDirectoryName(path));

@@ -179,8 +179,7 @@ namespace FModel.Utils
                 return string.Empty;
         }
 
-        public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files,
-            string mount)
+        public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files, string mount)
         {
             files = new Dictionary<string, FPakEntry>();
             foreach (FPakEntry entry in tempFiles.Values)
@@ -226,6 +225,8 @@ namespace FModel.Utils
                 }
 
                 files[mount + entry.GetPathWithoutExtension()] = entry;
+                if (Globals.Game.ActualGame == EGame.Unknown)
+                    Folders.SetGameName((mount.Length == 1 ? entry.GetFirstFolder() : mount) + "\\Content\\Paks");
             }
         }
 

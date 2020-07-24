@@ -112,6 +112,6 @@ namespace FModel.ViewModels.MenuItem
         public static IEnumerable<PakFileReader> GetPakFileReaders(this ObservableCollection<dynamic> o) =>
             Application.Current.Dispatcher.Invoke(() => o.GetMenuItemWithPakFiles().Select(x => x.PakFile));
         public static IEnumerable<PakFileReader> GetDynamicPakFileReaders(this ObservableCollection<dynamic> o) =>
-            Application.Current.Dispatcher.Invoke(() => o.GetPakFileReaders().Where(x => !x.Info.EncryptionKeyGuid.Equals(new FGuid(0u, 0u, 0u, 0u))));
+            Application.Current.Dispatcher.Invoke(() => o.GetPakFileReaders().Where(x => x.Info.bEncryptedIndex && !x.Info.EncryptionKeyGuid.Equals(new FGuid(0u, 0u, 0u, 0u))));
     }
 }

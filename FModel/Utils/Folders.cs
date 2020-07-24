@@ -1,9 +1,11 @@
 ﻿using FModel.Logger;
 using FModel.Windows.CustomNotifier;
+using Ionic.Zip;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace FModel.Utils
 {
@@ -88,6 +90,25 @@ namespace FModel.Utils
             Directory.CreateDirectory(Properties.Settings.Default.OutputPath + "\\JSONs\\");
             Directory.CreateDirectory(Properties.Settings.Default.OutputPath + "\\Sounds\\");
             Directory.CreateDirectory(Properties.Settings.Default.OutputPath + "\\Logs\\");
+        }
+
+        public static async Task DownloadAndExtractVgm()
+        {
+            if (!Directory.Exists(Properties.Settings.Default.OutputPath + "\\Vgm\\"))
+            {
+                DirectoryInfo vgm = Directory.CreateDirectory(Properties.Settings.Default.OutputPath + "\\Vgm\\");
+                vgm.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+
+                string zipFile = $"{vgm.FullName}test.zip";
+                using var client = new HttpClientDownloadWithProgress("https://github.com/losnoco/vgmstream/releases/latest/download/test.zip", zipFile);
+                await client.StartDownload().ConfigureAwait(false);
+                if (new FileInfo(zipFile).Length > 0)
+                {
+                    ZipFile zip = ZipFile.Read(zipFile);
+                    foreach (ZipEntry e in zip)
+                        e.Extract(vgm.FullName, ExtractExistingFileAction.OverwriteSilently);
+                }
+            }
         }
 
         public static void CheckWatermarks()

@@ -108,7 +108,7 @@ namespace FModel.ViewModels.MenuItem
                 Stopwatch downloadTimer = Stopwatch.StartNew();
                 StatusBarVm.statusBarViewModel.Set($"{Properties.Resources.Downloading} {Header}", Properties.Resources.Waiting);
 
-                string path = $"{Properties.Settings.Default.OutputPath}//Backups//{Header}";
+                string path = $"{Properties.Settings.Default.OutputPath}\\Backups\\{Header}";
                 using var client = new HttpClientDownloadWithProgress(DownloadUrl, path);
                 client.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) =>
                 {

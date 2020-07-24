@@ -281,7 +281,7 @@ namespace FModel.Windows.SoundPlayer
         /// </summary>
         private bool TryVGMStreamConvert(ListBoxViewModel2 selectedItem, out string wavFilePath)
         {
-            if (File.Exists(Properties.Settings.Default.OutputPath + "\\vgmstream\\test.exe"))
+            if (File.Exists(Properties.Settings.Default.OutputPath + "\\Vgm\\test.exe"))
             {
                 Directory.CreateDirectory(Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\");
                 File.WriteAllBytes(Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\" + selectedItem.Content, selectedItem.Data);
@@ -289,7 +289,7 @@ namespace FModel.Windows.SoundPlayer
                 wavFilePath = Path.ChangeExtension(Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\" + selectedItem.Content, ".wav");
                 var vgmstream = Process.Start(new ProcessStartInfo
                 {
-                    FileName = Properties.Settings.Default.OutputPath + "\\vgmstream\\test.exe",
+                    FileName = Properties.Settings.Default.OutputPath + "\\Vgm\\test.exe",
                     Arguments = $"-o \"{wavFilePath}\" \"{Properties.Settings.Default.OutputPath + "\\Sounds\\" + selectedItem.Folder + "\\" + selectedItem.Content}\"",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,

@@ -4,12 +4,6 @@ namespace PakReader.Parsers.Objects
 {
     public readonly struct FByteBulkData : IUStruct
     {
-        // Memory saving, we don't need this
-        //uint BulkDataFlags;
-        //long ElementCount;
-        //long BulkDataOffsetInFile;
-        //long BulkDataSizeOnDisk;
-
         public readonly byte[] Data;
 
         internal FByteBulkData(BinaryReader reader, Stream ubulk, long ubulkOffset)
@@ -21,12 +15,23 @@ namespace PakReader.Parsers.Objects
             var BulkDataOffsetInFile = reader.ReadInt64();
 
             Data = null;
-            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_ForceInlinePayload) != 0 && ElementCount > 0)
+            if ((BulkDataFlags & 0x20) != 0 || ElementCount == 0)
+                return;
+            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadAtEndOfFile) != 0)
             {
-                Data = reader.ReadBytes((int)ElementCount);
+                long rememberMe = reader.BaseStream.Position;
+                if (BulkDataOffsetInFile + ElementCount <= reader.BaseStream.Length)
+                {
+                    reader.BaseStream.Seek(BulkDataOffsetInFile, SeekOrigin.Begin);
+                    Data = reader.ReadBytes(ElementCount);
+                }
+                reader.BaseStream.Seek(rememberMe, SeekOrigin.Begin);
             }
-            
-            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadInSeperateFile) != 0)
+            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_OptionalPayload) != 0) //.uptnl
+                return;
+            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_ForceInlinePayload) != 0) //.uexp
+                Data = reader.ReadBytes(ElementCount);
+            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadInSeperateFile) != 0) //.ubulk
             {
                 if (ubulk != null)
                 {

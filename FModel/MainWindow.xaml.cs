@@ -93,6 +93,7 @@ namespace FModel
             if (Properties.Settings.Default.UseDiscordRpc) DiscordIntegration.StartClient();
             await AesGrabber.Load(Properties.Settings.Default.ReloadAesKeys).ConfigureAwait(false);
             await CdnDataGrabber.DoCDNStuff().ConfigureAwait(false);
+            await Folders.DownloadAndExtractVgm().ConfigureAwait(false);
         }
 
         private void AeConfiguration()
