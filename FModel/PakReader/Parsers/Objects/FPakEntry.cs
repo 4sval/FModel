@@ -71,7 +71,7 @@ namespace PakReader.Parsers.Objects
                 else
                     CompressionMethodIndex = reader.ReadUInt32();
             }
-            if (Version <= EPakVersion.INITIAL) reader.ReadInt64(); // Timestamp
+            if (Version < EPakVersion.NO_TIMESTAMPS) reader.ReadInt64(); // Timestamp
             reader.ReadBytes(20); // Hash
             if (Version >= EPakVersion.COMPRESSION_ENCRYPTION)
             {

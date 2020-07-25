@@ -46,8 +46,12 @@ namespace FModel.Grabber.Paks
                         if (!Utils.Paks.IsFileReadLocked(new FileInfo(paks[i])))
                         {
                             PakFileReader pakFile = new PakFileReader(paks[i]);
-                            if (i == 0) Globals.Game.Version = pakFile.Info.Version;
                             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Registering]", $"{pakFile.FileName} with GUID {pakFile.Info.EncryptionKeyGuid.Hex}");
+                            if (i == 0)
+                            {
+                                Globals.Game.Version = pakFile.Info.Version;
+                                Globals.Game.SubVersion = pakFile.Info.SubVersion;
+                            }
 
                             Application.Current.Dispatcher.Invoke(delegate
                             {

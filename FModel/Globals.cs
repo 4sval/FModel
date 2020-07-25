@@ -24,7 +24,7 @@ namespace FModel
         });
         public static bool bSearch = false; // trigger the event to select a file thank to the search window
         public static string sSearch = string.Empty; // this will be the file name triggered
-        public static FGame Game = new FGame(EGame.Unknown, EPakVersion.LATEST);
+        public static FGame Game = new FGame(EGame.Unknown, EPakVersion.LATEST, 0);
         public const EFModel Build =
 #if RELEASE
             EFModel.Release;
@@ -39,11 +39,13 @@ namespace FModel
     {
         public EGame ActualGame;
         public EPakVersion Version;
+        public int SubVersion;
 
-        public FGame(EGame game, EPakVersion version)
+        public FGame(EGame game, EPakVersion version, int subVersion)
         {
             ActualGame = game;
             Version = version;
+            SubVersion = subVersion;
         }
 
         public string GetName()

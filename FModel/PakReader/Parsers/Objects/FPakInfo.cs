@@ -20,29 +20,29 @@ namespace PakReader.Parsers.Objects
         public readonly string[] CompressionMethods;    // 160 bytes
                                                         // 221 bytes total
 
-        internal const long SERIALIZED_SIZE = 4 * 2 + 8 * 2 + 20 + /* new fields */ 1 + 16;
+        internal const long _SIZE = 4 * 2 + 8 * 2 + 20 + 1 + 16;
+        internal const long _SIZE8 = _SIZE + 4 * 32;
+        internal const long _SIZE8A = _SIZE8 + 32;
+        internal const long _SIZE9 = _SIZE8A + 1;
 
         internal FPakInfo ReadPakInfo(BinaryReader reader)
         {
-            long offset = reader.BaseStream.Length - SERIALIZED_SIZE;
-            long terminator = offset - 300;
-            int maxNumCompressionMethods = 0;
-            while (offset > terminator)
+            long fileSize = reader.BaseStream.Length;
+            long[] OffsetsToTry = new long[4] { _SIZE, _SIZE8, _SIZE8A, _SIZE9 };
+            for (int i = 0; i < OffsetsToTry.Length; i++)
             {
-                reader.BaseStream.Seek(offset, SeekOrigin.Begin);
-                FPakInfo info = new FPakInfo(reader, maxNumCompressionMethods);
-                if (info.Version != EPakVersion.INVALID)
-                    return info;
-                else
+                if (fileSize - OffsetsToTry[i] > 0)
                 {
-                    offset -= COMPRESSION_METHOD_NAME_LEN;
-                    maxNumCompressionMethods++;
+                    reader.BaseStream.Seek(fileSize - OffsetsToTry[i], SeekOrigin.Begin);
+                    FPakInfo info = new FPakInfo(reader, OffsetsToTry[i]);
+                    if (info.Version != EPakVersion.INVALID)
+                        return info;
                 }
             }
             return default;
         }
 
-        internal FPakInfo(BinaryReader reader, int maxNumCompressionMethods)
+        internal FPakInfo(BinaryReader reader, long offset)
         {
             // Serialize if version is at least EPakVersion.ENCRYPTION_KEY_GUID
             EncryptionKeyGuid = new FGuid(reader);
@@ -62,15 +62,12 @@ namespace PakReader.Parsers.Objects
             }
 
             Version = (EPakVersion)reader.ReadInt32();
-            int b;
-            if (maxNumCompressionMethods == 5 && Version == EPakVersion.FNAME_BASED_COMPRESSION_METHOD) // UE4.23
-                b = (((int)Version) << 4) | (1);
-            else
-                b = (((int)Version) << 4) | (0);
-            SubVersion = b & 15;
+            SubVersion = (offset == _SIZE8A && Version == EPakVersion.FNAME_BASED_COMPRESSION_METHOD) ? 1 : 0;
             IndexOffset = reader.ReadInt64();
             IndexSize = reader.ReadInt64();
             IndexHash = new FSHAHash(reader);
+            if (Version == EPakVersion.FROZEN_INDEX)
+                reader.ReadByte(); // bIndexIsFrozen
 
             if (Version < EPakVersion.FNAME_BASED_COMPRESSION_METHOD)
             {
@@ -78,10 +75,10 @@ namespace PakReader.Parsers.Objects
             }
             else
             {
-                int BufferSize = COMPRESSION_METHOD_NAME_LEN * maxNumCompressionMethods;
+                int BufferSize = COMPRESSION_METHOD_NAME_LEN * 4;
                 byte[] Methods = reader.ReadBytes(BufferSize);
-                var MethodList = new List<string>(maxNumCompressionMethods);
-                for (int i = 0; i < maxNumCompressionMethods; i++)
+                var MethodList = new List<string>(4);
+                for (int i = 0; i < 4; i++)
                 {
                     if (Methods[i*COMPRESSION_METHOD_NAME_LEN] != 0)
                     {
@@ -90,6 +87,11 @@ namespace PakReader.Parsers.Objects
                 }
                 CompressionMethods = MethodList.ToArray();
             }
+
+            if (Version < EPakVersion.INDEX_ENCRYPTION)
+                bEncryptedIndex = false;
+            if (Version < EPakVersion.ENCRYPTION_KEY_GUID)
+                EncryptionKeyGuid = new FGuid(0u, 0u, 0u, 0u);
         }
     }
 }
