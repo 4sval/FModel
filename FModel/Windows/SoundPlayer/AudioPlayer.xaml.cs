@@ -182,6 +182,11 @@ namespace FModel.Windows.SoundPlayer
                     output.Resume();
                     PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/pause.png"));
                 }
+                else if (output.IsStopped)
+                {
+                    output.Play();
+                    PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/pause.png"));
+                }
             }
             else
             {
@@ -232,6 +237,7 @@ namespace FModel.Windows.SoundPlayer
                 case ESourceProperty.PlaybackState:
                     if (output != null && output.Position == output.Length && (PlaybackState)e.Value == PlaybackState.Stopped)
                     {
+                        output.Stop();
                         Application.Current.Dispatcher.Invoke(delegate
                         {
                             PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/play.png"));

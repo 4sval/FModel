@@ -46,7 +46,7 @@ namespace FModel.Utils
                         Properties.Resources.No);
 
                     if (dialogResult == MessageBoxResult.Yes)
-                        new ProcessStartInfo { FileName = args.ChangelogURL, UseShellExecute = true };
+                        Process.Start(new ProcessStartInfo { FileName = args.ChangelogURL, UseShellExecute = true });
 
                     if (dialogResult == MessageBoxResult.Yes || dialogResult == MessageBoxResult.No || dialogResult == MessageBoxResult.OK)
                     {

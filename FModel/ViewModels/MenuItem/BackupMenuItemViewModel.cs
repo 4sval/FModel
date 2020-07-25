@@ -160,38 +160,38 @@ namespace FModel.ViewModels.MenuItem
                         StatusBarVm.statusBarViewModel.Set(string.Format(Properties.Resources.MountedPakTo, pakFile.FileName, pakFile.MountPoint), Properties.Resources.Loading);
                     }
                     
-                    foreach (var entry in pakFile)
+                    foreach (var (_, entry) in pakFile)
                     {
                         // uasset or umap or idk
-                        writer.Write(entry.Value.Offset);
-                        writer.Write(entry.Value.Size);
-                        writer.Write(entry.Value.UncompressedSize);
-                        writer.Write(entry.Value.Encrypted);
-                        writer.Write(entry.Value.StructSize);
-                        writer.Write(pakFile.MountPoint + entry.Value.Name);
-                        writer.Write(entry.Value.CompressionMethodIndex);
+                        writer.Write(entry.Offset);
+                        writer.Write(entry.Size);
+                        writer.Write(entry.UncompressedSize);
+                        writer.Write(entry.Encrypted);
+                        writer.Write(entry.StructSize);
+                        writer.Write(pakFile.MountPoint + entry.Name);
+                        writer.Write(entry.CompressionMethodIndex);
 
                         // uexp
-                        if (entry.Value.Uexp != null)
+                        if (entry.Uexp != null)
                         {
-                            writer.Write(entry.Value.Uexp.Offset);
-                            writer.Write(entry.Value.Uexp.Size);
-                            writer.Write(entry.Value.Uexp.UncompressedSize);
-                            writer.Write(entry.Value.Uexp.Encrypted);
-                            writer.Write(entry.Value.Uexp.StructSize);
-                            writer.Write(pakFile.MountPoint + entry.Value.Uexp.Name);
-                            writer.Write(entry.Value.Uexp.CompressionMethodIndex);
+                            writer.Write(entry.Uexp.Offset);
+                            writer.Write(entry.Uexp.Size);
+                            writer.Write(entry.Uexp.UncompressedSize);
+                            writer.Write(entry.Uexp.Encrypted);
+                            writer.Write(entry.Uexp.StructSize);
+                            writer.Write(pakFile.MountPoint + entry.Uexp.Name);
+                            writer.Write(entry.Uexp.CompressionMethodIndex);
                         }
                         // ubulk
-                        if (entry.Value.Ubulk != null)
+                        if (entry.Ubulk != null)
                         {
-                            writer.Write(entry.Value.Ubulk.Offset);
-                            writer.Write(entry.Value.Ubulk.Size);
-                            writer.Write(entry.Value.Ubulk.UncompressedSize);
-                            writer.Write(entry.Value.Ubulk.Encrypted);
-                            writer.Write(entry.Value.Ubulk.StructSize);
-                            writer.Write(pakFile.MountPoint + entry.Value.Ubulk.Name);
-                            writer.Write(entry.Value.Ubulk.CompressionMethodIndex);
+                            writer.Write(entry.Ubulk.Offset);
+                            writer.Write(entry.Ubulk.Size);
+                            writer.Write(entry.Ubulk.UncompressedSize);
+                            writer.Write(entry.Ubulk.Encrypted);
+                            writer.Write(entry.Ubulk.StructSize);
+                            writer.Write(pakFile.MountPoint + entry.Ubulk.Name);
+                            writer.Write(entry.Ubulk.CompressionMethodIndex);
                         }
                     }
                 }
