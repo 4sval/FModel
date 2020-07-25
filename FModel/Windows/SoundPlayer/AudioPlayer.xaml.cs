@@ -261,11 +261,13 @@ namespace FModel.Windows.SoundPlayer
             {
                 // vgmstream convert on select
                 if (string.IsNullOrEmpty(selectedItem.FullPath) && selectedItem.Data != null)
+                {
                     if (TryVGMStreamConvert(selectedItem, out string wavFile))
                     {
                         _oldPlayedSound = wavFile;
                         LoadFile(wavFile);
                     }
+                }
                 else if (!_oldPlayedSound.Equals(selectedItem.FullPath))
                     _oldPlayedSound = selectedItem.FullPath;
 
