@@ -4,7 +4,6 @@ using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace FModel.Creator.Bases
 {
@@ -16,7 +15,7 @@ namespace FModel.Creator.Bases
             FilterQuality = SKFilterQuality.High,
             Typeface = Text.TypeFaces.DescriptionTypeface,
             TextSize = 19.5f,
-            Color = SKColors.White,
+            Color = SKColor.Parse("939498"),
         };
 
         public SKBitmap IconImage;
@@ -96,28 +95,10 @@ namespace FModel.Creator.Bases
 
         public void Draw(SKCanvas c)
         {
-            float textSize = 67.5f;
-            SKPaint namePaint = new SKPaint
-            {
-                IsAntialias = true,
-                FilterQuality = SKFilterQuality.High,
-                Typeface = Text.TypeFaces.DisplayNameTypeface,
-                TextSize = textSize,
-                Color = SKColors.White,
-                TextAlign = SKTextAlign.Left,
-            };
+            DrawCenteredTitle(c, DisplayName, 67.5f, out var textSize);
 
-            // resize if too long
-            while (namePaint.MeasureText(DisplayName) > Width)
-            {
-                namePaint.TextSize = textSize -= 2;
-            }
-
-            c.DrawText(DisplayName, Margin, Margin + textSize, namePaint);
-
-            // wrap if too long
-            Helper.DrawMultilineText(c, Description, Width, Margin, ETextSide.Left,
-                new SKRect(Margin, textSize + 37.5f, Width - Margin, Height - 37.5f), descriptionPaint, out var yPos);
+            Helper.DrawMultilineText(c, Description, Width, Margin, ETextSide.Center,
+                new SKRect(Margin, textSize + 56.25f, Width - Margin, Height - 37.5f), descriptionPaint, out var yPos);
 
             if (IconImage != null)
                 c.DrawBitmap(IconImage, new SKRect(0, yPos, Width, Height),
@@ -128,7 +109,7 @@ namespace FModel.Creator.Bases
             {
                 int xToAdd = ability.Icon != null ? ability.Icon.Width : 0;
                 textSize = 42.5f;
-                namePaint = new SKPaint
+                var namePaint = new SKPaint
                 {
                     IsAntialias = true,
                     FilterQuality = SKFilterQuality.High,
@@ -155,6 +136,42 @@ namespace FModel.Creator.Bases
 
                 yaPos += ability.Height + 48 + (Margin * 2);
             }
+        }
+
+        private void DrawCenteredTitle(SKCanvas c, string title, float textSize, out float outTextSize)
+        {
+            SKPaint namePaint = new SKPaint
+            {
+                IsAntialias = true,
+                FilterQuality = SKFilterQuality.High,
+                Typeface = Text.TypeFaces.DisplayNameTypeface,
+                TextSize = textSize,
+                Color = SKColors.White,
+                TextAlign = SKTextAlign.Center,
+            };
+            float textWidth = namePaint.MeasureText(title);
+            while (textWidth > Width) // resize if too long
+            {
+                namePaint.TextSize = textSize -= 2;
+                textWidth = namePaint.MeasureText(title);
+            }
+            outTextSize = textSize;
+
+            float x1 = (Width / 2 - (textWidth / 2)) - 20;
+            float x2 = (x1 + textWidth) + 40;
+            float y1 = Margin + 5;
+            float y2 = Margin + namePaint.TextSize + 10;
+
+            c.DrawLine(new SKPoint(30, y1 + 5 + (namePaint.TextSize / 2)), new SKPoint(x1 - 30, y1 + 5 + (namePaint.TextSize / 2)), new SKPaint { Color = SKColor.Parse("E2E8E6") });
+            c.DrawLine(new SKPoint(x2 + 30, y1 + 5 + (namePaint.TextSize / 2)), new SKPoint(Width - 30, y1 + 5 + (namePaint.TextSize / 2)), new SKPaint { Color = SKColor.Parse("E2E8E6") });
+
+            c.DrawLine(new SKPoint(x1, y1), new SKPoint(x2, y1), new SKPaint { Color = SKColor.Parse("E2E8E6") }); // top
+            c.DrawLine(new SKPoint(x1, y2 + 5), new SKPoint(x2, y2 + 5), new SKPaint { Color = SKColor.Parse("E2E8E6") }); // bottom
+            c.DrawLine(new SKPoint(x1, y1), new SKPoint(x1, y2 + 5), new SKPaint { Color = SKColor.Parse("E2E8E6") }); // left
+            c.DrawLine(new SKPoint(x2, y1), new SKPoint(x2, y2 + 5), new SKPaint { Color = SKColor.Parse("E2E8E6") }); // right
+            c.DrawRect(new SKRect(x1 + 5, y1 + 5, x2 - 5, y2), new SKPaint { Color = SKColor.Parse("949598") });
+
+            c.DrawText(title, Width / 2, Margin + namePaint.TextSize, namePaint);
         }
     }
 }
