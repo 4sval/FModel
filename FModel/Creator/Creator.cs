@@ -7,7 +7,9 @@ using FModel.Creator.Texts;
 using FModel.ViewModels.ImageBox;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.Objects;
+using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
+using System.Diagnostics;
 using System.IO;
 
 namespace FModel.Creator
@@ -51,6 +53,7 @@ namespace FModel.Creator
                 case "FortTokenType":
                 case "FortAbilityKit":
                 case "FortWorkerType":
+                case "RewardGraphToken":
                 case "FortBannerTokenType":
                 case "FortVariantTokenType":
                 case "FortFeatItemDefinition":
@@ -71,6 +74,7 @@ namespace FModel.Creator
                 case "FortResourceItemDefinition":
                 case "FortSchematicItemDefinition":
                 case "FortIngredientItemDefinition":
+                case "FortAccountBuffItemDefinition":
                 case "FortWeaponMeleeItemDefinition":
                 case "FortContextTrapItemDefinition":
                 case "FortPlayerPerksItemDefinition":
@@ -83,6 +87,7 @@ namespace FModel.Creator
                 case "FortHardcoreModifierItemDefinition":
                 case "FortConsumableAccountItemDefinition":
                 case "FortConversionControlItemDefinition":
+                case "FortAccountBuffCreditItemDefinition":
                 case "FortPersistentResourceItemDefinition":
                 case "FortCampaignHeroLoadoutItemDefinition":
                 case "FortConditionalResourceItemDefinition":
@@ -237,6 +242,20 @@ namespace FModel.Creator
                             ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                         }
                         return true;
+                    }
+                case "StreamedVideoDataAsset":
+                    {
+                        if (Globals.Game.ActualGame == EGame.Valorant && exports[index].GetExport<StructProperty>("Uuid") is StructProperty s && s.Value is FGuid uuid)
+                        {
+                            Process.Start(new ProcessStartInfo
+                            {
+                                FileName = string.Format(
+                                    "http://valorant.dyn.riotcdn.net/x/videos/release-01.04/{0}_default_universal.mp4",
+                                    $"{uuid.A:x8}-{uuid.B >> 16:x4}-{uuid.B & 0xFFFF:x4}-{uuid.C >> 16:x4}-{uuid.C & 0xFFFF:x4}{uuid.D:x8}"),
+                                UseShellExecute = true
+                            });
+                        }
+                        return false;
                     }
             }
             return false;

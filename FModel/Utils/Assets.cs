@@ -86,8 +86,8 @@ namespace FModel.Utils
                                         IHighlightingDefinition syntax = ext switch
                                         {
                                             ".ini" => AvalonEditVm.IniHighlighter,
-                                            ".txt" => AvalonEditVm.BaseHighlighter,
-                                            ".bat" => AvalonEditVm.BaseHighlighter,
+                                            ".txt" => AvalonEditVm.IniHighlighter,
+                                            ".bat" => AvalonEditVm.IniHighlighter,
                                             ".xml" => AvalonEditVm.XmlHighlighter,
                                             ".h" => AvalonEditVm.CppHighlighter,
                                             _ => AvalonEditVm.JsonHighlighter

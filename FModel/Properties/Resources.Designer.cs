@@ -322,16 +322,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Byte[].
-        /// </summary>
-        public static byte[] Base {
-            get {
-                object obj = ResourceManager.GetObject("Base", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         /// </summary>
         public static System.Drawing.Icon borderlands3 {

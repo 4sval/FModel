@@ -166,7 +166,7 @@ This software uses the following open source packages:
 This project is not my full time job, donations are greatly appreciated.
 
 <a href="https://www.paypal.me/FModel">
-  <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">
+  <img src="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EP9SSWG8MW4UC&source=url">
 </a>
 
 ## You may also like...

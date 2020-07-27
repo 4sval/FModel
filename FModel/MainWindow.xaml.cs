@@ -252,10 +252,10 @@ namespace FModel
                 Application.Current.Shutdown();
             }
         }
-        private void FModel_MI_Help_Donate_Click(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { FileName = "https://www.paypal.me/FModel", UseShellExecute = true });
+        private void FModel_MI_Help_Trello_Click(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { FileName = "https://trello.com/b/DfmzkVQB/fmodel", UseShellExecute = true });
+        private void FModel_MI_Help_Donate_Click(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { FileName = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EP9SSWG8MW4UC&source=url", UseShellExecute = true });
         private void FModel_MI_Help_Changelog_Click(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { FileName = "https://github.com/iAmAsval/FModel/releases/latest", UseShellExecute = true });
         private void FModel_MI_Help_BugsReport_Click(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { FileName = "https://github.com/iAmAsval/FModel/issues/new", UseShellExecute = true });
-        private void FModel_MI_Help_Trello_Click(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { FileName = "https://trello.com/b/DfmzkVQB/fmodel", UseShellExecute = true });
         private void FModel_MI_Help_Discord_Click(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { FileName = "https://discord.gg/fdkNYYQ", UseShellExecute = true });
         private void FModel_MI_Help_About_Click(object sender, RoutedEventArgs e)
         {
