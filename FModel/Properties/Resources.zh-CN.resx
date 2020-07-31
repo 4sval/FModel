@@ -787,4 +787,7 @@
   <data name="StaticKey" xml:space="preserve">
     <value>静态密钥</value>
   </data>
+  <data name="NoKeyWarning" xml:space="preserve">
+    <value>找到一个加密的.PAK文件。要解密文件，请设置正确的AES加密密钥。</value>
+  </data>
 </root>
