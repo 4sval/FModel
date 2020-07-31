@@ -122,31 +122,41 @@ namespace FModel.Windows.SoundPlayer
 
         public void LoadFile(string filepath)
         {
-            Focus();
-
-            var item = new ListBoxViewModel2
+            ListBoxViewModel2 item = ListBoxVm.soundFiles.Where(x => x.FullPath.Equals(filepath)).FirstOrDefault();
+            if (item == null)
             {
-                Content = Path.GetFileName(filepath),
-                Data = null,
-                FullPath = filepath,
-                Folder = string.Empty
-            };
-            ListBoxVm.soundFiles.Add(item);
+                Focus();
+                item = new ListBoxViewModel2
+                {
+                    Content = Path.GetFileName(filepath),
+                    Data = null,
+                    FullPath = filepath,
+                    Folder = string.Empty
+                };
 
-            if (ListBoxVm.soundFiles.Count == 1) // auto play if one in queue
-            {
-                output.Stop();
-                output.Load(filepath);
-                output.Play();
-                Sound_LstBox.SelectedIndex = 0;
+                ListBoxVm.soundFiles.Add(item);
 
-                string name = Path.GetFileName(filepath);
-                InputFileVm.inputFileViewModel.Set(name, output);
-                DiscordIntegration.Update(string.Empty, string.Format(Properties.Resources.Listening, name));
-                PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/pause.png"));
+                if (ListBoxVm.soundFiles.Count == 1) // auto play if one in queue
+                {
+                    output.Stop();
+                    output.Load(filepath);
+                    output.Play();
+                    Sound_LstBox.SelectedIndex = 0;
+
+                    string name = Path.GetFileName(filepath);
+                    InputFileVm.inputFileViewModel.Set(name, output);
+                    DiscordIntegration.Update(string.Empty, string.Format(Properties.Resources.Listening, name));
+                    PlayPauseImg.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/pause.png"));
+                }
+                else
+                {
+                    Sound_LstBox.SelectedIndex = ListBoxVm.soundFiles.IndexOf(item);
+                    Sound_LstBox.ScrollIntoView(item);
+                }
             }
             else
             {
+                Focus();
                 Sound_LstBox.SelectedIndex = ListBoxVm.soundFiles.IndexOf(item);
                 Sound_LstBox.ScrollIntoView(item);
             }
