@@ -118,7 +118,8 @@ namespace FModel.Grabber.Paks
             MenuItems.pakFiles.Add(new PakMenuItemViewModel
             {
                 Header = Properties.Resources.LoadAll,
-                Icon = new Image { Source = new BitmapImage(new Uri("Resources/folder-download.png", UriKind.Relative)) }
+                Icon = new Image { Source = new BitmapImage(new Uri("Resources/folder-download.png", UriKind.Relative)) },
+                IsEnabled = false
             });
 
             // Separator

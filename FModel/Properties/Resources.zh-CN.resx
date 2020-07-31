@@ -457,9 +457,6 @@
   <data name="KB" xml:space="preserve">
     <value>KB</value>
   </data>
-  <data name="KbkpFilter" xml:space="preserve">
-    <value>FBKP文件（*.fbkp）| *.fbkp |所有文件（*.*）| *.*</value>
-  </data>
   <data name="Korean" xml:space="preserve">
     <value>韩语</value>
   </data>
@@ -691,9 +688,6 @@
   <data name="State" xml:space="preserve">
     <value>州</value>
   </data>
-  <data name="Static Key" xml:space="preserve">
-    <value>静态密钥</value>
-  </data>
   <data name="StaticKeyNotWorking" xml:space="preserve">
     <value>{0}对您的PAK文件不起作用</value>
   </data>
@@ -786,5 +780,11 @@
   </data>
   <data name="YesShowChangelog" xml:space="preserve">
     <value>是（显示更改日志）</value>
+  </data>
+  <data name="FbkpFilter" xml:space="preserve">
+    <value>FBKP文件（*.fbkp）| *.fbkp |所有文件（*.*）| *.*</value>
+  </data>
+  <data name="StaticKey" xml:space="preserve">
+    <value>静态密钥</value>
   </data>
 </root>

@@ -1078,4 +1078,7 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="Cpp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Cpp.xshd;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="NoKeyWarning" xml:space="preserve">
+    <value>An encrypted .PAK file has been found. In order to decrypt it, please specify a working AES encryption key</value>
+  </data>
 </root>

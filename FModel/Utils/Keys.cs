@@ -20,7 +20,7 @@ namespace FModel.Utils
             if (MenuItems.pakFiles.AtLeastOnePak())
             {
                 if (disableAll)
-                    foreach (PakMenuItemViewModel menuItem in MenuItems.pakFiles.GetMenuItemWithPakFiles())
+                    foreach (PakMenuItemViewModel menuItem in MenuItems.pakFiles.GetMenuItemsWithPakFiles())
                         menuItem.IsEnabled = false;
                 else
                 {
@@ -40,7 +40,7 @@ namespace FModel.Utils
                     bool mainError = false; // used to avoid notifications about all static paks not working with the key
 
                     StatusBarVm.statusBarViewModel.Reset();
-                    foreach (PakMenuItemViewModel menuItem in MenuItems.pakFiles.GetMenuItemWithPakFiles())
+                    foreach (PakMenuItemViewModel menuItem in MenuItems.pakFiles.GetMenuItemsWithPakFiles())
                     {
                         // reset everyone
                         menuItem.PakFile.AesKey = null;
@@ -61,8 +61,11 @@ namespace FModel.Utils
                                 {
                                     mainError = true;
                                     StatusBarVm.statusBarViewModel.Set(e.Message, Properties.Resources.Error);
-                                    FConsole.AppendText(string.Format(Properties.Resources.StaticKeyNotWorking, $"0x{sKey}"), FColors.Red, true);
                                     DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"0x{sKey} is NOT!!!! working with user's pak files");
+                                    if (string.IsNullOrEmpty(sKey))
+                                        FConsole.AppendText(Properties.Resources.NoKeyWarning, FColors.Red, true);
+                                    else
+                                        FConsole.AppendText(string.Format(Properties.Resources.StaticKeyNotWorking, $"0x{sKey}"), FColors.Red, true);
                                 }
                             }
                         }
@@ -87,6 +90,8 @@ namespace FModel.Utils
 
                         menuItem.IsEnabled = menuItem.PakFile.AesKey != null || !menuItem.PakFile.Info.bEncryptedIndex;
                     }
+
+                    MenuItems.pakFiles[1].IsEnabled = MenuItems.pakFiles.AtLeastOnePakWithKey();
                 }
             }
         }

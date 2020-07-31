@@ -1781,6 +1781,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à An encrypted .PAK file has been found. In order to decrypt it, please specify a working AES encryption key.
+        /// </summary>
+        public static string NoKeyWarning {
+            get {
+                return ResourceManager.GetString("NoKeyWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à No Text.
         /// </summary>
         public static string NoText {

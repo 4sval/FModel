@@ -105,12 +105,14 @@ namespace FModel.ViewModels.MenuItem
         // comment methods you don't use, thx
         public static bool AtLeastOnePak(this ObservableCollection<dynamic> o) => 
             Application.Current.Dispatcher.Invoke(() => o.Any(x => !x.GetType().Equals(typeof(Separator)) && x.PakFile != null));
-        public static IEnumerable<PakMenuItemViewModel> GetMenuItemWithPakFiles(this ObservableCollection<dynamic> o) => 
+        public static bool AtLeastOnePakWithKey(this ObservableCollection<dynamic> o) =>
+            Application.Current.Dispatcher.Invoke(() => o.Any(x => !x.GetType().Equals(typeof(Separator)) && x.PakFile != null && (x.PakFile.AesKey != null || !x.PakFile.Info.bEncryptedIndex)));
+        public static IEnumerable<PakMenuItemViewModel> GetMenuItemsWithPakFiles(this ObservableCollection<dynamic> o) => 
             Application.Current.Dispatcher.Invoke(() => o.Where(x => !x.GetType().Equals(typeof(Separator)) && x.PakFile != null).Select(x => (PakMenuItemViewModel)x));
         public static int GetPakCount(this ObservableCollection<dynamic> o) =>
-            Application.Current.Dispatcher.Invoke(() => o.GetMenuItemWithPakFiles().Count());
+            Application.Current.Dispatcher.Invoke(() => o.GetMenuItemsWithPakFiles().Count());
         public static IEnumerable<PakFileReader> GetPakFileReaders(this ObservableCollection<dynamic> o) =>
-            Application.Current.Dispatcher.Invoke(() => o.GetMenuItemWithPakFiles().Select(x => x.PakFile));
+            Application.Current.Dispatcher.Invoke(() => o.GetMenuItemsWithPakFiles().Select(x => x.PakFile));
         public static IEnumerable<PakFileReader> GetDynamicPakFileReaders(this ObservableCollection<dynamic> o) =>
             Application.Current.Dispatcher.Invoke(() => o.GetPakFileReaders().Where(x => x.Info.bEncryptedIndex && !x.Info.EncryptionKeyGuid.Equals(new FGuid(0u, 0u, 0u, 0u))));
     }
