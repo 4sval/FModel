@@ -463,6 +463,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Check For Updates.
+        /// </summary>
+        public static string CheckForUpdates {
+            get {
+                return ResourceManager.GetString("CheckForUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Chinese (Simplified).
         /// </summary>
         public static string Chinese {
@@ -1835,15 +1844,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Open.
-        /// </summary>
-        public static string Open {
-            get {
-                return ResourceManager.GetString("Open", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Open Image.
         /// </summary>
         public static string OpenImage {
@@ -2659,15 +2659,6 @@ namespace FModel.Properties {
         public static string UseDiscordRpc {
             get {
                 return ResourceManager.GetString("UseDiscordRpc", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Use FModel in English.
-        /// </summary>
-        public static string UseFEnglish {
-            get {
-                return ResourceManager.GetString("UseFEnglish", resourceCulture);
             }
         }
         

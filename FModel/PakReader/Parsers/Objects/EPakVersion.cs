@@ -14,6 +14,7 @@ namespace PakReader.Parsers.Objects
         FNAME_BASED_COMPRESSION_METHOD = 8, // UE4.22+ - use string instead of enum for compression method
         FROZEN_INDEX = 9,
         PATH_HASH_INDEX = 10,
+        FNV64BUGFIX = 11,
 
 
         LAST,

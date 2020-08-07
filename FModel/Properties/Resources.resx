@@ -703,9 +703,6 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="Opacity" xml:space="preserve">
     <value>Opacity</value>
   </data>
-  <data name="Open" xml:space="preserve">
-    <value>Open</value>
-  </data>
   <data name="OpenImage" xml:space="preserve">
     <value>Open Image</value>
   </data>
@@ -1048,9 +1045,6 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="NoImageToCopy" xml:space="preserve">
     <value>There is currently no image to copy</value>
   </data>
-  <data name="UseFEnglish" xml:space="preserve">
-    <value>Use FModel in English</value>
-  </data>
   <data name="NoBackground" xml:space="preserve">
     <value>No Background</value>
   </data>
@@ -1080,5 +1074,8 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="NoKeyWarning" xml:space="preserve">
     <value>An encrypted .PAK file has been found. In order to decrypt it, please specify a working AES encryption key</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>Check For Updates</value>
   </data>
 </root>

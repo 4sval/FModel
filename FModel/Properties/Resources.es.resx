@@ -688,9 +688,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="Opacity" xml:space="preserve">
     <value>Opacidad</value>
   </data>
-  <data name="Open" xml:space="preserve">
-    <value>Abrir</value>
-  </data>
   <data name="OpenImage" xml:space="preserve">
     <value>Abrir imagen</value>
   </data>
@@ -1021,9 +1018,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   </data>
   <data name="NoImageToCopy" xml:space="preserve">
     <value>Actualmente no hay imagen para copiar</value>
-  </data>
-  <data name="UseFEnglish" xml:space="preserve">
-    <value>Usar FModel en Inglés</value>
   </data>
   <data name="NoBackground" xml:space="preserve">
     <value>Sin fondo</value>

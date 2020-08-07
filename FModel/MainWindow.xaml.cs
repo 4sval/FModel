@@ -47,6 +47,7 @@ namespace FModel
 
         private async void OnClosing(object sender, CancelEventArgs e)
         {
+            Updater.CheckForUpdate();
             Globals.gNotifier.Dispose();
             Tasks.TokenSource?.Dispose();
             DiscordIntegration.Dispose();
@@ -68,7 +69,6 @@ namespace FModel
             FModel_MI_Assets_GoTo.ItemsSource = MenuItems.customGoTos;
             FModel_AssetsPathTree.ItemsSource = SortedTreeviewVm.gameFilesPath.ChildrensView;
 
-            Updater.CheckForUpdate();
             DebugHelper.WriteUserSettings();
             Folders.CheckWatermarks();
 
@@ -265,6 +265,10 @@ namespace FModel
                 new FAbout().Show();
             }
             else { FWindows.GetOpenedWindow<Window>(Properties.Resources.AboutF).Focus(); }
+        }
+        private void FModel_MI_Help_Updates_Click(object sender, RoutedEventArgs e)
+        {
+            Updater.CheckForUpdate();
         }
         #endregion
 

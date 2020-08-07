@@ -90,7 +90,7 @@ namespace FModel.Utils
                 {
                     DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[RiotClientInstalls.json]", installs);
                     InstallsJson installsJson = JsonConvert.DeserializeObject<InstallsJson>(File.ReadAllText(installs));
-                    if (installsJson?.AssociatedClient.Count > 0)
+                    if (installsJson != null && installsJson.AssociatedClient.Count > 0)
                     {
                         foreach (var KvP in installsJson.AssociatedClient)
                             if (KvP.Key.Contains("VALORANT/live/"))

@@ -179,9 +179,15 @@
                         <Image Source="Resources/discord.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <Separator/>
                 <MenuItem x:Name="FModel_MI_Help_About" Header="{x:Static properties:Resources.AboutF}" Click="FModel_MI_Help_About_Click">
                     <MenuItem.Icon>
                         <Image Source="Resources/information.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="FModel_MI_Help_Updates" Header="{x:Static properties:Resources.CheckForUpdates}" Click="FModel_MI_Help_Updates_Click">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/refresh.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>

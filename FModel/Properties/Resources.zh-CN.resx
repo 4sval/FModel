@@ -550,9 +550,6 @@
   <data name="Opacity" xml:space="preserve">
     <value>不透明度</value>
   </data>
-  <data name="Open" xml:space="preserve">
-    <value>开放</value>
-  </data>
   <data name="OpenImage" xml:space="preserve">
     <value>开启图片</value>
   </data>
@@ -741,9 +738,6 @@
   </data>
   <data name="UseDiscordRpc" xml:space="preserve">
     <value>使用Discord RPC</value>
-  </data>
-  <data name="UseFEnglish" xml:space="preserve">
-    <value>英文使用FModel</value>
   </data>
   <data name="UseGameColors" xml:space="preserve">
     <value>使用游戏颜色</value>

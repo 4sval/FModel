@@ -541,9 +541,6 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="Opacity" xml:space="preserve">
     <value>التعتيم</value>
   </data>
-  <data name="Open" xml:space="preserve">
-    <value>افتح</value>
-  </data>
   <data name="OpenImage" xml:space="preserve">
     <value>افتح الصورة</value>
   </data>
@@ -768,9 +765,6 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="CopyImage" xml:space="preserve">
     <value>انسخ الصورة</value>
-  </data>
-  <data name="UseFEnglish" xml:space="preserve">
-    <value>استخدم Fmodel باللغة الإنجليزية</value>
   </data>
   <data name="NoBackground" xml:space="preserve">
     <value>أي خلفية</value>

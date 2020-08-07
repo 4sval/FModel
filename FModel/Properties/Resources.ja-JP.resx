@@ -739,9 +739,6 @@
   <data name="Name" xml:space="preserve">
     <value>名前</value>
   </data>
-  <data name="Open" xml:space="preserve">
-    <value>開く</value>
-  </data>
   <data name="Help" xml:space="preserve">
     <value>ヘルプ</value>
   </data>
@@ -771,9 +768,6 @@
   </data>
   <data name="NoImageToCopy" xml:space="preserve">
     <value>現在、コピーする画像はありません</value>
-  </data>
-  <data name="UseFEnglish" xml:space="preserve">
-    <value>FModelを英語で使用する</value>
   </data>
   <data name="UseDiscordRpc" xml:space="preserve">
     <value>Discord RPCを使用する</value>

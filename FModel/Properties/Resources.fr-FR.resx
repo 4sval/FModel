@@ -564,9 +564,6 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   <data name="Opacity" xml:space="preserve">
     <value>Opacité</value>
   </data>
-  <data name="Open" xml:space="preserve">
-    <value>Ouvrir</value>
-  </data>
   <data name="OpenImage" xml:space="preserve">
     <value>Ouvrir l'Image</value>
   </data>
@@ -813,9 +810,6 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   <data name="NoImageToCopy" xml:space="preserve">
     <value>Il n'y a actuellement aucune image à copier</value>
   </data>
-  <data name="UseFEnglish" xml:space="preserve">
-    <value>Utiliser FModel en Anglais</value>
-  </data>
   <data name="NoBackground" xml:space="preserve">
     <value>Pas de fond</value>
   </data>
@@ -827,5 +821,8 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   </data>
   <data name="NoKeyWarning" xml:space="preserve">
     <value>Un fichier .PAK chiffré a été trouvé. Afin de le déchiffrer, veuillez spécifier une clé de chiffrement AES fonctionnelle</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>Vérifier les Mises à Jour</value>
   </data>
 </root>

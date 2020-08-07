@@ -438,9 +438,6 @@
   <data name="Opacity" xml:space="preserve">
     <value>Прозрачность</value>
   </data>
-  <data name="Open" xml:space="preserve">
-    <value>Открыть</value>
-  </data>
   <data name="OpenImage" xml:space="preserve">
     <value>Открыть изображение</value>
   </data>
@@ -743,9 +740,6 @@
   </data>
   <data name="CopyImage" xml:space="preserve">
     <value>Скопировать изображение</value>
-  </data>
-  <data name="UseFEnglish" xml:space="preserve">
-    <value>Использовать FModel на Английском</value>
   </data>
   <data name="FilePathNoExt" xml:space="preserve">
     <value>Путь файлу без расширения</value>

@@ -505,9 +505,6 @@ Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leake
   <data name="Opacity" xml:space="preserve">
     <value>Deckkraft</value>
   </data>
-  <data name="Open" xml:space="preserve">
-    <value>Öffnen</value>
-  </data>
   <data name="OpenImage" xml:space="preserve">
     <value>Bild öffnen</value>
   </data>
@@ -805,9 +802,6 @@ Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leake
   </data>
   <data name="CopyImage" xml:space="preserve">
     <value>Bild kopieren</value>
-  </data>
-  <data name="UseFEnglish" xml:space="preserve">
-    <value>FModel in Englisch benutzen</value>
   </data>
   <data name="NoBackground" xml:space="preserve">
     <value>Kein Hintergrund</value>
