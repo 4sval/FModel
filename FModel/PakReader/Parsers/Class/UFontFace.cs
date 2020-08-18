@@ -20,8 +20,11 @@ namespace PakReader.Parsers.Class
                     string FontFilename = Path.GetFileName(str.Value);
                     string folder = FModel.Properties.Settings.Default.OutputPath + "\\Fonts\\";
 
-                    using var fileStream = new FileStream(folder + FontFilename, FileMode.Create, FileAccess.Write);
-                    ufont.CopyTo(fileStream);
+                    if (ufont != null)
+                    {
+                        using var fileStream = new FileStream(folder + FontFilename, FileMode.Create, FileAccess.Write);
+                        ufont.CopyTo(fileStream);
+                    }
                 }
             }
         }

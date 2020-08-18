@@ -63,7 +63,7 @@ namespace FModel.Creator.Texts
             if (Globals.Game.ActualGame == EGame.Fortnite)
             {
                 ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(_FORTNITE_BASE_PATH + _BURBANK_BIG_CONDENSED_BLACK);
-                if (t != null && t.Length == 3)
+                if (t != null && t.Length == 3 && t[2].Array != null)
                     BundleDefaultTypeface = SKTypeface.FromStream(t[2].AsStream());
                 else BundleDefaultTypeface = DefaultTypeface;
 
@@ -78,7 +78,7 @@ namespace FModel.Creator.Texts
                 if (!namePath.Equals(_FORTNITE_BASE_PATH))
                 {
                     t = Utils.GetPropertyArraySegmentByte(namePath);
-                    if (t != null && t.Length == 3)
+                    if (t != null && t.Length == 3 && t[2].Array != null)
                         DisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
                 }
                 else DisplayNameTypeface = DefaultTypeface;
@@ -91,7 +91,7 @@ namespace FModel.Creator.Texts
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_SC_REGULAR :
                     _NOTO_SANS_REGULAR);
                 t = Utils.GetPropertyArraySegmentByte(descriptionPath);
-                if (t != null && t.Length == 3)
+                if (t != null && t.Length == 3 && t[2].Array != null)
                     DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
                 else DescriptionTypeface = DefaultTypeface;
 
@@ -106,7 +106,7 @@ namespace FModel.Creator.Texts
                 if (!bundleNamePath.Equals(_FORTNITE_BASE_PATH))
                 {
                     t = Utils.GetPropertyArraySegmentByte(bundleNamePath);
-                    if (t != null && t.Length == 3)
+                    if (t != null && t.Length == 3 && t[2].Array != null)
                         BundleDisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
                 }
                 else BundleDisplayNameTypeface = BundleDefaultTypeface;
@@ -122,7 +122,7 @@ namespace FModel.Creator.Texts
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _TUNGSTEN_SIMPLIFIED_CHINESE :
                     _TUNGSTEN_BOLD);
                 ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(namePath);
-                if (t != null && t.Length == 3)
+                if (t != null && t.Length == 3 && t[2].Array != null)
                     DisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
                 else DisplayNameTypeface = DefaultTypeface;
 
@@ -134,12 +134,12 @@ namespace FModel.Creator.Texts
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTOSANS_CJK_LIGHT :
                     _DINNEXT_W1G_LIGHT);
                 t = Utils.GetPropertyArraySegmentByte(descriptionPath);
-                if (t != null && t.Length == 3)
+                if (t != null && t.Length == 3 && t[2].Array != null)
                     DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
                 else DescriptionTypeface = DefaultTypeface;
 
                 t = Utils.GetPropertyArraySegmentByte(_VALORANT_BASE_PATH + _DINNEXT_W1G_BOLD);
-                if (t != null && t.Length == 3)
+                if (t != null && t.Length == 3 && t[2].Array != null)
                     BundleDefaultTypeface = SKTypeface.FromStream(t[2].AsStream());
                 else BundleDefaultTypeface = DefaultTypeface;
             }

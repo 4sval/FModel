@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using PakReader.Parsers.Objects;
+using PakReader.Textures;
 using SkiaSharp;
 
 namespace PakReader.Parsers.Class
