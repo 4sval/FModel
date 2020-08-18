@@ -8,7 +8,7 @@ namespace PakReader.Parsers.PropertyTagData
         {
             BaseProperty prop = type.String switch
             {
-                "ByteProperty" => new ByteProperty(reader, readType),
+                "ByteProperty" => new ByteProperty(reader, tag, readType),
                 "BoolProperty" => new BoolProperty(reader, tag, readType),
                 "IntProperty" => new IntProperty(reader),
                 "FloatProperty" => new FloatProperty(reader),
@@ -43,7 +43,7 @@ namespace PakReader.Parsers.PropertyTagData
         {
             object prop = type.String switch
             {
-                "ByteProperty" => new ByteProperty(reader, readType).Value,
+                "ByteProperty" => new ByteProperty(reader, tag, readType).Value,
                 "BoolProperty" => new BoolProperty(reader, tag, readType).Value,
                 "IntProperty" => new IntProperty(reader).Value,
                 "FloatProperty" => new FloatProperty(reader).Value,

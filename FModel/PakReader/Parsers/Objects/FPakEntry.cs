@@ -189,6 +189,7 @@ namespace PakReader.Parsers.Objects
                 {
                     "Zlib" => new ZlibStream(blockMs, CompressionMode.Decompress),
                     "Gzip" => new GZipStream(blockMs, CompressionMode.Decompress),
+                    "Oodle" => new OodleStream(blockBbuffer, uncompressedSize),
                     _ => throw new NotImplementedException($"Decompression not yet implemented ({compressionMethod})")
                 };
 

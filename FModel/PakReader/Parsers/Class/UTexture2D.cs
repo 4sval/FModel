@@ -16,8 +16,25 @@ namespace PakReader.Parsers.Class
             {
                 if (image == null)
                 {
-                    var mip = PlatformDatas[0].Mips[0];
-                    image = TextureDecoder.DecodeImage(mip.BulkData.Data, mip.SizeX, mip.SizeY, mip.SizeZ, PlatformDatas[0].PixelFormat);
+                    int sizeX = 0;
+                    int sizeY = 0;
+                    int sizeZ = 1;
+                    List<byte> data = new List<byte>();
+                    if (PlatformDatas[0].Mips.Length > 0)
+                    {
+                        sizeX = PlatformDatas[0].Mips[0].SizeX;
+                        sizeY = PlatformDatas[0].Mips[0].SizeY;
+                        sizeZ = PlatformDatas[0].Mips[0].SizeZ;
+                        data.AddRange(PlatformDatas[0].Mips[0].BulkData.Data);
+                    }
+
+                    //if (PlatformDatas[0].bIsVirtual)
+                    //{
+                    //    sizeX = PlatformDatas[0].VTData.Width;
+                    //    sizeY = PlatformDatas[0].VTData.Height;
+                    //}
+
+                    image = TextureDecoder.DecodeImage(data.ToArray(), sizeX, sizeY, sizeZ, PlatformDatas[0].PixelFormat);
                 }
                 return image;
             }

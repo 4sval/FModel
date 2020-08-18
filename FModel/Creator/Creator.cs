@@ -250,7 +250,7 @@ namespace FModel.Creator
                             Process.Start(new ProcessStartInfo
                             {
                                 FileName = string.Format(
-                                    "http://valorant.dyn.riotcdn.net/x/videos/release-01.04/{0}_default_universal.mp4",
+                                    "http://valorant.dyn.riotcdn.net/x/videos/release-01.05/{0}_default_universal.mp4",
                                     $"{uuid.A:x8}-{uuid.B >> 16:x4}-{uuid.B & 0xFFFF:x4}-{uuid.C >> 16:x4}-{uuid.C & 0xFFFF:x4}{uuid.D:x8}"),
                                 UseShellExecute = true
                             });

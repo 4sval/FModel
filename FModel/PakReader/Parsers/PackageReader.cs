@@ -51,6 +51,7 @@ namespace PakReader.Parsers
                     DataExports[i] = ExportType.String switch
                     {
                         "Texture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
+                        "VirtualTexture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
                         "CurveTable" => new UCurveTable(this),
                         "DataTable" => new UDataTable(this),
                         "FontFace" => new UFontFace(this, ubulk),

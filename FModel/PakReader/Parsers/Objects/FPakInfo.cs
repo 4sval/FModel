@@ -80,7 +80,7 @@ namespace PakReader.Parsers.Objects
                 var MethodList = new List<string>(4);
                 for (int i = 0; i < 4; i++)
                 {
-                    if (Methods[i*COMPRESSION_METHOD_NAME_LEN] != 0)
+                    if (Methods[i * COMPRESSION_METHOD_NAME_LEN] != 0)
                     {
                         MethodList.Add(Encoding.ASCII.GetString(Methods, i * COMPRESSION_METHOD_NAME_LEN, COMPRESSION_METHOD_NAME_LEN).TrimEnd('\0'));
                     }

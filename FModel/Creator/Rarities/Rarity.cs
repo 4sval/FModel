@@ -46,6 +46,7 @@ namespace FModel.Creator.Rarities
                             rarity = EFortRarity.Transcendent;
                             break;
                         case "EFortRarity::Unattainable":
+                        case "EFortRarity::Badass":
                             rarity = EFortRarity.Unattainable;
                             break;
                     }

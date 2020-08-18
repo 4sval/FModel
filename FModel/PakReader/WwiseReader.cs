@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace FModel.PakReader
+namespace PakReader
 {
     /// <summary>
     /// http://wiki.xentax.com/index.php/Wwise_SoundBank_(*.bnk)
@@ -98,7 +98,7 @@ namespace FModel.PakReader
                     string key = $"{didxSection.WemFilesRef[i].Id}.wem";
                     if (stidSection != null && stidSection.SoundBanks.TryGetValue(didxSection.WemFilesRef[i].Id, out string name))
                         key = $"{name}.wem";
-                    else if (Globals.Game.ActualGame == EGame.Valorant && ValoloWwiseDict.ValorantWemToName.TryGetValue(didxSection.WemFilesRef[i].Id, out string hardcodedname))
+                    else if (FModel.Globals.Game.ActualGame == FModel.EGame.Valorant && ValoloWwiseDict.ValorantWemToName.TryGetValue(didxSection.WemFilesRef[i].Id, out string hardcodedname))
                         key = $"{hardcodedname}.wem";
 
                     AudioFiles[key] = dataSection.WemFiles[i];
@@ -113,7 +113,7 @@ namespace FModel.PakReader
                             string key = $"{entry.Path.ToUpper()}_{entry.NameHash}.wem";
                             if (stidSection != null && stidSection.SoundBanks.TryGetValue(entry.NameHash, out string name))
                                 key = $"{name}.wem";
-                            else if (Globals.Game.ActualGame == EGame.Valorant && ValoloWwiseDict.ValorantWemToName.TryGetValue(entry.NameHash, out string hardcodedname))
+                            else if (FModel.Globals.Game.ActualGame == FModel.EGame.Valorant && ValoloWwiseDict.ValorantWemToName.TryGetValue(entry.NameHash, out string hardcodedname))
                                 key = $"{hardcodedname}.wem";
 
                             AudioFiles[key] = entry.Data;

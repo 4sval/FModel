@@ -5,6 +5,7 @@ using FModel.ViewModels.ListBox;
 using FModel.ViewModels.SoundPlayer;
 using FModel.Windows.SoundPlayer.Visualization;
 using Microsoft.Win32;
+using PakReader;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

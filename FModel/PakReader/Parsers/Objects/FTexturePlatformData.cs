@@ -10,6 +10,8 @@ namespace PakReader.Parsers.Objects
         public readonly int NumSlices;
         public readonly EPixelFormat PixelFormat;
         public readonly FTexture2DMipMap[] Mips;
+        public readonly FVirtualTextureBuiltData VTData;
+        public readonly bool bIsVirtual;
 
         internal FTexturePlatformData(PackageReader reader, Stream ubulk, long bulkOffset)
         {
@@ -17,6 +19,8 @@ namespace PakReader.Parsers.Objects
             SizeY = reader.ReadInt32();
             NumSlices = reader.ReadInt32();
             PixelFormat = Enum.Parse<EPixelFormat>(reader.ReadFString());
+            VTData = default;
+            bIsVirtual = false;
 
             var FirstMipToSerialize = reader.ReadInt32();
             FirstMipToSerialize = 0; // what: https://github.com/EpicGames/UnrealEngine/blob/4.24/Engine/Source/Runtime/Engine/Private/TextureDerivedData.cpp#L1316
@@ -25,7 +29,11 @@ namespace PakReader.Parsers.Objects
 
             if (FModel.Globals.Game.Version > EPakVersion.FNAME_BASED_COMPRESSION_METHOD || FModel.Globals.Game.SubVersion == 1)
             {
-                if (reader.ReadInt32() != 0) throw new FileLoadException("VirtualTextures are not supported");
+                bIsVirtual = reader.ReadInt32() != 0;
+                if (bIsVirtual)
+                {
+                    VTData = new FVirtualTextureBuiltData(reader, ubulk, bulkOffset);
+                }
             }
         }
     }
