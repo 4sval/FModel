@@ -7,16 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FModel", "FModel\FModel.csp
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
-		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A42F8737-D056-4FA5-BEB5-AA96E1639F8A}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{A42F8737-D056-4FA5-BEB5-AA96E1639F8A}.Debug|x64.ActiveCfg = Debug|x64
 		{A42F8737-D056-4FA5-BEB5-AA96E1639F8A}.Debug|x64.Build.0 = Debug|x64
-		{A42F8737-D056-4FA5-BEB5-AA96E1639F8A}.Release|Any CPU.ActiveCfg = Release|x64
 		{A42F8737-D056-4FA5-BEB5-AA96E1639F8A}.Release|x64.ActiveCfg = Release|x64
 		{A42F8737-D056-4FA5-BEB5-AA96E1639F8A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
