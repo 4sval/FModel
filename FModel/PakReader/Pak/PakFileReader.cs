@@ -65,7 +65,7 @@ namespace PakReader.Pak
         }
         public bool TestAesKey(byte[] bytes, byte[] key)
         {
-            BinaryReader IndexReader = new BinaryReader(new MemoryStream(AESDecryptor.DecryptAES(bytes, key)));
+            using BinaryReader IndexReader = new BinaryReader(new MemoryStream(AESDecryptor.DecryptAES(bytes, key)));
             int stringLen = IndexReader.ReadInt32();
             if (stringLen > 128 || stringLen < -128)
             {
@@ -190,9 +190,7 @@ namespace PakReader.Pak
                 }
             }
 
-            Paks.Merge(tempFiles, out var files, MountPoint);
-            Entries = files;
-
+            Paks.Merge(tempFiles, out Entries, MountPoint);
             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PakFileReader]", "[ReadIndexInternal]", $"{FileName} contains {Entries.Count} files, mount point: \"{this.MountPoint}\", version: {(int)this.Info.Version}");
 
             if (Info.bEncryptedIndex)

@@ -114,6 +114,17 @@ namespace PakReader.Pak
             }
             return default;
         }
+        public T GetTypedExport<T>(string exportType) where T : IUExport
+        {
+            int index = 0;
+            var exportTypes = ExportTypes;
+            for (int i = 0; i < exportTypes.Length; i++)
+            {
+                if (exportTypes[i].String == exportType)
+                    index = i;
+            }
+            return (T)Exports[index];
+        }
 
         public bool HasExport() => exports != null;
 

@@ -23,10 +23,18 @@ namespace PakReader.Parsers.Class
                     List<byte> data = new List<byte>();
                     if (PlatformDatas[0].Mips.Length > 0)
                     {
-                        sizeX = PlatformDatas[0].Mips[0].SizeX;
-                        sizeY = PlatformDatas[0].Mips[0].SizeY;
-                        sizeZ = PlatformDatas[0].Mips[0].SizeZ;
-                        data.AddRange(PlatformDatas[0].Mips[0].BulkData.Data);
+                        int i = 0;
+                        byte[] d = PlatformDatas[0].Mips[i].BulkData.Data;
+                        while (d == null)
+                        {
+                            i++;
+                            d = PlatformDatas[0].Mips[i].BulkData.Data;
+                        }
+
+                        sizeX = PlatformDatas[0].Mips[i].SizeX;
+                        sizeY = PlatformDatas[0].Mips[i].SizeY;
+                        sizeZ = PlatformDatas[0].Mips[i].SizeZ;
+                        data.AddRange(d);
                     }
 
                     //if (PlatformDatas[0].bIsVirtual)

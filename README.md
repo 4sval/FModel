@@ -5,8 +5,6 @@
 Created in March 2019, FModel is a .PAK file explorer fully dedicated to Fortnite but also work with some other Unreal Engine's games. It quickly became popular to quickly generate images of new cosmetics added to the game.
 Over time, new features got added and new users discovered the program.
 
-Friendly reminder, using FModel for Fortnite doesn't make you a leaker so please don't call yourself a leaker.
-
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -145,6 +143,7 @@ To use FModel, you need to have [.NET Core 3.1](https://dotnet.microsoft.com/dow
 
 This software uses the following open source packages:
 
+- [ASTCDecoder](https://github.com/Ryujinx/Ryujinx/tree/master/Ryujinx.Graphics.Texture/Astc)
 - [Audion.CSCore](https://github.com/tjscience/audion.cscore)
 - [Autoupdater.NET.Official](https://github.com/ravibpatel/AutoUpdater.NET)
 - [AvalonEdit](https://github.com/icsharpcode/AvalonEdit)

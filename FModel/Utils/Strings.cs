@@ -21,8 +21,22 @@ namespace FModel.Utils
             if (string.IsNullOrWhiteSpace(path))
                 return string.Empty;
 
-            Regex regexGame = new Regex(Regex.Escape("Game"));
-            string fixedPath = regexGame.Replace(path, $"{Folders.GetGameName()}/Content", 1);
+            string trigger;
+            {
+                string tempPath = path.Substring(1);
+                trigger = tempPath.Substring(0, tempPath.IndexOf("/"));
+
+                if (trigger.Equals("SrirachaRanch"))
+                    trigger = $"{trigger}/{trigger}Core";
+            }
+
+            Regex regex = new Regex(Regex.Escape(trigger));
+            string fixedPath = trigger switch
+            {
+                "Game" => regex.Replace(path, $"{Folders.GetGameName()}/Content", 1),
+                _ => regex.Replace(path, $"{Folders.GetGameName()}/Plugins/GameFeatures/{trigger}/Content", 1)
+            };
+
             int sep = fixedPath.LastIndexOf('.');
             return fixedPath.Substring(0, sep > 0 ? sep : fixedPath.Length);
         }

@@ -82,6 +82,7 @@ namespace FModel.Creator
                 case "FortHomebaseNodeItemDefinition":
                 case "FortWeaponRangedItemDefinition":
                 case "FortNeverPersistItemDefinition":
+                case "RadioContentSourceItemDefinition":
                 case "FortPlaysetGrenadeItemDefinition":
                 case "FortPersonalVehicleItemDefinition":
                 case "FortHardcoreModifierItemDefinition":

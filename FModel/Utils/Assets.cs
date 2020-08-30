@@ -23,7 +23,6 @@ using System.Threading;
 using SkiaSharp;
 using System.Text;
 using FModel.ViewModels.DataGrid;
-using FModel.PakReader;
 using ICSharpCode.AvalonEdit.Highlighting;
 using static FModel.Creator.Creator;
 
