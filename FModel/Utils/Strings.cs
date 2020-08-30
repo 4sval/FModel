@@ -25,15 +25,16 @@ namespace FModel.Utils
             {
                 string tempPath = path.Substring(1);
                 trigger = tempPath.Substring(0, tempPath.IndexOf("/"));
-
-                if (trigger.Equals("SrirachaRanch"))
-                    trigger = $"{trigger}/{trigger}Core";
             }
 
-            Regex regex = new Regex(Regex.Escape(trigger));
+            Regex regex = new Regex(trigger);
+            if (trigger.Equals("SrirachaRanch"))
+                trigger += $"/{trigger}Core";
+
             string fixedPath = trigger switch
             {
                 "Game" => regex.Replace(path, $"{Folders.GetGameName()}/Content", 1),
+                "RegionCN" => regex.Replace(path, $"{Folders.GetGameName()}/Plugins/{trigger}/Content", 1),
                 _ => regex.Replace(path, $"{Folders.GetGameName()}/Plugins/GameFeatures/{trigger}/Content", 1)
             };
 
