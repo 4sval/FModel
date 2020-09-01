@@ -41,14 +41,19 @@ namespace FModel.Utils
                     MessageBoxResult dialogResult = DarkMessageBoxHelper.ShowYesNoCancel(
                         string.Format(Properties.Resources.UpdateAvailableConfirm, args.CurrentVersion, args.InstalledVersion),
                         Properties.Resources.UpdateAvailable,
-                        Properties.Resources.YesShowChangelog,
-                        Properties.Resources.Yes,
-                        Properties.Resources.No);
+                        Properties.Resources.YesShowChangelog, // Yes
+                        Properties.Resources.MaybeLater, // No
+                        Properties.Resources.SkipThisVersion); // Cancel
 
                     if (dialogResult == MessageBoxResult.Yes)
                         Process.Start(new ProcessStartInfo { FileName = args.ChangelogURL, UseShellExecute = true });
+                    if (dialogResult == MessageBoxResult.Cancel)
+                    {
+                        Properties.Settings.Default.SkipVersion = true;
+                        Properties.Settings.Default.Save();
+                    }
 
-                    if (dialogResult == MessageBoxResult.Yes || dialogResult == MessageBoxResult.No || dialogResult == MessageBoxResult.OK)
+                    if (dialogResult == MessageBoxResult.Yes || dialogResult == MessageBoxResult.OK)
                     {
                         try
                         {

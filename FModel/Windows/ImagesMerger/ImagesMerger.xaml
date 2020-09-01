@@ -68,7 +68,7 @@
                 <Image x:Name="Preview_Img" Width="512" Height="512"/>
             </Border>
             <Slider x:Name="ImTheSlider" Style="{StaticResource Horizontal_Slider}"
-                    Grid.Row="1" Margin="0,3,0,0" TickPlacement="None" Value="7" IsSnapToTickEnabled="True"
+                    Grid.Row="1" Margin="0,3,0,0" TickPlacement="None" IsSnapToTickEnabled="True"
                     Minimum="2" Maximum="20" TickFrequency="1" Thumb.DragCompleted="DrawPreview"/>
             <Button x:Name="OpenImageBtn" Grid.Row="2"
                 Content="{x:Static properties:Resources.OpenImage}"

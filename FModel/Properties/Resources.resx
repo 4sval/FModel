@@ -1075,7 +1075,10 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="NoKeyWarning" xml:space="preserve">
     <value>An encrypted .PAK file has been found. In order to decrypt it, please specify a working AES encryption key</value>
   </data>
-  <data name="CheckForUpdates" xml:space="preserve">
-    <value>Check For Updates</value>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>Maybe Later</value>
+  </data>
+  <data name="SkipThisVersion" xml:space="preserve">
+    <value>Skip this Version</value>
   </data>
 </root>

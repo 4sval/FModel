@@ -463,15 +463,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Check For Updates.
-        /// </summary>
-        public static string CheckForUpdates {
-            get {
-                return ResourceManager.GetString("CheckForUpdates", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Chinese (Simplified).
         /// </summary>
         public static string Chinese {
@@ -1655,6 +1646,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Maybe Later.
+        /// </summary>
+        public static string MaybeLater {
+            get {
+                return ResourceManager.GetString("MaybeLater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à MB.
         /// </summary>
         public static string MB {
@@ -2349,6 +2349,15 @@ namespace FModel.Properties {
             get {
                 object obj = ResourceManager.GetObject("sign_direction_remove", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Skip this Version.
+        /// </summary>
+        public static string SkipThisVersion {
+            get {
+                return ResourceManager.GetString("SkipThisVersion", resourceCulture);
             }
         }
         

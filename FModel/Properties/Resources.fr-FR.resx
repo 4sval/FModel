@@ -822,7 +822,10 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   <data name="NoKeyWarning" xml:space="preserve">
     <value>Un fichier .PAK chiffré a été trouvé. Afin de le déchiffrer, veuillez spécifier une clé de chiffrement AES fonctionnelle</value>
   </data>
-  <data name="CheckForUpdates" xml:space="preserve">
-    <value>Vérifier les Mises à Jour</value>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>Peut être plus tard</value>
+  </data>
+  <data name="SkipThisVersion" xml:space="preserve">
+    <value>Ignorer cette version</value>
   </data>
 </root>

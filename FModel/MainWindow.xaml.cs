@@ -47,7 +47,6 @@ namespace FModel
 
         private async void OnClosing(object sender, CancelEventArgs e)
         {
-            Updater.CheckForUpdate();
             Globals.gNotifier.Dispose();
             Tasks.TokenSource?.Dispose();
             DiscordIntegration.Dispose();
@@ -69,6 +68,7 @@ namespace FModel
             FModel_MI_Assets_GoTo.ItemsSource = MenuItems.customGoTos;
             FModel_AssetsPathTree.ItemsSource = SortedTreeviewVm.gameFilesPath.ChildrensView;
 
+            if (!Properties.Settings.Default.SkipVersion) Updater.CheckForUpdate();
             DebugHelper.WriteUserSettings();
             Folders.CheckWatermarks();
 
@@ -180,10 +180,23 @@ namespace FModel
             }
             else { FWindows.GetOpenedWindow<Window>(Properties.Resources.AudioPlayer).Focus(); }
         }
-        private void FModel_MI_Assets_Export_Click(object sender, RoutedEventArgs e)
+        private async void FModel_MI_Assets_Export_Click(object sender, RoutedEventArgs e)
         {
             if (FModel_AssetsList.HasItems && FModel_AssetsList.SelectedIndex >= 0 && FModel_AssetsList.SelectedItem is ListBoxViewModel selectedItem)
-                Assets.Export(selectedItem.PakEntry, false);
+            {
+                bool autoExport = FModel_AssetsList.SelectedItems.Count > 1;
+                if (!autoExport) Assets.Export(selectedItem.PakEntry, false); // manual export if one
+                else
+                {
+                    bool ret = Properties.Settings.Default.AutoExport;
+                    Properties.Settings.Default.AutoExport = autoExport;
+
+                    await Assets.GetUserSelection(FModel_AssetsList.SelectedItems); // auto export if multiple
+
+                    Properties.Settings.Default.AutoExport = ret;
+                    Properties.Settings.Default.Save();
+                }
+            }
             else Globals.gNotifier.ShowCustomMessage(Properties.Resources.Error, Properties.Resources.NoDataToExport);
         }
         private void FModel_MI_Assets_Save_Click(object sender, RoutedEventArgs e) => AvalonEditVm.avalonEditViewModel.Save(false);
@@ -265,10 +278,6 @@ namespace FModel
                 new FAbout().Show();
             }
             else { FWindows.GetOpenedWindow<Window>(Properties.Resources.AboutF).Focus(); }
-        }
-        private void FModel_MI_Help_Updates_Click(object sender, RoutedEventArgs e)
-        {
-            Updater.CheckForUpdate();
         }
         #endregion
 
@@ -414,8 +423,15 @@ namespace FModel
                     AvalonEditVm.avalonEditViewModel.Save(false);
                 else // extract (aka display) and save
                 {
-                    await Assets.GetUserSelection(FModel_AssetsList.SelectedItems);
-                    AvalonEditVm.avalonEditViewModel.Save(false);
+                    bool autoSave = FModel_AssetsList.SelectedItems.Count > 1;
+                    bool ret = Properties.Settings.Default.AutoSave;
+
+                    Properties.Settings.Default.AutoSave = autoSave;
+                    await Assets.GetUserSelection(FModel_AssetsList.SelectedItems); // auto save if multiple
+                    if (!autoSave) AvalonEditVm.avalonEditViewModel.Save(false); // manual save if one
+
+                    Properties.Settings.Default.AutoSave = ret;
+                    Properties.Settings.Default.Save();
                 }
             }
             else Globals.gNotifier.ShowCustomMessage(Properties.Resources.Error, Properties.Resources.NoDataToSave);

@@ -130,7 +130,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.6.0" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.6.2" />
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.150" />

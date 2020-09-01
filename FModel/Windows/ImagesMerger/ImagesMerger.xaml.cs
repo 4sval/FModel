@@ -139,6 +139,7 @@ namespace FModel.Windows.ImagesMerger
                     });
                 }
 
+                ImTheSlider.Value = Math.Min(Images_LstBx.Items.Count, Math.Round(Math.Sqrt(Images_LstBx.Items.Count)));
                 await DrawPreview().ConfigureAwait(false);
             }
         }

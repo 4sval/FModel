@@ -32,6 +32,7 @@ namespace FModel.Properties
                 }
             }
 
+            Default.SkipVersion = false; // just in case
             Default.UpdateSettings = false; // just in case
             Default.Save();
         }
