@@ -1,4 +1,3 @@
-using System;
 using PakReader.Parsers.Objects;
 
 namespace PakReader.Parsers.PropertyTagData
@@ -10,10 +9,9 @@ namespace PakReader.Parsers.PropertyTagData
         {
             Position = reader.Position;
             var NumKeysToRemove = reader.ReadInt32();
-            if (NumKeysToRemove != 0)
+            for (int i = 0; i < NumKeysToRemove; i++)
             {
-                // Let me know if you find a package that has a non-zero NumKeysToRemove value
-                throw new NotImplementedException("Parsing of non-zero NumKeysToRemove sets aren't supported yet.");
+                ReadAsObject(reader, tag, tag.InnerType, ReadType.ARRAY); // read in the air? uh ok
             }
 
             var NumEntries = reader.ReadInt32();

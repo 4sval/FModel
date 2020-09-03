@@ -36,11 +36,11 @@ namespace PakReader.Textures
                     break;
                 case EPixelFormat.PF_BC5:
                     data = BCDecoder.DecodeBC5(sequence, width, height);
-                    colorType = SKColorType.Bgra8888;
+                    colorType = SKColorType.Rgb888x;
                     break;
                 case EPixelFormat.PF_BC4:
                     data = BCDecoder.DecodeBC4(sequence, width, height);
-                    colorType = SKColorType.Bgra8888;
+                    colorType = SKColorType.Rgb888x;
                     break;
                 case EPixelFormat.PF_G8:
                     data = sequence;
