@@ -23,6 +23,8 @@ namespace PakReader.Parsers.Objects
             var HistoryType = (ETextHistoryType)reader.ReadSByte();
 
             // Create the history class based on the serialized type
+            // https://github.com/EpicGames/UnrealEngine/blob/283e412aa843210f2d6e9ed0236861cf749b3429/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.h
+            // https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp
             switch (HistoryType)
             {
                 case ETextHistoryType.Base:
@@ -31,8 +33,6 @@ namespace PakReader.Parsers.Objects
                 case ETextHistoryType.AsDateTime:
                     Text = new FTextHistory.DateTime(reader);
                     break;
-                // https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/Core/Private/Internationalization/TextHistory.cpp
-                // https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/Core/Private/Internationalization/TextData.h
                 case ETextHistoryType.NamedFormat:
                 case ETextHistoryType.OrderedFormat:
                     Text = new FTextHistory.OrderedFormat(reader);
@@ -45,10 +45,18 @@ namespace PakReader.Parsers.Objects
                 case ETextHistoryType.StringTableEntry:
                     Text = new FTextHistory.StringTableEntry(reader);
                     break;
-                case ETextHistoryType.ArgumentFormat:
-                case ETextHistoryType.AsDate:
                 case ETextHistoryType.AsTime:
+                    Text = new FTextHistory.AsTime(reader);
+                    break;
+                case ETextHistoryType.AsDate:
+                    Text = new FTextHistory.AsDate(reader);
+                    break;
+                case ETextHistoryType.ArgumentFormat:
+                    Text = new FTextHistory.ArgumentDataFormat(reader);
+                    break;
                 case ETextHistoryType.Transform:
+                    Text = new FTextHistory.Transform(reader);
+                    break;
                 case ETextHistoryType.TextGenerator:
                     throw new NotImplementedException(string.Format(FModel.Properties.Resources.ParsingNotSupported, HistoryType));
                 default:
@@ -65,6 +73,10 @@ namespace PakReader.Parsers.Objects
                 FTextHistory.OrderedFormat orderedFormat => orderedFormat.GetValue(),
                 FTextHistory.FormatNumber formatNumber => formatNumber.GetValue(),
                 FTextHistory.StringTableEntry stringTableEntry => stringTableEntry.GetValue(),
+                FTextHistory.AsTime asTime => asTime.GetValue(),
+                FTextHistory.AsDate asDate => asDate.GetValue(),
+                FTextHistory.ArgumentDataFormat argumentDataFormat => argumentDataFormat.GetValue(),
+                FTextHistory.Transform transform => transform.GetValue(),
                 FTextHistory.None none => none.CultureInvariantString,
                 _ => Text
             };

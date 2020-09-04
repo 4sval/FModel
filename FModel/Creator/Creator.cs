@@ -7,9 +7,7 @@ using FModel.Creator.Texts;
 using FModel.ViewModels.ImageBox;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
-using System.Diagnostics;
 using System.IO;
 
 namespace FModel.Creator
@@ -244,20 +242,20 @@ namespace FModel.Creator
                         }
                         return true;
                     }
-                case "StreamedVideoDataAsset":
-                    {
-                        if (Globals.Game.ActualGame == EGame.Valorant && exports[index].GetExport<StructProperty>("Uuid") is StructProperty s && s.Value is FGuid uuid)
-                        {
-                            Process.Start(new ProcessStartInfo
-                            {
-                                FileName = string.Format(
-                                    "http://valorant.dyn.riotcdn.net/x/videos/release-01.05/{0}_default_universal.mp4",
-                                    $"{uuid.A:x8}-{uuid.B >> 16:x4}-{uuid.B & 0xFFFF:x4}-{uuid.C >> 16:x4}-{uuid.C & 0xFFFF:x4}{uuid.D:x8}"),
-                                UseShellExecute = true
-                            });
-                        }
-                        return false;
-                    }
+                //case "StreamedVideoDataAsset": // must find a way to automatically gets the right version in the url
+                //    {
+                //        if (Globals.Game.ActualGame == EGame.Valorant && exports[index].GetExport<StructProperty>("Uuid") is StructProperty s && s.Value is FGuid uuid)
+                //        {
+                //            Process.Start(new ProcessStartInfo
+                //            {
+                //                FileName = string.Format(
+                //                    "http://valorant.dyn.riotcdn.net/x/videos/release-01.05/{0}_default_universal.mp4",
+                //                    $"{uuid.A:x8}-{uuid.B >> 16:x4}-{uuid.B & 0xFFFF:x4}-{uuid.C >> 16:x4}-{uuid.C & 0xFFFF:x4}{uuid.D:x8}"),
+                //                UseShellExecute = true
+                //            });
+                //        }
+                //        return false;
+                //    }
             }
             return false;
         }
