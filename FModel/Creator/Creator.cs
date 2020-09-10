@@ -151,6 +151,27 @@ namespace FModel.Creator
                         }
                         return true;
                     }
+                case "MaterialInstanceConstant":
+                    {
+                        if (assetFolder.Equals("MI_OfferImages"))
+                        {
+                            BaseOfferMaterial icon = new BaseOfferMaterial(exports[index]);
+                            using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Premul))
+                            using (var c = new SKCanvas(ret))
+                            {
+                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                                {
+                                    icon.DrawBackground(c);
+                                }
+                                icon.DrawImage(c);
+
+                                Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                                ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
                 case "FortItemSeriesDefinition":
                     {
                         BaseIcon icon = new BaseIcon();
