@@ -19,7 +19,7 @@ namespace PakReader
         {
             var MagicNumber = new FGuid(reader);
 
-            var VersionNumber = Version.LEGACY;
+            var VersionNumber = Version.Legacy;
             if (MagicNumber == Magic)
             {
                 VersionNumber = (Version)reader.ReadByte();
@@ -30,33 +30,31 @@ namespace PakReader
                 reader.BaseStream.Seek(0, SeekOrigin.Begin);
             }
 
-            if (VersionNumber > Version.LATEST)
+            if (VersionNumber > Version.Latest)
             {
                 throw new IOException($"LocRes file is too new to be loaded! (File Version: {(byte)VersionNumber}, Loader Version: {(byte)LocMetaReader.Version.LATEST})");
             }
 
             // Read the localized string array
             FTextLocalizationResourceString[] LocalizedStringArray = Array.Empty<FTextLocalizationResourceString>();
-            if (VersionNumber >= Version.COMPACT)
+            if (VersionNumber >= Version.Compact)
             {
                 long LocalizedStringArrayOffset = -1; // INDEX_NONE
                 LocalizedStringArrayOffset = reader.ReadInt64();
 
                 if (LocalizedStringArrayOffset != -1)
                 {
-                    if (VersionNumber >= Version.OPTIMIZED)
+                    long CurrentFileOffset = reader.BaseStream.Position;
+                    reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
+
+                    if (VersionNumber >= Version.Optimized_CRC32)
                     {
-                        long CurrentFileOffset = reader.BaseStream.Position;
-                        reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
                         LocalizedStringArray = reader.ReadTArray(() => new FTextLocalizationResourceString(reader));
                         reader.BaseStream.Seek(CurrentFileOffset, SeekOrigin.Begin);
                     }
                     else
                     {
                         string[] TmpLocalizedStringArray;
-
-                        long CurrentFileOffset = reader.BaseStream.Position;
-                        reader.BaseStream.Seek(LocalizedStringArrayOffset, SeekOrigin.Begin);
                         TmpLocalizedStringArray = reader.ReadTArray(() => reader.ReadFString());
                         reader.BaseStream.Seek(CurrentFileOffset, SeekOrigin.Begin);
 
@@ -70,11 +68,9 @@ namespace PakReader
             }
 
             // Read entries count
-            if (VersionNumber >= Version.OPTIMIZED)
+            if (VersionNumber >= Version.Optimized_CRC32)
             {
                 uint EntriesCount = reader.ReadUInt32();
-                // No need for initializer
-                // Link: https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/Core/Private/Internationalization/TextLocalizationResource.cpp#L266
             }
 
             // Read namespace count
@@ -83,7 +79,7 @@ namespace PakReader
             for (uint i = 0; i < NamespaceCount; i++)
             {
                 // Read namespace
-                if (VersionNumber >= Version.OPTIMIZED)
+                if (VersionNumber >= Version.Optimized_CRC32)
                 {
                     reader.ReadUInt32(); // StrHash
                 }
@@ -94,7 +90,7 @@ namespace PakReader
                 for (uint j = 0; j < KeyCount; j++)
                 {
                     // Read key
-                    if (VersionNumber >= Version.OPTIMIZED)
+                    if (VersionNumber >= Version.Optimized_CRC32)
                     {
                         reader.ReadUInt32(); // StrHash
                     }
@@ -103,7 +99,7 @@ namespace PakReader
                     reader.ReadUInt32(); // SourceStringHash
 
                     string EntryLocalizedString;
-                    if (VersionNumber >= Version.COMPACT)
+                    if (VersionNumber >= Version.Compact)
                     {
                         int LocalizedStringIndex = reader.ReadInt32();
 
@@ -150,14 +146,16 @@ namespace PakReader
         public enum Version : byte
         {
             /** Legacy format file - will be missing the magic number. */
-            LEGACY = 0,
+            Legacy = 0,
             /** Compact format file - strings are stored in a LUT to avoid duplication. */
-            COMPACT,
-            /** Optimized format file - namespaces/keys are pre-hashed, we know the number of elements up-front, and the number of references for each string in the LUT (to allow stealing). */
-            OPTIMIZED,
+            Compact,
+            /** Optimized format file - namespaces/keys are pre-hashed (CRC32), we know the number of elements up-front, and the number of references for each string in the LUT (to allow stealing). */
+            Optimized_CRC32,
+            /** Optimized format file - namespaces/keys are pre-hashed (CityHash64, UTF-16), we know the number of elements up-front, and the number of references for each string in the LUT (to allow stealing). */
+            Optimized_CityHash64_UTF16,
 
-            LATEST_PLUS_ONE,
-            LATEST = LATEST_PLUS_ONE - 1
+            LatestPlusOne,
+            Latest = LatestPlusOne - 1
         }
 
         struct FTextLocalizationResourceString
