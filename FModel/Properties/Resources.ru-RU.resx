@@ -771,4 +771,13 @@
   <data name="WithPosition" xml:space="preserve">
     <value>Должность / Значение</value>
   </data>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>Возможно позднее</value>
+  </data>
+  <data name="NoKeyWarning" xml:space="preserve">
+    <value>Найден зашифрованный .PAK файл. Для того чтобы расшифровать его, пожалуйста, укажите рабочий AES ключ</value>
+  </data>
+  <data name="SkipThisVersion" xml:space="preserve">
+    <value>Пропустить эту версию</value>
+  </data>
 </root>

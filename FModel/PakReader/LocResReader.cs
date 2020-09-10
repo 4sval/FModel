@@ -67,35 +67,26 @@ namespace PakReader
                 }
             }
 
-            // Read entries count
             if (VersionNumber >= Version.Optimized_CRC32)
-            {
-                uint EntriesCount = reader.ReadUInt32();
-            }
+                reader.ReadUInt32(); // EntriesCount
 
             // Read namespace count
             uint NamespaceCount = reader.ReadUInt32();
-
             for (uint i = 0; i < NamespaceCount; i++)
             {
-                // Read namespace
                 if (VersionNumber >= Version.Optimized_CRC32)
-                {
                     reader.ReadUInt32(); // StrHash
-                }
-                string Namespace = reader.ReadFString();
 
+                string Namespace = reader.ReadFString();
                 uint KeyCount = reader.ReadUInt32();
                 Dictionary<string, string> Entries = new Dictionary<string, string>((int)KeyCount);
                 for (uint j = 0; j < KeyCount; j++)
                 {
                     // Read key
                     if (VersionNumber >= Version.Optimized_CRC32)
-                    {
                         reader.ReadUInt32(); // StrHash
-                    }
-                    string Key = reader.ReadFString();
 
+                    string Key = reader.ReadFString();
                     reader.ReadUInt32(); // SourceStringHash
 
                     string EntryLocalizedString;

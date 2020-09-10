@@ -778,4 +778,13 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="WithPosition" xml:space="preserve">
     <value>Posizione / Valore</value>
   </data>
+  <data name="SkipThisVersion" xml:space="preserve">
+    <value>Ignora questa Versione</value>
+  </data>
+  <data name="NoKeyWarning" xml:space="preserve">
+    <value>È stato trovato un file .PAK criptato. Per decriptarlo, fornisci una chiave AES valida</value>
+  </data>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>Magari più avanti</value>
+  </data>
 </root>

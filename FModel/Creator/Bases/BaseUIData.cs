@@ -128,7 +128,7 @@ namespace FModel.Creator.Bases
                 c.DrawText(ability.DisplayName, Width + Margin + xToAdd + 10, yaPos + Margin + textSize, namePaint);
 
                 Helper.DrawMultilineText(c, ability.Description, Width, Width + Margin + xToAdd + 10, ETextSide.Left,
-                    new SKRect(Margin, textSize + yaPos + 27.5f, Width + AdditionalWidth - Margin, Height - 27.5f), descriptionPaint, out var _);
+                    new SKRect(Width + Margin + xToAdd + 10, textSize + yaPos + 27.5f, Width + AdditionalWidth - Margin, Height - 27.5f), descriptionPaint, out var _);
 
                 if (ability.Icon != null)
                     c.DrawBitmap(ability.Icon, new SKRect(Width + Margin, yaPos, Width + Margin + ability.Icon.Width, yaPos + ability.Icon.Height),

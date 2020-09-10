@@ -45,7 +45,7 @@ namespace FModel.Creator.Texts
         public static void DrawMultilineText(SKCanvas canvas, string text, int size, int margin, ETextSide side, SKRect area, SKPaint paint, out int yPos)
         {
             float lineHeight = paint.TextSize * 1.2f;
-            Line[] lines = SplitLines(text, paint, area.Width - margin);
+            Line[] lines = SplitLines(text, paint, area.Width);
             if (lines == null)
             {
                 yPos = (int)area.Top;
@@ -59,7 +59,7 @@ namespace FModel.Creator.Texts
                 {
                     ETextSide.Center => area.MidX - lines[i].Width / 2,
                     ETextSide.Right => size - margin - lines[i].Width,
-                    ETextSide.Left => margin,
+                    ETextSide.Left => area.Left,
                     _ => area.MidX - lines[i].Width / 2
                 };
                 canvas.DrawText(lines[i].Value.TrimEnd(), x, y, paint);

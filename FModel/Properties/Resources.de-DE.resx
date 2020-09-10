@@ -812,4 +812,13 @@ Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leake
   <data name="WithPosition" xml:space="preserve">
     <value>Position / Wert</value>
   </data>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>Vielleicht später</value>
+  </data>
+  <data name="NoKeyWarning" xml:space="preserve">
+    <value>Eine verschlüsselte .PAK-Datei wurde gefunden. Bitte gib einen funktionierenden AES-Schlüssel zum Entschlüsseln an</value>
+  </data>
+  <data name="SkipThisVersion" xml:space="preserve">
+    <value>Diese Version überspringen</value>
+  </data>
 </root>

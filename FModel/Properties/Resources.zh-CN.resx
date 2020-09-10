@@ -784,4 +784,10 @@
   <data name="NoKeyWarning" xml:space="preserve">
     <value>找到一个加密的.PAK文件。要解密文件，请设置正确的AES加密密钥。</value>
   </data>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>也许以后</value>
+  </data>
+  <data name="SkipThisVersion" xml:space="preserve">
+    <value>跳过此版本</value>
+  </data>
 </root>

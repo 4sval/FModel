@@ -40,7 +40,7 @@ namespace FModel.Creator.Bundles
                         var c = p.GetExport<UDataTable>();
                         if (c != null && c.TryGetCaseInsensitiveValue(parts[1], out var s) && s is UObject banner)
                         {
-                            RewardIcon = new BaseIcon(banner, "BannerIcons.uasset").IconImage.Resize(64, 64);
+                            RewardIcon = new BaseIcon(banner, "BannerIcons.uasset", false).IconImage.Resize(64, 64);
                         }
                     }
                 }
@@ -84,7 +84,7 @@ namespace FModel.Creator.Bundles
                             break;
                         default:
                             IsCountShifted = false;
-                            RewardIcon = new BaseIcon(d, itemDefinition.Value.AssetPathName.String.Substring(s1, s2) + ".uasset").IconImage.Resize(64, 64);
+                            RewardIcon = new BaseIcon(d, itemDefinition.Value.AssetPathName.String.Substring(s1, s2) + ".uasset", false).IconImage.Resize(64, 64);
                             break;
                     }
                 }
@@ -124,7 +124,7 @@ namespace FModel.Creator.Bundles
                             {
                                 int i = path.LastIndexOf('/');
                                 IsCountShifted = false;
-                                RewardIcon = new BaseIcon(d, path.Substring(i > 0 ? i : 0) + ".uasset").IconImage.Resize(64, 64);
+                                RewardIcon = new BaseIcon(d, path.Substring(i > 0 ? i : 0) + ".uasset", false).IconImage.Resize(64, 64);
                             }
                         }
                         break;

@@ -44,16 +44,18 @@ namespace FModel.Creator.Bases
             Stats = new List<Statistic>();
         }
 
-        /// <summary>
-        /// used to get low res icons ONLY
-        /// </summary>
-        /// <param name="export"></param>
-        /// <param name="assetName"></param>
-        public BaseIcon(IUExport export, string assetName) : this()
+        public BaseIcon(IUExport export, string assetName, bool forceHR) : this()
         {
+            if (export.GetExport<ObjectProperty>("Series") is ObjectProperty series)
+                Serie.GetRarity(this, series);
+            else if (Properties.Settings.Default.UseGameColors) // override default green
+                Rarity.GetInGameRarity(this, export.GetExport<EnumProperty>("Rarity")); // uncommon will be triggered by Rarity being null
+            else if (export.GetExport<EnumProperty>("Rarity") is EnumProperty rarity)
+                Rarity.GetHardCodedRarity(this, rarity);
+
             if (export.GetExport<ObjectProperty>("HeroDefinition", "WeaponDefinition") is ObjectProperty itemDef)
-                LargeSmallImage.GetPreviewImage(this, itemDef, assetName, false);
-            else if (export.GetExport<SoftObjectProperty>("SmallPreviewImage", "SmallImage") is SoftObjectProperty previewImage)
+                LargeSmallImage.GetPreviewImage(this, itemDef, assetName, forceHR);
+            else if (export.GetExport<SoftObjectProperty>(forceHR ? "LargePreviewImage" : "SmallPreviewImage", forceHR ? "ItemDisplayAsset" : "SmallImage") is SoftObjectProperty previewImage)
                 LargeSmallImage.GetPreviewImage(this, previewImage);
         }
 

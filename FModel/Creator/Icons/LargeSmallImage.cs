@@ -56,6 +56,6 @@ namespace FModel.Creator.Icons
 
         public static void DrawPreviewImage(SKCanvas c, BaseIcon icon) =>
             c.DrawBitmap(icon.IconImage ?? icon.FallbackImage, new SKRect(icon.Margin, icon.Margin, icon.Size - icon.Margin, icon.Size - icon.Margin),
-                            new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
+                new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
     }
 }
