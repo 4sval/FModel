@@ -47,11 +47,12 @@ namespace FModel.Utils
 
                     if (dialogResult == MessageBoxResult.Yes)
                         Process.Start(new ProcessStartInfo { FileName = args.ChangelogURL, UseShellExecute = true });
-                    if (dialogResult == MessageBoxResult.Cancel)
-                    {
-                        Properties.Settings.Default.SkipVersion = true;
-                        Properties.Settings.Default.Save();
-                    }
+                    // what i forgot: checking installed version to compare with saved version to skip
+                    //if (dialogResult == MessageBoxResult.Cancel)
+                    //{
+                    //    Properties.Settings.Default.SkipVersion = true;
+                    //    Properties.Settings.Default.Save();
+                    //}
 
                     if (dialogResult == MessageBoxResult.Yes || dialogResult == MessageBoxResult.OK)
                     {
