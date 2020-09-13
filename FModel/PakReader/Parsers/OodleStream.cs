@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using FModel.Utils;
 
 namespace PakReader.Parsers
 {
@@ -14,16 +15,12 @@ namespace PakReader.Parsers
 
         public OodleStream(byte[] input, long decompressedLength)
         {
+            Oodle.LoadOodleDll();
             _baseStream = new MemoryStream(Decompress(input, decompressedLength), false)
             {
                 Position = 0
             };
         }
-
-        /// <summary>
-        /// Oodle Library Path
-        /// </summary>
-        private const string OodleLibraryPath = "oo2core_5_win64";
 
         protected override void Dispose(bool disposing)
         {
@@ -45,7 +42,7 @@ namespace PakReader.Parsers
         /// <summary>
         /// Oodle64 Decompression Method 
         /// </summary>
-        [DllImport(OodleLibraryPath, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(Oodle.OODLE_DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern long OodleLZ_Decompress(byte[] buffer, long bufferSize, byte[] result, long outputBufferSize, int a, int b, int c, long d, long e, long f, long g, long h, long i, int ThreadModule);
 
         /// <summary>
