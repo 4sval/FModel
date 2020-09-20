@@ -2185,6 +2185,16 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap rotate_3d {
+            get {
+                object obj = ResourceManager.GetObject("rotate_3d", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Russian.
         /// </summary>
         public static string Russian {

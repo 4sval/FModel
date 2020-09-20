@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,20 +73,5 @@ namespace PakReader.Parsers.Class
             return false;
         }
         public bool TryGetValue(string key, out object value) => Dict.TryGetValue(key, out value);
-
-        public T Deserialize<T>()
-        {
-            var ret = ReflectionHelper.NewInstance<T>();
-            var map = ReflectionHelper.GetActionMap<T>();
-            foreach (var kv in Dict)
-            {
-                (var baseType, var typeGetter) = ReflectionHelper.GetPropertyInfo(kv.Value.GetType());
-                if (map.TryGetValue((kv.Key.ToLowerInvariant(), baseType), out Action<object, object> setter))
-                {
-                    setter(ret, typeGetter(kv.Value));
-                }
-            }
-            return ret;
-        }
     }
 }

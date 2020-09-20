@@ -75,7 +75,7 @@ namespace PakReader.Parsers
         public override bool CanRead => throw new NotImplementedException();
         public override bool CanSeek => throw new NotImplementedException();
         public override bool CanWrite => throw new NotImplementedException();
-        public override long Length => throw new NotImplementedException();
+        public override long Length => _baseStream.Length;
         public override long Position { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

@@ -14,8 +14,8 @@ namespace FModel.Creator.Texts
             public float Width { get; set; }
         }
 
-        public static void DrawCenteredMultilineText(SKCanvas canvas, string text, int maxLineCount, BaseIcon icon, ETextSide side, SKRect area, SKPaint paint)
-            => DrawCenteredMultilineText(canvas, text, maxLineCount, icon.Size, icon.Margin, side, area, paint);
+        public static void DrawCenteredMultilineText(SKCanvas canvas, string text, int maxLineCount, IBase icon, ETextSide side, SKRect area, SKPaint paint)
+            => DrawCenteredMultilineText(canvas, text, maxLineCount, icon.Width, icon.Margin, side, area, paint);
         public static void DrawCenteredMultilineText(SKCanvas canvas, string text, int maxLineCount, int size, int margin, ETextSide side, SKRect area, SKPaint paint)
         {
             float lineHeight = paint.TextSize * 1.2f;

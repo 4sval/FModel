@@ -25,7 +25,7 @@ namespace FModel.Creator
             string assetFolder = d.Parent.Name;
             if (Text.TypeFaces.NeedReload(false)) Text.TypeFaces = new Typefaces(); // when opening bundle creator settings without loading paks first
 
-            int index = Globals.Game.ActualGame == EGame.Valorant ? 1 : 0;
+            int index = Globals.Game.ActualGame == EGame.Valorant || Globals.Game.ActualGame == EGame.Spellbreak ? 1 : 0;
             string exportType = exportTypes.Length > index ? exportTypes[index].String : string.Empty;
             switch (exportType)
             {
@@ -290,6 +290,43 @@ namespace FModel.Creator
                 //        }
                 //        return false;
                 //    }
+                case "GAccolade":
+                case "GCosmeticSkin":
+                case "GCosmeticCard":
+                case "GCosmeticTitle":
+                case "GCosmeticBadge":
+                case "GCosmeticEmote":
+                case "GCosmeticTriumph":
+                case "GCosmeticRunTrail":
+                case "GCosmeticArtifact":
+                case "GCosmeticDropTrail":
+                    {
+                        BaseGCosmetic icon = new BaseGCosmetic(exports[index], exportType);
+                        using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                        using (var c = new SKCanvas(ret))
+                        {
+                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                            {
+                                Rarity.DrawRarity(c, icon);
+                            }
+
+                            LargeSmallImage.DrawPreviewImage(c, icon);
+
+                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                            {
+                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
+                                {
+                                    Text.DrawBackground(c, icon);
+                                    Text.DrawDisplayName(c, icon);
+                                    Text.DrawDescription(c, icon);
+                                }
+                            }
+
+                            Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                        }
+                        return true;
+                    }
             }
             return false;
         }

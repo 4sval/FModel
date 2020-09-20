@@ -89,6 +89,7 @@
     <None Remove="Resources\power.png" />
     <None Remove="Resources\progress-download.png" />
     <None Remove="Resources\refresh.png" />
+    <None Remove="Resources\rotate-3d.png" />
     <None Remove="Resources\settings.png" />
     <None Remove="Resources\share-all.png" />
     <None Remove="Resources\share.png" />
@@ -129,18 +130,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.6.2" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.6.3" />
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.150" />
     <PackageReference Include="DotNetZip" Version="1.13.8" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.1" />
-    <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.1.11" />
+    <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.6" />
     <PackageReference Include="LZMA-SDK" Version="19.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NVorbis" Version="0.10.1" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="1.1.0" />
-    <PackageReference Include="SkiaSharp" Version="2.80.1" />
+    <PackageReference Include="SkiaSharp" Version="2.80.2" />
     <PackageReference Include="ToastNotifications" Version="2.5.1" />
     <PackageReference Include="ToastNotifications.Messages" Version="2.5.1" />
     <PackageReference Include="WriteableBitmapEx" Version="1.6.7" />
@@ -202,6 +203,7 @@
     <Resource Include="Resources\power.png" />
     <Resource Include="Resources\progress-download.png" />
     <Resource Include="Resources\refresh.png" />
+    <Resource Include="Resources\rotate-3d.png" />
     <Resource Include="Resources\settings.png" />
     <Resource Include="Resources\share-all.png" />
     <Resource Include="Resources\share.png" />

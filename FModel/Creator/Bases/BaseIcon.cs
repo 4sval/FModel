@@ -12,7 +12,7 @@ using System.Windows;
 
 namespace FModel.Creator.Bases
 {
-    public class BaseIcon
+    public class BaseIcon : IBase
     {
         public SKBitmap FallbackImage;
         public SKBitmap IconImage;
@@ -126,5 +126,15 @@ namespace FModel.Creator.Bases
 
             AdditionalSize = 48 * Stats.Count;
         }
+
+        SKBitmap IBase.FallbackImage => FallbackImage;
+        SKBitmap IBase.IconImage => IconImage;
+        SKColor[] IBase.RarityBackgroundColors => RarityBackgroundColors;
+        SKColor[] IBase.RarityBorderColor => RarityBorderColor;
+        string IBase.DisplayName => DisplayName;
+        string IBase.Description => Description;
+        int IBase.Width => Size;
+        int IBase.Height => Size + AdditionalSize;
+        int IBase.Margin => Margin;
     }
 }

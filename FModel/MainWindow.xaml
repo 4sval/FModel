@@ -71,6 +71,11 @@
                         <Image Source="Resources/cast-audio.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Header="Mesh Viewer">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/rotate-3d.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator/>
                 <MenuItem x:Name="FModel_MI_Assets_GoTo" Header="{x:Static properties:Resources.Directories}">
                     <MenuItem.Icon>

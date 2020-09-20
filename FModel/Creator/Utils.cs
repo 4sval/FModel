@@ -64,6 +64,10 @@ namespace FModel.Creator
                     s += "_1024";
                 else if (s.Equals("/Game/UI/Foundation/Textures/BattleRoyale/BattlePass/T-BattlePass-Season14-Tile") || s.Equals("/Game/UI/Foundation/Textures/BattleRoyale/BattlePass/T-BattlePassWithLevels-Season14-Tile"))
                     s += "_1";
+                else if (s.Equals("/Game/UI/Textures/assets/cosmetics/skins/headshot/Skin_Headshot_WolfsBlood_UIT"))
+                    s = "/Game/UI/Textures/assets/cosmetics/skins/headshot/Skin_Headshot_Wolfsblood_UIT";
+                else if (s.Equals("/Game/UI/Textures/assets/cosmetics/skins/headshot/Skin_Headshot_Timeweaver_UIT"))
+                    s = "/Game/UI/Textures/assets/cosmetics/skins/headshot/Skin_Headshot_TimeWeaver_UIT";
             }
 
             PakPackage p = GetPropertyPakPackage(s);

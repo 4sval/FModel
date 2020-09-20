@@ -80,7 +80,7 @@ namespace FModel.Utils
             lzmaEncoder.Code(input, output, -1, -1, prg);
         }
 
-        public static void Decompress(Stream input, Stream output, Action<long, long>? onProgress = null)
+        public static void Decompress(Stream input, Stream output, Action<long, long> onProgress = null)
         {
             var decoder = new Decoder();
 

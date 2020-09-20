@@ -87,17 +87,17 @@ namespace FModel.Creator.Texts
             return string.Empty;
         }
 
-        public static void DrawBackground(SKCanvas c, BaseIcon icon)
+        public static void DrawBackground(SKCanvas c, IBase icon)
         {
             switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
             {
                 case EIconDesign.Flat:
                     {
                         var pathBottom = new SKPath { FillType = SKPathFillType.EvenOdd };
-                        pathBottom.MoveTo(icon.Margin, icon.Size - icon.Margin);
-                        pathBottom.LineTo(icon.Margin, icon.Size - icon.Margin - (icon.Size / 17 * 2.5f));
-                        pathBottom.LineTo(icon.Size - icon.Margin, icon.Size - icon.Margin - (icon.Size / 17 * 4.5f));
-                        pathBottom.LineTo(icon.Size - icon.Margin, icon.Size - icon.Margin);
+                        pathBottom.MoveTo(icon.Margin, icon.Height - icon.Margin);
+                        pathBottom.LineTo(icon.Margin, icon.Height - icon.Margin - (icon.Height / 17 * 2.5f));
+                        pathBottom.LineTo(icon.Width - icon.Margin, icon.Height - icon.Margin - (icon.Height / 17 * 4.5f));
+                        pathBottom.LineTo(icon.Width - icon.Margin, icon.Height - icon.Margin);
                         pathBottom.Close();
                         c.DrawPath(pathBottom, new SKPaint
                         {
@@ -110,7 +110,7 @@ namespace FModel.Creator.Texts
                 default:
                     {
                         c.DrawRect(
-                            new SKRect(icon.Margin, _STARTER_TEXT_POSITION, icon.Size - icon.Margin, icon.Size - icon.Margin),
+                            new SKRect(icon.Margin, _STARTER_TEXT_POSITION, icon.Width - icon.Margin, icon.Height - icon.Margin),
                             new SKPaint
                             {
                                 IsAntialias = true,
@@ -122,12 +122,12 @@ namespace FModel.Creator.Texts
             }
         }
 
-        public static void DrawDisplayName(SKCanvas c, BaseIcon icon)
+        public static void DrawDisplayName(SKCanvas c, IBase icon)
         {
             _NAME_TEXT_SIZE = 45;
             string text = icon.DisplayName;
             SKTextAlign side = SKTextAlign.Center;
-            int x = icon.Size / 2;
+            int x = icon.Width / 2;
             int y = _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE;
             switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
             {
@@ -141,7 +141,7 @@ namespace FModel.Creator.Texts
                     {
                         _NAME_TEXT_SIZE = 47;
                         side = SKTextAlign.Right;
-                        x = icon.Size - icon.Margin * 2;
+                        x = icon.Width - icon.Margin * 2;
                         break;
                     }
             }
@@ -157,7 +157,7 @@ namespace FModel.Creator.Texts
             };
 
             // resize if too long
-            while (namePaint.MeasureText(text) > (icon.Size - (icon.Margin * 2)))
+            while (namePaint.MeasureText(text) > (icon.Width - (icon.Margin * 2)))
             {
                 namePaint.TextSize = _NAME_TEXT_SIZE -= 2;
             }
@@ -165,7 +165,7 @@ namespace FModel.Creator.Texts
             c.DrawText(text, x, y, namePaint);
         }
 
-        public static void DrawDescription(SKCanvas c, BaseIcon icon)
+        public static void DrawDescription(SKCanvas c, IBase icon)
         {
             int maxLine = 4;
             _BOTTOM_TEXT_SIZE = 15;
@@ -198,7 +198,7 @@ namespace FModel.Creator.Texts
             
             // wrap if too long
             Helper.DrawCenteredMultilineText(c, text, maxLine, icon, side,
-                new SKRect(icon.Margin, _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE, icon.Size - icon.Margin, icon.Size - _BOTTOM_TEXT_SIZE),
+                new SKRect(icon.Margin, _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE, icon.Width - icon.Margin, icon.Height - _BOTTOM_TEXT_SIZE),
                 descriptionPaint);
         }
 

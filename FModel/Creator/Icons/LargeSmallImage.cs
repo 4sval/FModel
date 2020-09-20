@@ -54,8 +54,8 @@ namespace FModel.Creator.Icons
             return false;
         }
 
-        public static void DrawPreviewImage(SKCanvas c, BaseIcon icon) =>
-            c.DrawBitmap(icon.IconImage ?? icon.FallbackImage, new SKRect(icon.Margin, icon.Margin, icon.Size - icon.Margin, icon.Size - icon.Margin),
+        public static void DrawPreviewImage(SKCanvas c, IBase icon) =>
+            c.DrawBitmap(icon.IconImage ?? icon.FallbackImage, new SKRect(icon.Margin, icon.Margin, icon.Width - icon.Margin, icon.Height - icon.Margin),
                 new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
     }
 }

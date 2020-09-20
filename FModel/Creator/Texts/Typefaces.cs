@@ -49,6 +49,13 @@ namespace FModel.Creator.Texts
         private const string _DINNEXT_LTARABIC_LIGHT = "UI/Fonts/FinalFonts/LOCFonts/DIN_Next_Arabic/DINNextLTArabic-Light";
         private const string _NOTOSANS_CJK_LIGHT = "UI/Fonts/FinalFonts/LOCFonts/CJK/NotoSansCJK-Light"; // chinese, japanese, korean
         private const string _DINNEXT_W1G_BOLD = "UI/Fonts/FinalFonts/DINNextW1G-Bold";
+
+        private const string _SPELLBREAK_BASE_PATH = "/Game/UI/Fonts/";
+        private const string _MONTSERRAT_SEMIBOLD = "Montserrat-Semibold";
+        private const string _MONTSERRAT_SEMIBOLD_ITALIC = "Montserrat-SemiBoldItalic";
+        private const string _NANUM_GOTHIC = "NanumGothic";
+        private const string _QUADRAT_BOLD = "Quadrat_Bold";
+        private const string _SEGOE_BOLD_ITALIC = "Segoe_Bold_Italic";
 #pragma warning restore IDE0051
 
         public SKTypeface DefaultTypeface; // used as default font for all untranslated strings (item source, ...)
@@ -142,6 +149,18 @@ namespace FModel.Creator.Texts
                 if (t != null && t.Length == 3 && t[2].Array != null)
                     BundleDefaultTypeface = SKTypeface.FromStream(t[2].AsStream());
                 else BundleDefaultTypeface = DefaultTypeface;
+            }
+            else if (Globals.Game.ActualGame == EGame.Spellbreak)
+            {
+                ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(_SPELLBREAK_BASE_PATH + _QUADRAT_BOLD);
+                if (t != null && t.Length == 3 && t[2].Array != null)
+                    DisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
+                else DisplayNameTypeface = DefaultTypeface;
+
+                t = Utils.GetPropertyArraySegmentByte(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD);
+                if (t != null && t.Length == 3 && t[2].Array != null)
+                    DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
+                else DescriptionTypeface = DefaultTypeface;
             }
         }
 

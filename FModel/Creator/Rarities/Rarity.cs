@@ -66,6 +66,27 @@ namespace FModel.Creator.Rarities
             else GetHardCodedRarity(icon, e);
         }
 
+        public static void GetInGameRarity(BaseGCosmetic icon, EnumProperty e)
+        {
+            PakPackage p = Utils.GetPropertyPakPackage("/Game/UI/UIKit/DT_RarityColors");
+            if (p.HasExport() && !p.Equals(default))
+            {
+                var d = p.GetExport<UDataTable>();
+                if (d != null)
+                {
+                    if (e != null && d.TryGetValue(e?.Value.String["EXRarity::".Length..], out object r) && r is UObject rarity &&
+                        rarity.GetExport<ArrayProperty>("Colors") is ArrayProperty colors &&
+                        colors.Value[0] is StructProperty s1 && s1.Value is FLinearColor color1 &&
+                        colors.Value[1] is StructProperty s2 && s2.Value is FLinearColor color2 &&
+                        colors.Value[2] is StructProperty s3 && s3.Value is FLinearColor color3)
+                    {
+                        icon.RarityBackgroundColors = new SKColor[2] { SKColor.Parse(color1.Hex), SKColor.Parse(color3.Hex) };
+                        icon.RarityBorderColor = new SKColor[2] { SKColor.Parse(color2.Hex), SKColor.Parse(color1.Hex) };
+                    }
+                }
+            }
+        }
+
         public static void GetHardCodedRarity(BaseIcon icon, EnumProperty e)
         {
             switch (e?.Value.String)
@@ -103,17 +124,17 @@ namespace FModel.Creator.Rarities
             }
         }
 
-        public static void DrawRarity(SKCanvas c, BaseIcon icon)
+        public static void DrawRarity(SKCanvas c, IBase icon)
         {
             // border
-            c.DrawRect(new SKRect(0, 0, icon.Size, icon.Size),
+            c.DrawRect(new SKRect(0, 0, icon.Width, icon.Height),
                 new SKPaint
                 {
                     IsAntialias = true,
                     FilterQuality = SKFilterQuality.High,
                     Shader = SKShader.CreateLinearGradient(
-                        new SKPoint(icon.Size / 2, icon.Size),
-                        new SKPoint(icon.Size, icon.Size / 4),
+                        new SKPoint(icon.Width / 2, icon.Height),
+                        new SKPoint(icon.Width, icon.Height / 4),
                         icon.RarityBorderColor,
                         SKShaderTileMode.Clamp)
                 });
@@ -122,12 +143,12 @@ namespace FModel.Creator.Rarities
             {
                 case EIconDesign.Flat:
                     {
-                        if (icon.RarityBackgroundImage != null)
-                            c.DrawBitmap(icon.RarityBackgroundImage, new SKRect(icon.Margin, icon.Margin, icon.Size - icon.Margin, icon.Size - icon.Margin),
+                        if (icon is BaseIcon i && i.RarityBackgroundImage != null)
+                            c.DrawBitmap(i.RarityBackgroundImage, new SKRect(icon.Margin, icon.Margin, icon.Width - icon.Margin, icon.Height - icon.Margin),
                                 new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
                         else
                         {
-                            c.DrawRect(new SKRect(icon.Margin, icon.Margin, icon.Size - icon.Margin, icon.Size - icon.Margin),
+                            c.DrawRect(new SKRect(icon.Margin, icon.Margin, icon.Width - icon.Margin, icon.Height - icon.Margin),
                                 new SKPaint
                                 {
                                     IsAntialias = true,
@@ -143,16 +164,16 @@ namespace FModel.Creator.Rarities
                             };
                             var pathTop = new SKPath { FillType = SKPathFillType.EvenOdd };
                             pathTop.MoveTo(icon.Margin, icon.Margin);
-                            pathTop.LineTo(icon.Margin + (icon.Size / 17 * 10), icon.Margin);
-                            pathTop.LineTo(icon.Margin, icon.Margin + (icon.Size / 17));
+                            pathTop.LineTo(icon.Margin + (icon.Width / 17 * 10), icon.Margin);
+                            pathTop.LineTo(icon.Margin, icon.Margin + (icon.Height / 17));
                             pathTop.Close();
                             c.DrawPath(pathTop, paint);
 
                             var pathBottom = new SKPath { FillType = SKPathFillType.EvenOdd };
-                            pathBottom.MoveTo(icon.Margin, icon.Size - icon.Margin);
-                            pathBottom.LineTo(icon.Margin, icon.Size - icon.Margin - (icon.Size / 17 * 2.5f));
-                            pathBottom.LineTo(icon.Size - icon.Margin, icon.Size - icon.Margin - (icon.Size / 17 * 4.5f));
-                            pathBottom.LineTo(icon.Size - icon.Margin, icon.Size - icon.Margin);
+                            pathBottom.MoveTo(icon.Margin, icon.Height - icon.Margin);
+                            pathBottom.LineTo(icon.Margin, icon.Height - icon.Margin - (icon.Height / 17 * 2.5f));
+                            pathBottom.LineTo(icon.Width - icon.Margin, icon.Height - icon.Margin - (icon.Height / 17 * 4.5f));
+                            pathBottom.LineTo(icon.Width - icon.Margin, icon.Height - icon.Margin);
                             pathBottom.Close();
                             c.DrawPath(pathBottom, paint);
                         }
@@ -160,18 +181,18 @@ namespace FModel.Creator.Rarities
                     }
                 default:
                     {
-                        if (icon.RarityBackgroundImage != null)
-                            c.DrawBitmap(icon.RarityBackgroundImage, new SKRect(icon.Margin, icon.Margin, icon.Size - icon.Margin, icon.Size - icon.Margin),
+                        if (icon is BaseIcon i && i.RarityBackgroundImage != null)
+                            c.DrawBitmap(i.RarityBackgroundImage, new SKRect(icon.Margin, icon.Margin, icon.Width - icon.Margin, icon.Height - icon.Margin),
                                 new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
                         else
-                            c.DrawRect(new SKRect(icon.Margin, icon.Margin, icon.Size - icon.Margin, icon.Size - icon.Margin),
+                            c.DrawRect(new SKRect(icon.Margin, icon.Margin, icon.Width - icon.Margin, icon.Height - icon.Margin),
                                 new SKPaint
                                 {
                                     IsAntialias = true,
                                     FilterQuality = SKFilterQuality.High,
                                     Shader = SKShader.CreateRadialGradient(
-                                        new SKPoint(icon.Size / 2, icon.Size / 2),
-                                        icon.Size / 5 * 4,
+                                        new SKPoint(icon.Width / 2, icon.Height / 2),
+                                        icon.Width / 5 * 4,
                                         icon.RarityBackgroundColors,
                                         SKShaderTileMode.Clamp)
                                 });

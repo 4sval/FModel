@@ -342,9 +342,9 @@ namespace FModel.Utils
         public static void Filter(string filter, string item, out bool bSearch)
         {
             if (filter.StartsWith("!="))
-                bSearch = item.IndexOf(filter.Substring(2), StringComparison.CurrentCultureIgnoreCase) < 0;
+                bSearch = item.IndexOf(filter[2..], StringComparison.CurrentCultureIgnoreCase) < 0;
             else if (filter.StartsWith("=="))
-                bSearch = item.IndexOf(filter.Substring(2), StringComparison.CurrentCulture) >= 0;
+                bSearch = item.IndexOf(filter[2..], StringComparison.CurrentCulture) >= 0;
             else
                 bSearch = item.IndexOf(filter, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
@@ -367,7 +367,7 @@ namespace FModel.Utils
                                     if (data[i] == null)
                                         continue;
 
-                                    string basePath = Properties.Settings.Default.OutputPath + "\\Exports\\" + mount.Substring(1);
+                                    string basePath = Properties.Settings.Default.OutputPath + "\\Exports\\" + mount[1..];
                                     string fullPath = basePath + Path.ChangeExtension(entry.Name, ext[i]);
                                     string name = Path.GetFileName(fullPath);
                                     Directory.CreateDirectory(basePath + entry.GetPathWithoutFile());
@@ -394,7 +394,7 @@ namespace FModel.Utils
                     {
                         if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out var r))
                         {
-                            string basePath = Properties.Settings.Default.OutputPath + "\\Exports\\" + r.MountPoint.Substring(1);
+                            string basePath = Properties.Settings.Default.OutputPath + "\\Exports\\" + r.MountPoint[1..];
                             string fullPath = basePath + entry.Name;
                             string name = Path.GetFileName(fullPath);
                             Directory.CreateDirectory(basePath + entry.GetPathWithoutFile());
@@ -440,7 +440,7 @@ namespace FModel.Utils
         {
             if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out var r))
             {
-                string toCopy = r.MountPoint.Substring(1);
+                string toCopy = r.MountPoint[1..];
                 if (mode == ECopy.Path)
                     toCopy += entry.Name;
                 else if (mode == ECopy.PathNoExt)

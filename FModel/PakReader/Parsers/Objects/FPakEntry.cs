@@ -32,7 +32,7 @@ namespace PakReader.Parsers.Objects
 
             PakFileName = pakName;
             string name = caseSensitive ? reader.ReadFString() : reader.ReadFString().ToLowerInvariant();
-            Name = name.StartsWith("/") ? name.Substring(1) : name;
+            Name = name.StartsWith("/") ? name[1..] : name;
 
             var StartOffset = reader.BaseStream.Position;
 
@@ -229,16 +229,16 @@ namespace PakReader.Parsers.Objects
         public FPakEntry Uexp = null;
         public FPakEntry Ubulk = null;
 
-        public bool IsUE4Package() => Name.Substring(Name.LastIndexOf(".")).Equals(".uasset");
-        public bool IsLocres() => Name.Substring(Name.LastIndexOf(".")).Equals(".locres");
-        public bool IsUE4Map() => Name.Substring(Name.LastIndexOf(".")).Equals(".umap");
-        public bool IsUE4Font() => Name.Substring(Name.LastIndexOf(".")).Equals(".ufont");
+        public bool IsUE4Package() => Name[Name.LastIndexOf(".")..].Equals(".uasset");
+        public bool IsLocres() => Name[Name.LastIndexOf(".")..].Equals(".locres");
+        public bool IsUE4Map() => Name[Name.LastIndexOf(".")..].Equals(".umap");
+        public bool IsUE4Font() => Name[Name.LastIndexOf(".")..].Equals(".ufont");
 
         public bool HasUexp() => Uexp != null;
         public bool HasUbulk() => Ubulk != null;
 
         public bool IsCompressed() => UncompressedSize != Size || CompressionMethodIndex != (int)ECompressionFlags.COMPRESS_None;
-        public string GetExtension() => Name.Substring(Name.LastIndexOf("."));
+        public string GetExtension() => Name[Name.LastIndexOf(".")..];
         public string GetPathWithoutFile()
         {
             int stop = Name.LastIndexOf("/");
