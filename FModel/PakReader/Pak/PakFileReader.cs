@@ -15,6 +15,7 @@ namespace PakReader.Pak
     {
         public FPakInfo Info { get; }
         public Stream Stream { get; }
+        public string Directory { get; }
         public string FileName { get; }
         public bool CaseSensitive { get; }
 
@@ -45,6 +46,7 @@ namespace PakReader.Pak
 
         public PakFileReader(string path, Stream stream, bool caseSensitive = true)
         {
+            Directory = Path.GetDirectoryName(path);
             FileName = Path.GetFileName(path);
             Stream = stream;
             CaseSensitive = caseSensitive;

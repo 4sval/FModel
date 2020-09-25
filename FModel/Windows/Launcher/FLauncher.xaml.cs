@@ -128,7 +128,8 @@ namespace FModel.Windows.Launcher
                 UseDescriptionForTitle = true
             };
 
-            if ((bool)dialog.ShowDialog(this))
+            bool? result = dialog.ShowDialog();
+            if (result.HasValue && result.Value)
             {
                 GamesPath_TxtBox.Text = dialog.SelectedPath;
             }

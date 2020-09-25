@@ -6,27 +6,33 @@ using PakReader.Pak;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
+using EpicManifestParser.Objects;
+
 namespace FModel.Grabber.Paks
 {
     static class PaksGrabber
     {
+        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/.+\.pak$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase);
+
         public static async Task PopulateMenu()
         {
             PopulateBase();
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 if (string.IsNullOrEmpty(Properties.Settings.Default.PakPath))
                 {
-                    Application.Current.Dispatcher.Invoke(delegate
+                    await Application.Current.Dispatcher.InvokeAsync(delegate
                     {
-                        var launcher = new FLauncher();
-                        if ((bool)launcher.ShowDialog())
+                        FLauncher launcher = new FLauncher();
+                        bool? result = launcher.ShowDialog();
+                        if (result.HasValue && result.Value)
                         {
                             Properties.Settings.Default.PakPath = launcher.Path;
                             Properties.Settings.Default.Save();
@@ -34,12 +40,51 @@ namespace FModel.Grabber.Paks
                     });
                 }
 
-                // define the current game thank to the pak path
-                Folders.SetGameName(Properties.Settings.Default.PakPath);
-
                 // Add Pak Files
-                if (Directory.Exists(Properties.Settings.Default.PakPath))
+                if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
                 {
+                    byte[] manifestBytes = await File.ReadAllBytesAsync(Properties.Settings.Default.PakPath);
+                    Manifest manifest = new Manifest(manifestBytes, new ManifestOptions
+                    {
+                        ChunkBaseUri = new Uri("http://download.epicgames.com/Builds/Fortnite/CloudDir/ChunksV3/", UriKind.Absolute),
+                        ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks"))
+                    });
+                    int pakFiles = 0;
+
+                    foreach (FileManifest fileManifest in manifest.FileManifests)
+                    {
+                        if (!_pakFileRegex.IsMatch(fileManifest.Name))
+                        {
+                            continue;
+                        }
+
+                        var pakFileName = fileManifest.Name.Replace('/', '\\');
+                        PakFileReader pakFile = new PakFileReader(pakFileName, fileManifest.GetStream());
+
+                        if (pakFiles++ == 0)
+                        {
+                            // define the current game thank to the pak path
+                            Folders.SetGameName(pakFileName);
+
+                            Globals.Game.Version = pakFile.Info.Version;
+                            Globals.Game.SubVersion = pakFile.Info.SubVersion;
+                        }
+
+                        await Application.Current.Dispatcher.InvokeAsync(delegate
+                        {
+                            MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                            {
+                                PakFile = pakFile,
+                                IsEnabled = false
+                            });
+                        });
+                    }
+                }
+                else if (Directory.Exists(Properties.Settings.Default.PakPath))
+                {
+                    // define the current game thank to the pak path
+                    Folders.SetGameName(Properties.Settings.Default.PakPath);
+
                     string[] paks = Directory.GetFiles(Properties.Settings.Default.PakPath, "*.pak");
                     for (int i = 0; i < paks.Length; i++)
                     {
@@ -53,7 +98,7 @@ namespace FModel.Grabber.Paks
                                 Globals.Game.SubVersion = pakFile.Info.SubVersion;
                             }
 
-                            Application.Current.Dispatcher.Invoke(delegate
+                            await Application.Current.Dispatcher.InvokeAsync(delegate
                             {
                                 MenuItems.pakFiles.Add(new PakMenuItemViewModel
                                 {

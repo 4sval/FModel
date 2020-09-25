@@ -1,4 +1,6 @@
-﻿using FModel.Logger;
+﻿using System;
+
+using FModel.Logger;
 using FModel.ViewModels.MenuItem;
 using FModel.ViewModels.StatusBar;
 using Newtonsoft.Json;
@@ -70,7 +72,13 @@ namespace FModel.Utils
                             }
                         }
 
-                        string trigger = $"{Properties.Settings.Default.PakPath.Substring(Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName())).Replace("\\", "/")}/{menuItem.PakFile.FileName}";
+                        string trigger;
+
+                        if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
+                            trigger = $"{menuItem.PakFile.Directory.Replace('\\', '/')}/{menuItem.PakFile.FileName}";
+                        else
+                            trigger = $"{Properties.Settings.Default.PakPath.Substring(Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName(), StringComparison.Ordinal)).Replace("\\", "/")}/{menuItem.PakFile.FileName}";
+
                         if (dynamicKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict) && gameDict.TryGetValue(trigger, out var key))
                         {
                             string dKey = key.StartsWith("0x") ? key.Substring(2).ToUpperInvariant() : key.ToUpperInvariant();

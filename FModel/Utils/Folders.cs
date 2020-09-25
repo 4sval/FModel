@@ -19,11 +19,11 @@ namespace FModel.Utils
 
         public static void SetGameName(string pakPath)
         {
-            int index = pakPath.LastIndexOf("\\Content\\Paks");
+            int index = pakPath.LastIndexOf("\\Content\\Paks", StringComparison.Ordinal);
             if (index > -1)
             {
                 string p = pakPath.Substring(0, index);
-                string game = p.Substring(p.LastIndexOf("\\") + 1);
+                string game = p.Substring(p.LastIndexOf('\\') + 1);
                 Globals.Game.ActualGame = game switch
                 {
                     "FortniteGame" => EGame.Fortnite,
