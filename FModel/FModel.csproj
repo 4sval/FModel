@@ -204,7 +204,6 @@
     <Resource Include="Resources\power.png" />
     <Resource Include="Resources\progress-download.png" />
     <Resource Include="Resources\refresh.png" />
-    <Resource Include="Resources\rotate-3d.png" />
     <Resource Include="Resources\settings.png" />
     <Resource Include="Resources\share-all.png" />
     <Resource Include="Resources\share.png" />
