@@ -4,6 +4,7 @@ using FModel.ViewModels.StatusBar;
 using Newtonsoft.Json;
 using PakReader;
 using PakReader.Parsers.Objects;
+using System;
 using System.Collections.Generic;
 
 namespace FModel.Utils
@@ -50,7 +51,7 @@ namespace FModel.Utils
                             if (menuItem.PakFile.Info.EncryptionKeyGuid.Equals(new FGuid(0u, 0u, 0u, 0u)) &&
                                 staticKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var sKey))
                             {
-                                sKey = sKey.StartsWith("0x") ? sKey.Substring(2).ToUpperInvariant() : sKey.ToUpperInvariant();
+                                sKey = sKey.StartsWith("0x") ? sKey[2..].ToUpperInvariant() : sKey.ToUpperInvariant();
                                 try
                                 {
                                     // i can use TestAesKey here but that means it's gonna test here then right after to set the key
@@ -70,10 +71,16 @@ namespace FModel.Utils
                             }
                         }
 
-                        string trigger = $"{Properties.Settings.Default.PakPath.Substring(Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName())).Replace("\\", "/")}/{menuItem.PakFile.FileName}";
+                        string trigger;
+                        {
+                            if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
+                                trigger = $"{menuItem.PakFile.Directory.Replace('\\', '/')}/{menuItem.PakFile.FileName}";
+                            else
+                                trigger = $"{Properties.Settings.Default.PakPath[Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName(), StringComparison.Ordinal)..].Replace("\\", "/")}/{menuItem.PakFile.FileName}";
+                        }
                         if (dynamicKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict) && gameDict.TryGetValue(trigger, out var key))
                         {
-                            string dKey = key.StartsWith("0x") ? key.Substring(2).ToUpperInvariant() : key.ToUpperInvariant();
+                            string dKey = key.StartsWith("0x") ? key[2..].ToUpperInvariant() : key.ToUpperInvariant();
                             try
                             {
                                 // i can use TestAesKey here but that means it's gonna test here then right after to set the key

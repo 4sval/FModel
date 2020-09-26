@@ -134,7 +134,7 @@ namespace FModel.Creator.Bases
         string IBase.DisplayName => DisplayName;
         string IBase.Description => Description;
         int IBase.Width => Size;
-        int IBase.Height => Size + AdditionalSize;
+        int IBase.Height => Size;
         int IBase.Margin => Margin;
     }
 }

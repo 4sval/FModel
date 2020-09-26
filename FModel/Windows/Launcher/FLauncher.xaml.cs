@@ -47,6 +47,8 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Fortnite [EGL2]", Property = egl2FilesPath });
             }
 
+            ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Fortnite [LIVE]", Property = "latest.manifest" });
+
             string valorantFilesPath = Paks.GetValorantPakFilesPath();
             if (!string.IsNullOrEmpty(valorantFilesPath))
             {
@@ -62,7 +64,7 @@ namespace FModel.Windows.Launcher
                 Globals.gNotifier.ShowCustomMessage("Borderlands 3", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/borderlands3.ico");
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Borderlands 3", Property = borderlands3FilesPath });
             }
-            
+
             string minecraftdungeonsFilesPath = Paks.GetMinecraftDungeonsPakFilesPath();
             if (!string.IsNullOrEmpty(minecraftdungeonsFilesPath))
             {
@@ -128,9 +130,18 @@ namespace FModel.Windows.Launcher
                 UseDescriptionForTitle = true
             };
 
-            if ((bool)dialog.ShowDialog(this))
+            bool? result = dialog.ShowDialog();
+            if (result.HasValue && result.Value)
             {
                 GamesPath_TxtBox.Text = dialog.SelectedPath;
+            }
+        }
+
+        private void OnTextChange(object sender, TextChangedEventArgs e)
+        {
+            if (e.Source is TextBox text)
+            {
+                text.IsReadOnly = text.Text == "latest.manifest";
             }
         }
     }

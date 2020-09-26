@@ -15,6 +15,7 @@ namespace PakReader.Pak
     {
         public FPakInfo Info { get; }
         public Stream Stream { get; }
+        public string Directory { get; }
         public string FileName { get; }
         public bool CaseSensitive { get; }
 
@@ -45,6 +46,7 @@ namespace PakReader.Pak
 
         public PakFileReader(string path, Stream stream, bool caseSensitive = true)
         {
+            Directory = Path.GetDirectoryName(path);
             FileName = Path.GetFileName(path);
             Stream = stream;
             CaseSensitive = caseSensitive;
@@ -164,7 +166,7 @@ namespace PakReader.Pak
                 MountPoint = IndexReader.ReadFString() ?? "";
                 if (MountPoint.StartsWith("../../.."))
                 {
-                    MountPoint = MountPoint.Substring(8);
+                    MountPoint = MountPoint[8..];
                 }
                 else
                 {
@@ -209,7 +211,7 @@ namespace PakReader.Pak
             MountPoint = reader.ReadFString();
             if (MountPoint.StartsWith("../../.."))
             {
-                MountPoint = MountPoint.Substring(8);
+                MountPoint = MountPoint[8..];
             }
             else
             {
@@ -278,7 +280,7 @@ namespace PakReader.Pak
                 {
                     var path = directoryEntry.Directory + hashIndexEntry.Filename;
                     if (path.StartsWith("/"))
-                        path = path.Substring(1);
+                        path = path[1..];
                     if (!CaseSensitive)
                     {
                         path = path.ToLowerInvariant();
