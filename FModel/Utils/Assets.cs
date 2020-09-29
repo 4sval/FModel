@@ -25,6 +25,7 @@ using System.Text;
 using FModel.ViewModels.DataGrid;
 using ICSharpCode.AvalonEdit.Highlighting;
 using static FModel.Creator.Creator;
+using System.Runtime.CompilerServices;
 
 namespace FModel.Utils
 {
@@ -339,6 +340,7 @@ namespace FModel.Utils
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Filter(string filter, string item, out bool bSearch)
         {
             if (filter.StartsWith("!="))
@@ -436,6 +438,7 @@ namespace FModel.Utils
             }
             Copy(sb.ToString().Trim());
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Copy(FPakEntry entry, ECopy mode)
         {
             if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out var r))
@@ -455,6 +458,7 @@ namespace FModel.Utils
             }
             return string.Empty;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Copy(string fullPath, ECopy mode)
         {
             string toCopy = string.Empty;

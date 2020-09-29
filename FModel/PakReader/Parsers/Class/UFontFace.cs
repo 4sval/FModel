@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace PakReader.Parsers.Class
 {
@@ -33,10 +34,14 @@ namespace PakReader.Parsers.Class
         public IEnumerable<string> Keys => FontFaceAsset.Keys;
         public IEnumerable<object> Values => FontFaceAsset.Values;
         public int Count => FontFaceAsset.Count;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ContainsKey(string key) => FontFaceAsset.ContainsKey(key);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => FontFaceAsset.GetEnumerator();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         IEnumerator IEnumerable.GetEnumerator() => FontFaceAsset.GetEnumerator();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetValue(string key, out object value) => FontFaceAsset.TryGetValue(key, out value);
     }
 }

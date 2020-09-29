@@ -4,6 +4,7 @@ using Ionic.Zip;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -17,6 +18,7 @@ namespace FModel.Utils
             CreateDefaultSubFolders();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetGameName(string pakPath)
         {
             int index = pakPath.LastIndexOf("\\Content\\Paks", StringComparison.Ordinal);
@@ -40,7 +42,9 @@ namespace FModel.Utils
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetGameName() => GetGameName(Globals.Game.ActualGame);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetGameName(EGame game) =>
             game switch
             {

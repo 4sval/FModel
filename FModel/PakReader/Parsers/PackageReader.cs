@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.Objects;
 
@@ -18,7 +19,6 @@ namespace PakReader.Parsers
         public IUExport[] DataExports { get; }
         public FName[] DataExportTypes { get; }
 
-        public PackageReader(string path) : this(path + ".uasset", path + ".uexp", path + ".ubulk") { }
         public PackageReader(string uasset, string uexp, string ubulk) : this(File.OpenRead(uasset), File.OpenRead(uexp), File.Exists(ubulk) ? File.OpenRead(ubulk) : null) { }
         public PackageReader(Stream uasset, Stream uexp, Stream ubulk) : this(new BinaryReader(uasset), new BinaryReader(uexp), ubulk) { }
 
@@ -121,6 +121,7 @@ namespace PakReader.Parsers
             return Array.Empty<FObjectExport>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public FName ReadFName()
         {
             var NameIndex = Loader.ReadInt32();
@@ -141,19 +142,32 @@ namespace PakReader.Parsers
 
         public static implicit operator BinaryReader(PackageReader reader) => reader.Loader;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte ReadByte() => Loader.ReadByte();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public sbyte ReadSByte() => Loader.ReadSByte();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte[] ReadBytes(int count) => Loader.ReadBytes(count);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadFString() => Loader.ReadFString();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ReadTArray<T>(Func<T> Getter) => Loader.ReadTArray(Getter);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public short ReadInt16() => Loader.ReadInt16();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ushort ReadUInt16() => Loader.ReadUInt16();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int ReadInt32() => Loader.ReadInt32();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint ReadUInt32() => Loader.ReadUInt32();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long ReadInt64() => Loader.ReadInt64();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ulong ReadUInt64() => Loader.ReadUInt64();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float ReadFloat() => Loader.ReadSingle();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double ReadDouble() => Loader.ReadDouble();
 
         public long Position { get => Loader.BaseStream.Position; set => Loader.BaseStream.Position = value; }

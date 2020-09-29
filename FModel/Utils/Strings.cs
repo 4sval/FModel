@@ -1,9 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace FModel.Utils
 {
     static class Strings
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetReadableSize(double size)
         {
             string[] sizes = { Properties.Resources.B, Properties.Resources.KB, Properties.Resources.MB, Properties.Resources.GB, Properties.Resources.TB };
@@ -16,6 +18,7 @@ namespace FModel.Utils
             return string.Format("{0:# ###.##} {1}", size, sizes[order]).TrimStart();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FixPath(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -23,7 +26,7 @@ namespace FModel.Utils
 
             string trigger;
             {
-                string tempPath = path.Substring(1);
+                string tempPath = path[1..];
                 trigger = tempPath.Substring(0, tempPath.IndexOf("/"));
             }
 

@@ -8,10 +8,7 @@ namespace PakReader
     public class LocResReader
     {
         static readonly FGuid Magic = new FGuid(0x7574140E, 0xFC034A67, 0x9D90154A, 0x1B7F37C3);
-
         public readonly Dictionary<string, Dictionary<string, string>> Entries = new Dictionary<string, Dictionary<string, string>>();
-
-        public LocResReader(string path) : this(File.OpenRead(path)) { }
 
         public LocResReader(Stream stream) : this(new BinaryReader(stream)) { }
 
@@ -125,13 +122,6 @@ namespace PakReader
                 }
                 this.Entries.Add(Namespace ?? "", Entries);
             }
-        }
-
-        public string this[string ns, string key] => Entries[ns][key];
-        public bool TryGetValue(string ns, string key, out string value)
-        {
-            value = null;
-            return Entries.TryGetValue(ns, out var nsret) && nsret.TryGetValue(key, out value);
         }
 
         public enum Version : byte

@@ -4,11 +4,13 @@ using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace FModel.Creator
 {
     static class Utils
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetFullPath(string partialPath)
         {
             foreach (var fileReader in Globals.CachedPakFiles.Values)
@@ -45,7 +47,9 @@ namespace FModel.Creator
             return default;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SKBitmap NewZeroedBitmap(int width, int height) => new SKBitmap(new SKImageInfo(width, height), SKBitmapAllocFlags.ZeroPixels);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SKBitmap Resize(this SKBitmap me, int width, int height)
         {
             var bmp = NewZeroedBitmap(width, height);

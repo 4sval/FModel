@@ -103,6 +103,8 @@ namespace FModel.Creator.Bases
                 Description = Text.GetTextPropertyBase(arrayDescription);
             if (export.GetExport<StructProperty>("MaxStackSize") is StructProperty maxStackSize)
                 ShortDescription = Text.GetMaxStackSize(maxStackSize);
+            else if (export.GetExport<StructProperty>("XpRewardAmount") is StructProperty xpRewardAmount)
+                ShortDescription = Text.GetXpRewardAmount(xpRewardAmount);
             else if (export.GetExport<TextProperty>("ShortDescription") is TextProperty shortDescription)
                 ShortDescription = Text.GetTextPropertyBase(shortDescription);
             else if (exportType.Equals("AthenaItemWrapDefinition")) // if no ShortDescription it's most likely a wrap
@@ -116,8 +118,13 @@ namespace FModel.Creator.Bases
 
             if (export.GetExport<SoftObjectProperty>("AmmoData") is SoftObjectProperty ammoData)
                 Statistics.GetAmmoData(this, ammoData);
-            if (export.GetExport<StructProperty>("WeaponStatHandle") is StructProperty weaponStatHandle)
+            if (export.GetExport<StructProperty>("WeaponStatHandle") is StructProperty weaponStatHandle &&
+                (exportType.Equals("FortWeaponMeleeItemDefinition") ||
+                (export.GetExport<SoftObjectProperty>("StatList") is SoftObjectProperty statList &&
+                !statList.Value.AssetPathName.String.StartsWith("/Game/UI/Tooltips/NoTooltipStats"))))
+            {
                 Statistics.GetWeaponStats(this, weaponStatHandle);
+            }
             if (export.GetExport<ObjectProperty>("HeroGameplayDefinition") is ObjectProperty heroGameplayDefinition)
                 Statistics.GetHeroStats(this, heroGameplayDefinition);
 

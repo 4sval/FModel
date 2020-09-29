@@ -87,6 +87,35 @@ namespace FModel.Creator.Texts
             return string.Empty;
         }
 
+        public static string GetXpRewardAmount(StructProperty xpRewardAmount)
+        {
+            if (xpRewardAmount.Value is UObject o1)
+            {
+                if (
+                    o1.TryGetValue("Curve", out var c1) && c1 is StructProperty curve && curve.Value is UObject o2 &&
+                    o2.TryGetValue("CurveTable", out var c2) && c2 is ObjectProperty curveTable &&
+                    o2.TryGetValue("RowName", out var c3) && c3 is NameProperty rowName) // new way
+                {
+                    PakPackage p = Utils.GetPropertyPakPackage(curveTable.Value.Resource.OuterIndex.Resource.ObjectName.String);
+                    if (p.HasExport() && !p.Equals(default))
+                    {
+                        var table = p.GetExport<UCurveTable>();
+                        if (table != null)
+                        {
+                            if (table.TryGetValue(rowName.Value.String, out var v1) && v1 is UObject maxStackAmount &&
+                                maxStackAmount.TryGetValue("Keys", out var v2) && v2 is ArrayProperty keys &&
+                                keys.Value.Length > 0 && (keys.Value[0] as StructProperty).Value is FSimpleCurveKey amount &&
+                                amount.KeyValue != -1)
+                            {
+                                return $"{amount.KeyValue} Xp";
+                            }
+                        }
+                    }
+                }
+            }
+            return string.Empty;
+        }
+
         public static void DrawBackground(SKCanvas c, IBase icon)
         {
             switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)

@@ -14,20 +14,23 @@ namespace FModel.Creator.Stats
     {
         public static void GetAmmoData(BaseIcon icon, SoftObjectProperty ammoData)
         {
-            PakPackage p = Utils.GetPropertyPakPackage(ammoData.Value.AssetPathName.String);
-            if (p.HasExport() && !p.Equals(default))
+            if (!ammoData.Value.AssetPathName.String.StartsWith("/Game/Athena/Items/Consumables/"))
             {
-                var obj = p.GetExport<UObject>();
-                if (obj != null)
+                PakPackage p = Utils.GetPropertyPakPackage(ammoData.Value.AssetPathName.String);
+                if (p.HasExport() && !p.Equals(default))
                 {
-                    if (obj.TryGetValue("DisplayName", out var v1) && v1 is TextProperty displayName &&
-                        obj.TryGetValue("SmallPreviewImage", out var v2) && v2 is SoftObjectProperty smallPreviewImage)
+                    var obj = p.GetExport<UObject>();
+                    if (obj != null)
                     {
-                        icon.Stats.Add(new Statistic
+                        if (obj.TryGetValue("DisplayName", out var v1) && v1 is TextProperty displayName &&
+                            obj.TryGetValue("SmallPreviewImage", out var v2) && v2 is SoftObjectProperty smallPreviewImage)
                         {
-                            Icon = Utils.GetSoftObjectTexture(smallPreviewImage),
-                            Description = Text.GetTextPropertyBase(displayName).ToUpper()
-                        });
+                            icon.Stats.Add(new Statistic
+                            {
+                                Icon = Utils.GetSoftObjectTexture(smallPreviewImage),
+                                Description = Text.GetTextPropertyBase(displayName).ToUpper()
+                            });
+                        }
                     }
                 }
             }

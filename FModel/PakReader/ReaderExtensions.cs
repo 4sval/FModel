@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace PakReader
@@ -44,6 +45,7 @@ namespace PakReader
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T[] ReadTArray<T>(this BinaryReader reader, Func<T> Getter)
         {
             int SerializeNum = reader.ReadInt32();

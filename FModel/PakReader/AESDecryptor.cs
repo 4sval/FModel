@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 namespace PakReader
@@ -18,6 +19,7 @@ namespace PakReader
             Cipher.BlockSize = BLOCK_SIZE;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static ICryptoTransform GetDecryptor(byte[] key)
         {
             if (!CachedTransforms.TryGetValue(key, out var ret))

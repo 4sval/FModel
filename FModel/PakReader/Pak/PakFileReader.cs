@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using FModel.Logger;
@@ -462,7 +463,9 @@ namespace PakReader.Pak
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetValue(string key, out FPakEntry value) => Entries.TryGetValue(key, out value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetPartialKey(string partialKey, out string key)
         {
             foreach (string path in Entries.Keys)
@@ -478,11 +481,7 @@ namespace PakReader.Pak
             return false;
         }
 
-        public ReadOnlyMemory<byte> GetFile(string path) => Entries[CaseSensitive ? path : path.ToLowerInvariant()].GetData(Stream, AesKey, Info.CompressionMethods);
 
-        // IReadOnlyDictionary implementation (to prevent writing to the Entries dictionary
-
-        // TODO: Make these methods respect CaseSensitive property
         FPakEntry IReadOnlyDictionary<string, FPakEntry>.this[string key] => Entries[key];
         IEnumerable<string> IReadOnlyDictionary<string, FPakEntry>.Keys => Entries.Keys;
         IEnumerable<FPakEntry> IReadOnlyDictionary<string, FPakEntry>.Values => Entries.Values;

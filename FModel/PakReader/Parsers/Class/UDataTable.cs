@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace PakReader.Parsers.Class
 {
@@ -33,11 +34,16 @@ namespace PakReader.Parsers.Class
         public IEnumerable<string> Keys => RowMap.Keys;
         public IEnumerable<object> Values => RowMap.Values;
         public int Count => RowMap.Count;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ContainsKey(string key) => RowMap.ContainsKey(key);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => RowMap.GetEnumerator();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         IEnumerator IEnumerable.GetEnumerator() => RowMap.GetEnumerator();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetValue(string key, out object value) => RowMap.TryGetValue(key, out value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetCaseInsensitiveValue(string key, out object value)
         {
             foreach (var r in RowMap)
