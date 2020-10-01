@@ -52,6 +52,7 @@ namespace FModel.Creator
                 case "FortAbilityKit":
                 case "FortWorkerType":
                 case "RewardGraphToken":
+                case "FortPlaylistAthena":
                 case "FortBannerTokenType":
                 case "FortVariantTokenType":
                 case "FortFeatItemDefinition":
@@ -83,16 +84,19 @@ namespace FModel.Creator
                 case "RadioContentSourceItemDefinition":
                 case "FortPlaysetGrenadeItemDefinition":
                 case "FortPersonalVehicleItemDefinition":
+                case "FortGameplayModifierItemDefinition":
                 case "FortHardcoreModifierItemDefinition":
                 case "FortConsumableAccountItemDefinition":
                 case "FortConversionControlItemDefinition":
                 case "FortAccountBuffCreditItemDefinition":
                 case "FortPersistentResourceItemDefinition":
+                case "FortHomebaseBannerIconItemDefinition":
                 case "FortCampaignHeroLoadoutItemDefinition":
                 case "FortConditionalResourceItemDefinition":
                 case "FortChallengeBundleScheduleDefinition":
                 case "FortWeaponMeleeDualWieldItemDefinition":
                 case "FortDailyRewardScheduleTokenDefinition":
+                case "FortCreativeRealEstatePlotItemDefinition":
                     {
                         BaseIcon icon = new BaseIcon(exports[index], exportType, ref assetName);
                         int height = icon.Size + icon.AdditionalSize;
