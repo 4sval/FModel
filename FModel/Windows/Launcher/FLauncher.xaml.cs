@@ -101,7 +101,7 @@ namespace FModel.Windows.Launcher
             if (!string.IsNullOrEmpty(sod2Path))
             {
                 // WIP
-                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]", $"State of Decay 2 found at {sod2Path}");
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[UWP / LauncherInstalled.dat]", $"State of Decay 2 found at {sod2Path}");
                 Globals.gNotifier.ShowCustomMessage("State of Decay 2", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/sod2.ico");
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "State of Decay 2", Property = sod2Path });
             }
