@@ -110,7 +110,7 @@ namespace FModel.Creator.Bases
             // text
             if (export.GetExport<TextProperty>("DisplayName", "DefaultHeaderText", "UIDisplayName") is TextProperty displayName)
                 DisplayName = Text.GetTextPropertyBase(displayName);
-            if (export.GetExport<TextProperty>("Description", "DefaultBodyText") is TextProperty description)
+            if (export.GetExport<TextProperty>("Description", "DefaultBodyText", "UIDescription") is TextProperty description)
                 Description = Text.GetTextPropertyBase(description);
             else if (export.GetExport<ArrayProperty>("Description") is ArrayProperty arrayDescription) // abilities
                 Description = Text.GetTextPropertyBase(arrayDescription);
@@ -118,7 +118,7 @@ namespace FModel.Creator.Bases
                 ShortDescription = Text.GetMaxStackSize(maxStackSize);
             else if (export.GetExport<StructProperty>("XpRewardAmount") is StructProperty xpRewardAmount)
                 ShortDescription = Text.GetXpRewardAmount(xpRewardAmount);
-            else if (export.GetExport<TextProperty>("ShortDescription") is TextProperty shortDescription)
+            else if (export.GetExport<TextProperty>("ShortDescription", "UIDisplaySubName") is TextProperty shortDescription)
                 ShortDescription = Text.GetTextPropertyBase(shortDescription);
             else if (exportType.Equals("AthenaItemWrapDefinition")) // if no ShortDescription it's most likely a wrap
                 ShortDescription = Localizations.GetLocalization("Fort.Cosmetics", "ItemWrapShortDescription", "Wrap");
