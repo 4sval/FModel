@@ -756,7 +756,8 @@ namespace FModel.Properties {
         ///   Recherche une chaîne localisée semblable à • Yanteh				• Maiky
         ///• FunGames			• HYPEX ♥
         ///• Alexander			• Netu ♥
-        ///• SexyNutella			• imatrix.
+        ///• SexyNutella			• imatrix
+        ///• Frenzy Leaks			• LlamaLeaks.
         /// </summary>
         public static string DonatorsFDetails {
             get {

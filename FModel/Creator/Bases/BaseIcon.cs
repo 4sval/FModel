@@ -3,6 +3,7 @@ using FModel.Creator.Rarities;
 using FModel.Creator.Stats;
 using FModel.Creator.Texts;
 using FModel.Utils;
+using PakReader.Pak;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
@@ -57,6 +58,18 @@ namespace FModel.Creator.Bases
                 LargeSmallImage.GetPreviewImage(this, itemDef, assetName, forceHR);
             else if (export.GetExport<SoftObjectProperty>(forceHR ? "LargePreviewImage" : "SmallPreviewImage", forceHR ? "ItemDisplayAsset" : "SmallImage") is SoftObjectProperty previewImage)
                 LargeSmallImage.GetPreviewImage(this, previewImage);
+            else if (export.GetExport<ObjectProperty>("access_item") is ObjectProperty accessItem)
+            {
+                PakPackage p = Utils.GetPropertyPakPackage(accessItem.Value.Resource.OuterIndex.Resource.ObjectName.String);
+                if (p.HasExport() && !p.Equals(default))
+                {
+                    var d = p.GetExport<UObject>();
+                    if (d != null)
+                    {
+                        IconImage = new BaseIcon(d, accessItem.Value.Resource.ObjectName.String + ".uasset", false).IconImage;
+                    }
+                }
+            }
         }
 
         /// <summary>
