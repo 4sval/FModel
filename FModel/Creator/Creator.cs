@@ -72,6 +72,7 @@ namespace FModel.Creator
                 case "FortCurrencyItemDefinition":
                 case "FortResourceItemDefinition":
                 case "FortSchematicItemDefinition":
+                case "FortExpeditionItemDefinition":
                 case "FortIngredientItemDefinition":
                 case "FortAccountBuffItemDefinition":
                 case "FortWeaponMeleeItemDefinition":
@@ -82,6 +83,7 @@ namespace FModel.Creator
                 case "FortWeaponRangedItemDefinition":
                 case "FortNeverPersistItemDefinition":
                 case "RadioContentSourceItemDefinition":
+                case "FortOutpostItemDefinition":
                 case "FortPlaysetGrenadeItemDefinition":
                 case "FortPersonalVehicleItemDefinition":
                 case "FortGameplayModifierItemDefinition":
