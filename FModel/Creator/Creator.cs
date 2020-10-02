@@ -55,6 +55,7 @@ namespace FModel.Creator
                 case "FortPlaylistAthena":
                 case "FortBannerTokenType":
                 case "FortVariantTokenType":
+                case "FortDecoItemDefinition":
                 case "FortFeatItemDefinition":
                 case "FortStatItemDefinition":
                 case "FortTrapItemDefinition":
@@ -66,6 +67,7 @@ namespace FModel.Creator
                 case "FortPlaysetItemDefinition":
                 case "FortGiftBoxItemDefinition":
                 case "FortSpyTechItemDefinition":
+                case "FortOutpostItemDefinition":
                 case "FortAccoladeItemDefinition":
                 case "FortCardPackItemDefinition":
                 case "FortDefenderItemDefinition":
@@ -83,7 +85,6 @@ namespace FModel.Creator
                 case "FortWeaponRangedItemDefinition":
                 case "FortNeverPersistItemDefinition":
                 case "RadioContentSourceItemDefinition":
-                case "FortOutpostItemDefinition":
                 case "FortPlaysetGrenadeItemDefinition":
                 case "FortPersonalVehicleItemDefinition":
                 case "FortGameplayModifierItemDefinition":
