@@ -160,13 +160,13 @@ namespace FModel.Utils
                     "Minecraft Dungeons not found");
             }
 
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Launcher version not found, attempting to find Microsoft Store installation.");
+            //DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Launcher version not found, attempting to find Microsoft Store installation.");
 
-            var mcDungeonsUWPPath = GetUWPPakFilesPath("Microsoft.Lovika_8wekyb3d8bbwe");
-            if (!string.IsNullOrEmpty(mcDungeonsUWPPath))
-            {
-                return $"{mcDungeonsUWPPath}\\Dungeons\\Content\\Paks";
-            }
+            //var mcDungeonsUWPPath = GetUWPPakFilesPath("Microsoft.Lovika_8wekyb3d8bbwe");
+            //if (!string.IsNullOrEmpty(mcDungeonsUWPPath))
+            //{ 
+            //    return $"{mcDungeonsUWPPath}\\Dungeons\\Content\\Paks";
+            //}
 
             return string.Empty;
         }
