@@ -237,8 +237,8 @@ namespace FModel.Creator.Texts
             {
                 IsAntialias = true,
                 FilterQuality = SKFilterQuality.High,
-                Typeface = side == ETextSide.Left ? TypeFaces.DisplayNameTypeface : TypeFaces.DefaultTypeface,
-                TextSize = 15,
+                Typeface = side == ETextSide.Left ? TypeFaces.BottomDefaultTypeface ?? TypeFaces.DisplayNameTypeface : TypeFaces.BottomDefaultTypeface ?? TypeFaces.DefaultTypeface,
+                TextSize = TypeFaces.BottomDefaultTypeface == null ? 15 : 13,
                 Color = SKColors.White,
                 TextAlign = side == ETextSide.Left ? SKTextAlign.Left : SKTextAlign.Right,
             };

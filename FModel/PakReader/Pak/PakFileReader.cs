@@ -480,6 +480,20 @@ namespace PakReader.Pak
             key = string.Empty;
             return false;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryGetCaseInsensiteveValue(string key, out FPakEntry value)
+        {
+            foreach (var r in Entries)
+            {
+                if (r.Key.Equals(key, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    value = r.Value;
+                    return true;
+                }
+            }
+            value = null;
+            return false;
+        }
 
 
         FPakEntry IReadOnlyDictionary<string, FPakEntry>.this[string key] => Entries[key];

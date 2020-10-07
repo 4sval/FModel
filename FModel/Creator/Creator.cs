@@ -312,9 +312,16 @@ namespace FModel.Creator
                         using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
                         using (var c = new SKCanvas(ret))
                         {
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign == EIconDesign.Flat)
                             {
-                                Rarity.DrawRarity(c, icon);
+                                icon.Draw(c);
+                            }
+                            else
+                            {
+                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                                {
+                                    Rarity.DrawRarity(c, icon);
+                                }
                             }
 
                             LargeSmallImage.DrawPreviewImage(c, icon);

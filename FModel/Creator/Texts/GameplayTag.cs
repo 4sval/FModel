@@ -36,7 +36,7 @@ namespace FModel.Creator.Texts
             if (p.HasExport() && !p.Equals(default))
             {
                 var d = p.GetExport<UDataTable>();
-                if (d != null && d.TryGetValue(setName, out var obj) && obj is UObject o)
+                if (d != null && d.TryGetCaseInsensitiveValue(setName, out var obj) && obj is UObject o)
                 {
                     if (o.TryGetValue("DisplayName", out var displayName) && displayName is TextProperty t)
                     {

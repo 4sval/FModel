@@ -793,6 +793,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Show statistics.
+        /// </summary>
+        public static string DrawStats {
+            get {
+                return ResourceManager.GetString("DrawStats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Duration.
         /// </summary>
         public static string Duration {

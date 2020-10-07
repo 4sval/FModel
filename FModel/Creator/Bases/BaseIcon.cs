@@ -129,16 +129,16 @@ namespace FModel.Creator.Bases
             else if (export.GetExport<ObjectProperty>("cosmetic_item") is ObjectProperty cosmeticItem) // variants
                 CosmeticSource = cosmeticItem.Value.Resource.ObjectName.String;
 
-            if (export.GetExport<SoftObjectProperty>("AmmoData") is SoftObjectProperty ammoData)
+            if (Properties.Settings.Default.DrawStats && export.GetExport<SoftObjectProperty>("AmmoData") is SoftObjectProperty ammoData)
                 Statistics.GetAmmoData(this, ammoData);
-            if (export.GetExport<StructProperty>("WeaponStatHandle") is StructProperty weaponStatHandle &&
+            if (Properties.Settings.Default.DrawStats && export.GetExport<StructProperty>("WeaponStatHandle") is StructProperty weaponStatHandle &&
                 (exportType.Equals("FortWeaponMeleeItemDefinition") ||
                 (export.GetExport<SoftObjectProperty>("StatList") is SoftObjectProperty statList &&
                 !statList.Value.AssetPathName.String.StartsWith("/Game/UI/Tooltips/NoTooltipStats"))))
             {
                 Statistics.GetWeaponStats(this, weaponStatHandle);
             }
-            if (export.GetExport<ObjectProperty>("HeroGameplayDefinition") is ObjectProperty heroGameplayDefinition)
+            if (Properties.Settings.Default.DrawStats && export.GetExport<ObjectProperty>("HeroGameplayDefinition") is ObjectProperty heroGameplayDefinition)
                 Statistics.GetHeroStats(this, heroGameplayDefinition);
 
             /* Please do not add Schematics support because it takes way too much memory */

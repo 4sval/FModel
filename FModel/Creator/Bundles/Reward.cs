@@ -34,13 +34,12 @@ namespace FModel.Creator.Bundles
                 string[] parts = assetName.Split(':');
                 if (parts[0].Equals("HomebaseBannerIcon", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    PakPackage p = Utils.GetPropertyPakPackage("/Game/Banners/BannerIcons");
+                    PakPackage p = Utils.GetPropertyPakPackage($"/Game/Items/BannerIcons/{parts[1]}.{parts[1]}");
                     if (p.HasExport() && !p.Equals(default))
                     {
-                        var c = p.GetExport<UDataTable>();
-                        if (c != null && c.TryGetCaseInsensitiveValue(parts[1], out var s) && s is UObject banner)
+                        if (p.GetExport<UObject>() is UObject banner)
                         {
-                            RewardIcon = new BaseIcon(banner, "BannerIcons.uasset", false).IconImage.Resize(64, 64);
+                            RewardIcon = new BaseIcon(banner, $"{parts[1]}.uasset", false).IconImage.Resize(64, 64);
                         }
                     }
                 }

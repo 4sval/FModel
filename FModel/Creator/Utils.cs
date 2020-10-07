@@ -25,7 +25,7 @@ namespace FModel.Creator
         {
             string path = Strings.FixPath(value);
             foreach (var fileReader in Globals.CachedPakFiles.Values)
-                if (fileReader.TryGetValue(path, out var entry))
+                if (fileReader.TryGetCaseInsensiteveValue(path, out var entry))
                 {
                     // kinda sad to use Globals.CachedPakFileMountPoint when the mount point is already in the path ¯\_(ツ)_/¯
                     string mount = path.Substring(0, path.Length - entry.Name.Substring(0, entry.Name.LastIndexOf(".")).Length);
@@ -38,7 +38,7 @@ namespace FModel.Creator
         {
             string path = Strings.FixPath(value);
             foreach (var fileReader in Globals.CachedPakFiles.Values)
-                if (fileReader.TryGetValue(path, out var entry))
+                if (fileReader.TryGetCaseInsensiteveValue(path, out var entry))
                 {
                     // kinda sad to use Globals.CachedPakFileMountPoint when the mount point is already in the path ¯\_(ツ)_/¯
                     string mount = path.Substring(0, path.Length - entry.Name.Substring(0, entry.Name.LastIndexOf(".")).Length);
