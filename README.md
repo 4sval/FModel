@@ -159,6 +159,7 @@ This software uses the following open source packages:
 - [SkiaSharp](https://github.com/mono/SkiaSharp)
 - [ToastNotifications](https://github.com/rafallopatka/ToastNotifications)
 - [MaterialDesignIcons](https://materialdesignicons.com/)
+- [Microsoft.Windows.SDK.Contracts](https://www.nuget.org/packages/Microsoft.Windows.SDK.Contracts)
 
 ## Support [![](https://wakatime.com/badge/github/iAmAsval/FModel.svg)](https://wakatime.com/badge/github/iAmAsval/FModel)
 
