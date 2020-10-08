@@ -73,6 +73,7 @@ namespace FModel.Creator
                 case "FortDefenderItemDefinition":
                 case "FortCurrencyItemDefinition":
                 case "FortResourceItemDefinition":
+                case "FortCodeTokenItemDefinition":
                 case "FortSchematicItemDefinition":
                 case "FortExpeditionItemDefinition":
                 case "FortIngredientItemDefinition":
