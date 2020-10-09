@@ -96,6 +96,8 @@ To use FModel, you need to have [.NET Core 3.1](https://dotnet.microsoft.com/dow
             <a href="https://github.com/PsychoPast" title="Github">🔧</a>
             <a href="https://twitter.com/xXPsychoPastXx" title="Twitter">🐦</a>
         </td>
+  </tr>
+  <tr>
         <td align="center">
             <a href="https://github.com/AyeTSG">
                 <img src="https://avatars1.githubusercontent.com/u/49595354?s=200&v=4" width="100px;" alt="TSG"/><br>
