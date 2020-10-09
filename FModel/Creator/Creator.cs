@@ -142,6 +142,18 @@ namespace FModel.Creator
                         }
                         return true;
                     }
+                case "AthenaSeasonItemDefinition":
+                    {
+                        BaseSeason icon = new BaseSeason(exports[index], assetFolder);
+                        using (var ret = new SKBitmap(icon.Width, icon.HeaderHeight + icon.AdditionalSize, SKColorType.Rgba8888, SKAlphaType.Opaque))
+                        using (var c = new SKCanvas(ret))
+                        {
+                            icon.Draw(c);
+
+                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                        }
+                        return true;
+                    }
                 case "FortMtxOfferData":
                     {
                         BaseOffer icon = new BaseOffer(exports[index]);

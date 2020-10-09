@@ -141,6 +141,7 @@ namespace FModel.Windows.Launcher
         {
             if (e.Source is TextBox text)
             {
+                BrowsePath.IsEnabled = text.Text != "donotedit-youcanteditanyway.manifest";
                 text.IsReadOnly = text.Text == "donotedit-youcanteditanyway.manifest";
             }
         }

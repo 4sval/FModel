@@ -70,6 +70,9 @@ namespace FModel.Creator.Bases
                     }
                 }
             }
+
+            if (export.GetExport<TextProperty>("DisplayName", "DefaultHeaderText", "UIDisplayName") is TextProperty displayName)
+                DisplayName = Text.GetTextPropertyBase(displayName);
         }
 
         /// <summary>
