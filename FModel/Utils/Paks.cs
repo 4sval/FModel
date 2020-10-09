@@ -19,9 +19,9 @@ namespace FModel.Utils
         /// <returns></returns>
         public static (string, string, string) GetUEGameFilesPath(string game)
         {
-            foreach (DriveInfo drive in DriveInfo.GetDrives())
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                string launcher = $"{drive.Name}ProgramData\\Epic\\UnrealEngineLauncher\\LauncherInstalled.dat";
+                string launcher = $"{Environment.GetEnvironmentVariable("PROGRAMDATA")}\\Epic\\UnrealEngineLauncher\\LauncherInstalled.dat";
                 if (File.Exists(launcher))
                 {
                     DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", launcher);
@@ -82,9 +82,9 @@ namespace FModel.Utils
 
         public static string GetValorantPakFilesPath()
         {
-            foreach (DriveInfo drive in DriveInfo.GetDrives())
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                string installs = $"{drive.Name}ProgramData\\Riot Games\\RiotClientInstalls.json";
+                string installs = $"{Environment.GetEnvironmentVariable("PROGRAMDATA")}\\Riot Games\\RiotClientInstalls.json";
                 if (File.Exists(installs))
                 {
                     DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[RiotClientInstalls.json]", installs);
