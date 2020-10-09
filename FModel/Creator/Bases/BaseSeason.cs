@@ -110,7 +110,7 @@ namespace FModel.Creator.Bases
                 TextSize = 15,
                 Color = SKColors.White,
                 TextAlign = SKTextAlign.Center,
-                Typeface = Text.TypeFaces.BottomDefaultTypeface
+                Typeface = Text.TypeFaces.BottomDefaultTypeface ?? Text.TypeFaces.DisplayNameTypeface
             };
             using SKPaint bg = new SKPaint
             {
@@ -135,7 +135,7 @@ namespace FModel.Creator.Bases
             int x = 20;
             foreach (var (index, reward) in BookXpSchedule)
             {
-                if (index == 0)
+                if (index == 0 || reward.Count <= 0)
                     continue;
 
                 c.DrawText(index.ToString(), new SKPoint(x + (defaultSize / 2), y - 5), paint);
@@ -234,11 +234,14 @@ namespace FModel.Creator.Bases
                     });
             }
 
-            c.DrawBitmap(FirstWinReward.TheReward.IconImage.Resize(HeaderHeight, HeaderHeight), new SKPoint(0, 0), new SKPaint
+            if (FirstWinReward != null)
             {
-                FilterQuality = SKFilterQuality.High,
-                IsAntialias = true
-            });
+                c.DrawBitmap(FirstWinReward.TheReward.IconImage.Resize(HeaderHeight, HeaderHeight), new SKPoint(0, 0), new SKPaint
+                {
+                    FilterQuality = SKFilterQuality.High,
+                    IsAntialias = true
+                });
+            }
 
             SKPath pathTop = new SKPath { FillType = SKPathFillType.EvenOdd };
             pathTop.MoveTo(0, HeaderHeight);
