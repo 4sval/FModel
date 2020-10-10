@@ -157,6 +157,9 @@ namespace FModel.Creator.Texts
         {
             _NAME_TEXT_SIZE = 45;
             string text = icon.DisplayName;
+
+            if (string.IsNullOrEmpty(text)) return;
+
             SKTextAlign side = SKTextAlign.Center;
             int x = icon.Width / 2;
             int y = _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE;
@@ -223,11 +226,12 @@ namespace FModel.Creator.Texts
 
         public static void DrawDescription(SKCanvas c, IBase icon)
         {
-            if (!string.IsNullOrEmpty(icon.Description)) return;
-
-            int maxLine = 4;
             _BOTTOM_TEXT_SIZE = 15;
             string text = icon.Description;
+
+            if (string.IsNullOrEmpty(text)) return;
+
+            int maxLine = 4;
             ETextSide side = ETextSide.Center;
             switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
             {
@@ -262,6 +266,8 @@ namespace FModel.Creator.Texts
 
         public static void DrawToBottom(SKCanvas c, BaseIcon icon, ETextSide side, string text)
         {
+            if (string.IsNullOrEmpty(text)) return;
+
             SKPaint shortDescriptionPaint = new SKPaint
             {
                 IsAntialias = true,
