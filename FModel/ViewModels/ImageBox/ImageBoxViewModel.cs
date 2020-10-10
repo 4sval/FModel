@@ -65,8 +65,8 @@ namespace FModel.ViewModels.ImageBox
                     {
                         Title = vm.Name,
                         WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                        Width = vm.Image.Width,
-                        Height = vm.Image.Height
+                        Width = vm.Image.Width + 16,
+                        Height = vm.Image.Height + 39
                     };
                     win.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
                     if (vm.Image.Height > 1000)

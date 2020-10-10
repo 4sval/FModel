@@ -18,7 +18,7 @@ namespace FModel.Grabber.Paks
 {
     static class PaksGrabber
     {
-        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/.+\.pak$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/.+\.pak$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         public static async Task PopulateMenu()
         {
@@ -41,9 +41,10 @@ namespace FModel.Grabber.Paks
                 }
 
                 // Add Pak Files
-                if (Properties.Settings.Default.PakPath.EndsWith(".manifest") && await ManifestGrabber.TryGetLatestManifestInfo().ConfigureAwait(false) is ManifestInfo manifestInfo)
+                if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
                 {
-                    var manifestData = await manifestInfo.DownloadManifestDataAsync();
+                    ManifestInfo manifestInfo = await ManifestGrabber.TryGetLatestManifestInfo().ConfigureAwait(false);
+                    byte[] manifestData = await manifestInfo.DownloadManifestDataAsync().ConfigureAwait(false);
                     Manifest manifest = new Manifest(manifestData, new ManifestOptions
                     {
                         ChunkBaseUri = new Uri("http://download.epicgames.com/Builds/Fortnite/CloudDir/ChunksV3/", UriKind.Absolute),
