@@ -45,7 +45,7 @@ namespace FModel.Creator.Bases
                 if (Description.Equals(DisplayName)) Description = string.Empty;
                 if (!string.IsNullOrEmpty(Description))
                 {
-                    Height += (int)descriptionPaint.TextSize * Helper.SplitLines(Description, descriptionPaint, Width - Margin).Length;
+                    Height += (int)descriptionPaint.TextSize * Helper.SplitLines(Description, descriptionPaint, Width - Margin).Count;
                     Height += (int)descriptionPaint.TextSize;
                 }
             }
@@ -78,7 +78,7 @@ namespace FModel.Creator.Bases
                             s.Description = Text.GetTextPropertyBase(aDescription) ?? "";
                             if (!string.IsNullOrEmpty(Description))
                             {
-                                s.Height += (int)descriptionPaint.TextSize * Helper.SplitLines(s.Description, descriptionPaint, Width - Margin).Length;
+                                s.Height += (int)descriptionPaint.TextSize * Helper.SplitLines(s.Description, descriptionPaint, Width - Margin).Count;
                                 s.Height += (int)descriptionPaint.TextSize * 3;
                             }
                         }
