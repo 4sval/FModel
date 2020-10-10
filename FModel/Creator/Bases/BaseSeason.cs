@@ -3,6 +3,7 @@ using FModel.Creator.Texts;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 using System;
 using System.Collections.Generic;
 
@@ -62,7 +63,7 @@ namespace FModel.Creator.Bases
                         {
                             if (reward.Value is UObject o &&
                                 o.GetExport<SoftObjectProperty>("ItemDefinition") is SoftObjectProperty itemDefinition &&
-                                //!itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Athena/Items/ChallengeBundleSchedules/") &&
+                                !itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Items/Tokens/") &&
                                 o.GetExport<IntProperty>("Quantity") is IntProperty quantity)
                             {
                                 BookXpSchedule[i].Add(new Reward(quantity, itemDefinition.Value));
@@ -84,7 +85,7 @@ namespace FModel.Creator.Bases
                         {
                             if (reward.Value is UObject o &&
                                 o.GetExport<SoftObjectProperty>("ItemDefinition") is SoftObjectProperty itemDefinition &&
-                                //!itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Athena/Items/ChallengeBundleSchedules/") &&
+                                //!itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Items/Tokens/") &&
                                 o.GetExport<IntProperty>("Quantity") is IntProperty quantity)
                             {
                                 BookXpSchedule[i].Add(new Reward(quantity, itemDefinition.Value));
@@ -177,15 +178,41 @@ namespace FModel.Creator.Bases
 
             string text = DisplayName.ToUpper();
             int x = 300;
-            while (paint.MeasureText(text) > (Width - x))
+            if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
             {
-                paint.TextSize -= 2;
+                SKShaper shaper = new SKShaper(paint.Typeface);
+                float shapedTextWidth;
+
+                while (true)
+                {
+                    SKShaper.Result shapedText = shaper.Shape(text, paint);
+                    shapedTextWidth = shapedText.Points[^1].X + paint.TextSize / 2f;
+
+                    if (shapedTextWidth > Width)
+                    {
+                        paint.TextSize -= 2;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                c.DrawShapedText(shaper, text, x, 155, paint);
             }
-            c.DrawText(text, x, 155, paint);
+            else
+            {
+                while (paint.MeasureText(text) > (Width - x))
+                {
+                    paint.TextSize -= 2;
+                }
+                c.DrawText(text, x, 155, paint);
+            }
 
             paint.Color = SKColors.White.WithAlpha(150);
             paint.TextAlign = SKTextAlign.Right;
             paint.TextSize = 23;
+            paint.Typeface = Text.TypeFaces.DefaultTypeface;
             c.DrawText(Watermark
                 .Replace("{BundleName}", text)
                 .Replace("{Date}", DateTime.Now.ToString("dd/MM/yyyy")),

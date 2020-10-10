@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
 using FModel.Creator.Bases;
-using FModel.Properties;
-
 using PakReader.Pak;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.Objects;
 using PakReader.Parsers.PropertyTagData;
-
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
 
@@ -125,7 +120,7 @@ namespace FModel.Creator.Texts
 
         public static void DrawBackground(SKCanvas c, IBase icon)
         {
-            switch ((EIconDesign)Settings.Default.AssetsIconDesign)
+            switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
             {
                 case EIconDesign.Flat:
                     {
@@ -162,67 +157,70 @@ namespace FModel.Creator.Texts
         {
             _NAME_TEXT_SIZE = 45;
             string text = icon.DisplayName;
-            SKTextAlign side = SKTextAlign.Center;
-            int x = icon.Width / 2;
-            int y = _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE;
-            switch ((EIconDesign)Settings.Default.AssetsIconDesign)
+            if (!string.IsNullOrEmpty(text))
             {
-                case EIconDesign.Mini:
-                    {
-                        _NAME_TEXT_SIZE = 47;
-                        text = text.ToUpperInvariant();
-                        break;
-                    }
-                case EIconDesign.Flat:
-                    {
-                        _NAME_TEXT_SIZE = 47;
-                        side = SKTextAlign.Right;
-                        x = icon.Width - icon.Margin * 2;
-                        break;
-                    }
-            }
-
-            SKPaint namePaint = new SKPaint
-            {
-                IsAntialias = true,
-                FilterQuality = SKFilterQuality.High,
-                Typeface = TypeFaces.DisplayNameTypeface,
-                TextSize = _NAME_TEXT_SIZE,
-                Color = SKColors.White,
-                TextAlign = side
-            };
-
-            if ((ELanguage)Settings.Default.AssetsLanguage == ELanguage.Arabic)
-            {
-                SKShaper shaper = new SKShaper(namePaint.Typeface);
-                float shapedTextWidth;
-
-                while (true)
+                SKTextAlign side = SKTextAlign.Center;
+                int x = icon.Width / 2;
+                int y = _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE;
+                switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
                 {
-                    SKShaper.Result shapedText = shaper.Shape(text, namePaint);
-                    shapedTextWidth = shapedText.Points[^1].X + namePaint.TextSize / 2f;
+                    case EIconDesign.Mini:
+                        {
+                            _NAME_TEXT_SIZE = 47;
+                            text = text.ToUpperInvariant();
+                            break;
+                        }
+                    case EIconDesign.Flat:
+                        {
+                            _NAME_TEXT_SIZE = 47;
+                            side = SKTextAlign.Right;
+                            x = icon.Width - icon.Margin * 2;
+                            break;
+                        }
+                }
 
-                    if (shapedTextWidth > icon.Width - icon.Margin * 2)
+                SKPaint namePaint = new SKPaint
+                {
+                    IsAntialias = true,
+                    FilterQuality = SKFilterQuality.High,
+                    Typeface = TypeFaces.DisplayNameTypeface,
+                    TextSize = _NAME_TEXT_SIZE,
+                    Color = SKColors.White,
+                    TextAlign = side
+                };
+
+                if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
+                {
+                    SKShaper shaper = new SKShaper(namePaint.Typeface);
+                    float shapedTextWidth;
+
+                    while (true)
+                    {
+                        SKShaper.Result shapedText = shaper.Shape(text, namePaint);
+                        shapedTextWidth = shapedText.Points[^1].X + namePaint.TextSize / 2f;
+
+                        if (shapedTextWidth > icon.Width - icon.Margin * 2)
+                        {
+                            namePaint.TextSize = _NAME_TEXT_SIZE -= 1;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    c.DrawShapedText(shaper, text, (icon.Width - shapedTextWidth) / 2f, y, namePaint);
+                }
+                else
+                {
+                    // resize if too long
+                    while (namePaint.MeasureText(text) > icon.Width - icon.Margin * 2)
                     {
                         namePaint.TextSize = _NAME_TEXT_SIZE -= 1;
                     }
-                    else
-                    {
-                        break;
-                    }
-                }
 
-                c.DrawShapedText(shaper, text, (icon.Width - shapedTextWidth) / 2f, y, namePaint);
-            }
-            else
-            {
-                // resize if too long
-                while (namePaint.MeasureText(text) > icon.Width - icon.Margin * 2)
-                {
-                    namePaint.TextSize = _NAME_TEXT_SIZE -= 1;
+                    c.DrawText(text, x, y, namePaint);
                 }
-
-                c.DrawText(text, x, y, namePaint);
             }
         }
 
@@ -232,7 +230,7 @@ namespace FModel.Creator.Texts
             _BOTTOM_TEXT_SIZE = 15;
             string text = icon.Description;
             ETextSide side = ETextSide.Center;
-            switch ((EIconDesign)Settings.Default.AssetsIconDesign)
+            switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
             {
                 case EIconDesign.Mini:
                     {
@@ -277,7 +275,7 @@ namespace FModel.Creator.Texts
 
             if (side == ETextSide.Left)
             {
-                if ((ELanguage)Settings.Default.AssetsLanguage == ELanguage.Arabic)
+                if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
                 {
                     shortDescriptionPaint.TextSize -= 4f;
                     SKShaper shaper = new SKShaper(shortDescriptionPaint.Typeface);

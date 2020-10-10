@@ -3,6 +3,7 @@ using PakReader.Parsers.Class;
 using PakReader.Parsers.Objects;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 using System.Collections.Generic;
 
 namespace FModel.Creator.Bases
@@ -124,17 +125,48 @@ namespace FModel.Creator.Bases
                 Color = SKColors.White,
                 TextAlign = SKTextAlign.Left
             };
-
-            // resize if too long
-            while (namePaint.MeasureText(OptionDisplayName) > (Width - (Margin * 2)))
+            SKPaint optionPaint = new SKPaint
             {
-                namePaint.TextSize = textSize -= 2;
-            }
-            int y = Margin + textSize;
-            c.DrawText(OptionDisplayName, Margin, y, namePaint);
-            y += (int)descriptionPaint.TextSize + (Margin / 2);
+                IsAntialias = true,
+                FilterQuality = SKFilterQuality.High,
+                Typeface = Text.TypeFaces.DisplayNameTypeface,
+                TextSize = 20,
+                Color = SKColor.Parse("EEFFFF"),
+                TextAlign = SKTextAlign.Left
+            };
 
-            // wrap if too long
+            if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
+            {
+                SKShaper shaper = new SKShaper(namePaint.Typeface);
+                float shapedTextWidth;
+
+                while (true)
+                {
+                    SKShaper.Result shapedText = shaper.Shape(OptionDisplayName, namePaint);
+                    shapedTextWidth = shapedText.Points[^1].X + namePaint.TextSize / 2f;
+
+                    if (shapedTextWidth > (Width - (Margin * 2)))
+                    {
+                        namePaint.TextSize -= 2;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                c.DrawShapedText(shaper, OptionDisplayName, Margin, Margin + textSize, namePaint);
+            }
+            else
+            {
+                while (namePaint.MeasureText(OptionDisplayName) > (Width - (Margin * 2)))
+                {
+                    namePaint.TextSize = textSize -= 2;
+                }
+                c.DrawText(OptionDisplayName, Margin, Margin + textSize, namePaint);
+            }
+
+            int y = (Margin + textSize) + ((int)descriptionPaint.TextSize + (Margin / 2));
             Helper.DrawMultilineText(c, OptionDescription, Width, Margin, ETextSide.Left,
                 new SKRect(Margin, y, Width - Margin, 256), descriptionPaint, out int top);
 
@@ -150,17 +182,17 @@ namespace FModel.Creator.Bases
                         Color = option.Color
                     });
 
-                int ts = 20;
-                c.DrawText(option.Option, Margin + (space * 2), top + (ts * 1.1f),
-                    new SKPaint
-                    {
-                        IsAntialias = true,
-                        FilterQuality = SKFilterQuality.High,
-                        Typeface = Text.TypeFaces.DisplayNameTypeface,
-                        TextSize = ts,
-                        Color = SKColor.Parse("EEFFFF"),
-                        TextAlign = SKTextAlign.Left
-                    });
+                if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
+                {
+                    SKShaper shaper = new SKShaper(optionPaint.Typeface);
+                    SKShaper.Result shapedText = shaper.Shape(option.Option, optionPaint);
+                    float shapedTextWidth = shapedText.Points[^1].X + optionPaint.TextSize / 2f;
+                    c.DrawShapedText(shaper, option.Option, Margin + (space * 2), top + (20 * 1.1f), optionPaint);
+                }
+                else
+                {
+                    c.DrawText(option.Option, Margin + (space * 2), top + (20 * 1.1f), optionPaint);
+                }
 
                 top += height + space;
             }

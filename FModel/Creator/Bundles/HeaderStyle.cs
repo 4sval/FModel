@@ -1,6 +1,7 @@
 ﻿using FModel.Creator.Bases;
 using FModel.Creator.Texts;
 using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 using System;
 
 namespace FModel.Creator.Bundles
@@ -75,15 +76,41 @@ namespace FModel.Creator.Bundles
 
             string text = icon.DisplayName.ToUpper();
             int x = icon.IsDisplayNameShifted ? 300 : 50;
-            while (paint.MeasureText(text) > (icon.Width - x))
+            if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
             {
-                paint.TextSize -= 2;
+                SKShaper shaper = new SKShaper(paint.Typeface);
+                float shapedTextWidth;
+
+                while (true)
+                {
+                    SKShaper.Result shapedText = shaper.Shape(text, paint);
+                    shapedTextWidth = shapedText.Points[^1].X + paint.TextSize / 2f;
+
+                    if (shapedTextWidth > (icon.Width - x))
+                    {
+                        paint.TextSize -= 1;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                c.DrawShapedText(shaper, text, x, 155, paint);
             }
-            c.DrawText(text, x, 155, paint);
+            else
+            {
+                while (paint.MeasureText(text) > (icon.Width - x))
+                {
+                    paint.TextSize -= 2;
+                }
+                c.DrawText(text, x, 155, paint);
+            }
 
             paint.Color = SKColors.White.WithAlpha(150);
             paint.TextAlign = SKTextAlign.Right;
             paint.TextSize = 23;
+            paint.Typeface = Text.TypeFaces.DefaultTypeface;
             c.DrawText(icon.Watermark
                 .Replace("{BundleName}", text)
                 .Replace("{Date}", DateTime.Now.ToString("dd/MM/yyyy")),

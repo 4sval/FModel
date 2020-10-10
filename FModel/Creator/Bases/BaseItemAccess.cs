@@ -4,6 +4,7 @@ using PakReader.Pak;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 
 namespace FModel.Creator.Bases
 {
@@ -77,11 +78,36 @@ namespace FModel.Creator.Bases
                 Color = SKColors.White,
                 TextAlign = SKTextAlign.Center,
             };
-            while (namePaint.MeasureText(DisplayName) > (Size - (Item.Margin * 2)))
+            if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
             {
-                namePaint.TextSize = size -= 2;
+                SKShaper shaper = new SKShaper(namePaint.Typeface);
+                float shapedTextWidth;
+
+                while (true)
+                {
+                    SKShaper.Result shapedText = shaper.Shape(DisplayName, namePaint);
+                    shapedTextWidth = shapedText.Points[^1].X + namePaint.TextSize / 2f;
+
+                    if (shapedTextWidth > (Size - (Item.Margin * 2)))
+                    {
+                        namePaint.TextSize -= 2;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                c.DrawShapedText(shaper, DisplayName, (Size - shapedTextWidth) / 2f, Item.Margin * 8 + size, namePaint);
             }
-            c.DrawText(DisplayName, left, Item.Margin * 8 + size, namePaint);
+            else
+            {
+                while (namePaint.MeasureText(DisplayName) > (Size - (Item.Margin * 2)))
+                {
+                    namePaint.TextSize = size -= 2;
+                }
+                c.DrawText(DisplayName, left, Item.Margin * 8 + size, namePaint);
+            }
 
             int topBase = Item.Margin + size * 2;
             c.DrawBitmap(Lock, new SKRect(50, topBase, 50 + Lock.Width, topBase + Lock.Height),
@@ -102,7 +128,7 @@ namespace FModel.Creator.Bases
             {
                 IsAntialias = true,
                 FilterQuality = SKFilterQuality.High,
-                Typeface = Text.TypeFaces.DefaultTypeface,
+                Typeface = Text.TypeFaces.BottomDefaultTypeface ?? Text.TypeFaces.DefaultTypeface,
                 TextSize = 15,
                 Color = SKColors.White,
                 TextAlign = SKTextAlign.Right,

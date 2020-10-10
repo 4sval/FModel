@@ -5,6 +5,7 @@ using PakReader.Pak;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 using System;
 using System.Windows;
 
@@ -192,13 +193,36 @@ namespace FModel.Creator.Stats
                     TextAlign = SKTextAlign.Center,
                 };
 
-                // resize if too long
-                while (statPaint.MeasureText(stat.Description) > (icon.Size - (icon.Margin * 2) - iconSize))
+                if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
                 {
-                    statPaint.TextSize = textSize -= 2;
-                }
+                    SKShaper shaper = new SKShaper(statPaint.Typeface);
+                    float shapedTextWidth;
 
-                c.DrawText(stat.Description, icon.Size / 2, y + 32, statPaint);
+                    while (true)
+                    {
+                        SKShaper.Result shapedText = shaper.Shape(stat.Description, statPaint);
+                        shapedTextWidth = shapedText.Points[^1].X + statPaint.TextSize / 2f;
+
+                        if (shapedTextWidth > (icon.Size - (icon.Margin * 2) - iconSize))
+                        {
+                            statPaint.TextSize -= 2;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    c.DrawShapedText(shaper, stat.Description, (icon.Size - shapedTextWidth) / 2f, y + 32, statPaint);
+                }
+                else
+                {
+                    while (statPaint.MeasureText(stat.Description) > (icon.Size - (icon.Margin * 2) - iconSize))
+                    {
+                        statPaint.TextSize = textSize -= 2;
+                    }
+                    c.DrawText(stat.Description, icon.Size / 2, y + 32, statPaint);
+                }
 
                 y += size;
             }

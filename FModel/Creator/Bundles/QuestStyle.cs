@@ -1,6 +1,7 @@
 ﻿using FModel.Creator.Bases;
 using FModel.Creator.Texts;
 using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 
 namespace FModel.Creator.Bundles
 {
@@ -28,11 +29,39 @@ namespace FModel.Creator.Bundles
                 paint.Color = SKColors.White;
                 paint.TextAlign = SKTextAlign.Left;
                 paint.Typeface = Text.TypeFaces.BundleDisplayNameTypeface;
-                while (paint.MeasureText(q.Description) > icon.Width - 65 - 165)
+                if (!string.IsNullOrEmpty(q.Description))
                 {
-                    paint.TextSize -= 1;
+                    if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
+                    {
+                        SKShaper shaper = new SKShaper(paint.Typeface);
+                        float shapedTextWidth;
+
+                        while (true)
+                        {
+                            SKShaper.Result shapedText = shaper.Shape(q.Description, paint);
+                            shapedTextWidth = shapedText.Points[^1].X + paint.TextSize / 2f;
+
+                            if (shapedTextWidth > icon.Width - 65 - 165)
+                            {
+                                paint.TextSize -= 1;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        c.DrawShapedText(shaper, q.Description, 65, y + paint.TextSize + 11, paint);
+                    }
+                    else
+                    {
+                        while (paint.MeasureText(q.Description) > icon.Width - 65 - 165)
+                        {
+                            paint.TextSize -= 1;
+                        }
+                        c.DrawText(q.Description, new SKPoint(65, y + paint.TextSize + 11), paint);
+                    }
                 }
-                c.DrawText(q.Description, new SKPoint(65, y + paint.TextSize + 11), paint);
 
                 paint.TextSize = 16;
                 paint.Color = SKColors.White.WithAlpha(200);
@@ -83,11 +112,36 @@ namespace FModel.Creator.Bundles
                 paint.Color = SKColors.White;
                 paint.TextAlign = SKTextAlign.Left;
                 paint.Typeface = Text.TypeFaces.BundleDisplayNameTypeface;
-                while (paint.MeasureText(r.CompletionText) > icon.Width - 65 - 165)
+                if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
                 {
-                    paint.TextSize -= 1;
+                    SKShaper shaper = new SKShaper(paint.Typeface);
+                    float shapedTextWidth;
+
+                    while (true)
+                    {
+                        SKShaper.Result shapedText = shaper.Shape(r.CompletionText, paint);
+                        shapedTextWidth = shapedText.Points[^1].X + paint.TextSize / 2f;
+
+                        if (shapedTextWidth > icon.Width - 65 - 165)
+                        {
+                            paint.TextSize -= 1;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    c.DrawShapedText(shaper, r.CompletionText, 65, y + paint.TextSize + 15, paint);
                 }
-                c.DrawText(r.CompletionText, new SKPoint(65, y + paint.TextSize + 15), paint);
+                else
+                {
+                    while (paint.MeasureText(r.CompletionText) > icon.Width - 65 - 165)
+                    {
+                        paint.TextSize -= 1;
+                    }
+                    c.DrawText(r.CompletionText, new SKPoint(65, y + paint.TextSize + 15), paint);
+                }
 
                 if (r.Reward?.RewardIcon != null)
                 {
