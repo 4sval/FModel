@@ -40,7 +40,7 @@ namespace FModel.Creator.Bases
                 OptionDescription = Text.GetTextPropertyBase(optionDescription);
                 if (!string.IsNullOrEmpty(OptionDescription))
                 {
-                    Height += (int)descriptionPaint.TextSize * Helper.SplitLines(OptionDescription, descriptionPaint, Width - Margin).Length;
+                    Height += (int)descriptionPaint.TextSize * Helper.SplitLines(OptionDescription, descriptionPaint, Width - Margin).Count;
                     Height += (int)descriptionPaint.TextSize;
                 }
             }

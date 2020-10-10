@@ -6,19 +6,19 @@ using PakReader.Pak;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-
 using EpicManifestParser.Objects;
+using System.Text.RegularExpressions;
+using FModel.Grabber.Manifests;
 
 namespace FModel.Grabber.Paks
 {
     static class PaksGrabber
     {
-        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/.+\.pak$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/.+\.pak$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         public static async Task PopulateMenu()
         {
@@ -30,7 +30,7 @@ namespace FModel.Grabber.Paks
                 {
                     await Application.Current.Dispatcher.InvokeAsync(delegate
                     {
-                        FLauncher launcher = new FLauncher();
+                        var launcher = new FLauncher();
                         bool? result = launcher.ShowDialog();
                         if (result.HasValue && result.Value)
                         {
@@ -43,8 +43,9 @@ namespace FModel.Grabber.Paks
                 // Add Pak Files
                 if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
                 {
-                    byte[] manifestBytes = await File.ReadAllBytesAsync(Properties.Settings.Default.PakPath);
-                    Manifest manifest = new Manifest(manifestBytes, new ManifestOptions
+                    ManifestInfo manifestInfo = await ManifestGrabber.TryGetLatestManifestInfo().ConfigureAwait(false);
+                    byte[] manifestData = await manifestInfo.DownloadManifestDataAsync().ConfigureAwait(false);
+                    Manifest manifest = new Manifest(manifestData, new ManifestOptions
                     {
                         ChunkBaseUri = new Uri("http://download.epicgames.com/Builds/Fortnite/CloudDir/ChunksV3/", UriKind.Absolute),
                         ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks"))
