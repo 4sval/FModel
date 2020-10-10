@@ -47,6 +47,8 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Fortnite [EGL2]", Property = egl2FilesPath });
             }
 
+            ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Fortnite [LIVE]", Property = "donotedit-youcanteditanyway.manifest" });
+
             string valorantFilesPath = Paks.GetValorantPakFilesPath();
             if (!string.IsNullOrEmpty(valorantFilesPath))
             {
@@ -62,7 +64,7 @@ namespace FModel.Windows.Launcher
                 Globals.gNotifier.ShowCustomMessage("Borderlands 3", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/borderlands3.ico");
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Borderlands 3", Property = borderlands3FilesPath });
             }
-            
+
             string minecraftdungeonsFilesPath = Paks.GetMinecraftDungeonsPakFilesPath();
             if (!string.IsNullOrEmpty(minecraftdungeonsFilesPath))
             {
@@ -79,12 +81,12 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Battle Breakers", Property = battlebreakersFilesPath });
             }
 
-            string spellbreakerFilesPath = Paks.GetSpellbreakPakFilesPath();
-            if (!string.IsNullOrEmpty(spellbreakerFilesPath))
+            string spellbreakFilesPath = Paks.GetSpellbreakPakFilesPath();
+            if (!string.IsNullOrEmpty(spellbreakFilesPath))
             {
-                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"Spellbreak found at {spellbreakerFilesPath}");
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[LauncherInstalled.dat]", $"Spellbreak found at {spellbreakFilesPath}");
                 Globals.gNotifier.ShowCustomMessage("Spellbreak", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/spellbreak.ico");
-                ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Spellbreak", Property = spellbreakerFilesPath });
+                ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Spellbreak", Property = spellbreakFilesPath });
             }
 
             string theCyclePath = Paks.GetTheCyclePakFilesPath();
@@ -95,14 +97,14 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "The Cycle (Early Access)", Property = theCyclePath });
             }
 
-            string sod2Path = Paks.GetStateOfDecay2PakFilesPath();
-            if (!string.IsNullOrEmpty(sod2Path))
-            {
+            //string sod2Path = Paks.GetStateOfDecay2PakFilesPath();
+            //if (!string.IsNullOrEmpty(sod2Path))
+            //{
                 // WIP
-                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]", $"State of Decay 2 found at {sod2Path}");
-                Globals.gNotifier.ShowCustomMessage("State of Decay 2", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/sod2.ico");
-                ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "State of Decay 2", Property = sod2Path });
-            }
+            //    DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[UWP / LauncherInstalled.dat]", $"State of Decay 2 found at {sod2Path}");
+            //    Globals.gNotifier.ShowCustomMessage("State of Decay 2", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/sod2.ico");
+            //    ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "State of Decay 2", Property = sod2Path });
+            //}
 
             Games_CbBox.SelectedItem = ComboBoxVm.gamesCbViewModel.Where(x => x.Property.ToString() == Properties.Settings.Default.PakPath).FirstOrDefault();
         }
@@ -132,6 +134,15 @@ namespace FModel.Windows.Launcher
             if (result.HasValue && result.Value)
             {
                 GamesPath_TxtBox.Text = dialog.SelectedPath;
+            }
+        }
+
+        private void OnTextChange(object sender, TextChangedEventArgs e)
+        {
+            if (e.Source is TextBox text)
+            {
+                BrowsePath.IsEnabled = text.Text != "donotedit-youcanteditanyway.manifest";
+                text.IsReadOnly = text.Text == "donotedit-youcanteditanyway.manifest";
             }
         }
     }

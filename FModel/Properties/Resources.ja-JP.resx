@@ -778,4 +778,13 @@
   <data name="WithPosition" xml:space="preserve">
     <value>位置/値</value>
   </data>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>またあとで</value>
+  </data>
+  <data name="NoKeyWarning" xml:space="preserve">
+    <value>暗号化された.PAKファイルが見つかりました. 暗号化を解除するには、有効なAES暗号化キーを指定してください</value>
+  </data>
+  <data name="SkipThisVersion" xml:space="preserve">
+    <value>このバージョンをスキップ</value>
+  </data>
 </root>

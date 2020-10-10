@@ -828,4 +828,7 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   <data name="SkipThisVersion" xml:space="preserve">
     <value>Ignorer cette version</value>
   </data>
+  <data name="DrawStats" xml:space="preserve">
+    <value>Afficher les statistiques</value>
+  </data>
 </root>

@@ -6,11 +6,8 @@ namespace PakReader
     public class LocMetaReader
     {
         static readonly FGuid Magic = new FGuid(0xA14CEE4F, 0x83554868, 0xBD464C6C, 0x7C50DA70);
-
         public readonly string NativeCulture;
         public readonly string NativeLocRes;
-
-        public LocMetaReader(string path) : this(File.OpenRead(path)) { }
 
         public LocMetaReader(Stream stream) : this(new BinaryReader(stream)) { }
 

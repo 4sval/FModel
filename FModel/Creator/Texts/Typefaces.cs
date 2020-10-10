@@ -60,6 +60,7 @@ namespace FModel.Creator.Texts
 
         public SKTypeface DefaultTypeface; // used as default font for all untranslated strings (item source, ...)
         public SKTypeface BundleDefaultTypeface; // used for the last folder string
+        public SKTypeface BottomDefaultTypeface;
         public SKTypeface DisplayNameTypeface;
         public SKTypeface DescriptionTypeface;
         public SKTypeface BundleDisplayNameTypeface;
@@ -89,6 +90,17 @@ namespace FModel.Creator.Texts
                         DisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
                 }
                 else DisplayNameTypeface = DefaultTypeface;
+
+                string bottomPath = _FORTNITE_BASE_PATH + (
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? string.Empty :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? string.Empty :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Arabic ? string.Empty :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.TraditionalChinese ? string.Empty :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? string.Empty :
+                    _BURBANK_SMALL_BOLD);
+                t = Utils.GetPropertyArraySegmentByte(bottomPath);
+                if (t != null && t.Length == 3 && t[2].Array != null)
+                    BottomDefaultTypeface = SKTypeface.FromStream(t[2].AsStream());
 
                 string descriptionPath = _FORTNITE_BASE_PATH + (
                     Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _NOTO_SANS_KR_REGULAR :

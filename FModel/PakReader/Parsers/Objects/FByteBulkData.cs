@@ -36,7 +36,10 @@ namespace PakReader.Parsers.Objects
             else if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadInSeperateFile) != 0 &&
                 ubulk != null && BulkDataOffsetInFile + ubulkOffset >= 0) //.ubulk
             {
-                ubulk.Position = BulkDataOffsetInFile + ubulkOffset;
+                if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_NoOffsetFixUp) == 0) // UE4.26 flag
+                {
+                    ubulk.Position = BulkDataOffsetInFile + ubulkOffset;
+                }
                 Data = new byte[ElementCount];
                 ubulk.Read(Data, 0, (int)ElementCount);
             }

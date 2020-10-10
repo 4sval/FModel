@@ -3,6 +3,7 @@ using FModel.Creator.Rarities;
 using FModel.Creator.Stats;
 using FModel.Creator.Texts;
 using FModel.Utils;
+using PakReader.Pak;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
@@ -57,6 +58,21 @@ namespace FModel.Creator.Bases
                 LargeSmallImage.GetPreviewImage(this, itemDef, assetName, forceHR);
             else if (export.GetExport<SoftObjectProperty>(forceHR ? "LargePreviewImage" : "SmallPreviewImage", forceHR ? "ItemDisplayAsset" : "SmallImage") is SoftObjectProperty previewImage)
                 LargeSmallImage.GetPreviewImage(this, previewImage);
+            else if (export.GetExport<ObjectProperty>("access_item") is ObjectProperty accessItem)
+            {
+                PakPackage p = Utils.GetPropertyPakPackage(accessItem.Value.Resource.OuterIndex.Resource.ObjectName.String);
+                if (p.HasExport() && !p.Equals(default))
+                {
+                    var d = p.GetExport<UObject>();
+                    if (d != null)
+                    {
+                        IconImage = new BaseIcon(d, accessItem.Value.Resource.ObjectName.String + ".uasset", false).IconImage;
+                    }
+                }
+            }
+
+            if (export.GetExport<TextProperty>("DisplayName", "DefaultHeaderText", "UIDisplayName") is TextProperty displayName)
+                DisplayName = Text.GetTextPropertyBase(displayName);
         }
 
         /// <summary>
@@ -97,13 +113,15 @@ namespace FModel.Creator.Bases
             // text
             if (export.GetExport<TextProperty>("DisplayName", "DefaultHeaderText", "UIDisplayName") is TextProperty displayName)
                 DisplayName = Text.GetTextPropertyBase(displayName);
-            if (export.GetExport<TextProperty>("Description", "DefaultBodyText") is TextProperty description)
+            if (export.GetExport<TextProperty>("Description", "DefaultBodyText", "UIDescription") is TextProperty description)
                 Description = Text.GetTextPropertyBase(description);
             else if (export.GetExport<ArrayProperty>("Description") is ArrayProperty arrayDescription) // abilities
                 Description = Text.GetTextPropertyBase(arrayDescription);
             if (export.GetExport<StructProperty>("MaxStackSize") is StructProperty maxStackSize)
                 ShortDescription = Text.GetMaxStackSize(maxStackSize);
-            else if (export.GetExport<TextProperty>("ShortDescription") is TextProperty shortDescription)
+            else if (export.GetExport<StructProperty>("XpRewardAmount") is StructProperty xpRewardAmount)
+                ShortDescription = Text.GetXpRewardAmount(xpRewardAmount);
+            else if (export.GetExport<TextProperty>("ShortDescription", "UIDisplaySubName") is TextProperty shortDescription)
                 ShortDescription = Text.GetTextPropertyBase(shortDescription);
             else if (exportType.Equals("AthenaItemWrapDefinition")) // if no ShortDescription it's most likely a wrap
                 ShortDescription = Localizations.GetLocalization("Fort.Cosmetics", "ItemWrapShortDescription", "Wrap");
@@ -114,11 +132,16 @@ namespace FModel.Creator.Bases
             else if (export.GetExport<ObjectProperty>("cosmetic_item") is ObjectProperty cosmeticItem) // variants
                 CosmeticSource = cosmeticItem.Value.Resource.ObjectName.String;
 
-            if (export.GetExport<SoftObjectProperty>("AmmoData") is SoftObjectProperty ammoData)
+            if (Properties.Settings.Default.DrawStats && export.GetExport<SoftObjectProperty>("AmmoData") is SoftObjectProperty ammoData)
                 Statistics.GetAmmoData(this, ammoData);
-            if (export.GetExport<StructProperty>("WeaponStatHandle") is StructProperty weaponStatHandle)
+            if (Properties.Settings.Default.DrawStats && export.GetExport<StructProperty>("WeaponStatHandle") is StructProperty weaponStatHandle &&
+                (exportType.Equals("FortWeaponMeleeItemDefinition") ||
+                (export.GetExport<SoftObjectProperty>("StatList") is SoftObjectProperty statList &&
+                !statList.Value.AssetPathName.String.StartsWith("/Game/UI/Tooltips/NoTooltipStats"))))
+            {
                 Statistics.GetWeaponStats(this, weaponStatHandle);
-            if (export.GetExport<ObjectProperty>("HeroGameplayDefinition") is ObjectProperty heroGameplayDefinition)
+            }
+            if (Properties.Settings.Default.DrawStats && export.GetExport<ObjectProperty>("HeroGameplayDefinition") is ObjectProperty heroGameplayDefinition)
                 Statistics.GetHeroStats(this, heroGameplayDefinition);
 
             /* Please do not add Schematics support because it takes way too much memory */
@@ -134,7 +157,7 @@ namespace FModel.Creator.Bases
         string IBase.DisplayName => DisplayName;
         string IBase.Description => Description;
         int IBase.Width => Size;
-        int IBase.Height => Size + AdditionalSize;
+        int IBase.Height => Size;
         int IBase.Margin => Margin;
     }
 }

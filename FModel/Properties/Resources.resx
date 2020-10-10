@@ -351,9 +351,10 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="DonatorsFDetails" xml:space="preserve">
     <value>• Yanteh				• Maiky
-• FunGames			• HYPEX
-• Alexander			• Netu
-• SexyNutella</value>
+• FunGames			• HYPEX ♥
+• Alexander			• Netu ♥
+• SexyNutella			• imatrix
+• Frenzy Leaks			• LlamaLeaks</value>
     <comment>Do not translate</comment>
   </data>
   <data name="DownloadError" xml:space="preserve">
@@ -1081,7 +1082,7 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="SkipThisVersion" xml:space="preserve">
     <value>Skip this Version</value>
   </data>
-  <data name="rotate_3d" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\rotate-3d.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="DrawStats" xml:space="preserve">
+    <value>Show statistics</value>
   </data>
 </root>

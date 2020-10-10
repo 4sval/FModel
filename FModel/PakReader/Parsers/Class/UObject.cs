@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using PakReader.Parsers.Objects;
 using PakReader.Parsers.PropertyTagData;
 
@@ -55,10 +56,14 @@ namespace PakReader.Parsers.Class
         public IEnumerable<string> Keys => Dict.Keys;
         public IEnumerable<object> Values => Dict.Values;
         public int Count => Dict.Count;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ContainsKey(string key) => Dict.ContainsKey(key);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => Dict.GetEnumerator();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         IEnumerator IEnumerable.GetEnumerator() => Dict.GetEnumerator();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetValue(out object value, params string[] keys)
         {
             foreach (string key in keys)
@@ -72,6 +77,7 @@ namespace PakReader.Parsers.Class
             value = null;
             return false;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetValue(string key, out object value) => Dict.TryGetValue(key, out value);
     }
 }

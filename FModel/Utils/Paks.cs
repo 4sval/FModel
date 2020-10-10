@@ -5,6 +5,7 @@ using PakReader.Parsers.Objects;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using Windows.Management.Deployment;
 
 namespace FModel.Utils
 {
@@ -46,30 +47,28 @@ namespace FModel.Utils
         }
 
         // This method is in testing and is not recommended to be used other than for development purposes
-        public static (string, string) GetUWPPakFilesPath(string game)
+        public static string GetUWPPakFilesPath(string game)
         {
-            var dir = "C:\\Program Files\\WindowsApps\\";
             try
             {
-                if (Directory.Exists(dir))
+                foreach (var pkg in new PackageManager().FindPackagesForUser(string.Empty, game))
                 {
-                    DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]", "Folder as been found");
-                    foreach (var directory in Directory.GetDirectories(dir))
-                        if (directory.Equals(game))
-                            return (game, directory);
-
-                    DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]", $"{game} not found");
-                    return (string.Empty, string.Empty);
+                    DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Microsoft Store]", $"UWP Game {game} found at {pkg.EffectiveLocation.Name}");
+                    return pkg.EffectivePath;
                 }
             }
             catch (UnauthorizedAccessException)
             {
-                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]",
-                    $"{dir} can't be accessed without permission changes to the folder.");
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Microsoft Store]",
+                    $"The WindowsApps folder can't be accessed without permission changes to the folder.");
+            }
+            catch
+            {
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Microsoft Store]", $"An expected error has ocurred.");
             }
 
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[WindowsApps]", "Folder not found");
-            return (string.Empty, string.Empty);
+            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Microsoft Store]", $"{game} cannot be found on this system.");
+            return string.Empty;
         }
 
         public static string GetFortnitePakFilesPath()
@@ -109,17 +108,20 @@ namespace FModel.Utils
         public static string GetStateOfDecay2PakFilesPath()
         {
             // WIP
-            (_, string sod2UWPPakFilesPath) = (string.Empty, string.Empty);
-            (_, string _, string sod2PakFilesPath) = (string.Empty, string.Empty, string.Empty);
-            if (!GetUWPPakFilesPath("Microsoft.Dayton_1.3544.68.2_x64__8wekyb3d8bbwe").Equals(null))
-                (_, sod2UWPPakFilesPath) = GetUWPPakFilesPath("Microsoft.Dayton_1.3544.68.2_x64__8wekyb3d8bbwe");
-            else
-                (_, _, sod2PakFilesPath) = GetUEGameFilesPath("<Unknown Epic Games Name>");
-
-            if (!string.IsNullOrEmpty(sod2PakFilesPath))
-                return $"{sod2PakFilesPath}\\StateOfDecay2\\Content\\Paks";
-            else if (!string.IsNullOrEmpty(sod2UWPPakFilesPath))
+            var sod2UWPPakFilesPath = GetUWPPakFilesPath("Microsoft.Dayton_8wekyb3d8bbwe");
+            if (!string.IsNullOrEmpty(sod2UWPPakFilesPath))
+            {
                 return $"{sod2UWPPakFilesPath}\\StateOfDecay2\\Content\\Paks";
+            }
+            else
+            {
+                (_, string _, string sod2PakFilesPath) = GetUEGameFilesPath("<Replace when known with EGL name>");
+                if (!string.IsNullOrEmpty(sod2PakFilesPath))
+                {
+                    return $"{sod2PakFilesPath}\\StateOfDecay2\\Content\\Paks";
+                }
+            }
+
             return string.Empty;
         }
 
@@ -157,6 +159,14 @@ namespace FModel.Utils
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]",
                     "Minecraft Dungeons not found");
             }
+
+            //DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Launcher version not found, attempting to find Microsoft Store installation.");
+
+            //var mcDungeonsUWPPath = GetUWPPakFilesPath("Microsoft.Lovika_8wekyb3d8bbwe");
+            //if (!string.IsNullOrEmpty(mcDungeonsUWPPath))
+            //{ 
+            //    return $"{mcDungeonsUWPPath}\\Dungeons\\Content\\Paks";
+            //}
 
             return string.Empty;
         }

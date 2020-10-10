@@ -12,6 +12,7 @@ namespace PakReader
             return val + alignment - 1 & ~(alignment - 1);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint Flip(uint value) => (value & 0x000000FFU) << 24 | (value & 0x0000FF00U) << 8 |
          (value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24;
 
@@ -19,6 +20,8 @@ namespace PakReader
             string s = i.ToString("X2");
             return s[0] + ((uint)s[1] << 16);
         }).ToArray();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToHex(params byte[] bytes)
         {
             if (bytes == null) return null;
@@ -32,10 +35,14 @@ namespace PakReader
             }
             return new string(result);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToStringKey(this byte[] byteKey)
         {
             return "0x" + BitConverter.ToString(byteKey).Replace("-", "");
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte[] ToBytesKey(this string stringKey)
         {
             byte[] arr = new byte[stringKey.Length >> 1];
@@ -45,6 +52,8 @@ namespace PakReader
             }
             return arr;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int GetHexVal(char hex)
         {
             int val = (int)hex;

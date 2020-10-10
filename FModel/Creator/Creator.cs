@@ -52,8 +52,10 @@ namespace FModel.Creator
                 case "FortAbilityKit":
                 case "FortWorkerType":
                 case "RewardGraphToken":
+                case "FortPlaylistAthena":
                 case "FortBannerTokenType":
                 case "FortVariantTokenType":
+                case "FortDecoItemDefinition":
                 case "FortFeatItemDefinition":
                 case "FortStatItemDefinition":
                 case "FortTrapItemDefinition":
@@ -65,12 +67,15 @@ namespace FModel.Creator
                 case "FortPlaysetItemDefinition":
                 case "FortGiftBoxItemDefinition":
                 case "FortSpyTechItemDefinition":
+                case "FortOutpostItemDefinition":
                 case "FortAccoladeItemDefinition":
                 case "FortCardPackItemDefinition":
                 case "FortDefenderItemDefinition":
                 case "FortCurrencyItemDefinition":
                 case "FortResourceItemDefinition":
+                case "FortCodeTokenItemDefinition":
                 case "FortSchematicItemDefinition":
+                case "FortExpeditionItemDefinition":
                 case "FortIngredientItemDefinition":
                 case "FortAccountBuffItemDefinition":
                 case "FortWeaponMeleeItemDefinition":
@@ -83,16 +88,19 @@ namespace FModel.Creator
                 case "RadioContentSourceItemDefinition":
                 case "FortPlaysetGrenadeItemDefinition":
                 case "FortPersonalVehicleItemDefinition":
+                case "FortGameplayModifierItemDefinition":
                 case "FortHardcoreModifierItemDefinition":
                 case "FortConsumableAccountItemDefinition":
                 case "FortConversionControlItemDefinition":
                 case "FortAccountBuffCreditItemDefinition":
                 case "FortPersistentResourceItemDefinition":
+                case "FortHomebaseBannerIconItemDefinition":
                 case "FortCampaignHeroLoadoutItemDefinition":
                 case "FortConditionalResourceItemDefinition":
                 case "FortChallengeBundleScheduleDefinition":
                 case "FortWeaponMeleeDualWieldItemDefinition":
                 case "FortDailyRewardScheduleTokenDefinition":
+                case "FortCreativeRealEstatePlotItemDefinition":
                     {
                         BaseIcon icon = new BaseIcon(exports[index], exportType, ref assetName);
                         int height = icon.Size + icon.AdditionalSize;
@@ -130,6 +138,18 @@ namespace FModel.Creator
                             }
 
                             Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                        }
+                        return true;
+                    }
+                case "AthenaSeasonItemDefinition":
+                    {
+                        BaseSeason icon = new BaseSeason(exports[index], assetFolder);
+                        using (var ret = new SKBitmap(icon.Width, icon.HeaderHeight + icon.AdditionalSize, SKColorType.Rgba8888, SKAlphaType.Opaque))
+                        using (var c = new SKCanvas(ret))
+                        {
+                            icon.Draw(c);
+
                             ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                         }
                         return true;
@@ -305,9 +325,16 @@ namespace FModel.Creator
                         using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
                         using (var c = new SKCanvas(ret))
                         {
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign == EIconDesign.Flat)
                             {
-                                Rarity.DrawRarity(c, icon);
+                                icon.Draw(c);
+                            }
+                            else
+                            {
+                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                                {
+                                    Rarity.DrawRarity(c, icon);
+                                }
                             }
 
                             LargeSmallImage.DrawPreviewImage(c, icon);

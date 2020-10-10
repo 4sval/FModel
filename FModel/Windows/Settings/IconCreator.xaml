@@ -78,6 +78,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <CheckBox x:Name="UseGameColor_CkBox" Grid.Row="0" Margin="5"
@@ -86,6 +87,9 @@
                             <CheckBox Grid.Row="1" Margin="5"
                                       Content="{x:Static properties:Resources.UseItemShopIcon}"
                                       IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseItemShopIcon, Mode=TwoWay}"/>
+                            <CheckBox Grid.Row="2" Margin="5"
+                                      Content="{x:Static properties:Resources.DrawStats}"
+                                      IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=DrawStats, Mode=TwoWay}"/>
                         </Grid>
                     </Grid>
 

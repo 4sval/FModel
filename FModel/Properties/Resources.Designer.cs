@@ -754,9 +754,10 @@ namespace FModel.Properties {
         
         /// <summary>
         ///   Recherche une chaîne localisée semblable à • Yanteh				• Maiky
-        ///• FunGames			• HYPEX
-        ///• Alexander			• Netu
-        ///• SexyNutella.
+        ///• FunGames			• HYPEX ♥
+        ///• Alexander			• Netu ♥
+        ///• SexyNutella			• imatrix
+        ///• Frenzy Leaks			• LlamaLeaks.
         /// </summary>
         public static string DonatorsFDetails {
             get {
@@ -788,6 +789,15 @@ namespace FModel.Properties {
         public static string DownloadSuccess {
             get {
                 return ResourceManager.GetString("DownloadSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Show statistics.
+        /// </summary>
+        public static string DrawStats {
+            get {
+                return ResourceManager.GetString("DrawStats", resourceCulture);
             }
         }
         
@@ -2181,16 +2191,6 @@ namespace FModel.Properties {
         public static string Rgba {
             get {
                 return ResourceManager.GetString("Rgba", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap rotate_3d {
-            get {
-                object obj = ResourceManager.GetObject("rotate_3d", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

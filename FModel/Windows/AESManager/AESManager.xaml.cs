@@ -5,6 +5,7 @@ using FModel.ViewModels.MenuItem;
 using FModel.Windows.CustomNotifier;
 using Newtonsoft.Json;
 using PakReader.Pak;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -60,12 +61,20 @@ namespace FModel.Windows.AESManager
                 foreach (PakFileReader pak in MenuItems.pakFiles.GetDynamicPakFileReaders())
                 {
                     gridRow++;
-                    string trigger = $"{Properties.Settings.Default.PakPath.Substring(Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName())).Replace("\\", "/")}/{pak.FileName}";
+                    string trigger;
+                    {
+                        if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
+                            trigger = $"{pak.Directory.Replace('\\', '/')}/{pak.FileName}";
+                        else
+                            trigger = $"{Properties.Settings.Default.PakPath[Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName(), StringComparison.Ordinal)..].Replace("\\", "/")}/{pak.FileName}";
+                    }
                     string key;
-                    if (dynamicAesKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict) && gameDict.TryGetValue(trigger, out var dKey))
-                        key = dKey;
-                    else
-                        key = "";
+                    {
+                        if (dynamicAesKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict) && gameDict.TryGetValue(trigger, out var dKey))
+                            key = dKey;
+                        else
+                            key = "";
+                    }
                     DebugHelper.WriteLine("{0} {1} {2} {3} {4}", "[FModel]", "[Window]", "[AES Manager]", "[GET]", $"{pak.FileName} with key: {key}");
 
                     DynamicKeys_Grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -116,7 +125,13 @@ namespace FModel.Windows.AESManager
             dynamicAesKeys[Globals.Game.ActualGame.ToString()] = new Dictionary<string, string>();
             foreach (PakFileReader pak in MenuItems.pakFiles.GetDynamicPakFileReaders())
             {
-                string trigger = $"{Properties.Settings.Default.PakPath.Substring(Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName())).Replace("\\", "/")}/{pak.FileName}";
+                string trigger;
+                {
+                    if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
+                        trigger = $"{pak.Directory.Replace('\\', '/')}/{pak.FileName}";
+                    else
+                        trigger = $"{Properties.Settings.Default.PakPath[Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName(), StringComparison.Ordinal)..].Replace("\\", "/")}/{pak.FileName}";
+                }
                 TextBox textBox = DependencyObjects.FindChild<TextBox>(this, $"pakchunk{Regex.Match(pak.FileName[0..^4], @"\d+").Value}");
                 if (!string.IsNullOrEmpty(textBox.Text))
                 {
@@ -162,12 +177,20 @@ namespace FModel.Windows.AESManager
 
                         foreach (PakFileReader pak in MenuItems.pakFiles.GetDynamicPakFileReaders())
                         {
-                            string trigger = $"{Properties.Settings.Default.PakPath.Substring(Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName())).Replace("\\", "/")}/{pak.FileName}";
+                            string trigger;
+                            {
+                                if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
+                                    trigger = $"{pak.Directory.Replace('\\', '/')}/{pak.FileName}";
+                                else
+                                    trigger = $"{Properties.Settings.Default.PakPath[Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName(), StringComparison.Ordinal)..].Replace("\\", "/")}/{pak.FileName}";
+                            }
                             string key;
-                            if (dynamicAesKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict) && gameDict.TryGetValue(trigger, out var dKey))
-                                key = dKey;
-                            else
-                                key = "";
+                            {
+                                if (dynamicAesKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict) && gameDict.TryGetValue(trigger, out var dKey))
+                                    key = dKey;
+                                else
+                                    key = "";
+                            }
                             DebugHelper.WriteLine("{0} {1} {2} {3} {4}", "[FModel]", "[Window]", "[AES Manager]", "[UPDATE]", $"{pak.FileName} with key: {key}");
 
                             TextBox textBox = DependencyObjects.FindChild<TextBox>(this, $"pakchunk{Regex.Match(pak.FileName[0..^4], @"\d+").Value}");

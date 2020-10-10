@@ -1,6 +1,7 @@
 ﻿using FModel.Creator.Bases;
 using PakReader.Pak;
 using PakReader.Parsers.Class;
+using PakReader.Parsers.Objects;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System;
@@ -11,6 +12,7 @@ namespace FModel.Creator.Bundles
     {
         public int RewardQuantity;
         public SKBitmap RewardIcon;
+        public BaseIcon TheReward;
         public string RewardFillColor;
         public string RewardBorderColor;
         public bool IsCountShifted;
@@ -19,6 +21,7 @@ namespace FModel.Creator.Bundles
         {
             RewardQuantity = 0;
             RewardIcon = null;
+            TheReward = null;
             RewardFillColor = "";
             RewardBorderColor = "";
             IsCountShifted = false;
@@ -34,19 +37,34 @@ namespace FModel.Creator.Bundles
                 string[] parts = assetName.Split(':');
                 if (parts[0].Equals("HomebaseBannerIcon", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    PakPackage p = Utils.GetPropertyPakPackage("/Game/Banners/BannerIcons");
+                    PakPackage p = Utils.GetPropertyPakPackage($"/Game/Items/BannerIcons/{parts[1]}.{parts[1]}");
                     if (p.HasExport() && !p.Equals(default))
                     {
-                        var c = p.GetExport<UDataTable>();
-                        if (c != null && c.TryGetCaseInsensitiveValue(parts[1], out var s) && s is UObject banner)
+                        if (p.GetExport<UObject>() is UObject banner)
                         {
-                            RewardIcon = new BaseIcon(banner, "BannerIcons.uasset", false).IconImage.Resize(64, 64);
+                            TheReward = new BaseIcon(banner, $"{parts[1]}.uasset", false);
+                            RewardIcon = TheReward.IconImage.Resize(64, 64);
                         }
                     }
                 }
                 else GetReward(parts[1]);
             }
             else GetReward(assetName);
+        }
+        public Reward(IntProperty quantity, FSoftObjectPath itemFullPath)
+        {
+            RewardQuantity = quantity.Value;
+            PakPackage p = Utils.GetPropertyPakPackage(itemFullPath.AssetPathName.String);
+            if (p.HasExport() && !p.Equals(default))
+            {
+                var d = p.GetExport<UObject>();
+                if (d != null)
+                {
+                    int i = itemFullPath.AssetPathName.String.LastIndexOf('/');
+                    TheReward = new BaseIcon(d, itemFullPath.AssetPathName.String[(i > 0 ? i : 0)..] + ".uasset", false);
+                    RewardIcon = TheReward.IconImage.Resize(80, 80);
+                }
+            }
         }
 
         public Reward(IntProperty quantity, SoftObjectProperty itemDefinition) : this()
@@ -84,7 +102,8 @@ namespace FModel.Creator.Bundles
                             break;
                         default:
                             IsCountShifted = false;
-                            RewardIcon = new BaseIcon(d, itemDefinition.Value.AssetPathName.String.Substring(s1, s2) + ".uasset", false).IconImage.Resize(64, 64);
+                            TheReward = new BaseIcon(d, itemDefinition.Value.AssetPathName.String.Substring(s1, s2) + ".uasset", false);
+                            RewardIcon = TheReward.IconImage.Resize(64, 64);
                             break;
                     }
                 }
@@ -124,7 +143,8 @@ namespace FModel.Creator.Bundles
                             {
                                 int i = path.LastIndexOf('/');
                                 IsCountShifted = false;
-                                RewardIcon = new BaseIcon(d, path.Substring(i > 0 ? i : 0) + ".uasset", false).IconImage.Resize(64, 64);
+                                TheReward = new BaseIcon(d, path[(i > 0 ? i : 0)..] + ".uasset", false);
+                                RewardIcon = TheReward.IconImage.Resize(64, 64);
                             }
                         }
                         break;

@@ -82,8 +82,8 @@ To use FModel, you need to have [.NET Core 3.1](https://dotnet.microsoft.com/dow
         </td>
 	<td align="center">
             <a href="https://github.com/NotOfficer">
-                <img src="https://avatars1.githubusercontent.com/u/29897990?s=200&v=4" width="100px;" alt="Not Officer"/><br>
-                <sub><b>Not Officer</b></sub>
+                <img src="https://avatars1.githubusercontent.com/u/29897990?s=200&v=4" width="100px;" alt="Officer"/><br>
+                <sub><b>Officer</b></sub>
             </a><br>
             <a href="https://github.com/NotOfficer" title="Github">🔧</a>
             <a href="https://twitter.com/Not0fficer" title="Twitter">🐦</a>
@@ -96,6 +96,8 @@ To use FModel, you need to have [.NET Core 3.1](https://dotnet.microsoft.com/dow
             <a href="https://github.com/PsychoPast" title="Github">🔧</a>
             <a href="https://twitter.com/xXPsychoPastXx" title="Twitter">🐦</a>
         </td>
+  </tr>
+  <tr>
         <td align="center">
             <a href="https://github.com/AyeTSG">
                 <img src="https://avatars1.githubusercontent.com/u/49595354?s=200&v=4" width="100px;" alt="TSG"/><br>
@@ -159,6 +161,7 @@ This software uses the following open source packages:
 - [SkiaSharp](https://github.com/mono/SkiaSharp)
 - [ToastNotifications](https://github.com/rafallopatka/ToastNotifications)
 - [MaterialDesignIcons](https://materialdesignicons.com/)
+- [Microsoft.Windows.SDK.Contracts](https://www.nuget.org/packages/Microsoft.Windows.SDK.Contracts)
 
 ## Support [![](https://wakatime.com/badge/github/iAmAsval/FModel.svg)](https://wakatime.com/badge/github/iAmAsval/FModel)
 

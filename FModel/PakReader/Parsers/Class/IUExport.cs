@@ -1,5 +1,6 @@
 ﻿using PakReader.Parsers.PropertyTagData;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace PakReader.Parsers.Class
 {
@@ -14,6 +15,7 @@ namespace PakReader.Parsers.Class
 
     public static class IUExportExtension
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetExport<T>(this IUExport export, params string[] names)
         {
             foreach (string name in names)
