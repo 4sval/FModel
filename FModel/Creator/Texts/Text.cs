@@ -230,20 +230,23 @@ namespace FModel.Creator.Texts
             _BOTTOM_TEXT_SIZE = 15;
             string text = icon.Description;
             ETextSide side = ETextSide.Center;
-            switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
+            if (text != null)
             {
-                case EIconDesign.Mini:
-                    {
-                        maxLine = 5;
-                        _BOTTOM_TEXT_SIZE = icon.Margin;
-                        text = text.ToUpper();
-                        break;
-                    }
-                case EIconDesign.Flat:
-                    {
-                        side = ETextSide.Right;
-                        break;
-                    }
+                switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
+                {
+                    case EIconDesign.Mini:
+                        {
+                            maxLine = 5;
+                            _BOTTOM_TEXT_SIZE = icon.Margin;
+                            text = text.ToUpper();
+                            break;
+                        }
+                    case EIconDesign.Flat:
+                        {
+                            side = ETextSide.Right;
+                            break;
+                        }
+                }
             }
 
             SKPaint descriptionPaint = new SKPaint
