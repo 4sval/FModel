@@ -52,7 +52,6 @@ namespace FModel.Creator
                 case "FortAbilityKit":
                 case "FortWorkerType":
                 case "RewardGraphToken":
-                case "FortPlaylistAthena":
                 case "FortBannerTokenType":
                 case "FortVariantTokenType":
                 case "FortDecoItemDefinition":
@@ -142,6 +141,34 @@ namespace FModel.Creator
                         }
                         return true;
                     }
+                case "FortPlaylistAthena":
+                {
+                    BasePlaylist icon = new BasePlaylist(exports[index]);
+                    using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                    using (var c = new SKCanvas(ret))
+                    {
+                        if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        {
+                            Rarity.DrawRarity(c, icon);
+                        }
+
+                        LargeSmallImage.DrawPreviewImage(c, icon);
+
+                        if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        {
+                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
+                            {
+                                Text.DrawBackground(c, icon);
+                                Text.DrawDisplayName(c, icon);
+                                Text.DrawDescription(c, icon);
+                            }
+                        }
+
+                        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                    }
+                    return true;
+                }
                 case "AthenaSeasonItemDefinition":
                     {
                         BaseSeason icon = new BaseSeason(exports[index], assetFolder);
