@@ -1085,4 +1085,7 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="DrawStats" xml:space="preserve">
     <value>Show statistics</value>
   </data>
+  <data name="Fat" xml:space="preserve">
+    <value>Fat</value>
+  </data>
 </root>

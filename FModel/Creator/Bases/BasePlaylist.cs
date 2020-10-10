@@ -38,7 +38,8 @@ namespace FModel.Creator.Bases
             if (export.GetExport<TextProperty>("UIDescription", "Description") is { } description)
                 Description = Text.GetTextPropertyBase(description);
 
-            Width = Height = 512;
+            Width = 1024;
+            Height = 512;
 
             if (export.GetExport<NameProperty>("PlaylistName") is { } playlistName && !playlistName.Value.IsNone)
             {

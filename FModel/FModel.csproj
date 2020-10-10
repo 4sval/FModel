@@ -8,8 +8,8 @@
     <StartupObject>FModel.App</StartupObject>
     <Authors>Asval</Authors>
     <Company></Company>
-    <AssemblyVersion>3.1.1.2</AssemblyVersion>
-    <FileVersion>3.1.1.2</FileVersion>
+    <AssemblyVersion>3.1.1.3</AssemblyVersion>
+    <FileVersion>3.1.1.3</FileVersion>
     <PackageIcon>FModel.ico</PackageIcon>
     <PackageIconUrl />
     <PackageProjectUrl>https://github.com/iAmAsval/FModel</PackageProjectUrl>

@@ -821,4 +821,10 @@ Jetzt ist es die am häufigsten genutzte freie Software um mit Fortnite zu leake
   <data name="SkipThisVersion" xml:space="preserve">
     <value>Diese Version überspringen</value>
   </data>
+  <data name="DrawStats" xml:space="preserve">
+    <value>Zeige Statistiken</value>
+  </data>
+  <data name="Fat" xml:space="preserve">
+    <value>Fett</value>
+  </data>
 </root>

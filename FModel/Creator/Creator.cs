@@ -152,7 +152,7 @@ namespace FModel.Creator
                             Rarity.DrawRarity(c, icon);
                         }
 
-                        LargeSmallImage.DrawPreviewImage(c, icon);
+                        LargeSmallImage.DrawNotStretchedPreviewImage(c, icon);
 
                         if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
                         {
@@ -164,7 +164,7 @@ namespace FModel.Creator
                             }
                         }
 
-                        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                        // Watermark.DrawWatermark(c); // boi why would you watermark something you don't own ¯\_(ツ)_/¯
                         ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
                     return true;

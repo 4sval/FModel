@@ -1031,4 +1031,10 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="WithPosition" xml:space="preserve">
     <value>Posición / Valor</value>
   </data>
+  <data name="Fat" xml:space="preserve">
+    <value>Gordo</value>
+  </data>
+  <data name="DrawStats" xml:space="preserve">
+    <value>Mostrar estadísticas</value>
+  </data>
 </root>

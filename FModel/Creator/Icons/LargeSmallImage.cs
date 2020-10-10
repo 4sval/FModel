@@ -57,5 +57,13 @@ namespace FModel.Creator.Icons
         public static void DrawPreviewImage(SKCanvas c, IBase icon) =>
             c.DrawBitmap(icon.IconImage ?? icon.FallbackImage, new SKRect(icon.Margin, icon.Margin, icon.Width - icon.Margin, icon.Height - icon.Margin),
                 new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
+        
+        public static void DrawNotStretchedPreviewImage(SKCanvas c, IBase icon)
+        {
+            SKBitmap i = icon.IconImage ?? icon.FallbackImage;
+            int x = i.Width < icon.Width ? ((icon.Width / 2) - (i.Width / 2)) : icon.Margin;
+            c.DrawBitmap(i, new SKRect(x, icon.Margin, (x + i.Width) - (icon.Margin * 2), i.Height - icon.Margin),
+                new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
+        }
     }
 }

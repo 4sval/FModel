@@ -790,4 +790,10 @@
   <data name="SkipThisVersion" xml:space="preserve">
     <value>跳过此版本</value>
   </data>
+  <data name="DrawStats" xml:space="preserve">
+    <value>显示统计数据</value>
+  </data>
+  <data name="Fat" xml:space="preserve">
+    <value>厚</value>
+  </data>
 </root>

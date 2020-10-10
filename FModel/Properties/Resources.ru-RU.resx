@@ -780,4 +780,10 @@
   <data name="SkipThisVersion" xml:space="preserve">
     <value>Пропустить эту версию</value>
   </data>
+  <data name="DrawStats" xml:space="preserve">
+    <value>Посмотреть Статистику</value>
+  </data>
+  <data name="Fat" xml:space="preserve">
+    <value>Жирный</value>
+  </data>
 </root>

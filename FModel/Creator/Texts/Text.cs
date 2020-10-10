@@ -157,96 +157,92 @@ namespace FModel.Creator.Texts
         {
             _NAME_TEXT_SIZE = 45;
             string text = icon.DisplayName;
-            if (!string.IsNullOrEmpty(text))
+            SKTextAlign side = SKTextAlign.Center;
+            int x = icon.Width / 2;
+            int y = _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE;
+            switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
             {
-                SKTextAlign side = SKTextAlign.Center;
-                int x = icon.Width / 2;
-                int y = _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE;
-                switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
-                {
-                    case EIconDesign.Mini:
-                        {
-                            _NAME_TEXT_SIZE = 47;
-                            text = text.ToUpperInvariant();
-                            break;
-                        }
-                    case EIconDesign.Flat:
-                        {
-                            _NAME_TEXT_SIZE = 47;
-                            side = SKTextAlign.Right;
-                            x = icon.Width - icon.Margin * 2;
-                            break;
-                        }
-                }
-
-                SKPaint namePaint = new SKPaint
-                {
-                    IsAntialias = true,
-                    FilterQuality = SKFilterQuality.High,
-                    Typeface = TypeFaces.DisplayNameTypeface,
-                    TextSize = _NAME_TEXT_SIZE,
-                    Color = SKColors.White,
-                    TextAlign = side
-                };
-
-                if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
-                {
-                    SKShaper shaper = new SKShaper(namePaint.Typeface);
-                    float shapedTextWidth;
-
-                    while (true)
+                case EIconDesign.Mini:
                     {
-                        SKShaper.Result shapedText = shaper.Shape(text, namePaint);
-                        shapedTextWidth = shapedText.Points[^1].X + namePaint.TextSize / 2f;
-
-                        if (shapedTextWidth > icon.Width - icon.Margin * 2)
-                        {
-                            namePaint.TextSize = _NAME_TEXT_SIZE -= 1;
-                        }
-                        else
-                        {
-                            break;
-                        }
+                        _NAME_TEXT_SIZE = 47;
+                        text = text.ToUpperInvariant();
+                        break;
                     }
+                case EIconDesign.Flat:
+                    {
+                        _NAME_TEXT_SIZE = 47;
+                        side = SKTextAlign.Right;
+                        x = icon.Width - icon.Margin * 2;
+                        break;
+                    }
+            }
 
-                    c.DrawShapedText(shaper, text, (icon.Width - shapedTextWidth) / 2f, y, namePaint);
-                }
-                else
+            SKPaint namePaint = new SKPaint
+            {
+                IsAntialias = true,
+                FilterQuality = SKFilterQuality.High,
+                Typeface = TypeFaces.DisplayNameTypeface,
+                TextSize = _NAME_TEXT_SIZE,
+                Color = SKColors.White,
+                TextAlign = side
+            };
+
+            if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
+            {
+                SKShaper shaper = new SKShaper(namePaint.Typeface);
+                float shapedTextWidth;
+
+                while (true)
                 {
-                    // resize if too long
-                    while (namePaint.MeasureText(text) > icon.Width - icon.Margin * 2)
+                    SKShaper.Result shapedText = shaper.Shape(text, namePaint);
+                    shapedTextWidth = shapedText.Points[^1].X + namePaint.TextSize / 2f;
+
+                    if (shapedTextWidth > icon.Width - icon.Margin * 2)
                     {
                         namePaint.TextSize = _NAME_TEXT_SIZE -= 1;
                     }
-
-                    c.DrawText(text, x, y, namePaint);
+                    else
+                    {
+                        break;
+                    }
                 }
+
+                c.DrawShapedText(shaper, text, side == SKTextAlign.Right ? (x - shapedTextWidth) : ((icon.Width - shapedTextWidth) / 2f), y, namePaint);
+            }
+            else
+            {
+                // resize if too long
+                while (namePaint.MeasureText(text) > icon.Width - icon.Margin * 2)
+                {
+                    namePaint.TextSize = _NAME_TEXT_SIZE -= 1;
+                }
+
+                c.DrawText(text, x, y, namePaint);
             }
         }
 
         public static void DrawDescription(SKCanvas c, IBase icon)
         {
+            if (!string.IsNullOrEmpty(icon.Description)) return;
+
             int maxLine = 4;
             _BOTTOM_TEXT_SIZE = 15;
             string text = icon.Description;
             ETextSide side = ETextSide.Center;
-            if (text != null)
+            switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
             {
-                switch ((EIconDesign)Properties.Settings.Default.AssetsIconDesign)
-                {
-                    case EIconDesign.Mini:
-                        {
-                            maxLine = 5;
-                            _BOTTOM_TEXT_SIZE = icon.Margin;
-                            text = text.ToUpper();
-                            break;
-                        }
-                    case EIconDesign.Flat:
-                        {
-                            side = ETextSide.Right;
-                            break;
-                        }
-                }
+                case EIconDesign.Mini:
+                    {
+                        maxLine = 5;
+                        _BOTTOM_TEXT_SIZE = icon.Margin;
+                        text = text.ToUpper();
+                        break;
+                    }
+                case EIconDesign.Flat:
+                    {
+                        side = ETextSide.Right;
+                        break;
+                    }
             }
 
             SKPaint descriptionPaint = new SKPaint
@@ -257,7 +253,7 @@ namespace FModel.Creator.Texts
                 TextSize = 13,
                 Color = SKColors.White,
             };
-            
+
             // wrap if too long
             Helper.DrawCenteredMultilineText(c, text, maxLine, icon, side,
                 new SKRect(icon.Margin, _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE, icon.Width - icon.Margin, icon.Height - _BOTTOM_TEXT_SIZE),

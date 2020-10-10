@@ -787,4 +787,10 @@ Col tempo sono state aggiunte nuove funzioni e molti altri utenti hanno comincia
   <data name="MaybeLater" xml:space="preserve">
     <value>Magari più avanti</value>
   </data>
+  <data name="DrawStats" xml:space="preserve">
+    <value>Mostra statistiche</value>
+  </data>
+  <data name="Fat" xml:space="preserve">
+    <value>Grosso</value>
+  </data>
 </root>

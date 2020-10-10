@@ -961,6 +961,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Fat.
+        /// </summary>
+        public static string Fat {
+            get {
+                return ResourceManager.GetString("Fat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à FBKP Files (*.fbkp)|*.fbkp|All Files (*.*)|*.*.
         /// </summary>
         public static string FbkpFilter {
