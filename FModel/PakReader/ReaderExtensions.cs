@@ -1,18 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace PakReader
 {
     static class ReaderExtensions
     {
-        public static string ReadFString(this BinaryReader reader)
+        public static unsafe string ReadFString(this BinaryReader reader)
         {
-            // > 0 for ANSICHAR, < 0 for UCS2CHAR serialization
             var SaveNum = reader.ReadInt32();
-            bool LoadUCS2Char = SaveNum < 0;
-            if (LoadUCS2Char)
+
+            if (SaveNum == 0) return null;
+
+            // > 0 for ANSICHAR, < 0 for UCS2CHAR serialization
+            if (SaveNum < 0)
             {
                 // If SaveNum cannot be negated due to integer overflow, Ar is corrupted.
                 if (SaveNum == int.MinValue)
@@ -21,27 +22,22 @@ namespace PakReader
                 }
 
                 SaveNum = -SaveNum;
-            }
 
-            if (SaveNum == 0) return null;
+                var dataBytes = reader.ReadBytes(SaveNum * sizeof(char));
 
-            // 1 byte is removed because of null terminator (\0)
-            if (LoadUCS2Char)
-            {
-                ushort[] data = new ushort[SaveNum];
-                for (int i = 0; i < SaveNum; i++)
+                fixed (byte* pData = dataBytes)
                 {
-                    data[i] = reader.ReadUInt16();
-                }
-                unsafe
-                {
-                    fixed (ushort* dataPtr = &data[0])
-                        return new string((char*)dataPtr, 0, data.Length - 1);
+                    return new string((char*)pData, 0, SaveNum - 1); // 1 byte is removed because of null terminator (\0)
                 }
             }
             else
             {
-                return Encoding.UTF8.GetString(reader.ReadBytes(SaveNum).AsSpan(..^1));
+                var dataBytes = reader.ReadBytes(SaveNum);
+
+                fixed (byte* pData = dataBytes)
+                {
+                    return new string((sbyte*)pData, 0, SaveNum - 1); // 1 byte is removed because of null terminator (\0)
+                }
             }
         }
 

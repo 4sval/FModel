@@ -1,18 +1,21 @@
-﻿using FModel.Logger;
-using FModel.Utils;
-using FModel.ViewModels.MenuItem;
-using FModel.Windows.Launcher;
-using PakReader.Pak;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+
 using EpicManifestParser.Objects;
-using System.Text.RegularExpressions;
+
 using FModel.Grabber.Manifests;
+using FModel.Logger;
+using FModel.Utils;
+using FModel.ViewModels.MenuItem;
+using FModel.Windows.Launcher;
+
+using PakReader.Pak;
 
 namespace FModel.Grabber.Paks
 {
@@ -44,7 +47,20 @@ namespace FModel.Grabber.Paks
                 if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
                 {
                     ManifestInfo manifestInfo = await ManifestGrabber.TryGetLatestManifestInfo().ConfigureAwait(false);
-                    byte[] manifestData = await manifestInfo.DownloadManifestDataAsync().ConfigureAwait(false);
+                    DirectoryInfo chunksDir = Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks"));
+                    string manifestPath = Path.Combine(chunksDir.FullName, manifestInfo.Filename);
+                    byte[] manifestData;
+
+                    if (File.Exists(manifestPath))
+                    {
+                        manifestData = await File.ReadAllBytesAsync(manifestPath);
+                    }
+                    else
+                    {
+                        manifestData = await manifestInfo.DownloadManifestDataAsync().ConfigureAwait(false);
+                        await File.WriteAllBytesAsync(manifestPath, manifestData).ConfigureAwait(false);
+                    }
+
                     Manifest manifest = new Manifest(manifestData, new ManifestOptions
                     {
                         ChunkBaseUri = new Uri("http://download.epicgames.com/Builds/Fortnite/CloudDir/ChunksV3/", UriKind.Absolute),

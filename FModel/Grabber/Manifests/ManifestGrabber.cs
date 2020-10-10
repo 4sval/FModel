@@ -1,5 +1,7 @@
 ﻿using EpicManifestParser.Objects;
+
 using FModel.Utils;
+
 using System;
 using System.Threading.Tasks;
 
@@ -11,7 +13,8 @@ namespace FModel.Grabber.Manifests
         {
             if (IsExpired())
             {
-                OAuth auth = await Endpoints.GetOAuthInfo();
+                OAuth auth = await Endpoints.GetOAuthInfo().ConfigureAwait(false);
+
                 if (auth != null)
                 {
                     Properties.Settings.Default.AccessToken = auth.AccessToken;
@@ -20,19 +23,14 @@ namespace FModel.Grabber.Manifests
                 }
             }
 
-            string ret = await Endpoints.GetStringEndpoint("https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/public/assets/v2/platform/Windows/namespace/fn/catalogItem/4fe75bbc5a674f4f9b356b5c90567da5/app/Fortnite/label/Live", Properties.Settings.Default.AccessToken);
-            if (!string.IsNullOrEmpty(ret)) return new ManifestInfo(ret);
-            else return null;
+            string ret = await Endpoints.GetStringEndpoint("https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/public/assets/v2/platform/Windows/namespace/fn/catalogItem/4fe75bbc5a674f4f9b356b5c90567da5/app/Fortnite/label/Live", Properties.Settings.Default.AccessToken).ConfigureAwait(false);
+            return string.IsNullOrEmpty(ret) ? null : new ManifestInfo(ret);
         }
 
         private static bool IsExpired()
         {
             long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            if ((currentTime - 60000) >= Properties.Settings.Default.LauncherExpiration)
-            {
-                return true;
-            }
-            return false;
+            return currentTime - 60000 >= Properties.Settings.Default.LauncherExpiration;
         }
     }
 }
