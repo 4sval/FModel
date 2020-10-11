@@ -204,14 +204,16 @@ namespace FModel.Creator.Bases
                         break;
                     }
                 }
-               if (text.Any(char.IsDigit))
+                //only trigger the fix if The Last char is a digit
+               if (char.IsDigit(text[text.Length - 1]))
                 {
                     int s = text.Count(k => Char.IsDigit(k));
+                    float numberwidth = paint.MeasureText(text.Substring(text.Length - s));
 
                     //Draw Number Separately 
                     c.DrawShapedText(shaper, text.Substring(text.Length - s), x, 155, paint);
 
-                    c.DrawShapedText(shaper, text.Substring(0, text.Length - s), x + 60, 155, paint);
+                    c.DrawShapedText(shaper, text.Substring(0, text.Length - s), x + numberwidth, 155, paint);
                 }  
                else
                 {

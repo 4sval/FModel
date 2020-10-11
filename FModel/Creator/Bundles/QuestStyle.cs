@@ -2,6 +2,8 @@
 using FModel.Creator.Texts;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
+using System;
+using System.Linq;
 
 namespace FModel.Creator.Bundles
 {
@@ -50,8 +52,18 @@ namespace FModel.Creator.Bundles
                                 break;
                             }
                         }
+                        if (char.IsDigit(q.Description[q.Description.Length - 1]))
+                        {
+                            int s = q.Description.Count(k => Char.IsDigit(k));
+                            c.DrawShapedText(shaper, q.Description.Substring(q.Description.Length - s), 65, y + paint.TextSize + 11, paint);
 
-                        c.DrawShapedText(shaper, q.Description, 65, y + paint.TextSize + 11, paint);
+                            c.DrawShapedText(shaper, q.Description.Substring(0, q.Description.Length - s), 115, y + paint.TextSize + 11, paint);
+                        }
+                        else
+                        {
+                            c.DrawShapedText(shaper, q.Description, 65, y + paint.TextSize + 11, paint);
+
+                        }
                     }
                     else
                     {
