@@ -146,7 +146,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>مفتاح AES</value>
   </data>
   <data name="AesKeysUpdated" xml:space="preserve">
-    <value>تم تحديث المفاتيح</value>
+    <value>AES تم تحديث مفاتيح </value>
   </data>
   <data name="AesNotWorking" xml:space="preserve">
     <value>'{0}' لا يعمل مع '{1}'</value>
@@ -176,7 +176,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>مشغل الصوت</value>
   </data>
   <data name="Auto" xml:space="preserve">
-    <value>تلقاءي</value>
+    <value>تلقائي</value>
   </data>
   <data name="AutoOpenSounds" xml:space="preserve">
     <value>افتح الأصوات تلقائيا</value>
@@ -185,16 +185,16 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>B</value>
   </data>
   <data name="BackupPaks" xml:space="preserve">
-    <value>Backup PAKs</value>
+    <value>PAKs انشاء نسخة احتياطية من</value>
   </data>
   <data name="Backups" xml:space="preserve">
-    <value>Backups</value>
+    <value>النسخ الاحتياطية</value>
   </data>
   <data name="Banner" xml:space="preserve">
     <value>شعار</value>
   </data>
   <data name="BugsReport" xml:space="preserve">
-    <value>Bugs Report</value>
+    <value>التبليغ عن مشكل</value>
   </data>
   <data name="BytesPerSecond" xml:space="preserve">
     <value>بايت في الثانية</value>
@@ -212,7 +212,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>Challenges' Custom Banner</value>
   </data>
   <data name="ChallengesThemeCreator" xml:space="preserve">
-    <value>Challenges' Theme Creator</value>
+    <value>مصمم صورة التحديات</value>
   </data>
   <data name="ChangeGame" xml:space="preserve">
     <value>تغيير اللعبة</value>
@@ -221,7 +221,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>التغيير</value>
   </data>
   <data name="Chinese" xml:space="preserve">
-    <value>اللغة الصينية (المبسطة)</value>
+    <value>اللغة الصينية المبسطة</value>
   </data>
   <data name="Clear" xml:space="preserve">
     <value>امسح</value>
@@ -329,7 +329,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>استخلاص</value>
   </data>
   <data name="FbkpFilter" xml:space="preserve">
-    <value>FBKP Files (*.fbkp)|*.fbkp|All Files (*.*)|*.*</value>
+    <value>FBKP ملفات (*.fbkp)|*.fbkp|جميع الملفات (*.*)|*.*</value>
   </data>
   <data name="FCopy" xml:space="preserve">
     <value>نسخ</value>
@@ -356,7 +356,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>الملفات</value>
   </data>
   <data name="Filter" xml:space="preserve">
-    <value>Filter</value>
+    <value>تصفية</value>
   </data>
   <data name="Find" xml:space="preserve">
     <value>تجد</value>
@@ -413,13 +413,13 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>أيقونة</value>
   </data>
   <data name="IconCreator" xml:space="preserve">
-    <value>خالق الأيقونة</value>
+    <value>مصمم الأيقونة</value>
   </data>
   <data name="IconWatermark" xml:space="preserve">
     <value>Icon Watermark</value>
   </data>
   <data name="IconWatermarkNotFound" xml:space="preserve">
-    <value>File not found, watermarking disabled</value>
+    <value>watermarking الملف غير متوفر ,تم تعطيل ال</value>
   </data>
   <data name="Idling" xml:space="preserve">
     <value>{0} - Idling</value>
@@ -452,7 +452,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>اللغة اليابانية</value>
   </data>
   <data name="JsonFilter" xml:space="preserve">
-    <value>JSON Files (*.json)|*.json</value>
+    <value>JSON ملفات (*.json)|*.json</value>
   </data>
   <data name="KB" xml:space="preserve">
     <value>KB</value>
@@ -464,7 +464,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>لغة</value>
   </data>
   <data name="Listening" xml:space="preserve">
-    <value>الاستماع - {0}</value>
+    <value> الاستماع - {0}</value>
   </data>
   <data name="LoadAll" xml:space="preserve">
     <value>تحميل الكل</value>
@@ -572,7 +572,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>.PAK Files Auto Detected</value>
   </data>
   <data name="PathChanged" xml:space="preserve">
-    <value>تم تغيير مسار (مسارات) FModel</value>
+    <value>FModel تم تغيير مسارات</value>
   </data>
   <data name="PathChangedRestart" xml:space="preserve">
     <value>FModel على وشك إعادة التشغيل لأنك طبقت المسار (المسارات) الجديدة</value>
@@ -584,7 +584,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>اللغة البولندية</value>
   </data>
   <data name="PortugueseBrazil" xml:space="preserve">
-    <value>اللغة البرتغالية (البرازيل)</value>
+    <value>اللغة البرتغالية/البرازيلية</value>
   </data>
   <data name="Preview" xml:space="preserve">
     <value>عرض مسبق</value>
@@ -593,7 +593,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>أساسي</value>
   </data>
   <data name="Processing" xml:space="preserve">
-    <value>Processing</value>
+    <value>معالجة</value>
   </data>
   <data name="Rarity" xml:space="preserve">
     <value>Rarity</value>
@@ -602,7 +602,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>Regular Expression</value>
   </data>
   <data name="ReloadAesKeysAtLaunch" xml:space="preserve">
-    <value>إعادة تحميل مفاتيح AES عند الإطلاق</value>
+    <value>عند الإطلاق AES إعادة تحميل مفاتيح</value>
   </data>
   <data name="Remove" xml:space="preserve">
     <value>إزالة</value>
@@ -668,7 +668,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>اللغة الأسبانية</value>
   </data>
   <data name="SpanishLatin" xml:space="preserve">
-    <value>الإسبانية (أمريكا اللاتينية)</value>
+    <value>الإسبانية /امريكا اللاتينية</value>
   </data>
   <data name="SRefresh" xml:space="preserve">
     <value>Refresh</value>
@@ -680,7 +680,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>مفتاح ثابت</value>
   </data>
   <data name="StaticKeyNotWorking" xml:space="preserve">
-    <value>{0} لا يعمل مع ملفات PAK الخاصة بك</value>
+    <value>{0} الخاصة بك PAK لا يعمل مع ملفات</value>
   </data>
   <data name="Stop" xml:space="preserve">
     <value>قف</value>
@@ -695,7 +695,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>نص للبحث:</value>
   </data>
   <data name="TimeElapsed" xml:space="preserve">
-    <value>الوقت المنقضي {0} مللي ثانية</value>
+    <value>الوقت المنقضي {0} جزء من الثانية</value>
   </data>
   <data name="TotalAssetsLoaded" xml:space="preserve">
     <value>تم تحميل أصول {0}</value>
@@ -731,7 +731,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>استخدم ألوان اللعبة</value>
   </data>
   <data name="UseItemShopIcon" xml:space="preserve">
-    <value>استخدم أيقونة محل الأدوات</value>
+    <value>استخدم أيقونة متجر الأدوات</value>
   </data>
   <data name="UseWatermark" xml:space="preserve">
     <value>watermark استخدم</value>
@@ -752,7 +752,7 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>Watermark</value>
   </data>
   <data name="YesShowChangelog" xml:space="preserve">
-    <value>نعم (عرض سجل التغيير)</value>
+    <value>(نعم اظهر التغييرات الجديدة)</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>نعم</value>
