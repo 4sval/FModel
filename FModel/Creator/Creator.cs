@@ -344,6 +344,7 @@ namespace FModel.Creator
                 //        }
                 //        return false;
                 //    }
+                case "GQuest":
                 case "GAccolade":
                 case "GCosmeticSkin":
                 case "GCharacterPerk":
