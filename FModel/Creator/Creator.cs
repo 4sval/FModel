@@ -1,4 +1,4 @@
-﻿using FModel.Creator.Bases;
+using FModel.Creator.Bases;
 using FModel.Creator.Bundles;
 using FModel.Creator.Icons;
 using FModel.Creator.Rarities;
@@ -346,7 +346,7 @@ namespace FModel.Creator
                 //    }
                 case "GAccolade":
                 case "GCosmeticSkin":
-                case "GCosmeticCard":
+                case "GCharacterPerk":
                 case "GCosmeticTitle":
                 case "GCosmeticBadge":
                 case "GCosmeticEmote":
@@ -384,6 +384,39 @@ namespace FModel.Creator
                             }
 
                             Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                        }
+                        return true;
+                    }
+                case "GCosmeticCard":
+                    {
+                        BaseGCosmetic icon = new BaseGCosmetic(exports[index], exportType);
+                        using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                        using (var c = new SKCanvas(ret))
+                        {
+                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign == EIconDesign.Flat)
+                            {
+                                icon.Draw(c);
+                            }
+                            else
+                            {
+                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                                {
+                                    Rarity.DrawRarity(c, icon);
+                                }
+                            }
+
+                            LargeSmallImage.DrawPreviewImage(c, icon);
+
+                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                            {
+                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
+                                {
+                                    Text.DrawBackground(c, icon);
+                                    Text.DrawDisplayName(c, icon);
+                                    Text.DrawDescription(c, icon);
+                                }
+                            }
                             ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                         }
                         return true;
