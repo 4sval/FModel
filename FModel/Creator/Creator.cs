@@ -37,11 +37,13 @@ namespace FModel.Creator
                 case "AthenaMusicPackItemDefinition":
                 case "AthenaBattleBusItemDefinition":
                 case "AthenaCharacterItemDefinition":
+                case "FortAlterationItemDefinition":
                 case "AthenaBackpackItemDefinition":
                 case "AthenaPickaxeItemDefinition":
                 case "AthenaGadgetItemDefinition":
                 case "AthenaGliderItemDefinition":
                 case "AthenaDailyQuestDefinition":
+                case "FortBackpackItemDefinition":
                 case "AthenaSprayItemDefinition":
                 case "AthenaDanceItemDefinition":
                 case "AthenaEmojiItemDefinition":
