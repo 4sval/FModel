@@ -1,4 +1,4 @@
-﻿using FModel.Creator.Bundles;
+using FModel.Creator.Bundles;
 using FModel.Creator.Texts;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
@@ -230,7 +230,6 @@ namespace FModel.Creator.Bases
                     paint.TextSize -= 2;
                 }
                 c.DrawText(text, x, 155, paint);
-                
             }
 
             paint.Color = SKColors.White.WithAlpha(150);

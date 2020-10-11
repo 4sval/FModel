@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace PakReader
 {
     static class ReaderExtensions
     {
-        public static unsafe string ReadFString(this BinaryReader reader)
+        public static string ReadFString(this BinaryReader reader)
         {
             var SaveNum = reader.ReadInt32();
 
@@ -24,20 +25,12 @@ namespace PakReader
                 SaveNum = -SaveNum;
 
                 var dataBytes = reader.ReadBytes(SaveNum * sizeof(char));
-
-                fixed (byte* pData = dataBytes)
-                {
-                    return new string((char*)pData, 0, SaveNum - 1); // 1 byte is removed because of null terminator (\0)
-                }
+                return Encoding.Unicode.GetString(dataBytes, 0, dataBytes.Length - 1); // 1 byte is removed because of null terminator (\0)
             }
             else
             {
                 var dataBytes = reader.ReadBytes(SaveNum);
-
-                fixed (byte* pData = dataBytes)
-                {
-                    return new string((sbyte*)pData, 0, SaveNum - 1); // 1 byte is removed because of null terminator (\0)
-                }
+                return Encoding.UTF8.GetString(dataBytes, 0, dataBytes.Length - 1); // 1 byte is removed because of null terminator (\0)
             }
         }
 

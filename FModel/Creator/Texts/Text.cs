@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FModel.Creator.Bases;
 using PakReader.Pak;
 using PakReader.Parsers.Class;

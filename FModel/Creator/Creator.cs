@@ -25,13 +25,21 @@ namespace FModel.Creator
             string assetFolder = d.Parent.Name;
             if (Text.TypeFaces.NeedReload(false)) Text.TypeFaces = new Typefaces(); // when opening bundle creator settings without loading paks first
 
-            int index = Globals.Game.ActualGame == EGame.Valorant || Globals.Game.ActualGame == EGame.Spellbreak ? 1 : 0;
-            string exportType = exportTypes.Length > index ? exportTypes[index].String : string.Empty;
+            int index;
+            {
+                if (Globals.Game.ActualGame == EGame.Valorant || Globals.Game.ActualGame == EGame.Spellbreak)
+                    index = 1;
+                else
+                    index = 0;
+            }
+            string exportType;
+            {
+                if (exportTypes.Length > index && exportTypes[index].String == "BlueprintGeneratedClass")
+                    index++;
 
-            if (Globals.Game.ActualGame == EGame.Spellbreak & exportType == "BlueprintGeneratedClass"){ // there should better way to do this
-                index++;
                 exportType = exportTypes.Length > index ? exportTypes[index].String : string.Empty;
-                }
+            }
+
             switch (exportType)
             {
                 case "AthenaConsumableEmoteItemDefinition":
