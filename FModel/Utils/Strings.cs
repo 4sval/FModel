@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace FModel.Utils
@@ -21,13 +22,13 @@ namespace FModel.Utils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FixPath(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(path) || path.Length < 5)
                 return string.Empty;
 
             string trigger;
             {
                 string tempPath = path[1..];
-                trigger = tempPath.Substring(0, tempPath.IndexOf("/"));
+                trigger = tempPath.Substring(0, tempPath.IndexOf('/'));
             }
 
             Regex regex = new Regex(trigger);

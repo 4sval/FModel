@@ -47,7 +47,7 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Fortnite [EGL2]", Property = egl2FilesPath });
             }
 
-            ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Fortnite [LIVE]", Property = "donotedit-youcanteditanyway.manifest" });
+            ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Fortnite [LIVE]", Property = "donotedit-youcanteditanyway-fn.manifest" });
 
             string valorantFilesPath = Paks.GetValorantPakFilesPath();
             if (!string.IsNullOrEmpty(valorantFilesPath))
@@ -56,6 +56,8 @@ namespace FModel.Windows.Launcher
                 Globals.gNotifier.ShowCustomMessage("Valorant", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/valorant.live.ico");
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Valorant", Property = valorantFilesPath });
             }
+
+            ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "Valorant [LIVE]", Property = "donotedit-youcanteditanyway-val.manifest" });
 
             string borderlands3FilesPath = Paks.GetBorderlands3PakFilesPath();
             if (!string.IsNullOrEmpty(borderlands3FilesPath))

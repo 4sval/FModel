@@ -136,12 +136,16 @@ namespace FModel.Creator.Bases
             int x = 20;
             foreach (var (index, reward) in BookXpSchedule)
             {
-                if (index == 0 || reward.Count <= 0)
+                if (index == 0 || reward.Count == 0)
                     continue;
 
                 c.DrawText(index.ToString(), new SKPoint(x + (defaultSize / 2), y - 5), paint);
 
-                rarity.Color = reward[0].TheReward.RarityBackgroundColors[0];
+                var theReward = reward[0].TheReward;
+                if (theReward == null)
+                    continue;
+
+                rarity.Color = theReward.RarityBackgroundColors[0];
                 c.DrawRect(new SKRect(x, y, x + defaultSize, y + defaultSize), bg);
                 c.DrawBitmap(reward[0].RewardIcon, new SKPoint(x, y), icon);
                 var pathBottom = new SKPath { FillType = SKPathFillType.EvenOdd };

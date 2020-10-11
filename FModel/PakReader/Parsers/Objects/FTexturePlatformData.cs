@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 
+using FModel;
+
 namespace PakReader.Parsers.Objects
 {
     public readonly struct FTexturePlatformData
@@ -27,7 +29,7 @@ namespace PakReader.Parsers.Objects
 
             Mips = reader.ReadTArray(() => new FTexture2DMipMap(reader, ubulk, bulkOffset));
 
-            if (FModel.Globals.Game.Version > EPakVersion.FNAME_BASED_COMPRESSION_METHOD || FModel.Globals.Game.SubVersion == 1)
+            if (Globals.Game.Version > EPakVersion.FNAME_BASED_COMPRESSION_METHOD || Globals.Game.SubVersion == 1 && Globals.Game.ActualGame != EGame.Fortnite)
             {
                 bIsVirtual = reader.ReadInt32() != 0;
                 if (bIsVirtual)

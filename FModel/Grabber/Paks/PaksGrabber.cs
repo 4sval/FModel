@@ -44,9 +44,15 @@ namespace FModel.Grabber.Paks
                 }
 
                 // Add Pak Files
-                if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
+                if (Properties.Settings.Default.PakPath.EndsWith("-fn.manifest"))
                 {
                     ManifestInfo manifestInfo = await ManifestGrabber.TryGetLatestManifestInfo().ConfigureAwait(false);
+
+                    if (manifestInfo == null)
+                    {
+                        throw new Exception("Failed to load latest manifest.");
+                    }
+
                     DirectoryInfo chunksDir = Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks"));
                     string manifestPath = Path.Combine(chunksDir.FullName, manifestInfo.Filename);
                     byte[] manifestData;
@@ -79,6 +85,41 @@ namespace FModel.Grabber.Paks
                         PakFileReader pakFile = new PakFileReader(pakFileName, fileManifest.GetStream());
 
                         if (pakFiles++ == 0)
+                        {
+                            // define the current game thank to the pak path
+                            Folders.SetGameName(pakFileName);
+
+                            Globals.Game.Version = pakFile.Info.Version;
+                            Globals.Game.SubVersion = pakFile.Info.SubVersion;
+                        }
+
+                        await Application.Current.Dispatcher.InvokeAsync(delegate
+                        {
+                            MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                            {
+                                PakFile = pakFile,
+                                IsEnabled = false
+                            });
+                        });
+                    }
+                }
+                else if (Properties.Settings.Default.PakPath.EndsWith("-val.manifest"))
+                {
+                    ValorantAPIManifest manifest = await ValorantAPIManifest.DownloadAndParse(Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks"))).ConfigureAwait(false);
+
+                    if (manifest == null)
+                    {
+                        throw new Exception("Failed to load latest manifest.");
+                    }
+
+                    for (int i = 0; i < manifest.Paks.Length; i++)
+                    {
+                        ValorantPak pak = manifest.Paks[i];
+
+                        var pakFileName = @$"ShooterGame\Content\Paks\{pak.Name}";
+                        PakFileReader pakFile = new PakFileReader(pakFileName, manifest.GetPakStream(i));
+
+                        if (i == 0)
                         {
                             // define the current game thank to the pak path
                             Folders.SetGameName(pakFileName);
