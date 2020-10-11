@@ -1,4 +1,4 @@
-﻿using FModel.Creator.Rarities;
+using FModel.Creator.Rarities;
 using FModel.Creator.Texts;
 using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
@@ -36,12 +36,12 @@ namespace FModel.Creator.Bases
             Description = "";
             Width = exportType switch
             {
-                "GCosmeticCard" => 1024,
+                "GCosmeticCard" => 1536,
                 _ => 512
             };
             Height = exportType switch
             {
-                "GCosmeticCard" => 200,
+                "GCosmeticCard" => 450, // Not perfect, causes images to get stretched a bit, but actually allows text to show up so it works for now. - FireMonkey
                 _ => 512
             };
         }
