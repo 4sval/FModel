@@ -775,4 +775,22 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="WithPosition" xml:space="preserve">
     <value>الوظيفة / القيمة</value>
   </data>
+  <data name="DrawStats" xml:space="preserve">
+    <value>عرض الاحصائيات</value>
+  </data>
+  <data name="MaybeLater" xml:space="preserve">
+    <value>ربما في وقت لاحق</value>
+  </data>
+  <data name="OggFilter" xml:space="preserve">
+    <value>ملفات OGG (* .ogg) | * .ogg | WAV Files (* .wav) | * .wav | ملفات WEM (* .wem) | * .wem | ملفات ADPCM (* .adpcm) | * .adpcm | كافة الملفات (*. *) | *. *</value>
+  </data>
+  <data name="SkipThisVersion" xml:space="preserve">
+    <value>تخطي هذه النسخة</value>
+  </data>
+  <data name="Fat" xml:space="preserve">
+    <value>عريض</value>
+  </data>
+  <data name="NoKeyWarning" xml:space="preserve">
+    <value>يعمل (AES)مشفر لفك تشفيرها يرجى تحديد مفتاح تشفير (.pak) تم العثور على ملف </value>
+  </data>
 </root>
