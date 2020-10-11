@@ -6,6 +6,8 @@ using SkiaSharp;
 using SkiaSharp.HarfBuzz;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Documents;
 
 namespace FModel.Creator.Bases
 {
@@ -184,6 +186,7 @@ namespace FModel.Creator.Bases
             int x = 300;
             if ((ELanguage)Properties.Settings.Default.AssetsLanguage == ELanguage.Arabic)
             {
+                
                 SKShaper shaper = new SKShaper(paint.Typeface);
                 float shapedTextWidth;
 
@@ -201,8 +204,22 @@ namespace FModel.Creator.Bases
                         break;
                     }
                 }
+               if (text.Any(char.IsDigit))
+                {
+                    int s = text.Count(k => Char.IsDigit(k));
 
-                c.DrawShapedText(shaper, text, x, 155, paint);
+                    //Draw Number Separately 
+                    c.DrawShapedText(shaper, text.Substring(text.Length - s), x, 155, paint);
+
+                    c.DrawShapedText(shaper, text.Substring(0, text.Length - s), x + 60, 155, paint);
+                }  
+               else
+                {
+                    //feels bad man 
+                    c.DrawShapedText(shaper, text, x, 155, paint);
+
+                }
+
             }
             else
             {
@@ -211,6 +228,7 @@ namespace FModel.Creator.Bases
                     paint.TextSize -= 2;
                 }
                 c.DrawText(text, x, 155, paint);
+                
             }
 
             paint.Color = SKColors.White.WithAlpha(150);
