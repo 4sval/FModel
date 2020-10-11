@@ -27,6 +27,11 @@ namespace FModel.Creator
 
             int index = Globals.Game.ActualGame == EGame.Valorant || Globals.Game.ActualGame == EGame.Spellbreak ? 1 : 0;
             string exportType = exportTypes.Length > index ? exportTypes[index].String : string.Empty;
+
+            if (Globals.Game.ActualGame == EGame.Spellbreak & exportType == "BlueprintGeneratedClass"){ // there should better way to do this
+                index++;
+                exportType = exportTypes.Length > index ? exportTypes[index].String : string.Empty;
+                }
             switch (exportType)
             {
                 case "AthenaConsumableEmoteItemDefinition":
@@ -37,11 +42,13 @@ namespace FModel.Creator
                 case "AthenaMusicPackItemDefinition":
                 case "AthenaBattleBusItemDefinition":
                 case "AthenaCharacterItemDefinition":
+                case "FortAlterationItemDefinition":
                 case "AthenaBackpackItemDefinition":
                 case "AthenaPickaxeItemDefinition":
                 case "AthenaGadgetItemDefinition":
                 case "AthenaGliderItemDefinition":
                 case "AthenaDailyQuestDefinition":
+                case "FortBackpackItemDefinition":
                 case "AthenaSprayItemDefinition":
                 case "AthenaDanceItemDefinition":
                 case "AthenaEmojiItemDefinition":
