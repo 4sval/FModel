@@ -1088,4 +1088,7 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="Fat" xml:space="preserve">
     <value>Fat</value>
   </data>
+  <data name="ResetSettings" xml:space="preserve">
+    <value>Reset Settings</value>
+  </data>
 </root>

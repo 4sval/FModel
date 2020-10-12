@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FModel.Properties
@@ -10,6 +11,7 @@ namespace FModel.Properties
     public sealed partial class Settings
     {
         private static string _userSettings = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\FModel\\DoNotDelete.json";
+        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/pakchunk(?:0|10.*|\w+)-WindowsClient\.pak$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         /// <summary>
         /// IMPORTANT: i believe Upgrade doesn't like int32 so use int64 (maybe because it's for x64?) for all int values
@@ -35,6 +37,26 @@ namespace FModel.Properties
             Default.SkipVersion = false; // just in case
             Default.UpdateSettings = false; // just in case
             Default.Save();
+        }
+
+        public static void Delete()
+        {
+#if DEBUG
+            _userSettings = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\FModel\\DoNotDelete_Debug.json";
+#endif
+
+            if (File.Exists(_userSettings))
+            {
+                File.Delete(_userSettings);
+            }
+
+            string dir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Asval\\";
+            if (Directory.Exists(dir))
+            {
+                Directory.Delete(dir, true);
+            }
+
+            Default.Reset();
         }
 
         /// <summary>

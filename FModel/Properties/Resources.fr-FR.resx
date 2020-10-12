@@ -834,4 +834,7 @@ C'est maintenant le logiciel gratuit le plus utilisé pour leak sur Fortnite.</v
   <data name="Fat" xml:space="preserve">
     <value>Gras</value>
   </data>
+  <data name="ResetSettings" xml:space="preserve">
+    <value>Réinitialiser les paramètres</value>
+  </data>
 </root>

@@ -109,5 +109,14 @@ namespace FModel.Windows.Settings
                 Properties.Settings.Default.OutputPath = dialog.SelectedPath;
             }
         }
+
+        private void OnDeleteSettings(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Delete();
+            DarkMessageBoxHelper.Show(Properties.Resources.PathChangedRestart, Properties.Resources.PathChanged, MessageBoxButton.OK, MessageBoxImage.Information);
+            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Restarting]", "Settings reset");
+            Process.Start(Process.GetCurrentProcess().MainModule.FileName);
+            Application.Current.Shutdown();
+        }
     }
 }

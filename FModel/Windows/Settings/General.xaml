@@ -160,6 +160,9 @@
         </GroupBox>
 
         <Button Grid.Row="6" Grid.Column="1"
+                Content="{x:Static properties:Resources.ResetSettings}" Padding="5,1,5,1"
+                HorizontalAlignment="Left" Style="{StaticResource RedButton}" Click="OnDeleteSettings"/>
+        <Button Grid.Row="6" Grid.Column="1"
                 Content="{x:Static properties:Resources.OK}"
                 HorizontalAlignment="Right" Width="80" Click="OnClick"/>
     </Grid>

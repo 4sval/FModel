@@ -29,6 +29,8 @@ namespace FModel.Grabber.Manifests
 
         private static bool IsExpired()
         {
+            if (string.IsNullOrEmpty(Properties.Settings.Default.AccessToken)) return true;
+
             long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             return currentTime - 60000 >= Properties.Settings.Default.LauncherExpiration;
         }

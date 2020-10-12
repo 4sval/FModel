@@ -4,6 +4,7 @@ using FModel.ViewModels.ComboBox;
 using FModel.Windows.CustomNotifier;
 using Ookii.Dialogs.Wpf;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -143,8 +144,9 @@ namespace FModel.Windows.Launcher
         {
             if (e.Source is TextBox text)
             {
-                BrowsePath.IsEnabled = text.Text != "donotedit-youcanteditanyway.manifest";
-                text.IsReadOnly = text.Text == "donotedit-youcanteditanyway.manifest";
+                bool m = Regex.IsMatch(text.Text, @"^donotedit-youcanteditanyway-(?:\w+)\.manifest$");
+                BrowsePath.IsEnabled = !m;
+                text.IsReadOnly = m;
             }
         }
     }
