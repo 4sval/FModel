@@ -42,21 +42,28 @@
     public enum ELanguage : long
     {
         English,
+        AustralianEnglish,
+        BritishEnglish,
         French,
         German,
         Italian,
         Spanish,
         SpanishLatin,
+        SpanishMexico,
         Arabic,
         Japanese,
         Korean,
         Polish,
         PortugueseBrazil,
+        PortuguesePortugal,
         Russian,
         Turkish,
         Chinese,
         TraditionalChinese,
-        AustralianEnglish
+        Swedish,
+        Thai,
+        Indonesian,
+        VietnameseVietnam
     }
 
     public enum EJsonType: long

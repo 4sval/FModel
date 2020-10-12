@@ -3,6 +3,7 @@ using PakReader.Parsers.Objects;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using FModel.Properties;
 using ToastNotifications;
 using ToastNotifications.Lifetime;
 using ToastNotifications.Position;
@@ -52,17 +53,17 @@ namespace FModel
         {
             return ActualGame switch
             {
-                EGame.Fortnite => "Fortnite",
-                EGame.Valorant => "Valorant",
-                EGame.DeadByDaylight => "Dead By Daylight",
-                EGame.Borderlands3 => "Borderlands 3",
-                EGame.MinecraftDungeons => "Minecraft Dungeons",
-                EGame.BattleBreakers => "Battle Breakers",
-                EGame.Spellbreak => "Spellbreak",
-                EGame.StateOfDecay2 => "State of Decay 2",
-                EGame.TheCycleEA => "The Cycle (Early Access)",
+                EGame.Fortnite => Resources.GameName_Fortnite,
+                EGame.Valorant => Resources.GameName_Valorant,
+                EGame.DeadByDaylight => Resources.GameName_DeadByDaylight,
+                EGame.Borderlands3 => Resources.GameName_Borderlands3,
+                EGame.MinecraftDungeons => Resources.GameName_MinecraftDungeons,
+                EGame.BattleBreakers => Resources.GameName_BattleBreakers,
+                EGame.Spellbreak => Resources.GameName_Spellbreak,
+                EGame.StateOfDecay2 => Resources.GameName_StateofDecay2,
+                EGame.TheCycleEA => Resources.GameName_TheCycle,
                 EGame.Unknown => "Unknown",
-                _ => "Unknown",
+                _ => "Unknown"
             };
         }
     }

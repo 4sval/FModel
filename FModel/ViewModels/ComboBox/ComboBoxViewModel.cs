@@ -52,20 +52,28 @@ namespace FModel.ViewModels.ComboBox
         public static ObservableCollection<ComboBoxViewModel> languageCbViewModel = new ObservableCollection<ComboBoxViewModel>
         {
             new ComboBoxViewModel { Id = 0, Content = Properties.Resources.English, Property = ELanguage.English },
-            new ComboBoxViewModel { Id = 1, Content = Properties.Resources.French, Property = ELanguage.French },
-            new ComboBoxViewModel { Id = 2, Content = Properties.Resources.German, Property = ELanguage.German },
-            new ComboBoxViewModel { Id = 3, Content = Properties.Resources.Italian, Property = ELanguage.Italian },
-            new ComboBoxViewModel { Id = 4, Content = Properties.Resources.Spanish, Property = ELanguage.Spanish },
-            new ComboBoxViewModel { Id = 5, Content = Properties.Resources.SpanishLatin, Property = ELanguage.SpanishLatin },
-            new ComboBoxViewModel { Id = 6, Content = Properties.Resources.Arabic, Property = ELanguage.Arabic },
-            new ComboBoxViewModel { Id = 7, Content = Properties.Resources.Japanese, Property = ELanguage.Japanese },
-            new ComboBoxViewModel { Id = 8, Content = Properties.Resources.Korean, Property = ELanguage.Korean },
-            new ComboBoxViewModel { Id = 9, Content = Properties.Resources.Polish, Property = ELanguage.Polish },
-            new ComboBoxViewModel { Id = 10, Content = Properties.Resources.PortugueseBrazil, Property = ELanguage.PortugueseBrazil },
-            new ComboBoxViewModel { Id = 11, Content = Properties.Resources.Russian, Property = ELanguage.Russian },
-            new ComboBoxViewModel { Id = 12, Content = Properties.Resources.Turkish, Property = ELanguage.Turkish },
-            new ComboBoxViewModel { Id = 13, Content = Properties.Resources.Chinese, Property = ELanguage.Chinese },
-            new ComboBoxViewModel { Id = 14, Content = Properties.Resources.TraditionalChinese, Property = ELanguage.TraditionalChinese }
+            new ComboBoxViewModel { Id = 1, Content = Properties.Resources.AustralianEnglish, Property = ELanguage.AustralianEnglish },
+            new ComboBoxViewModel { Id = 2, Content = Properties.Resources.BritishEnglish, Property = ELanguage.BritishEnglish },
+            new ComboBoxViewModel { Id = 3, Content = Properties.Resources.French, Property = ELanguage.French },
+            new ComboBoxViewModel { Id = 4, Content = Properties.Resources.German, Property = ELanguage.German },
+            new ComboBoxViewModel { Id = 5, Content = Properties.Resources.Italian, Property = ELanguage.Italian },
+            new ComboBoxViewModel { Id = 6, Content = Properties.Resources.Spanish, Property = ELanguage.Spanish },
+            new ComboBoxViewModel { Id = 7, Content = Properties.Resources.SpanishLatin, Property = ELanguage.SpanishLatin },
+            new ComboBoxViewModel { Id = 8, Content = Properties.Resources.SpanishMexico, Property = ELanguage.SpanishMexico },
+            new ComboBoxViewModel { Id = 9, Content = Properties.Resources.Arabic, Property = ELanguage.Arabic },
+            new ComboBoxViewModel { Id = 10, Content = Properties.Resources.Japanese, Property = ELanguage.Japanese },
+            new ComboBoxViewModel { Id = 11, Content = Properties.Resources.Korean, Property = ELanguage.Korean },
+            new ComboBoxViewModel { Id = 12, Content = Properties.Resources.Polish, Property = ELanguage.Polish },
+            new ComboBoxViewModel { Id = 13, Content = Properties.Resources.PortugueseBrazil, Property = ELanguage.PortugueseBrazil },
+            new ComboBoxViewModel { Id = 14, Content = Properties.Resources.PortuguesePortugal, Property = ELanguage.PortuguesePortugal },
+            new ComboBoxViewModel { Id = 15, Content = Properties.Resources.Russian, Property = ELanguage.Russian },
+            new ComboBoxViewModel { Id = 16, Content = Properties.Resources.Turkish, Property = ELanguage.Turkish },
+            new ComboBoxViewModel { Id = 17, Content = Properties.Resources.Chinese, Property = ELanguage.Chinese },
+            new ComboBoxViewModel { Id = 18, Content = Properties.Resources.TraditionalChinese, Property = ELanguage.TraditionalChinese },
+            new ComboBoxViewModel { Id = 19, Content = Properties.Resources.Swedish, Property = ELanguage.Swedish },
+            new ComboBoxViewModel { Id = 20, Content = Properties.Resources.Thai, Property = ELanguage.Thai },
+            new ComboBoxViewModel { Id = 21, Content = Properties.Resources.Indonesian, Property = ELanguage.Indonesian },
+            new ComboBoxViewModel { Id = 22, Content = Properties.Resources.VietnameseVietnam, Property = ELanguage.VietnameseVietnam }
         };
 
         public static ObservableCollection<ComboBoxViewModel> jsonCbViewModel = new ObservableCollection<ComboBoxViewModel>

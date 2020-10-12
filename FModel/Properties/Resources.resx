@@ -1091,4 +1091,55 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="ResetSettings" xml:space="preserve">
     <value>Reset Settings</value>
   </data>
+  <data name="GameName_Fortnite" xml:space="preserve">
+    <value>Fortnite</value>
+  </data>
+  <data name="GameName_Valorant" xml:space="preserve">
+    <value>Valorant</value>
+  </data>
+  <data name="GameName_DeadByDaylight" xml:space="preserve">
+    <value>Dead By Daylight</value>
+  </data>
+  <data name="GameName_Borderlands3" xml:space="preserve">
+    <value>Borderlands 3</value>
+  </data>
+  <data name="GameName_MinecraftDungeons" xml:space="preserve">
+    <value>Minecraft Dungeons</value>
+  </data>
+  <data name="AustralianEnglish" xml:space="preserve">
+    <value>Australian English</value>
+  </data>
+  <data name="BritishEnglish" xml:space="preserve">
+    <value>British English</value>
+  </data>
+  <data name="PortuguesePortugal" xml:space="preserve">
+    <value>Portuguese (Portugal)</value>
+  </data>
+  <data name="SpanishMexico" xml:space="preserve">
+    <value>Spanish (Mexico)</value>
+  </data>
+  <data name="Swedish" xml:space="preserve">
+    <value>Swedish</value>
+  </data>
+  <data name="Thai" xml:space="preserve">
+    <value>Thai</value>
+  </data>
+  <data name="Indonesian" xml:space="preserve">
+    <value>Indonesian</value>
+  </data>
+  <data name="VietnameseVietnam" xml:space="preserve">
+    <value>Vietnamese (Vietnam)</value>
+  </data>
+  <data name="GameName_BattleBreakers" xml:space="preserve">
+    <value>Battle Breakers</value>
+  </data>
+  <data name="GameName_Spellbreak" xml:space="preserve">
+    <value>Spellbreak</value>
+  </data>
+  <data name="GameName_StateofDecay2" xml:space="preserve">
+    <value>State of Decay 2</value>
+  </data>
+  <data name="GameName_TheCycle" xml:space="preserve">
+    <value>The Cycle</value>
+  </data>
 </root>

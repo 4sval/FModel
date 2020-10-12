@@ -37,11 +37,11 @@ namespace FModel.Windows.Settings
             _outputPath = Properties.Settings.Default.OutputPath;
             _useDiscordRpc = Properties.Settings.Default.UseDiscordRpc;
             FLanguages_CbBox.ItemsSource = ComboBoxVm.programLanguageCbViewModel;
-            FLanguages_CbBox.SelectedItem = ComboBoxVm.programLanguageCbViewModel.Where(x => x.Id == Properties.Settings.Default.ProgramLanguage).FirstOrDefault();
+            FLanguages_CbBox.SelectedItem = ComboBoxVm.programLanguageCbViewModel.FirstOrDefault(x => x.Id == Properties.Settings.Default.ProgramLanguage);
             Languages_CbBox.ItemsSource = ComboBoxVm.languageCbViewModel;
-            Languages_CbBox.SelectedItem = ComboBoxVm.languageCbViewModel.Where(x => x.Id == Properties.Settings.Default.AssetsLanguage).FirstOrDefault();
+            Languages_CbBox.SelectedItem = ComboBoxVm.languageCbViewModel.FirstOrDefault(x => x.Id == Properties.Settings.Default.AssetsLanguage);
             Json_CbBox.ItemsSource = ComboBoxVm.jsonCbViewModel;
-            Json_CbBox.SelectedItem = ComboBoxVm.jsonCbViewModel.Where(x => x.Id == Properties.Settings.Default.AssetsJsonType).FirstOrDefault();
+            Json_CbBox.SelectedItem = ComboBoxVm.jsonCbViewModel.FirstOrDefault(x => x.Id == Properties.Settings.Default.AssetsJsonType);
         }
 
         private async Task SaveAndExit()

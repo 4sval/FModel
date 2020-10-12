@@ -796,4 +796,31 @@
   <data name="Fat" xml:space="preserve">
     <value>厚</value>
   </data>
+  <data name="GameName_Fortnite" xml:space="preserve">
+    <value>堡垒之夜</value>
+  </data>
+  <data name="GameName_Valorant" xml:space="preserve">
+    <value>无畏契约</value>
+  </data>
+  <data name="GameName_MinecraftDungeons" xml:space="preserve">
+    <value>我的世界地牢</value>
+  </data>
+  <data name="GameName_Borderlands3" xml:space="preserve">
+    <value>无主之地3</value>
+  </data>
+  <data name="GameName_BattleBreakers" xml:space="preserve">
+    <value>《BATTLE BREAKERS》</value>
+  </data>
+  <data name="GameName_Spellbreak" xml:space="preserve">
+    <value>《Spellbreak》</value>
+  </data>
+  <data name="GameName_StateofDecay2" xml:space="preserve">
+    <value>《State of Decay 2》</value>
+  </data>
+  <data name="GameName_DeadByDaylight" xml:space="preserve">
+    <value>《Dead by Daylight》</value>
+  </data>
+  <data name="GameName_TheCycle" xml:space="preserve">
+    <value>《The Cycle》</value>
+  </data>
 </root>

@@ -147,9 +147,6 @@ namespace FModel.Utils
             else if (Globals.Game.ActualGame == EGame.Valorant)
                 return lang switch
                 {
-                    //Indonesian id-ID
-                    //Thailand th-TH
-                    //Vietnam vi-VN
                     ELanguage.English => "en-US",
                     ELanguage.French => "fr-FR",
                     ELanguage.German => "de-DE",
@@ -165,12 +162,14 @@ namespace FModel.Utils
                     ELanguage.Turkish => "tr-TR",
                     ELanguage.Chinese => "zh-CN",
                     ELanguage.TraditionalChinese => "zh-TW",
+                    ELanguage.Thai => "th-TH",
+                    ELanguage.VietnameseVietnam => "vi-VN",
+                    ELanguage.Indonesian => "id-ID",
                     _ => "en",
                 };
             else if (Globals.Game.ActualGame == EGame.DeadByDaylight)
                 return lang switch
                 {
-                    //Thailand th
                     ELanguage.English => "en",
                     ELanguage.French => "fr",
                     ELanguage.German => "de",
@@ -186,25 +185,26 @@ namespace FModel.Utils
                     ELanguage.Turkish => "tr",
                     ELanguage.Chinese => "zh-Hans",
                     ELanguage.TraditionalChinese => "zh-Hant",
+                    ELanguage.Thai => "th",
                     _ => "en",
                 };
             else if (Globals.Game.ActualGame == EGame.MinecraftDungeons)
                 return lang switch
                 {
-                    //Swedish sv-SE
-                    //Mexican Spanish es-MX
-                    //Portugal Portuguese pt-PT
-                    //British English en-GB
                     ELanguage.English => "en",
+                    ELanguage.BritishEnglish => "en-GB",
                     ELanguage.French => "fr-FR",
                     ELanguage.German => "de-DE",
                     ELanguage.Italian => "it-IT",
                     ELanguage.Spanish => "es-ES",
+                    ELanguage.SpanishMexico => "es-MX",
                     ELanguage.Japanese => "ja-JP",
                     ELanguage.Korean => "ko-KR",
                     ELanguage.Polish => "pl-PL",
                     ELanguage.PortugueseBrazil => "pt-BR",
+                    ELanguage.PortuguesePortugal => "pt-PT",
                     ELanguage.Russian => "ru-RU",
+                    ELanguage.Swedish => "sv-SE",
                     _ => "en"
                 };
             else if (Globals.Game.ActualGame == EGame.BattleBreakers)
@@ -244,9 +244,9 @@ namespace FModel.Utils
                     ELanguage.PortugueseBrazil => "pt-BR",
                     ELanguage.Italian => "it-IT",
                     ELanguage.French => "fr-FR",
-                    ELanguage.SpanishLatin => "es-MX",
+                    ELanguage.SpanishMexico => "es-MX",
                     ELanguage.German => "de-DE",
-                    _ => "en"
+                    _ => "en-US"
                 };
             else if (Globals.Game.ActualGame == EGame.TheCycleEA)
                 return lang switch
