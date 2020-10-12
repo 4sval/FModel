@@ -46,7 +46,7 @@ namespace FModel.ViewModels.ComboBox
             new ComboBoxViewModel { Id = 6, Content = Properties.Resources.Japanese },
             new ComboBoxViewModel { Id = 7, Content = Properties.Resources.Russian },
             new ComboBoxViewModel { Id = 8, Content = Properties.Resources.Chinese },
-            new ComboBoxViewModel { Id = 9, Content = Properties.Resources.PortugueseBrazil },
+            new ComboBoxViewModel { Id = 9, Content = Properties.Resources.PortugueseBrazil }
         };
 
         public static ObservableCollection<ComboBoxViewModel> languageCbViewModel = new ObservableCollection<ComboBoxViewModel>
