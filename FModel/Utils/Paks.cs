@@ -110,10 +110,9 @@ namespace FModel.Utils
 
         public static string GetStateOfDecay2PakFilesPath()
         {
-            var sod2UWPPakFilesPath = GetUWPPakFilesPath("Microsoft.Dayton_8wekyb3d8bbwe");
-            if (!string.IsNullOrEmpty(sod2UWPPakFilesPath))
+            if (!string.IsNullOrEmpty(GetUWPPakFilesPath("Microsoft.Dayton_8wekyb3d8bbwe")))
             {
-                return $"{sod2UWPPakFilesPath}\\StateOfDecay2\\Content\\Paks";
+                return $"{GetUWPPakFilesPath("Microsoft.Dayton_8wekyb3d8bbwe")}\\StateOfDecay2\\Content\\Paks";
             }
 
             // Don't even try to look for "<Unknown Epic Games Name>" in LauncherInstalled.dat since it won't ever exist
@@ -161,13 +160,12 @@ namespace FModel.Utils
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Minecraft Dungeons not found");
             }
 
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Launcher version not found, attempting to find Microsoft Store installation.");
-            
-            var mcDungeonsUWPPath = GetUWPPakFilesPath("Microsoft.Lovika_8wekyb3d8bbwe");
-            if (!string.IsNullOrEmpty(mcDungeonsUWPPath))
-            {
-                return $"{mcDungeonsUWPPath}\\Dungeons\\Content\\Paks";
-            }
+            // DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Launcher version not found, attempting to find Microsoft Store installation.");
+            //
+            // if (!string.IsNullOrEmpty(GetUWPPakFilesPath("Microsoft.Lovika_8wekyb3d8bbwe")))
+            // {
+            //     return $"{GetUWPPakFilesPath("Microsoft.Lovika_8wekyb3d8bbwe")}\\Dungeons\\Content\\Paks";
+            // }
 
             return string.Empty;
         }
