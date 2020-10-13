@@ -100,14 +100,14 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_TheCycle, Property = theCyclePath });
             }
 
-            //string sod2Path = Paks.GetStateOfDecay2PakFilesPath();
-            //if (!string.IsNullOrEmpty(sod2Path))
-            //{
+            string sod2Path = Paks.GetStateOfDecay2PakFilesPath();
+            if (!string.IsNullOrEmpty(sod2Path))
+            {
                 // WIP
-            //    DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[UWP / LauncherInstalled.dat]", $"State of Decay 2 found at {sod2Path}");
-            //    Globals.gNotifier.ShowCustomMessage("State of Decay 2", Properties.Resources.PathAutoDetected, "/FModel;component/Resources/sod2.ico");
-            //    ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = "State of Decay 2", Property = sod2Path });
-            //}
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[UWP / LauncherInstalled.dat]", $"State of Decay 2 found at {sod2Path}");
+                Globals.gNotifier.ShowCustomMessage(Properties.Resources.GameName_StateofDecay2, Properties.Resources.PathAutoDetected, "/FModel;component/Resources/sod2.ico");
+                ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_StateofDecay2, Property = sod2Path });
+            }
 
             Games_CbBox.SelectedItem = ComboBoxVm.gamesCbViewModel.FirstOrDefault(x => x.Property.ToString() == Properties.Settings.Default.PakPath);
         }

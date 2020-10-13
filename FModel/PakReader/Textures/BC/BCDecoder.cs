@@ -20,6 +20,7 @@ namespace PakReader.Textures.BC
                     }
                 }
             }
+
             return ret;
         }
 
@@ -38,10 +39,12 @@ namespace PakReader.Textures.BC
                     {
                         ret[GetPixelLoc(width, x_block * 4 + (i % 4), y_block * 4 + (i / 4), 4, 0)] = r_bytes[i];
                         ret[GetPixelLoc(width, x_block * 4 + (i % 4), y_block * 4 + (i / 4), 4, 1)] = g_bytes[i];
-                        ret[GetPixelLoc(width, x_block * 4 + (i % 4), y_block * 4 + (i / 4), 4, 2)] = GetZNormal(r_bytes[i], g_bytes[i]);
+                        ret[GetPixelLoc(width, x_block * 4 + (i % 4), y_block * 4 + (i / 4), 4, 2)] =
+                            GetZNormal(r_bytes[i], g_bytes[i]);
                     }
                 }
             }
+
             return ret;
         }
 
@@ -51,12 +54,12 @@ namespace PakReader.Textures.BC
 
         static byte GetZNormal(byte x, byte y)
         {
-            var xf = (x / 127.5f) - 1;
-            var yf = (y / 127.5f) - 1;
+            var xf = x / 127.5f - 1;
+            var yf = y / 127.5f - 1;
             var zval = 1 - xf * xf - yf * yf;
-            var zval_ = (float)Math.Sqrt(zval > 0 ? zval : 0);
+            var zval_ = (float) Math.Sqrt(zval > 0 ? zval : 0);
             zval = zval_ < 1 ? zval_ : 1;
-            return (byte)((zval * 127) + 128);
+            return (byte) (zval * 127 + 128);
         }
 
         static byte[] DecodeBC3Block(BinaryReader reader)
@@ -88,32 +91,33 @@ namespace PakReader.Textures.BC
             }
 
             byte[] index_block1 = GetBC3Indices(reader.ReadBytes(3));
-
             byte[] index_block2 = GetBC3Indices(reader.ReadBytes(3));
 
             byte[] bytes = new byte[16];
             for (int i = 0; i < 8; i++)
             {
-                bytes[7 - i] = (byte)ref_sl[index_block1[i]];
+                bytes[7 - i] = (byte) ref_sl[index_block1[i]];
             }
+
             for (int i = 0; i < 8; i++)
             {
-                bytes[15 - i] = (byte)ref_sl[index_block2[i]];
+                bytes[15 - i] = (byte) ref_sl[index_block2[i]];
             }
 
             return bytes;
         }
 
         static byte[] GetBC3Indices(byte[] buf_block) =>
-            new byte[] {
-                (byte)((buf_block[2] & 0b1110_0000) >> 5),
-                (byte)((buf_block[2] & 0b0001_1100) >> 2),
-                (byte)(((buf_block[2] & 0b0000_0011) << 1) | ((buf_block[1] & 0b1 << 7) >> 7)),
-                (byte)((buf_block[1] & 0b0111_0000) >> 4),
-                (byte)((buf_block[1] & 0b0000_1110) >> 1),
-                (byte)(((buf_block[1] & 0b0000_0001) << 2) | ((buf_block[0] & 0b11 << 6) >> 6)),
-                (byte)((buf_block[0] & 0b0011_1000) >> 3),
-                (byte)(buf_block[0] & 0b0000_0111)
+            new[]
+            {
+                (byte) ((buf_block[2] & 0b1110_0000) >> 5),
+                (byte) ((buf_block[2] & 0b0001_1100) >> 2),
+                (byte) (((buf_block[2] & 0b0000_0011) << 1) | ((buf_block[1] & 0b1 << 7) >> 7)),
+                (byte) ((buf_block[1] & 0b0111_0000) >> 4),
+                (byte) ((buf_block[1] & 0b0000_1110) >> 1),
+                (byte) (((buf_block[1] & 0b0000_0001) << 2) | ((buf_block[0] & 0b11 << 6) >> 6)),
+                (byte) ((buf_block[0] & 0b0011_1000) >> 3),
+                (byte) (buf_block[0] & 0b0000_0111)
             };
     }
 }

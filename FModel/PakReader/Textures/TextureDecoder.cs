@@ -62,6 +62,7 @@ namespace PakReader.Textures
                     bitmap.SetPixels(new IntPtr(p));
                 }
             }
+            
             return SKImage.FromBitmap(bitmap);
         }
     }

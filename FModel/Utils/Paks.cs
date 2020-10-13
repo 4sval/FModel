@@ -47,27 +47,30 @@ namespace FModel.Utils
         }
 
         // This method is in testing and is not recommended to be used other than for development purposes
-        public static string GetUWPPakFilesPath(string game)
+        public static string GetUWPPakFilesPath(string uwpfamilyname) // UWP Family name
         {
             try
             {
-                foreach (var pkg in new PackageManager().FindPackagesForUser(string.Empty, game))
+                foreach (var pkg in new PackageManager().FindPackagesForUser(string.Empty, uwpfamilyname))
                 {
-                    DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Microsoft Store]", $"UWP Game {game} found at {pkg.EffectiveLocation.Name}");
+                    DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[UWP Game Detection]",
+                        $"UWP Game {uwpfamilyname} found at {pkg.EffectiveLocation}");
                     return pkg.EffectivePath;
                 }
             }
             catch (UnauthorizedAccessException)
             {
-                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Microsoft Store]",
-                    $"The WindowsApps folder can't be accessed without permission changes to the folder.");
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[UWP Game Detection]",
+                    "The WindowsApps folder can't be accessed without permission changes to the folder. Make sure all WindowsApps folders have the correct read/write permissions set!");
             }
             catch
             {
-                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Microsoft Store]", $"An expected error has ocurred.");
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[UWP Game Detection]",
+                    "Error: An unknown error occured.");
             }
 
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Microsoft Store]", $"{game} cannot be found on this system.");
+            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[UWP Game Detection]",
+                $"The UWP package {uwpfamilyname} was not found on this system.");
             return string.Empty;
         }
 
@@ -107,20 +110,18 @@ namespace FModel.Utils
 
         public static string GetStateOfDecay2PakFilesPath()
         {
-            // WIP
             var sod2UWPPakFilesPath = GetUWPPakFilesPath("Microsoft.Dayton_8wekyb3d8bbwe");
             if (!string.IsNullOrEmpty(sod2UWPPakFilesPath))
             {
                 return $"{sod2UWPPakFilesPath}\\StateOfDecay2\\Content\\Paks";
             }
-            else
-            {
-                (_, string _, string sod2PakFilesPath) = GetUEGameFilesPath("<Replace when known with EGL name>");
-                if (!string.IsNullOrEmpty(sod2PakFilesPath))
-                {
-                    return $"{sod2PakFilesPath}\\StateOfDecay2\\Content\\Paks";
-                }
-            }
+
+            // Don't even try to look for "<Unknown Epic Games Name>" in LauncherInstalled.dat since it won't ever exist
+            // (_,string _,string sod2PakFilesPath) = GetUEGameFilesPath("<Unknown Epic Games Name>");
+            // if (!string.IsNullOrEmpty(sod2PakFilesPath))
+            // {
+            //     return $"{sod2PakFilesPath}\\StateOfDecay2\\Content\\Paks";
+            // }
 
             return string.Empty;
         }
@@ -136,7 +137,8 @@ namespace FModel.Utils
 
         public static string GetTheCyclePakFilesPath()
         {
-            (_, string _, string theCycleFilesPath) = GetUEGameFilesPath("AzaleaAlpha"); // TODO: Change when out of alpha
+            (_, string _, string theCycleFilesPath) =
+                GetUEGameFilesPath("AzaleaAlpha"); // TODO: Change when out of alpha
             if (!string.IsNullOrEmpty(theCycleFilesPath))
                 return $"{theCycleFilesPath}\\Prospect\\Content\\Paks";
             else
@@ -156,17 +158,16 @@ namespace FModel.Utils
                     !string.IsNullOrEmpty(launcherSettings.productLibraryDir))
                     return $"{launcherSettings.productLibraryDir}\\dungeons\\dungeons\\Dungeons\\Content\\Paks";
 
-                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]",
-                    "Minecraft Dungeons not found");
+                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Minecraft Dungeons not found");
             }
 
-            //DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Launcher version not found, attempting to find Microsoft Store installation.");
-
-            //var mcDungeonsUWPPath = GetUWPPakFilesPath("Microsoft.Lovika_8wekyb3d8bbwe");
-            //if (!string.IsNullOrEmpty(mcDungeonsUWPPath))
-            //{ 
-            //    return $"{mcDungeonsUWPPath}\\Dungeons\\Content\\Paks";
-            //}
+            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Launcher version not found, attempting to find Microsoft Store installation.");
+            
+            var mcDungeonsUWPPath = GetUWPPakFilesPath("Microsoft.Lovika_8wekyb3d8bbwe");
+            if (!string.IsNullOrEmpty(mcDungeonsUWPPath))
+            {
+                return $"{mcDungeonsUWPPath}\\Dungeons\\Content\\Paks";
+            }
 
             return string.Empty;
         }
@@ -189,7 +190,8 @@ namespace FModel.Utils
                 return string.Empty;
         }
 
-        public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files, string mount)
+        public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files,
+            string mount)
         {
             files = new Dictionary<string, FPakEntry>();
             foreach (FPakEntry entry in tempFiles.Values)
@@ -253,8 +255,7 @@ namespace FModel.Utils
             }
             finally
             {
-                if (stream != null)
-                    stream.Close();
+                stream?.Close();
             }
 
             return false;
@@ -273,8 +274,7 @@ namespace FModel.Utils
             }
             finally
             {
-                if (stream != null)
-                    stream.Close();
+                stream?.Close();
             }
 
             return false;
