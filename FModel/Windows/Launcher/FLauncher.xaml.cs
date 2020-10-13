@@ -144,7 +144,7 @@ namespace FModel.Windows.Launcher
         {
             if (e.Source is TextBox text)
             {
-                bool m = Regex.IsMatch(text.Text, @"^donotedit-youcanteditanyway-(?:\w+)\.manifest$");
+                bool m = Regex.IsMatch(text.Text, @"^donotedit-youcanteditanyway-\w+\.manifest$");
                 BrowsePath.IsEnabled = !m;
                 text.IsReadOnly = m;
             }
