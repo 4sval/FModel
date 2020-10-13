@@ -57,7 +57,7 @@ namespace PakReader.Parsers
                         "FontFace" => new UFontFace(this, ubulk),
                         "SoundWave" => new USoundWave(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
                         "StringTable" => new UStringTable(this),
-                        //"AkAudioEvent" => new UAkAudioEvent(this),
+                        "AkMediaAssetData" => new UAkMediaAssetData(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
                         _ => new UObject(this),
                     };
 

@@ -279,14 +279,6 @@
   <data name="ContributorsF" xml:space="preserve">
     <value>Contribuidoras</value>
   </data>
-  <data name="ContributorsFDetails" xml:space="preserve">
-    <value>• Waddlesworth			• Maiky
-• FunGames			• Not Officer
-• PsychoPast			• TSG
-• GMatrixGames			• Jackson
-• XTigerHyperX			• FireMonkey</value>
-    <comment>Do not translate</comment>
-  </data>
   <data name="CopySuccess" xml:space="preserve">
     <value>Copiado!</value>
   </data>
@@ -344,14 +336,6 @@
   </data>
   <data name="DonatorsF" xml:space="preserve">
     <value>Doadores</value>
-  </data>
-  <data name="DonatorsFDetails" xml:space="preserve">
-    <value>• Yanteh				• Maiky
-• FunGames			• HYPEX ♥
-• Alexander			• Netu ♥
-• SexyNutella			• imatrix
-• Frenzy Leaks			• LlamaLeaks</value>
-    <comment>Do not translate</comment>
   </data>
   <data name="DownloadError" xml:space="preserve">
     <value>Erro Ao Fazer Download De {0}</value>
@@ -738,9 +722,7 @@ FModel Lançador</value>
     <comment>General Settings Window</comment>
   </data>
   <data name="PathChangedRestart" xml:space="preserve">
-    <value>FModel Está Prestes A Reiniciar Porque Você Aplicou Seu (s) Novo (s) Caminho (
-FModel está prestes a reiniciar porque você aplicou seu (s) novo (s) caminho
-FModel está prestes a reiniciar porque você aplicou seu (s) novo (s) caminho (s)</value>
+    <value>FModel está prestes a reiniciar porque você aplicou seu (s) novo (s) caminho (s)</value>
     <comment>General Settings Window</comment>
   </data>
   <data name="pause" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -933,14 +915,6 @@ FModel está prestes a reiniciar porque você aplicou seu (s) novo (s) caminho (
   <data name="TranslatorsF" xml:space="preserve">
     <value>Tradutores</value>
   </data>
-  <data name="TranslatorsFDetails" xml:space="preserve">
-    <value>• EN: Asval#2291			• FR: Asval#2291
-• DE: FunGames#6822		• IT: arianaglande#5581
-• ES: Maiky.M#9879		• AR: PsychoPast#0001
-• JA: FNJPNews#7820		• RU: Seawod#4311
-• CN: GMatrixGames#6929</value>
-    <comment>Do not translate</comment>
-  </data>
   <data name="Turkish" xml:space="preserve">
     <value>Turco</value>
   </data>
@@ -1062,9 +1036,6 @@ FModel está prestes a reiniciar porque você aplicou seu (s) novo (s) caminho (
   </data>
   <data name="Xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Xml.xshd;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Trello" xml:space="preserve">
-    <value>Trello</value>
   </data>
   <data name="trello1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\trello.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
