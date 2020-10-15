@@ -50,6 +50,37 @@ namespace PakReader.Textures
                     data = sequence;
                     colorType = SKColorType.RgbaF16;
                     break;
+                case EPixelFormat.PF_BC7:
+                    data = Detex.DecodeDetexLinear(sequence, width, height, isFloat: false,
+                        inputFormat: DetexTextureFormat.DETEX_TEXTURE_FORMAT_BPTC,
+                        outputPixelFormat: DetexPixelFormat.DETEX_PIXEL_FORMAT_RGBA8);
+                    colorType = SKColorType.Rgba8888;
+                    break;
+                case EPixelFormat.PF_BC6H:
+                    data = Detex.DecodeDetexLinear(sequence, width, height, isFloat: true,
+                        inputFormat: DetexTextureFormat.DETEX_TEXTURE_FORMAT_BPTC_FLOAT,
+                        outputPixelFormat: DetexPixelFormat.DETEX_PIXEL_FORMAT_RGBX8); // Not sure whether that works, would actually be DETEX_PIXEL_FORMAT_FLOAT_RGBX32
+                    data = Detex.DecodeBC6H(sequence, width, height);
+                    colorType = SKColorType.Rgb888x;
+                    break;
+                case EPixelFormat.PF_ETC1:
+                    data = Detex.DecodeDetexLinear(sequence, width, height, isFloat: false,
+                        inputFormat: DetexTextureFormat.DETEX_TEXTURE_FORMAT_ETC1,
+                        outputPixelFormat: DetexPixelFormat.DETEX_PIXEL_FORMAT_RGBA8);
+                    colorType = SKColorType.Rgba8888;
+                    break;
+                case EPixelFormat.PF_ETC2_RGB:
+                    data = Detex.DecodeDetexLinear(sequence, width, height, isFloat: false,
+                        inputFormat: DetexTextureFormat.DETEX_TEXTURE_FORMAT_ETC2,
+                        outputPixelFormat: DetexPixelFormat.DETEX_PIXEL_FORMAT_RGBA8);
+                    colorType = SKColorType.Rgba8888;
+                    break;
+                case EPixelFormat.PF_ETC2_RGBA:
+                    data = Detex.DecodeDetexLinear(sequence, width, height, isFloat: false,
+                        inputFormat: DetexTextureFormat.DETEX_TEXTURE_FORMAT_ETC2_EAC,
+                        outputPixelFormat: DetexPixelFormat.DETEX_PIXEL_FORMAT_RGBA8);
+                    colorType = SKColorType.Rgba8888;
+                    break;
                 default:
                     throw new NotImplementedException($"Cannot decode {format} format");
             }
