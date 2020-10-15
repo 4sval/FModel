@@ -219,6 +219,23 @@ namespace FModel.Utils
                     return p;
                 }
 
+                var ak = p.GetExport<UAkMediaAssetData>();
+                if (ak != null)
+                {
+                    if (Properties.Settings.Default.AutoOpenSounds)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Window]", $"Opening Audio Player for {entry.GetNameWithExtension()}");
+                            if (!FWindows.IsWindowOpen<Window>(Properties.Resources.AudioPlayer))
+                                new AudioPlayer().LoadFile(ak.Sound, entry.GetNameWithoutExtension() + ".wem", mount + entry.GetPathWithoutFile());
+                            else
+                                ((AudioPlayer)FWindows.GetOpenedWindow<Window>(Properties.Resources.AudioPlayer)).LoadFile(ak.Sound, entry.GetNameWithoutExtension() + ".wem", mount + entry.GetPathWithoutFile());
+                        });
+                    }
+                    return p;
+                }
+
                 // Sound
                 var s = p.GetExport<USoundWave>();
                 if (s != null && (s.AudioFormat.String.Equals("OGG") || s.AudioFormat.String.Equals("OGG10000-1-1-1-1-1")))

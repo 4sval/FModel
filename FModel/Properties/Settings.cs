@@ -11,7 +11,6 @@ namespace FModel.Properties
     public sealed partial class Settings
     {
         private static string _userSettings = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\FModel\\DoNotDelete.json";
-        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/pakchunk(?:0|10.*|\w+)-WindowsClient\.pak$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         /// <summary>
         /// IMPORTANT: i believe Upgrade doesn't like int32 so use int64 (maybe because it's for x64?) for all int values
