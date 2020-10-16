@@ -18,10 +18,10 @@ namespace FModel.Utils
                 using Stream stream = new BufferedStream(new FileInfo(configFile).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
                 using BinaryReader reader = new BinaryReader(stream, Encoding.Default);
                 if (reader.ReadUInt32() != FILE_CONFIG_MAGIC)
-                    throw new FileLoadException("Invalid EGL2 Config Magic");
+                    return string.Empty;
 
                 if (reader.ReadUInt16BE() < FILE_CONFIG_VERSION)
-                    throw new FileLoadException("Invalid EGL2 Config Version");
+                    return string.Empty;
 
                 int stringLength = reader.ReadUInt16BE();
                 string cacheDirectory = Encoding.UTF8.GetString(reader.ReadBytes(stringLength));

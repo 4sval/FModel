@@ -121,6 +121,18 @@ namespace FModel.Windows.SoundPlayer
             }
         }
 
+        public void LoadFile(byte[] sound, string assetName, string gameFolder)
+        {
+            Focus();
+            ListBoxVm.soundFiles.Add(new ListBoxViewModel2
+            {
+                Content = assetName,
+                Data = sound,
+                FullPath = string.Empty,
+                Folder = gameFolder
+            });
+        }
+
         public void LoadFile(string filepath)
         {
             ListBoxViewModel2 item = ListBoxVm.soundFiles.Where(x => x.FullPath.Equals(filepath)).FirstOrDefault();

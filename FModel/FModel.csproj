@@ -127,6 +127,8 @@
     <EmbeddedResource Include="Resources\Ini.xshd" />
     <EmbeddedResource Include="Resources\Json.xshd" />
     <EmbeddedResource Include="Resources\Xml.xshd" />
+    <None Remove="Resources\Detex.dll" />
+    <EmbeddedResource Include="Resources\Detex.dll" />
   </ItemGroup>
 
   <ItemGroup>
