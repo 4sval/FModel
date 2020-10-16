@@ -136,8 +136,7 @@ namespace FModel.Utils
 
         public static string GetTheCyclePakFilesPath()
         {
-            (_, string _, string theCycleFilesPath) =
-                GetUEGameFilesPath("AzaleaAlpha"); // TODO: Change when out of alpha
+            (_, string _, string theCycleFilesPath) = GetUEGameFilesPath("AzaleaAlpha");
             if (!string.IsNullOrEmpty(theCycleFilesPath))
                 return $"{theCycleFilesPath}\\Prospect\\Content\\Paks";
             else
