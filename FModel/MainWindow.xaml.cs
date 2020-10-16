@@ -302,7 +302,6 @@ namespace FModel
                     Process.Start(Process.GetCurrentProcess().MainModule.FileName);
                     Application.Current.Shutdown();
                 }
-                // well totally not needed but saving again just incase ..
                 else
                 {
                     launcher.Close();
