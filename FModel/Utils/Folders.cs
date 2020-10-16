@@ -36,7 +36,7 @@ namespace FModel.Utils
                     "WorldExplorers" => EGame.BattleBreakers,
                     "g3" => EGame.Spellbreak,
                     "StateOfDecay2" => EGame.StateOfDecay2,
-                    "Prospect" => EGame.TheCycleEA,
+                    "Prospect" => EGame.TheCycle,
                     _ => EGame.Unknown,
                 };
             }
@@ -57,7 +57,7 @@ namespace FModel.Utils
                 EGame.BattleBreakers => "WorldExplorers",
                 EGame.Spellbreak => "g3",
                 EGame.StateOfDecay2 => "StateOfDecay2",
-                EGame.TheCycleEA => "Prospect",
+                EGame.TheCycle => "Prospect",
                 _ => string.Empty,
             };
 

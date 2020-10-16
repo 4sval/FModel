@@ -61,7 +61,7 @@ namespace FModel
                 EGame.BattleBreakers => Resources.GameName_BattleBreakers,
                 EGame.Spellbreak => Resources.GameName_Spellbreak,
                 EGame.StateOfDecay2 => Resources.GameName_StateofDecay2,
-                EGame.TheCycleEA => Resources.GameName_TheCycle,
+                EGame.TheCycle => Resources.GameName_TheCycle,
                 EGame.Unknown => "Unknown",
                 _ => "Unknown"
             };

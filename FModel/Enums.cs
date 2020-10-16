@@ -11,7 +11,7 @@
         BattleBreakers,
         Spellbreak,
         StateOfDecay2, // WIP
-        TheCycleEA // TODO: Early Access version, change when game is released
+        TheCycle
     }
 
     public enum EFModel
