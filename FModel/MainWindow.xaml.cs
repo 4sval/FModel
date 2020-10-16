@@ -255,14 +255,23 @@ namespace FModel
             var launcher = new FLauncher();
             if ((bool)launcher.ShowDialog())
             {
+                string currentvalue = Properties.Settings.Default.PakPath;
                 Properties.Settings.Default.PakPath = launcher.Path;
+                if (Properties.Settings.Default.PakPath != currentvalue)
+                {
+                    DarkMessageBoxHelper.Show(Properties.Resources.PathChangedRestart, Properties.Resources.PathChanged, MessageBoxButton.OK, MessageBoxImage.Information);
+                    DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Restarting]", "Path(s) changed");
 
-                DarkMessageBoxHelper.Show(Properties.Resources.PathChangedRestart, Properties.Resources.PathChanged, MessageBoxButton.OK, MessageBoxImage.Information);
-                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Restarting]", "Path(s) changed");
-
-                Properties.Settings.Default.Save();
-                Process.Start(Process.GetCurrentProcess().MainModule.FileName);
-                Application.Current.Shutdown();
+                    Properties.Settings.Default.Save();
+                    Process.Start(Process.GetCurrentProcess().MainModule.FileName);
+                    Application.Current.Shutdown();
+                }
+                // well totally not needed but saving again just incase ..
+                else
+                {
+                    Properties.Settings.Default.Save();
+                }
+                
             }
         }
         private void FModel_MI_Help_Trello_Click(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { FileName = "https://trello.com/b/DfmzkVQB/fmodel", UseShellExecute = true });
