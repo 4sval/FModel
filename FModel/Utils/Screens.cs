@@ -25,7 +25,7 @@ namespace FModel.Utils
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            return _instance ?? (_instance = new Screens());
+            return _instance ??= new Screens();
         }
     }
 }
