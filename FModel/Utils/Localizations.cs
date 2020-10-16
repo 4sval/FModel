@@ -144,7 +144,7 @@ namespace FModel.Utils
                     ELanguage.TraditionalChinese => "zh-Hant",
                     _ => "en",
                 };
-            else if (Globals.Game.ActualGame == EGame.Valorant)
+            if (Globals.Game.ActualGame == EGame.Valorant)
                 return lang switch
                 {
                     ELanguage.English => "en-US",
@@ -167,7 +167,7 @@ namespace FModel.Utils
                     ELanguage.Indonesian => "id-ID",
                     _ => "en",
                 };
-            else if (Globals.Game.ActualGame == EGame.DeadByDaylight)
+            if (Globals.Game.ActualGame == EGame.DeadByDaylight)
                 return lang switch
                 {
                     ELanguage.English => "en",
@@ -188,7 +188,7 @@ namespace FModel.Utils
                     ELanguage.Thai => "th",
                     _ => "en",
                 };
-            else if (Globals.Game.ActualGame == EGame.MinecraftDungeons)
+            if (Globals.Game.ActualGame == EGame.MinecraftDungeons)
                 return lang switch
                 {
                     ELanguage.English => "en",
@@ -207,7 +207,7 @@ namespace FModel.Utils
                     ELanguage.Swedish => "sv-SE",
                     _ => "en"
                 };
-            else if (Globals.Game.ActualGame == EGame.BattleBreakers)
+            if (Globals.Game.ActualGame == EGame.BattleBreakers)
                 return lang switch
                 {
                     ELanguage.English => "en",
@@ -221,7 +221,7 @@ namespace FModel.Utils
                     ELanguage.Chinese => "zh-Hans",
                     _ => "en"
                 };
-            else if (Globals.Game.ActualGame == EGame.Spellbreak)
+            if (Globals.Game.ActualGame == EGame.Spellbreak)
                 return lang switch
                 {
                     ELanguage.English => "en",
@@ -235,7 +235,7 @@ namespace FModel.Utils
                     ELanguage.Chinese => "zh-Hans",
                     _ => "en"
                 };
-            else if (Globals.Game.ActualGame == EGame.StateOfDecay2)
+            if (Globals.Game.ActualGame == EGame.StateOfDecay2)
                 return lang switch
                 {
                     ELanguage.English => "en-US",
@@ -248,7 +248,7 @@ namespace FModel.Utils
                     ELanguage.German => "de-DE",
                     _ => "en-US"
                 };
-            else if (Globals.Game.ActualGame == EGame.TheCycle)
+            if (Globals.Game.ActualGame == EGame.TheCycle)
                 return lang switch
                 {
                     ELanguage.English => "en",
@@ -258,10 +258,10 @@ namespace FModel.Utils
                     ELanguage.Polish => "pl",
                     ELanguage.PortugueseBrazil => "pt-BR",
                     ELanguage.Russian => "ru",
+                    ELanguage.Chinese => "zh",
                     _ => "en"
                 };
-            else
-                return "en";
+            return "en";
         }
     }
 }
