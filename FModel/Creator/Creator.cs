@@ -392,24 +392,19 @@ namespace FModel.Creator
                         {
                             icon.Draw(c);
                         }
-                        else
-                        {
-                            if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
-                            {
-                                Rarity.DrawRarity(c, icon);
-                            }
+                        else if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        { 
+                            Rarity.DrawRarity(c, icon);
                         }
 
                         LargeSmallImage.DrawPreviewImage(c, icon);
 
-                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground &&
+                            (EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
                         {
-                            if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
-                            {
-                                Text.DrawBackground(c, icon);
-                                Text.DrawDisplayName(c, icon);
-                                Text.DrawDescription(c, icon);
-                            }
+                            Text.DrawBackground(c, icon);
+                            Text.DrawDisplayName(c, icon);
+                            Text.DrawDescription(c, icon);
                         }
 
                         Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512

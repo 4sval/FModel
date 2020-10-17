@@ -45,8 +45,6 @@ namespace PakReader.Textures.BC
             return ret;
         }
 
-        //BC7 https://github.com/hglm/detex/blob/master/decompress-bptc.c
-
         static int GetPixelLoc(int width, int x, int y, int bpp, int off) => (y * width + x) * bpp + off;
 
         static byte GetZNormal(byte x, byte y)

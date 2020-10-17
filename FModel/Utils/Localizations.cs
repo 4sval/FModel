@@ -124,8 +124,9 @@ namespace FModel.Utils
         private static string GetLanguageCode() => GetLanguageCode((ELanguage)Properties.Settings.Default.AssetsLanguage);
         private static string GetLanguageCode(ELanguage lang)
         {
-            if (Globals.Game.ActualGame == EGame.Fortnite)
-                return lang switch
+            return Globals.Game.ActualGame switch
+            {
+                EGame.Fortnite => lang switch
                 {
                     ELanguage.English => "en",
                     ELanguage.French => "fr",
@@ -143,9 +144,8 @@ namespace FModel.Utils
                     ELanguage.Chinese => "zh-CN",
                     ELanguage.TraditionalChinese => "zh-Hant",
                     _ => "en",
-                };
-            if (Globals.Game.ActualGame == EGame.Valorant)
-                return lang switch
+                },
+                EGame.Valorant => lang switch
                 {
                     ELanguage.English => "en-US",
                     ELanguage.French => "fr-FR",
@@ -166,9 +166,8 @@ namespace FModel.Utils
                     ELanguage.VietnameseVietnam => "vi-VN",
                     ELanguage.Indonesian => "id-ID",
                     _ => "en",
-                };
-            if (Globals.Game.ActualGame == EGame.DeadByDaylight)
-                return lang switch
+                },
+                EGame.DeadByDaylight => lang switch
                 {
                     ELanguage.English => "en",
                     ELanguage.French => "fr",
@@ -187,9 +186,8 @@ namespace FModel.Utils
                     ELanguage.TraditionalChinese => "zh-Hant",
                     ELanguage.Thai => "th",
                     _ => "en",
-                };
-            if (Globals.Game.ActualGame == EGame.MinecraftDungeons)
-                return lang switch
+                },
+                EGame.MinecraftDungeons => lang switch
                 {
                     ELanguage.English => "en",
                     ELanguage.BritishEnglish => "en-GB",
@@ -206,9 +204,8 @@ namespace FModel.Utils
                     ELanguage.Russian => "ru-RU",
                     ELanguage.Swedish => "sv-SE",
                     _ => "en"
-                };
-            if (Globals.Game.ActualGame == EGame.BattleBreakers)
-                return lang switch
+                },
+                EGame.BattleBreakers => lang switch
                 {
                     ELanguage.English => "en",
                     ELanguage.Russian => "ru",
@@ -220,9 +217,8 @@ namespace FModel.Utils
                     ELanguage.PortugueseBrazil => "pt-BR",
                     ELanguage.Chinese => "zh-Hans",
                     _ => "en"
-                };
-            if (Globals.Game.ActualGame == EGame.Spellbreak)
-                return lang switch
+                },
+                EGame.Spellbreak => lang switch
                 {
                     ELanguage.English => "en",
                     ELanguage.Russian => "ru",
@@ -234,9 +230,8 @@ namespace FModel.Utils
                     ELanguage.PortugueseBrazil => "pt-BR",
                     ELanguage.Chinese => "zh-Hans",
                     _ => "en"
-                };
-            if (Globals.Game.ActualGame == EGame.StateOfDecay2)
-                return lang switch
+                },
+                EGame.StateOfDecay2 => lang switch
                 {
                     ELanguage.English => "en-US",
                     ELanguage.AustralianEnglish => "en-AU",
@@ -247,9 +242,8 @@ namespace FModel.Utils
                     ELanguage.SpanishMexico => "es-MX",
                     ELanguage.German => "de-DE",
                     _ => "en-US"
-                };
-            if (Globals.Game.ActualGame == EGame.TheCycle)
-                return lang switch
+                },
+                EGame.TheCycle => lang switch
                 {
                     ELanguage.English => "en",
                     ELanguage.German => "de",
@@ -260,8 +254,9 @@ namespace FModel.Utils
                     ELanguage.Russian => "ru",
                     ELanguage.Chinese => "zh",
                     _ => "en"
-                };
-            return "en";
+                },
+                _ => "en"
+            };
         }
     }
 }

@@ -21,6 +21,7 @@
         <CommandBinding Command="{x:Static utils:Commands.AutoExport}" Executed="OnAutoShortcutPressed"/>
         <CommandBinding Command="{x:Static utils:Commands.AutoSave}" Executed="OnAutoShortcutPressed"/>
         <CommandBinding Command="{x:Static utils:Commands.AutoSaveImage}" Executed="OnAutoShortcutPressed"/>
+        <CommandBinding Command="{x:Static utils:Commands.AutoOpenSounds}" Executed="OnAutoShortcutPressed"/>
         <CommandBinding Command="{x:Static utils:Commands.OpenImageDoubleClick}" Executed="OnImageOpenClick"/>
     </Window.CommandBindings>
     <Window.InputBindings>
@@ -30,6 +31,7 @@
         <KeyBinding Key="F4" Command="{x:Static utils:Commands.AutoExport}"/>
         <KeyBinding Key="F5" Command="{x:Static utils:Commands.AutoSave}"/>
         <KeyBinding Key="F6" Command="{x:Static utils:Commands.AutoSaveImage}"/>
+        <KeyBinding Key="F7" Command="{x:Static utils:Commands.AutoOpenSounds}"/>
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -91,6 +93,9 @@
                     <MenuItem Header="{x:Static properties:Resources.SaveImage}" IsCheckable="True" StaysOpenOnClick="True"
                               IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoSaveImage, Mode=TwoWay}"
                               InputGestureText="F6"/>
+                    <MenuItem Header="{x:Static properties:Resources.OpenSounds}" IsCheckable="True" StaysOpenOnClick="True"
+                              IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoOpenSounds, Mode=TwoWay}"
+                              InputGestureText="F7"/>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Assets_Export" Header="{x:Static properties:Resources.Export}" Click="FModel_MI_Assets_Export_Click">
                     <MenuItem.Icon>
