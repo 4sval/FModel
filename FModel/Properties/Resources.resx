@@ -1142,4 +1142,7 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="GameName_TheCycle" xml:space="preserve">
     <value>The Cycle</value>
   </data>
+  <data name="OpenSounds" xml:space="preserve">
+    <value>Open Sounds</value>
+  </data>
 </root>

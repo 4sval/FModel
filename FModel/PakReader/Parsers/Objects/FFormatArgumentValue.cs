@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace PakReader.Parsers.Objects
 {
@@ -18,7 +17,7 @@ namespace PakReader.Parsers.Objects
                 EFormatArgumentType.UInt => reader.ReadUInt64(),
                 EFormatArgumentType.Double => reader.ReadDouble(),
                 EFormatArgumentType.Float => reader.ReadFloat(),
-                _ => throw new NotImplementedException(string.Format(FModel.Properties.Resources.ParsingNotSupported, Type)),
+                _ => null, // throw new NotImplementedException(string.Format(FModel.Properties.Resources.ParsingNotSupported, Type)),
             };
         }
 

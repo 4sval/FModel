@@ -120,29 +120,37 @@ namespace FModel
                 switch (command.Name)
                 {
                     case "AutoExport":
-                    {
-                        bool b = Properties.Settings.Default.AutoExport;
-                        Properties.Settings.Default.AutoExport = !b;
-                        name = Properties.Resources.Export;
-                        state = states[Convert.ToInt32(b)];
-                        break;
-                    }
+                        {
+                            bool b = Properties.Settings.Default.AutoExport;
+                            Properties.Settings.Default.AutoExport = !b;
+                            name = Properties.Resources.Export;
+                            state = states[Convert.ToInt32(b)];
+                            break;
+                        }
                     case "AutoSave":
-                    {
-                        bool b = Properties.Settings.Default.AutoSave;
-                        Properties.Settings.Default.AutoSave = !b;
-                        name = Properties.Resources.Save;
-                        state = states[Convert.ToInt32(b)];
-                        break;
-                    }
+                        {
+                            bool b = Properties.Settings.Default.AutoSave;
+                            Properties.Settings.Default.AutoSave = !b;
+                            name = Properties.Resources.Save;
+                            state = states[Convert.ToInt32(b)];
+                            break;
+                        }
                     case "AutoSaveImage":
-                    {
-                        bool b = Properties.Settings.Default.AutoSaveImage;
-                        Properties.Settings.Default.AutoSaveImage = !b;
-                        name = Properties.Resources.SaveImage;
-                        state = states[Convert.ToInt32(b)];
-                        break;
-                    }
+                        {
+                            bool b = Properties.Settings.Default.AutoSaveImage;
+                            Properties.Settings.Default.AutoSaveImage = !b;
+                            name = Properties.Resources.SaveImage;
+                            state = states[Convert.ToInt32(b)];
+                            break;
+                        }
+                    case "AutoOpenSounds":
+                        {
+                            bool b = Properties.Settings.Default.AutoOpenSounds;
+                            Properties.Settings.Default.AutoOpenSounds = !b;
+                            name = Properties.Resources.OpenSounds;
+                            state = states[Convert.ToInt32(b)];
+                            break;
+                        }
                 }
 
                 Properties.Settings.Default.Save();
@@ -290,21 +298,16 @@ namespace FModel
             var launcher = new FLauncher();
             if ((bool) launcher.ShowDialog())
             {
-                string currentvalue = Properties.Settings.Default.PakPath;
-                Properties.Settings.Default.PakPath = launcher.Path;
-
-                if (Properties.Settings.Default.PakPath != currentvalue)
+                if (Properties.Settings.Default.PakPath != launcher.Path)
                 {
+                    Properties.Settings.Default.PakPath = launcher.Path;
+
                     DarkMessageBoxHelper.Show(Properties.Resources.PathChangedRestart, Properties.Resources.PathChanged, MessageBoxButton.OK, MessageBoxImage.Information);
                     DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Restarting]", "Path(s) changed");
 
                     Properties.Settings.Default.Save();
                     Process.Start(Process.GetCurrentProcess().MainModule.FileName);
                     Application.Current.Shutdown();
-                }
-                else
-                {
-                    launcher.Close();
                 }
             }
         }

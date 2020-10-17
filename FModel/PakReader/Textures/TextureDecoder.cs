@@ -54,7 +54,7 @@ namespace PakReader.Textures
                     data = Detex.DecodeDetexLinear(sequence, width, height, isFloat: false,
                         inputFormat: DetexTextureFormat.DETEX_TEXTURE_FORMAT_BPTC,
                         outputPixelFormat: DetexPixelFormat.DETEX_PIXEL_FORMAT_RGBA8);
-                    colorType = SKColorType.Rgba8888;
+                    colorType = SKColorType.Rgb888x;
                     break;
                 case EPixelFormat.PF_BC6H:
                     data = Detex.DecodeDetexLinear(sequence, width, height, isFloat: true,

@@ -49,9 +49,9 @@ namespace FModel.Windows.Settings
             if (_useDiscordRpc && !Properties.Settings.Default.UseDiscordRpc) // previously enabled
                 DiscordIntegration.Deinitialize();
 
-            if (Properties.Settings.Default.AssetsLanguage != Languages_CbBox.SelectedIndex)
+            if (Languages_CbBox.SelectedIndex > -1 && Languages_CbBox.SelectedItem is ComboBoxViewModel cb && cb.Id != Properties.Settings.Default.AssetsLanguage)
             {
-                Properties.Settings.Default.AssetsLanguage = Languages_CbBox.SelectedIndex;
+                Properties.Settings.Default.AssetsLanguage = cb.Id;
                 await Localizations.SetLocalization(Properties.Settings.Default.AssetsLanguage, true).ConfigureAwait(false);
             }
             if (Properties.Settings.Default.AssetsJsonType != Json_CbBox.SelectedIndex)

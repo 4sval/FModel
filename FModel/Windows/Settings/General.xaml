@@ -152,9 +152,6 @@
                     <CheckBox Grid.Row="0" Margin="5,6.5,5,5"
                           Content="{x:Static properties:Resources.ReloadAesKeysAtLaunch}"
                           IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=ReloadAesKeys, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="1" Margin="5,6.5,5,5"
-                          Content="{x:Static properties:Resources.AutoOpenSounds}"
-                          IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoOpenSounds, Mode=TwoWay}"/>
                 </Grid>
             </Grid>
         </GroupBox>
