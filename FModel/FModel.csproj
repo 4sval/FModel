@@ -108,6 +108,7 @@
     <None Remove="Resources\T_Placeholder_Challenge_Image.png" />
     <None Remove="Resources\T_Placeholder_Item_Image.png" />
     <None Remove="Resources\T_ReloadTime_Weapon_Stats.png" />
+    <None Remove="Resources\battle-breakers-item-background.png" />
     <None Remove="Resources\valorant.live.ico" />
     <None Remove="Resources\view-dashboard.png" />
     <None Remove="Resources\volume-minus.png" />
@@ -227,6 +228,7 @@
     <Resource Include="Resources\T_Placeholder_Challenge_Image.png" />
     <Resource Include="Resources\T_Placeholder_Item_Image.png" />
     <Resource Include="Resources\T_ReloadTime_Weapon_Stats.png" />
+    <Resource Include="Resources\battle-breakers-item-background.png" />
     <Resource Include="Resources\valorant.live.ico" />
     <Resource Include="Resources\view-dashboard.png" />
     <Resource Include="Resources\volume-minus.png" />

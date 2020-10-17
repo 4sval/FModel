@@ -12,6 +12,7 @@ namespace FModel.Creator.Bases
     {
         public SKBitmap FallbackImage;
         public SKBitmap IconImage;
+        public SKBitmap RarityBackgroundImage;
         public SKColor[] RarityBackgroundColors;
         public SKColor[] RarityBorderColor;
         public string DisplayName;
@@ -23,6 +24,7 @@ namespace FModel.Creator.Bases
         public BaseBBDefinition(string exportType)
         {
             FallbackImage = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T_Placeholder_Item_Image.png"))?.Stream);
+            RarityBackgroundImage = null;
             IconImage = FallbackImage;
             RarityBackgroundColors = new[] { SKColor.Parse("D0D0D0"), SKColor.Parse("636363") };
             RarityBorderColor = new[] { SKColor.Parse("D0D0D0"), SKColor.Parse("FFFFFF") };
@@ -32,8 +34,6 @@ namespace FModel.Creator.Bases
 
         public BaseBBDefinition(IUExport export, string exportType) : this(exportType)
         {
-            // Not sure how to handle rarity for this. From what I can see, there is no data for colors
-            
             if (export.GetExport<SoftObjectProperty>("IconTextureAssetData") is {} previewImage)
                 IconImage = Utils.GetSoftObjectTexture(previewImage);
             else if (export.GetExport<ObjectProperty>("IconTextureAssetData") is {} iconTexture)
@@ -43,6 +43,8 @@ namespace FModel.Creator.Bases
                 DisplayName = Text.GetTextPropertyBase(displayName);
             if (export.GetExport<TextProperty>("Description") is {} description)
                 Description = Text.GetTextPropertyBase(description);
+            
+            RarityBackgroundImage = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/battle-breakers-item-background.png"))?.Stream);
         }
         
         SKBitmap IBase.FallbackImage => FallbackImage;

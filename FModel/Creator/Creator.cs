@@ -462,7 +462,15 @@ namespace FModel.Creator
                     {
                         if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
                         {
-                            Rarity.DrawRarity(c, icon);
+                            if (icon.RarityBackgroundImage != null)
+                            {
+                                c.DrawBitmap(icon.RarityBackgroundImage, new SKRect(icon.Margin, icon.Margin, icon.Width - icon.Margin, icon.Height - icon.Margin),
+                                    new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
+                            }
+                            else
+                            {
+                                Rarity.DrawRarity(c, icon);
+                            }
                         }
 
                         LargeSmallImage.DrawPreviewImage(c, icon);
