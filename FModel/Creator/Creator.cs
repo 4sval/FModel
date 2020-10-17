@@ -23,7 +23,8 @@ namespace FModel.Creator
             var d = new DirectoryInfo(assetPath);
             string assetName = d.Name;
             string assetFolder = d.Parent.Name;
-            if (Text.TypeFaces.NeedReload(false)) Text.TypeFaces = new Typefaces(); // when opening bundle creator settings without loading paks first
+            if (Text.TypeFaces.NeedReload(false))
+                Text.TypeFaces = new Typefaces(); // when opening bundle creator settings without loading paks first
 
             int index;
             {
@@ -115,63 +116,66 @@ namespace FModel.Creator
                 case "FortWeaponMeleeDualWieldItemDefinition":
                 case "FortDailyRewardScheduleTokenDefinition":
                 case "FortCreativeRealEstatePlotItemDefinition":
+                {
+                    BaseIcon icon = new BaseIcon(exports[index], exportType, ref assetName);
+                    int height = icon.Size + icon.AdditionalSize;
+                    using (var ret = new SKBitmap(icon.Size, height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseIcon icon = new BaseIcon(exports[index], exportType, ref assetName);
-                        int height = icon.Size + icon.AdditionalSize;
-                        using (var ret = new SKBitmap(icon.Size, height, SKColorType.Rgba8888, SKAlphaType.Premul))
-                        using (var c = new SKCanvas(ret))
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
                         {
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
-                            {
-                                Rarity.DrawRarity(c, icon);
-                            }
-
-                            LargeSmallImage.DrawPreviewImage(c, icon);
-
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
-                            {
-                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
-                                {
-                                    Text.DrawBackground(c, icon);
-                                    Text.DrawDisplayName(c, icon);
-                                    Text.DrawDescription(c, icon);
-                                    if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.Mini)
-                                    {
-                                        if (!icon.ShortDescription.Equals(icon.DisplayName) && !icon.ShortDescription.Equals(icon.Description))
-                                            Text.DrawToBottom(c, icon, ETextSide.Left, icon.ShortDescription);
-                                        Text.DrawToBottom(c, icon, ETextSide.Right, icon.CosmeticSource);
-                                    }
-                                }
-                                UserFacingFlag.DrawUserFacingFlags(c, icon);
-
-                                // has more things to show
-                                if (height > icon.Size)
-                                {
-                                    Statistics.DrawStats(c, icon);
-                                }
-                            }
-
-                            Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
-                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                            Rarity.DrawRarity(c, icon);
                         }
-                        return true;
+
+                        LargeSmallImage.DrawPreviewImage(c, icon);
+
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        {
+                            if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
+                            {
+                                Text.DrawBackground(c, icon);
+                                Text.DrawDisplayName(c, icon);
+                                Text.DrawDescription(c, icon);
+                                if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.Mini)
+                                {
+                                    if (!icon.ShortDescription.Equals(icon.DisplayName) &&
+                                        !icon.ShortDescription.Equals(icon.Description))
+                                        Text.DrawToBottom(c, icon, ETextSide.Left, icon.ShortDescription);
+                                    Text.DrawToBottom(c, icon, ETextSide.Right, icon.CosmeticSource);
+                                }
+                            }
+
+                            UserFacingFlag.DrawUserFacingFlags(c, icon);
+
+                            // has more things to show
+                            if (height > icon.Size)
+                            {
+                                Statistics.DrawStats(c, icon);
+                            }
+                        }
+
+                        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
+                    return true;
+                }
                 case "FortPlaylistAthena":
                 {
                     BasePlaylist icon = new BasePlaylist(exports[index]);
                     using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
                     using (var c = new SKCanvas(ret))
                     {
-                        if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
                         {
                             Rarity.DrawRarity(c, icon);
                         }
 
                         LargeSmallImage.DrawNotStretchedPreviewImage(c, icon);
 
-                        if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
                         {
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
+                            if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
                             {
                                 Text.DrawBackground(c, icon);
                                 Text.DrawDisplayName(c, icon);
@@ -182,72 +186,81 @@ namespace FModel.Creator
                         // Watermark.DrawWatermark(c); // boi why would you watermark something you don't own ¯\_(ツ)_/¯
                         ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
                     return true;
                 }
                 case "AthenaSeasonItemDefinition":
+                {
+                    BaseSeason icon = new BaseSeason(exports[index], assetFolder);
+                    using (var ret = new SKBitmap(icon.Width, icon.HeaderHeight + icon.AdditionalSize,
+                        SKColorType.Rgba8888, SKAlphaType.Opaque))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseSeason icon = new BaseSeason(exports[index], assetFolder);
-                        using (var ret = new SKBitmap(icon.Width, icon.HeaderHeight + icon.AdditionalSize, SKColorType.Rgba8888, SKAlphaType.Opaque))
-                        using (var c = new SKCanvas(ret))
-                        {
-                            icon.Draw(c);
+                        icon.Draw(c);
 
-                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
-                        }
-                        return true;
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
+                    return true;
+                }
                 case "FortMtxOfferData":
+                {
+                    BaseOffer icon = new BaseOffer(exports[index]);
+                    using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Premul))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseOffer icon = new BaseOffer(exports[index]);
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        {
+                            icon.DrawBackground(c);
+                        }
+
+                        icon.DrawImage(c);
+
+                        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                    }
+
+                    return true;
+                }
+                case "MaterialInstanceConstant":
+                {
+                    if (assetFolder.Equals("MI_OfferImages"))
+                    {
+                        BaseOfferMaterial icon = new BaseOfferMaterial(exports[index]);
                         using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Premul))
                         using (var c = new SKCanvas(ret))
                         {
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                            if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
                             {
                                 icon.DrawBackground(c);
                             }
+
                             icon.DrawImage(c);
 
                             Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
                             ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                         }
+
                         return true;
                     }
-                case "MaterialInstanceConstant":
-                    {
-                        if (assetFolder.Equals("MI_OfferImages"))
-                        {
-                            BaseOfferMaterial icon = new BaseOfferMaterial(exports[index]);
-                            using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Premul))
-                            using (var c = new SKCanvas(ret))
-                            {
-                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
-                                {
-                                    icon.DrawBackground(c);
-                                }
-                                icon.DrawImage(c);
 
-                                Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
-                                ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
-                            }
-                            return true;
-                        }
-                        return false;
-                    }
+                    return false;
+                }
                 case "FortItemSeriesDefinition":
+                {
+                    BaseIcon icon = new BaseIcon();
+                    using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Opaque))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseIcon icon = new BaseIcon();
-                        using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Opaque))
-                        using (var c = new SKCanvas(ret))
-                        {
-                            Serie.GetRarity(icon, exports[index]);
-                            Rarity.DrawRarity(c, icon);
+                        Serie.GetRarity(icon, exports[index]);
+                        Rarity.DrawRarity(c, icon);
 
-                            Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
-                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
-                        }
-                        return true;
+                        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
+                    return true;
+                }
                 case "PlaylistUserOptionEnum":
                 case "PlaylistUserOptionBool":
                 case "PlaylistUserOptionString":
@@ -258,57 +271,62 @@ namespace FModel.Creator
                 case "PlaylistUserOptionFloatRange":
                 case "PlaylistUserOptionPrimaryAsset":
                 case "PlaylistUserOptionCollisionProfileEnum":
+                {
+                    BaseUserOption icon = new BaseUserOption(exports[index]);
+                    using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Opaque))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseUserOption icon = new BaseUserOption(exports[index]);
-                        using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Opaque))
-                        using (var c = new SKCanvas(ret))
-                        {
-                            icon.Draw(c);
+                        icon.Draw(c);
 
-                            Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
-                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
-                        }
-                        return true;
+                        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
+                    return true;
+                }
                 case "FortChallengeBundleItemDefinition":
+                {
+                    BaseBundle icon = new BaseBundle(exports[index], assetFolder);
+                    using (var ret = new SKBitmap(icon.Width, icon.HeaderHeight + icon.AdditionalSize,
+                        SKColorType.Rgba8888, SKAlphaType.Opaque))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseBundle icon = new BaseBundle(exports[index], assetFolder);
-                        using (var ret = new SKBitmap(icon.Width, icon.HeaderHeight + icon.AdditionalSize, SKColorType.Rgba8888, SKAlphaType.Opaque))
-                        using (var c = new SKCanvas(ret))
-                        {
-                            HeaderStyle.DrawHeaderPaint(c, icon);
-                            HeaderStyle.DrawHeaderText(c, icon);
-                            QuestStyle.DrawQuests(c, icon);
-                            QuestStyle.DrawCompletionRewards(c, icon);
+                        HeaderStyle.DrawHeaderPaint(c, icon);
+                        HeaderStyle.DrawHeaderText(c, icon);
+                        QuestStyle.DrawQuests(c, icon);
+                        QuestStyle.DrawCompletionRewards(c, icon);
 
-                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
-                        }
-                        return true;
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
+                    return true;
+                }
                 case "FortItemAccessTokenType":
+                {
+                    BaseItemAccess icon = new BaseItemAccess(exports[index]);
+                    using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Opaque))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseItemAccess icon = new BaseItemAccess(exports[index]);
-                        using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Opaque))
-                        using (var c = new SKCanvas(ret))
-                        {
-                            icon.Draw(c);
+                        icon.Draw(c);
 
-                            Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
-                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
-                        }
-                        return true;
+                        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
+                    return true;
+                }
                 case "MapUIData":
+                {
+                    BaseMapUIData icon = new BaseMapUIData(exports[index]);
+                    using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseMapUIData icon = new BaseMapUIData(exports[index]);
-                        using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
-                        using (var c = new SKCanvas(ret))
-                        {
-                            icon.Draw(c);
-                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
-                        }
-                        return true;
+                        icon.Draw(c);
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
+                    return true;
+                }
                 case "ArmorUIData":
                 case "SprayUIData":
                 case "ThemeUIData":
@@ -326,18 +344,20 @@ namespace FModel.Creator
                 case "EquippableSkinLevelUIData":
                 case "EquippableSkinChromaUIData":
                 case "EquippableCharmLevelUIData":
+                {
+                    BaseUIData icon = new BaseUIData(exports, index);
+                    using (var ret = new SKBitmap(icon.Width + icon.AdditionalWidth, icon.Height, SKColorType.Rgba8888,
+                        SKAlphaType.Premul))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseUIData icon = new BaseUIData(exports, index);
-                        using (var ret = new SKBitmap(icon.Width + icon.AdditionalWidth, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
-                        using (var c = new SKCanvas(ret))
-                        {
-                            icon.Draw(c);
+                        icon.Draw(c);
 
-                            Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
-                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
-                        }
-                        return true;
+                        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
+                    return true;
+                }
                 //case "StreamedVideoDataAsset": // must find a way to automatically gets the right version in the url
                 //    {
                 //        if (Globals.Game.ActualGame == EGame.Valorant && exports[index].GetExport<StructProperty>("Uuid") is StructProperty s && s.Value is FGuid uuid)
@@ -363,74 +383,108 @@ namespace FModel.Creator
                 case "GCosmeticRunTrail":
                 case "GCosmeticArtifact":
                 case "GCosmeticDropTrail":
+                {
+                    BaseGCosmetic icon = new BaseGCosmetic(exports[index], exportType);
+                    using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseGCosmetic icon = new BaseGCosmetic(exports[index], exportType);
-                        using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
-                        using (var c = new SKCanvas(ret))
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign == EIconDesign.Flat)
                         {
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign == EIconDesign.Flat)
-                            {
-                                icon.Draw(c);
-                            }
-                            else
-                            {
-                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
-                                {
-                                    Rarity.DrawRarity(c, icon);
-                                }
-                            }
-
-                            LargeSmallImage.DrawPreviewImage(c, icon);
-
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
-                            {
-                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
-                                {
-                                    Text.DrawBackground(c, icon);
-                                    Text.DrawDisplayName(c, icon);
-                                    Text.DrawDescription(c, icon);
-                                }
-                            }
-
-                            Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
-                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                            icon.Draw(c);
                         }
-                        return true;
+                        else
+                        {
+                            if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                            {
+                                Rarity.DrawRarity(c, icon);
+                            }
+                        }
+
+                        LargeSmallImage.DrawPreviewImage(c, icon);
+
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        {
+                            if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
+                            {
+                                Text.DrawBackground(c, icon);
+                                Text.DrawDisplayName(c, icon);
+                                Text.DrawDescription(c, icon);
+                            }
+                        }
+
+                        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
+                    return true;
+                }
                 case "GCosmeticCard":
+                {
+                    BaseGCosmetic icon = new BaseGCosmetic(exports[index], exportType);
+                    using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                    using (var c = new SKCanvas(ret))
                     {
-                        BaseGCosmetic icon = new BaseGCosmetic(exports[index], exportType);
-                        using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
-                        using (var c = new SKCanvas(ret))
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign == EIconDesign.Flat)
                         {
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign == EIconDesign.Flat)
-                            {
-                                icon.Draw(c);
-                            }
-                            else
-                            {
-                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
-                                {
-                                    Rarity.DrawRarity(c, icon);
-                                }
-                            }
-
-                            LargeSmallImage.DrawPreviewImage(c, icon);
-
-                            if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
-                            {
-                                if ((EIconDesign)Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
-                                {
-                                    Text.DrawBackground(c, icon);
-                                    Text.DrawDisplayName(c, icon);
-                                    Text.DrawDescription(c, icon);
-                                }
-                            }
-                            ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                            icon.Draw(c);
                         }
-                        return true;
+                        else
+                        {
+                            if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                            {
+                                Rarity.DrawRarity(c, icon);
+                            }
+                        }
+
+                        LargeSmallImage.DrawPreviewImage(c, icon);
+
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        {
+                            if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
+                            {
+                                Text.DrawBackground(c, icon);
+                                Text.DrawDisplayName(c, icon);
+                                Text.DrawDescription(c, icon);
+                            }
+                        }
+
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
                     }
+
+                    return true;
+                }
+                // Battle Breakers
+                case "WExpGenericAccountItemDefinition":
+                {
+                    BaseBBDefinition icon = new BaseBBDefinition(exports[index], exportType);
+                    using (var ret = new SKBitmap(icon.Width, icon.Height, SKColorType.Rgba8888, SKAlphaType.Premul))
+                    using (var c = new SKCanvas(ret))
+                    {
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        {
+                            Rarity.DrawRarity(c, icon);
+                        }
+
+                        LargeSmallImage.DrawPreviewImage(c, icon);
+
+                        if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoBackground)
+                        {
+                            if ((EIconDesign) Properties.Settings.Default.AssetsIconDesign != EIconDesign.NoText)
+                            {
+                                Text.DrawBackground(c, icon);
+                                Text.DrawDisplayName(c, icon);
+                                Text.DrawDescription(c, icon);
+                            }
+                        }
+
+                        Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                        ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
+                    }
+
+                    return true;
+                }
             }
+
             return false;
         }
     }

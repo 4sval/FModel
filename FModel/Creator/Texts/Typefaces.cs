@@ -56,6 +56,17 @@ namespace FModel.Creator.Texts
         private const string _NANUM_GOTHIC = "NanumGothic";
         private const string _QUADRAT_BOLD = "Quadrat_Bold";
         private const string _SEGOE_BOLD_ITALIC = "Segoe_Bold_Italic";
+        
+        private const string _BATTLE_BREAKERS_BASE_PATH = "/Game/UMG/Fonts/Faces/";
+        private const string _HEMIHEAD426 = "HemiHead426";
+        private const string _ROBOTO_BOLD = "Roboto-Bold";
+        private const string _ROBOTO_BOLD_ALL_CAPS = "Roboto-BoldAllCaps";
+        private const string _ROBOTO_REGULAR = "Roboto-Regular";
+        private const string _NOTO_SANS_JP_REGULAR = "NotoSansJP-Regular";
+        private const string _LATO_LIGHT = "Lato-Light";
+        private const string _LATO_MEDIUM = "Lato-Medium";
+        private const string _LATO_BLACK_ITALIC = "Lato-BlackItalic";
+        private const string _LATO_BLACK = "Lato-Black";
 #pragma warning restore IDE0051
 
         public SKTypeface DefaultTypeface; // used as default font for all untranslated strings (item source, ...)
@@ -67,7 +78,7 @@ namespace FModel.Creator.Texts
 
         public Typefaces()
         {
-            DefaultTypeface = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD).Stream);
+            DefaultTypeface = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
             if (Globals.Game.ActualGame == EGame.Fortnite)
             {
                 ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(_FORTNITE_BASE_PATH + _BURBANK_BIG_CONDENSED_BLACK);
@@ -170,6 +181,30 @@ namespace FModel.Creator.Texts
                 else DisplayNameTypeface = DefaultTypeface;
 
                 t = Utils.GetPropertyArraySegmentByte(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD);
+                if (t != null && t.Length == 3 && t[2].Array != null)
+                    DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
+                else DescriptionTypeface = DefaultTypeface;
+            }
+            else if (Globals.Game.ActualGame == EGame.BattleBreakers)
+            {
+                string namePath = _BATTLE_BREAKERS_BASE_PATH + (
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _NOTO_SANS_KR_REGULAR :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _LATO_BLACK :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NOTO_SANS_JP_REGULAR :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_SC_REGULAR :
+                    _HEMIHEAD426);
+                ArraySegment<byte>[] t = Utils.GetPropertyArraySegmentByte(namePath);
+                if (t != null && t.Length == 3 && t[2].Array != null)
+                    DisplayNameTypeface = SKTypeface.FromStream(t[2].AsStream());
+                else DisplayNameTypeface = DefaultTypeface;
+
+                string descriptionPath = _BATTLE_BREAKERS_BASE_PATH + (
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Korean ? _NOTO_SANS_KR_REGULAR :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Russian ? _LATO_BLACK :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Japanese ? _NOTO_SANS_JP_REGULAR :
+                    Properties.Settings.Default.AssetsLanguage == (long)ELanguage.Chinese ? _NOTO_SANS_SC_REGULAR :
+                    _HEMIHEAD426);
+                t = Utils.GetPropertyArraySegmentByte(descriptionPath);
                 if (t != null && t.Length == 3 && t[2].Array != null)
                     DescriptionTypeface = SKTypeface.FromStream(t[2].AsStream());
                 else DescriptionTypeface = DefaultTypeface;
