@@ -7,6 +7,7 @@ namespace PakReader
 {
     static class AESDecryptor
     {
+        public const int ALIGN = 16;
         public const int BLOCK_SIZE = 16 * 8; // 128
         static readonly Rijndael Cipher;
         static readonly Dictionary<byte[], ICryptoTransform> CachedTransforms = new Dictionary<byte[], ICryptoTransform>();
