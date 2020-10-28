@@ -1,8 +1,9 @@
-﻿using PakReader;
-using PakReader.Pak;
-using PakReader.Parsers.Objects;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows;
+using FModel.PakReader;
+using FModel.PakReader.IO;
+using FModel.PakReader.Pak;
+using FModel.PakReader.Parsers.Objects;
 
 namespace FModel.ViewModels.TabControl
 {
@@ -19,6 +20,18 @@ namespace FModel.ViewModels.TabControl
                 vm.AesKey = pakFileReader.AesKey?.ToStringKey();
                 vm.Guid = pakFileReader.Info.EncryptionKeyGuid.Hex;
                 vm.FileCount = (pakFileReader as IReadOnlyDictionary<string, FPakEntry>).Count.ToString();
+            });
+        }
+        public static void Set(this PakPropertiesViewModel vm, FFileIoStoreReader ioReader)
+        {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                vm.PakName = ioReader.FileName;
+                vm.Version = ((int)ioReader.TocResource.Header.Version).ToString();
+                vm.MountPoint = ioReader.MountPoint;
+                vm.AesKey = ioReader.AesKey?.ToStringKey();
+                vm.Guid = ioReader.EncryptionKeyGuid.Hex;
+                vm.FileCount = ioReader.Count.ToString();
             });
         }
         public static void Reset(this PakPropertiesViewModel vm)

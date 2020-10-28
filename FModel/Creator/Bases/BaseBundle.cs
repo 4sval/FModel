@@ -1,9 +1,9 @@
 ﻿using FModel.Creator.Bundles;
 using FModel.Creator.Texts;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
 using System.Collections.Generic;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Bases
 {
@@ -53,7 +53,7 @@ namespace FModel.Creator.Bases
             {
                 foreach (SoftObjectProperty questPath in careerQuestBitShifts.Value)
                 {
-                    PakPackage p = Utils.GetPropertyPakPackage(questPath.Value.AssetPathName.String);
+                    Package p = Utils.GetPropertyPakPackage(questPath.Value.AssetPathName.String);
                     if (p.HasExport() && !p.Equals(default))
                     {
                         var obj = p.GetExport<UObject>();

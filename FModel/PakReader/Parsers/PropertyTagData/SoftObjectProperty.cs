@@ -1,10 +1,14 @@
-﻿using PakReader.Parsers.Objects;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.PropertyTagData
+namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class SoftObjectProperty : BaseProperty<FSoftObjectPath>
     {
+        internal SoftObjectProperty()
+        {
+            Value = new FSoftObjectPath();
+        }
         internal SoftObjectProperty(PackageReader reader, ReadType readType)
         {
             Position = reader.Position;

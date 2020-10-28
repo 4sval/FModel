@@ -1,24 +1,101 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
+using FModel.Logger;
+using FModel.PakReader.IO;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.PropertyTagData;
+using FModel.Utils;
 
-namespace PakReader.Parsers.Class
+namespace FModel.PakReader.Parsers.Class
 {
     public class UObject : IUExport, IUStruct
     {
-        readonly Dictionary<string, object> Dict;
+        private readonly Dictionary<string, object> Dict;
+
+        public UObject(IoPackageReader reader, IReadOnlyDictionary<int, PropertyInfo> properties, bool structFallback = false, string type = null)
+        {
+            Dict = new Dictionary<string, object>();
+            var header = new FUnversionedHeader(reader);
+            using var it = new FIterator(header);
+
+#if DEBUG
+
+            var headerWritten = false;
+
+            do
+            {
+                if (properties.ContainsKey(it.Current.Val))
+                {
+                    continue;
+                }
+
+                if (!headerWritten)
+                {
+                    headerWritten = true;
+                    FConsole.AppendText(string.Concat("\n", type ?? "Unknown", ": ", reader.Summary.Name.String), "#CA6C6C", true);
+                }
+
+                FConsole.AppendText($"Val: {it.Current.Val} (IsNonZero: {it.Current.IsNonZero})", FColors.Yellow, true);
+            }
+            while (it.MoveNext());
+            it.Reset();
+#endif
+
+            var num = 1;
+
+            do
+            {
+                var (val, isNonZero) = it.Current;
+                if (properties.TryGetValue(val, out var propertyInfo))
+                {
+                    if (isNonZero)
+                    {
+                        var obj = BaseProperty.ReadAsObject(reader, new FPropertyTag(propertyInfo), new FName(propertyInfo.Type), ReadType.NORMAL);
+                        var key = Dict.ContainsKey(propertyInfo.Name) ? $"{propertyInfo.Name}_NK{num++:00}" : propertyInfo.Name;
+                        Dict[key] = obj;
+                    }
+                    else
+                    {
+                        var obj = BaseProperty.ReadAsZeroObject(reader, new FPropertyTag(propertyInfo),
+                            new FName(propertyInfo.Type));
+                        var key = Dict.ContainsKey(propertyInfo.Name) ? $"{propertyInfo.Name}_NK{num++:00}" : propertyInfo.Name;
+                        Dict[key] = obj;
+                    }
+                }
+                else
+                {
+                    if (!isNonZero)
+                    {
+                        // We are lucky: We don't know this property but it also has no content
+                        DebugHelper.WriteLine($"Unknown property for {GetType().Name} with value {val} but it's zero so we are good");
+                    }
+                    else
+                    {
+                        DebugHelper.WriteLine($"Unknown property for {GetType().Name} with value {val}. Can't proceed serialization (Serialized {Dict.Count} properties till now)");
+                        return;
+                        //throw new FileLoadException($"Unknown property for {GetType().Name} with value {val}. Can't proceed serialization");
+                    }
+                }
+            } while (it.MoveNext());
+            if (!structFallback && reader.ReadInt32() != 0/* && reader.Position + 16 <= maxSize*/)
+            {
+                new FGuid(reader);
+            }
+        }
+
+        // Empty UObject used for new package format when a property is zero
+        public UObject()
+        {
+            Dict = new Dictionary<string, object>();
+        }
 
         // https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp#L930
-        public UObject(PackageReader reader) : this(reader, reader.ExportMap.Sum(e => e.SerialSize), false) { }
-        public UObject(PackageReader reader, bool structFallback) : this(reader, reader.ExportMap.Sum(e => e.SerialSize), structFallback) { }
-        public UObject(PackageReader reader, long maxSize) : this(reader, maxSize, false) { }
+        public UObject(PackageReader reader) : this(reader, false) { }
 
         // Structs that don't use binary serialization
         // https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp#L2197
-        internal UObject(PackageReader reader, long maxSize, bool structFallback)
+        internal UObject(PackageReader reader, bool structFallback)
         {
             var properties = new Dictionary<string, object>();
             int num = 1;
@@ -46,7 +123,7 @@ namespace PakReader.Parsers.Class
             }
             Dict = properties;
 
-            if (!structFallback && reader.ReadInt32() != 0 && reader.Position + 16 <= maxSize)
+            if (!structFallback && reader.ReadInt32() != 0/* && reader.Position + 16 <= maxSize*/)
             {
                 new FGuid(reader);
             }

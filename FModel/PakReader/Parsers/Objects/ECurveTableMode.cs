@@ -1,4 +1,4 @@
-﻿namespace PakReader.Parsers.Objects
+﻿namespace FModel.PakReader.Parsers.Objects
 {
     /**
      * Whether the curve table contains simple, rich, or no curves

@@ -1,11 +1,11 @@
-﻿using Ionic.Zlib;
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using Ionic.Zlib;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
-    public class FPakEntry
+    public class FPakEntry : ReaderEntry
     {
         const byte Flag_Encrypted = 0x01;
         const byte Flag_Deleted = 0x02;
@@ -13,8 +13,9 @@ namespace PakReader.Parsers.Objects
         public bool Encrypted => (Flags & Flag_Encrypted) != 0;
         public bool Deleted => (Flags & Flag_Deleted) != 0;
 
-        public readonly string PakFileName;
-        public readonly string Name;
+        public override string ContainerName { get; }
+        public override string Name => _name;
+        private readonly string _name;
         public readonly long Offset;
         public readonly long Size;
         public readonly long UncompressedSize;
@@ -31,9 +32,9 @@ namespace PakReader.Parsers.Objects
             CompressionBlockSize = 0;
             Flags = 0;
 
-            PakFileName = pakName;
+            ContainerName = pakName;
             string name = caseSensitive ? reader.ReadFString() : reader.ReadFString().ToLowerInvariant();
-            Name = name.StartsWith("/") ? name[1..] : name;
+            _name = name.StartsWith("/") ? name[1..] : name;
 
             var StartOffset = reader.BaseStream.Position;
 
@@ -95,8 +96,8 @@ namespace PakReader.Parsers.Objects
             CompressionBlockSize = 0;
             Flags = 0;
 
-            PakFileName = pakName;
-            Name = caseSensitive ? reader.ReadFString() : reader.ReadFString().ToLowerInvariant();
+            ContainerName = pakName;
+            _name = caseSensitive ? reader.ReadFString() : reader.ReadFString().ToLowerInvariant();
 
             var StartOffset = reader.BaseStream.Position;
 
@@ -118,8 +119,8 @@ namespace PakReader.Parsers.Objects
 
         internal FPakEntry(string pakName, string name, long offset, long size, long uncompressedSize, FPakCompressedBlock[] compressionBlocks, uint compressionBlockSize, uint compressionMethodIndex, byte flags)
         {
-            PakFileName = pakName;
-            Name = name;
+            ContainerName = pakName;
+            _name = name;
             Offset = offset;
             Size = size;
             UncompressedSize = uncompressedSize;
@@ -227,49 +228,7 @@ namespace PakReader.Parsers.Objects
             return SerializedSize;
         }
 
-        public FPakEntry Uexp = null;
-        public FPakEntry Ubulk = null;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsUE4Package() => Name[Name.LastIndexOf(".")..].Equals(".uasset");
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsLocres() => Name[Name.LastIndexOf(".")..].Equals(".locres");
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsUE4Map() => Name[Name.LastIndexOf(".")..].Equals(".umap");
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsUE4Font() => Name[Name.LastIndexOf(".")..].Equals(".ufont");
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool HasUexp() => Uexp != null;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool HasUbulk() => Ubulk != null;
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsCompressed() => UncompressedSize != Size || CompressionMethodIndex != (int)ECompressionFlags.COMPRESS_None;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetExtension() => Name[Name.LastIndexOf(".")..];
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetPathWithoutFile()
-        {
-            int stop = Name.LastIndexOf("/");
-            if (stop <= -1)
-                stop = 0;
-            return Name.Substring(0, stop);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetPathWithoutExtension() => Name.Substring(0, Name.LastIndexOf("."));
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetNameWithExtension() => Name.Substring(Name.LastIndexOf("/") + 1);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetNameWithoutExtension()
-        {
-            int start = Name.LastIndexOf("/") + 1;
-            int stop = Name.LastIndexOf(".") - start;
-            return Name.Substring(start, stop);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetFirstFolder() => Name.Substring(Name.StartsWith('/') ? 1 : 0, Name.IndexOf('/'));
-
-        public override string ToString() => Name;
     }
 }

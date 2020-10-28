@@ -1,9 +1,13 @@
-using PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.PropertyTagData
+namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class ArrayProperty : BaseProperty<BaseProperty[]>
     {
+        internal ArrayProperty()
+        {
+            Value = new BaseProperty[0];
+        }
         internal ArrayProperty(PackageReader reader, FPropertyTag tag)
         {
             Position = reader.Position;
@@ -16,7 +20,7 @@ namespace PakReader.Parsers.PropertyTagData
             if (tag.InnerType.String == "StructProperty")
             {
                 // Serialize a PropertyTag for the inner property of this array, allows us to validate the inner struct to see if it has changed
-                InnerTag = new FPropertyTag(reader);
+                InnerTag = reader is IoPackageReader ? tag : new FPropertyTag(reader);
             }
             for (int i = 0; i < length; i++)
             {

@@ -1,4 +1,4 @@
-﻿namespace PakReader.Textures.BC
+﻿namespace FModel.PakReader.Textures.BC
 {
     internal enum DetexCompressedTextureFormatIndex : uint
     {

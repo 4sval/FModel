@@ -1,11 +1,11 @@
 ﻿using FModel.Grabber.Paks;
 using FModel.Logger;
 using Newtonsoft.Json;
-using PakReader.Parsers.Objects;
 using System.Collections.Generic;
 using System.IO;
 using System;
 using Windows.Management.Deployment;
+using FModel.PakReader;
 
 namespace FModel.Utils
 {
@@ -189,10 +189,10 @@ namespace FModel.Utils
                 return string.Empty;
         }
 
-        public static void Merge(Dictionary<string, FPakEntry> tempFiles, out Dictionary<string, FPakEntry> files, string mount)
+        public static void Merge<T>(Dictionary<string, T> tempFiles, out Dictionary<string, T> files, string mount) where T : ReaderEntry
         {
-            files = new Dictionary<string, FPakEntry>();
-            foreach (FPakEntry entry in tempFiles.Values)
+            files = new Dictionary<string, T>();
+            foreach (var entry in tempFiles.Values)
             {
                 if (files.ContainsKey(mount + entry.GetPathWithoutExtension()) ||
                     entry.GetExtension().Equals(".uptnl") ||
@@ -205,18 +205,18 @@ namespace FModel.Utils
                     if (!tempFiles.ContainsKey(Path.ChangeExtension(entry.Name, ".umap"))) // but not including a .umap
                     {
                         string e = Path.ChangeExtension(entry.Name, ".uexp");
-                        FPakEntry uexp = tempFiles.ContainsKey(e) ? tempFiles[e] : null; // add its uexp
+                        var uexp = tempFiles.ContainsKey(e) ? tempFiles[e] : null; // add its uexp
                         if (uexp != null)
                             entry.Uexp = uexp;
 
                         string u = Path.ChangeExtension(entry.Name, ".ubulk");
-                        FPakEntry ubulk = tempFiles.ContainsKey(u) ? tempFiles[u] : null; // add its ubulk
+                        var ubulk = tempFiles.ContainsKey(u) ? tempFiles[u] : null; // add its ubulk
                         if (ubulk != null)
                             entry.Ubulk = ubulk;
                         else
                         {
                             string f = Path.ChangeExtension(entry.Name, ".ufont");
-                            FPakEntry ufont = tempFiles.ContainsKey(f) ? tempFiles[f] : null; // add its ufont
+                            var ufont = tempFiles.ContainsKey(f) ? tempFiles[f] : null; // add its ufont
                             if (ufont != null)
                                 entry.Ubulk = ufont;
                         }
@@ -226,10 +226,10 @@ namespace FModel.Utils
                 {
                     string e = Path.ChangeExtension(entry.Name, ".uexp");
                     string u = Path.ChangeExtension(entry.Name, ".ubulk");
-                    FPakEntry uexp = tempFiles.ContainsKey(e) ? tempFiles[e] : null; // add its uexp
+                    var uexp = tempFiles.ContainsKey(e) ? tempFiles[e] : null; // add its uexp
                     if (uexp != null)
                         entry.Uexp = uexp;
-                    FPakEntry ubulk = tempFiles.ContainsKey(u) ? tempFiles[u] : null; // add its ubulk
+                    var ubulk = tempFiles.ContainsKey(u) ? tempFiles[u] : null; // add its ubulk
                     if (ubulk != null)
                         entry.Ubulk = ubulk;
                 }

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using FModel.Creator.Bases;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
 
@@ -25,7 +25,7 @@ namespace FModel.Creator.Texts
                     return b.SourceString.Replace("<Emphasized>", string.Empty).Replace("</>", string.Empty);
                 else if (text.Text is FTextHistory.StringTableEntry s)
                 {
-                    PakPackage p = Utils.GetPropertyPakPackage(s.TableId.String);
+                    Package p = Utils.GetPropertyPakPackage(s.TableId.String);
                     if (p.HasExport() && !p.Equals(default))
                     {
                         var table = p.GetExport<UStringTable>();
@@ -69,7 +69,7 @@ namespace FModel.Creator.Texts
                     o2.TryGetValue("CurveTable", out var c2) && c2 is ObjectProperty curveTable &&
                     o2.TryGetValue("RowName", out var c3) && c3 is NameProperty rowName) // new way
                 {
-                    PakPackage p = Utils.GetPropertyPakPackage(curveTable.Value.Resource.OuterIndex.Resource.ObjectName.String);
+                    Package p = Utils.GetPropertyPakPackage(curveTable.Value.Resource.OuterIndex.Resource.ObjectName.String);
                     if (p.HasExport() && !p.Equals(default))
                     {
                         var table = p.GetExport<UCurveTable>();
@@ -98,7 +98,7 @@ namespace FModel.Creator.Texts
                     o2.TryGetValue("CurveTable", out var c2) && c2 is ObjectProperty curveTable &&
                     o2.TryGetValue("RowName", out var c3) && c3 is NameProperty rowName) // new way
                 {
-                    PakPackage p = Utils.GetPropertyPakPackage(curveTable.Value.Resource.OuterIndex.Resource.ObjectName.String);
+                    Package p = Utils.GetPropertyPakPackage(curveTable.Value.Resource.OuterIndex.Resource.ObjectName.String);
                     if (p.HasExport() && !p.Equals(default))
                     {
                         var table = p.GetExport<UCurveTable>();

@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using FModel.PakReader.IO;
 
-namespace PakReader.Parsers.Objects
+using Newtonsoft.Json;
+
+namespace FModel.PakReader.Parsers.Objects
 {
     public sealed class FObjectExport : FObjectResource
     {
@@ -43,6 +45,17 @@ namespace PakReader.Parsers.Objects
         [JsonIgnore]
         public int CreateBeforeCreateDependencies { get; }
 
+        internal FObjectExport(IoPackageReader reader, int index)
+        {
+            var exportMapEntry = reader.ExportMap[index];
+            OuterIndex = new FPackageIndex(reader, (int)exportMapEntry.OuterIndex.Value + 1);
+            ObjectFlags = exportMapEntry.ObjectFlags;
+            SerialOffset = (long)exportMapEntry.CookedSerialOffset;
+            SerialSize = (long)exportMapEntry.CookedSerialSize;
+            PackageFlags = reader.Summary.PackageFlags;
+            ObjectName = new FName(exportMapEntry.ObjectName.String, (int)exportMapEntry.ObjectName.Index, (int)exportMapEntry.ObjectName.Number);
+        }
+
         internal FObjectExport(PackageReader reader)
         {
             ClassIndex = new FPackageIndex(reader);
@@ -84,8 +97,8 @@ namespace PakReader.Parsers.Objects
         public enum EDynamicType : byte
         {
             NotDynamicExport,
-		    DynamicType,
-		    ClassDefaultObject,
-	    };
+            DynamicType,
+            ClassDefaultObject,
+        };
     }
 }

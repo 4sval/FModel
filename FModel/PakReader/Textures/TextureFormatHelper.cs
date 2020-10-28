@@ -1,7 +1,7 @@
-﻿using PakReader.Parsers.Objects;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Textures
+namespace FModel.PakReader.Textures
 {
     public class TextureFormatHelper
     {

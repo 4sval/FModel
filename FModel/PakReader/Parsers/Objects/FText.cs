@@ -1,13 +1,19 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FText
     {
         [JsonIgnore]
         public readonly ETextFlag Flags;
         public readonly FTextHistory Text;
+
+        internal FText(ETextFlag flags, FTextHistory text)
+        {
+            Flags = flags;
+            Text = text;
+        }
 
         // https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/Core/Private/Internationalization/Text.cpp#L769
         internal FText(PackageReader reader)

@@ -5,10 +5,10 @@ using FModel.Creator.Rarities;
 using FModel.Creator.Stats;
 using FModel.Creator.Texts;
 using FModel.ViewModels.ImageBox;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.Objects;
 using SkiaSharp;
 using System.IO;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
 
 namespace FModel.Creator
 {

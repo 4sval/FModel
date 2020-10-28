@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FAssetRegistryState : IUStruct
     {

@@ -1,4 +1,4 @@
-﻿namespace PakReader.Parsers.Objects
+﻿namespace FModel.PakReader.Parsers.Objects
 {
     /** Enumerates key time compression options. */
     public enum ERichCurveKeyTimeCompressionFormat

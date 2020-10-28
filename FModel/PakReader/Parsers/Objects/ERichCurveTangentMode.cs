@@ -1,4 +1,4 @@
-﻿namespace PakReader.Parsers.Objects
+﻿namespace FModel.PakReader.Parsers.Objects
 {
     /** If using Cubic, this enum describes how the tangents should be controlled in editor. */
     public enum ERichCurveTangentMode : byte

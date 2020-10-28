@@ -1,4 +1,4 @@
-﻿namespace PakReader.Parsers.Objects
+﻿namespace FModel.PakReader.Parsers.Objects
 {
     /** Method of interpolation between this key and the next. */
     public enum ERichCurveInterpMode : byte

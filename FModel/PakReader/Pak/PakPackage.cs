@@ -1,19 +1,27 @@
 using System;
 using System.IO;
+using FModel.PakReader.Parsers;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
 using Newtonsoft.Json;
-using PakReader.Parsers;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.Objects;
 
-namespace PakReader.Pak
+namespace FModel.PakReader.Pak
 {
-    public readonly struct PakPackage
+    public sealed class PakPackage : Package
     {
         readonly ArraySegment<byte> UAsset;
         readonly ArraySegment<byte> UExp;
         readonly ArraySegment<byte> UBulk;
+        
+        internal PakPackage(ArraySegment<byte> asset, ArraySegment<byte> exp, ArraySegment<byte> bulk)
+        {
+            UAsset = asset;
+            UExp = exp;
+            UBulk = bulk;
+            exports = new ExportList();
+        }
 
-        public string JsonData
+        public override string JsonData
         {
             get
             {
@@ -37,7 +45,7 @@ namespace PakReader.Pak
                 return exports.JsonData;
             }
         }
-        public FName[] ExportTypes
+        public override FName[] ExportTypes
         {
             get
             {
@@ -51,14 +59,14 @@ namespace PakReader.Pak
                     if (bulk != null)
                         bulk.Position = 0;
 
-                    var p = new PackageReader(asset, exp, bulk);
+                    var p = new LegacyPackageReader(asset, exp, bulk);
                     exports.Exports = p.DataExports;
                     return exports.ExportTypes = p.DataExportTypes;
                 }
                 return exports.ExportTypes;
             }
         }
-        public IUExport[] Exports
+        public override IUExport[] Exports
         {
             get
             {
@@ -72,74 +80,17 @@ namespace PakReader.Pak
                     if (bulk != null)
                         bulk.Position = 0;
 
-                    var p = new PackageReader(asset, exp, bulk);
+                    var p = new LegacyPackageReader(asset, exp, bulk);
                     exports.ExportTypes = p.DataExportTypes;
                     return exports.Exports = p.DataExports;
                 }
                 return exports.Exports;
             }
         }
-        readonly ExportList exports;
+        private readonly ExportList exports;
 
-        internal PakPackage(ArraySegment<byte> asset, ArraySegment<byte> exp, ArraySegment<byte> bulk)
-        {
-            UAsset = asset;
-            UExp = exp;
-            UBulk = bulk;
-            exports = new ExportList();
-        }
-
-        public T GetExport<T>() where T : IUExport
-        {
-            var exports = Exports;
-            for (int i = 0; i < exports.Length; i++)
-            {
-                if (exports[i] is T)
-                    return (T)exports[i];
-            }
-            return default;
-        }
-        public T GetIndexedExport<T>(int index) where T : IUExport
-        {
-            var exports = Exports;
-            int foundCount = 0;
-            for (int i = 0; i < exports.Length; i++)
-            {
-                if (exports[i] is T)
-                {
-                    if (foundCount == index)
-                        return (T)exports[i];
-                    foundCount++;
-                }
-            }
-            return default;
-        }
-        public T GetTypedExport<T>(string exportType) where T : IUExport
-        {
-            int index = 0;
-            var exportTypes = ExportTypes;
-            for (int i = 0; i < exportTypes.Length; i++)
-            {
-                if (exportTypes[i].String == exportType)
-                    index = i;
-            }
-            return (T)Exports[index];
-        }
-
-        public bool HasExport() => exports != null;
 
         // hacky way to get the package to be a readonly struct, essentially a double pointer i guess
-        sealed class ExportList
-        {
-            public string JsonData;
-            public FName[] ExportTypes;
-            public IUExport[] Exports;
-        }
-
-        sealed class JsonExport
-        {
-            public string ExportType;
-            public object ExportValue;
-        }
+        
     }
 }

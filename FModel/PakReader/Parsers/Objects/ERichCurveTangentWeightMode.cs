@@ -1,4 +1,4 @@
-﻿namespace PakReader.Parsers.Objects
+﻿namespace FModel.PakReader.Parsers.Objects
 {
     /** Enumerates tangent weight modes. */
     public enum ERichCurveTangentWeightMode

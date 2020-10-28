@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 
-namespace PakReader.Textures.ASTC
+namespace FModel.PakReader.Textures.ASTC
 {
     public class BitArrayStream
     {

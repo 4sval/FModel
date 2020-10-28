@@ -1,9 +1,13 @@
-﻿using PakReader.Parsers.Objects;
+﻿using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.PropertyTagData
+namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class NameProperty : BaseProperty<FName>
     {
+        internal NameProperty()
+        {
+            Value = new FName();
+        }
         internal NameProperty(PackageReader reader)
         {
             Position = reader.Position;

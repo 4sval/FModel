@@ -11,11 +11,11 @@ using EpicManifestParser.Objects;
 
 using FModel.Grabber.Manifests;
 using FModel.Logger;
+using FModel.PakReader.IO;
+using FModel.PakReader.Pak;
 using FModel.Utils;
 using FModel.ViewModels.MenuItem;
 using FModel.Windows.Launcher;
-
-using PakReader.Pak;
 
 namespace FModel.Grabber.Paks
 {
@@ -143,6 +143,7 @@ namespace FModel.Grabber.Paks
                     // define the current game thank to the pak path
                     Folders.SetGameName(Properties.Settings.Default.PakPath);
 
+                    // paks
                     string[] paks = Directory.GetFiles(Properties.Settings.Default.PakPath, "*.pak");
                     for (int i = 0; i < paks.Length; i++)
                     {
@@ -171,6 +172,33 @@ namespace FModel.Grabber.Paks
                             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Locked]", paks[i]);
                         }
                     }
+                    
+                    // io stores
+                    var utocs = Directory.GetFiles(Properties.Settings.Default.PakPath, "*.utoc");
+                    foreach (var utoc in utocs)
+                    {
+                        var ucas = utoc.Replace(".utoc", ".ucas");
+                        if (!Utils.Paks.IsFileReadLocked(new FileInfo(utoc)) && !Utils.Paks.IsFileReadLocked(new FileInfo(ucas)))
+                        {
+                            var utocStream = new MemoryStream(await File.ReadAllBytesAsync(utoc));
+                            var ucasStream = File.OpenRead(ucas);
+                            var ioStore = new FFileIoStoreReader(ucas.SubstringAfterLast('\\'), utocStream, ucasStream);
+                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[IO Store]", "[Registering]", $"{ioStore.FileName} with GUID {ioStore.TocResource.Header.EncryptionKeyGuid.Hex}");
+                            await Application.Current.Dispatcher.InvokeAsync(delegate
+                            {
+                                MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                                {
+                                    IoStore = ioStore,
+                                    IsEnabled = false
+                                });
+                            });
+                        }
+                        else
+                        {
+                            FConsole.AppendText(string.Format(Properties.Resources.PakFileLocked, Path.GetFileNameWithoutExtension(utoc)), FColors.Red, true);
+                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[IO Store]", "[Locked]", utoc);
+                        }
+                    } 
                 }
             });
         }

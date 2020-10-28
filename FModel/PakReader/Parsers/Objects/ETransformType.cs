@@ -1,5 +1,5 @@
 ﻿
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public enum ETransformType : byte
     {

@@ -1,11 +1,15 @@
-﻿using PakReader.Parsers.Class;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
-namespace PakReader.Parsers.Objects
+using FModel.PakReader.IO;
+using FModel.PakReader.Parsers.Class;
+
+namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct UScriptStruct
     {
         public readonly IUStruct Struct;
-
+        
         // Binary serialization, tagged property serialization otherwise
         // https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp#L2146
         internal UScriptStruct(PackageReader reader, FName structName) : this(reader, structName.String) { }
@@ -18,6 +22,7 @@ namespace PakReader.Parsers.Objects
             {
                 "LevelSequenceObjectReferenceMap" => new FLevelSequenceObjectReferenceMap(reader),
                 "GameplayTagContainer" => new FGameplayTagContainer(reader),
+                //"GameplayTag" => new FGameplayTagContainer(reader),
                 "NavAgentSelector" => new FNavAgentSelectorCustomization(reader),
                 "Quat" => new FQuat(reader),
                 "Vector4" => new FVector4(reader),
@@ -54,8 +59,72 @@ namespace PakReader.Parsers.Objects
                 "VectorMaterialInput" => new FVectorMaterialInput(reader),
                 "ColorMaterialInput" => new FColorMaterialInput(reader),
                 "ExpressionInput" => new FMaterialInput(reader),
-                _ => new UObject(reader, true),
+                //
+                "PrimaryAssetType" => new FPrimaryAssetType(reader),
+                "PrimaryAssetId" => new FPrimaryAssetId(reader),
+                _ => Fallback(reader, structName)
             };
+        }
+        
+        internal UScriptStruct(string structName)
+        {
+            Struct = structName switch
+            {
+                "LevelSequenceObjectReferenceMap" => new FLevelSequenceObjectReferenceMap(),
+                "GameplayTagContainer" => new FGameplayTagContainer(),
+                //"GameplayTag" => new FGameplayTagContainer(reader),
+                "NavAgentSelector" => new FNavAgentSelectorCustomization(),
+                "Quat" => new FQuat(),
+                "Vector4" => new FVector4(),
+                "Vector2D" => new FVector2D(),
+                "Box2D" => new FBox2D(),
+                "Box" => new FBox(),
+                "Vector" => new FVector(),
+                "Rotator" => new FRotator(),
+                "IntPoint" => new FIntPoint(),
+                "Guid" => new FGuid(),
+                "SoftObjectPath" => new FSoftObjectPath(),
+                "SoftClassPath" => new FSoftObjectPath(),
+                "Color" => new FColor(),
+                "LinearColor" => new FLinearColor(),
+                "SimpleCurveKey" => new FSimpleCurveKey(),
+                "RichCurveKey" => new FRichCurveKey(),
+                "FrameNumber" => new FFrameNumber(),
+                "SmartName" => new FSmartName(),
+                "PerPlatformFloat" => new FPerPlatformFloat(),
+                "PerPlatformInt" => new FPerPlatformInt(),
+                "DateTime" => new FDateTime(),
+                "Timespan" => new FDateTime(),
+                "MovieSceneTrackIdentifier" => new FFrameNumber(),
+                "MovieSceneSegmentIdentifier" => new FFrameNumber(),
+                "MovieSceneSequenceID" => new FFrameNumber(),
+                "MovieSceneSegment" => new FMovieSceneSegment(),
+                "SectionEvaluationDataTree" => new FSectionEvaluationDataTree(),
+                "MovieSceneFrameRange" => new FMovieSceneFrameRange(),
+                "MovieSceneEvaluationKey" => new FMovieSceneEvaluationKey(),
+                "MovieSceneFloatValue" => new FRichCurveKey(),
+                "MovieSceneFloatChannel" => new FMovieSceneFloatChannel(),
+                "MovieSceneEvaluationTemplate" => new FMovieSceneEvaluationTemplate(),
+                //"SkeletalMeshSamplingLODBuiltData" => new FSkeletalMeshSamplingLODBuiltData(reader),
+                "VectorMaterialInput" => new FVectorMaterialInput(),
+                "ColorMaterialInput" => new FColorMaterialInput(),
+                "ExpressionInput" => new FMaterialInput(),
+                //
+                "PrimaryAssetType" => new FPrimaryAssetType(),
+                "PrimaryAssetId" => new FPrimaryAssetId(),
+                _ => new UObject()
+            };
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static IUStruct Fallback(PackageReader reader, string structName)
+        {
+            if (reader is IoPackageReader ioReader)
+            {
+                return Globals.TypeMappings.TryGetValue(structName, out var structProperties) ? new UObject(ioReader, structProperties, true, structName) : new UObject(ioReader, new Dictionary<int, PropertyInfo>(), true, structName);
+            }
+
+            return new UObject(reader, true);
         }
     }
 }

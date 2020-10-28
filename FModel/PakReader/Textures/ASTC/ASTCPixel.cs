@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PakReader.Textures.ASTC
+namespace FModel.PakReader.Textures.ASTC
 {
     class ASTCPixel
     {

@@ -1,4 +1,4 @@
-﻿namespace PakReader.Pak.IO
+﻿namespace FModel.PakReader.IO
 {
     public enum FIoStoreTocEntryMetaFlags : byte
     {

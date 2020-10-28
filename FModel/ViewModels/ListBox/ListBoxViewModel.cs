@@ -1,6 +1,6 @@
 ﻿using FModel.Utils;
-using PakReader.Parsers.Objects;
 using System;
+using FModel.PakReader;
 
 namespace FModel.ViewModels.ListBox
 {
@@ -27,12 +27,12 @@ namespace FModel.ViewModels.ListBox
             set { this.SetProperty(ref this._content, value); }
         }
 
-        private FPakEntry _pakEntry;
-        public FPakEntry PakEntry
+        private ReaderEntry _readerEntry;
+        public ReaderEntry ReaderEntry
         {
-            get { return _pakEntry; }
+            get { return _readerEntry; }
 
-            set { this.SetProperty(ref this._pakEntry, value); }
+            set { this.SetProperty(ref this._readerEntry, value); }
         }
     }
 

@@ -1,9 +1,9 @@
-﻿using PakReader.Parsers.Class;
-using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
-using SkiaSharp;
+﻿using SkiaSharp;
 using System;
 using System.Windows;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Bases
 {

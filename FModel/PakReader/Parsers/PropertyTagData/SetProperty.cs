@@ -1,9 +1,13 @@
-using PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.PropertyTagData
+namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class SetProperty : BaseProperty<object[]>
     {
+        internal SetProperty()
+        {
+            Value = new object[0];
+        }
         // https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/CoreUObject/Private/UObject/PropertySet.cpp#L216
         internal SetProperty(PackageReader reader, FPropertyTag tag)
         {

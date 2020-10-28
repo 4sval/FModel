@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using Newtonsoft.Json;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     /**
      * Wrapper for index into a ULnker's ImportMap or ExportMap.
@@ -20,20 +21,48 @@ namespace PakReader.Parsers.Objects
             {
                 if (!IsNull)
                 {
-                    if (IsImport && AsImport < Reader.ImportMap.Length)
-                        return Reader.ImportMap[AsImport];
-                    else if (IsImport && AsExport < Reader.ExportMap.Length)
-                        return Reader.ExportMap[AsExport];
+                    if (Reader is LegacyPackageReader legacyReader)
+                    {
+                        if (IsImport && AsImport < legacyReader.ImportMap.Length)
+                        {
+                            return legacyReader.ImportMap[AsImport];
+                        }
+
+                        if (IsExport && AsExport < legacyReader.ExportMap.Length)
+                        {
+                            return legacyReader.ExportMap[AsExport];
+                        }
+                    }
+                    else if (Reader is IoPackageReader ioReader)
+                    {
+                        if (IsImport && AsImport < ioReader.FakeImportMap.Count)
+                        {
+                            return ioReader.FakeImportMap[AsImport];
+                        }
+
+                        if (IsExport && AsExport < ioReader.ExportMap.Length)
+                        {
+                            return new FObjectExport(ioReader, AsExport);
+                        }
+
+                        Debugger.Break();
+                    }
                 }
                 return null;
             }
         }
 
-        readonly PackageReader Reader;
+        private readonly PackageReader Reader;
 
         internal FPackageIndex(PackageReader reader)
         {
             Index = reader.ReadInt32();
+            Reader = reader;
+        }
+        
+        internal FPackageIndex(PackageReader reader, int index)
+        {
+            Index = index;
             Reader = reader;
         }
 

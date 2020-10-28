@@ -5,7 +5,6 @@ using FModel.ViewModels.ListBox;
 using FModel.ViewModels.SoundPlayer;
 using FModel.Windows.SoundPlayer.Visualization;
 using Microsoft.Win32;
-using PakReader;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -92,7 +91,7 @@ namespace FModel.Windows.SoundPlayer
                         case ".bnk":
                         case ".pck":
                             Focus();
-                            WwiseReader bnk = new WwiseReader(new BinaryReader(new BufferedStream(new FileInfo(file).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))));
+                            WwiseReader bnk = new WwiseReader(new BinaryReader(new FileInfo(file).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite)));
                             LoadFiles(bnk.AudioFiles, "");
                             break;
                         default:

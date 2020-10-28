@@ -1,18 +1,21 @@
-﻿using PakReader.Parsers.Objects;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.Class
+namespace FModel.PakReader.Parsers.Class
 {
     public sealed class UCurveTable : IUExport
     {
         public ECurveTableMode CurveTableMode { get; }
         readonly Dictionary<string, object> RowMap;
-
+        
         internal UCurveTable(PackageReader reader)
         {
-            _ = new UObject(reader); //will break
+            if (!(reader is IoPackageReader))
+            {
+                _ = new UObject(reader); //will break    
+            }
 
             int NumRows = reader.ReadInt32();
             CurveTableMode = (ECurveTableMode)reader.ReadByte();

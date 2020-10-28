@@ -1,4 +1,4 @@
-﻿namespace PakReader.Pak
+﻿namespace FModel.PakReader.Pak
 {
     class DefaultPakFilter : IPakFilter
     {

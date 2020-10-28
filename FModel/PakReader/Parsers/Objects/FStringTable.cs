@@ -1,7 +1,7 @@
-﻿using FModel.Utils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using FModel.Utils;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FStringTable : IUStruct
     {

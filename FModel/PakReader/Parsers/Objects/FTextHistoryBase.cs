@@ -1,6 +1,6 @@
 ﻿using FModel.Utils;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public partial class FTextHistory
     {

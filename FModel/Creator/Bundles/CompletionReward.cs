@@ -1,6 +1,6 @@
 ﻿using FModel.Utils;
-using PakReader.Parsers.PropertyTagData;
 using System;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Bundles
 {

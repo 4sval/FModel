@@ -1,9 +1,9 @@
-﻿using PakReader.Parsers.Objects;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.Class
+namespace FModel.PakReader.Parsers.Class
 {
     public sealed class UAkMediaAssetData : UObject
     {

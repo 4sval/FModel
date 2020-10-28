@@ -15,7 +15,7 @@ namespace FModel.Utils
             string configFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EGL2\\config";
             if (File.Exists(configFile))
             {
-                using Stream stream = new BufferedStream(new FileInfo(configFile).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+                using Stream stream = new FileInfo(configFile).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 using BinaryReader reader = new BinaryReader(stream, Encoding.Default);
                 if (reader.ReadUInt32() != FILE_CONFIG_MAGIC)
                     return string.Empty;

@@ -1,10 +1,10 @@
 ﻿using FModel.Creator.Bases;
 using FModel.Creator.Icons;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.PropertyTagData;
 using FModel.Utils;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Texts
 {
@@ -32,7 +32,7 @@ namespace FModel.Creator.Texts
 
         private static string GetCosmeticSet(string setName)
         {
-            PakPackage p = Utils.GetPropertyPakPackage("/Game/Athena/Items/Cosmetics/Metadata/CosmeticSets");
+            Package p = Utils.GetPropertyPakPackage("/Game/Athena/Items/Cosmetics/Metadata/CosmeticSets");
             if (p.HasExport() && !p.Equals(default))
             {
                 var d = p.GetExport<UDataTable>();

@@ -1,8 +1,9 @@
-﻿using PakReader.Pak;
-using PakReader.Parsers.Objects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using FModel.PakReader.IO;
+using FModel.PakReader.Pak;
+using FModel.PakReader.Parsers.Objects;
 using FModel.Properties;
 using ToastNotifications;
 using ToastNotifications.Lifetime;
@@ -17,6 +18,10 @@ namespace FModel
         /// PakFileReader is the reader where you can grab the FPakEntries, MountPoint and more
         /// </summary>
         public static readonly Dictionary<string, PakFileReader> CachedPakFiles = new Dictionary<string, PakFileReader>();
+        public static readonly Dictionary<string, FFileIoStoreReader> CachedIoStores = new Dictionary<string, FFileIoStoreReader>();
+        public static FIoGlobalData GlobalData = null;
+        public static Dictionary<string, Dictionary<int, PropertyInfo>> TypeMappings;
+        public static Dictionary<string, Dictionary<int, string>> EnumMappings;
         public static readonly Notifier gNotifier = new Notifier(cfg =>
         {
             cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(TimeSpan.FromSeconds(7), MaximumNotificationCount.FromCount(15));

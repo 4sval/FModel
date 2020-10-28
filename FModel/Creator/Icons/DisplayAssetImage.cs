@@ -1,7 +1,7 @@
 ﻿using FModel.Creator.Bases;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Icons
 {
@@ -33,8 +33,8 @@ namespace FModel.Creator.Icons
             if (string.IsNullOrEmpty(path))
                 path = "/Game/Catalog/DisplayAssets/DA_Featured_" + assetName.Substring(0, assetName.LastIndexOf("."));
 
-            PakPackage p = Utils.GetPropertyPakPackage(path);
-            if (p.HasExport() && !p.Equals(default))
+            Package p = Utils.GetPropertyPakPackage(path);
+            if (p != null && p.HasExport())
             {
                 var obj = p.GetExport<UObject>();
                 if (obj != null)

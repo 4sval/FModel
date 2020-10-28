@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Pak
+namespace FModel.PakReader.Pak
 {
     public class PakIndex : IEnumerable<string>
     {

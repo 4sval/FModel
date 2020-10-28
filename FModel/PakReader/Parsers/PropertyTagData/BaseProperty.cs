@@ -1,9 +1,43 @@
-﻿using PakReader.Parsers.Objects;
+﻿using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.PropertyTagData
+namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public class BaseProperty
     {
+        internal static BaseProperty ReadAsZeroObject(PackageReader reader, FPropertyTag tag, FName type)
+        {
+            BaseProperty prop = type.String switch
+            {
+                "ByteProperty" => new ByteProperty(),
+                "BoolProperty" => new BoolProperty(tag),
+                "IntProperty" => new IntProperty(),
+                "FloatProperty" => new FloatProperty(),
+                "ObjectProperty" => new ObjectProperty(reader, 0),
+                "NameProperty" => new NameProperty(),
+                "DelegateProperty" => new DelegateProperty(),
+                "DoubleProperty" => new DoubleProperty(),
+                "ArrayProperty" => new ArrayProperty(),
+                "StructProperty" => new StructProperty(tag),
+                "StrProperty" => new StrProperty(),
+                "TextProperty" => new TextProperty(),
+                "InterfaceProperty" => new InterfaceProperty(),
+                //"MulticastDelegateProperty" => new MulticastDelegateProperty(reader, tag),
+                //"LazyObjectProperty" => new LazyObjectProperty(reader, tag),
+                "SoftObjectProperty" => new SoftObjectProperty(),
+                "AssetObjectProperty" => new SoftObjectProperty(),
+                "UInt64Property" => new UInt64Property(),
+                "UInt32Property" => new UInt32Property(),
+                "UInt16Property" => new UInt16Property(),
+                "Int64Property" => new Int64Property(),
+                "Int16Property" => new Int16Property(),
+                "Int8Property" => new Int8Property(),
+                "MapProperty" => new MapProperty(),
+                "SetProperty" => new SetProperty(),
+                "EnumProperty" => new EnumProperty(tag),
+                _ => null, //throw new NotImplementedException($"Parsing of {type.String} types aren't supported yet."),
+            };
+            return prop;
+        }
         internal static BaseProperty ReadAsObject(PackageReader reader, FPropertyTag tag, FName type, ReadType readType)
         {
             BaseProperty prop = type.String switch
@@ -33,7 +67,7 @@ namespace PakReader.Parsers.PropertyTagData
                 "Int8Property" => new Int8Property(reader),
                 "MapProperty" => new MapProperty(reader, tag),
                 "SetProperty" => new SetProperty(reader, tag),
-                "EnumProperty" => new EnumProperty(reader),
+                "EnumProperty" => new EnumProperty(reader, tag),
                 _ => null, //throw new NotImplementedException($"Parsing of {type.String} types aren't supported yet."),
             };
             return prop;
@@ -68,7 +102,7 @@ namespace PakReader.Parsers.PropertyTagData
                 "Int8Property" => new Int8Property(reader).Value,
                 "MapProperty" => new MapProperty(reader, tag).Value,
                 "SetProperty" => new SetProperty(reader, tag).Value,
-                "EnumProperty" => new EnumProperty(reader).Value,
+                "EnumProperty" => new EnumProperty(reader, tag).Value,
                 _ => null, //throw new NotImplementedException($"Parsing of {type.String} types aren't supported yet."),
             };
             return prop;

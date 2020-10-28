@@ -1,20 +1,26 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using FModel.Logger;
+using FModel.PakReader.Parsers;
+using FModel.PakReader.Parsers.Objects;
 using FModel.Utils;
 using Ionic.Zlib;
-using PakReader.Parsers;
-using PakReader.Parsers.Objects;
 
-namespace PakReader.Pak.IO
+namespace FModel.PakReader.IO
 {
-    public class FFileIoStoreReader
+    public class FFileIoStoreReader : IReadOnlyDictionary<string, FIoStoreEntry>
     {
+        public readonly string FileName;
         public readonly FIoStoreTocResource TocResource;
         public readonly Dictionary<FIoChunkId, FIoOffsetAndLength> Toc;
         public readonly FFileIoStoreContainerFile ContainerFile;
         public readonly FIoContainerId ContainerId;
+
+        public bool IsInitialized => Files != null;
 
         private byte[] _aesKey;
         public byte[] AesKey
@@ -22,6 +28,7 @@ namespace PakReader.Pak.IO
             get => _aesKey;
             set
             {
+                if (!HasDirectoryIndex) return;
                 if (value != null && !TestAesKey(value)) //if value not null, test but fail, throw not working
                     throw new ArgumentException(string.Format(FModel.Properties.Resources.AesNotWorking, value.ToStringKey(), ContainerFile.FileName));
                 _aesKey = value; // else, even if value is null, set it
@@ -29,22 +36,29 @@ namespace PakReader.Pak.IO
             }
         }
 
+        public readonly bool CaseSensitive;
+
+        public bool HasDirectoryIndex => TocResource.DirectoryIndexBuffer != null;
+
         public FGuid EncryptionKeyGuid => ContainerFile.EncryptionKeyGuid;
         public bool IsEncrypted => ContainerFile.ContainerFlags.HasAnyFlags(EIoContainerFlags.Encrypted);
-        
+
+        public Dictionary<string, FIoStoreEntry> Files;
 
         public FIoDirectoryIndexResource _directoryIndex;
         private byte[] _directoryIndexBuffer;
 
-        public FFileIoStoreReader(Stream tocStream, Stream containerStream, EIoStoreTocReadOptions tocReadOptions = EIoStoreTocReadOptions.ReadDirectoryIndex)
+        public FFileIoStoreReader(string fileName, Stream tocStream, Stream containerStream, bool caseSensitive = true, EIoStoreTocReadOptions tocReadOptions = EIoStoreTocReadOptions.ReadDirectoryIndex)
         {
+            FileName = fileName;
+            CaseSensitive = caseSensitive;
             ContainerFile.FileHandle = containerStream;
             var tocResource = new FIoStoreTocResource(tocStream, tocReadOptions);
             TocResource = tocResource;
 
             var containerUncompressedSize = tocResource.Header.TocCompressedBlockEntryCount > 0
-                ? tocResource.Header.TocCompressedBlockEntryCount * tocResource.Header.CompressionBlockSize
-                : containerStream.Length;
+                ? (ulong) tocResource.Header.TocCompressedBlockEntryCount * (ulong) tocResource.Header.CompressionBlockSize
+                : (ulong) containerStream.Length;
             
             Toc = new Dictionary<FIoChunkId, FIoOffsetAndLength>((int) tocResource.Header.TocEntryCount);
 
@@ -79,18 +93,40 @@ namespace PakReader.Pak.IO
             _directoryIndexBuffer = tocResource.DirectoryIndexBuffer;
         }
 
-        public void ReadIndex()
+        public bool ReadDirectoryIndex()
         {
-            using Stream indexStream = IsEncrypted
-                ? new MemoryStream(AESDecryptor.DecryptAES(_directoryIndexBuffer, _aesKey))
-                : new MemoryStream(_directoryIndexBuffer);
-            _directoryIndex = new FIoDirectoryIndexResource(indexStream);
+            try
+            {
+                if (HasDirectoryIndex)
+                {
+                    using Stream indexStream = IsEncrypted
+                        ? new MemoryStream(AESDecryptor.DecryptAES(_directoryIndexBuffer, _aesKey))
+                        : new MemoryStream(_directoryIndexBuffer);
+                    _directoryIndex = new FIoDirectoryIndexResource(indexStream, CaseSensitive);
+
+                    var firstEntry = GetChildDirectory(FIoDirectoryIndexHandle.Root);
+
+                    var tempFiles = new Dictionary<string, FIoStoreEntry>();
+                    ReadIndex("", firstEntry, tempFiles);
+                    Paks.Merge(tempFiles, out Files, _directoryIndex.MountPoint);
+                    DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[FFileIoStoreReader]", "[ReadDirectoryIndex]", $"{FileName} contains {Files.Count} files, mount point: \"{MountPoint}\", version: {(int)TocResource.Header.Version}");
+                
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                DebugHelper.WriteLine(e.ToString());
+            }
+            return false;
         }
 
         public string MountPoint => _directoryIndex.MountPoint;
 
         public bool TestAesKey(byte[] key)
         {
+            if (!HasDirectoryIndex)
+                return false;
             if (!IsEncrypted)
                 return true;
             return TestAesKey(_directoryIndexBuffer, key);
@@ -122,6 +158,8 @@ namespace PakReader.Pak.IO
             }
         }
 
+        public bool DoesChunkExist(FIoChunkId chunkId) => Toc.ContainsKey(chunkId);
+
         public byte[] Read(FIoChunkId chunkId)
         {
             var offsetAndLength = Toc[chunkId];
@@ -129,16 +167,15 @@ namespace PakReader.Pak.IO
             var compressionBlockSize = tocResource.Header.CompressionBlockSize;
             var dst = new byte[offsetAndLength.Length];
             var firstBlockIndex = (int) (offsetAndLength.Offset / compressionBlockSize);
-            var lastBlockIndex = (int) ((BinaryHelper.Align(offsetAndLength.Offset + dst.Length, compressionBlockSize) - 1) / compressionBlockSize);
-            var offsetInBlock = offsetAndLength.Offset % compressionBlockSize;
-
-            byte[] src;
+            var lastBlockIndex = (int) ((BinaryHelper.Align((long) offsetAndLength.Offset + dst.Length, compressionBlockSize) - 1) / compressionBlockSize);
+            var offsetInBlock = (int) offsetAndLength.Offset % compressionBlockSize;
             var remainingSize = dst.Length;
             var dstOffset = 0;
-            for (int blockIndex = firstBlockIndex; blockIndex < lastBlockIndex; blockIndex++)
+
+            for (int blockIndex = firstBlockIndex; blockIndex <= lastBlockIndex; blockIndex++)
             {
                 var compressionBlock = tocResource.CompressionBlocks[blockIndex];
-                
+
                 var rawSize = BinaryHelper.Align(compressionBlock.CompressedSize, AESDecryptor.ALIGN);
                 var compressedBuffer = new byte[rawSize];
                 
@@ -153,6 +190,8 @@ namespace PakReader.Pak.IO
                     compressedBuffer = AESDecryptor.DecryptAES(compressedBuffer, _aesKey);
                 }
 
+                byte[] src;
+
                 if (compressionBlock.CompressionMethodIndex == 0)
                 {
                     src = compressedBuffer;
@@ -164,7 +203,7 @@ namespace PakReader.Pak.IO
                     src = uncompressedBuffer;
                 }
 
-                var sizeInBlock = (int) Math.Min(compressionBlockSize - offsetInBlock, remainingSize);
+                var sizeInBlock = (int)Math.Min(compressionBlockSize - offsetInBlock, remainingSize);
                 Buffer.BlockCopy(src, (int) offsetInBlock, dst, dstOffset, sizeInBlock);
                 offsetInBlock = 0;
                 remainingSize -= sizeInBlock;
@@ -249,5 +288,111 @@ namespace PakReader.Pak.IO
             };
             compressionStream.Read(outData, 0, outData.Length);
         }
+
+        private void ReadIndex(string directoryName, FIoDirectoryIndexHandle dir, IDictionary<string, FIoStoreEntry> outFiles)
+        {
+            
+            while (dir.IsValid())
+            {
+                var subDirectoryName = string.Concat(directoryName, GetDirectoryName(dir), "/");
+            
+                var file = GetFile(dir);
+                while (file.IsValid())
+                {
+                    var name = GetFileName(file);
+                    var path = string.Concat(subDirectoryName, name);
+                    var data = GetFileData(file);
+                    outFiles[path] = new FIoStoreEntry(this, data, path, CaseSensitive);
+                    file = GetNextFile(file);
+                }
+            
+                ReadIndex(subDirectoryName, GetChildDirectory(dir), outFiles);
+
+                dir = GetNextDirectory(dir);
+            }
+        }
+        
+        public bool TryGetFile(string path, out ArraySegment<byte> ret1, out ArraySegment<byte> ret2, out ArraySegment<byte> ret3)
+        {
+            if (!string.IsNullOrEmpty(path) && Files.TryGetValue(CaseSensitive ? path : path.ToLowerInvariant(), out var entry))
+            {
+                ret1 = entry.GetData();
+                if (entry.HasUexp())
+                {
+                    ret2 = (entry.Uexp as FIoStoreEntry)?.GetData();
+                    ret3 = (entry.Ubulk as FIoStoreEntry)?.GetData();
+                    return true;
+                }
+                else // return a fail but keep the uasset data
+                {
+                    ret2 = null;
+                    ret3 = null;
+                    return false;
+                }
+            }
+            ret1 = null;
+            ret2 = null;
+            ret3 = null;
+            return false;
+        }
+        
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryGetPartialKey(string partialKey, out string key)
+        {
+            foreach (string path in Files.Keys)
+            {
+                if (Regex.Match(path, partialKey, RegexOptions.IgnoreCase).Success)
+                {
+                    key = path;
+                    return true;
+                }
+            }
+
+            key = string.Empty;
+            return false;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryGetCaseInsensiteveValue(string key, out FIoStoreEntry value)
+        {
+            foreach (var r in Files)
+            {
+                if (r.Key.Equals(key, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    value = r.Value;
+                    return true;
+                }
+            }
+            value = null;
+            return false;
+        }
+
+        public IEnumerator<KeyValuePair<string, FIoStoreEntry>> GetEnumerator()
+        {
+            return Files.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable) Files).GetEnumerator();
+        }
+
+        public int Count => Files.Count;
+
+        public bool ContainsKey(string key)
+        {
+            return Files.ContainsKey(key);
+        }
+
+        public bool TryGetValue(string key, out FIoStoreEntry value)
+        {
+            return Files.TryGetValue(key, out value);
+        }
+
+        public FIoStoreEntry this[string key] => Files[key];
+
+        public IEnumerable<string> Keys => Files.Keys;
+
+        public IEnumerable<FIoStoreEntry> Values => Files.Values;
     }
 }

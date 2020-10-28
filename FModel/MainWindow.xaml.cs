@@ -23,14 +23,19 @@ using FModel.Windows.Search;
 using FModel.Windows.Settings;
 using FModel.Windows.SoundPlayer;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using PropertyInfo = FModel.PakReader.IO.PropertyInfo;
 
 namespace FModel
 {
@@ -72,6 +77,8 @@ namespace FModel
             if (!Properties.Settings.Default.SkipVersion) Updater.CheckForUpdate();
             DebugHelper.WriteUserSettings();
             Folders.CheckWatermarks();
+            
+            LoadMappings();
 
             await Task.WhenAll(Init()).ContinueWith(t =>
                 {
@@ -95,6 +102,52 @@ namespace FModel
             await AesGrabber.Load(Properties.Settings.Default.ReloadAesKeys).ConfigureAwait(false);
             await CdnDataGrabber.DoCDNStuff().ConfigureAwait(false);
             await Folders.DownloadAndExtractVgm().ConfigureAwait(false);
+        }
+
+        private async void LoadMappings()
+        {
+            try
+            {
+#if DEBUG
+                string rawMappings = null;
+                string rawEnumMappings = null;
+                try
+                {
+                    rawMappings = await File.ReadAllTextAsync("TypeMappings.json");
+                    rawEnumMappings = await File.ReadAllTextAsync("EnumMappings.json");
+                }
+                catch
+                {
+                    rawMappings ??= await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
+                    rawEnumMappings ??=  await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
+                }
+#else
+                var rawMappings =  await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
+                var rawEnumMappings =  await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
+#endif
+                var serializerSettings = new JsonSerializerSettings
+                {
+                    ContractResolver = new DefaultContractResolver
+                        {NamingStrategy = new CamelCaseNamingStrategy(false, false)}
+                };
+                Globals.TypeMappings =
+                    JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, PropertyInfo>>>(rawMappings,
+                        serializerSettings);
+                Globals.EnumMappings = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, string>>>(rawEnumMappings,
+                    serializerSettings);
+
+            }
+            catch (Exception exception)
+            {
+                DebugHelper.WriteException(exception, "Failed to load Mappings");
+                Globals.TypeMappings ??= new Dictionary<string, Dictionary<int, PropertyInfo>>();
+                Globals.EnumMappings ??= new Dictionary<string, Dictionary<int, string>>();
+            }
+        }
+
+        public void ReloadMappings(object sender, RoutedEventArgs e)
+        {
+            LoadMappings();
         }
 
         private void AeConfiguration()
@@ -206,7 +259,7 @@ namespace FModel
                 FModel_AssetsList.SelectedItem is ListBoxViewModel selectedItem)
             {
                 bool autoExport = FModel_AssetsList.SelectedItems.Count > 1;
-                if (!autoExport) Assets.Export(selectedItem.PakEntry, false); // manual export if one
+                if (!autoExport) Assets.Export(selectedItem.ReaderEntry, false); // manual export if one
                 else
                 {
                     bool ret = Properties.Settings.Default.AutoExport;
@@ -375,7 +428,7 @@ namespace FModel
             {
                 FModel_TabCtrl.SelectedIndex = 1;
                 ExtractStopVm.extractViewModel.IsEnabled = true;
-                AssetPropertiesVm.assetPropertiesViewModel.Set(selectedItem.PakEntry);
+                AssetPropertiesVm.assetPropertiesViewModel.Set(selectedItem.ReaderEntry);
             }
             else
             {

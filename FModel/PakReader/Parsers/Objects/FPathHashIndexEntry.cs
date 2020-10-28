@@ -1,5 +1,4 @@
-﻿using PakReader;
-using System.IO;
+﻿using System.IO;
 
 namespace FModel.PakReader.Parsers.Objects
 {

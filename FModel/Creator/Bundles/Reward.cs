@@ -1,10 +1,10 @@
 ﻿using FModel.Creator.Bases;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Bundles
 {
@@ -37,7 +37,7 @@ namespace FModel.Creator.Bundles
                 string[] parts = assetName.Split(':');
                 if (parts[0].Equals("HomebaseBannerIcon", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    PakPackage p = Utils.GetPropertyPakPackage($"/Game/Items/BannerIcons/{parts[1]}.{parts[1]}");
+                    Package p = Utils.GetPropertyPakPackage($"/Game/Items/BannerIcons/{parts[1]}.{parts[1]}");
                     if (p.HasExport() && !p.Equals(default))
                     {
                         if (p.GetExport<UObject>() is UObject banner)
@@ -54,7 +54,7 @@ namespace FModel.Creator.Bundles
         public Reward(IntProperty quantity, FSoftObjectPath itemFullPath)
         {
             RewardQuantity = quantity.Value;
-            PakPackage p = Utils.GetPropertyPakPackage(itemFullPath.AssetPathName.String);
+            Package p = Utils.GetPropertyPakPackage(itemFullPath.AssetPathName.String);
             if (p.HasExport() && !p.Equals(default))
             {
                 var d = p.GetExport<UObject>();
@@ -71,7 +71,7 @@ namespace FModel.Creator.Bundles
         {
             RewardQuantity = quantity.Value;
 
-            PakPackage p = Utils.GetPropertyPakPackage(itemDefinition.Value.AssetPathName.String);
+            Package p = Utils.GetPropertyPakPackage(itemDefinition.Value.AssetPathName.String);
             if (p.HasExport() && !p.Equals(default))
             {
                 var d = p.GetExport<UObject>();
@@ -135,7 +135,7 @@ namespace FModel.Creator.Bundles
                 default:
                     {
                         string path = Utils.GetFullPath($"/FortniteGame/Content/Athena/.*?/{trigger}.*").Replace("FortniteGame/Content", "Game");
-                        PakPackage p = Utils.GetPropertyPakPackage(path);
+                        Package p = Utils.GetPropertyPakPackage(path);
                         if (p.HasExport() && !p.Equals(default))
                         {
                             var d = p.GetExport<UObject>();

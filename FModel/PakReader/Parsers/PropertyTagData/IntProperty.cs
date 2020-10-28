@@ -1,7 +1,11 @@
-﻿namespace PakReader.Parsers.PropertyTagData
+﻿namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class IntProperty : BaseProperty<int>
     {
+        internal IntProperty()
+        {
+            Value = 0;
+        }
         internal IntProperty(PackageReader reader)
         {
             Position = reader.Position;

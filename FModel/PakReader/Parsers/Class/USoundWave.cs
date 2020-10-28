@@ -1,10 +1,12 @@
-﻿using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using FModel.PakReader.IO;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.PropertyTagData;
 
-namespace PakReader.Parsers.Class
+namespace FModel.PakReader.Parsers.Class
 {
     public sealed class USoundWave : UObject
     {
@@ -51,7 +53,18 @@ namespace PakReader.Parsers.Class
             }
         }
 
+        internal USoundWave(IoPackageReader reader, Dictionary<int, PropertyInfo> properties, Stream ubulk,
+            long ubulkOffset) : base(reader, properties)
+        {
+            Serialize(reader, ubulk, ubulkOffset);
+        }
+
         internal USoundWave(PackageReader reader, Stream ubulk, long ubulkOffset) : base(reader)
+        {
+            Serialize(reader, ubulk, ubulkOffset);
+        }
+
+        private void Serialize(PackageReader reader, Stream ubulk, long ubulkOffset)
         {
             // if UE4.25+ && Windows -> True
             bStreaming = FModel.Globals.Game.Version >= EPakVersion.PATH_HASH_INDEX;

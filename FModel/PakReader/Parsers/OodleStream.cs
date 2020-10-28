@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using FModel.Utils;
 
-namespace PakReader.Parsers
+namespace FModel.PakReader.Parsers
 {
     /// <summary>
     /// https://gist.github.com/Scobalula/37229307de57de685d16ec621d5aceb5

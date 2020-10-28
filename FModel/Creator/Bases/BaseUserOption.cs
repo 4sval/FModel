@@ -1,10 +1,10 @@
 ﻿using FModel.Creator.Texts;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
 using System.Collections.Generic;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Bases
 {

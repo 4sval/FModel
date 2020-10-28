@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FGuid : IUStruct, IEquatable<FGuid>
     {

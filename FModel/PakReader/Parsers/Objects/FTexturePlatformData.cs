@@ -1,9 +1,7 @@
 using System;
 using System.IO;
 
-using FModel;
-
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FTexturePlatformData
     {

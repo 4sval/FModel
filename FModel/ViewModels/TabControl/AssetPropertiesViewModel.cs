@@ -1,29 +1,55 @@
 ﻿using FModel.Utils;
-using PakReader.Parsers.Objects;
 using System.Windows;
+using FModel.PakReader;
+using FModel.PakReader.IO;
+using FModel.PakReader.Parsers.Objects;
 
 namespace FModel.ViewModels.TabControl
 {
     static class AssetPropertiesVm
     {
         public static readonly AssetPropertiesViewModel assetPropertiesViewModel = new AssetPropertiesViewModel();
-        public static void Set(this AssetPropertiesViewModel vm, FPakEntry entry)
+        public static void Set(this AssetPropertiesViewModel vm, ReaderEntry entry)
         {
             Application.Current.Dispatcher.Invoke(delegate
             {
                 string ext = string.Join("   ", entry.GetExtension(), entry.Uexp?.GetExtension(), entry.Ubulk?.GetExtension());
-                string offsets = string.Join("   ", "0x" + (entry.Offset + entry.StructSize).ToString("X2"),
-                    entry.Uexp != null ? "0x" + (entry.Uexp.Offset + entry.StructSize).ToString("X2") : string.Empty,
-                    entry.Ubulk != null ? "0x" + (entry.Ubulk.Offset + entry.StructSize).ToString("X2") : string.Empty);
-                string tSize = Strings.GetReadableSize(entry.Size + (entry.Uexp?.Size ?? 0) + (entry.Ubulk?.Size ?? 0));
+                string offsets;
+                string tSize;
+                if (entry is FPakEntry pakEntry)
+                {
+                    offsets = string.Join("   ", "0x" + (pakEntry.Offset + pakEntry.StructSize).ToString("X2"),
+                        entry.Uexp != null ? "0x" + (((FPakEntry)pakEntry.Uexp).Offset + pakEntry.StructSize).ToString("X2") : string.Empty,
+                        entry.Ubulk != null ? "0x" + (((FPakEntry)pakEntry.Ubulk).Offset + pakEntry.StructSize).ToString("X2") : string.Empty);
+                    tSize = Strings.GetReadableSize(pakEntry.Size + ((pakEntry.Uexp as FPakEntry)?.Size ?? 0) + ((pakEntry.Ubulk as FPakEntry)?.Size ?? 0));
+                } else if (entry is FIoStoreEntry ioEntry)
+                {
+                    offsets = string.Join("   ", "0x" + (ioEntry.Offset).ToString("X2"),
+                        entry.Uexp != null ? "0x" + (((FIoStoreEntry)ioEntry.Uexp).Offset).ToString("X2") : string.Empty,
+                        entry.Ubulk != null ? "0x" + (((FIoStoreEntry)ioEntry.Ubulk).Offset).ToString("X2") : string.Empty);
+                    tSize = Strings.GetReadableSize(ioEntry.Length + ((ioEntry.Uexp as FIoStoreEntry)?.Length ?? 0) + ((ioEntry.Ubulk as FIoStoreEntry)?.Length ?? 0));
+                }
+                else
+                {
+                    offsets = string.Empty;
+                    tSize = string.Empty;
+                }
 
                 vm.AssetName = entry.GetNameWithExtension();
-                vm.PartOf = entry.PakFileName;
+                vm.PartOf = entry.ContainerName;
                 vm.IncludedExtensions = ext.TrimEnd();
                 vm.Offsets = offsets.TrimEnd();
                 vm.TotalSize = tSize;
-                vm.IsEncrypted = entry.Encrypted ? Properties.Resources.Yes : Properties.Resources.No;
-                vm.CompMethod = ((ECompressionFlags)entry.CompressionMethodIndex).ToString();
+                if (entry is FPakEntry cast)
+                {
+                    vm.IsEncrypted = cast.Encrypted ? Properties.Resources.Yes : Properties.Resources.No;
+                    vm.CompMethod = ((ECompressionFlags)cast.CompressionMethodIndex).ToString();
+                }
+                else
+                {
+                    vm.IsEncrypted = Properties.Resources.No;
+                    vm.CompMethod = ECompressionFlags.COMPRESS_None.ToString();
+                }
             });
         }
         public static void Reset(this AssetPropertiesViewModel vm)

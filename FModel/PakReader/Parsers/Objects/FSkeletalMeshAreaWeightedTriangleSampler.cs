@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     /** Allows area weighted sampling of triangles on a skeletal mesh. */
     public readonly struct FSkeletalMeshAreaWeightedTriangleSampler : IUStruct

@@ -1,8 +1,11 @@
-﻿namespace PakReader.Parsers.Objects
+﻿using System;
+
+namespace FModel.PakReader.Parsers.Objects
 {
     /** 
      * Flags describing an object instance
      */
+    [Flags]
     public enum EObjectFlags : uint
     {
         // Do not add new flags unless they truly belong here. There are alternatives.
@@ -45,6 +48,7 @@
         RF_NonPIEDuplicateTransient = 0x02000000,   ///< Object should not be included for duplication unless it's being duplicated for a PIE session
         RF_Dynamic = 0x04000000,    ///< Field Only. Dynamic field - doesn't get constructed during static initialization, can be constructed multiple times
         RF_WillBeLoaded = 0x08000000,   ///< This object was constructed during load and will be loaded shortly
+        RF_HasExternalPackage		=0x10000000,	///< This object has an external package assigned and should look it up when getting the outermost package                                        
 
         // Extra defines
         RF_Load = RF_Public | RF_Standalone | RF_Transactional | RF_ClassDefaultObject | RF_ArchetypeObject | RF_DefaultSubObject | RF_TextExportTransient | RF_InheritableComponentTemplate | RF_DuplicateTransient | RF_NonPIEDuplicateTransient,

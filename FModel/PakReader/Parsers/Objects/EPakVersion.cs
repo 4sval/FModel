@@ -1,4 +1,4 @@
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     // NOTE: THIS IS NOT AN ACTUAL ENUM IN UE4.
     // LINK: https://github.com/EpicGames/UnrealEngine/blob/8b6414ae4bca5f93b878afadcc41ab518b09984f/Engine/Source/Runtime/PakFile/Public/IPlatformFilePak.h#L85

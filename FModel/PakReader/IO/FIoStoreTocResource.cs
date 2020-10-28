@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
+using FModel.PakReader.Parsers.Objects;
 using FModel.Utils;
-using PakReader.Parsers.Objects;
 
-namespace PakReader.Pak.IO
+namespace FModel.PakReader.IO
 {
     public enum EIoStoreTocReadOptions
     {
@@ -87,7 +85,7 @@ namespace PakReader.Pak.IO
                     ChunkBlockSignatures[i] = new FSHAHash(reader);
                 }
 
-                // You could very hashes here but nah
+                // You could verify hashes here but nah
             }
 
             // Directory index

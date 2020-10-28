@@ -1,10 +1,15 @@
-﻿using PakReader.Parsers.Objects;
-using System;
+﻿using System;
 
-namespace PakReader.Parsers.PropertyTagData
+using FModel.PakReader.Parsers.Objects;
+
+namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class ByteProperty : BaseProperty<object>
     {
+        internal ByteProperty()
+        {
+            Value = 0;
+        }
         internal ByteProperty(PackageReader reader, FPropertyTag tag, ReadType readType)
         {
             Position = reader.Position;

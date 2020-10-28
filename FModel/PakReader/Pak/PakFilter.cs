@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace PakReader.Pak
+namespace FModel.PakReader.Pak
 {
     // Currently only supports strings that start with a value
     // I've just implemented this myself to save tons of memory so you don't have to

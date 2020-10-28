@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FPakInfo
     {

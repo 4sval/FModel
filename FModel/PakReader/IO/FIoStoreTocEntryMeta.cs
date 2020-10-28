@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace PakReader.Pak.IO
+namespace FModel.PakReader.IO
 {
     public readonly struct FIoStoreTocEntryMeta
     {

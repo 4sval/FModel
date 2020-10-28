@@ -1,13 +1,13 @@
 ﻿using FModel.Creator.Bases;
 using FModel.Creator.Texts;
 using FModel.Utils;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
 using System;
 using System.Windows;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Stats
 {
@@ -17,7 +17,7 @@ namespace FModel.Creator.Stats
         {
             if (!ammoData.Value.AssetPathName.String.StartsWith("/Game/Athena/Items/Consumables/"))
             {
-                PakPackage p = Utils.GetPropertyPakPackage(ammoData.Value.AssetPathName.String);
+                Package p = Utils.GetPropertyPakPackage(ammoData.Value.AssetPathName.String);
                 if (p.HasExport() && !p.Equals(default))
                 {
                     var obj = p.GetExport<UObject>();
@@ -43,7 +43,7 @@ namespace FModel.Creator.Stats
                 o1.TryGetValue("DataTable", out var c1) && c1 is ObjectProperty dataTable &&
                 o1.TryGetValue("RowName", out var c2) && c2 is NameProperty rowName)
             {
-                PakPackage p = Utils.GetPropertyPakPackage(dataTable.Value.Resource.OuterIndex.Resource.ObjectName.String);
+                Package p = Utils.GetPropertyPakPackage(dataTable.Value.Resource.OuterIndex.Resource.ObjectName.String);
                 if (p.HasExport() && !p.Equals(default))
                 {
                     var table = p.GetExport<UDataTable>();
@@ -79,7 +79,7 @@ namespace FModel.Creator.Stats
 
         public static void GetHeroStats(BaseIcon icon, ObjectProperty heroGameplayDefinition)
         {
-            PakPackage p = Utils.GetPropertyPakPackage(heroGameplayDefinition.Value.Resource.OuterIndex.Resource.ObjectName.String);
+            Package p = Utils.GetPropertyPakPackage(heroGameplayDefinition.Value.Resource.OuterIndex.Resource.ObjectName.String);
             if (p.HasExport() && !p.Equals(default))
             {
                 var obj = p.GetExport<UObject>();
@@ -108,7 +108,7 @@ namespace FModel.Creator.Stats
         {
             if (parent.TryGetValue("GrantedAbilityKit", out var v) && v is SoftObjectProperty grantedAbilityKit)
             {
-                PakPackage k = Utils.GetPropertyPakPackage(grantedAbilityKit.Value.AssetPathName.String);
+                Package k = Utils.GetPropertyPakPackage(grantedAbilityKit.Value.AssetPathName.String);
                 if (k.HasExport() && !k.Equals(default))
                 {
                     var kit = k.GetExport<UObject>();

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace PakReader.Textures.ASTC
+namespace FModel.PakReader.Textures.ASTC
 {
     public struct IntegerEncoded
     {

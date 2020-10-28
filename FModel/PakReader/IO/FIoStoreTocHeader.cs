@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Linq;
-using PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Pak.IO
+namespace FModel.PakReader.IO
 {
     public enum EIoStoreTocVersion : byte
     {

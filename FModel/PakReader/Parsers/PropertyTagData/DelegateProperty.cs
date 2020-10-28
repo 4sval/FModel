@@ -1,12 +1,18 @@
-﻿using PakReader.Parsers.Objects;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.PropertyTagData
+namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class DelegateProperty : BaseProperty
     {
         public int Object;
         public FName Name;
+
+        internal DelegateProperty()
+        {
+            Object = 0;
+            Name = new FName();
+        }
 
         internal DelegateProperty(PackageReader reader)
         {

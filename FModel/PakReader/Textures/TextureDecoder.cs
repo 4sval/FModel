@@ -1,13 +1,13 @@
 ﻿using System;
-using PakReader.Parsers.Objects;
-using PakReader.Textures.ASTC;
-using PakReader.Textures.BC;
-using PakReader.Textures.DXT;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Textures.ASTC;
+using FModel.PakReader.Textures.BC;
+using FModel.PakReader.Textures.DXT;
 using SkiaSharp;
 
-namespace PakReader.Textures
+namespace FModel.PakReader.Textures
 {
-    static class TextureDecoder
+    public static class TextureDecoder
     {
         public static SKImage DecodeImage(byte[] sequence, int width, int height, int depth, EPixelFormat format)
         {

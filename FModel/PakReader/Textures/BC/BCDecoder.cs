@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace PakReader.Textures.BC
+namespace FModel.PakReader.Textures.BC
 {
     public static class BCDecoder
     {

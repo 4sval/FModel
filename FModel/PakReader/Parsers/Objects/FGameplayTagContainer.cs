@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FGameplayTagContainer : IUStruct
     {
@@ -9,7 +9,7 @@ namespace PakReader.Parsers.Objects
 
         internal FGameplayTagContainer(PackageReader reader)
         {
-            GameplayTags = reader.ReadTArray(() => reader.ReadFName());
+            GameplayTags = reader.ReadTArray(reader.ReadFName);
         }
 
         public string[] GetValue()

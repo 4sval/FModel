@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace PakReader.Textures.BC
+namespace FModel.PakReader.Textures.BC
 {
     public static class Detex
     {

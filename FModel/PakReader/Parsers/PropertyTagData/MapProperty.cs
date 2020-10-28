@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
-using PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.PropertyTagData
+namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class MapProperty : BaseProperty<IReadOnlyDictionary<object, object>>
     {
+        internal MapProperty()
+        {
+            Value = new Dictionary<object, object>();
+        }
         // https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/CoreUObject/Private/UObject/PropertyMap.cpp#L243
         internal MapProperty(PackageReader reader, FPropertyTag tag)
         {
@@ -14,7 +18,12 @@ namespace PakReader.Parsers.PropertyTagData
             if (NumKeysToRemove != 0)
             {
                 // Let me know if you find a package that has a non-zero NumKeysToRemove value
-                throw new NotImplementedException("Parsing of non-zero NumKeysToRemove maps aren't supported yet.");
+                //throw new NotImplementedException("Parsing of non-zero NumKeysToRemove maps aren't supported yet.");
+
+                for (var i = 0; i < NumKeysToRemove; i++)
+                {
+                    ReadAsValue(reader, tag, tag.InnerType, ReadType.MAP);
+                }
             }
 
             var NumEntries = reader.ReadInt32();

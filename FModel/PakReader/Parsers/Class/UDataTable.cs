@@ -3,12 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace PakReader.Parsers.Class
+using FModel.PakReader.IO;
+using FModel.PakReader.Parsers.PropertyTagData;
+using FModel.Utils;
+
+namespace FModel.PakReader.Parsers.Class
 {
     public sealed class UDataTable : IUExport
     {
         /** Map of name of row to row data structure. */
-        readonly Dictionary<string, object> RowMap;
+        private readonly Dictionary<string, object> RowMap;
 
         internal UDataTable(PackageReader reader)
         {
@@ -27,6 +31,55 @@ namespace PakReader.Parsers.Class
                 }
 
                 RowMap[RowName] = new UObject(reader, true);
+            }
+        }
+
+        internal UDataTable(IoPackageReader reader, IReadOnlyDictionary<int, PropertyInfo> properties, string type)
+        {
+            var baseObj = new UObject(reader, properties, type: type);
+
+            if (!baseObj.TryGetValue("RowStruct", out var rowStructProp) || !(rowStructProp is ObjectProperty rowStruct) || !rowStruct.Value.IsImport)
+            {
+                return;
+            }
+
+            var rowStructimportIndex = rowStruct.Value.AsImport;
+
+            if (rowStructimportIndex >= reader.ImportMap.Length)
+            {
+                return;
+            }
+
+            var rowStructimport = reader.ImportMap[rowStructimportIndex];
+
+            if (rowStructimport.Type != EType.ScriptImport ||
+                !Globals.GlobalData.ScriptObjectByGlobalId.TryGetValue(rowStructimport, out var rowStrucDesc) ||
+                rowStrucDesc.Name.IsNone)
+            {
+                return;
+            }
+
+            if (!Globals.TypeMappings.TryGetValue(rowStrucDesc.Name.String, out var rowProperties))
+            {
+                FConsole.AppendText($"{reader.Summary.Name.String} can't be parsed yet (RowType: {rowStrucDesc.Name.String})", FColors.Red, true);
+                return;
+            }
+
+            var NumRows = reader.ReadInt32();
+            RowMap = new Dictionary<string, object>();
+
+            for (var i = 0; i < NumRows; i++)
+            {
+                var num = 1;
+                var RowName = reader.ReadFName().String ?? "";
+                var baseName = RowName;
+
+                while (RowMap.ContainsKey(RowName))
+                {
+                    RowName = $"{baseName}_NK{num++:00}";
+                }
+
+                RowMap[RowName] = new UObject(reader, rowProperties, true, rowStrucDesc.Name.String);
             }
         }
 

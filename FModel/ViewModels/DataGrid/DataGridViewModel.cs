@@ -1,5 +1,4 @@
-﻿using PakReader.Parsers.Objects;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace FModel.ViewModels.DataGrid
@@ -8,7 +7,7 @@ namespace FModel.ViewModels.DataGrid
     {
         public static ObservableCollection<DataGridViewModel> dataGridViewModel = new ObservableCollection<DataGridViewModel>();
 
-        public static void Add(this ObservableCollection<DataGridViewModel> vm, string name, string ext, string pakfile)
+        public static void Add(this ObservableCollection<DataGridViewModel> vm, string name, string ext, string containerFile)
         {
             Application.Current.Dispatcher.Invoke(delegate
             {
@@ -16,7 +15,7 @@ namespace FModel.ViewModels.DataGrid
                 {
                     Name = name,
                     Extensions = ext,
-                    PakFile = pakfile
+                    ContainerFile = containerFile
                 });
             });
         }
@@ -40,12 +39,12 @@ namespace FModel.ViewModels.DataGrid
             set { this.SetProperty(ref this._extensions, value); }
         }
 
-        private string _pakFile;
-        public string PakFile
+        private string _containerFile;
+        public string ContainerFile
         {
-            get { return _pakFile; }
+            get { return _containerFile; }
 
-            set { this.SetProperty(ref this._pakFile, value); }
+            set { this.SetProperty(ref this._containerFile, value); }
         }
     }
 }

@@ -2,10 +2,10 @@
 using FModel.ViewModels.MenuItem;
 using FModel.ViewModels.StatusBar;
 using Newtonsoft.Json;
-using PakReader;
-using PakReader.Parsers.Objects;
 using System;
 using System.Collections.Generic;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Objects;
 
 namespace FModel.Utils
 {
@@ -21,7 +21,7 @@ namespace FModel.Utils
             if (MenuItems.pakFiles.AtLeastOnePak())
             {
                 if (disableAll)
-                    foreach (PakMenuItemViewModel menuItem in MenuItems.pakFiles.GetMenuItemsWithPakFiles())
+                    foreach (PakMenuItemViewModel menuItem in MenuItems.pakFiles.GetMenuItemsWithReaders())
                         menuItem.IsEnabled = false;
                 else
                 {
@@ -41,14 +41,21 @@ namespace FModel.Utils
                     bool mainError = false; // used to avoid notifications about all static paks not working with the key
 
                     StatusBarVm.statusBarViewModel.Reset();
-                    foreach (PakMenuItemViewModel menuItem in MenuItems.pakFiles.GetMenuItemsWithPakFiles())
+                    foreach (PakMenuItemViewModel menuItem in MenuItems.pakFiles.GetMenuItemsWithReaders())
                     {
                         // reset everyone
-                        menuItem.PakFile.AesKey = null;
+
+                        if (menuItem.IsPakFileReader)
+                            menuItem.PakFile.AesKey = null;
+                        else
+                            menuItem.IoStore.AesKey = null;
 
                         if (!mainError && isMainKey)
                         {
-                            if (menuItem.PakFile.Info.EncryptionKeyGuid.Equals(new FGuid(0u, 0u, 0u, 0u)) &&
+                            var encryptionKeyGuid = menuItem.IsPakFileReader
+                                ? menuItem.PakFile.Info.EncryptionKeyGuid
+                                : menuItem.IoStore.EncryptionKeyGuid;
+                            if (encryptionKeyGuid.Equals(new FGuid(0u, 0u, 0u, 0u)) &&
                                 staticKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var sKey))
                             {
                                 sKey = sKey.StartsWith("0x") ? sKey[2..].ToUpperInvariant() : sKey.ToUpperInvariant();
@@ -56,7 +63,10 @@ namespace FModel.Utils
                                 {
                                     // i can use TestAesKey here but that means it's gonna test here then right after to set the key
                                     // so a try catch when setting the key seems better
-                                    menuItem.PakFile.AesKey = sKey.Trim().ToBytesKey();
+                                    if (menuItem.IsPakFileReader)
+                                        menuItem.PakFile.AesKey = sKey.Trim().ToBytesKey();
+                                    else
+                                        menuItem.IoStore.AesKey = sKey.Trim().ToBytesKey();
                                 }
                                 catch (System.Exception e)
                                 {
@@ -71,12 +81,19 @@ namespace FModel.Utils
                             }
                         }
 
+                        var fileName = menuItem.IsPakFileReader
+                            ? menuItem.PakFile.FileName
+                            : menuItem.IoStore.FileName;
                         string trigger;
                         {
                             if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
-                                trigger = $"{menuItem.PakFile.Directory.Replace('\\', '/')}/{menuItem.PakFile.FileName}";
+                                trigger = $"{menuItem.PakFile.Directory.Replace('\\', '/')}/{fileName}";
                             else
-                                trigger = $"{Properties.Settings.Default.PakPath[Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName(), StringComparison.Ordinal)..].Replace("\\", "/")}/{menuItem.PakFile.FileName}";
+                                trigger = $"{Properties.Settings.Default.PakPath[Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName(), StringComparison.Ordinal)..].Replace("\\", "/")}/{fileName}";
+                        }
+                        if (!trigger.EndsWith(".pak"))
+                        {
+                            trigger = trigger.Substring(0, trigger.LastIndexOf('.')) + ".pak";
                         }
                         if (dynamicKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict) && gameDict.TryGetValue(trigger, out var key))
                         {
@@ -85,17 +102,22 @@ namespace FModel.Utils
                             {
                                 // i can use TestAesKey here but that means it's gonna test here then right after to set the key
                                 // so a try catch when setting the key seems better
-                                menuItem.PakFile.AesKey = dKey.Trim().ToBytesKey();
+                                if (menuItem.IsPakFileReader)
+                                    menuItem.PakFile.AesKey = dKey.Trim().ToBytesKey();
+                                else
+                                    menuItem.IoStore.AesKey = dKey.Trim().ToBytesKey();
                             }
                             catch (System.Exception e)
                             {
                                 StatusBarVm.statusBarViewModel.Set(e.Message, Properties.Resources.Error);
-                                FConsole.AppendText(string.Format(Properties.Resources.DynamicKeyNotWorking, $"0x{dKey}", menuItem.PakFile.FileName), FColors.Red, true);
-                                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"0x{dKey} is NOT!!!! working with {menuItem.PakFile.FileName}");
+                                FConsole.AppendText(string.Format(Properties.Resources.DynamicKeyNotWorking, $"0x{dKey}", fileName), FColors.Red, true);
+                                DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"0x{dKey} is NOT!!!! working with {fileName}");
                             }
                         }
 
-                        menuItem.IsEnabled = menuItem.PakFile.AesKey != null || !menuItem.PakFile.Info.bEncryptedIndex;
+                        menuItem.IsEnabled = menuItem.IsPakFileReader
+                            ? menuItem.PakFile.AesKey != null || !menuItem.PakFile.Info.bEncryptedIndex
+                            : menuItem.IoStore.HasDirectoryIndex && (menuItem.IoStore.AesKey != null || !menuItem.IoStore.IsEncrypted);
                     }
 
                     MenuItems.pakFiles[1].IsEnabled = MenuItems.pakFiles.AtLeastOnePakWithKey();

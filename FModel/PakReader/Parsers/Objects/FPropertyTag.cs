@@ -1,4 +1,6 @@
-﻿namespace PakReader.Parsers.Objects
+﻿using FModel.PakReader.IO;
+
+namespace FModel.PakReader.Parsers.Objects
 {
     readonly struct FPropertyTag
     {
@@ -18,6 +20,23 @@
         public readonly FName Type; // Variables
         public readonly FName ValueType;
 
+        public FPropertyTag(PropertyInfo info)
+        {
+            Name = new FName(info.Name);
+            Type = new FName(info.Type);
+            StructName = new FName(info.StructType);
+            BoolVal = (byte) ((info.Bool ?? false) ? 1 : 0);
+            EnumName = new FName(info.EnumName);
+            InnerType = new FName(info.InnerType);
+            ValueType = new FName(info.ValueType);
+            ArrayIndex = 0;
+            Position = 0;
+            HasPropertyGuid = 0;
+            PropertyGuid = default;
+            Size = 0;
+            SizeOffset = 0;
+            StructGuid = default;
+        }
         internal FPropertyTag(PackageReader reader)
         {
             ArrayIndex = 0;

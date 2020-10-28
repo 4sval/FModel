@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-namespace PakReader.Textures.ASTC
+namespace FModel.PakReader.Textures.ASTC
 {
     public class ASTCDecoderException : Exception
     {

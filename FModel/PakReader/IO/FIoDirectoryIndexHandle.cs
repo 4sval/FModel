@@ -1,10 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace PakReader.Pak.IO
+namespace FModel.PakReader.IO
 {
     public readonly struct FIoDirectoryIndexHandle
     {
         public static FIoDirectoryIndexHandle InvalidHandle = new FIoDirectoryIndexHandle(uint.MaxValue); 
+        public static FIoDirectoryIndexHandle Root = new FIoDirectoryIndexHandle(0);
         private readonly uint _handle;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

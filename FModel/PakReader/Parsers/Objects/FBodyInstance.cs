@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FBodyInstance : IUStruct
     {

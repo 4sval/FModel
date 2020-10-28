@@ -1,9 +1,9 @@
-﻿using PakReader.Parsers.Objects;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.Class
+namespace FModel.PakReader.Parsers.Class
 {
     public sealed class UStringTable : IUExport
     {

@@ -5,7 +5,6 @@ using FModel.Windows.CustomNotifier;
 using FModel.Windows.DarkMessageBox;
 using K4os.Compression.LZ4;
 using K4os.Compression.LZ4.Streams;
-using PakReader.Pak;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -14,6 +13,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using FModel.PakReader.Pak;
+using FModel.PakReader.Parsers.Objects;
 
 namespace FModel.ViewModels.MenuItem
 {
@@ -172,26 +173,26 @@ namespace FModel.ViewModels.MenuItem
                         writer.Write(entry.CompressionMethodIndex);
 
                         // uexp
-                        if (entry.Uexp != null)
+                        if (entry.Uexp != null && entry.Uexp is FPakEntry uexp)
                         {
-                            writer.Write(entry.Uexp.Offset);
-                            writer.Write(entry.Uexp.Size);
-                            writer.Write(entry.Uexp.UncompressedSize);
-                            writer.Write(entry.Uexp.Encrypted);
-                            writer.Write(entry.Uexp.StructSize);
+                            writer.Write(uexp.Offset);
+                            writer.Write(uexp.Size);
+                            writer.Write(uexp.UncompressedSize);
+                            writer.Write(uexp.Encrypted);
+                            writer.Write(uexp.StructSize);
                             writer.Write(pakFile.MountPoint + entry.Uexp.Name);
-                            writer.Write(entry.Uexp.CompressionMethodIndex);
+                            writer.Write(uexp.CompressionMethodIndex);
                         }
                         // ubulk
-                        if (entry.Ubulk != null)
+                        if (entry.Ubulk != null && entry.Ubulk is FPakEntry ubulk)
                         {
-                            writer.Write(entry.Ubulk.Offset);
-                            writer.Write(entry.Ubulk.Size);
-                            writer.Write(entry.Ubulk.UncompressedSize);
-                            writer.Write(entry.Ubulk.Encrypted);
-                            writer.Write(entry.Ubulk.StructSize);
+                            writer.Write(ubulk.Offset);
+                            writer.Write(ubulk.Size);
+                            writer.Write(ubulk.UncompressedSize);
+                            writer.Write(ubulk.Encrypted);
+                            writer.Write(ubulk.StructSize);
                             writer.Write(pakFile.MountPoint + entry.Ubulk.Name);
-                            writer.Write(entry.Ubulk.CompressionMethodIndex);
+                            writer.Write(ubulk.CompressionMethodIndex);
                         }
                     }
                 }

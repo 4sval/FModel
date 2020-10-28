@@ -4,13 +4,13 @@ using FModel.Utils;
 using FModel.ViewModels.MenuItem;
 using FModel.Windows.CustomNotifier;
 using Newtonsoft.Json;
-using PakReader.Pak;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using FModel.PakReader.Pak;
 
 namespace FModel.Windows.AESManager
 {

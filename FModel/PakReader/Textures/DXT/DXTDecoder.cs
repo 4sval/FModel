@@ -1,4 +1,4 @@
-﻿namespace PakReader.Textures.DXT
+﻿namespace FModel.PakReader.Textures.DXT
 {
     public static class DXTDecoder
     {

@@ -1,9 +1,9 @@
 ﻿using FModel.Creator.Stats;
 using FModel.Creator.Texts;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System.Collections.Generic;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Bases
 {

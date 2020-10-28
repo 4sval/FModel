@@ -8,9 +8,8 @@ using System.Text.RegularExpressions;
 using FModel.Logger;
 using FModel.PakReader.Parsers.Objects;
 using FModel.Utils;
-using PakReader.Parsers.Objects;
 
-namespace PakReader.Pak
+namespace FModel.PakReader.Pak
 {
     public sealed class PakFileReader : IReadOnlyDictionary<string, FPakEntry>
     {
@@ -42,7 +41,7 @@ namespace PakReader.Pak
 
         // Buffered streams increase performance dramatically
         public PakFileReader(string file, bool caseSensitive = true)
-            : this(file, new BufferedStream(new FileInfo(file).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite)), caseSensitive)
+            : this(file, new FileInfo(file).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite), caseSensitive)
         { }
 
         public PakFileReader(string path, Stream stream, bool caseSensitive = true)
@@ -446,15 +445,15 @@ namespace PakReader.Pak
                 ret1 = entry.GetData(Stream, AesKey, Info.CompressionMethods);
                 if (entry.HasUexp())
                 {
-                    ret2 = entry.Uexp.GetData(Stream, AesKey, Info.CompressionMethods);
-                    ret3 = entry.HasUbulk() ? entry.Ubulk.GetData(Stream, AesKey, Info.CompressionMethods) : null;
+                    ret2 = ((FPakEntry)entry.Uexp).GetData(Stream, AesKey, Info.CompressionMethods);
+                    ret3 = entry.HasUbulk() ? ((FPakEntry)entry.Ubulk).GetData(Stream, AesKey, Info.CompressionMethods) : null;
                     return true;
                 }
                 else // return a fail but keep the uasset data
                 {
                     ret2 = null;
                     ret3 = null;
-                    return false;
+                    return entry.GetExtension().Contains(".ufont", StringComparison.OrdinalIgnoreCase);
                 }
             }
             ret1 = null;

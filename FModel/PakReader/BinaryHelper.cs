@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace PakReader
+namespace FModel.PakReader
 {
     static class BinaryHelper
     {

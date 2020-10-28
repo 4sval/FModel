@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FSoftObjectPath : IUStruct
     {

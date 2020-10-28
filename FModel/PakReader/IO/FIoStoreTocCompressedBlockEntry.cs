@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace PakReader.Pak.IO
+namespace FModel.PakReader.IO
 {
     public readonly struct FIoStoreTocCompressedBlockEntry
     {

@@ -1,10 +1,10 @@
-﻿using FModel.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using FModel.Utils;
 
-namespace PakReader
+namespace FModel.PakReader
 {
     /// <summary>
     /// http://wiki.xentax.com/index.php/Wwise_SoundBank_(*.bnk)

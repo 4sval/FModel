@@ -1,15 +1,31 @@
 ﻿using FModel.Utils;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using FModel.PakReader;
+using FModel.PakReader.IO;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator
 {
     static class Utils
     {
+        public static string GetFullPath(FPackageId id)
+        {
+            foreach (var ioStore in Globals.CachedIoStores.Values)
+            {
+                if (ioStore.IsInitialized)
+                {
+                    var entry = ioStore.Files.FirstOrDefault(it => it.Value.ChunkId.ChunkId == id.Id).Value;
+                    if (entry != null)
+                        return ioStore.MountPoint + entry.Name;
+                }
+            }
+
+            return null;
+        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetFullPath(string partialPath)
         {
@@ -18,20 +34,35 @@ namespace FModel.Creator
                 {
                     return fullPath;
                 }
+
+            foreach (var ioStoreReader in Globals.CachedIoStores.Values)
+            {
+                if (ioStoreReader.TryGetPartialKey(partialPath, out var fullPath))
+                {
+                    return fullPath;
+                }
+            }
             return string.Empty;
         }
 
-        public static PakPackage GetPropertyPakPackage(string value)
+        public static Package GetPropertyPakPackage(string value)
         {
             string path = Strings.FixPath(value);
             foreach (var fileReader in Globals.CachedPakFiles.Values)
                 if (fileReader.TryGetCaseInsensiteveValue(path, out var entry))
                 {
                     // kinda sad to use Globals.CachedPakFileMountPoint when the mount point is already in the path ¯\_(ツ)_/¯
-                    string mount = path.Substring(0, path.Length - entry.Name.Substring(0, entry.Name.LastIndexOf(".")).Length);
-                    return Assets.GetPakPackage(entry, mount);
+                    string mount = path.Substring(0, path.Length - entry.Name.Substring(0, entry.Name.LastIndexOf('.')).Length);
+                    return Assets.GetPackage(entry, mount);
                 }
-            return default;
+            foreach (var ioStoreReader in Globals.CachedIoStores.Values)
+                if (ioStoreReader.TryGetCaseInsensiteveValue(path, out var entry))
+                {
+                    // kinda sad to use Globals.CachedPakFileMountPoint when the mount point is already in the path ¯\_(ツ)_/¯
+                    string mount = path.Substring(0, path.Length - entry.Name.Substring(0, entry.Name.LastIndexOf('.')).Length);
+                    return Assets.GetPackage(entry, mount);
+                }
+            return null;
         }
 
         public static ArraySegment<byte>[] GetPropertyArraySegmentByte(string value)
@@ -41,7 +72,14 @@ namespace FModel.Creator
                 if (fileReader.TryGetCaseInsensiteveValue(path, out var entry))
                 {
                     // kinda sad to use Globals.CachedPakFileMountPoint when the mount point is already in the path ¯\_(ツ)_/¯
-                    string mount = path.Substring(0, path.Length - entry.Name.Substring(0, entry.Name.LastIndexOf(".")).Length);
+                    string mount = path.Substring(0, path.Length - entry.Name.Substring(0, entry.Name.LastIndexOf('.')).Length);
+                    return Assets.GetArraySegmentByte(entry, mount);
+                }
+            foreach (var ioStoreReader in Globals.CachedIoStores.Values)
+                if (ioStoreReader.TryGetCaseInsensiteveValue(path, out var entry))
+                {
+                    // kinda sad to use Globals.CachedPakFileMountPoint when the mount point is already in the path ¯\_(ツ)_/¯
+                    string mount = path.Substring(0, path.Length - entry.Name.Substring(0, entry.Name.LastIndexOf('.')).Length);
                     return Assets.GetArraySegmentByte(entry, mount);
                 }
             return default;
@@ -74,7 +112,7 @@ namespace FModel.Creator
                     s = "/Game/UI/Textures/assets/cosmetics/skins/headshot/Skin_Headshot_TimeWeaver_UIT";
             }
 
-            PakPackage p = GetPropertyPakPackage(s);
+            var p = GetPropertyPakPackage(s);
             if (p.HasExport() && !p.Equals(default))
             {
                 var i = p.GetExport<UTexture2D>();

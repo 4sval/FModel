@@ -1,7 +1,11 @@
-﻿namespace PakReader.Parsers.PropertyTagData
+﻿namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class InterfaceProperty : BaseProperty<uint>
     {
+        internal InterfaceProperty()
+        {
+            Value = 0;
+        }
         // Value is ObjectRef
         internal InterfaceProperty(PackageReader reader)
         {

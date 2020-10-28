@@ -1,15 +1,11 @@
-using PakReader.Pak;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using PakReader.Parsers.Class;
 using FModel.ViewModels.ImageBox;
 using Newtonsoft.Json;
 using FModel.Logger;
-using PakReader.Parsers.Objects;
 using System.IO;
 using FModel.ViewModels.AvalonEdit;
-using PakReader;
 using System.Threading.Tasks;
 using FModel.ViewModels.StatusBar;
 using System.Collections;
@@ -26,6 +22,11 @@ using FModel.ViewModels.DataGrid;
 using ICSharpCode.AvalonEdit.Highlighting;
 using static FModel.Creator.Creator;
 using System.Runtime.CompilerServices;
+using FModel.PakReader;
+using FModel.PakReader.IO;
+using FModel.PakReader.Pak;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
 
 namespace FModel.Utils
 {
@@ -36,7 +37,7 @@ namespace FModel.Utils
         /// PakPackage to get the properties of the asset
         /// ArraySegment<byte>[] to export the raw data
         /// </summary>
-        private static readonly Dictionary<FPakEntry, Dictionary<PakPackage, ArraySegment<byte>[]>> _CachedFiles = new Dictionary<FPakEntry, Dictionary<PakPackage, ArraySegment<byte>[]>>();
+        private static readonly Dictionary<ReaderEntry, Dictionary<Package, ArraySegment<byte>[]>> _CachedFiles = new Dictionary<ReaderEntry, Dictionary<Package, ArraySegment<byte>[]>>();
         private static Stopwatch _timer;
 
         public static void ClearCachedFiles() => _CachedFiles.Clear();
@@ -67,10 +68,11 @@ namespace FModel.Utils
                     Thread.Sleep(10); // this is actually useful because it smh unfreeze the ui so the user can cancel even tho it's a Task so...
                     if (item is ListBoxViewModel selected)
                     {
-                        if (Globals.CachedPakFiles.TryGetValue(selected.PakEntry.PakFileName, out var r))
+                        FFileIoStoreReader io = null;
+                        if (Globals.CachedPakFiles.TryGetValue(selected.ReaderEntry.ContainerName, out var r) || Globals.CachedIoStores.TryGetValue(selected.ReaderEntry.ContainerName, out io))
                         {
-                            string mount = r.MountPoint;
-                            string ext = selected.PakEntry.GetExtension();
+                            string mount = r != null ? r.MountPoint : io!.MountPoint;
+                            string ext = selected.ReaderEntry.GetExtension();
                             switch (ext)
                             {
                                 case ".ini":
@@ -92,77 +94,77 @@ namespace FModel.Utils
                                             ".h" => AvalonEditVm.CppHighlighter,
                                             _ => AvalonEditVm.JsonHighlighter
                                         };
-                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.ReaderEntry.ContainerName, mount + selected.ReaderEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         using var reader = new StreamReader(asset);
-                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.PakEntry.Name, syntax);
+                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.ReaderEntry.Name, syntax);
                                         break;
                                     }
                                 case ".locmeta":
                                     {
-                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.ReaderEntry.ContainerName, mount + selected.ReaderEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
-                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new LocMetaReader(asset), Formatting.Indented), mount + selected.PakEntry.Name);
+                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new LocMetaReader(asset), Formatting.Indented), mount + selected.ReaderEntry.Name);
                                         break;
                                     }
                                 case ".locres":
                                     {
-                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.ReaderEntry.ContainerName, mount + selected.ReaderEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
-                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new LocResReader(asset).Entries, Formatting.Indented), mount + selected.PakEntry.Name);
+                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new LocResReader(asset).Entries, Formatting.Indented), mount + selected.ReaderEntry.Name);
                                         break;
                                     }
                                 case ".udic":
                                     {
-                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.ReaderEntry.ContainerName, mount + selected.ReaderEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
-                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new FOodleDictionaryArchive(asset).Header, Formatting.Indented), mount + selected.PakEntry.Name);
+                                        AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new FOodleDictionaryArchive(asset).Header, Formatting.Indented), mount + selected.ReaderEntry.Name);
                                         break;
                                     }
                                 case ".bin":
                                     {
                                         if (
-                                        !selected.PakEntry.Name.Equals("FortniteGame/AssetRegistry.bin") && // this file is 85mb...
-                                        selected.PakEntry.Name.Contains("AssetRegistry")) // only parse AssetRegistry (basically the ones in dynamic paks)
+                                        !selected.ReaderEntry.Name.Equals("FortniteGame/AssetRegistry.bin") && // this file is 85mb...
+                                        selected.ReaderEntry.Name.Contains("AssetRegistry")) // only parse AssetRegistry (basically the ones in dynamic paks)
                                         {
-                                            using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
+                                            using var asset = GetMemoryStream(selected.ReaderEntry.ContainerName, mount + selected.ReaderEntry.GetPathWithoutExtension());
                                             asset.Position = 0;
-                                            AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new FAssetRegistryState(asset), Formatting.Indented), mount + selected.PakEntry.Name);
+                                            AvalonEditVm.avalonEditViewModel.Set(JsonConvert.SerializeObject(new FAssetRegistryState(asset), Formatting.Indented), mount + selected.ReaderEntry.Name);
                                         }
                                         break;
                                     }
                                 case ".bnk":
                                 case ".pck":
                                     {
-                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.ReaderEntry.ContainerName, mount + selected.ReaderEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
                                         WwiseReader bnk = new WwiseReader(new BinaryReader(asset));
                                         Application.Current.Dispatcher.Invoke(delegate
                                         {
-                                            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Window]", $"Opening Audio Player for {selected.PakEntry.GetNameWithExtension()}");
+                                            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Window]", $"Opening Audio Player for {selected.ReaderEntry.GetNameWithExtension()}");
                                             if (!FWindows.IsWindowOpen<Window>(Properties.Resources.AudioPlayer))
-                                                new AudioPlayer().LoadFiles(bnk.AudioFiles, mount + selected.PakEntry.GetPathWithoutFile());
+                                                new AudioPlayer().LoadFiles(bnk.AudioFiles, mount + selected.ReaderEntry.GetPathWithoutFile());
                                             else
-                                                ((AudioPlayer)FWindows.GetOpenedWindow<Window>(Properties.Resources.AudioPlayer)).LoadFiles(bnk.AudioFiles, mount + selected.PakEntry.GetPathWithoutFile());
+                                                ((AudioPlayer)FWindows.GetOpenedWindow<Window>(Properties.Resources.AudioPlayer)).LoadFiles(bnk.AudioFiles, mount + selected.ReaderEntry.GetPathWithoutFile());
                                         });
                                         break;
                                     }
                                 case ".png":
                                     {
-                                        using var asset = GetMemoryStream(selected.PakEntry.PakFileName, mount + selected.PakEntry.GetPathWithoutExtension());
+                                        using var asset = GetMemoryStream(selected.ReaderEntry.ContainerName, mount + selected.ReaderEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
-                                        ImageBoxVm.imageBoxViewModel.Set(SKBitmap.Decode(asset), mount + selected.PakEntry.Name);
+                                        ImageBoxVm.imageBoxViewModel.Set(SKBitmap.Decode(asset), mount + selected.ReaderEntry.Name);
                                         break;
                                     }
                                 case ".ushaderbytecode":
                                     break;
                                 default:
-                                    AvalonEditVm.avalonEditViewModel.Set(GetJsonProperties(selected.PakEntry, mount, true), mount + selected.PakEntry.Name);
+                                    AvalonEditVm.avalonEditViewModel.Set(GetJsonProperties(selected.ReaderEntry, mount, true), mount + selected.ReaderEntry.Name);
                                     break;
                             }
 
                             if (Properties.Settings.Default.AutoExport)
-                                Export(selected.PakEntry, true);
+                                Export(selected.ReaderEntry, true);
                         }
                     }
                 }
@@ -189,14 +191,23 @@ namespace FModel.Utils
                         return new MemoryStream(uasset.Array, uasset.Offset, uasset.Count);
                     }
                 }
+            } else if (Globals.CachedIoStores.TryGetValue(pakName, out var ioStore))
+            {
+                if (ioStore.IsInitialized && ioStore.TryGetFile(pathWithoutExtension, out ArraySegment<byte> uasset, out _, out _))
+                {
+                    if (uasset != null)
+                    {
+                        return new MemoryStream(uasset.Array, uasset.Offset, uasset.Count);
+                    }
+                }
             }
             return null;
         }
 
-        public static string GetJsonProperties(FPakEntry entry, string mount) => GetJsonProperties(entry, mount, false);
-        public static string GetJsonProperties(FPakEntry entry, string mount, bool loadContent)
+        public static string GetJsonProperties(ReaderEntry entry, string mount) => GetJsonProperties(entry, mount, false);
+        public static string GetJsonProperties(ReaderEntry entry, string mount, bool loadContent)
         {
-            PakPackage p = GetPakPackage(entry, mount, loadContent);
+            Package p = GetPackage(entry, mount, loadContent);
             if (!p.Equals(default))
             {
                 return p.JsonData;
@@ -204,10 +215,10 @@ namespace FModel.Utils
             return string.Empty;
         }
 
-        public static PakPackage GetPakPackage(FPakEntry entry, string mount) => GetPakPackage(entry, mount, false);
-        public static PakPackage GetPakPackage(FPakEntry entry, string mount, bool loadContent)
+        public static Package GetPackage(ReaderEntry entry, string mount) => GetPackage(entry, mount, false);
+        public static Package GetPackage(ReaderEntry entry, string mount, bool loadContent)
         {
-            TryGetPakPackage(entry, mount, out var p);
+            TryGetPackage(entry, mount, out var p);
 
             if (loadContent)
             {
@@ -302,7 +313,7 @@ namespace FModel.Utils
 
             return p;
         }
-        private static bool TryGetPakPackage(FPakEntry entry, string mount, out PakPackage package)
+        private static bool TryGetPackage(ReaderEntry entry, string mount, out Package package)
         {
             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[Assets]", "[Package]", $"Searching for '{mount + entry.Name}'s package");
             if (_CachedFiles.TryGetValue(entry, out var dict))
@@ -311,17 +322,34 @@ namespace FModel.Utils
                 return true;
             }
 
-            if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out PakFileReader pak))
+            if (Globals.CachedPakFiles.TryGetValue(entry.ContainerName, out PakFileReader pak))
             {
                 if (pak.Initialized && pak.TryGetFile(mount + entry.GetPathWithoutExtension(), out ArraySegment<byte> uasset, out ArraySegment<byte> uexp, out ArraySegment<byte> ubulk))
                 {
                     package = new PakPackage(uasset, uexp, ubulk);
-                    _CachedFiles[entry] = new Dictionary<PakPackage, ArraySegment<byte>[]>
+                    _CachedFiles[entry] = new Dictionary<Package, ArraySegment<byte>[]>
                     {
                         [package] = new ArraySegment<byte>[] { uasset, uexp, ubulk }
                     };
                     return true;
                 }
+            }
+            else if (entry is FIoStoreEntry ioStoreEntry)
+            {
+                var uasset = ioStoreEntry.GetData();
+                var uexp = (ioStoreEntry.Uexp as FIoStoreEntry)?.GetData();
+                var ubulk = (ioStoreEntry.Ubulk as FIoStoreEntry)?.GetData();
+                if (uexp != null)
+                    package = new PakPackage(uasset, uexp, ubulk);
+                else
+                    package = new IoPackage(uasset, ubulk, ioStoreEntry);
+#if !DEBUG
+                _CachedFiles[entry] = new Dictionary<Package, ArraySegment<byte>[]>
+                {
+                    [package] = new ArraySegment<byte>[] { uasset, uexp, ubulk }
+                };          
+#endif
+                return true;
             }
 
             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[Assets]", "[Package]", $"No package found for '{mount + entry.Name}'");
@@ -329,12 +357,12 @@ namespace FModel.Utils
             return false;
         }
 
-        public static ArraySegment<byte>[] GetArraySegmentByte(FPakEntry entry, string mount)
+        public static ArraySegment<byte>[] GetArraySegmentByte(ReaderEntry entry, string mount)
         {
             TryGetArraySegmentByte(entry, mount, out var b);
             return b;
         }
-        private static bool TryGetArraySegmentByte(FPakEntry entry, string mount, out ArraySegment<byte>[] arraySegment)
+        private static bool TryGetArraySegmentByte(ReaderEntry entry, string mount, out ArraySegment<byte>[] arraySegment)
         {
             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[Assets]", "[ArraySegment]", $"Searching for '{mount + entry.Name}'s ArraySegment<byte>");
             if (_CachedFiles.TryGetValue(entry, out var dict))
@@ -343,13 +371,20 @@ namespace FModel.Utils
                 return true;
             }
 
-            if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out PakFileReader pak))
+            if (Globals.CachedPakFiles.TryGetValue(entry.ContainerName, out PakFileReader pak))
             {
                 if (pak.Initialized && pak.TryGetFile(mount + entry.GetPathWithoutExtension(), out ArraySegment<byte> uasset, out ArraySegment<byte> uexp, out ArraySegment<byte> ubulk))
                 {
                     arraySegment = new ArraySegment<byte>[] { uasset, uexp, ubulk };
                     return true;
                 }
+            } else if (entry is FIoStoreEntry ioStoreEntry)
+            {
+                var uasset = ioStoreEntry.GetData();
+                var uexp = (ioStoreEntry.Uexp as FIoStoreEntry)?.GetData();
+                var ubulk = (ioStoreEntry.Ubulk as FIoStoreEntry)?.GetData();
+                arraySegment = new ArraySegment<byte>[] { uasset, uexp, ubulk };
+                return true;
             }
 
             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[Assets]", "[ArraySegment]", $"No ArraySegment<byte> found for '{mount + entry.Name}'");
@@ -368,16 +403,17 @@ namespace FModel.Utils
                 bSearch = item.IndexOf(filter, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
-        public static void Export(FPakEntry entry, bool autoSave)
+        public static void Export(ReaderEntry entry, bool autoSave)
         {
             switch (entry.GetExtension())
             {
                 case ".uasset": // embedded data export
                 case ".umap": // embedded data export
                     {
-                        if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out var r))
+                        FFileIoStoreReader io = null;
+                        if (Globals.CachedPakFiles.TryGetValue(entry.ContainerName, out var r) || Globals.CachedIoStores.TryGetValue(entry.ContainerName, out io))
                         {
-                            string mount = r.MountPoint;
+                            string mount = r != null ? r.MountPoint : io!.MountPoint;
                             if (TryGetArraySegmentByte(entry, mount, out var data))
                             {
                                 string[] ext = string.Join(":", entry.GetExtension(), entry.Uexp?.GetExtension(), entry.Ubulk?.GetExtension()).Split(':');
@@ -411,14 +447,16 @@ namespace FModel.Utils
                     }
                 default: // single data export
                     {
-                        if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out var r))
+                        FFileIoStoreReader io = null;
+                        if (Globals.CachedPakFiles.TryGetValue(entry.ContainerName, out var r) || Globals.CachedIoStores.TryGetValue(entry.ContainerName, out io))
                         {
-                            string basePath = Properties.Settings.Default.OutputPath + "\\Exports\\" + r.MountPoint[1..];
+                            string mount = r != null ? r.MountPoint : io!.MountPoint;
+                            string basePath = Properties.Settings.Default.OutputPath + "\\Exports\\" + mount[1..];
                             string fullPath = basePath + entry.Name;
                             string name = Path.GetFileName(fullPath);
                             Directory.CreateDirectory(basePath + entry.GetPathWithoutFile());
 
-                            using var data = GetMemoryStream(entry.PakFileName, r.MountPoint + entry.GetPathWithoutExtension());
+                            using var data = GetMemoryStream(entry.ContainerName, mount + entry.GetPathWithoutExtension());
                             using var stream = new FileStream(fullPath, FileMode.Create, FileAccess.Write);
                             data.WriteTo(stream);
 
@@ -430,7 +468,7 @@ namespace FModel.Utils
                                 else
                                     Globals.gNotifier.ShowCustomMessage(Properties.Resources.Success, string.Format(Properties.Resources.DataExported, name, string.Empty, fullPath));
                             }
-                        }
+                        } else {}
                         break;
                     }
             }
@@ -443,7 +481,7 @@ namespace FModel.Utils
             {
                 foreach (ListBoxViewModel selectedItem in entries)
                 {
-                    sb.AppendLine(Copy(selectedItem.PakEntry, mode));
+                    sb.AppendLine(Copy(selectedItem.ReaderEntry, mode));
                 }
             }
             else if (entries[0] is DataGridViewModel)
@@ -456,11 +494,16 @@ namespace FModel.Utils
             Copy(sb.ToString().Trim());
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string Copy(FPakEntry entry, ECopy mode)
+        public static string Copy(ReaderEntry entry, ECopy mode)
         {
-            if (Globals.CachedPakFiles.TryGetValue(entry.PakFileName, out var r))
+            FFileIoStoreReader io = null;
+            if (Globals.CachedPakFiles.TryGetValue(entry.ContainerName, out var r) || Globals.CachedIoStores.TryGetValue(entry.ContainerName, out io))
             {
-                string toCopy = r.MountPoint[1..];
+                string toCopy;
+                if (r != null)
+                    toCopy = r.MountPoint.Substring(1);
+                else
+                    toCopy = io!.MountPoint[1..];
                 if (mode == ECopy.Path)
                     toCopy += entry.Name;
                 else if (mode == ECopy.PathNoExt)

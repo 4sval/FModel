@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace PakReader
+namespace FModel.PakReader
 {
     static class ReaderExtensions
     {

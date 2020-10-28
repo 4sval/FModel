@@ -2,14 +2,12 @@
 using System.Windows;
 
 using FModel.Creator.Texts;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 using FModel.Utils;
 
 using Fortnite_API.Objects;
 using Fortnite_API.Objects.V1;
-
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
-
 using SkiaSharp;
 
 namespace FModel.Creator.Bases

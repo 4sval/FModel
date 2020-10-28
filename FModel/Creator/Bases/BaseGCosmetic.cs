@@ -1,10 +1,10 @@
 using FModel.Creator.Rarities;
 using FModel.Creator.Texts;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System;
 using System.Windows;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Bases
 {

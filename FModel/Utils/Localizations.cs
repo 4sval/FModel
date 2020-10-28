@@ -1,11 +1,11 @@
 ﻿using FModel.Creator.Texts;
 using FModel.Logger;
 using FModel.ViewModels.StatusBar;
-using PakReader;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using FModel.PakReader;
 
 namespace FModel.Utils
 {
@@ -64,7 +64,7 @@ namespace FModel.Utils
 
                         if (m != null && m.Success)
                         {
-                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[Localizations]", "[GameDict]", $"Feeding with {KvP.Value.Name} from {KvP.Value.PakFileName} Miam Miam!");
+                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[Localizations]", "[GameDict]", $"Feeding with {KvP.Value.Name} from {KvP.Value.ContainerName} Miam Miam!");
 
                             using var asset = Assets.GetMemoryStream(fileReader.FileName, mount + KvP.Value.GetPathWithoutExtension());
                             asset.Position = 0;

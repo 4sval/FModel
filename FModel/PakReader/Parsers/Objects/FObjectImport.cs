@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace PakReader.Parsers.Objects
+namespace FModel.PakReader.Parsers.Objects
 {
     public sealed class FObjectImport : FObjectResource
     {

@@ -1,10 +1,10 @@
-﻿using PakReader.Parsers.PropertyTagData;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using FModel.PakReader.Parsers.PropertyTagData;
 
-namespace PakReader.Parsers.Class
+namespace FModel.PakReader.Parsers.Class
 {
     public sealed class UFontFace : IUExport
     {
@@ -14,18 +14,16 @@ namespace PakReader.Parsers.Class
         internal UFontFace(PackageReader reader, Stream ufont)
         {
             FontFaceAsset = new UObject(reader, true);
-            foreach (KeyValuePair<string, object> prop in FontFaceAsset)
-            {
-                if (prop.Key.Equals("SourceFilename") && prop.Value is StrProperty str)
-                {
-                    string FontFilename = Path.GetFileName(str.Value);
-                    string folder = FModel.Properties.Settings.Default.OutputPath + "\\Fonts\\";
 
-                    if (ufont != null)
-                    {
-                        using var fileStream = new FileStream(folder + FontFilename, FileMode.Create, FileAccess.Write);
-                        ufont.CopyTo(fileStream);
-                    }
+            if (FontFaceAsset.TryGetValue("SourceFilename", out var prop) && prop is StrProperty str)
+            {
+                string FontFilename = Path.GetFileName(str.Value);
+                string folder = Properties.Settings.Default.OutputPath + "\\Fonts\\";
+
+                if (ufont != null)
+                {
+                    using var fileStream = new FileStream(folder + FontFilename, FileMode.Create, FileAccess.Write);
+                    ufont.CopyTo(fileStream);
                 }
             }
         }

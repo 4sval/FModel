@@ -7,16 +7,14 @@ using FModel.Creator.Icons;
 using FModel.Creator.Rarities;
 using FModel.Creator.Stats;
 using FModel.Creator.Texts;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 using FModel.Properties;
 using FModel.Utils;
 
 using Fortnite_API.Objects;
 using Fortnite_API.Objects.V1;
-
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
-
 using SkiaSharp;
 
 namespace FModel.Creator.Bases
@@ -68,7 +66,7 @@ namespace FModel.Creator.Bases
                 LargeSmallImage.GetPreviewImage(this, previewImage);
             else if (export.GetExport<ObjectProperty>("access_item") is { } accessItem)
             {
-                PakPackage p = Utils.GetPropertyPakPackage(accessItem.Value.Resource.OuterIndex.Resource.ObjectName.String);
+                Package p = Utils.GetPropertyPakPackage(accessItem.Value.Resource.OuterIndex.Resource.ObjectName.String);
                 if (p.HasExport() && !p.Equals(default))
                 {
                     var d = p.GetExport<UObject>();

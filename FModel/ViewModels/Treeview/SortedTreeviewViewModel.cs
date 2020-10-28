@@ -3,7 +3,6 @@ using FModel.ViewModels.Buttons;
 using FModel.ViewModels.DataGrid;
 using FModel.ViewModels.ListBox;
 using FModel.ViewModels.StatusBar;
-using PakReader.Pak;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using FModel.PakReader.Pak;
 
 namespace FModel.ViewModels.Treeview
 {
@@ -75,14 +75,14 @@ namespace FModel.ViewModels.Treeview
                 var m = Regex.Match(entry.Name, $"{fullPath}/*", RegexOptions.IgnoreCase);
                 if (m.Success)
                 {
-                    if (Globals.CachedPakFiles.TryGetValue(entry.PakFile, out PakFileReader pak))
+                    if (Globals.CachedPakFiles.TryGetValue(entry.ContainerFile, out PakFileReader pak))
                     {
                         if (pak.TryGetValue("/" + entry.Name.Substring(0, entry.Name.LastIndexOf(".")), out var pakEntry)) // remove the extension to get the entry
                         {
                             entriesToExtract.Add(new ListBoxViewModel
                             {
                                 Content = pakEntry.GetNameWithExtension(),
-                                PakEntry = pakEntry
+                                ReaderEntry = pakEntry
                             });
                         }
                     }
@@ -112,7 +112,7 @@ namespace FModel.ViewModels.Treeview
                     var m = Regex.Match(entry.Name, $"{fullPath}/*", RegexOptions.IgnoreCase);
                     if (m.Success)
                     {
-                        if (Globals.CachedPakFiles.TryGetValue(entry.PakFile, out PakFileReader pak))
+                        if (Globals.CachedPakFiles.TryGetValue(entry.ContainerFile, out PakFileReader pak))
                         {
                             if (pak.TryGetValue("/" + entry.Name.Substring(0, entry.Name.LastIndexOf(".")), out var pakEntry)) // remove the extension to get the entry
                             {

@@ -1,8 +1,8 @@
 ﻿using FModel.Creator.Bases;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 
 namespace FModel.Creator.Rarities
@@ -11,7 +11,7 @@ namespace FModel.Creator.Rarities
     {
         public static void GetRarity(BaseIcon icon, ObjectProperty o)
         {
-            PakPackage p = Utils.GetPropertyPakPackage(o.Value.Resource.OuterIndex.Resource.ObjectName.String);
+            Package p = Utils.GetPropertyPakPackage(o.Value.Resource.OuterIndex.Resource.ObjectName.String);
             if (p.HasExport() && !p.Equals(default))
             {
                 var obj = p.GetExport<UObject>();

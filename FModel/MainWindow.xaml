@@ -23,6 +23,7 @@
         <CommandBinding Command="{x:Static utils:Commands.AutoSaveImage}" Executed="OnAutoShortcutPressed"/>
         <CommandBinding Command="{x:Static utils:Commands.AutoOpenSounds}" Executed="OnAutoShortcutPressed"/>
         <CommandBinding Command="{x:Static utils:Commands.OpenImageDoubleClick}" Executed="OnImageOpenClick"/>
+        <CommandBinding Command="{x:Static utils:Commands.ReloadTypeMappings}" Executed="ReloadMappings"/>
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Key="F1" Command="{x:Static utils:Commands.OpenGeneralSettings}"/>
@@ -32,6 +33,7 @@
         <KeyBinding Key="F5" Command="{x:Static utils:Commands.AutoSave}"/>
         <KeyBinding Key="F6" Command="{x:Static utils:Commands.AutoSaveImage}"/>
         <KeyBinding Key="F7" Command="{x:Static utils:Commands.AutoOpenSounds}"/>
+        <KeyBinding Key="F12" Command="{x:Static utils:Commands.ReloadTypeMappings}"/>
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>

@@ -1,7 +1,7 @@
 using FModel.Creator.Bases;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 
 namespace FModel.Creator.Icons
@@ -16,11 +16,11 @@ namespace FModel.Creator.Icons
         public static void GetPreviewImage(BaseIcon icon, ObjectProperty o, string assetName) => GetPreviewImage(icon, o, assetName, true);
         public static void GetPreviewImage(BaseIcon icon, ObjectProperty o, string assetName, bool hightRes)
         {
-            string path = o.Value.Resource.OuterIndex.Resource.ObjectName.String;
-            if (path.Equals("/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_STWCosmetic_Tier"))
+            string path = o.Value.Resource?.OuterIndex.Resource?.ObjectName.String;
+            if (path?.Equals("/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_STWCosmetic_Tier") == true)
                 path += "_" + assetName.Substring(assetName.LastIndexOf(".") - 1, 1);
 
-            PakPackage p = Utils.GetPropertyPakPackage(path);
+            Package p = Utils.GetPropertyPakPackage(path);
             if (p.HasExport() && !p.Equals(default))
             {
                 if (GetPreviewImage(icon, p.GetIndexedExport<UObject>(0), hightRes))

@@ -1,12 +1,12 @@
 ﻿using FModel.Creator.Bases;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Icons
 {
@@ -16,7 +16,7 @@ namespace FModel.Creator.Icons
         {
             if (uffs.Count > 0)
             {
-                PakPackage p = Utils.GetPropertyPakPackage("/Game/Items/ItemCategories"); //PrimaryCategories - SecondaryCategories - TertiaryCategories
+                Package p = Utils.GetPropertyPakPackage("/Game/Items/ItemCategories"); //PrimaryCategories - SecondaryCategories - TertiaryCategories
                 if (p.HasExport() && !p.Equals(default))
                 {
                     var o = p.GetExport<UObject>();

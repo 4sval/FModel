@@ -10,11 +10,10 @@ using FModel.ViewModels.TabControl;
 using FModel.ViewModels.Treeview;
 using K4os.Compression.LZ4.Streams;
 using Microsoft.Win32;
-using PakReader.Pak;
-using PakReader.Parsers.Objects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +21,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using FModel.PakReader;
+using FModel.PakReader.IO;
+using FModel.PakReader.Pak;
+using FModel.PakReader.Parsers.Objects;
 
 namespace FModel.ViewModels.MenuItem
 {
@@ -34,13 +37,14 @@ namespace FModel.ViewModels.MenuItem
         private bool _staysOpenOnClick = false;
         private string _inputGestureText;
         private Image _icon;
+        private FFileIoStoreReader _ioStore;
         private PakFileReader _pakFile;
         private PakMenuItemViewModel _parent;
         private ObservableCollection<PakMenuItemViewModel> _childrens;
 
         public string Header
         {
-            get { return PakFile != null ? PakFile.FileName : _header; }
+            get { return IsPakFileReader ? PakFile.FileName : IsIoStoreReader ? IoStore.FileName : _header; }
 
             set { this.SetProperty(ref this._header, value); }
         }
@@ -72,7 +76,7 @@ namespace FModel.ViewModels.MenuItem
         {
             get
             {
-                long size = PakFile != null ? PakFile.Stream.Length : 0;
+                long size = IsPakFileReader ? PakFile.Stream.Length : (IsIoStoreReader ? IoStore.ContainerFile.FileSize : 0);
                 if (size > 0)
                     return Strings.GetReadableSize(size);
                 else
@@ -86,6 +90,16 @@ namespace FModel.ViewModels.MenuItem
             get { return _icon; }
 
             set { this.SetProperty(ref this._icon, value); }
+        }
+
+
+        public bool HasReader => IsPakFileReader || IsIoStoreReader;
+        public bool IsPakFileReader => _pakFile != null;
+        public bool IsIoStoreReader => _ioStore != null;
+        public FFileIoStoreReader IoStore
+        {
+            get => _ioStore;
+            set => SetProperty(ref _ioStore, value);
         }
         public PakFileReader PakFile
         {
@@ -157,7 +171,7 @@ namespace FModel.ViewModels.MenuItem
             Header.Equals(Properties.Resources.NewModifiedFiles);
 
         private async void SinglePakLoader() => await LoadPakFiles(EPakLoader.Single).ConfigureAwait(false);
-        private bool SinglePakLoaderCanExecute() => PakFile != null;
+        private bool SinglePakLoaderCanExecute() => IsPakFileReader || IsIoStoreReader;
         private async void AllPaksLoader() => await LoadPakFiles(EPakLoader.All).ConfigureAwait(false);
         private bool AllPaksLoaderCanExecute() => Header.Equals(Properties.Resources.LoadAll);
         private async void NewFilesLoader() => await LoadPakFiles(EPakLoader.New).ConfigureAwait(false);
@@ -182,8 +196,15 @@ namespace FModel.ViewModels.MenuItem
             {
                 if (mode == EPakLoader.Single)
                 {
-                    StatusBarVm.statusBarViewModel.Set($"{Properties.Settings.Default.PakPath}\\{PakFile.FileName}", Properties.Resources.Loading);
-                    DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PakMenuItemViewModel]", "[Loader]", $"{PakFile.FileName} was selected ({mode})");
+                    if (IsPakFileReader)
+                    {
+                        StatusBarVm.statusBarViewModel.Set($"{Properties.Settings.Default.PakPath}\\{PakFile.FileName}", Properties.Resources.Loading);
+                        DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PakMenuItemViewModel]", "[Loader]", $"{PakFile.FileName} was selected ({mode})");    
+                    } else if (IsIoStoreReader)
+                    {
+                        StatusBarVm.statusBarViewModel.Set($"{Properties.Settings.Default.PakPath}\\{IoStore.FileName}", Properties.Resources.Loading);
+                        DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PakMenuItemViewModel]", "[Loader]", $"{IoStore.FileName} was selected ({mode})"); 
+                    }
                 }
                 else
                 {
@@ -206,13 +227,56 @@ namespace FModel.ViewModels.MenuItem
                     }
                 }
 
-                if (mode == EPakLoader.Single) PakPropertiesVm.pakPropertiesViewModel.Set(PakFile);
+                FFileIoStoreReader globalReader = null;
+                foreach (var ioStore in MenuItems.pakFiles.GetIoStoreReaders())
+                {
+                    if (ioStore.IsEncrypted && ioStore.AesKey == null)
+                        continue;
+                    
+                    if (!Globals.CachedIoStores.ContainsKey(ioStore.FileName))
+                    {
+                        if (ioStore.FileName.Contains("global.ucas", StringComparison.OrdinalIgnoreCase))
+                        {
+                            globalReader = ioStore;
+                            continue;
+                        }
+                        if (!ioStore.ReadDirectoryIndex())
+                            continue;
+                        Globals.CachedIoStores[ioStore.FileName] = ioStore;
+
+                        if (mode != EPakLoader.Single)
+                            StatusBarVm.statusBarViewModel.Set(string.Format(Properties.Resources.MountedPakTo, ioStore.FileName, ioStore.MountPoint), Properties.Resources.Loading);
+                    }
+                }
+                
+                if (globalReader != null)
+                {
+                    try
+                    {
+                        Globals.GlobalData = new FIoGlobalData(globalReader, Globals.CachedIoStores.Values);
+                        DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PakMenuItemViewModel]",
+                            "[Loader]",
+                            $"Loaded global io data with {Globals.GlobalData.GlobalNameMap.Length} names and {Globals.GlobalData.ScriptObjectByGlobalId.Count} script objects"); 
+                    }
+                    catch (Exception e)
+                    {
+                        DebugHelper.WriteException(e, "Failed to load global io data");
+                    }
+                }
+
+                if (mode == EPakLoader.Single)
+                {
+                    if (IsPakFileReader) 
+                        PakPropertiesVm.pakPropertiesViewModel.Set(PakFile);
+                    else if (IsIoStoreReader)
+                        PakPropertiesVm.pakPropertiesViewModel.Set(IoStore);
+                }
                 await Localizations.SetLocalization(Properties.Settings.Default.AssetsLanguage, false).ConfigureAwait(false);
                 PopulateTreeviewViewModel(mode);
             }).ContinueWith(t =>
             {
                 DiscordIntegration.Update(
-                    $"{Globals.CachedPakFiles.Count}/{MenuItems.pakFiles.GetPakCount()} {Properties.Resources.PakFiles}",
+                    $"{Globals.CachedPakFiles.Count}/{MenuItems.pakFiles.GetReaderCount()} {Properties.Resources.PakFiles}",
                     string.Format("{0} - {1}", Globals.Game.GetName(),
                         mode == EPakLoader.All ? Properties.Resources.AllFiles :
                         mode == EPakLoader.New ? Properties.Resources.NewFiles :
@@ -220,14 +284,23 @@ namespace FModel.ViewModels.MenuItem
                         mode == EPakLoader.NewModified ? Properties.Resources.NewModifiedFiles :
                         mode == EPakLoader.Single ? Header :
                         string.Empty
-                        ));
+                    ));
 
                 if (t.Exception != null) Tasks.TaskCompleted(t.Exception);
-                else StatusBarVm.statusBarViewModel.Set(
-                    mode == EPakLoader.Single ?
-                    $"{Properties.Settings.Default.PakPath}\\{PakFile.FileName}" :
-                    Properties.Settings.Default.PakPath,
-                    Properties.Resources.Success);
+                else
+                {
+                    if (mode == EPakLoader.Single)
+                    {
+                        if (IsPakFileReader)
+                            StatusBarVm.statusBarViewModel.Set($"{Properties.Settings.Default.PakPath}\\{PakFile.FileName}", Properties.Resources.Success);
+                        else if (IsIoStoreReader)
+                            StatusBarVm.statusBarViewModel.Set($"{Properties.Settings.Default.PakPath}\\{IoStore.FileName}", Properties.Resources.Success);
+                    }
+                    else
+                    {
+                        StatusBarVm.statusBarViewModel.Set(Properties.Settings.Default.PakPath, Properties.Resources.Success);
+                    }
+                }
             },
             TaskScheduler.FromCurrentSynchronizationContext());
 
@@ -346,10 +419,15 @@ namespace FModel.ViewModels.MenuItem
             switch (mode)
             {
                 case EPakLoader.Single:
-                    PopulateProcess(Globals.CachedPakFiles[PakFile.FileName]);
+                    if (IsPakFileReader)
+                        PopulateProcess(Globals.CachedPakFiles[PakFile.FileName]);
+                    else if (IsIoStoreReader)
+                        PopulateProcess(Globals.CachedIoStores[IoStore.FileName]);
                     break;
                 case EPakLoader.All:
                     foreach (var fileReader in Globals.CachedPakFiles)
+                        PopulateProcess(fileReader.Value);
+                    foreach (var fileReader in Globals.CachedIoStores)
                         PopulateProcess(fileReader.Value);
                     break;
                 case EPakLoader.New:
@@ -361,11 +439,11 @@ namespace FModel.ViewModels.MenuItem
             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PakMenuItemViewModel]", "[Loader]", "Treeview populated");
         }
 
-        private void PopulateProcess(IReadOnlyDictionary<string, FPakEntry> array)
+        private void PopulateProcess<T>(IReadOnlyDictionary<string, T> array) where T : ReaderEntry
         {
             Application.Current.Dispatcher.Invoke(delegate
             {
-                foreach (KeyValuePair<string, FPakEntry> entry in array)
+                foreach (KeyValuePair<string, T> entry in array)
                 {
                     string path = entry.Key.Substring(1) + entry.Value.GetExtension();
                     Populate(SortedTreeviewVm.gameFilesPath, path.Substring(0, path.LastIndexOf("/")), path, entry.Value);
@@ -378,11 +456,11 @@ namespace FModel.ViewModels.MenuItem
                         entry.Value.GetExtension(),
                         entry.Value.Uexp?.GetExtension(),
                         entry.Value.Ubulk?.GetExtension()).TrimEnd(),
-                        entry.Value.PakFileName);
+                        entry.Value.ContainerName);
                 }
             });
         }
-        private void Populate(dynamic nodeList, string pathWithoutFile, string seqPath, FPakEntry entry)
+        private void Populate<T>(dynamic nodeList, string pathWithoutFile, string seqPath, T entry) where T : ReaderEntry
         {
             string folder;
             int p = seqPath.IndexOf('/');
@@ -419,7 +497,7 @@ namespace FModel.ViewModels.MenuItem
                 nodeList.GameFiles[pathWithoutFile].Add(new ListBoxViewModel
                 {
                     Content = folder,
-                    PakEntry = entry
+                    ReaderEntry = entry
                 });
             }
         }

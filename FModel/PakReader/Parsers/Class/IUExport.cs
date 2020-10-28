@@ -1,8 +1,8 @@
-﻿using PakReader.Parsers.PropertyTagData;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using FModel.PakReader.Parsers.PropertyTagData;
 
-namespace PakReader.Parsers.Class
+namespace FModel.PakReader.Parsers.Class
 {
     /// <summary>
     /// IReadOnlyDictionary<string, object> is only used to be able to iterate over properties

@@ -1,10 +1,10 @@
 ﻿using FModel.Creator.Bases;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.Objects;
-using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System.Linq;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Rarities
 {
@@ -12,8 +12,8 @@ namespace FModel.Creator.Rarities
     {
         public static void GetInGameRarity(BaseIcon icon, EnumProperty e)
         {
-            PakPackage p = Utils.GetPropertyPakPackage("/Game/Balance/RarityData");
-            if (p.HasExport() && !p.Equals(default))
+            Package p = Utils.GetPropertyPakPackage("/Game/Balance/RarityData");
+            if (p != null && p.HasExport())
             {
                 var d = p.GetExport<UObject>();
                 if (d != null)
@@ -68,13 +68,13 @@ namespace FModel.Creator.Rarities
 
         public static void GetInGameRarity(BaseGCosmetic icon, EnumProperty e)
         {
-            PakPackage p = Utils.GetPropertyPakPackage("/Game/UI/UIKit/DT_RarityColors");
-            if (p.HasExport() && !p.Equals(default))
+            Package p = Utils.GetPropertyPakPackage("/Game/UI/UIKit/DT_RarityColors");
+            if (p != null || p.HasExport())
             {
                 var d = p.GetExport<UDataTable>();
                 if (d != null)
                 {
-                    if (e != null && d.TryGetValue(e?.Value.String["EXRarity::".Length..], out object r) && r is UObject rarity &&
+                    if (e != null && d.TryGetValue(e.Value.String["EXRarity::".Length..], out object r) && r is UObject rarity &&
                         rarity.GetExport<ArrayProperty>("Colors") is ArrayProperty colors &&
                         colors.Value[0] is StructProperty s1 && s1.Value is FLinearColor color1 &&
                         colors.Value[1] is StructProperty s2 && s2.Value is FLinearColor color2 &&

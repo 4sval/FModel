@@ -1,18 +1,23 @@
 ﻿using System;
-using PakReader.Parsers.Objects;
+using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.PropertyTagData
+namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class BoolProperty : BaseProperty<bool>
     {
+        internal BoolProperty(FPropertyTag tag)
+        {
+            Value = tag.BoolVal != 0;
+        }
         internal BoolProperty(PackageReader reader, FPropertyTag tag, ReadType readType)
         {
             switch (readType)
             {
-                case ReadType.NORMAL:
+                case ReadType.NORMAL when !(reader is IoPackageReader):
                     Position = tag.Position;
                     Value = tag.BoolVal != 0;
                     break;
+                case ReadType.NORMAL:
                 case ReadType.MAP:
                 case ReadType.ARRAY:
                     Position = reader.Position;

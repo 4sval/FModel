@@ -12,5 +12,6 @@ namespace FModel.Utils
         public static readonly RoutedUICommand AutoSaveImage = new RoutedUICommand(string.Empty, "AutoSaveImage", typeof(MainWindow));
         public static readonly RoutedUICommand AutoOpenSounds = new RoutedUICommand(string.Empty, "AutoOpenSounds", typeof(MainWindow));
         public static readonly RoutedUICommand OpenImageDoubleClick = new RoutedUICommand(string.Empty, "OpenImageDoubleClick", typeof(MainWindow));
+        public static readonly RoutedUICommand ReloadTypeMappings = new RoutedUICommand(string.Empty, "ReloadTypeMappings", typeof(MainWindow));
     }
 }

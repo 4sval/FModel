@@ -1,9 +1,13 @@
-﻿using PakReader.Parsers.Objects;
+﻿using FModel.PakReader.Parsers.Objects;
 
-namespace PakReader.Parsers.PropertyTagData
+namespace FModel.PakReader.Parsers.PropertyTagData
 {
     public sealed class TextProperty : BaseProperty<FText>
     {
+        internal TextProperty()
+        {
+            Value = new FText(ETextFlag.Immutable, new FTextHistory.None());
+        }
         internal TextProperty(PackageReader reader)
         {
             Position = reader.Position;

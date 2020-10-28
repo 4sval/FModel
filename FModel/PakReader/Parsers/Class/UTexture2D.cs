@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using PakReader.Parsers.Objects;
-using PakReader.Textures;
+using FModel.PakReader.IO;
+using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.Textures;
 using SkiaSharp;
 
-namespace PakReader.Parsers.Class
+namespace FModel.PakReader.Parsers.Class
 {
     public sealed class UTexture2D : UObject
     {
-        public FTexturePlatformData[] PlatformDatas { get; }
+        public FTexturePlatformData[] PlatformDatas { get; private set; }
 
         SKImage image;
         public SKImage Image
@@ -49,7 +50,17 @@ namespace PakReader.Parsers.Class
             }
         }
 
+        internal UTexture2D(IoPackageReader reader, Dictionary<int, PropertyInfo> properties, Stream ubulk,
+            long bulkOffset) : base(reader, properties)
+        {
+            Serialize(reader, ubulk, bulkOffset);
+        }
         internal UTexture2D(PackageReader reader, Stream ubulk, long bulkOffset) : base(reader)
+        {
+            Serialize(reader, ubulk, bulkOffset);
+        }
+
+        private void Serialize(PackageReader reader, Stream ubulk, long bulkOffset)
         {
             new FStripDataFlags(reader); // and I quote, "still no idea"
             new FStripDataFlags(reader); // "why there are two" :)

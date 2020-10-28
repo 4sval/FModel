@@ -1,7 +1,7 @@
 ﻿using FModel.Creator.Texts;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Bundles
 {
@@ -37,7 +37,7 @@ namespace FModel.Creator.Bundles
 
             if (obj.TryGetValue("RewardsTable", out var v4) && v4 is ObjectProperty rewardsTable)
             {
-                PakPackage p = Utils.GetPropertyPakPackage(rewardsTable.Value.Resource.OuterIndex.Resource.ObjectName.String);
+                Package p = Utils.GetPropertyPakPackage(rewardsTable.Value.Resource.OuterIndex.Resource.ObjectName.String);
                 if (p.HasExport() && !p.Equals(default))
                 {
                     var u = p.GetExport<UDataTable>();

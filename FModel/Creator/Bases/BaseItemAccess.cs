@@ -1,8 +1,8 @@
 ﻿using FModel.Creator.Rarities;
 using FModel.Creator.Texts;
-using PakReader.Pak;
-using PakReader.Parsers.Class;
-using PakReader.Parsers.PropertyTagData;
+using FModel.PakReader;
+using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
 
@@ -44,7 +44,7 @@ namespace FModel.Creator.Bases
             if (export.GetExport<ObjectProperty>("access_item") is ObjectProperty accessItem)
             {
                 SItem = accessItem.Value.Resource.ObjectName.String;
-                PakPackage p = Utils.GetPropertyPakPackage(accessItem.Value.Resource.OuterIndex.Resource.ObjectName.String);
+                Package p = Utils.GetPropertyPakPackage(accessItem.Value.Resource.OuterIndex.Resource.ObjectName.String);
                 if (p.HasExport() && !p.Equals(default))
                 {
                     var d = p.GetExport<UObject>();
