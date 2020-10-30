@@ -27,7 +27,7 @@ namespace FModel.ViewModels.TabControl
                     offsets = string.Join("   ", "0x" + (ioEntry.Offset).ToString("X2"),
                         entry.Uexp != null ? "0x" + (((FIoStoreEntry)ioEntry.Uexp).Offset).ToString("X2") : string.Empty,
                         entry.Ubulk != null ? "0x" + (((FIoStoreEntry)ioEntry.Ubulk).Offset).ToString("X2") : string.Empty);
-                    tSize = Strings.GetReadableSize(ioEntry.Length + ((ioEntry.Uexp as FIoStoreEntry)?.Length ?? 0) + ((ioEntry.Ubulk as FIoStoreEntry)?.Length ?? 0));
+                    tSize = Strings.GetReadableSize(ioEntry.Size + ((ioEntry.Uexp as FIoStoreEntry)?.Size ?? 0) + ((ioEntry.Ubulk as FIoStoreEntry)?.Size ?? 0));
                 }
                 else
                 {
@@ -40,15 +40,15 @@ namespace FModel.ViewModels.TabControl
                 vm.IncludedExtensions = ext.TrimEnd();
                 vm.Offsets = offsets.TrimEnd();
                 vm.TotalSize = tSize;
-                if (entry is FPakEntry cast)
+                if (entry is FPakEntry c1)
                 {
-                    vm.IsEncrypted = cast.Encrypted ? Properties.Resources.Yes : Properties.Resources.No;
-                    vm.CompMethod = ((ECompressionFlags)cast.CompressionMethodIndex).ToString();
+                    vm.IsEncrypted = c1.Encrypted ? Properties.Resources.Yes : Properties.Resources.No;
+                    vm.CompMethod = ((ECompressionFlags)c1.CompressionMethodIndex).ToString();
                 }
-                else
+                else if (entry is FIoStoreEntry c2)
                 {
-                    vm.IsEncrypted = Properties.Resources.No;
-                    vm.CompMethod = ECompressionFlags.COMPRESS_None.ToString();
+                    vm.IsEncrypted = c2.Encrypted ? Properties.Resources.Yes : Properties.Resources.No;
+                    vm.CompMethod = c2.CompressionMethodString;
                 }
             });
         }

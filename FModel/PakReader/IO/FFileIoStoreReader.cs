@@ -44,6 +44,7 @@ namespace FModel.PakReader.IO
         public bool IsEncrypted => ContainerFile.ContainerFlags.HasAnyFlags(EIoContainerFlags.Encrypted);
 
         public Dictionary<string, FIoStoreEntry> Files;
+        public Dictionary<ulong, string> Chunks;
 
         public FIoDirectoryIndexResource _directoryIndex;
         private byte[] _directoryIndexBuffer;
@@ -107,7 +108,8 @@ namespace FModel.PakReader.IO
                     var firstEntry = GetChildDirectory(FIoDirectoryIndexHandle.Root);
 
                     var tempFiles = new Dictionary<string, FIoStoreEntry>();
-                    ReadIndex("", firstEntry, tempFiles);
+                    Chunks = new Dictionary<ulong, string>();
+                    ReadIndex("", firstEntry, tempFiles, Chunks);
                     Paks.Merge(tempFiles, out Files, _directoryIndex.MountPoint);
                     DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[FFileIoStoreReader]", "[ReadDirectoryIndex]", $"{FileName} contains {Files.Count} files, mount point: \"{MountPoint}\", version: {(int)TocResource.Header.Version}");
                 
@@ -289,9 +291,8 @@ namespace FModel.PakReader.IO
             compressionStream.Read(outData, 0, outData.Length);
         }
 
-        private void ReadIndex(string directoryName, FIoDirectoryIndexHandle dir, IDictionary<string, FIoStoreEntry> outFiles)
+        private void ReadIndex(string directoryName, FIoDirectoryIndexHandle dir, IDictionary<string, FIoStoreEntry> outFiles, Dictionary<ulong, string> outChunks)
         {
-            
             while (dir.IsValid())
             {
                 var subDirectoryName = string.Concat(directoryName, GetDirectoryName(dir), "/");
@@ -302,11 +303,13 @@ namespace FModel.PakReader.IO
                     var name = GetFileName(file);
                     var path = string.Concat(subDirectoryName, name);
                     var data = GetFileData(file);
-                    outFiles[path] = new FIoStoreEntry(this, data, path, CaseSensitive);
+                    var entry = new FIoStoreEntry(this, data, path, CaseSensitive);
+                    outChunks[entry.ChunkId.ChunkId] = path;
+                    outFiles[path] = entry;
                     file = GetNextFile(file);
                 }
             
-                ReadIndex(subDirectoryName, GetChildDirectory(dir), outFiles);
+                ReadIndex(subDirectoryName, GetChildDirectory(dir), outFiles, outChunks);
 
                 dir = GetNextDirectory(dir);
             }

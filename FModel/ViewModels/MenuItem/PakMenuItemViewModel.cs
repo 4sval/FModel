@@ -13,9 +13,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +23,7 @@ using FModel.PakReader;
 using FModel.PakReader.IO;
 using FModel.PakReader.Pak;
 using FModel.PakReader.Parsers.Objects;
+using System.Linq;
 
 namespace FModel.ViewModels.MenuItem
 {
@@ -308,9 +307,9 @@ namespace FModel.ViewModels.MenuItem
             GC.WaitForPendingFinalizers();
         }
 
-        private Dictionary<string, FPakEntry> GetOldFiles(EPakLoader mode)
+        private Dictionary<string, ReaderEntry> GetOldFiles(EPakLoader mode)
         {
-            var diff = new Dictionary<string, FPakEntry>();
+            var diff = new Dictionary<string, ReaderEntry>();
             var ofd = new OpenFileDialog()
             {
                 Title = Properties.Resources.SelectFile,
@@ -357,8 +356,13 @@ namespace FModel.ViewModels.MenuItem
                     }
                 }
 
-                var newFiles = new Dictionary<string, FPakEntry>();
+                var newFiles = new Dictionary<string, ReaderEntry>();
+
                 foreach (var fileReader in Globals.CachedPakFiles)
+                    foreach (var files in fileReader.Value)
+                        newFiles[files.Key] = files.Value;
+
+                foreach (var fileReader in Globals.CachedIoStores)
                     foreach (var files in fileReader.Value)
                         newFiles[files.Key] = files.Value;
 
@@ -369,7 +373,7 @@ namespace FModel.ViewModels.MenuItem
                     case EPakLoader.New:
                         foreach (var kvp in newFiles)
                         {
-                            if (!oldFiles.TryGetValue(kvp.Key, out var entry))
+                            if (!oldFiles.TryGetValue(kvp.Key, out var _))
                                 diff.Add(kvp.Key, kvp.Value);
                         }
                         break;
@@ -377,7 +381,7 @@ namespace FModel.ViewModels.MenuItem
                         foreach (var kvp in newFiles)
                         {
                             if (oldFiles.TryGetValue(kvp.Key, out var entry))
-                                if (entry.UncompressedSize != kvp.Value.UncompressedSize)
+                                if (entry.UncompressedSize != kvp.Value.UncompressedSize || entry.Encrypted != kvp.Value.Encrypted)
                                     diff.Add(kvp.Key, kvp.Value);
                         }
                         break;
@@ -386,7 +390,7 @@ namespace FModel.ViewModels.MenuItem
                         {
                             if (oldFiles.TryGetValue(kvp.Key, out var entry))
                             {
-                                if (entry.UncompressedSize != kvp.Value.UncompressedSize)
+                                if (entry.UncompressedSize != kvp.Value.UncompressedSize || entry.Encrypted != kvp.Value.Encrypted)
                                     diff.Add(kvp.Key, kvp.Value);
                             }
                             else
@@ -395,21 +399,22 @@ namespace FModel.ViewModels.MenuItem
                         break;
                 }
 
-                string cosmeticsPath;
-                if (Globals.Game.ActualGame == EGame.Fortnite)
-                    cosmeticsPath = $"/{Folders.GetGameName()}/Content/Athena/Items/Cosmetics/";
-                else if (Globals.Game.ActualGame == EGame.Valorant)
-                    cosmeticsPath = $"/{Folders.GetGameName()}/Content/Labels/";
-                else
-                    cosmeticsPath = "/gqdozqhndpioqgnq/"; // just corrupting it so it doesn't trigger all assets
+                //string cosmeticsPath;
+                //if (Globals.Game.ActualGame == EGame.Fortnite)
+                //    cosmeticsPath = $"/{Folders.GetGameName()}/Content/Athena/Items/Cosmetics/";
+                //else if (Globals.Game.ActualGame == EGame.Valorant)
+                //    cosmeticsPath = $"/{Folders.GetGameName()}/Content/Labels/";
+                //else
+                //    cosmeticsPath = "/gqdozqhndpioqgnq/"; // just corrupting it so it doesn't trigger all assets
 
-                var deleted = oldFiles.Where(kvp => !newFiles.TryGetValue(kvp.Key, out var _) && kvp.Key.StartsWith(cosmeticsPath)).ToDictionary(x => x.Key, x => x.Value);
-                if (deleted.Count > 0)
-                {
-                    FConsole.AppendText(Properties.Resources.RemovedRenamedCosmetics, FColors.Red, true);
-                    foreach (var kvp in deleted)
-                        FConsole.AppendText($"    - {kvp.Value.Name.Substring(1)}", FColors.LightGray, true);
-                }
+                //// Remove this for 14.40
+                //var deleted = oldFiles.Where(kvp => !newFiles.TryGetValue(kvp.Key, out var _) && kvp.Key.StartsWith(cosmeticsPath)).ToDictionary(x => x.Key, x => x.Value);
+                //if (deleted.Count > 0)
+                //{
+                //    FConsole.AppendText(Properties.Resources.RemovedRenamedCosmetics, FColors.Red, true);
+                //    foreach (var kvp in deleted)
+                //        FConsole.AppendText($"    - {kvp.Value.Name.Substring(1)}", FColors.LightGray, true);
+                //}
             }
             return diff;
         }

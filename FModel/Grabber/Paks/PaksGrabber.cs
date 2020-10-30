@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,7 +22,7 @@ namespace FModel.Grabber.Paks
 {
     static class PaksGrabber
     {
-        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/pakchunk(?:0|10.*|\w+)-WindowsClient\.pak$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/pakchunk(?:0|10.*|\w+)-WindowsClient\.(pak|utoc|ucas)$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         public static async Task PopulateMenu()
         {
@@ -81,26 +82,44 @@ namespace FModel.Grabber.Paks
                             continue;
                         }
 
+                        var pakStream = fileManifest.GetStream();
+                        if (pakStream.Length == 365) continue;
+
                         var pakFileName = fileManifest.Name.Replace('/', '\\');
-                        PakFileReader pakFile = new PakFileReader(pakFileName, fileManifest.GetStream());
-
-                        if (pakFiles++ == 0)
+                        if (pakFileName.EndsWith(".pak"))
                         {
-                            // define the current game thank to the pak path
-                            Folders.SetGameName(pakFileName);
-
-                            Globals.Game.Version = pakFile.Info.Version;
-                            Globals.Game.SubVersion = pakFile.Info.SubVersion;
-                        }
-
-                        await Application.Current.Dispatcher.InvokeAsync(delegate
-                        {
-                            MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                            PakFileReader pakFile = new PakFileReader(pakFileName, pakStream);
+                            if (pakFiles++ == 0)
                             {
-                                PakFile = pakFile,
-                                IsEnabled = false
+                                // define the current game thank to the pak path
+                                Folders.SetGameName(pakFileName);
+
+                                Globals.Game.Version = pakFile.Info.Version;
+                                Globals.Game.SubVersion = pakFile.Info.SubVersion;
+                            }
+
+                            await Application.Current.Dispatcher.InvokeAsync(delegate
+                            {
+                                MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                                {
+                                    PakFile = pakFile,
+                                    IsEnabled = false
+                                });
                             });
-                        });
+                        }
+                        else if (pakFileName.EndsWith(".ucas"))
+                        {
+                            var utocStream = manifest.FileManifests.FirstOrDefault(x => x.Name.Equals(fileManifest.Name.Replace(".ucas", ".utoc")));
+                            var ioStore = new FFileIoStoreReader(pakFileName.SubstringAfterLast('\\'), utocStream.GetStream(), pakStream);
+                            await Application.Current.Dispatcher.InvokeAsync(delegate
+                            {
+                                MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                                {
+                                    IoStore = ioStore,
+                                    IsEnabled = false
+                                });
+                            });
+                        }
                     }
                 }
                 else if (Properties.Settings.Default.PakPath.EndsWith("-val.manifest"))
@@ -147,7 +166,13 @@ namespace FModel.Grabber.Paks
                     string[] paks = Directory.GetFiles(Properties.Settings.Default.PakPath, "*.pak");
                     for (int i = 0; i < paks.Length; i++)
                     {
-                        if (!Utils.Paks.IsFileReadLocked(new FileInfo(paks[i])))
+                        var pakInfo = new FileInfo(paks[i]);
+                        if (pakInfo.Length == 365)
+                        {
+                            continue;
+                        }
+
+                        if (!Utils.Paks.IsFileReadLocked(pakInfo))
                         {
                             PakFileReader pakFile = new PakFileReader(paks[i]);
                             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Registering]", $"{pakFile.FileName} with GUID {pakFile.Info.EncryptionKeyGuid.Hex}");
@@ -184,6 +209,7 @@ namespace FModel.Grabber.Paks
                             var ucasStream = File.OpenRead(ucas);
                             var ioStore = new FFileIoStoreReader(ucas.SubstringAfterLast('\\'), utocStream, ucasStream);
                             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[IO Store]", "[Registering]", $"{ioStore.FileName} with GUID {ioStore.TocResource.Header.EncryptionKeyGuid.Hex}");
+
                             await Application.Current.Dispatcher.InvokeAsync(delegate
                             {
                                 MenuItems.pakFiles.Add(new PakMenuItemViewModel
@@ -198,7 +224,7 @@ namespace FModel.Grabber.Paks
                             FConsole.AppendText(string.Format(Properties.Resources.PakFileLocked, Path.GetFileNameWithoutExtension(utoc)), FColors.Red, true);
                             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[IO Store]", "[Locked]", utoc);
                         }
-                    } 
+                    }
                 }
             });
         }

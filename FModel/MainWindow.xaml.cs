@@ -119,11 +119,11 @@ namespace FModel
                 catch
                 {
                     rawMappings ??= await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
-                    rawEnumMappings ??=  await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
+                    rawEnumMappings ??= await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
                 }
 #else
-                var rawMappings =  await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
-                var rawEnumMappings =  await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
+                var rawMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
+                var rawEnumMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
 #endif
                 var serializerSettings = new JsonSerializerSettings
                 {
@@ -148,6 +148,7 @@ namespace FModel
         public void ReloadMappings(object sender, RoutedEventArgs e)
         {
             LoadMappings();
+            Globals.gNotifier.ShowCustomMessage("Mappings", "Reloaded successfully");
         }
 
         private void AeConfiguration()
@@ -161,7 +162,7 @@ namespace FModel
             CommandBindings.Add(Frm.FindBinding);
         }
 
-        #region MENU ITEMS
+#region MENU ITEMS
 
         private void OnAutoShortcutPressed(object sender, RoutedEventArgs e)
         {
@@ -388,9 +389,9 @@ namespace FModel
             }
         }
 
-        #endregion
+#endregion
 
-        #region TREEVIEW
+#region TREEVIEW
 
         private void OnSelectedPathChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -418,9 +419,9 @@ namespace FModel
             }
         }
 
-        #endregion
+#endregion
 
-        #region LISTBOX
+#region LISTBOX
 
         private void OnSelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -496,9 +497,9 @@ namespace FModel
             }
         }
 
-        #endregion
+#endregion
 
-        #region BUTTONS
+#region BUTTONS
 
         private void OnImageOpenClick(object sender, RoutedEventArgs e) => ImageBoxVm.imageBoxViewModel.OpenImage();
 
@@ -517,9 +518,9 @@ namespace FModel
                 await Assets.GetUserSelection(FModel_AssetsList.SelectedItems);
         }
 
-        #endregion
+#endregion
 
-        #region RIGHT CLICK MENUS
+#region RIGHT CLICK MENUS
 
         private async void FModel_MI_Directory_Extract_Click(object sender, RoutedEventArgs e)
         {
@@ -593,6 +594,6 @@ namespace FModel
                 Assets.Copy(FModel_AssetsList.SelectedItems, ECopy.FileNoExt);
         }
 
-        #endregion
+#endregion
     }
 }

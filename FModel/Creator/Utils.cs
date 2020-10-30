@@ -1,7 +1,6 @@
 ﻿using FModel.Utils;
 using SkiaSharp;
 using System;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using FModel.PakReader;
 using FModel.PakReader.IO;
@@ -16,11 +15,10 @@ namespace FModel.Creator
         {
             foreach (var ioStore in Globals.CachedIoStores.Values)
             {
-                if (ioStore.IsInitialized)
+                if (ioStore.Chunks.TryGetValue(id.Id, out string path))
                 {
-                    var entry = ioStore.Files.FirstOrDefault(it => it.Value.ChunkId.ChunkId == id.Id).Value;
-                    if (entry != null)
-                        return ioStore.MountPoint + entry.Name;
+                    if (ioStore.Files.TryGetValue(ioStore.MountPoint + path.Substring(0, path.LastIndexOf(".")), out FIoStoreEntry value))
+                        return ioStore.MountPoint + value.Name;
                 }
             }
 
@@ -62,7 +60,7 @@ namespace FModel.Creator
                     string mount = path.Substring(0, path.Length - entry.Name.Substring(0, entry.Name.LastIndexOf('.')).Length);
                     return Assets.GetPackage(entry, mount);
                 }
-            return null;
+            return default;
         }
 
         public static ArraySegment<byte>[] GetPropertyArraySegmentByte(string value)

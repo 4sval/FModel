@@ -5,8 +5,13 @@ namespace FModel.PakReader
     public abstract class ReaderEntry
     {
         public abstract string Name { get; }
-        
+        public abstract long UncompressedSize { get; }
+        public abstract long Size { get; }
+        public abstract int StructSize { get; }
+        public abstract uint CompressionMethodIndex { get; }
+        public abstract bool Encrypted { get; }
         public abstract string ContainerName { get; }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsUE4Package() => Name[Name.LastIndexOf(".")..].Equals(".uasset");

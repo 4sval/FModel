@@ -567,10 +567,11 @@ namespace FModel.Properties {
         
         /// <summary>
         ///   Recherche une chaîne localisée semblable à • Waddlesworth			• Maiky
-        ///• FunGames			• Not Officer
+        ///• FunGames			• Officer
         ///• PsychoPast			• TSG
         ///• GMatrixGames			• Jackson
-        ///• XTigerHyperX			• FireMonkey.
+        ///• XTigerHyperX			• FireMonkey
+        ///• Mang0e.
         /// </summary>
         public static string ContributorsFDetails {
             get {
@@ -771,11 +772,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à • Yanteh				• Maiky
-        ///• FunGames			• HYPEX ♥
-        ///• Alexander			• Netu ♥
-        ///• SexyNutella			• imatrix
-        ///• Frenzy Leaks			• LlamaLeaks.
+        ///   Recherche une chaîne localisée semblable à • Maiky ♥			• HYPEX ♥
+        ///• VenomLeaks ♥			• JayKeyFN ♥
+        ///• Fevers ♥			• Netu ♥
+        ///• Quentin Bellus			• Yanteh
+        ///• Shiina				• SexyNutella
+        ///• Alexander			• imatrix
+        ///• Frenzy Leaks			• LlamaLeaks
+        ///• XTigerHyperX			• FunGames
+        ///• WeLoveFortnite.
         /// </summary>
         public static string DonatorsFDetails {
             get {

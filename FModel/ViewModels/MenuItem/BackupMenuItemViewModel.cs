@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using FModel.PakReader.Pak;
 using FModel.PakReader.Parsers.Objects;
+using FModel.PakReader.IO;
 
 namespace FModel.ViewModels.MenuItem
 {
@@ -192,6 +193,60 @@ namespace FModel.ViewModels.MenuItem
                             writer.Write(ubulk.Encrypted);
                             writer.Write(ubulk.StructSize);
                             writer.Write(pakFile.MountPoint + entry.Ubulk.Name);
+                            writer.Write(ubulk.CompressionMethodIndex);
+                        }
+                    }
+                }
+                FFileIoStoreReader globalReader = null;
+                foreach (FFileIoStoreReader ioStore in MenuItems.pakFiles.GetIoStoreReaders())
+                {
+                    if (ioStore.IsEncrypted && ioStore.AesKey == null)
+                        continue;
+
+                    if (!Globals.CachedIoStores.ContainsKey(ioStore.FileName))
+                    {
+                        if (ioStore.FileName.Contains("global.ucas", StringComparison.OrdinalIgnoreCase))
+                        {
+                            globalReader = ioStore;
+                            continue;
+                        }
+                        if (!ioStore.ReadDirectoryIndex())
+                            continue;
+                        Globals.CachedIoStores[ioStore.FileName] = ioStore;
+                        StatusBarVm.statusBarViewModel.Set(string.Format(Properties.Resources.MountedPakTo, ioStore.FileName, ioStore.MountPoint), Properties.Resources.Loading);
+                    }
+
+                    foreach (var (_, entry) in ioStore)
+                    {
+                        // uasset or umap or idk
+                        writer.Write(entry.Offset);
+                        writer.Write(entry.Length);
+                        writer.Write(entry.UncompressedSize);
+                        writer.Write(entry.Encrypted);
+                        writer.Write(entry.StructSize);
+                        writer.Write(ioStore.MountPoint + entry.Name);
+                        writer.Write(entry.CompressionMethodIndex);
+
+                        // uexp
+                        if (entry.Uexp != null && entry.Uexp is FIoStoreEntry uexp)
+                        {
+                            writer.Write(uexp.Offset);
+                            writer.Write(uexp.Length);
+                            writer.Write(uexp.UncompressedSize);
+                            writer.Write(uexp.Encrypted);
+                            writer.Write(uexp.StructSize);
+                            writer.Write(ioStore.MountPoint + entry.Uexp.Name);
+                            writer.Write(uexp.CompressionMethodIndex);
+                        }
+                        // ubulk
+                        if (entry.Ubulk != null && entry.Ubulk is FIoStoreEntry ubulk)
+                        {
+                            writer.Write(ubulk.Offset);
+                            writer.Write(ubulk.Length);
+                            writer.Write(ubulk.UncompressedSize);
+                            writer.Write(ubulk.Encrypted);
+                            writer.Write(ubulk.StructSize);
+                            writer.Write(ioStore.MountPoint + entry.Ubulk.Name);
                             writer.Write(ubulk.CompressionMethodIndex);
                         }
                     }

@@ -343,12 +343,12 @@ namespace FModel.Utils
                     package = new PakPackage(uasset, uexp, ubulk);
                 else
                     package = new IoPackage(uasset, ubulk, ioStoreEntry);
-#if !DEBUG
+
                 _CachedFiles[entry] = new Dictionary<Package, ArraySegment<byte>[]>
                 {
                     [package] = new ArraySegment<byte>[] { uasset, uexp, ubulk }
-                };          
-#endif
+                };
+
                 return true;
             }
 

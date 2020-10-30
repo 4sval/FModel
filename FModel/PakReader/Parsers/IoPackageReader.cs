@@ -108,10 +108,13 @@ namespace FModel.PakReader.Parsers
                 foreach (var export in package.Reader.ExportMap)
                 {
                     var realImportIndex = Array.FindIndex(ImportMap, it => it == export.GlobalImportIndex);
-                    var nextIndex = FakeImportMap.Count;
-                    FakeImportMap[realImportIndex] = new FObjectResource(new FName(export.ObjectName.String), new FPackageIndex(this, -(nextIndex + 1)));
-                    var outerResource = new FObjectResource(new FName(string.Concat(package.Reader.Summary.Name.String, ".", export.ObjectName.String)), new FPackageIndex());
-                    FakeImportMap.Add(outerResource);
+                    if (realImportIndex > -1)
+                    {
+                        var nextIndex = FakeImportMap.Count;
+                        FakeImportMap[realImportIndex] = new FObjectResource(new FName(export.ObjectName.String), new FPackageIndex(this, -(nextIndex + 1)));
+                        var outerResource = new FObjectResource(new FName(string.Concat(package.Reader.Summary.Name.String, ".", export.ObjectName.String)), new FPackageIndex());
+                        FakeImportMap.Add(outerResource);
+                    }
                 }
             }
 
@@ -122,9 +125,16 @@ namespace FModel.PakReader.Parsers
             for (var i = 0; i < ExportMap.Length; i++)
             {
                 var exportMapEntry = ExportMap[i];
-                FName exportType;
+                FPackageObjectIndex trigger;
+                if (exportMapEntry.ClassIndex.IsExport)
+                    trigger = exportMapEntry.SuperIndex;
+                else if (exportMapEntry.ClassIndex.IsImport)
+                    trigger = exportMapEntry.ClassIndex;
+                else
+                    throw new FileLoadException("Can't get class name");
 
-                if (GlobalData != null && GlobalData.ScriptObjectByGlobalId.TryGetValue(exportMapEntry.ClassIndex, out var scriptObject))
+                FName exportType;
+                if (GlobalData != null && GlobalData.ScriptObjectByGlobalId.TryGetValue(trigger, out var scriptObject))
                 {
                     exportType = scriptObject.Name;
                 }
@@ -150,10 +160,12 @@ namespace FModel.PakReader.Parsers
                         //"AkMediaAssetData" => new UAkMediaAssetData(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
                         _ => new UObject(this, properties, type: exportType.String),
                     };
-                    _dataExportTypes[i] = exportType;    
+                    _dataExportTypes[i] = exportType;
                 }
                 else
                 {
+                    _dataExports[i] = null;
+                    _dataExportTypes[i] = exportType;
 #if DEBUG
                     var header = new FUnversionedHeader(this);
                     using var it = new FIterator(header);

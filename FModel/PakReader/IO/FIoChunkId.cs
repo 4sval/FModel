@@ -36,7 +36,7 @@ namespace FModel.PakReader.IO
             return hash;
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             if (!(obj is FIoChunkId cast))
             {
