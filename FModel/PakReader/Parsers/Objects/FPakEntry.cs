@@ -16,7 +16,8 @@ namespace FModel.PakReader.Parsers.Objects
         public override string ContainerName { get; }
         public override string Name => _name;
         private readonly string _name;
-        public readonly long Offset;
+        public override long Offset => _offset;
+        private readonly long _offset;
         public override long Size => _size;
         private readonly long _size;
         public override long UncompressedSize => _uncompressedSize;
@@ -42,7 +43,7 @@ namespace FModel.PakReader.Parsers.Objects
 
             var StartOffset = reader.BaseStream.Position;
 
-            Offset = reader.ReadInt64();
+            _offset = reader.ReadInt64();
             _size = reader.ReadInt64();
             _uncompressedSize = reader.ReadInt64();
             if (Version < EPakVersion.FNAME_BASED_COMPRESSION_METHOD)
@@ -105,7 +106,7 @@ namespace FModel.PakReader.Parsers.Objects
 
             var StartOffset = reader.BaseStream.Position;
 
-            Offset = reader.ReadInt64();
+            _offset = reader.ReadInt64();
             _size = reader.ReadInt64();
             _uncompressedSize = reader.ReadInt64();
             _compressionMethodIndex = reader.ReadUInt32();
@@ -125,7 +126,7 @@ namespace FModel.PakReader.Parsers.Objects
         {
             ContainerName = pakName;
             _name = name;
-            Offset = offset;
+            _offset = offset;
             _size = size;
             _uncompressedSize = uncompressedSize;
             CompressionBlocks = compressionBlocks;
@@ -141,7 +142,7 @@ namespace FModel.PakReader.Parsers.Objects
             {
                 if (_compressionMethodIndex == 0U)
                 {
-                    stream.Position = Offset + _structSize;
+                    stream.Position = _offset + _structSize;
                     if (Encrypted)
                     {
                         var data = new byte[(_size & 15) == 0 ? _size : (_size / 16 + 1) * 16];
@@ -174,7 +175,7 @@ namespace FModel.PakReader.Parsers.Objects
             int bytesRead = 0;
             for (int i = 0; i < CompressionBlocks.Length; i++)
             {
-                stream.Position = Offset + CompressionBlocks[i].CompressedStart;
+                stream.Position = _offset + CompressionBlocks[i].CompressedStart;
                 int uncompressedSize = (int)Math.Min(CompressionBlockSize, outData.Length - bytesRead);
 
                 byte[] blockBbuffer;

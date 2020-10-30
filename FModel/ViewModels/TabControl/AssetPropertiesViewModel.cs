@@ -16,18 +16,12 @@ namespace FModel.ViewModels.TabControl
                 string ext = string.Join("   ", entry.GetExtension(), entry.Uexp?.GetExtension(), entry.Ubulk?.GetExtension());
                 string offsets;
                 string tSize;
-                if (entry is FPakEntry pakEntry)
+                if (entry is ReaderEntry pakEntry)
                 {
                     offsets = string.Join("   ", "0x" + (pakEntry.Offset + pakEntry.StructSize).ToString("X2"),
-                        entry.Uexp != null ? "0x" + (((FPakEntry)pakEntry.Uexp).Offset + pakEntry.StructSize).ToString("X2") : string.Empty,
-                        entry.Ubulk != null ? "0x" + (((FPakEntry)pakEntry.Ubulk).Offset + pakEntry.StructSize).ToString("X2") : string.Empty);
-                    tSize = Strings.GetReadableSize(pakEntry.Size + ((pakEntry.Uexp as FPakEntry)?.Size ?? 0) + ((pakEntry.Ubulk as FPakEntry)?.Size ?? 0));
-                } else if (entry is FIoStoreEntry ioEntry)
-                {
-                    offsets = string.Join("   ", "0x" + (ioEntry.Offset).ToString("X2"),
-                        entry.Uexp != null ? "0x" + (((FIoStoreEntry)ioEntry.Uexp).Offset).ToString("X2") : string.Empty,
-                        entry.Ubulk != null ? "0x" + (((FIoStoreEntry)ioEntry.Ubulk).Offset).ToString("X2") : string.Empty);
-                    tSize = Strings.GetReadableSize(ioEntry.Size + ((ioEntry.Uexp as FIoStoreEntry)?.Size ?? 0) + ((ioEntry.Ubulk as FIoStoreEntry)?.Size ?? 0));
+                        entry.Uexp != null ? "0x" + (pakEntry.Uexp?.Offset + pakEntry.StructSize)?.ToString("X2") : string.Empty,
+                        entry.Ubulk != null ? "0x" + (pakEntry.Ubulk?.Offset + pakEntry.StructSize)?.ToString("X2") : string.Empty);
+                    tSize = Strings.GetReadableSize(pakEntry.Size + (pakEntry.Uexp?.Size ?? 0) + (pakEntry.Ubulk?.Size ?? 0));
                 }
                 else
                 {

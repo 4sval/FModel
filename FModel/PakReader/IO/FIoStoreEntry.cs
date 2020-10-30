@@ -17,9 +17,9 @@ namespace FModel.PakReader.IO
         
         public FIoChunkId ChunkId => ioStore.TocResource.ChunkIds[UserData];
         public FIoOffsetAndLength OffsetLength => ioStore.Toc[ChunkId];
-        public long Offset => (long) OffsetLength.Offset;
+        public override long Offset => (long) OffsetLength.Offset;
         public long Length => (long) OffsetLength.Length;
-        public string CompressionMethodString => ioStore.TocResource.CompressionMethods[CompressionMethodIndex - 1];
+        public string CompressionMethodString => ioStore.TocResource.CompressionMethods[CompressionMethodIndex > 0 ? CompressionMethodIndex - 1 : CompressionMethodIndex];
 
         public FIoStoreEntry(FFileIoStoreReader ioStore, uint userData, string name, bool caseSensitive)
         {

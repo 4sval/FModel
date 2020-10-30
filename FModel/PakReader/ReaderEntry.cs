@@ -6,6 +6,7 @@ namespace FModel.PakReader
     {
         public abstract string Name { get; }
         public abstract long UncompressedSize { get; }
+        public abstract long Offset { get; }
         public abstract long Size { get; }
         public abstract int StructSize { get; }
         public abstract uint CompressionMethodIndex { get; }

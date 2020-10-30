@@ -165,10 +165,13 @@ This software uses the following open source packages:
 
 ## Support [![](https://wakatime.com/badge/github/iAmAsval/FModel.svg)](https://wakatime.com/badge/github/iAmAsval/FModel)
 
-This project is not my full time job, donations are greatly appreciated.
+This project is not my full time job, donations and stars are greatly appreciated.
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EP9SSWG8MW4UC&source=url">
   <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">
+</a>
+<a href="https://starchart.cc/iamasval/fmodel.svg">
+  <img src="https://starchart.cc/iamasval/fmodel.svg">
 </a>
 
 ## You may also like...
