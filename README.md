@@ -5,6 +5,8 @@
 Created in March 2019, FModel is a .PAK file explorer fully dedicated to Fortnite but also work with some other Unreal Engine's games. It quickly became popular to quickly generate images of new cosmetics added to the game.
 Over time, new features got added and new users discovered the program.
 
+## Build Status [![Build status](https://ci.appveyor.com/api/projects/status/bqipyycg1404acyt/branch/master?svg=true)](https://ci.appveyor.com/project/iAmAsval/fmodel/branch/master)
+
 ## Table of Contents
 
 - [Introduction](#introduction)

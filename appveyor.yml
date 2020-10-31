@@ -1,0 +1,13 @@
+version: 1.0.{build}
+image: Visual Studio 2019
+clone_depth: 1
+before_build:
+- cmd: nuget restore
+build_script:
+- cmd: >-
+    "%programfiles(x86)%\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\amd64\MsBuild.exe" /nologo /m:2 /p:Configuration=Release /p:Platform="X64" /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" "FModel.sln"
+
+test: off
+artifacts:
+- path: FModel\bin\x64\Release\netcoreapp3.1\
+  name: FModel
