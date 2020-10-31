@@ -28,8 +28,13 @@ namespace FModel.Utils
 
             string trigger;
             {
-                string tempPath = path[1..];
-                trigger = tempPath.Substring(0, tempPath.IndexOf('/'));
+                if (path.Contains("/"))
+                {
+                    string tempPath = path[1..];
+                    trigger = tempPath.Substring(0, tempPath.IndexOf('/'));
+                }
+                else
+                    trigger = path;
             }
 
             Regex regex = new Regex(trigger);

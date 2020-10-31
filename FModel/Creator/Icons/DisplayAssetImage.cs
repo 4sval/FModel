@@ -42,7 +42,7 @@ namespace FModel.Creator.Icons
                     if (obj.TryGetValue(imageType, out var v1) && v1 is StructProperty s && s.Value is UObject type &&
                         type.TryGetValue("ResourceObject", out var v2) && v2 is ObjectProperty resourceObject)
                     {
-                        if (!resourceObject.Value.Resource.OuterIndex.Resource.ObjectName.String.Contains("/Game/Athena/Prototype/Textures/"))
+                        if (resourceObject.Value.Resource.OuterIndex.Resource != null && !resourceObject.Value.Resource.OuterIndex.Resource.ObjectName.String.Contains("/Game/Athena/Prototype/Textures/"))
                         {
                             icon.IconImage = Utils.GetObjectTexture(resourceObject);
                             assetName = "DA_Featured_" + assetName;

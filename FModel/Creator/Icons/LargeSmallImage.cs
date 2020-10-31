@@ -21,7 +21,7 @@ namespace FModel.Creator.Icons
                 path += "_" + assetName.Substring(assetName.LastIndexOf(".") - 1, 1);
 
             Package p = Utils.GetPropertyPakPackage(path);
-            if (p.HasExport() && !p.Equals(default))
+            if (p != null && p.HasExport() && !p.Equals(default))
             {
                 if (GetPreviewImage(icon, p.GetIndexedExport<UObject>(0), hightRes))
                     return;
