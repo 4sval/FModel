@@ -112,7 +112,7 @@ namespace FModel.PakReader.Parsers
                     {
                         var nextIndex = FakeImportMap.Count;
                         FakeImportMap[realImportIndex] = new FObjectResource(new FName(export.ObjectName.String), new FPackageIndex(this, -(nextIndex + 1)));
-                        var outerResource = new FObjectResource(new FName(string.Concat(package.Reader.Summary.Name.String, ".", export.ObjectName.String)), new FPackageIndex());
+                        var outerResource = new FObjectResource(new FName(package.Reader.Summary.Name.String), new FPackageIndex());
                         FakeImportMap.Add(outerResource);
                     }
                 }
@@ -152,7 +152,7 @@ namespace FModel.PakReader.Parsers
                         "Texture2D" => new UTexture2D(this, properties, _ubulk,
                             ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),
                         "VirtualTexture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),
-                        //"CurveTable" => new UCurveTable(this),
+                        "CurveTable" => new UCurveTable(this, properties),
                         "DataTable" => new UDataTable(this, properties, exportType.String),
                         //"FontFace" => new UFontFace(this, ubulk),
                         "SoundWave" => new USoundWave(this, properties, _ubulk, ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),

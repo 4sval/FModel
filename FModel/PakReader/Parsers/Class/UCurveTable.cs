@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using FModel.PakReader.IO;
 using FModel.PakReader.Parsers.Objects;
 
 namespace FModel.PakReader.Parsers.Class
@@ -12,10 +13,7 @@ namespace FModel.PakReader.Parsers.Class
         
         internal UCurveTable(PackageReader reader)
         {
-            if (!(reader is IoPackageReader))
-            {
-                _ = new UObject(reader); //will break    
-            }
+            new UObject(reader); //will break
 
             int NumRows = reader.ReadInt32();
             CurveTableMode = (ECurveTableMode)reader.ReadByte();
@@ -32,6 +30,29 @@ namespace FModel.PakReader.Parsers.Class
                 }
 
                 RowMap[RowName] = new UObject(reader, true);
+            }
+        }
+
+        internal UCurveTable(IoPackageReader reader, IReadOnlyDictionary<int, PropertyInfo> properties)
+        {
+            reader.ReadUInt16(); // don't ask me
+            reader.ReadUInt32(); // what is this
+
+            int NumRows = reader.ReadInt32();
+            CurveTableMode = (ECurveTableMode)reader.ReadByte();
+
+            RowMap = new Dictionary<string, object>();
+            for (int i = 0; i < NumRows; i++)
+            {
+                int num = 1;
+                string RowName = reader.ReadFName().String ?? "";
+                string baseName = RowName;
+                while (RowMap.ContainsKey(RowName))
+                {
+                    RowName = $"{baseName}_NK{num++:00}";
+                }
+
+                RowMap[RowName] = new UObject(reader, properties, true);
             }
         }
 
