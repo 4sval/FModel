@@ -26,9 +26,7 @@ namespace FModel.PakReader.Parsers.Class
             do
             {
                 if (properties.ContainsKey(it.Current.Val))
-                {
                     continue;
-                }
 
                 if (!headerWritten)
                 {
@@ -57,8 +55,7 @@ namespace FModel.PakReader.Parsers.Class
                     }
                     else
                     {
-                        var obj = BaseProperty.ReadAsZeroObject(reader, new FPropertyTag(propertyInfo),
-                            new FName(propertyInfo.Type));
+                        var obj = BaseProperty.ReadAsZeroObject(reader, new FPropertyTag(propertyInfo), new FName(propertyInfo.Type));
                         var key = Dict.ContainsKey(propertyInfo.Name) ? $"{propertyInfo.Name}_NK{num++:00}" : propertyInfo.Name;
                         Dict[key] = obj;
                     }
@@ -69,16 +66,16 @@ namespace FModel.PakReader.Parsers.Class
                     if (!isNonZero)
                     {
                         // We are lucky: We don't know this property but it also has no content
-                        DebugHelper.WriteLine($"Unknown property for {GetType().Name} with value {val} but it's zero so we are good");
+                        DebugHelper.WriteLine($"{type ?? "Unknown"}: Unknown property for {GetType().Name} with value {val} but it's zero so we are good");
                     }
                     else
                     {
-                        DebugHelper.WriteLine($"Unknown property for {GetType().Name} with value {val}. Can't proceed serialization (Serialized {Dict.Count} properties till now)");
-                        return;
+                        DebugHelper.WriteLine($"{type ?? "Unknown"}: Unknown property for {GetType().Name} with value {val}. Can't proceed serialization (Serialized {Dict.Count} properties till now)");
                         //throw new FileLoadException($"Unknown property for {GetType().Name} with value {val}. Can't proceed serialization");
                     }
                 }
             } while (it.MoveNext());
+
             if (!structFallback && reader.ReadInt32() != 0/* && reader.Position + 16 <= maxSize*/)
             {
                 new FGuid(reader);
@@ -122,12 +119,11 @@ namespace FModel.PakReader.Parsers.Class
                     reader.Position = Tag.Size + pos;
                 }
             }
+
             Dict = properties;
 
             if (!structFallback && reader.ReadInt32() != 0/* && reader.Position + 16 <= maxSize*/)
-            {
                 new FGuid(reader);
-            }
         }
 
         public object this[string key] => Dict[key];
@@ -152,6 +148,7 @@ namespace FModel.PakReader.Parsers.Class
                     return true;
                 }
             }
+
             value = null;
             return false;
         }
