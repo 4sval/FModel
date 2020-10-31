@@ -6,8 +6,10 @@ before_build:
 build_script:
 - cmd: >-
     "%programfiles(x86)%\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\amd64\MsBuild.exe" /nologo /m:2 /p:Configuration=Release /p:Platform="X64" /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" "FModel.sln"
+    
+    dotnet publish --configuration Release --framework netcoreapp3.1 --output "./build/" -p:PublishReadyToRun=true -p:PublishSingleFile=true --no-self-contained --runtime win-x64
 
 test: off
 artifacts:
-- path: FModel\bin\x64\Release\netcoreapp3.1\
+- path: build\
   name: FModel
