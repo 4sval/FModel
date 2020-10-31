@@ -135,11 +135,11 @@ namespace FModel.ViewModels.Treeview
                     else if (Globals.CachedIoStores.TryGetValue(entry.ContainerFile, out FFileIoStoreReader IoStore))
                     {
                         if (IoStore.TryGetValue("/" + entry.Name.Substring(0, entry.Name.LastIndexOf(".")), out var IoEntry)) // remove the extension to get the entry
-                            {
-                                Assets.Export(IoEntry, true);
-                            }
+                        {
+                            Assets.Export(IoEntry, true);
                         }
                     }
+                }
                 
             }).ContinueWith(t =>
             {
