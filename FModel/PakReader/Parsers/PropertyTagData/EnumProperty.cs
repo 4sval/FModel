@@ -14,7 +14,7 @@ namespace FModel.PakReader.Parsers.PropertyTagData
 
             if (reader is IoPackageReader)
             {
-                var byteValue = reader.ReadByte();
+                object byteValue = tag.EnumType.String == "IntProperty" ? reader.ReadInt32() : reader.ReadByte();
                 Value = new FName(ByteToEnum(tag.EnumName.String, byteValue));
             }
             else
@@ -23,7 +23,7 @@ namespace FModel.PakReader.Parsers.PropertyTagData
             }
         }
 
-        private static string ByteToEnum(string enumName, byte value)
+        private static string ByteToEnum(string enumName, object value)
         {
             string result;
 
@@ -32,7 +32,7 @@ namespace FModel.PakReader.Parsers.PropertyTagData
 
             if (Globals.EnumMappings.TryGetValue(enumName, out var values))
             {
-                result = values.TryGetValue(value, out var member) ? string.Concat(enumName, "::", member) : string.Concat(enumName, "::", value);
+                result = values.TryGetValue((int)value, out var member) ? string.Concat(enumName, "::", member) : string.Concat(enumName, "::", value);
             }
             else
             {

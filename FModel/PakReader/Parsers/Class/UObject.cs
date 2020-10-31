@@ -65,6 +65,7 @@ namespace FModel.PakReader.Parsers.Class
                 }
                 else
                 {
+                    Dict[val.ToString()] = null;
                     if (!isNonZero)
                     {
                         // We are lucky: We don't know this property but it also has no content

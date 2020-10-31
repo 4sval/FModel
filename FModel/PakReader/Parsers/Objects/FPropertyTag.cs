@@ -8,6 +8,7 @@ namespace FModel.PakReader.Parsers.Objects
         public readonly long Position;
         public readonly byte BoolVal;
         public readonly FName EnumName;
+        public readonly FName EnumType;
         public readonly byte HasPropertyGuid;
         public readonly FName InnerType;
         public readonly FName Name;
@@ -27,6 +28,7 @@ namespace FModel.PakReader.Parsers.Objects
             StructName = new FName(info.StructType);
             BoolVal = (byte) ((info.Bool ?? false) ? 1 : 0);
             EnumName = new FName(info.EnumName);
+            EnumType = new FName(info.EnumType);
             InnerType = new FName(info.InnerType);
             ValueType = new FName(info.ValueType);
             ArrayIndex = 0;
@@ -43,6 +45,7 @@ namespace FModel.PakReader.Parsers.Objects
             Position = 0; // default
             BoolVal = 0;
             EnumName = default;
+            EnumType = default;
             HasPropertyGuid = 0;
             InnerType = default;
             Name = default;

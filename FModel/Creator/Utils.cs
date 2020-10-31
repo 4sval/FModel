@@ -17,8 +17,7 @@ namespace FModel.Creator
             {
                 if (ioStore.Chunks.TryGetValue(id.Id, out string path))
                 {
-                    if (ioStore.Files.TryGetValue(ioStore.MountPoint + path.Substring(0, path.LastIndexOf(".")), out FIoStoreEntry value))
-                        return ioStore.MountPoint + value.Name;
+                    return ioStore.MountPoint + path;
                 }
             }
 
