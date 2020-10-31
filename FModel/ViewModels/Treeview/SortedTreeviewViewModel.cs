@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using FModel.PakReader.Pak;
+using FModel.PakReader.IO;
 
 namespace FModel.ViewModels.Treeview
 {
@@ -86,6 +87,17 @@ namespace FModel.ViewModels.Treeview
                             });
                         }
                     }
+                    else if (Globals.CachedIoStores.TryGetValue(entry.ContainerFile, out FFileIoStoreReader IoStore))
+                    {
+                        if (IoStore.TryGetValue("/" + entry.Name.Substring(0, entry.Name.LastIndexOf(".")), out var IoEntry)) // remove the extension to get the entry
+                        {
+                            entriesToExtract.Add(new ListBoxViewModel
+                            {
+                                Content = IoEntry.GetNameWithExtension(),
+                                ReaderEntry = IoEntry
+                            });
+                        }
+                    }
                 }
             }
 
@@ -120,7 +132,15 @@ namespace FModel.ViewModels.Treeview
                             }
                         }
                     }
-                }
+                    else if (Globals.CachedIoStores.TryGetValue(entry.ContainerFile, out FFileIoStoreReader IoStore))
+                    {
+                        if (IoStore.TryGetValue("/" + entry.Name.Substring(0, entry.Name.LastIndexOf(".")), out var IoEntry)) // remove the extension to get the entry
+                            {
+                                Assets.Export(IoEntry, true);
+                            }
+                        }
+                    }
+                
             }).ContinueWith(t =>
             {
                 timer.Stop();
