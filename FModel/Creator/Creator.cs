@@ -35,7 +35,7 @@ namespace FModel.Creator
             }
             string exportType;
             {
-                if (exportTypes.Length > index && exportTypes[index].String == "BlueprintGeneratedClass")
+                if (exportTypes.Length > index && (exportTypes[index].String == "BlueprintGeneratedClass" || exportTypes[index].String == "FortWeaponAdditionalData_AudioVisualizerData"))
                     index++;
 
                 exportType = exportTypes.Length > index ? exportTypes[index].String : string.Empty;
