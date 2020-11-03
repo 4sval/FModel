@@ -14,8 +14,8 @@ namespace FModel.Utils
     static class Endpoints
     {
         public static readonly FortniteApi FortniteAPI = new FortniteApi($"FModel/{Assembly.GetExecutingAssembly().GetName().Version}");
-        public const string FORTNITE_TYPE_MAPPINGS = "https://raw.githubusercontent.com/FabianFG/FortniteTypeMappings/master/TypeMappings.json";
-        public const string FORTNITE_ENUM_MAPPINGS = "https://raw.githubusercontent.com/FabianFG/FortniteTypeMappings/master/EnumMappings.json";
+        public const string FORTNITE_TYPE_MAPPINGS = "https://raw.githubusercontent.com/FModel/FortMappings/master/TypeMappings.json";
+        public const string FORTNITE_ENUM_MAPPINGS = "https://raw.githubusercontent.com/FModel/FortMappings/master/EnumMappings.json";
         public const string BENBOT_AES = "https://benbotfn.tk/api/v1/aes";
         public const string BENBOT_HOTFIXES = "https://benbotfn.tk/api/v1/hotfixes";
         public const string FMODEL_JSON = "https://dl.dropbox.com/s/sxyaqo6zu1drlea/FModel.json?dl=0";
