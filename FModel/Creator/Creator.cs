@@ -108,6 +108,7 @@ namespace FModel.Creator
                 case "FortConsumableAccountItemDefinition":
                 case "FortConversionControlItemDefinition":
                 case "FortAccountBuffCreditItemDefinition":
+                case "FortEventCurrencyItemDefinitionRedir":
                 case "FortPersistentResourceItemDefinition":
                 case "FortHomebaseBannerIconItemDefinition":
                 case "FortCampaignHeroLoadoutItemDefinition":
