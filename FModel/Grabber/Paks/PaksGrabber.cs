@@ -22,7 +22,7 @@ namespace FModel.Grabber.Paks
 {
     static class PaksGrabber
     {
-        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/pakchunk(?:0|10.*|\w+)-WindowsClient\.(pak|utoc|ucas)$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/pakchunk(?:0|10.*|\w+)-WindowsClient\.(pak|ucas)$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         public static async Task PopulateMenu()
         {

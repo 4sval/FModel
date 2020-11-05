@@ -60,8 +60,8 @@ namespace FModel.PakReader.Parsers.Objects
                 "ColorMaterialInput" => new FColorMaterialInput(reader),
                 "ExpressionInput" => new FMaterialInput(reader),
                 //
-                "PrimaryAssetType" => new FPrimaryAssetType(reader),
-                "PrimaryAssetId" => new FPrimaryAssetId(reader),
+                //"PrimaryAssetType" => new FPrimaryAssetType(reader),
+                //"PrimaryAssetId" => new FPrimaryAssetId(reader),
                 _ => Fallback(reader, structName)
             };
         }

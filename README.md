@@ -1,4 +1,4 @@
-# FModel
+# FModel [![Build status](https://ci.appveyor.com/api/projects/status/bqipyycg1404acyt/branch/master?svg=true)](https://ci.appveyor.com/project/iAmAsval/fmodel/branch/master)
 
 <img src="https://cdn.asval.tk/i/FModel.png" align="right" alt="FModel Logo" width="128" height="128">
 

@@ -36,7 +36,7 @@ namespace FModel.PakReader.Parsers.Class
         internal UCurveTable(IoPackageReader reader, IReadOnlyDictionary<int, PropertyInfo> properties)
         {
             reader.ReadUInt16(); // don't ask me
-            reader.ReadUInt32(); // what is this
+            reader.ReadUInt32(); // what this is
 
             int NumRows = reader.ReadInt32();
             CurveTableMode = (ECurveTableMode)reader.ReadByte();

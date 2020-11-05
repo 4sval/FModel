@@ -41,7 +41,6 @@ namespace FModel.PakReader.Parsers.Class
 #endif
 
             var num = 1;
-
             do
             {
                 var (val, isNonZero) = it.Current;

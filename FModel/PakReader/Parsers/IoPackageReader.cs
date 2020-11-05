@@ -149,8 +149,8 @@ namespace FModel.PakReader.Parsers
                 {
                     _dataExports[i] = exportType.String switch
                     {
-                        "Texture2D" => new UTexture2D(this, properties, _ubulk,
-                            ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),
+                        "Texture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),
+                        "TextureCube" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),
                         "VirtualTexture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),
                         "CurveTable" => new UCurveTable(this, properties),
                         "DataTable" => new UDataTable(this, properties, exportType.String),

@@ -275,7 +275,7 @@ namespace FModel.ViewModels.MenuItem
             }).ContinueWith(t =>
             {
                 DiscordIntegration.Update(
-                    $"{Globals.CachedPakFiles.Count}/{MenuItems.pakFiles.GetReaderCount()} {Properties.Resources.PakFiles}",
+                    $"{Globals.CachedPakFiles.Count + Globals.CachedIoStores.Count}/{MenuItems.pakFiles.GetReaderCount()} {Properties.Resources.PakFiles}",
                     string.Format("{0} - {1}", Globals.Game.GetName(),
                         mode == EPakLoader.All ? Properties.Resources.AllFiles :
                         mode == EPakLoader.New ? Properties.Resources.NewFiles :
