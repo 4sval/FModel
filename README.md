@@ -1,17 +1,15 @@
-# FModel [![Build status](https://ci.appveyor.com/api/projects/status/bqipyycg1404acyt/branch/master?svg=true)](https://ci.appveyor.com/project/iAmAsval/fmodel/branch/master)
+# FModel
 
 <img src="https://cdn.asval.tk/i/FModel.png" align="right" alt="FModel Logo" width="128" height="128">
 
 Created in March 2019, FModel is a .PAK file explorer fully dedicated to Fortnite but also work with some other Unreal Engine's games. It quickly became popular to quickly generate images of new cosmetics added to the game.
 Over time, new features got added and new users discovered the program.
 
-## Build Status [![Build status](https://ci.appveyor.com/api/projects/status/bqipyycg1404acyt/branch/master?svg=true)](https://ci.appveyor.com/project/iAmAsval/fmodel/branch/master)
-
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [Installation](#installation--)
+- [Installation](#installation)
 - [Acknowledgments](#acknowledgments)
 - [Support](#support-)
 
@@ -46,7 +44,12 @@ A few of the things you can do with FModel:
 * Audio Player
   - OGG / WAV files
   
-## Installation [![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total?label=latest-release&logo=GitHub)](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip) [![](https://img.shields.io/github/downloads/iAmAsval/FModel/total?label=all-releases&logo=GitHub)](https://github.com/iAmAsval/FModel/releases)
+## Installation
+
+[![](https://img.shields.io/github/release/iamasval/fmodel.svg)](https://github.com/iAmAsval/FModel/releases/latest)
+[![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total?label=latest-release&logo=GitHub)](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip) [![](https://img.shields.io/github/downloads/iAmAsval/FModel/total?label=all-releases&logo=GitHub)](https://github.com/iAmAsval/FModel/releases)
+[![](https://img.shields.io/github/license/iamasval/fmodel.svg)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
+[![](https://ci.appveyor.com/api/projects/status/bqipyycg1404acyt/branch/master?svg=true)](https://ci.appveyor.com/project/iAmAsval/fmodel/branch/master)
 
 To use FModel, you need to have [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-3.1.3-windows-x64-installer) installed on your computer
 * **[Download](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)** the latest version.
