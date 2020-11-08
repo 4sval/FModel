@@ -83,14 +83,7 @@ namespace FModel.Utils
                                 case ".uproject":
                                 case ".uplugin":
                                 case ".upluginmanifest":
-                                case ".csv":
-                                    {
-                                        using var asset = GetMemoryStream(selected.ReaderEntry.ContainerName, mount + selected.ReaderEntry.GetPathWithoutExtension());
-                                        asset.Position = 0;
-                                        using var reader = new StreamReader(asset);
-                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.ReaderEntry.Name, AvalonEditVm.IniHighlighter);
-                                        break;
-                                    }
+                                case ".csv":                        
                                 case ".json":
                                     {
                                         IHighlightingDefinition syntax = ext switch
@@ -98,6 +91,7 @@ namespace FModel.Utils
                                             ".ini" => AvalonEditVm.IniHighlighter,
                                             ".txt" => AvalonEditVm.IniHighlighter,
                                             ".bat" => AvalonEditVm.IniHighlighter,
+                                            ".csv" => AvalonEditVm.IniHighlighter,
                                             ".xml" => AvalonEditVm.XmlHighlighter,
                                             ".h" => AvalonEditVm.CppHighlighter,
                                             _ => AvalonEditVm.JsonHighlighter
