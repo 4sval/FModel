@@ -83,6 +83,14 @@ namespace FModel.Utils
                                 case ".uproject":
                                 case ".uplugin":
                                 case ".upluginmanifest":
+                                case ".csv":
+                                    {
+                                        using var asset = GetMemoryStream(selected.ReaderEntry.ContainerName, mount + selected.ReaderEntry.GetPathWithoutExtension());
+                                        asset.Position = 0;
+                                        using var reader = new StreamReader(asset);
+                                        AvalonEditVm.avalonEditViewModel.Set(reader.ReadToEnd(), mount + selected.ReaderEntry.Name, AvalonEditVm.IniHighlighter);
+                                        break;
+                                    }
                                 case ".json":
                                     {
                                         IHighlightingDefinition syntax = ext switch
@@ -249,7 +257,7 @@ namespace FModel.Utils
 
                 // Sound
                 var s = p.GetExport<USoundWave>();
-                if (s != null && (s.AudioFormat.String.Equals("OGG") || s.AudioFormat.String.Equals("OGG10000-1-1-1-1-1")))
+                if (s != null && (s.AudioFormat.String.Equals("OGG") || s.AudioFormat.String.Equals("OGG10000-1-1-1-1-1") || s.AudioFormat.String.Equals("OGG10025600-1-1-1-1-1")))
                 {
                     string path = Properties.Settings.Default.OutputPath + "\\Sounds\\" + mount + entry.GetPathWithoutExtension() + ".ogg";
                     Directory.CreateDirectory(Path.GetDirectoryName(path));
