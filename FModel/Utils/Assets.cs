@@ -83,6 +83,7 @@ namespace FModel.Utils
                                 case ".uproject":
                                 case ".uplugin":
                                 case ".upluginmanifest":
+                                case ".csv":                        
                                 case ".json":
                                     {
                                         IHighlightingDefinition syntax = ext switch
@@ -90,6 +91,7 @@ namespace FModel.Utils
                                             ".ini" => AvalonEditVm.IniHighlighter,
                                             ".txt" => AvalonEditVm.IniHighlighter,
                                             ".bat" => AvalonEditVm.IniHighlighter,
+                                            ".csv" => AvalonEditVm.IniHighlighter,
                                             ".xml" => AvalonEditVm.XmlHighlighter,
                                             ".h" => AvalonEditVm.CppHighlighter,
                                             _ => AvalonEditVm.JsonHighlighter
@@ -249,7 +251,7 @@ namespace FModel.Utils
 
                 // Sound
                 var s = p.GetExport<USoundWave>();
-                if (s != null && (s.AudioFormat.String.Equals("OGG") || s.AudioFormat.String.Equals("OGG10000-1-1-1-1-1")))
+                if (s != null && (s.AudioFormat.String.Equals("OGG") || s.AudioFormat.String.Equals("OGG10000-1-1-1-1-1") || s.AudioFormat.String.Equals("OGG10025600-1-1-1-1-1")))
                 {
                     string path = Properties.Settings.Default.OutputPath + "\\Sounds\\" + mount + entry.GetPathWithoutExtension() + ".ogg";
                     Directory.CreateDirectory(Path.GetDirectoryName(path));
