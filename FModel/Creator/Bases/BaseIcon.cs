@@ -119,7 +119,7 @@ namespace FModel.Creator.Bases
             // text
             if (export.GetExport<TextProperty>("DisplayName", "DefaultHeaderText", "UIDisplayName") is { } displayName)
                 DisplayName = Text.GetTextPropertyBase(displayName);
-            if (export.GetExport<TextProperty>("Description", "DefaultBodyText", "UIDescription") is { } description)
+            if (export.GetExport<TextProperty>("Description", "DefaultBodyText", "UIDescription", "UIDisplayDescription") is { } description)
                 Description = Text.GetTextPropertyBase(description);
             else if (export.GetExport<ArrayProperty>("Description") is { } arrayDescription) // abilities
                 Description = Text.GetTextPropertyBase(arrayDescription);
