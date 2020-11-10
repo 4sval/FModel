@@ -46,6 +46,9 @@ namespace FModel.PakReader.Parsers.Class
                 var (val, isNonZero) = it.Current;
                 if (properties.TryGetValue(val, out var propertyInfo))
                 {
+                    if (propertyInfo.Name == "AuthoredVFXData_ByPart" || propertyInfo.Name == "RequestedDataStores")
+                        continue;
+
                     if (isNonZero)
                     {
                         var obj = BaseProperty.ReadAsObject(reader, new FPropertyTag(propertyInfo), new FName(propertyInfo.Type), ReadType.NORMAL);

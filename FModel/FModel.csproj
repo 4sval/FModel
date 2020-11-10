@@ -133,10 +133,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.6.3" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.6.4" />
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
-    <PackageReference Include="DiscordRichPresence" Version="1.0.150" />
+    <PackageReference Include="DiscordRichPresence" Version="1.0.166" />
     <PackageReference Include="DotNetZip" Version="1.14.0" />
     <PackageReference Include="EpicManifestParser" Version="1.2.0" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.1" />
@@ -146,7 +146,7 @@
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NVorbis" Version="0.10.1" />
-    <PackageReference Include="Ookii.Dialogs.Wpf" Version="1.1.0" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="1.2.0" />
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
     <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.80.2" />
     <PackageReference Include="System.Data.HashFunction.CityHash" Version="2.0.0" />

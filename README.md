@@ -11,7 +11,7 @@ Over time, new features got added and new users discovered the program.
 - [Features](#features)
 - [Installation](#installation)
 - [Acknowledgments](#acknowledgments)
-- [Support](#support-)
+- [Support](#support)
 
 ## Introduction
 
@@ -168,12 +168,13 @@ This software uses the following open source packages:
 - [MaterialDesignIcons](https://materialdesignicons.com/)
 - [Microsoft.Windows.SDK.Contracts](https://www.nuget.org/packages/Microsoft.Windows.SDK.Contracts)
 
-## Support [![](https://wakatime.com/badge/github/iAmAsval/FModel.svg)](https://wakatime.com/badge/github/iAmAsval/FModel)
+## Support
 
 This project is not my full time job, donations and stars are greatly appreciated.
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EP9SSWG8MW4UC&source=url">
   <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">
+  <img src="https://wakatime.com/badge/github/iAmAsval/FModel.svg">
 </a>
 <a href="https://starchart.cc/iamasval/fmodel.svg">
   <img src="https://starchart.cc/iamasval/fmodel.svg">

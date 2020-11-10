@@ -775,9 +775,10 @@ namespace FModel.Properties {
         ///   Recherche une chaîne localisée semblable à • Maiky ♥			• HYPEX ♥
         ///• VenomLeaks ♥			• JayKeyFN ♥
         ///• Fevers ♥			• Netu ♥
-        ///• Quentin				• Yanteh
-        ///• Shiina				• SexyNutella
-        ///• Alexander			• imatrix
+        ///• TheGameVlog ♥			• Quentin
+        ///• Yanteh				• Shiina
+        ///• SexyNutella			• Alexander
+        ///• Jinx				• imatrix
         ///• Frenzy Leaks			• LlamaLeaks
         ///• XTigerHyperX			• FunGames
         ///• WeLoveFortnite.

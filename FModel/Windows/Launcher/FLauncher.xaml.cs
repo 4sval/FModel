@@ -48,7 +48,7 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_Fortnite + " [EGL2]", Property = egl2FilesPath });
             }
 
-            ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_Fortnite + " [LIVE]", Property = "donotedit-youcanteditanyway-fn.manifest" });
+            //ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_Fortnite + " [LIVE]", Property = "donotedit-youcanteditanyway-fn.manifest" });
 
             string valorantFilesPath = Paks.GetValorantPakFilesPath();
             if (!string.IsNullOrEmpty(valorantFilesPath))

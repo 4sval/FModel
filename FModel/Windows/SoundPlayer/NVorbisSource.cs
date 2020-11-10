@@ -38,14 +38,7 @@ namespace FModel.Windows.SoundPlayer
         {
             get
             {
-                try
-                {
-                    return CanSeek ? (long)(_vorbisReader.TotalTime.TotalSeconds * _waveFormat.SampleRate * _waveFormat.Channels) : 0;
-                }
-                catch (Exception)
-                {
-                    return 0;
-                }
+                return CanSeek ? (long)(_vorbisReader.TotalTime.TotalSeconds * _waveFormat.SampleRate * _waveFormat.Channels) : 0;
             }
         }
 

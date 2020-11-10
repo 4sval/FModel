@@ -8,11 +8,15 @@ namespace FModel.PakReader.Parsers.Objects
 
         internal FByteBulkData(BinaryReader reader, Stream ubulk, long ubulkOffset)
         {
-            var BulkDataFlags = reader.ReadUInt32();
+            var BulkDataFlags = reader.ReadInt32();
 
             var ElementCount = reader.ReadInt32();
             _ = reader.ReadInt32(); //BulkDataSizeOnDisk
             var BulkDataOffsetInFile = reader.ReadInt64();
+            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_NoOffsetFixUp) == 0) // UE4.26 flag
+            {
+                BulkDataOffsetInFile += ubulkOffset;
+            }
 
             Data = null;
             if ((BulkDataFlags & 0x20) != 0 || ElementCount == 0)
@@ -21,7 +25,6 @@ namespace FModel.PakReader.Parsers.Objects
                 return;
 
             if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadAtEndOfFile) != 0 &&
-                BulkDataOffsetInFile > 0 && ElementCount > 0 &&
                 BulkDataOffsetInFile + ElementCount <= reader.BaseStream.Length) //.uasset
             {
                 long rememberMe = reader.BaseStream.Position;
@@ -33,13 +36,9 @@ namespace FModel.PakReader.Parsers.Objects
             {
                 Data = reader.ReadBytes(ElementCount);
             }
-            else if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadInSeperateFile) != 0 &&
-                ubulk != null && BulkDataOffsetInFile + ubulkOffset >= 0) //.ubulk
+            else if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadInSeperateFile) != 0 && ubulk != null) //.ubulk
             {
-                if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_NoOffsetFixUp) == 0) // UE4.26 flag
-                {
-                    ubulk.Position = BulkDataOffsetInFile + ubulkOffset;
-                }
+                ubulk.Position = BulkDataOffsetInFile;
                 Data = new byte[ElementCount];
                 ubulk.Read(Data, 0, (int)ElementCount);
             }
