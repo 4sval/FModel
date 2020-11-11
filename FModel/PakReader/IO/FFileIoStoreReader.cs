@@ -15,6 +15,7 @@ namespace FModel.PakReader.IO
     public class FFileIoStoreReader : IReadOnlyDictionary<string, FIoStoreEntry>
     {
         public readonly string FileName;
+        public readonly string Directory;
         public readonly FIoStoreTocResource TocResource;
         public readonly Dictionary<FIoChunkId, FIoOffsetAndLength> Toc;
         public readonly FFileIoStoreContainerFile ContainerFile;
@@ -49,9 +50,10 @@ namespace FModel.PakReader.IO
         public FIoDirectoryIndexResource _directoryIndex;
         private byte[] _directoryIndexBuffer;
 
-        public FFileIoStoreReader(string fileName, Stream tocStream, Stream containerStream, bool caseSensitive = true, EIoStoreTocReadOptions tocReadOptions = EIoStoreTocReadOptions.ReadDirectoryIndex)
+        public FFileIoStoreReader(string fileName, string dir, Stream tocStream, Stream containerStream, bool caseSensitive = true, EIoStoreTocReadOptions tocReadOptions = EIoStoreTocReadOptions.ReadDirectoryIndex)
         {
             FileName = fileName;
+            Directory = dir;
             CaseSensitive = caseSensitive;
             ContainerFile.FileHandle = containerStream;
             var tocResource = new FIoStoreTocResource(tocStream, tocReadOptions);

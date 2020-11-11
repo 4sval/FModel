@@ -26,7 +26,9 @@ namespace FModel.PakReader.IO
         
         public FIoStoreTocResource(Stream tocStream, EIoStoreTocReadOptions readOptions = EIoStoreTocReadOptions.Default)
         {
-            using var reader = new BinaryReader(tocStream);
+            var streamBuffer = new byte[tocStream.Length];
+            tocStream.Read(streamBuffer, 0, streamBuffer.Length);
+            using var reader = new BinaryReader(new MemoryStream(streamBuffer));
             Header = new FIoStoreTocHeader(reader);
 
             var totalTocSize = tocStream.Length - FIoStoreTocHeader.SIZE;

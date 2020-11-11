@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-
 using EpicManifestParser.Objects;
-
 using FModel.Grabber.Manifests;
 using FModel.Logger;
 using FModel.PakReader.IO;
@@ -22,7 +20,7 @@ namespace FModel.Grabber.Paks
 {
     static class PaksGrabber
     {
-        private static readonly Regex _pakFileRegex = new Regex(@"^FortniteGame/Content/Paks/pakchunk(?:0|10.*|\w+)-WindowsClient\.(pak|ucas)$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        private static readonly Regex _pakFileRegex = new Regex(@"FortniteGame(/|\\)Content(/|\\)Paks(/|\\)(pakchunk(?:0|10.*|\w+)-WindowsClient|global)\.(pak|ucas)$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         public static async Task PopulateMenu()
         {
@@ -110,7 +108,7 @@ namespace FModel.Grabber.Paks
                         else if (pakFileName.EndsWith(".ucas"))
                         {
                             var utocStream = manifest.FileManifests.FirstOrDefault(x => x.Name.Equals(fileManifest.Name.Replace(".ucas", ".utoc")));
-                            var ioStore = new FFileIoStoreReader(pakFileName.SubstringAfterLast('\\'), utocStream.GetStream(), pakStream);
+                            var ioStore = new FFileIoStoreReader(pakFileName.SubstringAfterLast('\\'), pakFileName.SubstringBeforeLast('\\'), utocStream.GetStream(), pakStream);
                             await Application.Current.Dispatcher.InvokeAsync(delegate
                             {
                                 MenuItems.pakFiles.Add(new PakMenuItemViewModel
@@ -163,9 +161,14 @@ namespace FModel.Grabber.Paks
                     Folders.SetGameName(Properties.Settings.Default.PakPath);
 
                     // paks
-                    string[] paks = Directory.GetFiles(Properties.Settings.Default.PakPath, "*.pak");
+                    string[] paks = Directory.GetFiles(Properties.Settings.Default.PakPath);
                     for (int i = 0; i < paks.Length; i++)
                     {
+                        if (!_pakFileRegex.IsMatch(paks[i]))
+                        {
+                            continue;
+                        }
+
                         var pakInfo = new FileInfo(paks[i]);
                         if (pakInfo.Length == 365)
                         {
@@ -174,22 +177,50 @@ namespace FModel.Grabber.Paks
 
                         if (!Utils.Paks.IsFileReadLocked(pakInfo))
                         {
-                            PakFileReader pakFile = new PakFileReader(paks[i]);
-                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Registering]", $"{pakFile.FileName} with GUID {pakFile.Info.EncryptionKeyGuid.Hex}");
-                            if (i == 0)
+                            if (paks[i].EndsWith(".pak"))
                             {
-                                Globals.Game.Version = pakFile.Info.Version;
-                                Globals.Game.SubVersion = pakFile.Info.SubVersion;
-                            }
-
-                            await Application.Current.Dispatcher.InvokeAsync(delegate
-                            {
-                                MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                                PakFileReader pakFile = new PakFileReader(paks[i]);
+                                DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Registering]", $"{pakFile.FileName} with GUID {pakFile.Info.EncryptionKeyGuid.Hex}");
+                                if (i == 0)
                                 {
-                                    PakFile = pakFile,
-                                    IsEnabled = false
+                                    Globals.Game.Version = pakFile.Info.Version;
+                                    Globals.Game.SubVersion = pakFile.Info.SubVersion;
+                                }
+
+                                await Application.Current.Dispatcher.InvokeAsync(delegate
+                                {
+                                    MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                                    {
+                                        PakFile = pakFile,
+                                        IsEnabled = false
+                                    });
                                 });
-                            });
+                            }
+                            else if (paks[i].EndsWith(".ucas"))
+                            {
+                                var utoc = paks[i].Replace(".ucas", ".utoc");
+                                if (!Utils.Paks.IsFileReadLocked(new FileInfo(utoc)))
+                                {
+                                    var utocStream = new MemoryStream(await File.ReadAllBytesAsync(utoc));
+                                    var ucasStream = File.OpenRead(paks[i]);
+                                    var ioStore = new FFileIoStoreReader(paks[i].SubstringAfterLast('\\'), paks[i].SubstringBeforeLast('\\'), utocStream, ucasStream);
+                                    DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[IO Store]", "[Registering]", $"{ioStore.FileName} with GUID {ioStore.TocResource.Header.EncryptionKeyGuid.Hex}");
+
+                                    await Application.Current.Dispatcher.InvokeAsync(delegate
+                                    {
+                                        MenuItems.pakFiles.Add(new PakMenuItemViewModel
+                                        {
+                                            IoStore = ioStore,
+                                            IsEnabled = false
+                                        });
+                                    });
+                                }
+                                else
+                                {
+                                    FConsole.AppendText(string.Format(Properties.Resources.PakFileLocked, Path.GetFileNameWithoutExtension(utoc)), FColors.Red, true);
+                                    DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[IO Store]", "[Locked]", utoc);
+                                }
+                            }
                         }
                         else
                         {
@@ -202,28 +233,7 @@ namespace FModel.Grabber.Paks
                     var utocs = Directory.GetFiles(Properties.Settings.Default.PakPath, "*.utoc");
                     foreach (var utoc in utocs)
                     {
-                        var ucas = utoc.Replace(".utoc", ".ucas");
-                        if (!Utils.Paks.IsFileReadLocked(new FileInfo(utoc)) && !Utils.Paks.IsFileReadLocked(new FileInfo(ucas)))
-                        {
-                            var utocStream = new MemoryStream(await File.ReadAllBytesAsync(utoc));
-                            var ucasStream = File.OpenRead(ucas);
-                            var ioStore = new FFileIoStoreReader(ucas.SubstringAfterLast('\\'), utocStream, ucasStream);
-                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[IO Store]", "[Registering]", $"{ioStore.FileName} with GUID {ioStore.TocResource.Header.EncryptionKeyGuid.Hex}");
-
-                            await Application.Current.Dispatcher.InvokeAsync(delegate
-                            {
-                                MenuItems.pakFiles.Add(new PakMenuItemViewModel
-                                {
-                                    IoStore = ioStore,
-                                    IsEnabled = false
-                                });
-                            });
-                        }
-                        else
-                        {
-                            FConsole.AppendText(string.Format(Properties.Resources.PakFileLocked, Path.GetFileNameWithoutExtension(utoc)), FColors.Red, true);
-                            DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[IO Store]", "[Locked]", utoc);
-                        }
+                        
                     }
                 }
             });

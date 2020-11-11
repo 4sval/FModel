@@ -87,7 +87,7 @@ namespace FModel.Utils
                         string trigger;
                         {
                             if (Properties.Settings.Default.PakPath.EndsWith(".manifest"))
-                                trigger = $"{menuItem.PakFile.Directory.Replace('\\', '/')}/{fileName}";
+                                trigger = $"{(menuItem.IsPakFileReader ? menuItem.PakFile.Directory.Replace('\\', '/') : menuItem.IoStore.Directory.Replace('\\', '/'))}/{fileName}";
                             else
                                 trigger = $"{Properties.Settings.Default.PakPath[Properties.Settings.Default.PakPath.LastIndexOf(Folders.GetGameName(), StringComparison.Ordinal)..].Replace("\\", "/")}/{fileName}";
                         }
