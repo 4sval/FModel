@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace FModel.PakReader
 {
@@ -15,16 +16,16 @@ namespace FModel.PakReader
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsUE4Package() => Name[Name.LastIndexOf(".")..].Equals(".uasset");
+        public bool IsUE4Package() => Name[GetNameDefaultExt().LastIndexOf(".")..].Equals(".uasset");
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsLocres() => Name[Name.LastIndexOf(".")..].Equals(".locres");
+        public bool IsLocres() => Name[GetNameDefaultExt().LastIndexOf(".")..].Equals(".locres");
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsUE4Map() => Name[Name.LastIndexOf(".")..].Equals(".umap");
+        public bool IsUE4Map() => Name[GetNameDefaultExt().LastIndexOf(".")..].Equals(".umap");
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsUE4Font() => Name[Name.LastIndexOf(".")..].Equals(".ufont");
+        public bool IsUE4Font() => Name[GetNameDefaultExt().LastIndexOf(".")..].Equals(".ufont");
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetExtension() => Name[Name.LastIndexOf(".")..];
+        public string GetExtension() => Name[GetNameDefaultExt().LastIndexOf(".")..];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string GetPathWithoutFile()
         {
@@ -34,14 +35,14 @@ namespace FModel.PakReader
             return Name.Substring(0, stop);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetPathWithoutExtension() => Name.Substring(0, Name.LastIndexOf("."));
+        public string GetPathWithoutExtension() => Name.Substring(0, GetNameDefaultExt().LastIndexOf("."));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string GetNameWithExtension() => Name.Substring(Name.LastIndexOf("/") + 1);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string GetNameWithoutExtension()
         {
             int start = Name.LastIndexOf("/") + 1;
-            int stop = Name.LastIndexOf(".") - start;
+            int stop = GetNameDefaultExt().LastIndexOf(".") - start;
             return Name.Substring(start, stop);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -54,7 +55,10 @@ namespace FModel.PakReader
         public bool HasUexp() => Uexp != null;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasUbulk() => Ubulk != null;
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string GetNameDefaultExt() => !Path.HasExtension(Name) ? Name + ".uasset" : Name;
+        
         public override string ToString() => Name;
     }
 }
