@@ -73,7 +73,8 @@ namespace FModel.ViewModels.ComboBox
             new ComboBoxViewModel { Id = 19, Content = Properties.Resources.Swedish, Property = ELanguage.Swedish },
             new ComboBoxViewModel { Id = 20, Content = Properties.Resources.Thai, Property = ELanguage.Thai },
             new ComboBoxViewModel { Id = 21, Content = Properties.Resources.Indonesian, Property = ELanguage.Indonesian },
-            new ComboBoxViewModel { Id = 22, Content = Properties.Resources.VietnameseVietnam, Property = ELanguage.VietnameseVietnam }
+            new ComboBoxViewModel { Id = 22, Content = Properties.Resources.VietnameseVietnam, Property = ELanguage.VietnameseVietnam },
+            new ComboBoxViewModel { Id = 23, Content = Properties.Resources.Zulu, Property = ELanguage.Zulu}
         };
 
         public static ObservableCollection<ComboBoxViewModel> jsonCbViewModel = new ObservableCollection<ComboBoxViewModel>

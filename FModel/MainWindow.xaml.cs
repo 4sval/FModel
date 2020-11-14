@@ -35,7 +35,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Net.NetworkInformation;
+using PropertyInfo = FModel.PakReader.IO.PropertyInfo;
 
 namespace FModel
 {
@@ -106,41 +106,43 @@ namespace FModel
 
         private async void LoadMappings()
         {
-            string rawMappings = "{}";
-            string rawEnumMappings = "{}";
-
+            try
+            {
 #if DEBUG
-            if (File.Exists("TypeMappings.json"))
-            {
-                rawMappings = await File.ReadAllTextAsync("TypeMappings.json");
-            }
-            else if (NetworkInterface.GetIsNetworkAvailable())
-            {
-                rawMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
-            }
-
-            if (File.Exists("EnumMappings.json"))
-            {
-                rawEnumMappings = await File.ReadAllTextAsync("EnumMappings.json");
-            }
-            else if (NetworkInterface.GetIsNetworkAvailable())
-            {
-                rawEnumMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
-            }
-#else
-            rawMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
-            rawEnumMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
-#endif
-
-            var serializerSettings = new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver
+                string rawMappings = null;
+                string rawEnumMappings = null;
+                try
                 {
-                    NamingStrategy = new CamelCaseNamingStrategy(false, false)
+                    rawMappings = await File.ReadAllTextAsync(@"C:\Users\GMatrixGames\Desktop\FTest\FortniteTypeMappings\TypeMappings.json");
+                    rawEnumMappings = await File.ReadAllTextAsync(@"C:\Users\GMatrixGames\Desktop\FTest\FortniteTypeMappings\EnumMappings.json");
                 }
-            };
-            Globals.TypeMappings = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, PakReader.IO.PropertyInfo>>>(rawMappings, serializerSettings);
-            Globals.EnumMappings = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, string>>>(rawEnumMappings, serializerSettings);
+                catch
+                {
+                    rawMappings ??= await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
+                    rawEnumMappings ??= await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
+                }
+#else
+                var rawMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
+                var rawEnumMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
+#endif
+                var serializerSettings = new JsonSerializerSettings
+                {
+                    ContractResolver = new DefaultContractResolver
+                    { NamingStrategy = new CamelCaseNamingStrategy(false, false) }
+                };
+                Globals.TypeMappings =
+                    JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, PropertyInfo>>>(rawMappings,
+                        serializerSettings);
+                Globals.EnumMappings = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, string>>>(rawEnumMappings,
+                    serializerSettings);
+
+            }
+            catch (Exception exception)
+            {
+                DebugHelper.WriteException(exception, "Failed to load Mappings");
+                Globals.TypeMappings ??= new Dictionary<string, Dictionary<int, PropertyInfo>>();
+                Globals.EnumMappings ??= new Dictionary<string, Dictionary<int, string>>();
+            }
         }
 
         public void ReloadMappings(object sender, RoutedEventArgs e)

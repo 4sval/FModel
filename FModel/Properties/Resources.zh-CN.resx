@@ -823,4 +823,13 @@
   <data name="GameName_TheCycle" xml:space="preserve">
     <value>《The Cycle》</value>
   </data>
+  <data name="GameName_RogueCompany" xml:space="preserve">
+    <value>《Rogue Company》</value>
+  </data>
+  <data name="GameName_TheOuterWorlds" xml:space="preserve">
+    <value>《The Outer Worlds》</value>
+  </data>
+  <data name="Zulu" xml:space="preserve">
+    <value>祖鲁语</value>
+  </data>
 </root>

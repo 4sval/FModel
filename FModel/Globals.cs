@@ -67,6 +67,8 @@ namespace FModel
                 EGame.Spellbreak => Resources.GameName_Spellbreak,
                 EGame.StateOfDecay2 => Resources.GameName_StateofDecay2,
                 EGame.TheCycle => Resources.GameName_TheCycle,
+                EGame.TheOuterWorlds => Resources.GameName_TheOuterWorlds,
+                EGame.RogueCompany => Resources.GameName_RogueCompany,
                 EGame.Unknown => "Unknown",
                 _ => "Unknown"
             };

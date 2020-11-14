@@ -61,6 +61,8 @@ namespace FModel.Utils
                             m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/Game/{langCode}/Game.locres", RegexOptions.IgnoreCase);
                         else if (Globals.Game.ActualGame == EGame.TheCycle)
                             m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/ProspectGame/{langCode}/ProspectGame.locres", RegexOptions.IgnoreCase);
+                        else if (Globals.Game.ActualGame == EGame.RogueCompany)
+                            m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/KillstreakGame/{langCode}/KillstreakGame.locres", RegexOptions.IgnoreCase);
 
                         if (m != null && m.Success)
                         {
@@ -253,6 +255,20 @@ namespace FModel.Utils
                     ELanguage.PortugueseBrazil => "pt-BR",
                     ELanguage.Russian => "ru",
                     ELanguage.Chinese => "zh",
+                    _ => "en"
+                },
+                EGame.RogueCompany => lang switch
+                {
+                    ELanguage.English => "en",
+                    ELanguage.German => "de",
+                    ELanguage.SpanishLatin => "es",
+                    ELanguage.French => "fr",
+                    ELanguage.Polish => "pl",
+                    ELanguage.PortugueseBrazil => "pt",
+                    ELanguage.Japanese => "ja",
+                    ELanguage.Russian => "ru",
+                    ELanguage.Chinese => "zh",
+                    ELanguage.Zulu => "zu",
                     _ => "en"
                 },
                 _ => "en"

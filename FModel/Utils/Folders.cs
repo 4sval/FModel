@@ -37,6 +37,8 @@ namespace FModel.Utils
                     "g3" => EGame.Spellbreak,
                     "StateOfDecay2" => EGame.StateOfDecay2,
                     "Prospect" => EGame.TheCycle,
+                    "Indiana" => EGame.TheOuterWorlds,
+                    "RogueCompany" => EGame.RogueCompany,
                     _ => EGame.Unknown,
                 };
             }

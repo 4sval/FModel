@@ -10,8 +10,10 @@
         MinecraftDungeons,
         BattleBreakers,
         Spellbreak,
-        StateOfDecay2, // WIP
-        TheCycle
+        StateOfDecay2,
+        TheCycle,
+        TheOuterWorlds,
+        RogueCompany
     }
 
     public enum EFModel
@@ -63,7 +65,8 @@
         Swedish = 19,
         Thai = 20,
         Indonesian = 21,
-        VietnameseVietnam = 22
+        VietnameseVietnam = 22,
+        Zulu = 23
     }
 
     public enum EJsonType: long

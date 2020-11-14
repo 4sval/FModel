@@ -1085,4 +1085,13 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="Packages" xml:space="preserve">
     <value>Packages</value>
   </data>
+  <data name="GameName_RogueCompany" xml:space="preserve">
+    <value>Rogue Company</value>
+  </data>
+  <data name="GameName_TheOuterWorlds" xml:space="preserve">
+    <value>The Outer Worlds</value>
+  </data>
+  <data name="Zulu" xml:space="preserve">
+    <value>Zulu</value>
+  </data>
 </root>

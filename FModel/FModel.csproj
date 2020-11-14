@@ -71,6 +71,7 @@
     <None Remove="Resources\power.png" />
     <None Remove="Resources\progress-download.png" />
     <None Remove="Resources\refresh.png" />
+    <None Remove="Resources\roguecompany.png" />
     <None Remove="Resources\rotate-3d.png" />
     <None Remove="Resources\share-all.png" />
     <None Remove="Resources\share.png" />
@@ -82,6 +83,7 @@
     <None Remove="Resources\T-Icon-Pets-64.png" />
     <None Remove="Resources\T-Icon-Quests-64.png" />
     <None Remove="Resources\thecycle.ico" />
+    <None Remove="Resources\theouterworlds.png" />
     <None Remove="Resources\T_ClipSize_Weapon_Stats.png" />
     <None Remove="Resources\T_DamagePerBullet_Weapon_Stats.png" />
     <None Remove="Resources\T_Placeholder_Challenge_Image.png" />
@@ -170,6 +172,7 @@
     <Resource Include="Resources\power.png" />
     <Resource Include="Resources\progress-download.png" />
     <Resource Include="Resources\refresh.png" />
+    <Resource Include="Resources\roguecompany.png" />
     <Resource Include="Resources\share-all.png" />
     <Resource Include="Resources\share.png" />
     <Resource Include="Resources\sign-direction-plus.png" />
@@ -180,6 +183,7 @@
     <Resource Include="Resources\T-Icon-Pets-64.png" />
     <Resource Include="Resources\T-Icon-Quests-64.png" />
     <Resource Include="Resources\thecycle.ico" />
+    <Resource Include="Resources\theouterworlds.png" />
     <Resource Include="Resources\T_ClipSize_Weapon_Stats.png" />
     <Resource Include="Resources\T_DamagePerBullet_Weapon_Stats.png" />
     <Resource Include="Resources\T_Placeholder_Challenge_Image.png" />

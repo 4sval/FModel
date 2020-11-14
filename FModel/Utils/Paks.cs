@@ -105,16 +105,23 @@ namespace FModel.Utils
             return string.Empty;
         }
 
-        // public static string GetStateOfDecay2PakFilesPath()
-        // {
-        //     (_, string _, string sod2PakFilesPath) = GetUEGameFilesPath("<Replace when known with EGL name>");
-        //     if (!string.IsNullOrEmpty(sod2PakFilesPath))
-        //     {
-        //         return $"{sod2PakFilesPath}\\StateOfDecay2\\Content\\Paks";
-        //     }
-        //
-        //     return string.Empty;
-        // }
+        public static string GetRogueCompanyFilesPath()
+        {
+            (_, string _, string rogueCompanyFilesPath) = GetUEGameFilesPath("Pewee");
+            if (!string.IsNullOrEmpty(rogueCompanyFilesPath))
+                return $"{rogueCompanyFilesPath}\\RogueCompany\\Content\\Paks";
+            else
+                return string.Empty;
+        }
+
+        public static string GetTheOuterWorldsFilesPath()
+        {
+            (_, string _, string theOuterWorldsFilesPath) = GetUEGameFilesPath("Rosemallow");
+            if (!string.IsNullOrEmpty(theOuterWorldsFilesPath))
+                return $"{theOuterWorldsFilesPath}\\Indiana\\Content\\Paks";
+            else
+                return string.Empty;
+        }
 
         public static string GetBorderlands3PakFilesPath()
         {
@@ -127,7 +134,7 @@ namespace FModel.Utils
 
         public static string GetTheCyclePakFilesPath()
         {
-            (_, string _, string theCycleFilesPath) = GetUEGameFilesPath("AzaleaAlpha"); // TODO: Change when out of alpha
+            (_, string _, string theCycleFilesPath) = GetUEGameFilesPath("AzaleaAlpha");
             if (!string.IsNullOrEmpty(theCycleFilesPath))
                 return $"{theCycleFilesPath}\\Prospect\\Content\\Paks";
             else
