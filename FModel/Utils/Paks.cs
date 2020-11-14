@@ -105,25 +105,16 @@ namespace FModel.Utils
             return string.Empty;
         }
 
-        public static string GetStateOfDecay2PakFilesPath()
-        {
-            // WIP
-            var sod2UWPPakFilesPath = GetUWPPakFilesPath("Microsoft.Dayton_8wekyb3d8bbwe");
-            if (!string.IsNullOrEmpty(sod2UWPPakFilesPath))
-            {
-                return $"{sod2UWPPakFilesPath}\\StateOfDecay2\\Content\\Paks";
-            }
-            else
-            {
-                (_, string _, string sod2PakFilesPath) = GetUEGameFilesPath("<Replace when known with EGL name>");
-                if (!string.IsNullOrEmpty(sod2PakFilesPath))
-                {
-                    return $"{sod2PakFilesPath}\\StateOfDecay2\\Content\\Paks";
-                }
-            }
-
-            return string.Empty;
-        }
+        // public static string GetStateOfDecay2PakFilesPath()
+        // {
+        //     (_, string _, string sod2PakFilesPath) = GetUEGameFilesPath("<Replace when known with EGL name>");
+        //     if (!string.IsNullOrEmpty(sod2PakFilesPath))
+        //     {
+        //         return $"{sod2PakFilesPath}\\StateOfDecay2\\Content\\Paks";
+        //     }
+        //
+        //     return string.Empty;
+        // }
 
         public static string GetBorderlands3PakFilesPath()
         {
@@ -159,14 +150,6 @@ namespace FModel.Utils
                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]",
                     "Minecraft Dungeons not found");
             }
-
-            //DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[launcher_settings.json]", "Launcher version not found, attempting to find Microsoft Store installation.");
-
-            //var mcDungeonsUWPPath = GetUWPPakFilesPath("Microsoft.Lovika_8wekyb3d8bbwe");
-            //if (!string.IsNullOrEmpty(mcDungeonsUWPPath))
-            //{ 
-            //    return $"{mcDungeonsUWPPath}\\Dungeons\\Content\\Paks";
-            //}
 
             return string.Empty;
         }
@@ -253,8 +236,7 @@ namespace FModel.Utils
             }
             finally
             {
-                if (stream != null)
-                    stream.Close();
+                stream?.Close();
             }
 
             return false;
@@ -273,8 +255,7 @@ namespace FModel.Utils
             }
             finally
             {
-                if (stream != null)
-                    stream.Close();
+                stream?.Close();
             }
 
             return false;
