@@ -162,9 +162,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="AllFiles" xml:space="preserve">
     <value>Todos los Archivos</value>
   </data>
-  <data name="alpha_a_box" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\alpha-a-box.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Analyzing" xml:space="preserve">
     <value>Analizando {0}</value>
   </data>
@@ -206,14 +203,8 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="Backups" xml:space="preserve">
     <value>Respaldos</value>
   </data>
-  <data name="backup_restore" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\backup-restore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Banner" xml:space="preserve">
     <value>Encabezado</value>
-  </data>
-  <data name="bug" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\bug.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="BugsReport" xml:space="preserve">
     <value>Reporte de errores</value>
@@ -234,18 +225,12 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
     <value>Distinguir mayúsculas/minúsculas</value>
     <comment>Find &amp; Replace Window</comment>
   </data>
-  <data name="cast_audio" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cast-audio.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="ChallengesCustomBanner" xml:space="preserve">
     <value>Encabezado Personalizado de Desafíos</value>
   </data>
   <data name="ChallengesThemeCreator" xml:space="preserve">
     <value>Creador de Tema de Desafíos</value>
     <comment>Settings Menu Item</comment>
-  </data>
-  <data name="challenge_theme_creator" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\challenge-theme-creator.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ChangeGame" xml:space="preserve">
     <value>Cambiar Juego</value>
@@ -262,23 +247,11 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="Clear" xml:space="preserve">
     <value>Limpiar</value>
   </data>
-  <data name="ColorPickerOne" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ColorPickerOne.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ColorPickerTwo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ColorPickerTwo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Colors" xml:space="preserve">
     <value>Colores</value>
   </data>
   <data name="Compression" xml:space="preserve">
     <value>Compresión</value>
-  </data>
-  <data name="content_copy" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\content-copy.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="content_save" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\content-save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ContributorsF" xml:space="preserve">
     <value>Contributors</value>
@@ -311,9 +284,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="Default" xml:space="preserve">
     <value>Por defecto</value>
   </data>
-  <data name="delete_forever" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\delete-forever.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Design" xml:space="preserve">
     <value>Diseño</value>
   </data>
@@ -328,9 +298,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   </data>
   <data name="Disabled" xml:space="preserve">
     <value>Desactivado</value>
-  </data>
-  <data name="discord" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\discord.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DiscordServer" xml:space="preserve">
     <value>Servidor de Discord</value>
@@ -366,18 +333,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="egl2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\egl2.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="EIconDesign_Default" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\EIconDesign_Default.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="EIconDesign_Flat" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\EIconDesign_Flat.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="EIconDesign_Mini" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\EIconDesign_Mini.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="EIconDesign_NoText" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\EIconDesign_NoText.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Enabled" xml:space="preserve">
     <value>Activado</value>
   </data>
@@ -409,9 +364,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="FFile" xml:space="preserve">
     <value>Archivo</value>
   </data>
-  <data name="file" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="FileCount" xml:space="preserve">
     <value>Cantidad de archivos</value>
   </data>
@@ -430,17 +382,8 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="Files" xml:space="preserve">
     <value>Archivos</value>
   </data>
-  <data name="file_export" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file-export.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="file_image" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\file-image.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="file_multiple" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file-multiple.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="file_restore" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file-restore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Filter" xml:space="preserve">
     <value>Filtrar</value>
@@ -464,23 +407,11 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="FLauncher" xml:space="preserve">
     <value>FModel Launcher</value>
   </data>
-  <data name="fmodel" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fmodel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder_download" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder-download.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder_open" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder-open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="fortnite" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\fortnite.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="French" xml:space="preserve">
     <value>Francés</value>
-  </data>
-  <data name="gamepad_variant" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\gamepad-variant.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Games" xml:space="preserve">
     <value>Juegos</value>
@@ -498,9 +429,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   </data>
   <data name="German" xml:space="preserve">
     <value>Alemán</value>
-  </data>
-  <data name="github_circle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\github-circle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GoTo" xml:space="preserve">
     <value>Ir a</value>
@@ -533,9 +461,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="IconWatermarkNotFound" xml:space="preserve">
     <value>Archivo no encontrado, marca de agua desactivada</value>
   </data>
-  <data name="icon_creator" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon-creator.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Idling" xml:space="preserve">
     <value>{0} - Inactivo</value>
   </data>
@@ -548,17 +473,8 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="ImagesMerger" xml:space="preserve">
     <value>Fusionador de Imágenes</value>
   </data>
-  <data name="image_filter_black_white" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image-filter-black-white.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="image_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image-move.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Include" xml:space="preserve">
     <value>Extensión</value>
-  </data>
-  <data name="information" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\information.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Ini" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Ini.xshd;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -587,9 +503,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="KB" xml:space="preserve">
     <value>KB</value>
     <comment>KiloByte</comment>
-  </data>
-  <data name="key" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\key.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Korean" xml:space="preserve">
     <value>Coreano</value>
@@ -620,9 +533,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   </data>
   <data name="lock_open_variant" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lock-open-variant.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="magnify" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\magnify.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="MainPaks" xml:space="preserve">
     <value>PAKs Principal:</value>
@@ -728,21 +638,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
     <value>FModel se reiniciará porque aplicó su(s) nueva(s) ruta(s)</value>
     <comment>General Settings Window</comment>
   </data>
-  <data name="pause" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\pause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="paypal" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\paypal.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="pencil" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\pencil.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="play" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\play.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="playlist_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\playlist-plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="PngFilter" xml:space="preserve">
     <value>Archivos PNG (*.png)|*.png|Todos los archivos (*.*)|*.*</value>
   </data>
@@ -751,9 +646,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   </data>
   <data name="PortugueseBrazil" xml:space="preserve">
     <value>Portugués (Brasil)</value>
-  </data>
-  <data name="power" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\power.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Preview" xml:space="preserve">
     <value>Vista previa</value>
@@ -765,14 +657,8 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="Processing" xml:space="preserve">
     <value>Procesando</value>
   </data>
-  <data name="progress_download" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\progress-download.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Rarity" xml:space="preserve">
     <value>Rareza</value>
-  </data>
-  <data name="refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\refresh.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="RegularExpression" xml:space="preserve">
     <value>Expresión regular</value>
@@ -849,24 +735,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
     <value>Configuración</value>
     <comment>Settings Menu Header</comment>
   </data>
-  <data name="settings1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="share" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\share.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="share_all" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\share-all.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="sign_direction" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sign-direction.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="sign_direction_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sign-direction-plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="sign_direction_remove" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sign-direction-remove.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Spanish" xml:space="preserve">
     <value>Español</value>
   </data>
@@ -888,9 +756,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   </data>
   <data name="Stop" xml:space="preserve">
     <value>Detener</value>
-  </data>
-  <data name="stop1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\stop.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Success" xml:space="preserve">
     <value>Correcto</value>
@@ -921,27 +786,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="Turkish" xml:space="preserve">
     <value>Turco</value>
   </data>
-  <data name="T_ClipSize_Weapon_Stats" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T_ClipSize_Weapon_Stats.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="T_DamagePerBullet_Weapon_Stats" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T_DamagePerBullet_Weapon_Stats.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="T_Icon_Pets_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T-Icon-Pets-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="T_Icon_Quests_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T-Icon-Quests-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="T_Placeholder_Challenge_Image" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T_Placeholder_Challenge_Image.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="T_Placeholder_Item_Image" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T_Placeholder_Item_Image.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="T_ReloadTime_Weapon_Stats" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\T_ReloadTime_Weapon_Stats.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="UnhandledExceptionOccured" xml:space="preserve">
     <value>Ha ocurrido una excepción: {0}</value>
   </data>
@@ -960,20 +804,8 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   <data name="Version" xml:space="preserve">
     <value>Versión</value>
   </data>
-  <data name="view_dashboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\view-dashboard.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Volume" xml:space="preserve">
     <value>Volumen</value>
-  </data>
-  <data name="volume_minus" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\volume-minus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="volume_mute" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\volume-mute.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="volume_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\volume-plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Waiting" xml:space="preserve">
     <value>Esperando</value>
@@ -993,9 +825,6 @@ Ahora es el software gratuito más utilizado para filtrar en Fortnite.</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Sí</value>
-  </data>
-  <data name="zip_box" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\zip-box.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Actualización disponible</value>

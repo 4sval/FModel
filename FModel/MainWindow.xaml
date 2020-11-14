@@ -45,19 +45,31 @@
         <!-- MENU TOP -->
         <Menu IsMainMenu="True" Grid.Row="0" VerticalAlignment="Top" Height="25">
             <MenuItem Header="{x:Static properties:Resources.Files}">
-                <MenuItem x:Name="FModel_MI_Files_PAK" Header="{x:Static properties:Resources.PAK}">
+                <MenuItem x:Name="FModel_MI_Files_PAK" Header="{x:Static properties:Resources.Packages}">
                     <MenuItem.Icon>
-                        <Image Source="Resources/zip-box.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M20 6H12L10 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V8C22 6.9 21.1 6 20 6M18 12H16V14H18V16H16V18H14V16H16V14H14V12H16V10H14V8H16V10H18V12Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Files_AES" Header="{x:Static properties:Resources.AES}" Click="FModel_MI_Files_AES_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/key.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M4,4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8A2,2 0 0,0 20,6H12L10,4M11,10C12.31,10 13.42,10.84 13.83,12H19V14H18V16H16V14H13.83C13.42,15.17 12.31,16 11,16A3,3 0 0,1 8,13A3,3 0 0,1 11,10M11,12A1,1 0 0,0 10,13C10,13.56 10.45,14 11,14A1,1 0 0,0 12,13A1,1 0 0,0 11,12Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Files_Backups" Header="{x:Static properties:Resources.Backups}" ItemsSource="{Binding backupFiles}">
                     <MenuItem.Icon>
-                        <Image Source="Resources/file-restore.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M15.25,13H17.25L16.75,15H14.75L15.25,13M22,8V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6C2,4.89 2.89,4 4,4H10L12,6H20A2,2 0 0,1 22,8M20,12H18.5L19,10H18L17.5,12H15.5L16,10H15L14.5,12H13V13H14.25L13.75,15H12V16H13.5L13,18H14L14.5,16H16.5L16,18H17L17.5,16H19V15H17.75L18.25,13H20V12Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
@@ -67,24 +79,40 @@
                           Command="{x:Static utils:Commands.OpenSearchWindow}"
                           InputGestureText="F2">
                     <MenuItem.Icon>
-                        <Image Source="Resources/magnify.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M19.31 18.9L22.39 22L21 23.39L17.88 20.32C17.19 20.75 16.37 21 15.5 21C13 21 11 19 11 16.5C11 14 13 12 15.5 12C18 12 20 14 20 16.5C20 17.38 19.75 18.21 19.31 18.9M15.5 19C16.88 19 18 17.88 18 16.5C18 15.12 16.88 14 15.5 14C14.12 14 13 15.12 13 16.5C13 17.88 14.12 19 15.5 19M21 4V6H3V4H21M3 16V14H9V16H3M3 11V9H21V11H18.97C17.96 10.37 16.77 10 15.5 10C14.23 10 13.04 10.37 12.03 11H3Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Assets_AudioPlayer" Header="{x:Static properties:Resources.AudioPlayer}" Click="FModel_MI_Assets_AudioPlayer_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/cast-audio.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M2 11V13C7 13 11 17 11 22H13C13 15.9 8.1 11 2 11M20 2H10C8.9 2 8 2.9 8 4V10.5C9 11 9.9 11.7 10.7 12.4C11.6 11 13.2 10 15 10C17.8 10 20 12.2 20 15S17.8 20 15 20H14.8C14.9 20.7 15 21.3 15 22H20C21.1 22 22 21.1 22 20V4C22 2.9 21.1 2 20 2M15 8C13.9 8 13 7.1 13 6C13 4.9 13.9 4 15 4C16.1 4 17 4.9 17 6S16.1 8 15 8M15 18C14.8 18 14.5 18 14.3 17.9C13.8 16.4 13.1 15.1 12.2 13.9C12.6 12.8 13.7 11.9 15 11.9C16.7 11.9 18 13.2 18 14.9S16.7 18 15 18M2 15V17C4.8 17 7 19.2 7 22H9C9 18.1 5.9 15 2 15M2 19V22H5C5 20.3 3.7 19 2 19" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
                 <MenuItem x:Name="FModel_MI_Assets_GoTo" Header="{x:Static properties:Resources.Directories}">
                     <MenuItem.Icon>
-                        <Image Source="Resources/sign-direction.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M11,12H3.5L6,9.5L3.5,7H11V3L12,2L13,3V7H18L20.5,9.5L18,12H13V20A2,2 0 0,1 15,22H9A2,2 0 0,1 11,20V12Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
                 <MenuItem Header="{x:Static properties:Resources.Auto}">
                     <MenuItem.Icon>
-                        <Image Source="Resources/alpha-a-box.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M7.5,5.6L5,7L6.4,4.5L5,2L7.5,3.4L10,2L8.6,4.5L10,7L7.5,5.6M19.5,15.4L22,14L20.6,16.5L22,19L19.5,17.6L17,19L18.4,16.5L17,14L19.5,15.4M22,2L20.6,4.5L22,7L19.5,5.6L17,7L18.4,4.5L17,2L19.5,3.4L22,2M13.34,12.78L15.78,10.34L13.66,8.22L11.22,10.66L13.34,12.78M14.37,7.29L16.71,9.63C17.1,10 17.1,10.65 16.71,11.04L5.04,22.71C4.65,23.1 4,23.1 3.63,22.71L1.29,20.37C0.9,20 0.9,19.35 1.29,18.96L12.96,7.29C13.35,6.9 14,6.9 14.37,7.29Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                     <MenuItem Header="{x:Static properties:Resources.Export}" IsCheckable="True" StaysOpenOnClick="True"
                               IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoExport, Mode=TwoWay}"
@@ -101,17 +129,29 @@
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Assets_Export" Header="{x:Static properties:Resources.Export}" Click="FModel_MI_Assets_Export_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/file-export.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M6,2C4.89,2 4,2.9 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M13,3.5L18.5,9H13M8.93,12.22H16V19.29L13.88,17.17L11.05,20L8.22,17.17L11.05,14.35" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Assets_Save" Header="{x:Static properties:Resources.Save}" Click="FModel_MI_Assets_Save_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/content-save.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Assets_SaveImage" Header="{x:Static properties:Resources.SaveImage}" Click="FModel_MI_Assets_SaveImage_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/image-move.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M15,3H19V0L24,5L19,10V7H15V3M21,11.94V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H12.06C12,3.33 12,3.67 12,4A8,8 0 0,0 20,12C20.33,12 20.67,12 21,11.94M19,18L14.5,12L11,16.5L8.5,13.5L5,18H19Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Assets_OpenOutputFolder"
@@ -119,13 +159,21 @@
                           Command="{x:Static utils:Commands.OpenOutputFolder}"
                           InputGestureText="F3">
                     <MenuItem.Icon>
-                        <Image Source="Resources/folder-open.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M19,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10L12,6H19A2,2 0 0,1 21,8H21L4,8V18L6.14,10H23.21L20.93,18.5C20.7,19.37 19.92,20 19,20Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
                 <MenuItem x:Name="FModel_MI_Assets_ImageMerger" Header="{x:Static properties:Resources.ImagesMerger}" Click="FModel_MI_Assets_ImageMerger_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/image-filter-black-white.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M19,19L12,11V19H5L12,11V5H19M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
@@ -135,60 +183,104 @@
                           Command="{x:Static utils:Commands.OpenGeneralSettings}"
                           InputGestureText="F1">
                     <MenuItem.Icon>
-                        <Image Source="Resources/settings.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Settings_IconCreator" Header="{x:Static properties:Resources.IconCreator}" Click="FModel_MI_Settings_IconCreator_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/icon-creator.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M10 4A4 4 0 0 0 6 8A4 4 0 0 0 10 12A4 4 0 0 0 14 8A4 4 0 0 0 10 4M17 12C16.87 12 16.76 12.09 16.74 12.21L16.55 13.53C16.25 13.66 15.96 13.82 15.7 14L14.46 13.5C14.35 13.5 14.22 13.5 14.15 13.63L13.15 15.36C13.09 15.47 13.11 15.6 13.21 15.68L14.27 16.5C14.25 16.67 14.24 16.83 14.24 17C14.24 17.17 14.25 17.33 14.27 17.5L13.21 18.32C13.12 18.4 13.09 18.53 13.15 18.64L14.15 20.37C14.21 20.5 14.34 20.5 14.46 20.5L15.7 20C15.96 20.18 16.24 20.35 16.55 20.47L16.74 21.79C16.76 21.91 16.86 22 17 22H19C19.11 22 19.22 21.91 19.24 21.79L19.43 20.47C19.73 20.34 20 20.18 20.27 20L21.5 20.5C21.63 20.5 21.76 20.5 21.83 20.37L22.83 18.64C22.89 18.53 22.86 18.4 22.77 18.32L21.7 17.5C21.72 17.33 21.74 17.17 21.74 17C21.74 16.83 21.73 16.67 21.7 16.5L22.76 15.68C22.85 15.6 22.88 15.47 22.82 15.36L21.82 13.63C21.76 13.5 21.63 13.5 21.5 13.5L20.27 14C20 13.82 19.73 13.65 19.42 13.53L19.23 12.21C19.22 12.09 19.11 12 19 12H17M10 14C5.58 14 2 15.79 2 18V20H11.68A7 7 0 0 1 11 17A7 7 0 0 1 11.64 14.09C11.11 14.03 10.56 14 10 14M18 15.5C18.83 15.5 19.5 16.17 19.5 17C19.5 17.83 18.83 18.5 18 18.5C17.16 18.5 16.5 17.83 16.5 17C16.5 16.17 17.17 15.5 18 15.5Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Settings_ThemeCreator" Header="{x:Static properties:Resources.ChallengesThemeCreator}" Click="FModel_MI_Settings_ThemeCreator_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/challenge-theme-creator.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M21.7 18.6V17.6L22.8 16.8C22.9 16.7 23 16.6 22.9 16.5L21.9 14.8C21.9 14.7 21.7 14.7 21.6 14.7L20.4 15.2C20.1 15 19.8 14.8 19.5 14.7L19.3 13.4C19.3 13.3 19.2 13.2 19.1 13.2H17.1C16.9 13.2 16.8 13.3 16.8 13.4L16.6 14.7C16.3 14.9 16.1 15 15.8 15.2L14.6 14.7C14.5 14.7 14.4 14.7 14.3 14.8L13.3 16.5C13.3 16.6 13.3 16.7 13.4 16.8L14.5 17.6V18.6L13.4 19.4C13.3 19.5 13.2 19.6 13.3 19.7L14.3 21.4C14.4 21.5 14.5 21.5 14.6 21.5L15.8 21C16 21.2 16.3 21.4 16.6 21.5L16.8 22.8C16.9 22.9 17 23 17.1 23H19.1C19.2 23 19.3 22.9 19.3 22.8L19.5 21.5C19.8 21.3 20 21.2 20.3 21L21.5 21.4C21.6 21.4 21.7 21.4 21.8 21.3L22.8 19.6C22.9 19.5 22.9 19.4 22.8 19.4L21.7 18.6M18 19.5C17.2 19.5 16.5 18.8 16.5 18S17.2 16.5 18 16.5 19.5 17.2 19.5 18 18.8 19.5 18 19.5M11.29 20H5C3.89 20 3 19.1 3 18V6C3 4.89 3.9 4 5 4H19C20.11 4 21 4.9 21 6V11.68C20.38 11.39 19.71 11.18 19 11.08V8H5V18H11C11 18.7 11.11 19.37 11.29 20Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
                 <MenuItem x:Name="FModel_MI_Settings_RestoreLayout" Header="{x:Static properties:Resources.RestoreLayout}" Click="FModel_MI_Settings_RestoreLayout_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/view-dashboard.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Settings_ChangeGame" Header="{x:Static properties:Resources.ChangeGame}" Click="FModel_MI_Settings_ChangeGame_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/gamepad-variant.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M7,6H17A6,6 0 0,1 23,12A6,6 0 0,1 17,18C15.22,18 13.63,17.23 12.53,16H11.47C10.37,17.23 8.78,18 7,18A6,6 0 0,1 1,12A6,6 0 0,1 7,6M6,9V11H4V13H6V15H8V13H10V11H8V9H6M15.5,12A1.5,1.5 0 0,0 14,13.5A1.5,1.5 0 0,0 15.5,15A1.5,1.5 0 0,0 17,13.5A1.5,1.5 0 0,0 15.5,12M18.5,9A1.5,1.5 0 0,0 17,10.5A1.5,1.5 0 0,0 18.5,12A1.5,1.5 0 0,0 20,10.5A1.5,1.5 0 0,0 18.5,9Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="{x:Static properties:Resources.Help}">
                 <MenuItem x:Name="FModel_MI_Help_Trello" Header="{x:Static properties:Resources.Trello}" Click="FModel_MI_Help_Trello_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/trello.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M19.5,2H4.5A2.5,2.5 0 0,0 2,4.5V19.5A2.5,2.5 0 0,0 4.5,22H19.5A2.5,2.5 0 0,0 22,19.5V4.5A2.5,2.5 0 0,0 19.5,2M10.7,17.2A1.2,1.2 0 0,1 9.5,18.4H5.8C5.14,18.4 4.6,17.86 4.6,17.2V5.8A1.2,1.2 0 0,1 5.8,4.6H9.5C10.16,4.6 10.7,5.14 10.7,5.8V17.2M19.4,12.2C19.4,12.86 18.86,13.4 18.2,13.4H14.5C13.84,13.4 13.3,12.86 13.3,12.2V5.8C13.3,5.14 13.84,4.6 14.5,4.6H18.2C18.86,4.6 19.4,5.14 19.4,5.8V12.2Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Help_Donate" Header="{x:Static properties:Resources.Donate}" Click="FModel_MI_Help_Donate_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/paypal.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M9.06,1.93C7.17,1.92 5.33,3.74 6.17,6H3A2,2 0 0,0 1,8V10A1,1 0 0,0 2,11H11V8H13V11H22A1,1 0 0,0 23,10V8A2,2 0 0,0 21,6H17.83C19,2.73 14.6,0.42 12.57,3.24L12,4L11.43,3.22C10.8,2.33 9.93,1.94 9.06,1.93M9,4C9.89,4 10.34,5.08 9.71,5.71C9.08,6.34 8,5.89 8,5A1,1 0 0,1 9,4M15,4C15.89,4 16.34,5.08 15.71,5.71C15.08,6.34 14,5.89 14,5A1,1 0 0,1 15,4M2,12V20A2,2 0 0,0 4,22H20A2,2 0 0,0 22,20V12H13V20H11V12H2Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Help_Changelog" Header="{x:Static properties:Resources.Changelog}" Click="FModel_MI_Help_Changelog_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/github-circle.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Help_BugsReport" Header="{x:Static properties:Resources.BugsReport}" Click="FModel_MI_Help_BugsReport_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/bug.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M14,12H10V10H14M14,16H10V14H14M20,8H17.19C16.74,7.22 16.12,6.55 15.37,6.04L17,4.41L15.59,3L13.42,5.17C12.96,5.06 12.5,5 12,5C11.5,5 11.04,5.06 10.59,5.17L8.41,3L7,4.41L8.62,6.04C7.88,6.55 7.26,7.22 6.81,8H4V10H6.09C6.04,10.33 6,10.66 6,11V12H4V14H6V15C6,15.34 6.04,15.67 6.09,16H4V18H6.81C7.85,19.79 9.78,21 12,21C14.22,21 16.15,19.79 17.19,18H20V16H17.91C17.96,15.67 18,15.34 18,15V14H20V12H18V11C18,10.66 17.96,10.33 17.91,10H20V8Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Help_Discord" Header="{x:Static properties:Resources.DiscordServer}" Click="FModel_MI_Help_Discord_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/discord.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M22,24L16.75,19L17.38,21H4.5A2.5,2.5 0 0,1 2,18.5V3.5A2.5,2.5 0 0,1 4.5,1H19.5A2.5,2.5 0 0,1 22,3.5V24M12,6.8C9.32,6.8 7.44,7.95 7.44,7.95C8.47,7.03 10.27,6.5 10.27,6.5L10.1,6.33C8.41,6.36 6.88,7.53 6.88,7.53C5.16,11.12 5.27,14.22 5.27,14.22C6.67,16.03 8.75,15.9 8.75,15.9L9.46,15C8.21,14.73 7.42,13.62 7.42,13.62C7.42,13.62 9.3,14.9 12,14.9C14.7,14.9 16.58,13.62 16.58,13.62C16.58,13.62 15.79,14.73 14.54,15L15.25,15.9C15.25,15.9 17.33,16.03 18.73,14.22C18.73,14.22 18.84,11.12 17.12,7.53C17.12,7.53 15.59,6.36 13.9,6.33L13.73,6.5C13.73,6.5 15.53,7.03 16.56,7.95C16.56,7.95 14.68,6.8 12,6.8M9.93,10.59C10.58,10.59 11.11,11.16 11.1,11.86C11.1,12.55 10.58,13.13 9.93,13.13C9.29,13.13 8.77,12.55 8.77,11.86C8.77,11.16 9.28,10.59 9.93,10.59M14.1,10.59C14.75,10.59 15.27,11.16 15.27,11.86C15.27,12.55 14.75,13.13 14.1,13.13C13.46,13.13 12.94,12.55 12.94,11.86C12.94,11.16 13.45,10.59 14.1,10.59Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="FModel_MI_Help_About" Header="{x:Static properties:Resources.AboutF}" Click="FModel_MI_Help_About_Click">
                     <MenuItem.Icon>
-                        <Image Source="Resources/information.png"/>
+                        <Viewbox Width="19" Height="19">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="White" Data="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
@@ -226,7 +318,11 @@
                                 </MenuItem>
                                 <MenuItem x:Name="FModel_MI_Directory_Export" Header="{x:Static properties:Resources.Export}" Click="FModel_MI_Directory_Export_Click">
                                     <MenuItem.Icon>
-                                        <Image Source="Resources/file-export.png"/>
+                                        <Viewbox Width="19" Height="19">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="White" Data="M6,2C4.89,2 4,2.9 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M13,3.5L18.5,9H13M8.93,12.22H16V19.29L13.88,17.17L11.05,20L8.22,17.17L11.05,14.35" />
+                                            </Canvas>
+                                        </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem x:Name="FModel_MI_Directory_Save" Header="{x:Static properties:Resources.Save}" Click="FModel_MI_Directory_Save_Click">
@@ -273,7 +369,11 @@
                                 </MenuItem>
                                 <MenuItem Header="{x:Static properties:Resources.SaveImage}" Click="FModel_MI_Assets_SaveImage_Click">
                                     <MenuItem.Icon>
-                                        <Image Source="Resources/image-move.png"/>
+                                        <Viewbox Width="19" Height="19">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="White" Data="M15,3H19V0L24,5L19,10V7H15V3M21,11.94V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H12.06C12,3.33 12,3.67 12,4A8,8 0 0,0 20,12C20.33,12 20.67,12 21,11.94M19,18L14.5,12L11,16.5L8.5,13.5L5,18H19Z" />
+                                            </Canvas>
+                                        </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
                             </ContextMenu>
@@ -306,12 +406,20 @@
                                 </MenuItem>
                                 <MenuItem Header="{x:Static properties:Resources.Export}" Click="FModel_MI_Assets_Export_Click">
                                     <MenuItem.Icon>
-                                        <Image Source="Resources/file-export.png"/>
+                                        <Viewbox Width="19" Height="19">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="White" Data="M6,2C4.89,2 4,2.9 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M13,3.5L18.5,9H13M8.93,12.22H16V19.29L13.88,17.17L11.05,20L8.22,17.17L11.05,14.35" />
+                                            </Canvas>
+                                        </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem x:Name="CM_Asset_Save" Header="{x:Static properties:Resources.Save}" Click="CM_Asset_Save_Click">
                                     <MenuItem.Icon>
-                                        <Image Source="Resources/content-save.png"/>
+                                        <Viewbox Width="19" Height="19">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="White" Data="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
+                                            </Canvas>
+                                        </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator/>

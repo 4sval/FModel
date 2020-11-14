@@ -162,9 +162,6 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="AllFiles" xml:space="preserve">
     <value>All Files</value>
   </data>
-  <data name="alpha_a_box" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\alpha-a-box.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Analyzing" xml:space="preserve">
     <value>Analyzing {0}</value>
   </data>
@@ -212,9 +209,6 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="Banner" xml:space="preserve">
     <value>Banner</value>
   </data>
-  <data name="bug" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\bug.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="BugsReport" xml:space="preserve">
     <value>Bugs Report</value>
   </data>
@@ -234,18 +228,12 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>Case Sensitive</value>
     <comment>Find &amp; Replace Window</comment>
   </data>
-  <data name="cast_audio" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cast-audio.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="ChallengesCustomBanner" xml:space="preserve">
     <value>Challenges' Custom Banner</value>
   </data>
   <data name="ChallengesThemeCreator" xml:space="preserve">
     <value>Challenges' Theme Creator</value>
     <comment>Settings Menu Item</comment>
-  </data>
-  <data name="challenge_theme_creator" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\challenge-theme-creator.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ChangeGame" xml:space="preserve">
     <value>Change Game</value>
@@ -276,9 +264,6 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="content_copy" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\content-copy.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="content_save" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\content-save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ContributorsF" xml:space="preserve">
     <value>Contributors</value>
@@ -337,9 +322,6 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="Disabled" xml:space="preserve">
     <value>Disabled</value>
-  </data>
-  <data name="discord" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\discord.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DiscordServer" xml:space="preserve">
     <value>Discord Server</value>
@@ -452,17 +434,11 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="Files" xml:space="preserve">
     <value>Files</value>
   </data>
-  <data name="file_export" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file-export.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="file_image" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\file-image.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="file_multiple" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\file-multiple.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="file_restore" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file-restore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Filter" xml:space="preserve">
     <value>Filter</value>
@@ -492,17 +468,11 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="folder_download" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\folder-download.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="folder_open" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder-open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="fortnite" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\fortnite.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="French" xml:space="preserve">
     <value>French</value>
-  </data>
-  <data name="gamepad_variant" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\gamepad-variant.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Games" xml:space="preserve">
     <value>Games</value>
@@ -520,9 +490,6 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="German" xml:space="preserve">
     <value>German</value>
-  </data>
-  <data name="github_circle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\github-circle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GoTo" xml:space="preserve">
     <value>Go To</value>
@@ -555,9 +522,6 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="IconWatermarkNotFound" xml:space="preserve">
     <value>File not found, watermarking disabled</value>
   </data>
-  <data name="icon_creator" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon-creator.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Idling" xml:space="preserve">
     <value>{0} - Idling</value>
   </data>
@@ -570,17 +534,8 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="ImagesMerger" xml:space="preserve">
     <value>Images Merger</value>
   </data>
-  <data name="image_filter_black_white" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image-filter-black-white.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="image_move" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image-move.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Include" xml:space="preserve">
     <value>Include</value>
-  </data>
-  <data name="information" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\information.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Ini" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Ini.xshd;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -609,9 +564,6 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="KB" xml:space="preserve">
     <value>KB</value>
     <comment>KiloByte</comment>
-  </data>
-  <data name="key" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\key.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Korean" xml:space="preserve">
     <value>Korean</value>
@@ -642,9 +594,6 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="lock_open_variant" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\lock-open-variant.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="magnify" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\magnify.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="MainPaks" xml:space="preserve">
     <value>Main PAKs:</value>
@@ -752,9 +701,6 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="pause" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="paypal" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\paypal.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="pencil" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pencil.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -871,17 +817,11 @@ It's now the most used free software to leak on Fortnite.</value>
     <value>Settings</value>
     <comment>Settings Menu Header</comment>
   </data>
-  <data name="settings1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="share" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\share.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="share_all" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\share-all.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="sign_direction" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sign-direction.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="sign_direction_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sign-direction-plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -990,9 +930,6 @@ It's now the most used free software to leak on Fortnite.</value>
   <data name="Version" xml:space="preserve">
     <value>Version</value>
   </data>
-  <data name="view_dashboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\view-dashboard.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Volume" xml:space="preserve">
     <value>Volume</value>
   </data>
@@ -1023,9 +960,6 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>
-  </data>
-  <data name="zip_box" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\zip-box.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Update Available</value>
@@ -1072,9 +1006,6 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="Trello" xml:space="preserve">
     <value>Trello</value>
-  </data>
-  <data name="trello1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\trello.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Cpp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Cpp.xshd;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -1150,5 +1081,8 @@ It's now the most used free software to leak on Fortnite.</value>
   </data>
   <data name="OpenSounds" xml:space="preserve">
     <value>Open Sounds</value>
+  </data>
+  <data name="Packages" xml:space="preserve">
+    <value>Packages</value>
   </data>
 </root>

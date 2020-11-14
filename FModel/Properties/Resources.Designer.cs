@@ -174,16 +174,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap alpha_a_box {
-            get {
-                object obj = ResourceManager.GetObject("alpha_a_box", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Analyzing {0}.
         /// </summary>
         public static string Analyzing {
@@ -350,16 +340,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap bug {
-            get {
-                object obj = ResourceManager.GetObject("bug", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Bugs Report.
         /// </summary>
         public static string BugsReport {
@@ -411,26 +391,6 @@ namespace FModel.Properties {
         public static string CaseSensitive {
             get {
                 return ResourceManager.GetString("CaseSensitive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap cast_audio {
-            get {
-                object obj = ResourceManager.GetObject("cast_audio", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap challenge_theme_creator {
-            get {
-                object obj = ResourceManager.GetObject("challenge_theme_creator", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -542,16 +502,6 @@ namespace FModel.Properties {
         public static System.Drawing.Bitmap content_copy {
             get {
                 object obj = ResourceManager.GetObject("content_copy", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap content_save {
-            get {
-                object obj = ResourceManager.GetObject("content_save", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -731,16 +681,6 @@ namespace FModel.Properties {
         public static string Disabled {
             get {
                 return ResourceManager.GetString("Disabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap discord {
-            get {
-                object obj = ResourceManager.GetObject("discord", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -1031,16 +971,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap file_export {
-            get {
-                object obj = ResourceManager.GetObject("file_export", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         /// </summary>
         public static System.Drawing.Icon file_image {
@@ -1056,16 +986,6 @@ namespace FModel.Properties {
         public static System.Drawing.Bitmap file_multiple {
             get {
                 object obj = ResourceManager.GetObject("file_multiple", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap file_restore {
-            get {
-                object obj = ResourceManager.GetObject("file_restore", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1199,16 +1119,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap folder_open {
-            get {
-                object obj = ResourceManager.GetObject("folder_open", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         /// </summary>
         public static System.Drawing.Icon fortnite {
@@ -1309,16 +1219,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap gamepad_variant {
-            get {
-                object obj = ResourceManager.GetObject("gamepad_variant", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Games.
         /// </summary>
         public static string Games {
@@ -1360,16 +1260,6 @@ namespace FModel.Properties {
         public static string German {
             get {
                 return ResourceManager.GetString("German", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap github_circle {
-            get {
-                object obj = ResourceManager.GetObject("github_circle", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -1437,16 +1327,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap icon_creator {
-            get {
-                object obj = ResourceManager.GetObject("icon_creator", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Icon Creator.
         /// </summary>
         public static string IconCreator {
@@ -1479,26 +1359,6 @@ namespace FModel.Properties {
         public static string Idling {
             get {
                 return ResourceManager.GetString("Idling", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap image_filter_black_white {
-            get {
-                object obj = ResourceManager.GetObject("image_filter_black_white", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap image_move {
-            get {
-                object obj = ResourceManager.GetObject("image_move", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -1544,16 +1404,6 @@ namespace FModel.Properties {
         public static string Indonesian {
             get {
                 return ResourceManager.GetString("Indonesian", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap information {
-            get {
-                object obj = ResourceManager.GetObject("information", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -1650,16 +1500,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap key {
-            get {
-                object obj = ResourceManager.GetObject("key", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Korean.
         /// </summary>
         public static string Korean {
@@ -1747,16 +1587,6 @@ namespace FModel.Properties {
             get {
                 object obj = ResourceManager.GetObject("lock_open_variant", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap magnify {
-            get {
-                object obj = ResourceManager.GetObject("magnify", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -2013,6 +1843,15 @@ namespace FModel.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Packages.
+        /// </summary>
+        public static string Packages {
+            get {
+                return ResourceManager.GetString("Packages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à PAK.
         /// </summary>
         public static string PAK {
@@ -2099,16 +1938,6 @@ namespace FModel.Properties {
         public static System.Drawing.Bitmap pause {
             get {
                 object obj = ResourceManager.GetObject("pause", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap paypal {
-            get {
-                object obj = ResourceManager.GetObject("paypal", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2455,16 +2284,6 @@ namespace FModel.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap settings1 {
-            get {
-                object obj = ResourceManager.GetObject("settings1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap share {
             get {
                 object obj = ResourceManager.GetObject("share", resourceCulture);
@@ -2478,16 +2297,6 @@ namespace FModel.Properties {
         public static System.Drawing.Bitmap share_all {
             get {
                 object obj = ResourceManager.GetObject("share_all", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap sign_direction {
-            get {
-                object obj = ResourceManager.GetObject("sign_direction", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2786,16 +2595,6 @@ namespace FModel.Properties {
         }
         
         /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap trello1 {
-            get {
-                object obj = ResourceManager.GetObject("trello1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Turkish.
         /// </summary>
         public static string Turkish {
@@ -2910,16 +2709,6 @@ namespace FModel.Properties {
         public static string VietnameseVietnam {
             get {
                 return ResourceManager.GetString("VietnameseVietnam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap view_dashboard {
-            get {
-                object obj = ResourceManager.GetObject("view_dashboard", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -3042,16 +2831,6 @@ namespace FModel.Properties {
         public static string YesShowChangelog {
             get {
                 return ResourceManager.GetString("YesShowChangelog", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap zip_box {
-            get {
-                object obj = ResourceManager.GetObject("zip_box", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

@@ -39,6 +39,7 @@ namespace FModel.Windows.Search
                     e.Column.Header = Properties.Resources.Include;
                     e.Column.Width = new DataGridLength(3, DataGridLengthUnitType.Star);
                     break;
+                case "ContainerFile":
                 case "PakFile":
                     e.Column.Header = Properties.Resources.PAK;
                     e.Column.Width = new DataGridLength(4, DataGridLengthUnitType.Star);

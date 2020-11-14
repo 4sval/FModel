@@ -164,11 +164,6 @@ namespace FModel.Grabber.Paks
                     string[] paks = Directory.GetFiles(Properties.Settings.Default.PakPath);
                     for (int i = 0; i < paks.Length; i++)
                     {
-                        if (!_pakFileRegex.IsMatch(paks[i]))
-                        {
-                            continue;
-                        }
-
                         var pakInfo = new FileInfo(paks[i]);
                         if (pakInfo.Length == 365)
                         {
@@ -227,13 +222,6 @@ namespace FModel.Grabber.Paks
                             FConsole.AppendText(string.Format(Properties.Resources.PakFileLocked, Path.GetFileNameWithoutExtension(paks[i])), FColors.Red, true);
                             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[PAK]", "[Locked]", paks[i]);
                         }
-                    }
-                    
-                    // io stores
-                    var utocs = Directory.GetFiles(Properties.Settings.Default.PakPath, "*.utoc");
-                    foreach (var utoc in utocs)
-                    {
-                        
                     }
                 }
             });
