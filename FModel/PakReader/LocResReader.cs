@@ -29,7 +29,7 @@ namespace FModel.PakReader
 
             if (VersionNumber > Version.Latest)
             {
-                throw new IOException($"LocRes file is too new to be loaded! (File Version: {(byte)VersionNumber}, Loader Version: {(byte)LocMetaReader.Version.LATEST})");
+                throw new IOException($"LocRes file is too new to be loaded! (File Version: {(byte)VersionNumber}, Loader Version: {(byte)LocMetaReader.Version.Latest})");
             }
 
             // Read the localized string array

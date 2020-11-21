@@ -107,7 +107,7 @@ namespace FModel.ViewModels.MenuItem
         public static bool AtLeastOnePak(this ObservableCollection<dynamic> o) => 
             Application.Current.Dispatcher.Invoke(() => o.Any(x => !x.GetType().Equals(typeof(Separator)) && x.PakFile != null));
         public static bool AtLeastOnePakWithKey(this ObservableCollection<dynamic> o) =>
-            Application.Current.Dispatcher.Invoke(() => o.Any(x => !x.GetType().Equals(typeof(Separator)) && x.PakFile != null && (x.PakFile.AesKey != null || !x.PakFile.Info.bEncryptedIndex)));
+            Application.Current.Dispatcher.Invoke(() => o.GetMenuItemsWithReaders().Any(x => x.IsEnabled));
         public static IEnumerable<PakMenuItemViewModel> GetMenuItemsWithReaders(this ObservableCollection<dynamic> o) => 
             Application.Current.Dispatcher.Invoke(() => o.Where(x => !x.GetType().Equals(typeof(Separator)) && x.HasReader).Select(x => (PakMenuItemViewModel)x));
         public static IEnumerable<PakMenuItemViewModel> GetMenuItemsWithPakFiles(this ObservableCollection<dynamic> o) => 

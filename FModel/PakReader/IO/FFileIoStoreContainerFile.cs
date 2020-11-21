@@ -6,7 +6,6 @@ namespace FModel.PakReader.IO
     public struct FFileIoStoreContainerFile
     {
         public Stream FileHandle;
-        public string FileName;
         public long CompressionBlockSize;
         public string[] CompressionMethods;
         public FIoStoreTocCompressedBlockEntry[] CompressionBlocks;

@@ -21,7 +21,7 @@ namespace FModel.PakReader.Parsers
         public override FNameEntrySerialized[] NameMap { get; }
 
         private IUExport[] _dataExports;
-        private Stream _ubulk;
+        private readonly Stream _ubulk;
         public override IUExport[] DataExports {
             get
             {
@@ -42,11 +42,9 @@ namespace FModel.PakReader.Parsers
             }
         }
 
-        private Dictionary<FPackageObjectIndex, string> _importMappings;
-
-        public IoPackageReader(Stream uasset, Stream ubulk, FIoGlobalData globalData, FFileIoStoreReader reader, bool onlyInfo = false) : this(new BinaryReader(uasset),
-            ubulk, globalData, reader, onlyInfo) { }
-        public IoPackageReader(BinaryReader uasset, Stream ubulk, FIoGlobalData globalData, FFileIoStoreReader reader, bool onlyInfo = false)
+        public IoPackageReader(Stream uasset, Stream ubulk, FIoGlobalData globalData, bool onlyInfo = false) : this(new BinaryReader(uasset),
+            ubulk, globalData, onlyInfo) { }
+        public IoPackageReader(BinaryReader uasset, Stream ubulk, FIoGlobalData globalData, bool onlyInfo = false)
         {
             Loader = uasset;
             _ubulk = ubulk;
@@ -57,9 +55,9 @@ namespace FModel.PakReader.Parsers
             var nameHashes = new List<ulong>();
             if (Summary.NameMapNamesSize > 0)
             {
-                Loader.BaseStream.Position = Summary.NameMapNamesOffset;
+                Loader.BaseStream.Seek(Summary.NameMapNamesOffset, SeekOrigin.Begin);
                 var nameMapNames = Loader.ReadBytes(Summary.NameMapNamesSize);
-                Loader.BaseStream.Position = Summary.NameMapHashesOffset;
+                Loader.BaseStream.Seek(Summary.NameMapHashesOffset, SeekOrigin.Begin);
                 var nameMapHashes = Loader.ReadBytes(Summary.NameMapHashesSize);
 
                 FNameEntrySerialized.LoadNameBatch(nameMap, nameHashes, nameMapNames, nameMapHashes);
@@ -67,7 +65,7 @@ namespace FModel.PakReader.Parsers
 
             NameMap = nameMap.ToArray();
 
-            Loader.BaseStream.Position = Summary.ImportMapOffset;
+            Loader.BaseStream.Seek(Summary.ImportMapOffset, SeekOrigin.Begin);
             var importMapCount = (Summary.ExportMapOffset - Summary.ImportMapOffset) / /*sizeof(FPackageObjectIndex)*/ sizeof(ulong);
             ImportMap = new FPackageObjectIndex[importMapCount];
             for (int i = 0; i < importMapCount; i++)
@@ -75,7 +73,7 @@ namespace FModel.PakReader.Parsers
                 ImportMap[i] = new FPackageObjectIndex(Loader);
             }
 
-            Loader.BaseStream.Position = Summary.ExportMapOffset;
+            Loader.BaseStream.Seek(Summary.ExportMapOffset, SeekOrigin.Begin);
             var exportMapCount = (Summary.ExportBundlesOffset - Summary.ExportMapOffset) / FExportMapEntry.SIZE;
             ExportMap = new FExportMapEntry[exportMapCount];
             for (int i = 0; i < exportMapCount; i++)
@@ -89,10 +87,9 @@ namespace FModel.PakReader.Parsers
 
         private void ReadContent()
         {
-            Loader.BaseStream.Position = Summary.GraphDataOffset;
+            Loader.BaseStream.Seek(Summary.GraphDataOffset, SeekOrigin.Begin);
             var referencedPackagesCount = Loader.ReadInt32();
             var graphData = new (FPackageId importedPackageId, FArc[] arcs)[referencedPackagesCount];
-            _importMappings = new Dictionary<FPackageObjectIndex, string>(referencedPackagesCount);
             FakeImportMap = new List<FObjectResource>();
             for (int i = 0; i < ImportMap.Length; i++)
                 FakeImportMap.Add(new FObjectResource(new FName(), new FPackageIndex()));
@@ -101,19 +98,15 @@ namespace FModel.PakReader.Parsers
                 var importedPackageId = new FPackageId(Loader);
                 var arcs = Loader.ReadTArray(() => new FArc(Loader));
                 graphData[i] = (importedPackageId, arcs);
-                var importedPackageName = Creator.Utils.GetFullPath(importedPackageId)
-                    ?.Replace($"{Folders.GetGameName()}/Content", "Game");
-                var package = Creator.Utils.GetPropertyPakPackage(importedPackageName) as IoPackage;
-                if (package == null) continue;
+                string importedPackageName = Creator.Utils.GetFullPath(importedPackageId)?.Replace($"{Folders.GetGameName()}/Content", "Game");
+                if (!(Creator.Utils.GetPropertyPakPackage(importedPackageName) is IoPackage package)) continue;
                 foreach (var export in package.Reader.ExportMap)
                 {
                     var realImportIndex = Array.FindIndex(ImportMap, it => it == export.GlobalImportIndex);
                     if (realImportIndex > -1)
                     {
-                        var nextIndex = FakeImportMap.Count;
-                        FakeImportMap[realImportIndex] = new FObjectResource(new FName(export.ObjectName.String), new FPackageIndex(this, -(nextIndex + 1)));
-                        var outerResource = new FObjectResource(new FName(package.Reader.Summary.Name.String), new FPackageIndex());
-                        FakeImportMap.Add(outerResource);
+                        FakeImportMap[realImportIndex] = new FObjectResource(new FName(export.ObjectName.String), new FPackageIndex(this, -(FakeImportMap.Count + 1)));
+                        FakeImportMap.Add(new FObjectResource(new FName(package.Reader.Summary.Name.String), new FPackageIndex()));
                     }
                 }
             }
@@ -143,19 +136,18 @@ namespace FModel.PakReader.Parsers
                     exportType = new FName("Unknown");
                 }
 
-                Loader.BaseStream.Position = currentExportDataOffset;
-
+                Loader.BaseStream.Seek(currentExportDataOffset, SeekOrigin.Begin);
                 if (Globals.TypeMappings.TryGetValue(exportType.String, out var properties))
                 {
                     _dataExports[i] = exportType.String switch
                     {
-                        "Texture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),
-                        "TextureCube" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),
-                        "VirtualTexture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),
+                        "Texture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
+                        "TextureCube" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
+                        "VirtualTexture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
                         "CurveTable" => new UCurveTable(this, properties),
                         "DataTable" => new UDataTable(this, properties, exportType.String),
                         //"FontFace" => new UFontFace(this, ubulk),
-                        "SoundWave" => new USoundWave(this, properties, _ubulk, ExportMap.Sum(e => (long) e.CookedSerialSize) + beginExportOffset),
+                        "SoundWave" => new USoundWave(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
                         //"StringTable" => new UStringTable(this),
                         //"AkMediaAssetData" => new UAkMediaAssetData(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
                         _ => new UObject(this, properties, type: exportType.String),

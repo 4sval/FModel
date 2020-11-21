@@ -126,13 +126,14 @@ namespace FModel.Windows.DarkMessageBox
             DisplayButtons(MessageBoxButton.OK);
         }
 
-        internal DarkMessageBox(string message, string caption, MessageBoxButton button, MessageBoxImage image)
+        internal DarkMessageBox(string message, string caption, MessageBoxButton button, MessageBoxImage image, bool showReset = false)
         {
             InitializeComponent();
 
             Message = message;
             Caption = caption;
             Image_MessageBox.Visibility = Visibility.Collapsed;
+            if (showReset) ResetBtn.Visibility = Visibility.Visible;
 
             DisplayButtons(button);
             DisplayImage(image);

@@ -29,7 +29,7 @@ namespace FModel.PakReader.Parsers.Objects
         {
             foreach (FName gp in gpt)
             {
-                if (gp.String.StartsWith(startWith))
+                if (gp.String != null && gp.String.StartsWith(startWith))
                 {
                     fname = gp;
                     return true;
@@ -45,7 +45,7 @@ namespace FModel.PakReader.Parsers.Objects
             foreach (FName gp in gpt)
             {
                 foreach (string s in startWith)
-                    if (gp.String.StartsWith(s))
+                    if (gp.String != null && gp.String.StartsWith(s))
                         ret.Add(gp.String);
             }
             return ret;

@@ -8,17 +8,15 @@ namespace FModel.PakReader.IO
 {
     public class IoPackage : Package
     {
-        private byte[] UAsset;
-        private byte[] UBulk;
-        private FIoStoreEntry _entry;
+        private readonly byte[] UAsset;
+        private readonly byte[] UBulk;
         private IoPackageReader _reader;
-        private string _jsonData = null;
+        private readonly string _jsonData = null;
         
-        internal IoPackage(byte[] asset, byte[] bulk, FIoStoreEntry entry)
+        internal IoPackage(byte[] asset, byte[] bulk)
         {
             UAsset = asset;
             UBulk = bulk;
-            _entry = entry;
         }
 
         public IoPackageReader Reader
@@ -33,7 +31,7 @@ namespace FModel.PakReader.IO
                     if (bulk != null)
                         bulk.Position = 0;
 
-                    return _reader = new IoPackageReader(asset, bulk, Globals.GlobalData, _entry.ioStore, true);
+                    return _reader = new IoPackageReader(asset, bulk, Globals.GlobalData, true);
                 }
 
                 return _reader;

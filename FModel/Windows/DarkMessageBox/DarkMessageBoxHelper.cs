@@ -93,9 +93,9 @@ namespace FModel.Windows.DarkMessageBox
         /// <param name="button">A System.Windows.MessageBoxButton value that specifies which button or buttons to display.</param>
         /// <param name="icon">A System.Windows.MessageBoxImage value that specifies the icon to display.</param>
         /// <returns>A System.Windows.MessageBoxResult value that specifies which message box button is clicked by the user.</returns>
-        public static MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)
+        public static MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon, bool showReset = false)
         {
-            DarkMessageBox msg = new DarkMessageBox(messageBoxText, caption, button, icon);
+            DarkMessageBox msg = new DarkMessageBox(messageBoxText, caption, button, icon, showReset);
             msg.ShowDialog();
 
             return msg.Result;

@@ -44,8 +44,6 @@ namespace FModel.PakReader.Parsers.Objects
                         {
                             return new FObjectExport(ioReader, AsExport);
                         }
-
-                        Debugger.Break();
                     }
                 }
                 return null;

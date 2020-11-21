@@ -625,7 +625,7 @@
             <StatusBarItem Grid.Column="0">
                 <TextBlock x:Name="FModelVersion_TxtBlck" Text="FModel "/>
             </StatusBarItem>
-            <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Center" Height="Auto">
+            <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Center" Height="Auto" MaxHeight="50">
                 <TextBlock x:Name="ProcessEvents_TxtBlck" Text="{Binding Pevent, Mode=TwoWay}" Height="Auto"/>
             </StatusBarItem>
             <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Right">

@@ -1,6 +1,5 @@
 ﻿using FModel.Windows.SoundPlayer.Visualization;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Windows;
 
 namespace FModel.ViewModels.SoundPlayer

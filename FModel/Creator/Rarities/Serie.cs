@@ -11,12 +11,15 @@ namespace FModel.Creator.Rarities
     {
         public static void GetRarity(BaseIcon icon, ObjectProperty o)
         {
-            Package p = Utils.GetPropertyPakPackage(o.Value.Resource.OuterIndex.Resource.ObjectName.String);
-            if (p.HasExport() && !p.Equals(default))
+            if (o.Value.Resource != null)
             {
-                var obj = p.GetExport<UObject>();
-                if (obj != null)
-                    GetRarity(icon, obj);
+                Package p = Utils.GetPropertyPakPackage(o.Value.Resource.OuterIndex.Resource.ObjectName.String);
+                if (p.HasExport() && !p.Equals(default))
+                {
+                    var obj = p.GetExport<UObject>();
+                    if (obj != null)
+                        GetRarity(icon, obj);
+                }
             }
         }
 

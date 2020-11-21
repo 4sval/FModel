@@ -344,7 +344,7 @@ namespace FModel.Utils
                 if (uexp != null)
                     package = new PakPackage(uasset, uexp, ubulk);
                 else
-                    package = new IoPackage(uasset, ubulk, ioStoreEntry);
+                    package = new IoPackage(uasset, ubulk);
 #if !DEBUG
                 _CachedFiles[entry] = new Dictionary<Package, ArraySegment<byte>[]>
                 {

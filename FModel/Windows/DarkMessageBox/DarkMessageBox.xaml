@@ -28,9 +28,10 @@
         <Grid Grid.Row="1" MinHeight="45">
             <DockPanel Margin="5,0">
 
-                <Button Grid.Row="6" Grid.Column="1" DockPanel.Dock="Left" Height="20" Margin="5,0"
+                <Button x:Name="ResetBtn" Grid.Row="6" Grid.Column="1" DockPanel.Dock="Left" Height="20" Margin="5,0"
                         Content="{x:Static properties:Resources.ResetSettings}" Padding="5,2,5,2"
-                        HorizontalAlignment="Left" Style="{StaticResource RedButton}" Click="OnDeleteSettings"/>
+                        HorizontalAlignment="Left" Style="{StaticResource RedButton}" Click="OnDeleteSettings"
+                        Visibility="Hidden"/>
 
                 <!-- Cancel Button -->
                 <Button Name="Button_Cancel" MinWidth="88" MaxWidth="160" Height="20" Margin="5,0" HorizontalAlignment="Right" Visibility="Collapsed" IsCancel="True"

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using FModel.Logger;
 using FModel.PakReader.IO;
 using FModel.PakReader.Parsers.Objects;
 using FModel.PakReader.Parsers.PropertyTagData;
@@ -62,20 +61,7 @@ namespace FModel.PakReader.Parsers.Class
                         Dict[key] = obj;
                     }
                 }
-                else
-                {
-                    Dict[val.ToString()] = null;
-                    if (!isNonZero)
-                    {
-                        // We are lucky: We don't know this property but it also has no content
-                        DebugHelper.WriteLine($"{type ?? "Unknown"}: Unknown property for {GetType().Name} with value {val} but it's zero so we are good");
-                    }
-                    else
-                    {
-                        DebugHelper.WriteLine($"{type ?? "Unknown"}: Unknown property for {GetType().Name} with value {val}. Can't proceed serialization (Serialized {Dict.Count} properties till now)");
-                        //throw new FileLoadException($"Unknown property for {GetType().Name} with value {val}. Can't proceed serialization");
-                    }
-                }
+                else Dict[val.ToString()] = null;
             } while (it.MoveNext());
 
             if (!structFallback && reader.ReadInt32() != 0/* && reader.Position + 16 <= maxSize*/)

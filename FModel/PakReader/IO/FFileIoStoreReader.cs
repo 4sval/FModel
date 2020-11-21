@@ -31,7 +31,7 @@ namespace FModel.PakReader.IO
             {
                 if (!HasDirectoryIndex) return;
                 if (value != null && !TestAesKey(value)) //if value not null, test but fail, throw not working
-                    throw new ArgumentException(string.Format(FModel.Properties.Resources.AesNotWorking, value.ToStringKey(), ContainerFile.FileName));
+                    throw new ArgumentException(string.Format(FModel.Properties.Resources.AesNotWorking, value.ToStringKey(), FileName));
                 _aesKey = value; // else, even if value is null, set it
                 // setting _aesKey to null will disable the corresponding menu item
             }
@@ -176,9 +176,9 @@ namespace FModel.PakReader.IO
             var remainingSize = dst.Length;
             var dstOffset = 0;
 
-            for (int blockIndex = firstBlockIndex; blockIndex <= lastBlockIndex; blockIndex++)
+            for (int i = firstBlockIndex; i <= lastBlockIndex; i++)
             {
-                var compressionBlock = tocResource.CompressionBlocks[blockIndex];
+                var compressionBlock = tocResource.CompressionBlocks[i];
 
                 var rawSize = BinaryHelper.Align(compressionBlock.CompressedSize, AESDecryptor.ALIGN);
                 var compressedBuffer = new byte[rawSize];

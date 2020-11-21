@@ -62,7 +62,7 @@ namespace FModel
         {
             string errorMessage = string.Format(FModel.Properties.Resources.UnhandledExceptionOccured, e.Exception.Message);
             DebugHelper.WriteException(e.Exception, "thrown in App.xaml.cs by OnDispatcherUnhandledException");
-            DarkMessageBoxHelper.Show(errorMessage, FModel.Properties.Resources.Error, MessageBoxButton.OK, MessageBoxImage.Error);
+            DarkMessageBoxHelper.Show(errorMessage, FModel.Properties.Resources.Error, MessageBoxButton.OK, MessageBoxImage.Error, true);
             e.Handled = true;
         }
 
