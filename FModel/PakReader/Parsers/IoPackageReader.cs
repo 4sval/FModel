@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -164,21 +164,29 @@ namespace FModel.PakReader.Parsers
                 }
                 else
                 {
-                    _dataExports[i] = null;
+                    _dataExports[i] = new UObject();
                     _dataExportTypes[i] = exportType;
 #if DEBUG
-                    var header = new FUnversionedHeader(this);
-                    using var it = new FIterator(header);
-
-                    FConsole.AppendText(string.Concat("\n", exportType.String, ": ", Summary.Name.String), "#CA6C6C", true);
-
-                    do
+                    try
                     {
-                        FConsole.AppendText($"Val: {it.Current.Val} (IsNonZero: {it.Current.IsNonZero})", FColors.Yellow, true);
+                        var header = new FUnversionedHeader(this);
+
+                        using var it = new FIterator(header);
+                        FConsole.AppendText(string.Concat("\n", exportType.String, ": ", Summary.Name.String), "#CA6C6C", true);
+
+                        do
+                        {
+                            FConsole.AppendText($"Val: {it.Current.Val} (IsNonZero: {it.Current.IsNonZero})", FColors.Yellow, true);
+                        }
+                        while (it.MoveNext());
                     }
-                    while (it.MoveNext());
+                    catch (FileLoadException e)
+                    {
+                        continue;
+                    }
 #endif
                 }
+
                 currentExportDataOffset += (int) exportMapEntry.CookedSerialSize;
             }
         }
