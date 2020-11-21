@@ -11,7 +11,7 @@ namespace FModel.PakReader.IO
         private readonly byte[] UAsset;
         private readonly byte[] UBulk;
         private IoPackageReader _reader;
-        private readonly string _jsonData = null;
+        private string _jsonData = null;
         
         internal IoPackage(byte[] asset, byte[] bulk)
         {
