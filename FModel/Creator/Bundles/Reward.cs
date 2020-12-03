@@ -136,7 +136,7 @@ namespace FModel.Creator.Bundles
                     {
                         string path = Utils.GetFullPath($"/FortniteGame/Content/Athena/.*?/{trigger}.*").Replace("FortniteGame/Content", "Game");
                         Package p = Utils.GetPropertyPakPackage(path);
-                        if (p.HasExport() && !p.Equals(default))
+                        if (p!= null && p.HasExport() && !p.Equals(default))
                         {
                             var d = p.GetExport<UObject>();
                             if (d != null)

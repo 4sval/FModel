@@ -37,8 +37,8 @@ namespace FModel.Creator.Bundles
 
             if (obj.TryGetValue("RewardsTable", out var v4) && v4 is ObjectProperty rewardsTable)
             {
-                Package p = Utils.GetPropertyPakPackage(rewardsTable.Value.Resource.OuterIndex.Resource.ObjectName.String);
-                if (p.HasExport() && !p.Equals(default))
+                Package p = Utils.GetPropertyPakPackage(rewardsTable.Value.Resource.OuterIndex.Resource?.ObjectName.String);
+                if (p != null && p.HasExport() && !p.Equals(default))
                 {
                     var u = p.GetExport<UDataTable>();
                     if (u != null && u.TryGetValue("Default", out var i) && i is UObject r &&
