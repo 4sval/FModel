@@ -62,7 +62,7 @@ namespace FModel.Creator.Bases
 
             if (export.GetExport<ObjectProperty>("HeroDefinition", "WeaponDefinition") is { } itemDef)
                 LargeSmallImage.GetPreviewImage(this, itemDef, assetName, forceHR);
-            else if (export.GetExport<SoftObjectProperty>(forceHR ? "LargePreviewImage" : "SmallPreviewImage", forceHR ? "ItemDisplayAsset" : "SmallImage") is { } previewImage)
+            else if (export.GetExport<SoftObjectProperty>(forceHR ? "LargePreviewImage" : "SmallPreviewImage", forceHR ? "ItemDisplayAsset" : "SmallImage", forceHR ? "SidePanelIcon" : "ToastIcon") is { } previewImage)
                 LargeSmallImage.GetPreviewImage(this, previewImage);
             else if (export.GetExport<ObjectProperty>("access_item") is { } accessItem)
             {
@@ -109,9 +109,9 @@ namespace FModel.Creator.Bases
             { } // ^^^^ will return false if image not found, if so, we try to get the normal icon
             else if (export.GetExport<ObjectProperty>("HeroDefinition", "WeaponDefinition") is { } itemDef)
                 LargeSmallImage.GetPreviewImage(this, itemDef, assetName);
-            else if (export.GetExport<SoftObjectProperty>("LargePreviewImage", "SmallPreviewImage", "ItemDisplayAsset") is { } previewImage)
+            else if (export.GetExport<SoftObjectProperty>("LargePreviewImage", "SidePanelIcon", "EntryListIcon", "SmallPreviewImage", "ItemDisplayAsset") is { } previewImage)
                 LargeSmallImage.GetPreviewImage(this, previewImage);
-            else if (export.GetExport<ObjectProperty>("SmallPreviewImage") is { } smallPreviewImage)
+            else if (export.GetExport<ObjectProperty>("SmallPreviewImage", "ToastIcon") is { } smallPreviewImage)
                 IconImage = Utils.GetObjectTexture(smallPreviewImage);
             else if (export.GetExport<StructProperty>("IconBrush") is { } iconBrush) // abilities
                 LargeSmallImage.GetPreviewImage(this, iconBrush);
@@ -119,7 +119,7 @@ namespace FModel.Creator.Bases
             // text
             if (export.GetExport<TextProperty>("DisplayName", "DefaultHeaderText", "UIDisplayName") is { } displayName)
                 DisplayName = Text.GetTextPropertyBase(displayName);
-            if (export.GetExport<TextProperty>("Description", "DefaultBodyText", "UIDescription", "UIDisplayDescription") is { } description)
+            if (export.GetExport<TextProperty>("Description", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription") is { } description)
                 Description = Text.GetTextPropertyBase(description);
             else if (export.GetExport<ArrayProperty>("Description") is { } arrayDescription) // abilities
                 Description = Text.GetTextPropertyBase(arrayDescription);

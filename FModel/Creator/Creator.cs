@@ -75,6 +75,7 @@ namespace FModel.Creator
                 case "FortStatItemDefinition":
                 case "FortTrapItemDefinition":
                 case "FortAmmoItemDefinition":
+                case "FortTandemCharacterData":
                 case "FortQuestItemDefinition":
                 case "FortBadgeItemDefinition":
                 case "FortAwardItemDefinition":

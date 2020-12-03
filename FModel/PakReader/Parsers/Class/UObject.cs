@@ -50,8 +50,8 @@ namespace FModel.PakReader.Parsers.Class
 
                     if (isNonZero)
                     {
-                        var obj = BaseProperty.ReadAsObject(reader, new FPropertyTag(propertyInfo), new FName(propertyInfo.Type), ReadType.NORMAL);
                         var key = Dict.ContainsKey(propertyInfo.Name) ? $"{propertyInfo.Name}_NK{num++:00}" : propertyInfo.Name;
+                        var obj = BaseProperty.ReadAsObject(reader, new FPropertyTag(propertyInfo), new FName(propertyInfo.Type), ReadType.NORMAL);
                         Dict[key] = obj;
                     }
                     else

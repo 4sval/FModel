@@ -172,7 +172,7 @@ namespace FModel.PakReader.Parsers
                         }
                         while (it.MoveNext());
                     }
-                    catch (FileLoadException e)
+                    catch (FileLoadException)
                     {
                         continue;
                     }
