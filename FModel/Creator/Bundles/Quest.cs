@@ -35,7 +35,7 @@ namespace FModel.Creator.Bundles
                     Count = count.Value;
             }
 
-            if (obj.TryGetValue("RewardsTable", out var v4) && v4 is ObjectProperty rewardsTable)
+            if (obj.TryGetValue("RewardsTable", out var v4) && v4 is ObjectProperty rewardsTable && rewardsTable.Value.Resource.OuterIndex.Resource != null)
             {
                 Package p = Utils.GetPropertyPakPackage(rewardsTable.Value.Resource.OuterIndex.Resource?.ObjectName.String);
                 if (p != null && p.HasExport() && !p.Equals(default))
