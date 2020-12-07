@@ -16,6 +16,8 @@ namespace FModel.PakReader.Parsers.Class
         {
             Dict = new Dictionary<string, object>();
             var header = new FUnversionedHeader(reader);
+            if (!header.HasValues)
+                return;
             using var it = new FIterator(header);
 
 #if DEBUG
@@ -66,7 +68,7 @@ namespace FModel.PakReader.Parsers.Class
 
             if (!structFallback && reader.ReadInt32() != 0/* && reader.Position + 16 <= maxSize*/)
             {
-                new FGuid(reader);
+                _ = new FGuid(reader);
             }
         }
 

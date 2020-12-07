@@ -162,7 +162,8 @@ namespace FModel.PakReader.Parsers
                     try
                     {
                         var header = new FUnversionedHeader(this);
-
+                        if (!header.HasValues)
+                            continue;
                         using var it = new FIterator(header);
                         FConsole.AppendText(string.Concat("\n", exportType.String, ": ", Summary.Name.String), "#CA6C6C", true);
 

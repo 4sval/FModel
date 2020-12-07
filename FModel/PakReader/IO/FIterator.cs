@@ -17,7 +17,8 @@ namespace FModel.PakReader.IO
         {
             _zeroMask = header.ZeroMask;
             _fragmentIt = header.Fragments.GetEnumerator();
-            Skip();
+            if (header.HasValues)
+                Skip();
         }
         
         public bool MoveNext()
