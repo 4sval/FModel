@@ -35,7 +35,7 @@ namespace FModel.PakReader.IO
             }
             else
             {
-                ZeroMask = new BitArray(new int[8]);
+                ZeroMask = new BitArray(0);
                 HasNonZeroValues = unmaskedNum > 0;
             }
         }

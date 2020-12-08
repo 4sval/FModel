@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using FModel.Logger;
 using FModel.PakReader.IO;
 using FModel.PakReader.Parsers.Class;
 using FModel.PakReader.Parsers.Objects;
@@ -15,6 +17,7 @@ namespace FModel.PakReader.Parsers
         public readonly FPackageSummary Summary;
         public readonly FPackageObjectIndex[] ImportMap;
         public readonly FExportMapEntry[] ExportMap;
+        public readonly FExportBundle ExportBundle;
 
         internal List<FObjectResource> FakeImportMap;
         
@@ -80,6 +83,8 @@ namespace FModel.PakReader.Parsers
             {
                 ExportMap[i] = new FExportMapEntry(this);
             }
+            
+            ExportBundle = new FExportBundle(this);
 
             if (!onlyInfo)
                 ReadContent();
@@ -115,7 +120,10 @@ namespace FModel.PakReader.Parsers
             var currentExportDataOffset = beginExportOffset;
             _dataExports = new IUExport[ExportMap.Length];
             _dataExportTypes = new FName[ExportMap.Length];
-            for (var i = 0; i < ExportMap.Length; i++)
+
+            var exportOrder = ExportBundle.GetExportOrder();
+            
+            foreach (var i in exportOrder)
             {
                 var exportMapEntry = ExportMap[i];
                 FPackageObjectIndex trigger;
@@ -137,53 +145,117 @@ namespace FModel.PakReader.Parsers
                 }
 
                 Loader.BaseStream.Seek(currentExportDataOffset, SeekOrigin.Begin);
-                if (Globals.TypeMappings.TryGetValue(exportType.String, out var properties))
+                try
                 {
-                    _dataExports[i] = exportType.String switch
+                    if (Globals.TypeMappings.TryGetValue(exportType.String, out var properties))
                     {
-                        "Texture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                        "TextureCube" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                        "VirtualTexture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                        "CurveTable" => new UCurveTable(this, properties),
-                        "DataTable" => new UDataTable(this, properties, exportType.String),
-                        //"FontFace" => new UFontFace(this, ubulk),
-                        "SoundWave" => new USoundWave(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                        //"StringTable" => new UStringTable(this),
-                        //"AkMediaAssetData" => new UAkMediaAssetData(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
-                        _ => new UObject(this, properties, type: exportType.String),
-                    };
-                    _dataExportTypes[i] = exportType;
-                }
-                else
-                {
-                    _dataExports[i] = new UObject();
-                    _dataExportTypes[i] = exportType;
-#if DEBUG
-                    try
-                    {
-                        var header = new FUnversionedHeader(this);
-                        if (!header.HasValues)
-                            continue;
-                        using var it = new FIterator(header);
-                        FConsole.AppendText(string.Concat("\n", exportType.String, ": ", Summary.Name.String), "#CA6C6C", true);
-
-                        do
+                        _dataExports[i] = exportType.String switch
                         {
-                            FConsole.AppendText($"Val: {it.Current.Val} (IsNonZero: {it.Current.IsNonZero})", FColors.Yellow, true);
-                        }
-                        while (it.MoveNext());
+                            "Texture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
+                            "TextureCube" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
+                            "VirtualTexture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
+                            "CurveTable" => new UCurveTable(this, properties),
+                            "DataTable" => new UDataTable(this, properties, exportType.String),
+                            //"FontFace" => new UFontFace(this, ubulk),
+                            "SoundWave" => new USoundWave(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
+                            //"StringTable" => new UStringTable(this),
+                            //"AkMediaAssetData" => new UAkMediaAssetData(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
+                            _ => new UObject(this, properties, type: exportType.String),
+                        };
+                        _dataExportTypes[i] = exportType;
                     }
-                    catch (FileLoadException)
+                    else
                     {
-                        continue;
-                    }
+                        _dataExports[i] = new UObject();
+                        _dataExportTypes[i] = exportType;
+#if DEBUG
+                        try
+                        {
+                            var header = new FUnversionedHeader(this);
+                            if (!header.HasValues)
+                                continue;
+                            using var it = new FIterator(header);
+                            FConsole.AppendText(string.Concat("\n", exportType.String, ": ", Summary.Name.String), "#CA6C6C", true);
+
+                            do
+                            {
+                                FConsole.AppendText($"Val: {it.Current.Val} (IsNonZero: {it.Current.IsNonZero})", FColors.Yellow, true);
+                            }
+                            while (it.MoveNext());
+                        }
+                        catch (FileLoadException)
+                        {
+                            continue;
+                        }
 #endif
+                    }
                 }
+                catch (Exception e)
+                {
+                    DebugHelper.WriteLine("Failed to read export {0} ({1}) of type {2}", exportMapEntry.ObjectName.String, i, exportType.String);
+                    DebugHelper.WriteException(e);
+                }
+                
 
                 currentExportDataOffset += (int) exportMapEntry.CookedSerialSize;
             }
         }
 
         public override string ToString() => Summary.Name.String;
+    }
+    
+    [StructLayout(LayoutKind.Sequential)]
+    public readonly struct FExportBundleHeader
+    {
+        public readonly uint FirstEntryIndex;
+        public readonly uint EntryCount;
+
+        public FExportBundleHeader(BinaryReader reader)
+        {
+            FirstEntryIndex = reader.ReadUInt32();
+            EntryCount = reader.ReadUInt32();
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public readonly struct FExportBundleEntry
+    {
+        public readonly uint LocalExportIndex;
+        public readonly EExportCommandType CommandType;
+
+        public FExportBundleEntry(BinaryReader reader)
+        {
+            LocalExportIndex = reader.ReadUInt32();
+            CommandType = (EExportCommandType) reader.ReadUInt32();
+        }
+    }
+
+    public enum EExportCommandType : uint
+    {
+        ExportCommandType_Create,
+        ExportCommandType_Serialize,
+        ExportCommandType_Count
+    }
+
+    public class FExportBundle
+    {
+        public readonly FExportBundleHeader Header;
+        public readonly FExportBundleEntry[] Entries;
+
+        public FExportBundle(PackageReader reader)
+        {
+            Header = new FExportBundleHeader(reader);
+            Entries = new FExportBundleEntry[Header.EntryCount];
+            for (var i = 0; i < Header.EntryCount; i++)
+            {
+                Entries[i] = new FExportBundleEntry(reader);
+            }
+        }
+
+        public List<uint> GetExportOrder()
+        {
+           return Entries.Where(it => it.CommandType == EExportCommandType.ExportCommandType_Serialize)
+                .Select(it => Math.Min(Header.EntryCount - 1, it.LocalExportIndex)).ToList();
+        }
     }
 }
