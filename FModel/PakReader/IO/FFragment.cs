@@ -1,4 +1,4 @@
-﻿namespace FModel.PakReader.IO
+namespace FModel.PakReader.IO
 {
     public readonly struct FFragment
     {

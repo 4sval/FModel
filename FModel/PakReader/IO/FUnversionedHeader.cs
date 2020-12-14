@@ -40,7 +40,7 @@ namespace FModel.PakReader.IO
             }
         }
 
-        private static void LoadZeroMaskData(BinaryReader reader, int numBits, out BitArray data)
+        private void LoadZeroMaskData(BinaryReader reader, int numBits, out BitArray data)
         {
             if (numBits <= 8)
             {

@@ -47,9 +47,6 @@ namespace FModel.PakReader.Parsers.Class
                 var (val, isNonZero) = it.Current;
                 if (properties.TryGetValue(val, out var propertyInfo))
                 {
-                    if (propertyInfo.Name == "AuthoredVFXData_ByPart" || propertyInfo.Name == "RequestedDataStores")
-                        continue;
-
                     if (isNonZero)
                     {
                         var key = Dict.ContainsKey(propertyInfo.Name) ? $"{propertyInfo.Name}_NK{num++:00}" : propertyInfo.Name;

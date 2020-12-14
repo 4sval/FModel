@@ -45,7 +45,7 @@ namespace FModel.Utils
             {
                 "Game" => regex.Replace(path, $"{Folders.GetGameName()}/Content", 1),
                 "RegionCN" => regex.Replace(path, $"{Folders.GetGameName()}/Plugins/{trigger}/Content", 1),
-                _ => !path.Contains("/Plugins/GameFeatures/") && !path.Contains($"{Folders.GetGameName()}/Content") ? regex.Replace(path, $"{Folders.GetGameName()}/Plugins/GameFeatures/{trigger}/Content", 1) : path
+                _ => regex.Replace(path, $"{Folders.GetGameName()}/Plugins/GameFeatures/{trigger}/Content", 1)
             };
 
             int sep = fixedPath.LastIndexOf('.');

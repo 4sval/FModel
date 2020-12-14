@@ -103,7 +103,18 @@ namespace FModel.PakReader.Parsers
                 var importedPackageId = new FPackageId(Loader);
                 var arcs = Loader.ReadTArray(() => new FArc(Loader));
                 graphData[i] = (importedPackageId, arcs);
-                string importedPackageName = Creator.Utils.GetFullPath(importedPackageId)?.Replace($"{Folders.GetGameName()}/Content", "Game");
+                string importedPackageName = Creator.Utils.GetFullPath(importedPackageId);
+                {
+                    string gname = Folders.GetGameName();
+                    if (importedPackageName.StartsWith($"/{gname}/Plugins/GameFeatures"))
+                    {
+                        importedPackageName = importedPackageName.Replace($"{gname}/Plugins/GameFeatures/", "").Replace("/Content", "");
+                    }
+                    else if (importedPackageName.StartsWith($"/{gname}/Content"))
+                    {
+                        importedPackageName = importedPackageName.Replace($"{Folders.GetGameName()}/Content", "Game");
+                    }
+                }
                 if (!(Creator.Utils.GetPropertyPakPackage(importedPackageName) is IoPackage package)) continue;
                 foreach (var export in package.Reader.ExportMap)
                 {
@@ -145,6 +156,7 @@ namespace FModel.PakReader.Parsers
                 }
 
                 Loader.BaseStream.Seek(currentExportDataOffset, SeekOrigin.Begin);
+                _dataExportTypes[i] = exportType;
                 try
                 {
                     if (Globals.TypeMappings.TryGetValue(exportType.String, out var properties))
@@ -156,18 +168,13 @@ namespace FModel.PakReader.Parsers
                             "VirtualTexture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
                             "CurveTable" => new UCurveTable(this, properties),
                             "DataTable" => new UDataTable(this, properties, exportType.String),
-                            //"FontFace" => new UFontFace(this, ubulk),
                             "SoundWave" => new USoundWave(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                            //"StringTable" => new UStringTable(this),
-                            //"AkMediaAssetData" => new UAkMediaAssetData(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
                             _ => new UObject(this, properties, type: exportType.String),
                         };
-                        _dataExportTypes[i] = exportType;
                     }
                     else
                     {
                         _dataExports[i] = new UObject();
-                        _dataExportTypes[i] = exportType;
 #if DEBUG
                         try
                         {
