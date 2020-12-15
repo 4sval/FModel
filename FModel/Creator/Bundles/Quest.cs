@@ -35,22 +35,7 @@ namespace FModel.Creator.Bundles
                     Count = count.Value;
             }
 
-            if (obj.TryGetValue("RewardsTable", out var v4) && v4 is ObjectProperty rewardsTable && rewardsTable.Value.Resource.OuterIndex.Resource != null)
-            {
-                Package p = Utils.GetPropertyPakPackage(rewardsTable.Value.Resource.OuterIndex.Resource?.ObjectName.String);
-                if (p != null && p.HasExport() && !p.Equals(default))
-                {
-                    var u = p.GetExport<UDataTable>();
-                    if (u != null && u.TryGetValue("Default", out var i) && i is UObject r &&
-                        r.TryGetValue("TemplateId", out var i1) && i1 is NameProperty templateId &&
-                        r.TryGetValue("Quantity", out var i2) && i2 is IntProperty quantity)
-                    {
-                        Reward = new Reward(quantity, templateId);
-                    }
-                }
-            }
-
-            if (Reward == null && obj.TryGetValue("Rewards", out var v2) && v2 is ArrayProperty rewards)
+            if (obj.TryGetValue("Rewards", out var v2) && v2 is ArrayProperty rewards)
             {
                 foreach (StructProperty reward in rewards.Value)
                 {
@@ -72,6 +57,21 @@ namespace FModel.Creator.Bundles
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            if (Reward == null && obj.TryGetValue("RewardsTable", out var v4) && v4 is ObjectProperty rewardsTable && rewardsTable.Value.Resource.OuterIndex.Resource != null)
+            {
+                Package p = Utils.GetPropertyPakPackage(rewardsTable.Value.Resource.OuterIndex.Resource?.ObjectName.String);
+                if (p != null && p.HasExport() && !p.Equals(default))
+                {
+                    var u = p.GetExport<UDataTable>();
+                    if (u != null && u.TryGetValue("Default", out var i) && i is UObject r &&
+                        r.TryGetValue("TemplateId", out var i1) && i1 is NameProperty templateId &&
+                        r.TryGetValue("Quantity", out var i2) && i2 is IntProperty quantity)
+                    {
+                        Reward = new Reward(quantity, templateId);
                     }
                 }
             }

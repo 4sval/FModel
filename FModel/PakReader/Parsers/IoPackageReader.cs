@@ -176,24 +176,17 @@ namespace FModel.PakReader.Parsers
                     {
                         _dataExports[i] = new UObject();
 #if DEBUG
-                        try
-                        {
-                            var header = new FUnversionedHeader(this);
-                            if (!header.HasValues)
-                                continue;
-                            using var it = new FIterator(header);
-                            FConsole.AppendText(string.Concat("\n", exportType.String, ": ", Summary.Name.String), "#CA6C6C", true);
-
-                            do
-                            {
-                                FConsole.AppendText($"Val: {it.Current.Val} (IsNonZero: {it.Current.IsNonZero})", FColors.Yellow, true);
-                            }
-                            while (it.MoveNext());
-                        }
-                        catch (FileLoadException)
-                        {
+                        var header = new FUnversionedHeader(this);
+                        if (!header.HasValues)
                             continue;
+                        using var it = new FIterator(header);
+                        FConsole.AppendText(string.Concat("\n", exportType.String, ": ", Summary.Name.String), "#CA6C6C", true);
+
+                        do
+                        {
+                            FConsole.AppendText($"Val: {it.Current.Val} (IsNonZero: {it.Current.IsNonZero})", FColors.Yellow, true);
                         }
+                        while (it.MoveNext());
 #endif
                     }
                 }
