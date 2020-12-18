@@ -24,7 +24,10 @@ namespace FModel.Grabber.Paks
 
         public static async Task PopulateMenu()
         {
-            PopulateBase();
+            await Application.Current.Dispatcher.InvokeAsync(delegate
+            {
+                PopulateBase();
+            });
 
             await Task.Run(async () =>
             {

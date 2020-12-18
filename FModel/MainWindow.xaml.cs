@@ -77,14 +77,13 @@ namespace FModel
             if (!Properties.Settings.Default.SkipVersion) Updater.CheckForUpdate();
             DebugHelper.WriteUserSettings();
             Folders.CheckWatermarks();
-            
-            LoadMappings();
 
             await Task.WhenAll(Init()).ContinueWith(t =>
                 {
                     Keys.NoKeyGoodBye();
                     MenuItems.FeedCustomGoTos();
                     AeConfiguration();
+                    LoadMappings();
 
                     if (t.Exception != null) Tasks.TaskCompleted(t.Exception);
                     else StatusBarVm.statusBarViewModel.Set($"{Properties.Resources.Hello} {Environment.UserName}!", Properties.Resources.State);
@@ -97,11 +96,11 @@ namespace FModel
 
         private async Task Init()
         {
-            await PaksGrabber.PopulateMenu().ConfigureAwait(false);
-            if (Properties.Settings.Default.UseDiscordRpc) DiscordIntegration.StartClient();
-            await AesGrabber.Load(Properties.Settings.Default.ReloadAesKeys).ConfigureAwait(false);
             await CdnDataGrabber.DoCDNStuff().ConfigureAwait(false);
+            await PaksGrabber.PopulateMenu().ConfigureAwait(false);
+            await AesGrabber.Load(Properties.Settings.Default.ReloadAesKeys).ConfigureAwait(false);
             await Folders.DownloadAndExtractVgm().ConfigureAwait(false);
+            if (Properties.Settings.Default.UseDiscordRpc) DiscordIntegration.StartClient();
         }
 
         private async void LoadMappings()

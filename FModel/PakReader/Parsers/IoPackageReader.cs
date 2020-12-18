@@ -166,7 +166,7 @@ namespace FModel.PakReader.Parsers
                             "Texture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
                             "TextureCube" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
                             "VirtualTexture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                            "CurveTable" => new UCurveTable(this, properties),
+                            "CurveTable" => new UCurveTable(this),
                             "DataTable" => new UDataTable(this, properties, exportType.String),
                             "SoundWave" => new USoundWave(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
                             _ => new UObject(this, properties, type: exportType.String),

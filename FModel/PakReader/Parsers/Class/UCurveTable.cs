@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using FModel.PakReader.IO;
 using FModel.PakReader.Parsers.Objects;
@@ -10,7 +11,7 @@ namespace FModel.PakReader.Parsers.Class
     {
         public ECurveTableMode CurveTableMode { get; }
         readonly Dictionary<string, object> RowMap;
-        
+
         internal UCurveTable(PackageReader reader)
         {
             new UObject(reader); //will break
@@ -33,13 +34,19 @@ namespace FModel.PakReader.Parsers.Class
             }
         }
 
-        internal UCurveTable(IoPackageReader reader, IReadOnlyDictionary<int, PropertyInfo> properties)
+        internal UCurveTable(IoPackageReader reader)
         {
             reader.ReadUInt16(); // don't ask me
             reader.ReadUInt32(); // what this is
 
             int NumRows = reader.ReadInt32();
             CurveTableMode = (ECurveTableMode)reader.ReadByte();
+            Dictionary<int, PropertyInfo> properties = CurveTableMode switch
+            {
+                ECurveTableMode.RichCurves => Globals.TypeMappings["RichCurve"],
+                ECurveTableMode.SimpleCurves => Globals.TypeMappings["SimpleCurve"],
+                _ => throw new FileLoadException($"This table has an unknown mode ({CurveTableMode})")
+            };
 
             RowMap = new Dictionary<string, object>();
             for (int i = 0; i < NumRows; i++)
