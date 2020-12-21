@@ -96,9 +96,9 @@ namespace FModel
 
         private async Task Init()
         {
-            await CdnDataGrabber.DoCDNStuff().ConfigureAwait(false);
             await PaksGrabber.PopulateMenu().ConfigureAwait(false);
             await AesGrabber.Load(Properties.Settings.Default.ReloadAesKeys).ConfigureAwait(false);
+            await CdnDataGrabber.DoCDNStuff().ConfigureAwait(false);
             await Folders.DownloadAndExtractVgm().ConfigureAwait(false);
             if (Properties.Settings.Default.UseDiscordRpc) DiscordIntegration.StartClient();
         }

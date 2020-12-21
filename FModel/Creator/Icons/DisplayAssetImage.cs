@@ -9,29 +9,9 @@ namespace FModel.Creator.Icons
     {
         public static bool GetDisplayAssetImage(BaseIcon icon, SoftObjectProperty o, ref string assetName)
         {
-            string imageType = "DetailsImage";
-            switch ("DA_Featured_" + assetName)
-            {
-                case "DA_Featured_Glider_ID_141_AshtonBoardwalk.uasset":
-                case "DA_Featured_Glider_ID_150_TechOpsBlue.uasset":
-                case "DA_Featured_Glider_ID_131_SpeedyMidnight.uasset":
-                case "DA_Featured_Pickaxe_ID_178_SpeedyMidnight.uasset":
-                case "DA_Featured_Glider_ID_015_Brite.uasset":
-                case "DA_Featured_Glider_ID_016_Tactical.uasset":
-                case "DA_Featured_Glider_ID_017_Assassin.uasset":
-                case "DA_Featured_Pickaxe_ID_027_Scavenger.uasset":
-                case "DA_Featured_Pickaxe_ID_028_Space.uasset":
-                case "DA_Featured_Pickaxe_ID_029_Assassin.uasset":
-                    return false;
-                case "DA_Featured_Glider_ID_070_DarkViking.uasset":
-                case "DA_Featured_CID_319_Athena_Commando_F_Nautilus.uasset":
-                    imageType = "TileImage";
-                    break;
-            }
-
             string path = o?.Value.AssetPathName.String;
             if (string.IsNullOrEmpty(path))
-                path = "/Game/Catalog/DisplayAssets/DA_Featured_" + assetName.Substring(0, assetName.LastIndexOf("."));
+                path = "/Game/Catalog/MI_OfferImages/MI_" + assetName.Substring(0, assetName.LastIndexOf(".")).Replace("Athena_Commando_", "");
 
             Package p = Utils.GetPropertyPakPackage(path);
             if (p != null && p.HasExport())
@@ -39,14 +19,22 @@ namespace FModel.Creator.Icons
                 var obj = p.GetExport<UObject>();
                 if (obj != null)
                 {
-                    if (obj.TryGetValue(imageType, out var v1) && v1 is StructProperty s && s.Value is UObject type &&
-                        type.TryGetValue("ResourceObject", out var v2) && v2 is ObjectProperty resourceObject)
+                    if (obj.GetExport<ArrayProperty>("TextureParameterValues") is ArrayProperty textureParameterValues)
                     {
-                        if (resourceObject.Value.Resource.OuterIndex.Resource != null && !resourceObject.Value.Resource.OuterIndex.Resource.ObjectName.String.Contains("/Game/Athena/Prototype/Textures/"))
+                        foreach (StructProperty textureParameter in textureParameterValues.Value)
                         {
-                            icon.IconImage = Utils.GetObjectTexture(resourceObject);
-                            assetName = "DA_Featured_" + assetName;
-                            return true;
+                            if (textureParameter.Value is UObject parameter &&
+                                parameter.TryGetValue("ParameterValue", out var i) && i is ObjectProperty value &&
+                                parameter.TryGetValue("ParameterInfo", out var i1) && i1 is StructProperty i2 && i2.Value is UObject info &&
+                                info.TryGetValue("Name", out var j1) && j1 is NameProperty name)
+                            {
+                                if (name.Value.String.Equals("OfferImage") || name.Value.String.Equals("Texture"))
+                                {
+                                    icon.IconImage = Utils.GetObjectTexture(value);
+                                    assetName = "MI_" + assetName;
+                                    return true;
+                                }
+                            }
                         }
                     }
                 }
