@@ -4,43 +4,45 @@ namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FByteBulkData : IUStruct
     {
+        public readonly FByteBulkDataHeader Header;
         public readonly byte[] Data;
 
         internal FByteBulkData(BinaryReader reader, Stream ubulk, long ubulkOffset)
         {
-            var BulkDataFlags = reader.ReadInt32();
+            Header = new FByteBulkDataHeader(reader, ubulkOffset);
+            var bulkDataFlags = Header.BulkDataFlags;
 
-            var ElementCount = reader.ReadInt32();
-            _ = reader.ReadInt32(); //BulkDataSizeOnDisk
-            var BulkDataOffsetInFile = reader.ReadInt64();
-            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_NoOffsetFixUp) == 0) // UE4.26 flag
+            Data = new byte[Header.ElementCount];
+            if (Header.ElementCount == 0)
             {
-                BulkDataOffsetInFile += ubulkOffset;
-            }
-
-            Data = null;
-            if ((BulkDataFlags & 0x20) != 0 || ElementCount == 0)
                 return;
-            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_OptionalPayload) != 0) //.uptnl
+            }
+            else if ((bulkDataFlags & (uint)EBulkDataFlags.BULKDATA_Unused) != 0)
+            {
                 return;
-
-            if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadAtEndOfFile) != 0 &&
-                BulkDataOffsetInFile + ElementCount <= reader.BaseStream.Length) //.uasset
-            {
-                long rememberMe = reader.BaseStream.Position;
-                reader.BaseStream.Seek(BulkDataOffsetInFile, SeekOrigin.Begin);
-                Data = reader.ReadBytes(ElementCount);
-                reader.BaseStream.Seek(rememberMe, SeekOrigin.Begin);
             }
-            else if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_ForceInlinePayload) != 0) //.uexp
+            else if ((bulkDataFlags & (uint)EBulkDataFlags.BULKDATA_OptionalPayload) != 0) //.uptnl
             {
-                Data = reader.ReadBytes(ElementCount);
+                return;
             }
-            else if ((BulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadInSeperateFile) != 0 && ubulk != null) //.ubulk
+            else if ((bulkDataFlags & (uint)EBulkDataFlags.BULKDATA_ForceInlinePayload) != 0) //.uexp
             {
-                ubulk.Position = BulkDataOffsetInFile;
-                Data = new byte[ElementCount];
-                ubulk.Read(Data, 0, (int)ElementCount);
+                reader.Read(Data, 0, Header.ElementCount);
+            }
+            else if((bulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadInSeperateFile) != 0) //.ubulk
+            {
+                ubulk.Position = Header.OffsetInFile;
+                ubulk.Read(Data, 0, Header.ElementCount);
+            }
+            else if((bulkDataFlags & (uint)EBulkDataFlags.BULKDATA_PayloadAtEndOfFile) != 0) //.uexp
+            {
+                var savePos = reader.BaseStream.Position;
+                if (Header.OffsetInFile + Header.ElementCount <= reader.BaseStream.Length)
+                {
+                    reader.BaseStream.Position = Header.OffsetInFile;
+                    reader.Read(Data, 0, Header.ElementCount);
+                }
+                reader.BaseStream.Position = savePos;
             }
         }
     }
