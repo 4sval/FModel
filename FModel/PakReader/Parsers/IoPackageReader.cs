@@ -103,18 +103,7 @@ namespace FModel.PakReader.Parsers
                 var importedPackageId = new FPackageId(Loader);
                 var arcs = Loader.ReadTArray(() => new FArc(Loader));
                 graphData[i] = (importedPackageId, arcs);
-                string importedPackageName = Creator.Utils.GetFullPath(importedPackageId);
-                {
-                    string gname = Folders.GetGameName();
-                    if (importedPackageName.StartsWith($"/{gname}/Plugins/GameFeatures"))
-                    {
-                        importedPackageName = importedPackageName.Replace($"{gname}/Plugins/GameFeatures/", "").Replace("/Content", "");
-                    }
-                    else if (importedPackageName.StartsWith($"/{gname}/Content"))
-                    {
-                        importedPackageName = importedPackageName.Replace($"{Folders.GetGameName()}/Content", "Game");
-                    }
-                }
+                string importedPackageName = Transform(Creator.Utils.GetFullPath(importedPackageId));
                 if (!(Creator.Utils.GetPropertyPakPackage(importedPackageName) is IoPackage package)) continue;
                 foreach (var export in package.Reader.ExportMap)
                 {
@@ -202,6 +191,27 @@ namespace FModel.PakReader.Parsers
         }
 
         public override string ToString() => Summary.Name.String;
+
+        private string Transform(string path)
+        {
+            string gname = Folders.GetGameName();
+
+            if (path.StartsWith($"/{gname}/Content"))
+                return path.Replace($"{gname}/Content", "Game");
+
+            if (path.StartsWith($"/{gname}/Plugins"))
+            {
+                int cIndex = path.IndexOf("/Content/"); // search the Content folder
+                if (cIndex < 0)
+                    return path;
+
+                string tPath = path.Substring(0, cIndex);
+                string trigger = tPath.Substring(tPath.LastIndexOf('/'));
+                string replace = tPath.Substring(0, path.IndexOf(trigger));
+                return path.Replace(replace + trigger, trigger).Replace("/Content", string.Empty);
+            }
+            return path; // return input string as default
+        }
     }
     
     [StructLayout(LayoutKind.Sequential)]

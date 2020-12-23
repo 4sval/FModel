@@ -38,8 +38,8 @@ namespace FModel.Utils
             }
 
             Regex regex = new Regex(trigger);
-            if (trigger.Equals("SrirachaRanch"))
-                trigger += $"/{trigger}Core";
+            if (trigger.Equals("SrirachaRanchCore") || trigger.Equals("SrirachaRanchHoagie") || trigger.Equals("SrirachaRanchValet"))
+                trigger = "SrirachaRanch/" + trigger;
 
             string fixedPath = trigger switch
             {
