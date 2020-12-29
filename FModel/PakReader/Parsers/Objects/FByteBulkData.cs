@@ -15,14 +15,17 @@ namespace FModel.PakReader.Parsers.Objects
             Data = new byte[Header.ElementCount];
             if (Header.ElementCount == 0)
             {
+                Data = null;
                 return;
             }
             else if ((bulkDataFlags & (uint)EBulkDataFlags.BULKDATA_Unused) != 0)
             {
+                Data = null;
                 return;
             }
             else if ((bulkDataFlags & (uint)EBulkDataFlags.BULKDATA_OptionalPayload) != 0) //.uptnl
             {
+                Data = null;
                 return;
             }
             else if ((bulkDataFlags & (uint)EBulkDataFlags.BULKDATA_ForceInlinePayload) != 0) //.uexp
