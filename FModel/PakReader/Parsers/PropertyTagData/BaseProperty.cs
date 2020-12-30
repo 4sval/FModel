@@ -69,7 +69,7 @@ namespace FModel.PakReader.Parsers.PropertyTagData
                 "Int8Property" => new Int8Property(reader),
                 "MapProperty" => new MapProperty(reader, tag),
                 "SetProperty" => new SetProperty(reader, tag),
-                "EnumProperty" => new EnumProperty(reader, tag),
+                "EnumProperty" => new EnumProperty(reader, tag, readType),
                 _ => null, //throw new NotImplementedException($"Parsing of {type.String} types aren't supported yet."),
             };
             return prop;
@@ -105,7 +105,7 @@ namespace FModel.PakReader.Parsers.PropertyTagData
                 "Int8Property" => new Int8Property(reader).Value,
                 "MapProperty" => new MapProperty(reader, tag).Value,
                 "SetProperty" => new SetProperty(reader, tag).Value,
-                "EnumProperty" => new EnumProperty(reader, tag).Value,
+                "EnumProperty" => new EnumProperty(reader, tag, readType).Value,
                 _ => null, //throw new NotImplementedException($"Parsing of {type.String} types aren't supported yet."),
             };
             return prop;
