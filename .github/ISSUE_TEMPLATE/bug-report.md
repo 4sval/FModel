@@ -16,5 +16,6 @@ assignees: ''
 
 **DO NOT** report issues to ask where is `<insert your favorite asset here>`.
 **DO NOT** report issues if you have AES errors.
+**DO NOT** report issues if your game is not up to date.
 
 Without following the rules above, your issue will be closed without explanation.
