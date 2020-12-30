@@ -16,8 +16,15 @@ namespace FModel.PakReader.Parsers.Class
         {
             Dict = new Dictionary<string, object>();
             var header = new FUnversionedHeader(reader);
+
             if (!header.HasValues)
+            {
+                if (!structFallback && reader.ReadInt32() != 0 /* && reader.Position + 16 <= maxSize*/)
+                    reader.Position += FGuid.SIZE;
+
                 return;
+            }
+
             using var it = new FIterator(header);
 
 #if DEBUG
@@ -63,16 +70,14 @@ namespace FModel.PakReader.Parsers.Class
                 else Dict[val.ToString()] = null;
             } while (it.MoveNext());
 
-            if (!structFallback && reader.ReadInt32() != 0/* && reader.Position + 16 <= maxSize*/)
-            {
-                _ = new FGuid(reader);
-            }
+            if (!structFallback && reader.ReadInt32() != 0 /* && reader.Position + 16 <= maxSize*/)
+                reader.Position += FGuid.SIZE;
         }
 
         // Empty UObject used for new package format when a property is zero
         public UObject()
         {
-            Dict = new Dictionary<string, object>();
+            Dict = new Dictionary<string, object>(0);
         }
 
         // https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp#L930
@@ -83,7 +88,7 @@ namespace FModel.PakReader.Parsers.Class
         internal UObject(PackageReader reader, bool structFallback)
         {
             var properties = new Dictionary<string, object>();
-            int num = 1;
+            var num = 1;
 
             while (true)
             {
@@ -92,7 +97,7 @@ namespace FModel.PakReader.Parsers.Class
                     break;
 
                 var pos = reader.Position;
-                var obj = BaseProperty.ReadAsObject(reader, Tag, Tag.Type, ReadType.NORMAL) ?? null;
+                var obj = BaseProperty.ReadAsObject(reader, Tag, Tag.Type, ReadType.NORMAL);
 
                 var key = properties.ContainsKey(Tag.Name.String) ? $"{Tag.Name.String}_NK{num++:00}" : Tag.Name.String;
                 properties[key] = obj;
@@ -109,8 +114,8 @@ namespace FModel.PakReader.Parsers.Class
 
             Dict = properties;
 
-            if (!structFallback && reader.ReadInt32() != 0/* && reader.Position + 16 <= maxSize*/)
-                new FGuid(reader);
+            if (!structFallback && reader.ReadInt32() != 0 /* && reader.Position + 16 <= maxSize*/)
+                reader.Position += FGuid.SIZE;
         }
 
         public object this[string key] => Dict[key];

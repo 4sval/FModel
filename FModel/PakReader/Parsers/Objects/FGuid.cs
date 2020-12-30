@@ -7,6 +7,8 @@ namespace FModel.PakReader.Parsers.Objects
 {
     public readonly struct FGuid : IUStruct, IEquatable<FGuid>
     {
+        public const int SIZE = sizeof(uint) * 4;
+
         [JsonIgnore]
         public readonly uint A;
         [JsonIgnore]
