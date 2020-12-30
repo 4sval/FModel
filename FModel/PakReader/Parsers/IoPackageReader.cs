@@ -127,14 +127,22 @@ namespace FModel.PakReader.Parsers
             {
                 var exportMapEntry = ExportMap[i];
                 FPackageObjectIndex trigger;
+
                 if (exportMapEntry.ClassIndex.IsExport)
-                    trigger = exportMapEntry.SuperIndex;
+                {
+                    trigger = ExportMap[exportMapEntry.ClassIndex.AsExport].SuperIndex;
+                }
                 else if (exportMapEntry.ClassIndex.IsImport)
+                {
                     trigger = exportMapEntry.ClassIndex;
+                }
                 else
+                {
                     throw new FileLoadException("Can't get class name");
+                }
 
                 FName exportType;
+
                 if (GlobalData != null && GlobalData.ScriptObjectByGlobalId.TryGetValue(trigger, out var scriptObject))
                 {
                     exportType = scriptObject.Name;
