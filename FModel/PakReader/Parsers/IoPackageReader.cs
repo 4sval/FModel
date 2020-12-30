@@ -127,14 +127,17 @@ namespace FModel.PakReader.Parsers
             {
                 var exportMapEntry = ExportMap[i];
                 FPackageObjectIndex trigger;
+                bool structFallback;
 
                 if (exportMapEntry.ClassIndex.IsExport)
                 {
                     trigger = ExportMap[exportMapEntry.ClassIndex.AsExport].SuperIndex;
+                    structFallback = true;
                 }
                 else if (exportMapEntry.ClassIndex.IsImport)
                 {
                     trigger = exportMapEntry.ClassIndex;
+                    structFallback = false;
                 }
                 else
                 {
@@ -166,7 +169,7 @@ namespace FModel.PakReader.Parsers
                             "CurveTable" => new UCurveTable(this),
                             "DataTable" => new UDataTable(this, properties, exportType.String),
                             "SoundWave" => new USoundWave(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                            _ => new UObject(this, properties, type: exportType.String),
+                            _ => new UObject(this, properties, structFallback, exportType.String),
                         };
                     }
                     else
