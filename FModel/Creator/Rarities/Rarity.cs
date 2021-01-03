@@ -118,8 +118,8 @@ namespace FModel.Creator.Rarities
                     break;
                 case "EFortRarity::Transcendent":
                 case "EFortRarity::Masterwork":
-                    icon.RarityBackgroundColors = new SKColor[2] { SKColor.Parse("D51944"), SKColor.Parse("660522") };
-                    icon.RarityBorderColor = new SKColor[2] { SKColor.Parse("FF3F58"), SKColor.Parse("FF3F58") };
+                    icon.RarityBackgroundColors = new SKColor[2] { SKColor.Parse("5CDCE2"), SKColor.Parse("72C5F8") };
+                    icon.RarityBorderColor = new SKColor[2] { SKColor.Parse("28DAFB"), SKColor.Parse("28DAFB") };
                     break;
             }
         }

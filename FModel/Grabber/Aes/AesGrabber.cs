@@ -33,7 +33,7 @@ namespace FModel.Grabber.Aes
                     {
                         if (!string.IsNullOrEmpty(benResponse.MainKey))
                         {
-                            string mainKey = $"0x{benResponse.MainKey.Substring(2).ToUpper()}";
+                            string mainKey = $"0x{benResponse.MainKey[2..].ToUpper()}";
                             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"BenBot Main key is {mainKey}");
                             staticKeys[Globals.Game.ActualGame.ToString()] = mainKey;
                             Properties.Settings.Default.StaticAesKeys = JsonConvert.SerializeObject(staticKeys, Formatting.None);
@@ -42,7 +42,7 @@ namespace FModel.Grabber.Aes
                         if (oldDynamicKeys.TryGetValue(Globals.Game.ActualGame.ToString(), out var gameDict))
                         {
                             Dictionary<string, string> difference = benResponse.DynamicKeys
-                                .Where(x => !gameDict.ContainsKey(x.Key) || !gameDict[x.Key].Equals(x.Value))
+                                .Where(x => !x.Key.Contains("optional") && (!gameDict.ContainsKey(x.Key) || !gameDict[x.Key].Equals(x.Value)))
                                 .ToDictionary(x => x.Key, x => x.Value);
                             foreach (KeyValuePair<string, string> KvP in difference)
                             {
@@ -50,17 +50,31 @@ namespace FModel.Grabber.Aes
                                     Properties.Resources.PakFiles,
                                     string.Format(
                                         Properties.Resources.PakCanBeOpened,
-                                        KvP.Key.Substring(KvP.Key.IndexOf("Paks/") + "Paks/".Length)),
+                                        KvP.Key[(KvP.Key.IndexOf("Paks/") + "Paks/".Length)..]),
                                     "/FModel;component/Resources/lock-open-variant.ico");
                                 DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"{KvP.Key} with key {KvP.Value} can be opened");
                             }
                         }
 
-                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"BenBot Dynamic keys are {benResponse.DynamicKeys}");
+                        foreach (var (key, value) in benResponse.DynamicKeys.ToList())
+                        {
+                            if (key.Contains("optional"))
+                            {
+                                if (!benResponse.DynamicKeys.TryGetValue(key.Replace("optional", ""), out string _))
+                                    benResponse.DynamicKeys[key.Replace("optional", "")] = value;
+                            }
+                            else
+                            {
+                                if (!benResponse.DynamicKeys.TryGetValue(key.Replace("-WindowsClient", "optional-WindowsClient"), out string _))
+                                    benResponse.DynamicKeys[key.Replace("-WindowsClient", "optional-WindowsClient")] = value;
+                            }
+                        }
+
                         oldDynamicKeys[Globals.Game.ActualGame.ToString()] = benResponse.DynamicKeys;
                         Properties.Settings.Default.DynamicAesKeys = JsonConvert.SerializeObject(oldDynamicKeys, Formatting.None);
                         Properties.Settings.Default.Save();
 
+                        DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[AES]", $"BenBot Dynamic keys are {Properties.Settings.Default.DynamicAesKeys}");
                         return true;
                     }
                 }

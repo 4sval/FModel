@@ -7,8 +7,10 @@ using Ookii.Dialogs.Wpf;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace FModel.Windows.Settings
 {
@@ -117,6 +119,15 @@ namespace FModel.Windows.Settings
             DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Restarting]", "Settings reset");
             Process.Start(Process.GetCurrentProcess().MainModule.FileName);
             Application.Current.Shutdown();
+        }
+
+        private void OnTextChange(object sender, TextChangedEventArgs e)
+        {
+            if (e.Source is TextBox text)
+            {
+                bool m = Regex.IsMatch(text.Text, @"^donotedit-youcanteditanyway-\w+\.manifest$");
+                text.IsReadOnly = m;
+            }
         }
     }
 }
