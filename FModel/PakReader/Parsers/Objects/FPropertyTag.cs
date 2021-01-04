@@ -21,16 +21,27 @@ namespace FModel.PakReader.Parsers.Objects
         public readonly FName Type; // Variables
         public readonly FName ValueType;
 
-        public FPropertyTag(PropertyInfo info)
+        public FPropertyTag(FUnversionedProperty info)
         {
+            BoolVal = 0;
+
             Name = new FName(info.Name);
-            Type = new FName(info.Type);
-            StructName = new FName(info.StructType);
-            BoolVal = (byte) ((info.Bool ?? false) ? 1 : 0);
-            EnumName = new FName(info.EnumName);
-            EnumType = new FName(info.EnumType);
-            InnerType = new FName(info.InnerType);
-            ValueType = new FName(info.ValueType);
+            Type = new FName(info.Data);
+            StructName = new FName(info.Data.StructType);
+            EnumName = new FName(info.Data.EnumName);
+            EnumType = new FName(info.Data.InnerType);
+            InnerType = new FName(info.Data.InnerType);
+            ValueType = new FName(info.Data.ValueType);
+
+            if (InnerType.String == "StructProperty")
+            {
+                StructName = new FName(info.Data.InnerType.StructType);
+            }
+            else if (ValueType.String == "StructProperty")
+            {
+                StructName = new FName(info.Data.ValueType.StructType);
+            }
+
             ArrayIndex = 0;
             Position = 0;
             HasPropertyGuid = 0;

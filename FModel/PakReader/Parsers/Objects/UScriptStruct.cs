@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-
-using FModel.PakReader.IO;
+﻿using System.Runtime.CompilerServices;
 using FModel.PakReader.Parsers.Class;
 
 namespace FModel.PakReader.Parsers.Objects
@@ -121,7 +118,7 @@ namespace FModel.PakReader.Parsers.Objects
         {
             if (reader is IoPackageReader ioReader)
             {
-                return Globals.TypeMappings.TryGetValue(structName, out var structProperties) ? new UObject(ioReader, structProperties, true, structName) : new UObject(ioReader, new Dictionary<int, PropertyInfo>(), true, structName);
+                return new UObject(ioReader, structName, true);
             }
 
             return new UObject(reader, true);

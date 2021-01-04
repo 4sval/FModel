@@ -13,7 +13,7 @@ namespace FModel.PakReader.Parsers.PropertyTagData
         {
             Position = reader.Position;
             Value = new FSoftObjectPath(reader);
-            if (readType == ReadType.MAP)
+            if (!(reader is IoPackageReader) && readType == ReadType.MAP)
                 reader.Position += 16 - (reader.Position - Position); // skip ahead, putting the total bytes read to 16
         }
 

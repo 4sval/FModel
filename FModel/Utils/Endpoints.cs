@@ -14,9 +14,8 @@ namespace FModel.Utils
     static class Endpoints
     {
         public static readonly FortniteApi FortniteAPI = new FortniteApi($"FModel/{Assembly.GetExecutingAssembly().GetName().Version}");
-        public const string FORTNITE_TYPE_MAPPINGS = "https://raw.githubusercontent.com/FabianFG/FortniteTypeMappings/master/TypeMappings.json";
-        public const string FORTNITE_ENUM_MAPPINGS = "https://raw.githubusercontent.com/FabianFG/FortniteTypeMappings/master/EnumMappings.json";
         public const string BENBOT_AES = "https://benbotfn.tk/api/v1/aes";
+        public const string BENBOT_MAPPINGS = "https://benbotfn.tk/api/v1/mappings";
         public const string BENBOT_HOTFIXES = "https://benbotfn.tk/api/v1/hotfixes";
         public const string FMODEL_JSON = "https://dl.dropbox.com/s/sxyaqo6zu1drlea/FModel.json?dl=0";
         public const string OAUTH_URL = "https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/token";
@@ -25,17 +24,15 @@ namespace FModel.Utils
         public static byte[] GetRawData(Uri uri) => GetRawDataAsync(uri).GetAwaiter().GetResult();
         public static async Task<byte[]> GetRawDataAsync(Uri uri)
         {
-            using (HttpClient client = new HttpClient { Timeout = TimeSpan.FromSeconds(2) })
+            using HttpClient client = new HttpClient { Timeout = TimeSpan.FromSeconds(2) };
+            try
             {
-                try
-                {
-                    var data = await client.GetByteArrayAsync(uri).ConfigureAwait(false);
-                    return data;
-                }
-                catch
-                {
-                    return null;
-                }
+                var data = await client.GetByteArrayAsync(uri).ConfigureAwait(false);
+                return data;
+            }
+            catch
+            {
+                return null;
             }
         }
 

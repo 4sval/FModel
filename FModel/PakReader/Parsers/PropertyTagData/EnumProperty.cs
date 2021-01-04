@@ -1,4 +1,5 @@
 ﻿using FModel.PakReader.Parsers.Objects;
+using System.Linq;
 
 namespace FModel.PakReader.Parsers.PropertyTagData
 {
@@ -11,7 +12,6 @@ namespace FModel.PakReader.Parsers.PropertyTagData
         internal EnumProperty(PackageReader reader, FPropertyTag tag, ReadType readType)
         {
             Position = reader.Position;
-
             if (!(reader is IoPackageReader) || readType != ReadType.NORMAL)
             {
                 Value = reader.ReadFName();
@@ -23,23 +23,16 @@ namespace FModel.PakReader.Parsers.PropertyTagData
             }
         }
 
-        private static string ByteToEnum(string enumName, int value)
+        private static string ByteToEnum(string enumName, int index)
         {
             if (enumName == null)
-                return value.ToString();
+                return index.ToString();
 
-            string result;
-
-            if (Globals.EnumMappings.TryGetValue(enumName, out var values))
-            {
-                result = values.TryGetValue(value, out var member) ? string.Concat(enumName, "::", member) : string.Concat(enumName, "::", value);
-            }
+            var enumProp = Globals.Usmap.Enums.FirstOrDefault(x => x.Name == enumName);
+            if (!enumProp.Equals(default))
+                return index >= enumProp.Names.Length ? string.Concat(enumName, "::", index) : string.Concat(enumName, "::", enumProp.Names[index]);
             else
-            {
-                result = string.Concat(enumName, "::", value);
-            }
-
-            return result;
+                return string.Concat(enumName, "::", index);
         }
 
         public string GetValue() => Value.String;

@@ -23,19 +23,15 @@ using FModel.Windows.Search;
 using FModel.Windows.Settings;
 using FModel.Windows.SoundPlayer;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Net.NetworkInformation;
+using FModel.Grabber.Mappings;
 
 namespace FModel
 {
@@ -83,7 +79,6 @@ namespace FModel
                     Keys.NoKeyGoodBye();
                     MenuItems.FeedCustomGoTos();
                     AeConfiguration();
-                    LoadMappings();
 
                     if (t.Exception != null) Tasks.TaskCompleted(t.Exception);
                     else StatusBarVm.statusBarViewModel.Set($"{Properties.Resources.Hello} {Environment.UserName}!", Properties.Resources.State);
@@ -98,54 +93,22 @@ namespace FModel
         {
             await PaksGrabber.PopulateMenu().ConfigureAwait(false);
             await AesGrabber.Load(Properties.Settings.Default.ReloadAesKeys).ConfigureAwait(false);
+            await MappingsGrabber.Load().ConfigureAwait(false);
             await CdnDataGrabber.DoCDNStuff().ConfigureAwait(false);
             await Folders.DownloadAndExtractVgm().ConfigureAwait(false);
             if (Properties.Settings.Default.UseDiscordRpc) DiscordIntegration.StartClient();
         }
 
-        private async void LoadMappings()
+        public async void ReloadMappings(object sender, RoutedEventArgs e)
         {
-            string rawMappings = "{}";
-            string rawEnumMappings = "{}";
-
-#if DEBUG
-            if (File.Exists("TypeMappings.json"))
+            if (await MappingsGrabber.Load(true).ConfigureAwait(false))
             {
-                rawMappings = await File.ReadAllTextAsync("TypeMappings.json");
+                Globals.gNotifier.ShowCustomMessage("Mappings", "Reloaded successfully");
             }
-            else if (NetworkInterface.GetIsNetworkAvailable())
+            else
             {
-                rawMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
+                Globals.gNotifier.ShowCustomMessage("Mappings", "Fail to reload");
             }
-
-            if (File.Exists("EnumMappings.json"))
-            {
-                rawEnumMappings = await File.ReadAllTextAsync("EnumMappings.json");
-            }
-            else if (NetworkInterface.GetIsNetworkAvailable())
-            {
-                rawEnumMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
-            }
-#else
-            rawMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_TYPE_MAPPINGS);
-            rawEnumMappings = await Endpoints.GetStringEndpoint(Endpoints.FORTNITE_ENUM_MAPPINGS);
-#endif
-
-            var serializerSettings = new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy(false, false)
-                }
-            };
-            Globals.TypeMappings = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, PakReader.IO.PropertyInfo>>>(rawMappings, serializerSettings);
-            Globals.EnumMappings = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, string>>>(rawEnumMappings, serializerSettings);
-        }
-
-        public void ReloadMappings(object sender, RoutedEventArgs e)
-        {
-            LoadMappings();
-            Globals.gNotifier.ShowCustomMessage("Mappings", "Reloaded successfully");
         }
 
         private void AeConfiguration()

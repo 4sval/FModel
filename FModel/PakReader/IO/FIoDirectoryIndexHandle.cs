@@ -27,7 +27,11 @@ namespace FModel.PakReader.IO
         public static bool operator ==(FIoDirectoryIndexHandle a, FIoDirectoryIndexHandle b) => a._handle == b._handle;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(FIoDirectoryIndexHandle a, FIoDirectoryIndexHandle b) => a._handle != b._handle;
-        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(FIoDirectoryIndexHandle b) => _handle == b._handle;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool Equals(object obj) => obj is FIoDirectoryIndexHandle handle && Equals(handle);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FIoDirectoryIndexHandle FromIndex(uint index) => new FIoDirectoryIndexHandle(index);
     }

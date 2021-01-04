@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using UsmapNET.Classes;
 
 namespace FModel.PakReader.Parsers.Objects
 {
@@ -19,6 +20,13 @@ namespace FModel.PakReader.Parsers.Objects
         {
             //Name = name;
             String = name.Name;
+            Index = index;
+            Number = number;
+        }
+
+        public FName(UsmapPropertyData name, int index = 0, int number = 0)
+        {
+            String = name != null ? name.Type.ToString() : "None";
             Index = index;
             Number = number;
         }

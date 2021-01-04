@@ -8,6 +8,7 @@ using FModel.Properties;
 using ToastNotifications;
 using ToastNotifications.Lifetime;
 using ToastNotifications.Position;
+using UsmapNET.Classes;
 
 namespace FModel
 {
@@ -19,9 +20,9 @@ namespace FModel
         /// </summary>
         public static readonly Dictionary<string, PakFileReader> CachedPakFiles = new Dictionary<string, PakFileReader>();
         public static readonly Dictionary<string, FFileIoStoreReader> CachedIoStores = new Dictionary<string, FFileIoStoreReader>();
+        public static readonly Dictionary<string, FUnversionedType> CachedSchemas = new Dictionary<string, FUnversionedType>();
+        public static Usmap Usmap = null;
         public static FIoGlobalData GlobalData = null;
-        public static Dictionary<string, Dictionary<int, PropertyInfo>> TypeMappings;
-        public static Dictionary<string, Dictionary<int, string>> EnumMappings;
         public static readonly Notifier gNotifier = new Notifier(cfg =>
         {
             cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(TimeSpan.FromSeconds(7), MaximumNotificationCount.FromCount(15));

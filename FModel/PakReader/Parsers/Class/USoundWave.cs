@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FModel.PakReader.IO;
 using FModel.PakReader.Parsers.Objects;
 using FModel.PakReader.Parsers.PropertyTagData;
 
@@ -53,8 +51,7 @@ namespace FModel.PakReader.Parsers.Class
             }
         }
 
-        internal USoundWave(IoPackageReader reader, Dictionary<int, PropertyInfo> properties, Stream ubulk,
-            long ubulkOffset) : base(reader, properties)
+        internal USoundWave(IoPackageReader reader, string type, Stream ubulk, long ubulkOffset) : base(reader, type)
         {
             Serialize(reader, ubulk, ubulkOffset);
         }

@@ -131,6 +131,7 @@
     <PackageReference Include="System.Data.HashFunction.CityHash" Version="2.0.0" />
     <PackageReference Include="ToastNotifications" Version="2.5.1" />
     <PackageReference Include="ToastNotifications.Messages" Version="2.5.1" />
+    <PackageReference Include="Usmap.NET" Version="1.0.0" />
     <PackageReference Include="WriteableBitmapEx" Version="1.6.7" />
   </ItemGroup>
 

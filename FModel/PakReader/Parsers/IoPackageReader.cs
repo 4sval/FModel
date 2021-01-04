@@ -8,6 +8,7 @@ using FModel.PakReader.IO;
 using FModel.PakReader.Parsers.Class;
 using FModel.PakReader.Parsers.Objects;
 using FModel.Utils;
+using UsmapNET.Classes;
 
 namespace FModel.PakReader.Parsers
 {
@@ -159,36 +160,16 @@ namespace FModel.PakReader.Parsers
                 _dataExportTypes[i] = exportType;
                 try
                 {
-                    if (Globals.TypeMappings.TryGetValue(exportType.String, out var properties))
+                    _dataExports[i] = exportType.String switch
                     {
-                        _dataExports[i] = exportType.String switch
-                        {
-                            "Texture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                            "TextureCube" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                            "VirtualTexture2D" => new UTexture2D(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                            "CurveTable" => new UCurveTable(this),
-                            "DataTable" => new UDataTable(this, properties, exportType.String),
-                            "SoundWave" => new USoundWave(this, properties, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
-                            _ => new UObject(this, properties, structFallback, exportType.String),
-                        };
-                    }
-                    else
-                    {
-                        _dataExports[i] = new UObject();
-#if DEBUG
-                        var header = new FUnversionedHeader(this);
-                        if (!header.HasValues)
-                            continue;
-                        using var it = new FIterator(header);
-                        FConsole.AppendText(string.Concat("\n", exportType.String, ": ", Summary.Name.String), "#CA6C6C", true);
-
-                        do
-                        {
-                            FConsole.AppendText($"Val: {it.Current.Val} (IsNonZero: {it.Current.IsNonZero})", FColors.Yellow, true);
-                        }
-                        while (it.MoveNext());
-#endif
-                    }
+                        "Texture2D" => new UTexture2D(this, exportType.String, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
+                        "TextureCube" => new UTexture2D(this, exportType.String, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
+                        "VirtualTexture2D" => new UTexture2D(this, exportType.String, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
+                        "CurveTable" => new UCurveTable(this, exportType.String),
+                        "DataTable" => new UDataTable(this, exportType.String),
+                        "SoundWave" => new USoundWave(this, exportType.String, _ubulk, ExportMap.Sum(e => (long)e.CookedSerialSize) + beginExportOffset),
+                        _ => new UObject(this, exportType.String, structFallback),
+                    };
                 }
                 catch (Exception e)
                 {
@@ -202,6 +183,45 @@ namespace FModel.PakReader.Parsers
         }
 
         public override string ToString() => Summary.Name.String;
+
+        public FUnversionedType GetOrCreateSchema(string export)
+        {
+            if (Globals.CachedSchemas.TryGetValue(export, out var v))
+            {
+                return v;
+            }
+            else
+            {
+                var type = export;
+                var bNested = false;
+                var bNop = false;
+                var ret = new FUnversionedType(type);
+                while (type != null)
+                {
+                    var schema = Globals.Usmap.Schemas.FirstOrDefault(x => x.Name == type);
+                    if (schema.Name != null)
+                    {
+                        var lastIndex = ret.Properties.LastOrDefault().Key;
+                        if (!bNop && (bNested && schema.PropCount > 0)) lastIndex++;
+
+                        foreach (var prop in schema.Properties)
+                        {
+                            for (int i = 0; i < prop.ArraySize; i++)
+                            {
+                                ret.Properties[lastIndex + i + prop.SchemaIdx] = new FUnversionedProperty(prop);
+                            }
+                        }
+
+                        bNop = !bNested && schema.PropCount == 0;
+                        bNested = true;
+                        type = schema.SuperType;
+                    }
+                }
+
+                Globals.CachedSchemas[export] = ret;
+                return ret;
+            }
+        }
 
         private string Transform(string path)
         {

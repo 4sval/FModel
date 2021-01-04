@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
-
 using FModel.PakReader.IO;
 using FModel.PakReader.Parsers.PropertyTagData;
 using FModel.Utils;
@@ -34,24 +34,21 @@ namespace FModel.PakReader.Parsers.Class
             }
         }
 
-        internal UDataTable(IoPackageReader reader, IReadOnlyDictionary<int, PropertyInfo> properties, string type)
+        internal UDataTable(IoPackageReader reader, string type)
         {
-            var baseObj = new UObject(reader, properties, type: type);
-
+            var baseObj = new UObject(reader, type);
             if (!baseObj.TryGetValue("RowStruct", out var rowStructProp) || !(rowStructProp is ObjectProperty rowStruct) || !rowStruct.Value.IsImport)
             {
                 return;
             }
 
             var rowStructimportIndex = rowStruct.Value.AsImport;
-
             if (rowStructimportIndex >= reader.ImportMap.Length)
             {
                 return;
             }
 
             var rowStructimport = reader.ImportMap[rowStructimportIndex];
-
             if (rowStructimport.Type != EType.ScriptImport ||
                 !Globals.GlobalData.ScriptObjectByGlobalId.TryGetValue(rowStructimport, out var rowStrucDesc) ||
                 rowStrucDesc.Name.IsNone)
@@ -59,11 +56,13 @@ namespace FModel.PakReader.Parsers.Class
                 return;
             }
 
-            if (!Globals.TypeMappings.TryGetValue(rowStrucDesc.Name.String, out var rowProperties))
-            {
-                FConsole.AppendText($"{reader.Summary.Name.String} can't be parsed yet (RowType: {rowStrucDesc.Name.String})", FColors.Red, true);
-                return;
-            }
+            // this slows down icon generation
+            //bool hasStruct = Globals.Usmap.Schemas.Any(x => x.Name == rowStrucDesc.Name.String);
+            //if (!hasStruct)
+            //{
+            //    FConsole.AppendText($"{reader.Summary.Name.String} can't be parsed yet (RowType: {rowStrucDesc.Name.String})", FColors.Red, true);
+            //    return;
+            //}
 
             var NumRows = reader.ReadInt32();
             RowMap = new Dictionary<string, object>();
@@ -79,7 +78,7 @@ namespace FModel.PakReader.Parsers.Class
                     RowName = $"{baseName}_NK{num++:00}";
                 }
 
-                RowMap[RowName] = new UObject(reader, rowProperties, true, rowStrucDesc.Name.String);
+                RowMap[RowName] = new UObject(reader, rowStrucDesc.Name.String, true);
             }
         }
 

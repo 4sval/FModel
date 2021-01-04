@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using FModel.PakReader.IO;
 using FModel.PakReader.Parsers.Objects;
 using FModel.PakReader.Textures;
 using SkiaSharp;
@@ -50,8 +49,7 @@ namespace FModel.PakReader.Parsers.Class
             }
         }
 
-        internal UTexture2D(IoPackageReader reader, Dictionary<int, PropertyInfo> properties, Stream ubulk,
-            long bulkOffset) : base(reader, properties)
+        internal UTexture2D(IoPackageReader reader, string type, Stream ubulk, long bulkOffset) : base(reader, type)
         {
             Serialize(reader, ubulk, bulkOffset);
         }

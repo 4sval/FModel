@@ -12,63 +12,51 @@ namespace FModel.PakReader.Parsers.Class
     {
         private readonly Dictionary<string, object> Dict;
 
-        public UObject(IoPackageReader reader, IReadOnlyDictionary<int, PropertyInfo> properties, bool structFallback = false, string type = null)
+        public UObject(IoPackageReader reader, string type, bool structFallback = false)
         {
             Dict = new Dictionary<string, object>();
             var header = new FUnversionedHeader(reader);
-
-            if (!header.HasValues)
+            if (header.HasValues)
             {
-                if (!structFallback && reader.ReadInt32() != 0 /* && reader.Position + 16 <= maxSize*/)
-                    reader.Position += FGuid.SIZE;
-
-                return;
-            }
-
-            using var it = new FIterator(header);
-
+                FUnversionedType unversionedType = reader.GetOrCreateSchema(type);
+                using var it = new FIterator(header);
+                if (header.HasNonZeroValues)
+                {
+                    var num = 1;
+                    do
+                    {
+                        var (val, isNonZero) = it.Current;
+                        if (unversionedType.Properties.TryGetValue(val, out var props))
+                        {
+                            var propertyTag = new FPropertyTag(props);
+                            if (isNonZero)
+                            {
+                                var key = Dict.ContainsKey(props.Name) ? $"{props.Name}_NK{num++:00}" : props.Name;
+                                var obj = BaseProperty.ReadAsObject(reader, propertyTag, propertyTag.Type, ReadType.NORMAL);
+                                Dict[key] = obj;
+                            }
+                            else
+                            {
+                                var key = Dict.ContainsKey(props.Name) ? $"{props.Name}_NK{num++:00}" : props.Name;
+                                var obj = BaseProperty.ReadAsZeroObject(reader, propertyTag, propertyTag.Type);
+                                Dict[key] = obj;
+                            }
+                        }
+                        else Dict[val.ToString()] = null;
+                    } while (it.MoveNext());
+                }
+                else
+                {
 #if DEBUG
-
-            var headerWritten = false;
-
-            do
-            {
-                if (properties.ContainsKey(it.Current.Val))
-                    continue;
-
-                if (!headerWritten)
-                {
-                    headerWritten = true;
                     FConsole.AppendText(string.Concat("\n", type ?? "Unknown", ": ", reader.Summary.Name.String), "#CA6C6C", true);
-                }
-
-                FConsole.AppendText($"Val: {it.Current.Val} (IsNonZero: {it.Current.IsNonZero})", FColors.Yellow, true);
-            }
-            while (it.MoveNext());
-            it.Reset();
+                    do
+                    {
+                        FConsole.AppendText($"Val: {it.Current.Val} (IsNonZero: {it.Current.IsNonZero})", FColors.Yellow, true);
+                    }
+                    while (it.MoveNext());
 #endif
-
-            var num = 1;
-            do
-            {
-                var (val, isNonZero) = it.Current;
-                if (properties.TryGetValue(val, out var propertyInfo))
-                {
-                    if (isNonZero)
-                    {
-                        var key = Dict.ContainsKey(propertyInfo.Name) ? $"{propertyInfo.Name}_NK{num++:00}" : propertyInfo.Name;
-                        var obj = BaseProperty.ReadAsObject(reader, new FPropertyTag(propertyInfo), new FName(propertyInfo.Type), ReadType.NORMAL);
-                        Dict[key] = obj;
-                    }
-                    else
-                    {
-                        var obj = BaseProperty.ReadAsZeroObject(reader, new FPropertyTag(propertyInfo), new FName(propertyInfo.Type));
-                        var key = Dict.ContainsKey(propertyInfo.Name) ? $"{propertyInfo.Name}_NK{num++:00}" : propertyInfo.Name;
-                        Dict[key] = obj;
-                    }
                 }
-                else Dict[val.ToString()] = null;
-            } while (it.MoveNext());
+            }
 
             if (!structFallback && reader.ReadInt32() != 0 /* && reader.Position + 16 <= maxSize*/)
                 reader.Position += FGuid.SIZE;
