@@ -72,7 +72,7 @@ namespace FModel.Creator.Bundles
             RewardQuantity = quantity.Value;
 
             Package p = Utils.GetPropertyPakPackage(itemDefinition.Value.AssetPathName.String);
-            if (p.HasExport() && !p.Equals(default))
+            if (p != null && p.HasExport() && !p.Equals(default))
             {
                 var d = p.GetExport<UObject>();
                 if (d != null)
