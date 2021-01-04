@@ -18,10 +18,10 @@ namespace FModel.PakReader.Parsers.Class
             var header = new FUnversionedHeader(reader);
             if (header.HasValues)
             {
-                FUnversionedType unversionedType = reader.GetOrCreateSchema(type);
                 using var it = new FIterator(header);
                 if (header.HasNonZeroValues)
                 {
+                    FUnversionedType unversionedType = reader.GetOrCreateSchema(type);
                     var num = 1;
                     do
                     {

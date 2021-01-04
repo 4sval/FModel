@@ -214,8 +214,8 @@ namespace FModel.PakReader.Parsers
 
                         bNop = !bNested && schema.PropCount == 0;
                         bNested = true;
-                        type = schema.SuperType;
                     }
+                    type = schema.SuperType;
                 }
 
                 Globals.CachedSchemas[export] = ret;
