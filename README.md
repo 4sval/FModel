@@ -1,6 +1,6 @@
 # FModel
 
-<img src="https://cdn.asval.tk/i/FModel.png" align="right" alt="FModel Logo" width="128" height="128">
+<img src="https://fmodel.app/images/fmodel/fmodel.ico" align="right" alt="FModel Logo" width="128" height="128">
 
 Created in March 2019, FModel is a .PAK file explorer fully dedicated to Fortnite but also work with some other Unreal Engine's games. It quickly became popular to quickly generate images of new cosmetics added to the game.
 Over time, new features got added and new users discovered the program.
@@ -19,30 +19,32 @@ Over time, new features got added and new users discovered the program.
 
 Load one or several .PAK files, see assets properties, create icons for cosmetics, challenges, and much more. Built with C#, FModel is the most feature-rich software to leak on Fortnite and is 100% free.
 
-<p align="center">
-  <img src="https://cdn.asval.tk/i/2020-05/OAoZxW39Jv.gif">
-</p>
+[![FModel Features](https://fmodel.app/images/fmodel/NsAZOdHbQU.png)](https://youtu.be/fSmWby80Tzc)
+<h5 align="center">FModel Features - Quick Overview</h5>
 
 ## Features
 
 A few of the things you can do with FModel:
 
 * .PAK Files
-  - Load all
-  - Load one
-  - Load new assets
-  - Load modified assets
-  - Load new and modified assets
-  - Backup all assets
+  - Load multiple files with different keys
+  - Load new assets only
+  - Load modified assets only
+  - Backup all current assets
+  - Jump to a specific directory
 * Assets
   - Extract properties
   - Export RAW data
+  - Bulk extract and export
+  - Search and filter them with ease
   - Copy path / name
 * Icons
   - All BR / STW cosmetics and challenges
-  - 15 different languages available
+  - Create your own icon theme
+  - Merge selected icons into 1 image
+  - 15+ different languages available
 * Audio Player
-  - OGG / WAV files
+  - OGG / WAV / ADPCM / ... files
   
 ## Installation
 

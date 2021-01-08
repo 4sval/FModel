@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Windows;
-
 using FModel.Creator.Icons;
 using FModel.Creator.Rarities;
 using FModel.Creator.Stats;
@@ -12,9 +10,6 @@ using FModel.PakReader.Parsers.Class;
 using FModel.PakReader.Parsers.PropertyTagData;
 using FModel.Properties;
 using FModel.Utils;
-
-using Fortnite_API.Objects;
-using Fortnite_API.Objects.V1;
 using SkiaSharp;
 
 namespace FModel.Creator.Bases

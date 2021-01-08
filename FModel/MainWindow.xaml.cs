@@ -107,7 +107,7 @@ namespace FModel
             }
             else
             {
-                Globals.gNotifier.ShowCustomMessage("Mappings", "Fail to reload");
+                Globals.gNotifier.ShowCustomMessage("Mappings", "Failed to reload");
             }
         }
 

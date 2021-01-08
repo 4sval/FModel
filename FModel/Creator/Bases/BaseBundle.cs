@@ -80,7 +80,8 @@ namespace FModel.Creator.Bases
                             {
                                 if (!itemDefinition.Value.AssetPathName.IsNone &&
                                     !itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Items/Tokens/") &&
-                                    !itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Athena/Items/Quests"))
+                                    !itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Athena/Items/Quests") &&
+                                    !itemDefinition.Value.AssetPathName.String.StartsWith("/BattlepassS15/Items/Tokens/"))
                                 {
                                     CompletionRewards.Add(new CompletionReward(completionCount, quantity, itemDefinition));
                                 }

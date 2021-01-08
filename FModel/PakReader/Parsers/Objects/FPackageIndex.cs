@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace FModel.PakReader.Parsers.Objects

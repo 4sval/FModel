@@ -8,7 +8,6 @@ using FModel.PakReader.IO;
 using FModel.PakReader.Parsers.Class;
 using FModel.PakReader.Parsers.Objects;
 using FModel.Utils;
-using UsmapNET.Classes;
 
 namespace FModel.PakReader.Parsers
 {
@@ -146,7 +145,6 @@ namespace FModel.PakReader.Parsers
                 }
 
                 FName exportType;
-
                 if (GlobalData != null && GlobalData.ScriptObjectByGlobalId.TryGetValue(trigger, out var scriptObject))
                 {
                     exportType = scriptObject.Name;

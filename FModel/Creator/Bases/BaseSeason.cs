@@ -5,7 +5,6 @@ using SkiaSharp.HarfBuzz;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Documents;
 using FModel.PakReader.Parsers.Class;
 using FModel.PakReader.Parsers.PropertyTagData;
 
@@ -66,6 +65,7 @@ namespace FModel.Creator.Bases
                             if (reward.Value is UObject o &&
                                 o.GetExport<SoftObjectProperty>("ItemDefinition") is SoftObjectProperty itemDefinition &&
                                 !itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Items/Tokens/") &&
+                                !itemDefinition.Value.AssetPathName.String.StartsWith("/BattlepassS15/Items/Tokens/") &&
                                 o.GetExport<IntProperty>("Quantity") is IntProperty quantity)
                             {
                                 BookXpSchedule[i].Add(new Reward(quantity, itemDefinition.Value));
