@@ -226,7 +226,7 @@ namespace FModel.Creator
                 }
                 case "MaterialInstanceConstant":
                 {
-                    if (assetFolder.Equals("MI_OfferImages"))
+                    if (assetFolder.Equals("MI_OfferImages") || assetFolder.Equals("RenderSwitch_Materials"))
                     {
                         BaseOfferMaterial icon = new BaseOfferMaterial(exports[index]);
                         using (var ret = new SKBitmap(icon.Size, icon.Size, SKColorType.Rgba8888, SKAlphaType.Premul))

@@ -110,7 +110,7 @@ namespace FModel.Creator
             }
 
             var p = GetPropertyPakPackage(s);
-            if (p.HasExport() && !p.Equals(default))
+            if (p != null && p.HasExport() && !p.Equals(default))
             {
                 var i = p.GetExport<UTexture2D>();
                 if (i != null)

@@ -8,13 +8,13 @@
     <StartupObject>FModel.App</StartupObject>
     <Authors>Asval</Authors>
     <Company></Company>
-    <AssemblyVersion>3.1.1.3</AssemblyVersion>
-    <FileVersion>3.1.1.3</FileVersion>
+    <AssemblyVersion>3.1.2.0</AssemblyVersion>
+    <FileVersion>3.1.2.0</FileVersion>
     <PackageIcon>FModel.ico</PackageIcon>
     <PackageIconUrl />
     <PackageProjectUrl>https://github.com/iAmAsval/FModel</PackageProjectUrl>
     <Description></Description>
-    <Version>3.1.1</Version>
+    <Version>3.1.2</Version>
     <Platforms>x64</Platforms>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>

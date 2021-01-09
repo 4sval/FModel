@@ -100,7 +100,7 @@ namespace FModel.Creator.Bases
 
             // image
             if (Settings.Default.UseItemShopIcon &&
-                DisplayAssetImage.GetDisplayAssetImage(this, export.GetExport<SoftObjectProperty>("DisplayAssetPath"), ref assetName))
+                DisplayAssetImage.GetDisplayAssetImage(this, export, ref assetName))
             { } // ^^^^ will return false if image not found, if so, we try to get the normal icon
             else if (export.GetExport<ObjectProperty>("HeroDefinition", "WeaponDefinition") is { } itemDef)
                 LargeSmallImage.GetPreviewImage(this, itemDef, assetName);

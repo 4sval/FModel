@@ -20,7 +20,7 @@ namespace FModel.Creator.Bases
         public BaseOfferMaterial()
         {
             FallbackImage = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T_Placeholder_Item_Image.png")).Stream);
-            IconImage = FallbackImage;
+            IconImage = null;
             RarityBackgroundImage = null;
             RarityBackgroundColors = new SKColor[2] { SKColor.Parse("4F4F69"), SKColor.Parse("4F4F69") };
             RarityBorderColor = SKColor.Parse("9092AB");
@@ -59,17 +59,22 @@ namespace FModel.Creator.Bases
                         parameter.TryGetValue("ParameterInfo", out var i1) && i1 is StructProperty i2 && i2.Value is UObject info &&
                         info.TryGetValue("Name", out var j1) && j1 is NameProperty name)
                     {
-                        if (name.Value.String.Equals("OfferImage") || name.Value.String.Equals("Texture"))
-                        {
-                            IconImage = Utils.GetObjectTexture(value);
-                        }
-                        else if (name.Value.String.Equals("SeriesTexture"))
+                        if (name.Value.String.Equals("SeriesTexture"))
                         {
                             RarityBackgroundImage = Utils.GetObjectTexture(value);
+                        }
+                        else if (IconImage == null && value.Value.Resource.OuterIndex.Resource != null && (name.Value.String.Equals("OfferImage") || name.Value.String.Contains("Texture")))
+                        {
+                            IconImage = Utils.GetObjectTexture(value);
+                            if (IconImage == null) IconImage = Utils.GetTexture($"{value.Value.Resource.OuterIndex.Resource.ObjectName.String}_1");
+                            if (IconImage == null) IconImage = Utils.GetTexture($"{value.Value.Resource.OuterIndex.Resource.ObjectName.String}_01");
                         }
                     }
                 }
             }
+
+            if (IconImage == null)
+                IconImage = FallbackImage;
         }
 
         public void DrawBackground(SKCanvas c)

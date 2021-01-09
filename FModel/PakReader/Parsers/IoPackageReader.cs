@@ -103,7 +103,7 @@ namespace FModel.PakReader.Parsers
                 var importedPackageId = new FPackageId(Loader);
                 var arcs = Loader.ReadTArray(() => new FArc(Loader));
                 graphData[i] = (importedPackageId, arcs);
-                string importedPackageName = Transform(Creator.Utils.GetFullPath(importedPackageId));
+                string importedPackageName = Transform(Creator.Utils.GetFullPath(importedPackageId) ?? "");
                 if (!(Creator.Utils.GetPropertyPakPackage(importedPackageName) is IoPackage package)) continue;
                 foreach (var export in package.Reader.ExportMap)
                 {
