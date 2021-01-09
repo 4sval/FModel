@@ -33,6 +33,7 @@ namespace FModel.Grabber.Mappings
                                 await File.WriteAllBytesAsync(mappingPath, mappingsData).ConfigureAwait(false);
                             }
 
+                            FConsole.AppendText($"Mappings pulled from {mapping.FileName}", FColors.Yellow, true);
                             Globals.Usmap = new Usmap(mappingsData);
                             return true;
                         }

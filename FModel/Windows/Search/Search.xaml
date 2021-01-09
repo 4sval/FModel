@@ -42,7 +42,7 @@
 
         <DataGrid x:Name="Assets_DtGrd" Grid.Row="1" IsReadOnly="True"
                   AutoGenerateColumns="True" AutoGeneratingColumn="OnAutoGeneratingColumn"
-                  ColumnHeaderHeight="24" SelectionChanged="OnSelectedItemChanged">
+                  ColumnHeaderHeight="24" SelectionChanged="OnSelectedItemChanged" MouseDoubleClick="OnGoToClick">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="{x:Static properties:Resources.GoTo}" Click="OnGoToClick">
