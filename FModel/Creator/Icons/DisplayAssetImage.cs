@@ -20,11 +20,9 @@ namespace FModel.Creator.Icons
                 path = assetName.Substring(0, assetName.LastIndexOf(".")).Replace("Athena_Commando_", "");
                 switch (path) // Modified matrix's temp fix
                 {
+                    case "CID_971_M_Jupiter_S0Z6M":
                     case "CID_964_M_Historian_869BC":
                         path = path.Substring(0,path.LastIndexOf("_"));
-                        break;
-                    case "CID_971_M_Jupiter_S0Z6M":
-                        path = path.Substring(0, path.LastIndexOf("_"));
                         break;
                 }
                 path = "/Game/Catalog/MI_OfferImages/MI_" + path;
