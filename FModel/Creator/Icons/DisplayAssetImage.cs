@@ -17,7 +17,17 @@ namespace FModel.Creator.Icons
             }
             else
             {
-                path = "/Game/Catalog/MI_OfferImages/MI_" + assetName.Substring(0, assetName.LastIndexOf(".")).Replace("Athena_Commando_", "");
+                path = assetName.Substring(0, assetName.LastIndexOf(".")).Replace("Athena_Commando_", "");
+                switch (path) // Modified matrix's temp fix
+                {
+                    case "CID_964_M_Historian_869BC":
+                        path = path.Substring(0,path.LastIndexOf("_"));
+                        break;
+                    case "CID_971_M_Jupiter_S0Z6M":
+                        path = path.Substring(0, path.LastIndexOf("_"));
+                        break;
+                }
+                path = "/Game/Catalog/MI_OfferImages/MI_" + path;
             }
 
             Package p = Utils.GetPropertyPakPackage(path);
@@ -37,7 +47,7 @@ namespace FModel.Creator.Icons
                             {
                                 if (name.Value.String.Equals("OfferImage") || name.Value.String.Equals("Texture"))
                                 {
-                                    icon.IconImage = Utils.GetObjectTexture(value);
+                                    icon.IconImage = Utils.GetObjectTexture(value) ?? Utils.GetTexture($"{value.Value.Resource.OuterIndex.Resource.ObjectName.String}_1") ?? Utils.GetTexture($"{value.Value.Resource.OuterIndex.Resource.ObjectName.String}_01");
                                     assetName = "MI_" + assetName;
                                     return true;
                                 }
