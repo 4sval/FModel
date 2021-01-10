@@ -1,6 +1,7 @@
 ﻿using FModel.Creator.Bases;
 using FModel.PakReader;
 using FModel.PakReader.Parsers.Class;
+using FModel.PakReader.Parsers.Objects;
 using FModel.PakReader.Parsers.PropertyTagData;
 
 namespace FModel.Creator.Icons
@@ -10,9 +11,9 @@ namespace FModel.Creator.Icons
         public static bool GetDisplayAssetImage(BaseIcon icon, IUExport o, ref string assetName)
         {
             string path;
-            if (o.TryGetValue("DisplayAssetPath", out var d) && d is SoftObjectProperty da)
+            if (o.TryGetValue("DisplayAssetPath", out var d) && d is StructProperty da && da.Value is FSoftObjectPath daOut)
             {
-                path = da.Value.AssetPathName.String;
+                path = daOut.AssetPathName.String;
             }
             else
             {
