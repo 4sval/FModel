@@ -46,7 +46,7 @@ namespace FModel.Utils
                         string mount = fileReader.MountPoint;
                         string gameName = Folders.GetGameName();
                         if (Globals.Game.ActualGame == EGame.Fortnite)
-                            m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/Fortnite.*?/{langCode}/Fortnite.*", RegexOptions.IgnoreCase);
+                            m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/(Fortnite|RegionCN).*?/{langCode}/(Fortnite|RegionCN).*", RegexOptions.IgnoreCase);
                         else if (Globals.Game.ActualGame == EGame.Valorant)
                             m = Regex.Match(mount + KvP.Value.Name, $"{gameName}/Content/Localization/Game/{langCode}/Game.locres", RegexOptions.IgnoreCase);
                         else if (Globals.Game.ActualGame == EGame.DeadByDaylight)
