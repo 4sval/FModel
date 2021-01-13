@@ -61,7 +61,7 @@ namespace FModel.PakReader.IO
             PartitionCount = reader.ReadUInt32();
             ContainerId = new FIoContainerId(reader);
             EncryptionKeyGuid = new FGuid(reader);
-            ContainerFlags = (EIoContainerFlags) reader.ReadInt32();
+            ContainerFlags = (EIoContainerFlags) reader.ReadByte();
             Reserved3 = reader.ReadByte();
             Reserved4 = reader.ReadUInt16();
             Reserved5 = reader.ReadUInt32();
