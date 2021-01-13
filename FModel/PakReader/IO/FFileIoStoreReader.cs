@@ -57,6 +57,7 @@ namespace FModel.PakReader.IO
             CaseSensitive = caseSensitive;
             ContainerFile.FileHandle = containerStream;
             var tocResource = new FIoStoreTocResource(tocStream, tocReadOptions);
+            tocStream.Dispose();
             TocResource = tocResource;
 
             var containerUncompressedSize = tocResource.Header.TocCompressedBlockEntryCount > 0

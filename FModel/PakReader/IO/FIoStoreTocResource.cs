@@ -8,11 +8,11 @@ namespace FModel.PakReader.IO
     public enum EIoStoreTocReadOptions
     {
         Default,
-        ReadDirectoryIndex	= (1 << 0),
-        ReadTocMeta			= (1 << 1),
-        ReadAll				= ReadDirectoryIndex | ReadTocMeta
-    } 
-    
+        ReadDirectoryIndex = 1 << 0,
+        ReadTocMeta        = 1 << 1,
+        ReadAll            = ReadDirectoryIndex | ReadTocMeta
+    }
+
     public class FIoStoreTocResource
     {
         public readonly FIoStoreTocHeader Header;
@@ -30,8 +30,9 @@ namespace FModel.PakReader.IO
             tocStream.Read(streamBuffer, 0, streamBuffer.Length);
             using var reader = new BinaryReader(new MemoryStream(streamBuffer));
             Header = new FIoStoreTocHeader(reader);
+            reader.BaseStream.Position = Header.TocHeaderSize;
 
-            var totalTocSize = tocStream.Length - FIoStoreTocHeader.SIZE;
+            var totalTocSize = tocStream.Length - Header.TocHeaderSize;
             var tocMetaSize = Header.TocEntryCount * FIoStoreTocEntryMeta.SIZE;
             var defaultTocSize = totalTocSize - Header.DirectoryIndexSize - tocMetaSize;
 
