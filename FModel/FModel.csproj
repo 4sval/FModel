@@ -115,8 +115,8 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.6.4" />
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
-    <PackageReference Include="DiscordRichPresence" Version="1.0.166" />
-    <PackageReference Include="DotNetZip" Version="1.14.0" />
+    <PackageReference Include="DiscordRichPresence" Version="1.0.169" />
+    <PackageReference Include="DotNetZip" Version="1.15.0" />
     <PackageReference Include="EpicManifestParser" Version="1.2.0" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.1" />
     <PackageReference Include="Fortnite-API-Wrapper" Version="2.1.0" />
@@ -131,7 +131,7 @@
     <PackageReference Include="System.Data.HashFunction.CityHash" Version="2.0.0" />
     <PackageReference Include="ToastNotifications" Version="2.5.1" />
     <PackageReference Include="ToastNotifications.Messages" Version="2.5.1" />
-    <PackageReference Include="Usmap.NET" Version="1.0.0" />
+    <PackageReference Include="Usmap.NET" Version="1.1.1" />
     <PackageReference Include="WriteableBitmapEx" Version="1.6.7" />
   </ItemGroup>
 
