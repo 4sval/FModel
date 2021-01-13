@@ -4,7 +4,7 @@ using FModel.PakReader.Parsers.Objects;
 
 namespace FModel.PakReader.IO
 {
-    public enum EIoStoreTocVersion
+    public enum EIoStoreTocVersion : byte
     {
         Invalid = 0,
         Initial,
@@ -20,6 +20,8 @@ namespace FModel.PakReader.IO
 
         public readonly byte[] TocMagic;
         public readonly EIoStoreTocVersion Version;
+        public readonly byte Reserved0;
+        public readonly ushort Reserved1;
         public readonly uint TocHeaderSize;
         public readonly uint TocEntryCount;
         public readonly uint TocCompressedBlockEntryCount;
@@ -32,6 +34,11 @@ namespace FModel.PakReader.IO
         public readonly FIoContainerId ContainerId;
         public readonly FGuid EncryptionKeyGuid;
         public readonly EIoContainerFlags ContainerFlags;
+        public readonly byte Reserved3;
+        public readonly ushort Reserved4;
+        public readonly uint Reserved5;
+        public readonly ulong PartitionSize;
+        //uint64 Reserved6[6] = { 0 };
 
         public FIoStoreTocHeader(BinaryReader reader)
         {
@@ -40,7 +47,9 @@ namespace FModel.PakReader.IO
             if (!TOC_MAGIC.SequenceEqual(TocMagic))
                 throw new FileLoadException("Invalid utoc magic");
 
-            Version = (EIoStoreTocVersion) reader.ReadInt32();
+            Version = (EIoStoreTocVersion) reader.ReadByte();
+            Reserved0 = reader.ReadByte();
+            Reserved1 = reader.ReadUInt16();
             TocHeaderSize = reader.ReadUInt32();
             TocEntryCount = reader.ReadUInt32();
             TocCompressedBlockEntryCount = reader.ReadUInt32();
@@ -53,7 +62,10 @@ namespace FModel.PakReader.IO
             ContainerId = new FIoContainerId(reader);
             EncryptionKeyGuid = new FGuid(reader);
             ContainerFlags = (EIoContainerFlags) reader.ReadInt32();
-            //reader.BaseStream.Position += 60; // Padding
+            Reserved3 = reader.ReadByte();
+            Reserved4 = reader.ReadUInt16();
+            Reserved5 = reader.ReadUInt32();
+            PartitionSize = reader.ReadUInt64();
         }
     }
 }
