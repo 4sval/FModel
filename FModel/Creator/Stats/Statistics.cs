@@ -1,4 +1,4 @@
-﻿using FModel.Creator.Bases;
+using FModel.Creator.Bases;
 using FModel.Creator.Texts;
 using FModel.Utils;
 using SkiaSharp;
@@ -181,7 +181,7 @@ namespace FModel.Creator.Stats
                         Color = new SKColor(0, 0, 50, 75)
                     });
 
-                c.DrawBitmap(stat.Icon.Resize(iconSize, iconSize), new SKPoint(icon.Margin * (int)2.5, y + 4), new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
+                if (stat.Icon != null) c.DrawBitmap(stat.Icon.Resize(iconSize, iconSize), new SKPoint(icon.Margin * (int)2.5, y + 4), new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true });
 
                 var statPaint = new SKPaint
                 {
