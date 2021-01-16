@@ -48,7 +48,7 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_Fortnite + " [EGL2]", Property = egl2FilesPath });
             }
 
-            ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_Fortnite + " [LIVE]", Property = "donotedit-youcanteditanyway-fn.manifest" });
+            ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_Fortnite + " [LIVE]", Property = "donotedit-fn.manifest" });
 
             string valorantFilesPath = Paks.GetValorantPakFilesPath();
             if (!string.IsNullOrEmpty(valorantFilesPath))
@@ -58,7 +58,7 @@ namespace FModel.Windows.Launcher
                 ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_Valorant, Property = valorantFilesPath });
             }
 
-            ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_Valorant + " [LIVE]", Property = "donotedit-youcanteditanyway-val.manifest" });
+            ComboBoxVm.gamesCbViewModel.Add(new ComboBoxViewModel { Id = i++, Content = Properties.Resources.GameName_Valorant + " [LIVE]", Property = "donotedit-val.manifest" });
 
             string borderlands3FilesPath = Paks.GetBorderlands3PakFilesPath();
             if (!string.IsNullOrEmpty(borderlands3FilesPath))
@@ -151,7 +151,7 @@ namespace FModel.Windows.Launcher
         {
             if (e.Source is TextBox text)
             {
-                bool m = Regex.IsMatch(text.Text, @"^donotedit-youcanteditanyway-\w+\.manifest$");
+                bool m = Regex.IsMatch(text.Text, @"^donotedit-\w+\.manifest$");
                 BrowsePath.IsEnabled = !m;
                 text.IsReadOnly = m;
             }
