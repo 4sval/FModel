@@ -9,6 +9,7 @@ using SkiaSharp;
 using System.IO;
 using FModel.PakReader.Parsers.Class;
 using FModel.PakReader.Parsers.Objects;
+using FModel.Chic;
 
 namespace FModel.Creator
 {
@@ -50,7 +51,7 @@ namespace FModel.Creator
                 case "AthenaPetCarrierItemDefinition":
                 case "AthenaMusicPackItemDefinition":
                 case "AthenaBattleBusItemDefinition":
-                case "AthenaCharacterItemDefinition":
+                case "AthenaCharacterItemDefinition": return ChicIcon.GenerateIcon(exports[index], exportType, ref assetName);
                 case "FortAlterationItemDefinition":
                 case "AthenaBackpackItemDefinition":
                 case "AthenaPickaxeItemDefinition":

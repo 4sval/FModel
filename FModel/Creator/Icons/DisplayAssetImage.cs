@@ -23,7 +23,7 @@ namespace FModel.Creator.Icons
                     case "CID_971_M_Jupiter_S0Z6M":
                     case "CID_964_M_Historian_869BC":
                     case "CID_990_M_GrilledCheese_SNX4K":
-                        path = path.Substring(0,path.LastIndexOf("_"));
+                        path = path.Substring(0, path.LastIndexOf("_"));
                         break;
                 }
                 path = "/Game/Catalog/MI_OfferImages/MI_" + path;
