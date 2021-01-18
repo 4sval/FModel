@@ -9,7 +9,7 @@
         xmlns:utils="clr-namespace:FModel.Utils"
         mc:Ignorable="d"
         Style="{StaticResource {x:Type Window}}"
-        Title="FModel"
+        Title="Chic-Model"
         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={utils:Screens}, ConverterParameter='0.80' }"
         Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={utils:Screens}, ConverterParameter='0.70' }"
         WindowStartupLocation="CenterScreen" Icon="FModel.ico"
@@ -350,7 +350,7 @@
                                            SyntaxHighlighting="{Binding Highlighter, Mode=TwoWay}"
                                            Document="{Binding Document, Mode=TwoWay}"/>
                 </Border>
-                <Border Grid.Column="4" BorderBrush="#7F748198" BorderThickness="1" Background="#FF252D36">
+                <Border Grid.Column="4" BorderBrush="#7F748198" BorderThickness="1" Background="#FF1E1D1E">
                     <Image x:Name="FModel_ImgBox" Source="{Binding Image}">
                         <Image.InputBindings>
                             <MouseBinding MouseAction="LeftDoubleClick" Command="{x:Static utils:Commands.OpenImageDoubleClick}"/>
@@ -450,14 +450,14 @@
                         </RichTextBox.Resources>
                     </toolkit:RichTextBox>
                 </Border>
-                <Border Grid.Column="4" BorderBrush="#7F748198" BorderThickness="1" Background="#FF252D36">
-                    <TabControl x:Name="FModel_TabCtrl" BorderBrush="{x:Null}" Padding="0,2,0,0">
-                        <TabItem x:Name="FModel_PakProps" Header="{x:Static properties:Resources.PAK}">
+                <Border Grid.Column="4" BorderBrush="#7F748198" BorderThickness="1" Background="#FF1E1D1E">
+                    <TabControl x:Name="FModel_TabCtrl" BorderBrush="{x:Null}" Padding="0,2,0,0" Background="#FF2B282B">
+                        <TabItem x:Name="FModel_PakProps" Header="{x:Static properties:Resources.PAK}" Background="#FF2B282B">
                             <Grid>
                                 <Grid.Background>
-                                    <LinearGradientBrush EndPoint="0.25,0.9" StartPoint="0.75,1">
-                                        <GradientStop Color="#FF252D36" Offset="0"/>
-                                        <GradientStop Color="#FF252E38" Offset="1"/>
+                                    <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                        <GradientStop Color="#FF403B40"/>
+                                        <GradientStop Color="#FF1E1D1E" Offset="1"/>
                                     </LinearGradientBrush>
                                 </Grid.Background>
                                 <Grid.RowDefinitions>
@@ -500,12 +500,12 @@
                                              Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding FileCount, Mode=TwoWay}"/>
                             </Grid>
                         </TabItem>
-                        <TabItem x:Name="FModel_AssetProps" Header="{x:Static properties:Resources.Asset}">
+                        <TabItem x:Name="FModel_AssetProps" Header="{x:Static properties:Resources.Asset}" Background="#FF2B282B">
                             <Grid>
                                 <Grid.Background>
-                                    <LinearGradientBrush EndPoint="0.25,0.9" StartPoint="0.75,1">
-                                        <GradientStop Color="#FF252D36" Offset="0"/>
-                                        <GradientStop Color="#FF252E38" Offset="1"/>
+                                    <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                        <GradientStop Color="#FF403B40"/>
+                                        <GradientStop Color="#FF1E1D1E" Offset="1"/>
                                     </LinearGradientBrush>
                                 </Grid.Background>
                                 <Grid.RowDefinitions>
@@ -550,13 +550,12 @@
                                 <TextBox Grid.Column="3" Grid.Row="6" TextWrapping="NoWrap"
                                              Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding IsEncrypted, Mode=TwoWay}"/>
                                 <TextBox Grid.Column="3" Grid.Row="7" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding CompMethod, Mode=TwoWay}"/>
-                            </Grid>
+                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding CompMethod, Mode=TwoWay}"/></Grid>
                         </TabItem>
                     </TabControl>
                 </Border>
             </Grid>
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="3" Background="#FF2B282B">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=GridChildBottomLeft, Mode=TwoWay}"/>
                     <ColumnDefinition Width="2.25"/>

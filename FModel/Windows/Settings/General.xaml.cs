@@ -125,7 +125,7 @@ namespace FModel.Windows.Settings
         {
             if (e.Source is TextBox text)
             {
-                bool m = Regex.IsMatch(text.Text, @"^donotedit--\w+\.manifest$");
+                bool m = Regex.IsMatch(text.Text, @"^donotedit-\w+\.manifest$");
                 text.IsReadOnly = m;
             }
         }

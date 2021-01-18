@@ -8,17 +8,17 @@
     <BooleanToVisibilityConverter x:Key="bool2VisibilityConverter"/>
 
     <!--Colors-->
-    <Color x:Key="WindowBackgroundColor">#232930</Color>
-    <Color x:Key="DarkBackgroundColor">#FF252D36</Color>
-    <Color x:Key="LightBackgroundColor">#748198</Color>
-    <Color x:Key="BackgroundColor">#1C2026</Color>
-    <Color x:Key="DisabledBackgroundColor">#424242</Color>
-    <Color x:Key="LightDisabledBackgroundColor">#666666</Color>
+    <Color x:Key="WindowBackgroundColor">#FF1E1D1E</Color>
+    <Color x:Key="DarkBackgroundColor">#FF1E1D1E</Color>
+    <Color x:Key="LightBackgroundColor">#FF2B282B</Color>
+    <Color x:Key="BackgroundColor">#FF1E1D1E</Color>
+    <Color x:Key="DisabledBackgroundColor">#FF403B40</Color>
+    <Color x:Key="LightDisabledBackgroundColor">#FF595259</Color>
 
     <Color x:Key="ForegroundColor">#EFEFEF</Color>
 
-    <Color x:Key="HighlightColor">#3e4652</Color>
-    <Color x:Key="HotColor">#3C4C5E</Color>
+    <Color x:Key="HighlightColor">#FF2B282B</Color>
+    <Color x:Key="HotColor">#FF2B282B</Color>
 
     <!--Brushes-->
     <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}"/>
@@ -28,7 +28,7 @@
     <SolidColorBrush x:Key="TabControlNormalBorderBrush" Color="{StaticResource WindowBackgroundColor}"/>
 
     <SolidColorBrush x:Key="TabItemHotBackground" Color="{StaticResource HotColor}"/>
-    <SolidColorBrush x:Key="TabItemSelectedBackground" Color="#333C46"/>
+    <SolidColorBrush x:Key="TabItemSelectedBackground" Color="#FF403B40"/>
     <SolidColorBrush x:Key="TabItemHotBorderBrush" Color="{StaticResource HotColor}"/>
     <SolidColorBrush x:Key="TabItemDisabledBackground" Color="{StaticResource DarkBackgroundColor}"/>
     <SolidColorBrush x:Key="TabItemDisabledBorderBrush" Color="{StaticResource DarkBackgroundColor}"/>
@@ -89,19 +89,20 @@
     <SolidColorBrush x:Key="TreeViewBackground" Color="{StaticResource DarkBackgroundColor}"/>
     <SolidColorBrush x:Key="TreeViewDisabledForeground" Color="{StaticResource LightDisabledBackgroundColor}"/>
 
+    <SolidColorBrush x:Key="MenuForeground" Color="#1A171A"/>
     <SolidColorBrush x:Key="DisabledMenuForeground" Color="#656565"/>
-    <SolidColorBrush x:Key="MenuBackground" Color="#1c2026"/>
-    <SolidColorBrush x:Key="MenuItemSelectionFill" Color="{StaticResource HighlightColor}"/>
-    <SolidColorBrush x:Key="SubMenuBackgroundBrush" Color="#1c2026"/>
-    <SolidColorBrush x:Key="MenuItemPressedFill" Color="{StaticResource HighlightColor}"/>
-    <SolidColorBrush x:Key="SubMenuBorderBrush" Color="{StaticResource LightBackgroundColor}"/>
-    <SolidColorBrush x:Key="SubMenuRepeatButtonBrush" Color="{StaticResource HotColor}"/>
-    <SolidColorBrush x:Key="SubMenuHoverRepeatButtonBrush" Color="#7F7F7F"/>
+    <SolidColorBrush x:Key="MenuBackground" Color="#1A171A"/>
+    <SolidColorBrush x:Key="MenuItemSelectionFill" Color="#FF2B282B"/>
+    <SolidColorBrush x:Key="SubMenuBackgroundBrush" Color="#1A171A"/>
+    <SolidColorBrush x:Key="MenuItemPressedFill" Color="#FF2B282B"/>
+    <SolidColorBrush x:Key="SubMenuBorderBrush" Color="#FF2B282B"/>
+    <SolidColorBrush x:Key="SubMenuRepeatButtonBrush" Color="#1A171A"/>
+    <SolidColorBrush x:Key="SubMenuHoverRepeatButtonBrush" Color="#1A171A"/>
     <SolidColorBrush x:Key="MenuSeparatorBrush" Color="#FF748198"/>
 
     <SolidColorBrush x:Key="DataGridBackgroundBrush" Color="{StaticResource DarkBackgroundColor}"/>
     <SolidColorBrush x:Key="DataGridHeaderBackgroundBrush" Color="{StaticResource DarkBackgroundColor}"/>
-    <SolidColorBrush x:Key="DataGridHeaderMouseOverBrush" Color="#FF3E4652"/>
+    <SolidColorBrush x:Key="DataGridHeaderMouseOverBrush" Color="#FF2B282B"/>
     <SolidColorBrush x:Key="DataGridHeaderBorderBrush" Color="#7F748198"/>
     <SolidColorBrush x:Key="DataGridRowBorderBrush" Color="#7F748198"/>
     <SolidColorBrush x:Key="DataGridRowBackgroundBrush" Color="{StaticResource DarkBackgroundColor}"/>
@@ -2309,7 +2310,7 @@
 
     <Style TargetType="{x:Type Menu}">
         <Setter Property="Background" Value="{StaticResource MenuBackground}"/>
-        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource MenuForeground}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Menu}">
@@ -2327,7 +2328,7 @@
 
     <Style TargetType="{x:Type ContextMenu}">
         <Setter Property="Background" Value="{StaticResource MenuBackground}"/>
-        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource MenuForeground}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">

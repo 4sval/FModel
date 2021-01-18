@@ -13,7 +13,7 @@ using System.Text;
 
 namespace FModel.Chic
 {
-    public class ChicIcon
+    static class ChicIcon
     {
         public static bool GenerateIcon(IUExport export, string exportType, ref string assetName)
         {
@@ -23,7 +23,7 @@ namespace FModel.Chic
             using (var c = new SKCanvas(ret))
             {
                 //Background
-                Rarity.DrawRarity(c, icon);
+                ChicRarity.DrawRarity(c, icon);
 
                 //Draw item icon
                 LargeSmallImage.DrawPreviewImage(c, icon);
@@ -51,7 +51,10 @@ namespace FModel.Chic
                     Statistics.DrawStats(c, icon);
                 }
 
+                //Watermark
                 Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                
+                //Shows the image
                 ImageBoxVm.imageBoxViewModel.Set(ret, assetName);
             }
 
