@@ -51,7 +51,7 @@ namespace FModel.Creator
                 case "AthenaPetCarrierItemDefinition":
                 case "AthenaMusicPackItemDefinition":
                 case "AthenaBattleBusItemDefinition":
-                case "AthenaCharacterItemDefinition": return ChicIcon.GenerateIcon(exports[index], exportType, ref assetName);
+                case "AthenaCharacterItemDefinition":
                 case "FortAlterationItemDefinition":
                 case "AthenaBackpackItemDefinition":
                 case "AthenaPickaxeItemDefinition":
@@ -118,8 +118,8 @@ namespace FModel.Creator
                 case "FortChallengeBundleScheduleDefinition":
                 case "FortWeaponMeleeDualWieldItemDefinition":
                 case "FortDailyRewardScheduleTokenDefinition":
-                case "FortCreativeRealEstatePlotItemDefinition":
-                {
+                case "FortCreativeRealEstatePlotItemDefinition": return ChicIcon.GenerateIcon(exports[index], exportType, ref assetName);
+                /*{
                     BaseIcon icon = new BaseIcon(exports[index], exportType, ref assetName);
                     int height = icon.Size + icon.AdditionalSize;
                     using (var ret = new SKBitmap(icon.Size, height, SKColorType.Rgba8888, SKAlphaType.Premul))
@@ -162,7 +162,7 @@ namespace FModel.Creator
                     }
 
                     return true;
-                }
+                }*/
                 case "FortPlaylistAthena":
                 {
                     BasePlaylist icon = new BasePlaylist(exports[index]);

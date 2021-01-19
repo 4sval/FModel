@@ -22,6 +22,8 @@ namespace FModel.Chic
             using (var ret = new SKBitmap(icon.Size, height, SKColorType.Rgba8888, SKAlphaType.Premul))
             using (var c = new SKCanvas(ret))
             {
+                icon.Margin = 0;
+
                 //Background
                 ChicRarity.DrawRarity(c, icon);
 
@@ -29,9 +31,9 @@ namespace FModel.Chic
                 LargeSmallImage.DrawPreviewImage(c, icon);
 
                 //Draw Text Background
-                Text.DrawBackground(c, icon);
+                ChicText.DrawBackground(c, icon);
                 //Display Name
-                Text.DrawDisplayName(c, icon);
+                ChicText.DrawDisplayName(c, icon);
                 //Description
                 Text.DrawDescription(c, icon);
 
@@ -43,6 +45,7 @@ namespace FModel.Chic
                 //Draw Source
                 Text.DrawToBottom(c, icon, ETextSide.Right, icon.CosmeticSource);
 
+                //Draw Flags
                 UserFacingFlag.DrawUserFacingFlags(c, icon);
 
                 // has more things to show
