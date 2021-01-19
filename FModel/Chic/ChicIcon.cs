@@ -22,13 +22,13 @@ namespace FModel.Chic
             using (var ret = new SKBitmap(icon.Size, height, SKColorType.Rgba8888, SKAlphaType.Premul))
             using (var c = new SKCanvas(ret))
             {
-                icon.Margin = 0;
+                icon.Margin = 0; 
 
                 //Background
                 ChicRarity.DrawRarity(c, icon);
 
                 //Draw item icon
-                LargeSmallImage.DrawPreviewImage(c, icon);
+                ChicImage.DrawPreviewImage(c, icon);
 
                 //Draw Text Background
                 ChicText.DrawBackground(c, icon);
@@ -36,6 +36,8 @@ namespace FModel.Chic
                 ChicText.DrawDisplayName(c, icon);
                 //Description
                 Text.DrawDescription(c, icon);
+
+                icon.Margin = 2;
 
                 if (!icon.ShortDescription.Equals(icon.DisplayName) && !icon.ShortDescription.Equals(icon.Description))
                 {
@@ -47,6 +49,8 @@ namespace FModel.Chic
 
                 //Draw Flags
                 UserFacingFlag.DrawUserFacingFlags(c, icon);
+
+                icon.Margin = 2;
 
                 // has more things to show
                 if (height > icon.Size)

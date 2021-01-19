@@ -1,7 +1,9 @@
 ﻿using FModel.Creator.Bases;
 using FModel.Creator.Texts;
+using FModel.ViewModels.StatusBar;
 using SkiaSharp;
 using System.Printing;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace FModel.Chic
 {
@@ -13,21 +15,19 @@ namespace FModel.Chic
 
         public static void DrawBackground(SKCanvas c, IBase icon)
         {
-            var paint = new SKPaint
-            {
-                IsAntialias = true,
-                FilterQuality = SKFilterQuality.High,
-                Color = new SKColor(206, 155, 181),
-                ImageFilter = SKImageFilter.CreateDropShadow(0, 3, 5, 5, SKColors.Black, null, new SKImageFilter.CropRect(SKRect.Create(icon.Margin, icon.Margin, icon.Width - icon.Margin, icon.Height - icon.Margin)))
-            };
-
             var pathTop = new SKPath { FillType = SKPathFillType.EvenOdd };
             pathTop.MoveTo(icon.Margin, icon.Margin);
             pathTop.LineTo(icon.Width + icon.Margin, icon.Margin);
             pathTop.LineTo(icon.Width + icon.Margin, icon.Margin + 20);
             pathTop.LineTo(icon.Margin, icon.Margin + 30);
             pathTop.Close();
-            c.DrawPath(pathTop, paint);
+            c.DrawPath(pathTop, new SKPaint
+            {
+                IsAntialias = true,
+                FilterQuality = SKFilterQuality.High,
+                Color = new SKColor(30, 30, 30), //new SKColor(206, 155, 181),
+                ImageFilter = SKImageFilter.CreateDropShadow(0, 3, 5, 5, SKColors.Black, null, new SKImageFilter.CropRect(SKRect.Create(icon.Margin, icon.Margin, icon.Width - icon.Margin, icon.Height - icon.Margin)))
+            });
 
             var pathRarity = new SKPath { FillType = SKPathFillType.EvenOdd };
             pathRarity.MoveTo(icon.Margin, icon.Height - icon.Margin);
@@ -35,11 +35,18 @@ namespace FModel.Chic
             pathRarity.LineTo(icon.Width - icon.Margin, icon.Height - icon.Margin - 85);
             pathRarity.LineTo(icon.Width - icon.Margin, icon.Height - icon.Margin);
             pathRarity.Close();
+
+            SKColor rarityColor;
+            {
+                if (icon is BaseIcon b && b.HasSeries) rarityColor = b.RarityColors[0];
+                else rarityColor = icon.RarityBackgroundColors[0];
+            }
+
             c.DrawPath(pathRarity, new SKPaint
             {
                 IsAntialias = true,
                 FilterQuality = SKFilterQuality.High,
-                Color = icon.RarityBackgroundColors[0],
+                Color = rarityColor,
                 ImageFilter = SKImageFilter.CreateDropShadow(0, -3, 5, 5, SKColors.Black, null, new SKImageFilter.CropRect(SKRect.Create(icon.Margin, icon.Margin, icon.Width - icon.Margin, icon.Height - icon.Margin)))
             });
 
@@ -83,6 +90,34 @@ namespace FModel.Chic
             }
 
             c.DrawText(text, x, y, namePaint);
+        }
+
+        public static void DrawDescription(SKCanvas c, IBase icon)
+        {
+            string text = icon.Description;
+
+            if (string.IsNullOrEmpty(text)) return;
+
+            int maxLine = 4;
+
+            SKPaint descriptionPaint = new SKPaint
+            {
+                IsAntialias = true,
+                FilterQuality = SKFilterQuality.High,
+                Typeface = Text.TypeFaces.DescriptionTypeface,
+                TextSize = 13,
+                Color = SKColors.White
+            };
+
+            Helper.DrawCenteredMultilineText(c, text, maxLine, icon, ETextSide.Right,
+                new SKRect(icon.Margin, _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE, icon.Width - icon.Margin, icon.Height - _BOTTOM_TEXT_SIZE),
+                descriptionPaint);
+
+            c.DrawRect(new SKRect(icon.Margin, _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE, icon.Width - icon.Margin, icon.Height - _BOTTOM_TEXT_SIZE),
+                new SKPaint
+                {
+                    Color = SKColors.White
+                });
         }
     }
 }

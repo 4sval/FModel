@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using FModel.Chic;
 using FModel.Creator.Icons;
 using FModel.Creator.Rarities;
 using FModel.Creator.Stats;
@@ -22,6 +23,8 @@ namespace FModel.Creator.Bases
         public SKBitmap[] UserFacingFlags;
         public SKColor[] RarityBackgroundColors;
         public SKColor[] RarityBorderColor;
+        public SKColor[] RarityColors;
+        public bool HasSeries;
         public string DisplayName;
         public string Description;
         public string ShortDescription;
@@ -39,6 +42,7 @@ namespace FModel.Creator.Bases
             UserFacingFlags = null;
             RarityBackgroundColors = new[] { SKColor.Parse("5EBC36"), SKColor.Parse("305C15") };
             RarityBorderColor = new[] { SKColor.Parse("74EF52"), SKColor.Parse("74EF52") };
+            RarityColors = RarityBackgroundColors;
             DisplayName = "";
             Description = "";
             ShortDescription = "";
@@ -49,11 +53,16 @@ namespace FModel.Creator.Bases
         public BaseIcon(IUExport export, string assetName, bool forceHR) : this()
         {
             if (export.GetExport<ObjectProperty>("Series") is { } series)
+            {
                 Serie.GetRarity(this, series);
+                HasSeries = true;
+            }
             else if (Settings.Default.UseGameColors) // override default green
                 Rarity.GetInGameRarity(this, export.GetExport<EnumProperty>("Rarity")); // uncommon will be triggered by Rarity being null
             else if (export.GetExport<EnumProperty>("Rarity") is { } rarity)
                 Rarity.GetHardCodedRarity(this, rarity);
+
+            ChicRarity.GetInGameRarity(this, export.GetExport<EnumProperty>("Rarity"));
 
             if (export.GetExport<ObjectProperty>("HeroDefinition", "WeaponDefinition") is { } itemDef)
                 LargeSmallImage.GetPreviewImage(this, itemDef, assetName, forceHR);
@@ -92,11 +101,16 @@ namespace FModel.Creator.Bases
         {
             // rarity
             if (export.GetExport<ObjectProperty>("Series") is { } series)
+            {
                 Serie.GetRarity(this, series);
+                HasSeries = true;
+            }
             else if (Settings.Default.UseGameColors) // override default green
                 Rarity.GetInGameRarity(this, export.GetExport<EnumProperty>("Rarity")); // uncommon will be triggered by Rarity being null
             else if (export.GetExport<EnumProperty>("Rarity") is { } rarity)
                 Rarity.GetHardCodedRarity(this, rarity);
+
+            ChicRarity.GetInGameRarity(this, export.GetExport<EnumProperty>("Rarity"));
 
             // image
             if (Settings.Default.UseItemShopIcon &&
