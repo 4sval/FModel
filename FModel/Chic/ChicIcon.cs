@@ -35,22 +35,18 @@ namespace FModel.Chic
                 //Display Name
                 ChicText.DrawDisplayName(c, icon);
                 //Description
-                Text.DrawDescription(c, icon);
-
-                icon.Margin = 2;
+                ChicText.DrawDescription(c, icon);
 
                 if (!icon.ShortDescription.Equals(icon.DisplayName) && !icon.ShortDescription.Equals(icon.Description))
                 {
                     //Draw Item Type
-                    Text.DrawToBottom(c, icon, ETextSide.Left, icon.ShortDescription);
+                    ChicText.DrawToBottom(c, icon, ETextSide.Left, icon.ShortDescription);
                 }
                 //Draw Source
-                Text.DrawToBottom(c, icon, ETextSide.Right, icon.CosmeticSource);
+                ChicText.DrawToBottom(c, icon, ETextSide.Right, icon.CosmeticSource);
 
                 //Draw Flags
-                UserFacingFlag.DrawUserFacingFlags(c, icon);
-
-                icon.Margin = 2;
+                ChicUserFacingFlags.DrawUserFacingFlags(c, icon);
 
                 // has more things to show
                 if (height > icon.Size)

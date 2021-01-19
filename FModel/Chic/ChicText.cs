@@ -3,7 +3,6 @@ using FModel.Creator.Texts;
 using FModel.ViewModels.StatusBar;
 using SkiaSharp;
 using System.Printing;
-using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace FModel.Chic
 {
@@ -98,26 +97,48 @@ namespace FModel.Chic
 
             if (string.IsNullOrEmpty(text)) return;
 
-            int maxLine = 4;
-
-            SKPaint descriptionPaint = new SKPaint
+            SKPaint paint = new SKPaint
             {
                 IsAntialias = true,
                 FilterQuality = SKFilterQuality.High,
                 Typeface = Text.TypeFaces.DescriptionTypeface,
-                TextSize = 13,
+                TextSize = 18,
                 Color = SKColors.White
             };
 
-            Helper.DrawCenteredMultilineText(c, text, maxLine, icon, ETextSide.Right,
-                new SKRect(icon.Margin, _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE, icon.Width - icon.Margin, icon.Height - _BOTTOM_TEXT_SIZE),
-                descriptionPaint);
+            {
+                float lineHeight = paint.TextSize * 1.2f;
+                float height = 4 * lineHeight;
 
-            c.DrawRect(new SKRect(icon.Margin, _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE, icon.Width - icon.Margin, icon.Height - _BOTTOM_TEXT_SIZE),
-                new SKPaint
+                while (height > icon.Height - _BOTTOM_TEXT_SIZE - 3 - _STARTER_TEXT_POSITION - _NAME_TEXT_SIZE - 12)
                 {
-                    Color = SKColors.White
-                });
+                    paint.TextSize--;
+                    lineHeight = paint.TextSize * 1.2f;
+                    height = 4 * lineHeight;
+                }
+            }
+
+            Helper.DrawCenteredMultilineText(c, text, 4, icon, ETextSide.Right,
+                new SKRect(icon.Margin, _STARTER_TEXT_POSITION + _NAME_TEXT_SIZE + 12, icon.Width - icon.Margin, icon.Height - _BOTTOM_TEXT_SIZE - 3),
+                paint);
+        }
+
+        public static void DrawToBottom(SKCanvas c, BaseIcon icon, ETextSide side, string text)
+        {
+            if (string.IsNullOrEmpty(text)) return;
+
+            SKPaint paint = new SKPaint
+            {
+                IsAntialias = true,
+                FilterQuality = SKFilterQuality.High,
+                Typeface = side == ETextSide.Left ? Text.TypeFaces.BottomDefaultTypeface ?? Text.TypeFaces.DisplayNameTypeface : Text.TypeFaces.BottomDefaultTypeface ?? Text.TypeFaces.DefaultTypeface,
+                TextSize = Text.TypeFaces.BottomDefaultTypeface == null ? 15 : 13,
+                Color = SKColors.White,
+                TextAlign = side == ETextSide.Left ? SKTextAlign.Left : SKTextAlign.Right
+            };
+
+            if (side == ETextSide.Left) c.DrawText(text, 5, icon.Size - 5, paint);
+            else c.DrawText(text, icon.Size - 5, icon.Size - 5, paint);
         }
     }
 }
