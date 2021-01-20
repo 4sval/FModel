@@ -9,13 +9,13 @@ namespace FModel.Chic
 {
     static class ChicWatermark
     {
-        public static void DrawWatermark(SKCanvas c, int width, bool shadow = false, bool sizeByWidth)
+        public static void DrawWatermark(SKCanvas c, int width, bool shadow = false, bool sizeByWidth = false)
         {
             if (Settings.Default.UseIconWatermark && !string.IsNullOrEmpty(Settings.Default.IconWatermarkPath))
             {
                 using SKBitmap watermarkBase = SKBitmap.Decode(Settings.Default.IconWatermarkPath);
                 {
-                    int sizeMultiplier = sizeByWidth ? 0 : (int)Settings.Default.IconWatermarkScale / width;
+                    int sizeMultiplier = sizeByWidth ? GetMultiplier(width, watermarkBase) : (int)Settings.Default.IconWatermarkScale / width;
 
                     int sizeX = watermarkBase.Width * sizeMultiplier;
                     int sizeY = watermarkBase.Height * sizeMultiplier;
@@ -35,6 +35,19 @@ namespace FModel.Chic
                         });
                 }
             }
+        }
+
+        static int GetMultiplier(int width, SKBitmap watermark)
+        {
+            int w = width / 100 * 10;
+            int h = watermark.Height * (w / watermark.Width);
+
+            while (h % 1 != 0)
+            {
+                h = watermark.Height * (++w / watermark.Width);
+            }
+
+            return w / watermark.Width;
         }
     }
 }
