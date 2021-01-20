@@ -10,26 +10,20 @@ namespace FModel.Creator.Icons
     {
         public static bool GetDisplayAssetImage(BaseIcon icon, IUExport o, ref string assetName)
         {
-            string path;
+            string path = string.Empty;
+            bool displayExists = true;
             if (o.TryGetValue("DisplayAssetPath", out var d) && d is StructProperty da && da.Value is FSoftObjectPath daOut)
-            {
                 path = daOut.AssetPathName.String;
-            }
             else
             {
-                path = assetName.Substring(0, assetName.LastIndexOf(".")).Replace("Athena_Commando_", "");
-                switch (path) // Modified matrix's temp fix
-                {
-                    case "CID_971_M_Jupiter_S0Z6M":
-                    case "CID_964_M_Historian_869BC":
-                    case "CID_990_M_GrilledCheese_SNX4K":
-                        path = path.Substring(0, path.LastIndexOf("_"));
-                        break;
-                }
-                path = "/Game/Catalog/MI_OfferImages/MI_" + path;
+                displayExists = false;
+                path = "/Game/Catalog/MI_OfferImages/MI_" + assetName.Substring(0, assetName.LastIndexOf(".")).Replace("Athena_Commando_", "");
             }
 
             Package p = Utils.GetPropertyPakPackage(path);
+            if (!displayExists && p == default)
+                p = Utils.GetPropertyPakPackage(path[..path.LastIndexOf("_")]);
+
             if (p != null && p.HasExport())
             {
                 var obj = p.GetExport<UObject>();
