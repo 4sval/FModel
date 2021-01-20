@@ -9,14 +9,16 @@ namespace FModel.Chic
 {
     static class ChicWatermark
     {
-        public static void DrawWatermark(SKCanvas c, int width, bool shadow = false)
+        public static void DrawWatermark(SKCanvas c, int width, bool shadow = false, bool sizeByWidth)
         {
             if (Settings.Default.UseIconWatermark && !string.IsNullOrEmpty(Settings.Default.IconWatermarkPath))
             {
                 using SKBitmap watermarkBase = SKBitmap.Decode(Settings.Default.IconWatermarkPath);
                 {
-                    int sizeX = watermarkBase.Width * (int)Settings.Default.IconWatermarkScale / width;
-                    int sizeY = watermarkBase.Height * (int)Settings.Default.IconWatermarkScale / width;
+                    int sizeMultiplier = sizeByWidth ? 0 : (int)Settings.Default.IconWatermarkScale / width;
+
+                    int sizeX = watermarkBase.Width * sizeMultiplier;
+                    int sizeY = watermarkBase.Height * sizeMultiplier;
                     SKBitmap watermark = watermarkBase.Resize(sizeX, sizeY);
 
                     float x = width - watermark.Width - 2;
