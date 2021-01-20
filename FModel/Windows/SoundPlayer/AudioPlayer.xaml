@@ -98,7 +98,9 @@
                         <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-
+                    <Button Grid.Column="2" Grid.Row="1" Height="20" MinWidth="40" Click="OnCreateVideoClick"
+                            Content="Create Video" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                            Margin="0,0,150,-1" Padding="5,1,5,1"/>
                     <Button Grid.Column="2" Grid.Row="1" Height="20" MinWidth="40" Click="OnAddClick"
                             Content="{x:Static properties:Resources.Add}" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                             Margin="0,0,100,-1" Padding="5,1,5,1"/>

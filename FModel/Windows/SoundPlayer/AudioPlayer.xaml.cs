@@ -1,4 +1,5 @@
 using CSCore.SoundOut;
+using FModel.Chic.Windows;
 using FModel.Discord;
 using FModel.PakReader;
 using FModel.ViewModels.ListBox;
@@ -62,6 +63,14 @@ namespace FModel.Windows.SoundPlayer
             Time.Content = timeline;
         }
 
+        private void OnCreateVideoClick(object sender, RoutedEventArgs e)
+        {
+            if (Sound_LstBox.SelectedIndex > -1 && Sound_LstBox.SelectedItem is ListBoxViewModel2 selected)
+            {
+                VideoCreator creator = new VideoCreator(selected.FullPath);
+                creator.Show();
+            }
+        }
         private void OnAddClick(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog
