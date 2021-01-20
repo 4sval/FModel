@@ -57,7 +57,7 @@
                         <RowDefinition Height="5"/>
                     </Grid.RowDefinitions>
                     <Label Content="Text" Grid.Row="1" Grid.Column="1"/>
-                    <TextBox Name="TextInputBox" Grid.Row="1" Grid.Column="1" Margin="50,5,0,5"/>
+                    <TextBox Name="TextInput" Grid.Row="1" Grid.Column="1" Margin="50,2,0,2" TextChanged="TextInputChanged"/>
                     <Button Click="OnRemoveImageClick" Grid.Row="3" Grid.Column="1" Width="50" HorizontalAlignment="Right">
                         <Grid>
                             <Image Source="/FModel;component/Resources/image-remove.png"

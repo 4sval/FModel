@@ -4,6 +4,7 @@ using FModel.ViewModels.ComboBox;
 using FModel.ViewModels.StatusBar;
 using FModel.Windows.DarkMessageBox;
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;

@@ -102,7 +102,7 @@ namespace FModel.Chic
                 IsAntialias = true,
                 FilterQuality = SKFilterQuality.High,
                 Typeface = Text.TypeFaces.DescriptionTypeface,
-                TextSize = 18,
+                TextSize = 21,
                 Color = SKColors.White
             };
 
