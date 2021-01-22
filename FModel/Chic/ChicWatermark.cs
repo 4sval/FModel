@@ -4,6 +4,7 @@ using FModel.Properties;
 using FModel.Utils;
 using SkiaSharp;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
@@ -16,40 +17,28 @@ namespace FModel.Chic
         {
             if (Settings.Default.UseIconWatermark && !string.IsNullOrEmpty(Settings.Default.IconWatermarkPath))
             {
-                using SKBitmap watermarkBase = SKBitmap.Decode(Settings.Default.IconWatermarkPath);
-                {
-                    float sizeMultiplier = GetMultiplier(width, watermarkBase, sizePercent);
-                    
-                    float sizeX = watermarkBase.Width * sizeMultiplier;
-                    float sizeY = watermarkBase.Height * sizeMultiplier;
-                    SKBitmap watermark = watermarkBase.Resize((int)sizeX, (int)sizeY);
+                using SKBitmap watermarkBase = SKBitmap.Decode(new FileInfo(Settings.Default.IconWatermarkPath).Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+                int sizeX = (int)(watermarkBase.Width * GetMultiplier(width, watermarkBase, sizePercent));
+                int sizeY = (int)(watermarkBase.Height * GetMultiplier(width, watermarkBase, sizePercent));
+                SKBitmap watermark = watermarkBase.Resize(sizeX, sizeY);
 
-                    FConsole.AppendText(GetMultiplier(width, watermarkBase, sizePercent).ToString(), FColors.Green, true);
-                    FConsole.AppendText(sizeMultiplier.ToString(), FColors.Green, true);
-                    FConsole.AppendText(sizeX.ToString(), FColors.Green, true);
-                    FConsole.AppendText(sizeY.ToString(), FColors.Green, true);
-                    FConsole.AppendText(((int)sizeY).ToString(), FColors.Green, true);
-                    FConsole.AppendText(((int)sizeY).ToString(), FColors.Green, true);
-
-                    float x = width - watermark.Width - 2;
-                    float y = 2;
-                    float w = x + watermark.Width;
-                    float h = y + watermark.Height;
-                    c.DrawBitmap(watermark, new SKRect(x, y, w, h),
-                        new SKPaint
-                        {
-                            FilterQuality = SKFilterQuality.High,
-                            IsAntialias = true,
-                            Color = SKColors.Transparent.WithAlpha((byte)Settings.Default.IconWatermarkOpacity),
-                            ImageFilter = shadow ? SKImageFilter.CreateDropShadow(0, 0, 2, 2, SKColors.Black) : null
-                        });
-                }
+                float left = width - watermark.Width - 2;
+                float top = 2;
+                float right = left + watermark.Width;
+                float bottom = top + watermark.Height;
+                c.DrawBitmap(watermark, new SKRect(left, top, right, bottom),
+                    new SKPaint
+                    {
+                        FilterQuality = SKFilterQuality.High,
+                        IsAntialias = true,
+                        Color = SKColors.Transparent.WithAlpha((byte)Properties.Settings.Default.IconWatermarkOpacity)
+                    });
             }
-        }
 
-        static float GetMultiplier(int width, SKBitmap watermark, int size)
-        {
-            return (float)width / size / watermark.Width;
+            static float GetMultiplier(int width, SKBitmap watermark, int size)
+            {
+                return (float)width / size / watermark.Width;
+            }
         }
     }
 }
