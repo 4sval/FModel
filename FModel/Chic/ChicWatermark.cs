@@ -1,25 +1,35 @@
 ﻿using FModel.Creator;
+using FModel.Logger;
 using FModel.Properties;
+using FModel.Utils;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 
 namespace FModel.Chic
 {
     static class ChicWatermark
     {
-        public static void DrawWatermark(SKCanvas c, int width, bool shadow = false, bool sizeByWidth = false)
+        public static void DrawWatermark(SKCanvas c, int width, int sizePercent = 4, bool shadow = false)
         {
             if (Settings.Default.UseIconWatermark && !string.IsNullOrEmpty(Settings.Default.IconWatermarkPath))
             {
                 using SKBitmap watermarkBase = SKBitmap.Decode(Settings.Default.IconWatermarkPath);
                 {
-                    int sizeMultiplier = sizeByWidth ? GetMultiplier(width, watermarkBase) : (int)Settings.Default.IconWatermarkScale / width;
+                    float sizeMultiplier = GetMultiplier(width, watermarkBase, sizePercent);
+                    
+                    float sizeX = watermarkBase.Width * sizeMultiplier;
+                    float sizeY = watermarkBase.Height * sizeMultiplier;
+                    SKBitmap watermark = watermarkBase.Resize((int)sizeX, (int)sizeY);
 
-                    int sizeX = watermarkBase.Width * sizeMultiplier;
-                    int sizeY = watermarkBase.Height * sizeMultiplier;
-                    SKBitmap watermark = watermarkBase.Resize(sizeX, sizeY);
+                    FConsole.AppendText(GetMultiplier(width, watermarkBase, sizePercent).ToString(), FColors.Green, true);
+                    FConsole.AppendText(sizeMultiplier.ToString(), FColors.Green, true);
+                    FConsole.AppendText(sizeX.ToString(), FColors.Green, true);
+                    FConsole.AppendText(sizeY.ToString(), FColors.Green, true);
+                    FConsole.AppendText(((int)sizeY).ToString(), FColors.Green, true);
+                    FConsole.AppendText(((int)sizeY).ToString(), FColors.Green, true);
 
                     float x = width - watermark.Width - 2;
                     float y = 2;
@@ -37,17 +47,9 @@ namespace FModel.Chic
             }
         }
 
-        static int GetMultiplier(int width, SKBitmap watermark)
+        static float GetMultiplier(int width, SKBitmap watermark, int size)
         {
-            int w = width / 100 * 10;
-            int h = watermark.Height * (w / watermark.Width);
-
-            while (h % 1 != 0)
-            {
-                h = watermark.Height * (++w / watermark.Width);
-            }
-
-            return w / watermark.Width;
+            return (float)width / size / watermark.Width;
         }
     }
 }

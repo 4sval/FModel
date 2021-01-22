@@ -55,7 +55,7 @@ namespace FModel.Chic
                 }
 
                 //Watermark
-                Watermark.DrawWatermark(c); // watermark should only be applied on icons with width = 512
+                ChicWatermark.DrawWatermark(c, icon.Size); // watermark should only be applied on icons with width = 512
                 
                 //Shows the image
                 ImageBoxVm.imageBoxViewModel.Set(ret, assetName);

@@ -124,7 +124,7 @@ namespace FModel.Chic.Windows
 
             using (SKCanvas c = new SKCanvas(TheImage))
             {
-                ChicWatermark.DrawWatermark(c, TheImage.Width, true, true);
+                ChicWatermark.DrawWatermark(c, TheImage.Width, 25, true);
 
                 var textPaint = new SKPaint
                 {
