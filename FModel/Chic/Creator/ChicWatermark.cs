@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 
-namespace FModel.Chic
+namespace FModel.Chic.Creator
 {
     static class ChicWatermark
     {

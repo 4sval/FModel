@@ -7,7 +7,7 @@ using FModel.PakReader.Parsers.Objects;
 using FModel.PakReader.Parsers.PropertyTagData;
 using FModel.Creator.Rarities;
 
-namespace FModel.Chic
+namespace FModel.Chic.Creator
 {
     static class ChicRarity
     {

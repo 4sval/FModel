@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FModel.Chic
+namespace FModel.Chic.Creator
 {
     static class ChicImage
     {

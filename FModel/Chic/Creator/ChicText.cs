@@ -6,7 +6,7 @@ using SkiaSharp;
 using System;
 using System.Printing;
 
-namespace FModel.Chic
+namespace FModel.Chic.Creator
 {
     static class ChicText
     {
