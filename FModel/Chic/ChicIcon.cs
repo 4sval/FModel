@@ -42,8 +42,24 @@ namespace FModel.Chic
                     //Draw Item Type
                     ChicText.DrawToBottom(c, icon, ETextSide.Left, icon.ShortDescription);
                 }
+
+                string sourceText = icon.CosmeticSource switch
+                {
+                    "ItemShop" => "Item Shop",
+                    "Granted.Founders" => "Founder's Pack",
+                    _ => icon.CosmeticSource
+                };
+
+                if (sourceText.Contains("BattlePass.Paid"))
+                {
+                    string season = sourceText.Replace("Season", "").Replace(".BattlePass.Paid", "");
+                    season = season == "10" ? "X" : season;
+
+                    sourceText = $"Season {season} Battle Pass";
+                }
+
                 //Draw Source
-                ChicText.DrawToBottom(c, icon, ETextSide.Right, icon.CosmeticSource);
+                ChicText.DrawToBottom(c, icon, ETextSide.Right, sourceText);
 
                 //Draw Flags
                 ChicUserFacingFlags.DrawUserFacingFlags(c, icon);

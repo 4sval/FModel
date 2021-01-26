@@ -1,7 +1,9 @@
 ﻿using FModel.Creator.Bases;
 using FModel.Creator.Texts;
+using FModel.Utils;
 using FModel.ViewModels.StatusBar;
 using SkiaSharp;
+using System;
 using System.Printing;
 
 namespace FModel.Chic
@@ -94,6 +96,7 @@ namespace FModel.Chic
         public static void DrawDescription(SKCanvas c, IBase icon)
         {
             string text = icon.Description;
+            int lineCount = text.Split("\n").Length;
 
             if (string.IsNullOrEmpty(text)) return;
 
@@ -102,19 +105,20 @@ namespace FModel.Chic
                 IsAntialias = true,
                 FilterQuality = SKFilterQuality.High,
                 Typeface = Text.TypeFaces.DescriptionTypeface,
-                TextSize = 21,
+                TextSize = 18,
                 Color = SKColors.White
             };
 
             {
                 float lineHeight = paint.TextSize * 1.2f;
-                float height = 4 * lineHeight;
+                float height = lineCount * lineHeight;
 
                 while (height > icon.Height - _BOTTOM_TEXT_SIZE - 3 - _STARTER_TEXT_POSITION - _NAME_TEXT_SIZE - 12)
                 {
+                    FConsole.AppendText($"[CHIC MODEL DEBUG] - {height} -- {icon.Height - _BOTTOM_TEXT_SIZE - 3 - _STARTER_TEXT_POSITION - _NAME_TEXT_SIZE - 12}", "#ce9bb5", true);
                     paint.TextSize--;
                     lineHeight = paint.TextSize * 1.2f;
-                    height = 4 * lineHeight;
+                    height = lineCount * lineHeight;
                 }
             }
 
