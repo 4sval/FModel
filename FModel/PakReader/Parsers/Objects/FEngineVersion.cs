@@ -21,5 +21,14 @@ namespace FModel.PakReader.Parsers.Objects
             Changelist = reader.ReadUInt32();
             Branch = reader.ReadFString();
         }
+
+        internal FEngineVersion(ushort major, ushort minor, ushort patch, uint changelist, string branch)
+        {
+            Major = major;
+            Minor = minor;
+            Patch = patch;
+            Changelist = changelist;
+            Branch = branch;
+        }
     }
 }

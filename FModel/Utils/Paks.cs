@@ -225,8 +225,10 @@ namespace FModel.Utils
                 }
 
                 files[mount + entry.GetPathWithoutExtension()] = entry;
-                if (Globals.Game.ActualGame == EGame.Unknown)
-                    Folders.SetGameName((mount.Length == 1 ? entry.GetFirstFolder() : mount) + "\\Content\\Paks");
+                if (Globals.Game.ActualGame != EGame.Unknown) continue;
+                
+                var t = mount.Length == 1 ? entry.GetFirstFolder() : mount[1..].SubstringBefore('/');
+                Folders.SetGameName(t + "\\Content\\Paks");
             }
         }
 

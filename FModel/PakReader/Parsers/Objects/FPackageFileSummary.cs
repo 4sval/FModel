@@ -113,51 +113,51 @@ namespace FModel.PakReader.Parsers.Objects
                 throw new FileLoadException("Can't load legacy UE3 file");
             }
 
-            TotalHeaderSize = reader.ReadInt32();
-            FolderName = reader.ReadFString();
-            PackageFlags = (EPackageFlags)reader.ReadUInt32();
-            NameCount = reader.ReadInt32();
-            NameOffset = reader.ReadInt32();
+            TotalHeaderSize = reader.ReadInt32(); // 928
+            FolderName = reader.ReadFString(); // NONE
+            PackageFlags = (EPackageFlags)reader.ReadUInt32(); // PKG_FILTEREDITORONLY
+            NameCount = reader.ReadInt32(); // 15
+            NameOffset = reader.ReadInt32(); // 193
 
             // only serialize when file version is past VER_UE4_SERIALIZE_TEXT_IN_PACKAGES
-            GatherableTextDataCount = reader.ReadInt32();
-            GatherableTextDataOffset = reader.ReadInt32();
+            GatherableTextDataCount = reader.ReadInt32(); // 0
+            GatherableTextDataOffset = reader.ReadInt32(); // 0
 
-            ExportCount = reader.ReadInt32();
-            ExportOffset = reader.ReadInt32();
-            ImportCount = reader.ReadInt32();
-            ImportOffset = reader.ReadInt32();
-            DependsOffset = reader.ReadInt32();
+            ExportCount = reader.ReadInt32(); // 2
+            ExportOffset = reader.ReadInt32(); // 684
+            ImportCount = reader.ReadInt32(); // 5
+            ImportOffset = reader.ReadInt32(); // 544
+            DependsOffset = reader.ReadInt32(); // 892
 
             // only serialize when file version is past VER_UE4_ADD_STRING_ASSET_REFERENCES_MAP
-            SoftPackageReferencesCount = reader.ReadInt32();
-            SoftPackageReferencesOffset = reader.ReadInt32();
+            SoftPackageReferencesCount = reader.ReadInt32(); // 0
+            SoftPackageReferencesOffset = reader.ReadInt32(); // 0
 
             // only serialize when file version is past VER_UE4_ADDED_SEARCHABLE_NAMES
-            SearchableNamesOffset = reader.ReadInt32();
+            SearchableNamesOffset = reader.ReadInt32(); // 0
 
-            ThumbnailTableOffset = reader.ReadInt32();
-            Guid = new FGuid(reader);
+            ThumbnailTableOffset = reader.ReadInt32(); // 0
+            var game = Globals.Game.ActualGame;
+            if (Globals.Game.ActualGame == EGame.Valorant) reader.ReadInt64();
+            Guid = new FGuid(reader); // 2736849445951E72F2FF5BB9EC132D7C
 
+            var GenerationCount = reader.ReadInt32(); // 1
+            if (GenerationCount > 0)
             {
-                var GenerationCount = reader.ReadInt32();
-                if (GenerationCount > 0)
+                Generations = new FGenerationInfo[GenerationCount];
+                for (int i = 0; i < Generations.Length; i++)
                 {
-                    Generations = new FGenerationInfo[GenerationCount];
-                    for (int i = 0; i < Generations.Length; i++)
-                    {
-                        Generations[i] = new FGenerationInfo(reader);
-                    }
+                    Generations[i] = new FGenerationInfo(reader);
                 }
-                else
-                    Generations = null;
             }
+            else
+                Generations = null;
 
             // only serialize when file version is past VER_UE4_ENGINE_VERSION_OBJECT
-            SavedByEngineVersion = new FEngineVersion(reader);
+            SavedByEngineVersion = new FEngineVersion(reader); // 0
 
             // only serialize when file version is past VER_UE4_PACKAGE_SUMMARY_HAS_COMPATIBLE_ENGINE_VERSION
-            CompatibleWithEngineVersion = new FEngineVersion(reader);
+            CompatibleWithEngineVersion = new FEngineVersion(reader); // 0
 
             CompressionFlags = (ECompressionFlags)reader.ReadUInt32();
             if (CompressionFlags != ECompressionFlags.COMPRESS_None) // No support for deprecated compression
@@ -168,8 +168,8 @@ namespace FModel.PakReader.Parsers.Objects
                 throw new FileLoadException("Package level compression is enabled");
             }
 
-            PackageSource = reader.ReadUInt32();
-            reader.ReadTArray(() => reader.ReadFString()); // "AdditionalPackagesToCook"
+            PackageSource = reader.ReadUInt32(); // 3454468
+            reader.ReadTArray(() => reader.ReadFString()); // "AdditionalPackagesToCook" 0
 
             if (LegacyFileVersion > -7)
             {
@@ -180,18 +180,18 @@ namespace FModel.PakReader.Parsers.Objects
                 }
             }
 
-            AssetRegistryDataOffset = reader.ReadInt32();
-            BulkDataStartOffset = reader.ReadInt64();
+            AssetRegistryDataOffset = reader.ReadInt32(); // 900
+            BulkDataStartOffset = reader.ReadInt64(); // 5674
 
             // only serialize when file version is past VER_UE4_WORLD_LEVEL_INFO
-            WorldTileInfoDataOffset = reader.ReadInt32();
+            WorldTileInfoDataOffset = reader.ReadInt32(); // 0
 
             // only serialize when file version is past VER_UE4_CHANGED_CHUNKID_TO_BE_AN_ARRAY_OF_CHUNKIDS
-            ChunkIDs = reader.ReadTArray(() => reader.ReadInt32());
+            ChunkIDs = reader.ReadTArray(() => reader.ReadInt32()); // 0
 
             // only serialize when file version is past VER_UE4_PRELOAD_DEPENDENCIES_IN_COOKED_EXPORTS
-            PreloadDependencyCount = reader.ReadInt32();
-            PreloadDependencyOffset = reader.ReadInt32();
+            PreloadDependencyCount = reader.ReadInt32(); // 6
+            PreloadDependencyOffset = reader.ReadInt32(); // 904
         }
     }
 }
