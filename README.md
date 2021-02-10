@@ -105,14 +105,6 @@ To use FModel, you need to have [.NET Core 3.1](https://dotnet.microsoft.com/dow
         </td>
   </tr>
   <tr>
-        <td align="center">
-            <a href="https://github.com/AyeTSG">
-                <img src="https://avatars1.githubusercontent.com/u/49595354?s=200&v=4" width="100px;" alt="TSG"/><br>
-                <sub><b>TSG</b></sub>
-            </a><br>
-            <a href="https://github.com/AyeTSG" title="Github">🔧</a>
-            <a href="https://twitter.com/AyeTSG" title="Twitter">🐦</a>
-        </td>
 	<td align="center">
             <a href="https://github.com/JacksonPlayz">
                 <img src="https://avatars2.githubusercontent.com/u/18062275?s=200&v=4" width="100px;" alt="Jackson"/><br/>
