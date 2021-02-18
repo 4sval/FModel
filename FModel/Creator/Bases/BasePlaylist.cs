@@ -41,7 +41,7 @@ namespace FModel.Creator.Bases
 
             if (export.GetExport<NameProperty>("PlaylistName") is { } playlistName && !playlistName.Value.IsNone)
             {
-                ApiResponse<PlaylistV1> playlist = Endpoints.FortniteAPI.V1.Playlists.Get(playlistName.Value.String);
+                ApiResponse<PlaylistV1> playlist = Endpoints.FortniteAPIClient.V1.Playlists.Get(playlistName.Value.String);
 
                 if (playlist.IsSuccess && playlist.Data.Images.HasShowcase)
                 {

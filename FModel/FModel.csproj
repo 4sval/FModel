@@ -115,11 +115,11 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.6.4" />
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
-    <PackageReference Include="DiscordRichPresence" Version="1.0.169" />
+    <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
     <PackageReference Include="DotNetZip" Version="1.15.0" />
     <PackageReference Include="EpicManifestParser" Version="1.2.0" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.1" />
-    <PackageReference Include="Fortnite-API-Wrapper" Version="2.1.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
+    <PackageReference Include="Fortnite-API-Wrapper" Version="2.2.0" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.6" />
     <PackageReference Include="LZMA-SDK" Version="19.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />

@@ -13,7 +13,7 @@ namespace FModel.Utils
 {
     static class Endpoints
     {
-        public static readonly FortniteApi FortniteAPI = new FortniteApi($"FModel/{Assembly.GetExecutingAssembly().GetName().Version}");
+        public static readonly FortniteApiClient FortniteAPIClient = new FortniteApiClient($"FModel/{Assembly.GetExecutingAssembly().GetName().Version}");
         public const string BENBOT_AES = "https://benbotfn.tk/api/v1/aes";
         public const string BENBOT_MAPPINGS = "https://benbotfn.tk/api/v1/mappings";
         public const string BENBOT_HOTFIXES = "https://benbotfn.tk/api/v1/hotfixes";
