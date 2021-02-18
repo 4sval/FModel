@@ -122,6 +122,8 @@ namespace FModel.Grabber.Paks
                             });
                         }
                     }
+
+                    FConsole.AppendText($"Fortnite-Manifest version: {manifest.BuildVersion}-{manifest.CL}", FColors.Yellow, true);
                 }
                 else if (Properties.Settings.Default.PakPath.EndsWith("-val.manifest"))
                 {
@@ -155,6 +157,8 @@ namespace FModel.Grabber.Paks
                             });
                         });
                     }
+
+                    FConsole.AppendText($"Valorant-Manifest version: {manifest.Header.GameVersion ?? "Unknown"}", FColors.Yellow, true);
                 }
                 else if (Directory.Exists(Properties.Settings.Default.PakPath))
                 {
