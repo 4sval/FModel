@@ -71,7 +71,7 @@ namespace FModel.Grabber.Paks
 
                     Manifest manifest = new Manifest(manifestData, new ManifestOptions
                     {
-                        ChunkBaseUri = new Uri("http://download.epicgames.com/Builds/Fortnite/CloudDir/ChunksV3/", UriKind.Absolute),
+                        ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/ChunksV3/", UriKind.Absolute),
                         ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks"))
                     });
                     int pakFiles = 0;
@@ -125,25 +125,23 @@ namespace FModel.Grabber.Paks
                 }
                 else if (Properties.Settings.Default.PakPath.EndsWith("-val.manifest"))
                 {
-                    ValorantAPIManifest manifest = await ValorantAPIManifest.DownloadAndParse(Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks"))).ConfigureAwait(false);
+                    //var manifest = await ValorantAPIManifestV1.DownloadAndParse(Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks"))).ConfigureAwait(false);
+                    var manifest = await ValorantAPIManifestV2.DownloadAndParse(Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks"))).ConfigureAwait(false);
 
                     if (manifest == null)
                     {
                         throw new Exception("Failed to load latest manifest.");
                     }
 
-                    for (int i = 0; i < manifest.Paks.Length; i++)
+                    for (var i = 0; i < manifest.Paks.Length; i++)
                     {
-                        ValorantPak pak = manifest.Paks[i];
-
+                        var pak = manifest.Paks[i];
                         var pakFileName = @$"ShooterGame\Content\Paks\{pak.Name}";
-                        PakFileReader pakFile = new PakFileReader(pakFileName, manifest.GetPakStream(i));
+                        var pakFile = new PakFileReader(pakFileName, manifest.GetPakStream(i));
 
                         if (i == 0)
                         {
-                            // define the current game thank to the pak path
-                            Folders.SetGameName(pakFileName);
-
+                            Folders.SetGame(EGame.Valorant);
                             Globals.Game.Version = pakFile.Info.Version;
                             Globals.Game.SubVersion = pakFile.Info.SubVersion;
                         }

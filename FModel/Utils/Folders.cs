@@ -18,7 +18,7 @@ namespace FModel.Utils
             CreateDefaultSubFolders();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetGame(EGame game) => Globals.Game.ActualGame = game;
         public static void SetGameName(string pakPath)
         {
             int index = pakPath.LastIndexOf("\\Content\\Paks", StringComparison.Ordinal);
