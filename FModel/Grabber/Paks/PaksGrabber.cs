@@ -123,7 +123,7 @@ namespace FModel.Grabber.Paks
                         }
                     }
 
-                    FConsole.AppendText($"Fortnite-Manifest version: {manifest.BuildVersion}-{manifest.CL}", FColors.Yellow, true);
+                    FConsole.AppendText($"Fortnite-Manifest version: {manifest.Version}-{manifest.CL}", FColors.Yellow, true);
                 }
                 else if (Properties.Settings.Default.PakPath.EndsWith("-val.manifest"))
                 {
