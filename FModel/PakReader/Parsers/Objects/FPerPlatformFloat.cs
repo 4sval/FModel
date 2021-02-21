@@ -2,11 +2,12 @@
 {
     public readonly struct FPerPlatformFloat : IUStruct
     {
+        public readonly bool bCooked;
         public readonly float Default;
 
         internal FPerPlatformFloat(PackageReader reader)
         {
-            _ = reader.ReadByte() != 0; //bCooked
+            bCooked = reader.ReadInt32() != 0;
             Default = reader.ReadFloat();
         }
     }
