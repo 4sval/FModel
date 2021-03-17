@@ -96,6 +96,7 @@ namespace FModel.Creator.Bundles
                         break;
                     }
                 }
+
                 if (char.IsDigit(text[text.Length - 1]))
                 {
                     int s = text.Count(k => Char.IsDigit(k));

@@ -64,8 +64,7 @@ namespace FModel.Creator.Bases
                         {
                             if (reward.Value is UObject o &&
                                 o.GetExport<SoftObjectProperty>("ItemDefinition") is SoftObjectProperty itemDefinition &&
-                                !itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Items/Tokens/") &&
-                                !itemDefinition.Value.AssetPathName.String.StartsWith("/BattlepassS15/Items/Tokens/") &&
+                                !itemDefinition.Value.AssetPathName.String.Contains("/Items/Tokens/") &&
                                 o.GetExport<IntProperty>("Quantity") is IntProperty quantity)
                             {
                                 BookXpSchedule[i].Add(new Reward(quantity, itemDefinition.Value));
@@ -87,7 +86,6 @@ namespace FModel.Creator.Bases
                         {
                             if (reward.Value is UObject o &&
                                 o.GetExport<SoftObjectProperty>("ItemDefinition") is SoftObjectProperty itemDefinition &&
-                                //!itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Items/Tokens/") &&
                                 o.GetExport<IntProperty>("Quantity") is IntProperty quantity)
                             {
                                 BookXpSchedule[i].Add(new Reward(quantity, itemDefinition.Value));

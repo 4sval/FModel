@@ -79,9 +79,8 @@ namespace FModel.Creator.Bases
                                 re.TryGetValue("ItemDefinition", out var d) && d is SoftObjectProperty itemDefinition)
                             {
                                 if (!itemDefinition.Value.AssetPathName.IsNone &&
-                                    !itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Items/Tokens/") &&
-                                    !itemDefinition.Value.AssetPathName.String.StartsWith("/Game/Athena/Items/Quests") &&
-                                    !itemDefinition.Value.AssetPathName.String.StartsWith("/BattlepassS15/Items/Tokens/"))
+                                    !itemDefinition.Value.AssetPathName.String.Contains("/Items/Tokens/") &&
+                                    !itemDefinition.Value.AssetPathName.String.Contains("/Items/Quests"))
                                 {
                                     CompletionRewards.Add(new CompletionReward(completionCount, quantity, itemDefinition));
                                 }

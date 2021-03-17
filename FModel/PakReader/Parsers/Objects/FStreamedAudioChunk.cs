@@ -22,7 +22,6 @@ namespace FModel.PakReader.Parsers.Objects
             }
             else
             {
-                reader.Position -= 4;
                 throw new FileLoadException("StreamedAudioChunk must be cooked");
             }
         }
