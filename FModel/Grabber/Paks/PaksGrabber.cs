@@ -201,7 +201,7 @@ namespace FModel.Grabber.Paks
                                 var utoc = paks[i].Replace(".ucas", ".utoc");
                                 if (!Utils.Paks.IsFileReadLocked(new FileInfo(utoc)))
                                 {
-                                    var utocStream = new MemoryStream(await File.ReadAllBytesAsync(utoc));
+                                    var utocStream = File.OpenRead(utoc);
                                     var ucasStream = File.OpenRead(paks[i]);
                                     var ioStore = new FFileIoStoreReader(paks[i].SubstringAfterLast('\\'), paks[i].SubstringBeforeLast('\\'), utocStream, ucasStream);
                                     DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[IO Store]", "[Registering]", $"{ioStore.FileName} with GUID {ioStore.TocResource.Header.EncryptionKeyGuid.Hex}");
