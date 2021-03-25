@@ -151,11 +151,12 @@ namespace FModel.Utils
                                         });
                                         break;
                                     }
+                                case ".jpg":
                                 case ".png":
                                     {
                                         using var asset = GetMemoryStream(selected.ReaderEntry.ContainerName, mount + selected.ReaderEntry.GetPathWithoutExtension());
                                         asset.Position = 0;
-                                        ImageBoxVm.imageBoxViewModel.Set(SKBitmap.Decode(asset), mount + selected.ReaderEntry.Name);
+                                        ImageBoxVm.imageBoxViewModel.Set(SKBitmap.Decode(asset), selected.ReaderEntry.GetNameWithExtension());
                                         break;
                                     }
                                 case ".ushaderbytecode":
