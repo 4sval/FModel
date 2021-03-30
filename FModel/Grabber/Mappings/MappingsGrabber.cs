@@ -41,7 +41,7 @@ namespace FModel.Grabber.Mappings
                     }
                 }
 
-                var latestUsmaps = new DirectoryInfo(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks")).GetFiles("*.usmap");
+                var latestUsmaps = new DirectoryInfo(Path.Combine(Properties.Settings.Default.OutputPath, "PakChunks")).GetFiles("*_br.usmap");
                 if (Globals.Usmap == null && latestUsmaps.Length > 0)
                 {
                     var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
