@@ -328,6 +328,17 @@ namespace FModel.PakReader.Pak
                 uint Value = BitConverter.ToUInt32(encodedPakEntries, pakLocation);
                 pakLocation += sizeof(uint);
 
+                if ((Value & 0x3f) == 0x3f) // flag value to load a field
+                {
+                    CompressionBlockSize = BitConverter.ToUInt32(encodedPakEntries, pakLocation);
+                    pakLocation += sizeof(uint);
+                }
+                else
+                {
+                    // for backwards compatibility with old paks :
+                    CompressionBlockSize = (Value & 0x3f) << 11;
+                }
+
                 CompressionMethodIndex = ((Value >> 23) & 0x3f);
 
                 // Test for 32-bit safe values. Grab it, or memcpy the 64-bit value
@@ -392,11 +403,8 @@ namespace FModel.PakReader.Pak
                 FPakCompressedBlock[] CompressionBlocks = new FPakCompressedBlock[CompressionBlocksCount];
 
                 // Filter the compression block size or use the UncompressedSize if less that 64k.
-                CompressionBlockSize = 0;
-                if (CompressionBlocksCount > 0)
-                {
-                    CompressionBlockSize = UncompressedSize < 65536 ? (uint)UncompressedSize : ((Value & 0x3f) << 11);
-                }
+                if (CompressionBlocksCount > 0 && UncompressedSize < 65536)
+                    CompressionBlockSize = (uint)UncompressedSize;
 
                 // Set bDeleteRecord to false, because it obviously isn't deleted if we are here.
                 Deleted = false;

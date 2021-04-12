@@ -63,6 +63,7 @@ namespace FModel.PakReader.Parsers.Class
 
         private void Serialize(PackageReader reader, Stream ubulk, long ubulkOffset)
         {
+            bStreaming = FModel.Globals.Game.Version >= EPakVersion.PATH_HASH_INDEX;
             bCooked = reader.ReadInt32() != 0;
             if (this.TryGetValue("bStreaming", out var v) && v is BoolProperty b)
                 bStreaming = b.Value;
