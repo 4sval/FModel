@@ -20,14 +20,12 @@ namespace FModel.Views
 
         private async void OnDownloadClick(object sender, RoutedEventArgs e)
         {
-            if (DataContext is not BackupManagerViewModel viewModel) return;
-            await viewModel.Download();
+            await _viewModel.Download();
         }
 
         private async void OnCreateBackupClick(object sender, RoutedEventArgs e)
         {
-            if (DataContext is not BackupManagerViewModel viewModel) return;
-            await viewModel.CreateBackup();
+            await _viewModel.CreateBackup();
         }
     }
 }

@@ -59,7 +59,6 @@ namespace FModel.ViewModels
 
         public async Task CreateBackup()
         {
-            if (SelectedBackup == null) return;
             await _threadWorkerView.Begin(_ =>
             {
                 var backupFolder = Path.Combine(UserSettings.Default.OutputDirectory, "Backups");
