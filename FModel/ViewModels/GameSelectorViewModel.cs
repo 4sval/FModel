@@ -172,7 +172,7 @@ namespace FModel.ViewModels
             [JsonProperty("customChannels", NullValueHandling = NullValueHandling.Ignore)]
             public object[] CustomChannels;
             [JsonProperty("deviceId", NullValueHandling = NullValueHandling.Ignore)]
-            public long DeviceId;
+            public string DeviceId;
             [JsonProperty("formatVersion", NullValueHandling = NullValueHandling.Ignore)]
             public int FormatVersion;
             [JsonProperty("locale", NullValueHandling = NullValueHandling.Ignore)]
