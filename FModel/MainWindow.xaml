@@ -1,284 +1,230 @@
-<Window x:Class="FModel.MainWindow"
+<adonisControls:AdonisWindow x:Class="FModel.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:properties="clr-namespace:FModel.Properties"
-        xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
-        xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:utils="clr-namespace:FModel.Utils"
-        mc:Ignorable="d"
-        Style="{StaticResource {x:Type Window}}"
-        Title="FModel"
-        Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={utils:Screens}, ConverterParameter='0.80' }"
-        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={utils:Screens}, ConverterParameter='0.70' }"
-        WindowStartupLocation="CenterScreen" Icon="FModel.ico"
-        Loaded="OnLoaded" Closing="OnClosing">
-    <Window.CommandBindings>
-        <CommandBinding Command="{x:Static utils:Commands.OpenGeneralSettings}" Executed="FModel_MI_Settings_General_Click"/>
-        <CommandBinding Command="{x:Static utils:Commands.OpenSearchWindow}" Executed="FModel_MI_Assets_Search_Click"/>
-        <CommandBinding Command="{x:Static utils:Commands.OpenOutputFolder}" Executed="FModel_MI_Assets_OpenOutputFolder_Click"/>
-        <CommandBinding Command="{x:Static utils:Commands.AutoExport}" Executed="OnAutoShortcutPressed"/>
-        <CommandBinding Command="{x:Static utils:Commands.AutoSave}" Executed="OnAutoShortcutPressed"/>
-        <CommandBinding Command="{x:Static utils:Commands.AutoSaveImage}" Executed="OnAutoShortcutPressed"/>
-        <CommandBinding Command="{x:Static utils:Commands.AutoOpenSounds}" Executed="OnAutoShortcutPressed"/>
-        <CommandBinding Command="{x:Static utils:Commands.OpenImageDoubleClick}" Executed="OnImageOpenClick"/>
-        <CommandBinding Command="{x:Static utils:Commands.ReloadTypeMappings}" Executed="ReloadMappings"/>
-    </Window.CommandBindings>
-    <Window.InputBindings>
-        <KeyBinding Key="F1" Command="{x:Static utils:Commands.OpenGeneralSettings}"/>
-        <KeyBinding Key="F2" Command="{x:Static utils:Commands.OpenSearchWindow}"/>
-        <KeyBinding Key="F3" Command="{x:Static utils:Commands.OpenOutputFolder}"/>
-        <KeyBinding Key="F4" Command="{x:Static utils:Commands.AutoExport}"/>
-        <KeyBinding Key="F5" Command="{x:Static utils:Commands.AutoSave}"/>
-        <KeyBinding Key="F6" Command="{x:Static utils:Commands.AutoSaveImage}"/>
-        <KeyBinding Key="F7" Command="{x:Static utils:Commands.AutoOpenSounds}"/>
-        <KeyBinding Key="F12" Command="{x:Static utils:Commands.ReloadTypeMappings}"/>
-    </Window.InputBindings>
+        xmlns:local="clr-namespace:FModel"
+        xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+        xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+        WindowStartupLocation="CenterScreen" Closing="OnClosing" Loaded="OnLoaded" PreviewKeyDown="OnWindowKeyDown"
+        Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.85'}"
+        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
+            <Setter Property="Title" Value="FModel" />
+            <Style.Triggers>
+                <DataTrigger
+                    Binding="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}"
+                    Value="True">
+                    <Setter Property="Title"
+                            Value="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, StringFormat={}FModel - {0}}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </adonisControls:AdonisWindow.Style>
+    <adonisControls:AdonisWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Views/Resources/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </adonisControls:AdonisWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="{adonisUi:Space 1}" />
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- MENU TOP -->
-        <Menu IsMainMenu="True" Grid.Row="0" VerticalAlignment="Top" Height="25">
-            <MenuItem Header="{x:Static properties:Resources.Files}">
-                <MenuItem x:Name="FModel_MI_Files_PAK" Header="{x:Static properties:Resources.Packages}">
+        <Menu Grid.Row="0">
+            <MenuItem Header="Directory">
+                <MenuItem Header="Selector" Command="{Binding MenuCommand}" CommandParameter="Directory_Selector">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M20 6H12L10 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V8C22 6.9 21.1 6 20 6M18 12H16V14H18V16H16V18H14V16H16V14H14V12H16V10H14V8H16V10H18V12Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DirectoryIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="FModel_MI_Files_AES" Header="{x:Static properties:Resources.AES}" Click="FModel_MI_Files_AES_Click">
+                <MenuItem Header="AES" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding IsReady}">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M4,4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8A2,2 0 0,0 20,6H12L10,4M11,10C12.31,10 13.42,10.84 13.83,12H19V14H18V16H16V14H13.83C13.42,15.17 12.31,16 11,16A3,3 0 0,1 8,13A3,3 0 0,1 11,10M11,12A1,1 0 0,0 10,13C10,13.56 10.45,14 11,14A1,1 0 0,0 12,13A1,1 0 0,0 11,12Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource KeyIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="FModel_MI_Files_Backups" Header="{x:Static properties:Resources.Backups}" ItemsSource="{Binding backupFiles}">
+                <MenuItem Header="Backup" Command="{Binding MenuCommand}" CommandParameter="Directory_Backup" IsEnabled="{Binding IsReady}">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M15.25,13H17.25L16.75,15H14.75L15.25,13M22,8V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6C2,4.89 2.89,4 4,4H10L12,6H20A2,2 0 0,1 22,8M20,12H18.5L19,10H18L17.5,12H15.5L16,10H15L14.5,12H13V13H14.25L13.75,15H12V16H13.5L13,18H14L14.5,16H16.5L16,18H17L17.5,16H19V15H17.75L18.25,13H20V12Z" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-            <MenuItem Header="{x:Static properties:Resources.Assets}">
-                <MenuItem x:Name="FModel_MI_Assets_Search"
-                          Header="{x:Static properties:Resources.Search}"
-                          Command="{x:Static utils:Commands.OpenSearchWindow}"
-                          InputGestureText="F2">
-                    <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M19.31 18.9L22.39 22L21 23.39L17.88 20.32C17.19 20.75 16.37 21 15.5 21C13 21 11 19 11 16.5C11 14 13 12 15.5 12C18 12 20 14 20 16.5C20 17.38 19.75 18.21 19.31 18.9M15.5 19C16.88 19 18 17.88 18 16.5C18 15.12 16.88 14 15.5 14C14.12 14 13 15.12 13 16.5C13 17.88 14.12 19 15.5 19M21 4V6H3V4H21M3 16V14H9V16H3M3 11V9H21V11H18.97C17.96 10.37 16.77 10 15.5 10C14.23 10 13.04 10.37 12.03 11H3Z" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="FModel_MI_Assets_AudioPlayer" Header="{x:Static properties:Resources.AudioPlayer}" Click="FModel_MI_Assets_AudioPlayer_Click">
-                    <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M2 11V13C7 13 11 17 11 22H13C13 15.9 8.1 11 2 11M20 2H10C8.9 2 8 2.9 8 4V10.5C9 11 9.9 11.7 10.7 12.4C11.6 11 13.2 10 15 10C17.8 10 20 12.2 20 15S17.8 20 15 20H14.8C14.9 20.7 15 21.3 15 22H20C21.1 22 22 21.1 22 20V4C22 2.9 21.1 2 20 2M15 8C13.9 8 13 7.1 13 6C13 4.9 13.9 4 15 4C16.1 4 17 4.9 17 6S16.1 8 15 8M15 18C14.8 18 14.5 18 14.3 17.9C13.8 16.4 13.1 15.1 12.2 13.9C12.6 12.8 13.7 11.9 15 11.9C16.7 11.9 18 13.2 18 14.9S16.7 18 15 18M2 15V17C4.8 17 7 19.2 7 22H9C9 18.1 5.9 15 2 15M2 19V22H5C5 20.3 3.7 19 2 19" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <Separator/>
-                <MenuItem x:Name="FModel_MI_Assets_GoTo" Header="{x:Static properties:Resources.Directories}">
-                    <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M11,12H3.5L6,9.5L3.5,7H11V3L12,2L13,3V7H18L20.5,9.5L18,12H13V20A2,2 0 0,1 15,22H9A2,2 0 0,1 11,20V12Z" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <Separator/>
-                <MenuItem Header="{x:Static properties:Resources.Auto}">
-                    <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M7.5,5.6L5,7L6.4,4.5L5,2L7.5,3.4L10,2L8.6,4.5L10,7L7.5,5.6M19.5,15.4L22,14L20.6,16.5L22,19L19.5,17.6L17,19L18.4,16.5L17,14L19.5,15.4M22,2L20.6,4.5L22,7L19.5,5.6L17,7L18.4,4.5L17,2L19.5,3.4L22,2M13.34,12.78L15.78,10.34L13.66,8.22L11.22,10.66L13.34,12.78M14.37,7.29L16.71,9.63C17.1,10 17.1,10.65 16.71,11.04L5.04,22.71C4.65,23.1 4,23.1 3.63,22.71L1.29,20.37C0.9,20 0.9,19.35 1.29,18.96L12.96,7.29C13.35,6.9 14,6.9 14.37,7.29Z" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                    <MenuItem Header="{x:Static properties:Resources.Export}" IsCheckable="True" StaysOpenOnClick="True"
-                              IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoExport, Mode=TwoWay}"
-                              InputGestureText="F4"/>
-                    <MenuItem Header="{x:Static properties:Resources.Save}" IsCheckable="True" StaysOpenOnClick="True"
-                              IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoSave, Mode=TwoWay}"
-                              InputGestureText="F5"/>
-                    <MenuItem Header="{x:Static properties:Resources.SaveImage}" IsCheckable="True" StaysOpenOnClick="True"
-                              IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoSaveImage, Mode=TwoWay}"
-                              InputGestureText="F6"/>
-                    <MenuItem Header="{x:Static properties:Resources.OpenSounds}" IsCheckable="True" StaysOpenOnClick="True"
-                              IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=AutoOpenSounds, Mode=TwoWay}"
-                              InputGestureText="F7"/>
-                </MenuItem>
-                <MenuItem x:Name="FModel_MI_Assets_Export" Header="{x:Static properties:Resources.Export}" Click="FModel_MI_Assets_Export_Click">
-                    <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M6,2C4.89,2 4,2.9 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M13,3.5L18.5,9H13M8.93,12.22H16V19.29L13.88,17.17L11.05,20L8.22,17.17L11.05,14.35" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="FModel_MI_Assets_Save" Header="{x:Static properties:Resources.Save}" Click="FModel_MI_Assets_Save_Click">
-                    <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="FModel_MI_Assets_SaveImage" Header="{x:Static properties:Resources.SaveImage}" Click="FModel_MI_Assets_SaveImage_Click">
-                    <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M15,3H19V0L24,5L19,10V7H15V3M21,11.94V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H12.06C12,3.33 12,3.67 12,4A8,8 0 0,0 20,12C20.33,12 20.67,12 21,11.94M19,18L14.5,12L11,16.5L8.5,13.5L5,18H19Z" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="FModel_MI_Assets_OpenOutputFolder"
-                          Header="{x:Static properties:Resources.OpenOutputFolder}"
-                          Command="{x:Static utils:Commands.OpenOutputFolder}"
-                          InputGestureText="F3">
-                    <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M19,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10L12,6H19A2,2 0 0,1 21,8H21L4,8V18L6.14,10H23.21L20.93,18.5C20.7,19.37 19.92,20 19,20Z" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <Separator/>
-                <MenuItem x:Name="FModel_MI_Assets_ImageMerger" Header="{x:Static properties:Resources.ImagesMerger}" Click="FModel_MI_Assets_ImageMerger_Click">
-                    <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M19,19L12,11V19H5L12,11V5H19M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackupIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="{x:Static properties:Resources.Settings}">
-                <MenuItem x:Name="FModel_MI_Settings_General"
-                          Header="{x:Static properties:Resources.General}"
-                          Command="{x:Static utils:Commands.OpenGeneralSettings}"
-                          InputGestureText="F1">
+            <MenuItem Header="Assets">
+                <MenuItem Header="Search" IsEnabled="{Binding IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="FModel_MI_Settings_IconCreator" Header="{x:Static properties:Resources.IconCreator}" Click="FModel_MI_Settings_IconCreator_Click">
+                <MenuItem Header="Directories" ItemsSource="{Binding CustomDirectories.Directories}" IsEnabled="{Binding IsReady}">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M10 4A4 4 0 0 0 6 8A4 4 0 0 0 10 12A4 4 0 0 0 14 8A4 4 0 0 0 10 4M17 12C16.87 12 16.76 12.09 16.74 12.21L16.55 13.53C16.25 13.66 15.96 13.82 15.7 14L14.46 13.5C14.35 13.5 14.22 13.5 14.15 13.63L13.15 15.36C13.09 15.47 13.11 15.6 13.21 15.68L14.27 16.5C14.25 16.67 14.24 16.83 14.24 17C14.24 17.17 14.25 17.33 14.27 17.5L13.21 18.32C13.12 18.4 13.09 18.53 13.15 18.64L14.15 20.37C14.21 20.5 14.34 20.5 14.46 20.5L15.7 20C15.96 20.18 16.24 20.35 16.55 20.47L16.74 21.79C16.76 21.91 16.86 22 17 22H19C19.11 22 19.22 21.91 19.24 21.79L19.43 20.47C19.73 20.34 20 20.18 20.27 20L21.5 20.5C21.63 20.5 21.76 20.5 21.83 20.37L22.83 18.64C22.89 18.53 22.86 18.4 22.77 18.32L21.7 17.5C21.72 17.33 21.74 17.17 21.74 17C21.74 16.83 21.73 16.67 21.7 16.5L22.76 15.68C22.85 15.6 22.88 15.47 22.82 15.36L21.82 13.63C21.76 13.5 21.63 13.5 21.5 13.5L20.27 14C20 13.82 19.73 13.65 19.42 13.53L19.23 12.21C19.22 12.09 19.11 12 19 12H17M10 14C5.58 14 2 15.79 2 18V20H11.68A7 7 0 0 1 11 17A7 7 0 0 1 11.64 14.09C11.11 14.03 10.56 14 10 14M18 15.5C18.83 15.5 19.5 16.17 19.5 17C19.5 17.83 18.83 18.5 18 18.5C17.16 18.5 16.5 17.83 16.5 17C16.5 16.17 17.17 15.5 18 15.5Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DirectoriesIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="FModel_MI_Settings_ThemeCreator" Header="{x:Static properties:Resources.ChallengesThemeCreator}" Click="FModel_MI_Settings_ThemeCreator_Click">
+                <Separator />
+                <MenuItem Header="Export Data" Command="{Binding ExportDataCommand}" CommandParameter="{Binding SelectedItems, ElementName=AssetsListName}">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M21.7 18.6V17.6L22.8 16.8C22.9 16.7 23 16.6 22.9 16.5L21.9 14.8C21.9 14.7 21.7 14.7 21.6 14.7L20.4 15.2C20.1 15 19.8 14.8 19.5 14.7L19.3 13.4C19.3 13.3 19.2 13.2 19.1 13.2H17.1C16.9 13.2 16.8 13.3 16.8 13.4L16.6 14.7C16.3 14.9 16.1 15 15.8 15.2L14.6 14.7C14.5 14.7 14.4 14.7 14.3 14.8L13.3 16.5C13.3 16.6 13.3 16.7 13.4 16.8L14.5 17.6V18.6L13.4 19.4C13.3 19.5 13.2 19.6 13.3 19.7L14.3 21.4C14.4 21.5 14.5 21.5 14.6 21.5L15.8 21C16 21.2 16.3 21.4 16.6 21.5L16.8 22.8C16.9 22.9 17 23 17.1 23H19.1C19.2 23 19.3 22.9 19.3 22.8L19.5 21.5C19.8 21.3 20 21.2 20.3 21L21.5 21.4C21.6 21.4 21.7 21.4 21.8 21.3L22.8 19.6C22.9 19.5 22.9 19.4 22.8 19.4L21.7 18.6M18 19.5C17.2 19.5 16.5 18.8 16.5 18S17.2 16.5 18 16.5 19.5 17.2 19.5 18 18.8 19.5 18 19.5M11.29 20H5C3.89 20 3 19.1 3 18V6C3 4.89 3.9 4 5 4H19C20.11 4 21 4.9 21 6V11.68C20.38 11.39 19.71 11.18 19 11.08V8H5V18H11C11 18.7 11.11 19.37 11.29 20Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExportIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <Separator/>
-                <MenuItem x:Name="FModel_MI_Settings_RestoreLayout" Header="{x:Static properties:Resources.RestoreLayout}" Click="FModel_MI_Settings_RestoreLayout_Click">
+                <MenuItem Header="Save Property" Command="{Binding SavePropertyCommand}" CommandParameter="{Binding SelectedItems, ElementName=AssetsListName}">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="FModel_MI_Settings_ChangeGame" Header="{x:Static properties:Resources.ChangeGame}" Click="FModel_MI_Settings_ChangeGame_Click">
+                <MenuItem Header="Save Texture" Command="{Binding SaveTextureCommand}" CommandParameter="{Binding SelectedItems, ElementName=AssetsListName}">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M7,6H17A6,6 0 0,1 23,12A6,6 0 0,1 17,18C15.22,18 13.63,17.23 12.53,16H11.47C10.37,17.23 8.78,18 7,18A6,6 0 0,1 1,12A6,6 0 0,1 7,6M6,9V11H4V13H6V15H8V13H10V11H8V9H6M15.5,12A1.5,1.5 0 0,0 14,13.5A1.5,1.5 0 0,0 15.5,15A1.5,1.5 0 0,0 17,13.5A1.5,1.5 0 0,0 15.5,12M18.5,9A1.5,1.5 0 0,0 17,10.5A1.5,1.5 0 0,0 18.5,12A1.5,1.5 0 0,0 20,10.5A1.5,1.5 0 0,0 18.5,9Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Auto">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource StatusBarIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                    <MenuItem Header="Export Data" IsCheckable="True" StaysOpenOnClick="True"
+                              InputGestureText="{Binding AutoExportData, Source={x:Static local:Settings.UserSettings.Default}}"
+                              IsChecked="{Binding IsAutoExportData, Source={x:Static local:Settings.UserSettings.Default}}" />
+                    <MenuItem Header="Save Properties" IsCheckable="True" StaysOpenOnClick="True"
+                              InputGestureText="{Binding AutoSaveProps, Source={x:Static local:Settings.UserSettings.Default}}"
+                              IsChecked="{Binding IsAutoSaveProps, Source={x:Static local:Settings.UserSettings.Default}}" />
+                    <MenuItem Header="Save Textures" IsCheckable="True" StaysOpenOnClick="True"
+                              InputGestureText="{Binding AutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}"
+                              IsChecked="{Binding IsAutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}" />
+                    <!--<MenuItem Header="Save Meshes" IsCheckable="True" StaysOpenOnClick="True"
+                              InputGestureText="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
+                              IsChecked="{Binding IsAutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />-->
+                    <MenuItem Header="Save Materials" IsCheckable="True" StaysOpenOnClick="True"
+                              InputGestureText="{Binding AutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}}"
+                              IsChecked="{Binding IsAutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}}" />
+                    <MenuItem Header="Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
+                              InputGestureText="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}"
+                              IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Views">
+                <MenuItem Header="Audio Player" Command="{Binding MenuCommand}" CommandParameter="Views_AudioPlayer">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource AudioIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Map Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_MapViewer" IsEnabled="{Binding IsReady}">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource MapIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                    <MenuItem.Style>
+                        <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CUE4Parse.Game}" Value="{x:Static local:FGame.FortniteGame}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
+                </MenuItem>
+                <MenuItem Header="Image Merger" Command="{Binding MenuCommand}" CommandParameter="Views_ImageMerger">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource ImageMergerIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="{x:Static properties:Resources.Help}">
-                <MenuItem x:Name="FModel_MI_Help_Trello" Header="{x:Static properties:Resources.Trello}" Click="FModel_MI_Help_Trello_Click">
+            <MenuItem Header="Settings" Command="{Binding MenuCommand}" CommandParameter="Settings" />
+            <MenuItem Header="Help" >
+                <MenuItem Header="Donate" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M19.5,2H4.5A2.5,2.5 0 0,0 2,4.5V19.5A2.5,2.5 0 0,0 4.5,22H19.5A2.5,2.5 0 0,0 22,19.5V4.5A2.5,2.5 0 0,0 19.5,2M10.7,17.2A1.2,1.2 0 0,1 9.5,18.4H5.8C5.14,18.4 4.6,17.86 4.6,17.2V5.8A1.2,1.2 0 0,1 5.8,4.6H9.5C10.16,4.6 10.7,5.14 10.7,5.8V17.2M19.4,12.2C19.4,12.86 18.86,13.4 18.2,13.4H14.5C13.84,13.4 13.3,12.86 13.3,12.2V5.8C13.3,5.14 13.84,4.6 14.5,4.6H18.2C18.86,4.6 19.4,5.14 19.4,5.8V12.2Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource GiftIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="FModel_MI_Help_Donate" Header="{x:Static properties:Resources.Donate}" Click="FModel_MI_Help_Donate_Click">
+                <MenuItem Header="Changelog" Command="{Binding MenuCommand}" CommandParameter="Help_Changelog">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M9.06,1.93C7.17,1.92 5.33,3.74 6.17,6H3A2,2 0 0,0 1,8V10A1,1 0 0,0 2,11H11V8H13V11H22A1,1 0 0,0 23,10V8A2,2 0 0,0 21,6H17.83C19,2.73 14.6,0.42 12.57,3.24L12,4L11.43,3.22C10.8,2.33 9.93,1.94 9.06,1.93M9,4C9.89,4 10.34,5.08 9.71,5.71C9.08,6.34 8,5.89 8,5A1,1 0 0,1 9,4M15,4C15.89,4 16.34,5.08 15.71,5.71C15.08,6.34 14,5.89 14,5A1,1 0 0,1 15,4M2,12V20A2,2 0 0,0 4,22H20A2,2 0 0,0 22,20V12H13V20H11V12H2Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource GitHubIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="FModel_MI_Help_Changelog" Header="{x:Static properties:Resources.Changelog}" Click="FModel_MI_Help_Changelog_Click">
+                <MenuItem Header="Bugs Report" Command="{Binding MenuCommand}" CommandParameter="Help_BugsReport">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource BugIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="FModel_MI_Help_BugsReport" Header="{x:Static properties:Resources.BugsReport}" Click="FModel_MI_Help_BugsReport_Click">
+                <MenuItem Header="Discord Server" Command="{Binding MenuCommand}" CommandParameter="Help_Discord">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M14,12H10V10H14M14,16H10V14H14M20,8H17.19C16.74,7.22 16.12,6.55 15.37,6.04L17,4.41L15.59,3L13.42,5.17C12.96,5.06 12.5,5 12,5C11.5,5 11.04,5.06 10.59,5.17L8.41,3L7,4.41L8.62,6.04C7.88,6.55 7.26,7.22 6.81,8H4V10H6.09C6.04,10.33 6,10.66 6,11V12H4V14H6V15C6,15.34 6.04,15.67 6.09,16H4V18H6.81C7.85,19.79 9.78,21 12,21C14.22,21 16.15,19.79 17.19,18H20V16H17.91C17.96,15.67 18,15.34 18,15V14H20V12H18V11C18,10.66 17.96,10.33 17.91,10H20V8Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource DiscordIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="FModel_MI_Help_Discord" Header="{x:Static properties:Resources.DiscordServer}" Click="FModel_MI_Help_Discord_Click">
+                <MenuItem Header="About FModel" Command="{Binding MenuCommand}" CommandParameter="Help_About">
                     <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
+                        <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M22,24L16.75,19L17.38,21H4.5A2.5,2.5 0 0,1 2,18.5V3.5A2.5,2.5 0 0,1 4.5,1H19.5A2.5,2.5 0 0,1 22,3.5V24M12,6.8C9.32,6.8 7.44,7.95 7.44,7.95C8.47,7.03 10.27,6.5 10.27,6.5L10.1,6.33C8.41,6.36 6.88,7.53 6.88,7.53C5.16,11.12 5.27,14.22 5.27,14.22C6.67,16.03 8.75,15.9 8.75,15.9L9.46,15C8.21,14.73 7.42,13.62 7.42,13.62C7.42,13.62 9.3,14.9 12,14.9C14.7,14.9 16.58,13.62 16.58,13.62C16.58,13.62 15.79,14.73 14.54,15L15.25,15.9C15.25,15.9 17.33,16.03 18.73,14.22C18.73,14.22 18.84,11.12 17.12,7.53C17.12,7.53 15.59,6.36 13.9,6.33L13.73,6.5C13.73,6.5 15.53,7.03 16.56,7.95C16.56,7.95 14.68,6.8 12,6.8M9.93,10.59C10.58,10.59 11.11,11.16 11.1,11.86C11.1,12.55 10.58,13.13 9.93,13.13C9.29,13.13 8.77,12.55 8.77,11.86C8.77,11.16 9.28,10.59 9.93,10.59M14.1,10.59C14.75,10.59 15.27,11.16 15.27,11.86C15.27,12.55 14.75,13.13 14.1,13.13C13.46,13.13 12.94,12.55 12.94,11.86C12.94,11.16 13.45,10.59 14.1,10.59Z" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="FModel_MI_Help_About" Header="{x:Static properties:Resources.AboutF}" Click="FModel_MI_Help_About_Click">
-                    <MenuItem.Icon>
-                        <Viewbox Width="19" Height="19">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="White" Data="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource InfoIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
@@ -286,351 +232,562 @@
             </MenuItem>
         </Menu>
 
-        <!-- STUFF MIDDLE -->
-        <Grid Grid.Row="1" Margin="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="{Binding Source={x:Static properties:Settings.Default}, Path=GridParentTop, Mode=TwoWay}"/>
-                <RowDefinition Height="2"/>
-                <RowDefinition Height="{Binding Source={x:Static properties:Settings.Default}, Path=GridParentBottom, Mode=TwoWay}"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <Grid x:Name="RootGrid" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MinWidth="400" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=GridChildTopLeft, Mode=TwoWay}"/>
-                    <ColumnDefinition Width="2.25"/>
-                    <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=GridChildTopCenter, Mode=TwoWay}"/>
-                    <ColumnDefinition Width="2.25"/>
-                    <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=GridChildTopRight, Mode=TwoWay}"/>
-                </Grid.ColumnDefinitions>
-
-                <GridSplitter Grid.Column="1" Background="#FF232930" HorizontalAlignment="Stretch"/>
-                <GridSplitter Grid.Column="3" Background="#FF232930" HorizontalAlignment="Stretch"/>
-
-                <Border Grid.Column="0" BorderBrush="#7F748198" BorderThickness="1" Background="#FF252D36">
-                    <TreeView x:Name="FModel_AssetsPathTree" SelectedItemChanged="OnSelectedPathChanged">
-                        <TreeView.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem x:Name="FModel_MI_Directory_Extract" Header="{x:Static properties:Resources.Extract}" Click="FModel_MI_Directory_Extract_Click">
-                                    <MenuItem.Icon>
-                                        <Image Source="Resources/share-all.png"/>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem x:Name="FModel_MI_Directory_Export" Header="{x:Static properties:Resources.Export}" Click="FModel_MI_Directory_Export_Click">
-                                    <MenuItem.Icon>
-                                        <Viewbox Width="19" Height="19">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="White" Data="M6,2C4.89,2 4,2.9 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M13,3.5L18.5,9H13M8.93,12.22H16V19.29L13.88,17.17L11.05,20L8.22,17.17L11.05,14.35" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem x:Name="FModel_MI_Directory_Save" Header="{x:Static properties:Resources.Save}" Click="FModel_MI_Directory_Save_Click">
-                                    <MenuItem.Icon>
-                                        <Image Source="Resources/sign-direction-plus.png"/>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <Separator/>
-                                <MenuItem Header="{x:Static properties:Resources.FCopy}">
-                                    <MenuItem.Icon>
-                                        <Image Source="Resources/content-copy.png"/>
-                                    </MenuItem.Icon>
-                                    <MenuItem Header="{x:Static properties:Resources.DirectoryPath}" Click="CM_Copy_DPath_Click"/>
-                                </MenuItem>
-                            </ContextMenu>
-                        </TreeView.ContextMenu>
-                    </TreeView>
-                </Border>
-                <Border Grid.Column="2" BorderBrush="#7F748198" BorderThickness="1" Background="#FF252D36">
-                    <avalonedit:TextEditor x:Name="FModel_AvalonEdit"
-                                           FontFamily="Consolas" FontSize="8pt"
-                                           ShowLineNumbers="True"
-                                           HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
-                                           IsReadOnly="True" Foreground="#FFEFEFEF"
-                                           SyntaxHighlighting="{Binding Highlighter, Mode=TwoWay}"
-                                           Document="{Binding Document, Mode=TwoWay}"/>
-                </Border>
-                <Border Grid.Column="4" BorderBrush="#7F748198" BorderThickness="1" Background="#FF252D36">
-                    <Image x:Name="FModel_ImgBox" Source="{Binding Image}">
-                        <Image.InputBindings>
-                            <MouseBinding MouseAction="LeftDoubleClick" Command="{x:Static utils:Commands.OpenImageDoubleClick}"/>
-                        </Image.InputBindings>
-                        <Image.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="{x:Static properties:Resources.OpenImage}" Click="OnImageOpenClick">
-                                    <MenuItem.Icon>
-                                        <Image Source="Resources/open-in-new.png"/>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{x:Static properties:Resources.CopyImage}" Click="FModel_MI_Assets_CopyImage_Click">
-                                    <MenuItem.Icon>
-                                        <Image Source="Resources/content-copy.png"/>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{x:Static properties:Resources.SaveImage}" Click="FModel_MI_Assets_SaveImage_Click">
-                                    <MenuItem.Icon>
-                                        <Viewbox Width="19" Height="19">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="White" Data="M15,3H19V0L24,5L19,10V7H15V3M21,11.94V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H12.06C12,3.33 12,3.67 12,4A8,8 0 0,0 20,12C20.33,12 20.67,12 21,11.94M19,18L14.5,12L11,16.5L8.5,13.5L5,18H19Z" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </ContextMenu>
-                        </Image.ContextMenu>
-                    </Image>
-                </Border>
-            </Grid>
-            <GridSplitter Grid.Row="1" Background="#FF232930" HorizontalAlignment="Stretch"/>
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=GridChildBottomLeft, Mode=TwoWay}"/>
-                    <ColumnDefinition Width="2.25"/>
-                    <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=GridChildBottomCenter, Mode=TwoWay}"/>
-                    <ColumnDefinition Width="2.25"/>
-                    <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=GridChildBottomRight, Mode=TwoWay}"/>
-                </Grid.ColumnDefinitions>
-
-                <GridSplitter Grid.Column="1" Background="#FF232930" HorizontalAlignment="Stretch"/>
-                <GridSplitter Grid.Column="3" Background="#FF232930" HorizontalAlignment="Stretch"/>
-
-                <Border Grid.Column="0" BorderBrush="#7F748198" BorderThickness="1" Background="#FF252D36">
-                    <ListBox x:Name="FModel_AssetsList" SelectionMode="Extended"
-                             SelectionChanged="OnSelectedItemChanged" MouseDoubleClick="OnMouseDoubleClick">
-                        <ListBox.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="{x:Static properties:Resources.Extract}" Click="OnExtractClick">
-                                    <MenuItem.Icon>
-                                        <Image Source="Resources/share.png"/>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{x:Static properties:Resources.Export}" Click="FModel_MI_Assets_Export_Click">
-                                    <MenuItem.Icon>
-                                        <Viewbox Width="19" Height="19">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="White" Data="M6,2C4.89,2 4,2.9 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M13,3.5L18.5,9H13M8.93,12.22H16V19.29L13.88,17.17L11.05,20L8.22,17.17L11.05,14.35" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem x:Name="CM_Asset_Save" Header="{x:Static properties:Resources.Save}" Click="CM_Asset_Save_Click">
-                                    <MenuItem.Icon>
-                                        <Viewbox Width="19" Height="19">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="White" Data="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <Separator/>
-                                <MenuItem Header="{x:Static properties:Resources.FCopy}">
-                                    <MenuItem.Icon>
-                                        <Image Source="Resources/content-copy.png"/>
-                                    </MenuItem.Icon>
-                                    <MenuItem x:Name="CM_Copy_DPath" Header="{x:Static properties:Resources.DirectoryPath}" Click="CM_Copy_DPath_Click"/>
-                                    <MenuItem x:Name="CM_Copy_FPath" Header="{x:Static properties:Resources.FilePath}" Click="CM_Copy_FPath_Click"/>
-                                    <MenuItem x:Name="CM_Copy_FPath_NoExt" Header="{x:Static properties:Resources.FilePathNoExt}" Click="CM_Copy_FPath_NoExt_Click"/>
-                                    <MenuItem x:Name="CM_Copy_FName" Header="{x:Static properties:Resources.FileName}" Click="CM_Copy_FName_Click"/>
-                                    <MenuItem x:Name="CM_Copy_FName_NoExt" Header="{x:Static properties:Resources.FileNameNoExt}" Click="CM_Copy_FName_NoExt_Click"/>
-                                </MenuItem>
-                            </ContextMenu>
-                        </ListBox.ContextMenu>
-                    </ListBox>
-                </Border>
-                <Border Grid.Column="2" BorderBrush="#7F748198" BorderThickness="1" Background="#FF252D36">
-                    <toolkit:RichTextBox x:Name="FModel_Console" Background="#FF252D36" Foreground="#FFEFEFEF" BorderBrush="#FF333C46"
-                                 ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
-                        <toolkit:RichTextBox.TextFormatter>
-                            <utils:FConsole/>
-                        </toolkit:RichTextBox.TextFormatter>
-                        <RichTextBox.Resources>
-                            <Style TargetType="{x:Type Paragraph}">
-                                <Setter Property="Margin" Value="0" />
-                            </Style>
-                        </RichTextBox.Resources>
-                    </toolkit:RichTextBox>
-                </Border>
-                <Border Grid.Column="4" BorderBrush="#7F748198" BorderThickness="1" Background="#FF252D36">
-                    <TabControl x:Name="FModel_TabCtrl" BorderBrush="{x:Null}" Padding="0,2,0,0">
-                        <TabItem x:Name="FModel_PakProps" Header="{x:Static properties:Resources.PAK}">
-                            <Grid>
-                                <Grid.Background>
-                                    <LinearGradientBrush EndPoint="0.25,0.9" StartPoint="0.75,1">
-                                        <GradientStop Color="#FF252D36" Offset="0"/>
-                                        <GradientStop Color="#FF252E38" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Grid.Background>
+            <GroupBox Grid.Column="0" adonisExtensions:LayerExtension.Layer="2"
+                      Padding="{adonisUi:Space 0}" Background="Transparent">
+                <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange">
+                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="Directory">
+                        <DockPanel>
+                            <Grid DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="5"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="5"/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="5" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="5"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="10"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="10" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <Label Grid.Column="1" Grid.Row="1" Content="{x:Static properties:Resources.Name}"/>
-                                <Label Grid.Column="1" Grid.Row="2" Content="{x:Static properties:Resources.Version}"/>
-                                <Label Grid.Column="1" Grid.Row="3" Content="{x:Static properties:Resources.MountPoint}"/>
-                                <Label Grid.Column="1" Grid.Row="4" Content="{x:Static properties:Resources.AesKey}"/>
-                                <Label Grid.Column="1" Grid.Row="5" Content="{x:Static properties:Resources.Guid}"/>
-                                <Label Grid.Column="1" Grid.Row="6" Content="{x:Static properties:Resources.FileCount}"/>
-
-                                <TextBox Grid.Column="3" Grid.Row="1" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding PakName, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="2" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding Version, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="3" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding MountPoint, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="4" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding AesKey, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="5" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding Guid, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="6" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding FileCount, Mode=TwoWay}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Loading Mode" VerticalAlignment="Center" />
+                                <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding IsReady}"
+                                          SelectedItem="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Load"
+                                        Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding IsReady}"
+                                        CommandParameter="{Binding SelectedItems, ElementName=DirectoryFilesListBox}" />
                             </Grid>
-                        </TabItem>
-                        <TabItem x:Name="FModel_AssetProps" Header="{x:Static properties:Resources.Asset}">
-                            <Grid>
-                                <Grid.Background>
-                                    <LinearGradientBrush EndPoint="0.25,0.9" StartPoint="0.75,1">
-                                        <GradientStop Color="#FF252D36" Offset="0"/>
-                                        <GradientStop Color="#FF252E38" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Grid.Background>
+                            <Grid DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="5"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="5"/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="5"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="10"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="5"/>
-                                </Grid.ColumnDefinitions>
 
-                                <Label Grid.Column="1" Grid.Row="1" Content="{x:Static properties:Resources.Name}"/>
-                                <Label Grid.Column="1" Grid.Row="2" Content="{x:Static properties:Resources.IsPartOf}"/>
-                                <Label Grid.Column="1" Grid.Row="3" Content="{x:Static properties:Resources.Include}"/>
-                                <Label Grid.Column="1" Grid.Row="4" Content="{x:Static properties:Resources.Offsets}"/>
-                                <Label Grid.Column="1" Grid.Row="5" Content="{x:Static properties:Resources.TotalSize}"/>
-                                <Label Grid.Column="1" Grid.Row="6" Content="{x:Static properties:Resources.Encrypted}"/>
-                                <Label Grid.Column="1" Grid.Row="7" Content="{x:Static properties:Resources.Compression}"/>
+                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="GAME DIRECTORY" />
+                                <ListBox Grid.Row="1" x:Name="DirectoryFilesListBox" Style="{StaticResource DirectoryFilesListBox}" />
+                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
+                                <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
 
-                                <TextBox Grid.Column="3" Grid.Row="1" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding AssetName, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="2" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding PartOf, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="3" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding IncludedExtensions, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="4" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding Offsets, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="5" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding TotalSize, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="6" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding IsEncrypted, Mode=TwoWay}"/>
-                                <TextBox Grid.Column="3" Grid.Row="7" TextWrapping="NoWrap"
-                                             Style="{StaticResource ResourceKey=SelectableTextBox}" Text="{Binding CompMethod, Mode=TwoWay}"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=DirectoryFilesListBox, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FileCount, ElementName=DirectoryFilesListBox, FallbackValue='0', StringFormat={}{0} Files}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="File Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.IsEncrypted, ElementName=DirectoryFilesListBox, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.Guid, ElementName=DirectoryFilesListBox, FallbackValue='00000000000000000000000000000000'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Global Unique Identifier" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    </Grid>
+                                </StackPanel>
                             </Grid>
-                        </TabItem>
-                    </TabControl>
-                </Border>
-            </Grid>
-            <Grid Grid.Row="3">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=GridChildBottomLeft, Mode=TwoWay}"/>
-                    <ColumnDefinition Width="2.25"/>
-                    <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=GridChildBottomCenter, Mode=TwoWay}"/>
-                    <ColumnDefinition Width="2.25"/>
-                    <ColumnDefinition Width="{Binding Source={x:Static properties:Settings.Default}, Path=GridChildBottomRight, Mode=TwoWay}"/>
-                </Grid.ColumnDefinitions>
+                        </DockPanel>
+                    </TabItem>
+                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="Folders">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" MaxWidth="375"
+                                       Text="Open folders to navigate through your loaded files. Badges indicate how many assets are in the folder. To better optimize things, it is recommended to use your hotkeys, to quickly switch between tabs." />
+                            <Grid DockPanel.Dock="Top">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                <Grid Grid.Column="0" Margin="0,2,0,2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" />
+                                <TreeView Grid.Row="1" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
+                                    <TreeView.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Extract Folder's Assets" Click="OnFolderExtractClick">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Export Folder's Assets Data" Click="OnFolderExportClick">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExportIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Save Folder's Assets Properties" Click="OnFolderSaveClick">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator />
+                                            <MenuItem Header="Save Directory" Click="OnSaveDirectoryClick">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DirectoriesAddIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Copy Directory Path" Click="OnCopyDirectoryPathClick">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource CopyIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </TreeView.ContextMenu>
+                                </TreeView>
+                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
+                                <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Assets Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Folders Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Package, ElementName=AssetsFolderName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Included In Package" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=AssetsFolderName, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Package Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Version, ElementName=AssetsFolderName, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Package Version" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+                        </DockPanel>
+                    </TabItem>
+                    <TabItem Style="{StaticResource TabItemFillSpace}"
+                             Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
+                             HeaderStringFormat="{}{0} Assets">
+                        <DockPanel>
+                            <Grid DockPanel.Dock="Top" ZIndex="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <Grid Grid.Column="0" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Grid>
+                                <TextBox Grid.Column="0" Grid.ColumnSpan="2" x:Name="AssetsSearchName" AcceptsTab="False" AcceptsReturn="False"
+                                         Padding="25 0 0 0" HorizontalAlignment="Stretch" TextChanged="OnFilterTextChanged"
+                                         adonisExtensions:WatermarkExtension.Watermark="Search by name..." />
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <Button ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
+                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                            <Grid DockPanel.Dock="Top">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                    <Label Grid.Column="0"
-                       Content="{x:Static properties:Resources.Filter}"
-                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <TextBox x:Name="AssetFilter_TxtBox" Grid.Column="1" TextWrapping="NoWrap"
-                             VerticalAlignment="Top" Foreground="#FFEFEFEF" Margin="5,3,0,0"
-                             TextChanged="OnFilterTextChanged"/>
+                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}"
+                                           Tag="{Binding SelectedItem.Header, ElementName=AssetsFolderName, FallbackValue='ASSETS LIST', Converter={x:Static converters:FolderToSeparatorTagConverter.Instance}}" />
+                                <ListBox Grid.Row="1" x:Name="AssetsListName" Style="{StaticResource AssetsListBox}" PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick">
+                                    <ListBox.ContextMenu>
+                                        <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                            <MenuItem Header="Extract in New Tab" Command="{Binding DataContext.ExtractNewTabCommand}" CommandParameter="{Binding SelectedItems}">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Export Data" Command="{Binding DataContext.ExportDataCommand}" CommandParameter="{Binding SelectedItems}">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExportIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Save Properties" Command="{Binding DataContext.SavePropertyCommand}" CommandParameter="{Binding SelectedItems}">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Save Texture" Command="{Binding DataContext.SaveTextureCommand}" CommandParameter="{Binding SelectedItems}">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator />
+                                            <MenuItem Header="Copy">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource CopyIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                                <MenuItem Header="File Path" Command="{Binding DataContext.CopyCommand}">
+                                                    <MenuItem.CommandParameter>
+                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                            <Binding Source="File_Path" />
+                                                            <Binding Path="SelectedItems" />
+                                                        </MultiBinding>
+                                                    </MenuItem.CommandParameter>
+                                                </MenuItem>
+                                                <MenuItem Header="File Name" Command="{Binding DataContext.CopyCommand}">
+                                                    <MenuItem.CommandParameter>
+                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                            <Binding Source="File_Name" />
+                                                            <Binding Path="SelectedItems" />
+                                                        </MultiBinding>
+                                                    </MenuItem.CommandParameter>
+                                                </MenuItem>
+                                                <MenuItem Header="Directory Path" Command="{Binding DataContext.CopyCommand}">
+                                                    <MenuItem.CommandParameter>
+                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                            <Binding Source="Directory_Path" />
+                                                            <Binding Path="SelectedItems" />
+                                                        </MultiBinding>
+                                                    </MenuItem.CommandParameter>
+                                                </MenuItem>
+                                                <MenuItem Header="File Path w/o Extension" Command="{Binding DataContext.CopyCommand}">
+                                                    <MenuItem.CommandParameter>
+                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                            <Binding Source="File_Path_No_Extension" />
+                                                            <Binding Path="SelectedItems" />
+                                                        </MultiBinding>
+                                                    </MenuItem.CommandParameter>
+                                                </MenuItem>
+                                                <MenuItem Header="File Name w/o Extension" Command="{Binding DataContext.CopyCommand}">
+                                                    <MenuItem.CommandParameter>
+                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                            <Binding Source="File_Name_No_Extension" />
+                                                            <Binding Path="SelectedItems" />
+                                                        </MultiBinding>
+                                                    </MenuItem.CommandParameter>
+                                                </MenuItem>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </ListBox.ContextMenu>
+                                </ListBox>
+                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
+                                <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.Offset, ElementName=AssetsListName, FallbackValue=0, StringFormat='{}0x{0:X}'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Offset" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.Size, ElementName=AssetsListName, FallbackValue=0, Converter={x:Static converters:SizeToStringConverter.Instance}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Size" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Compression, ElementName=AssetsListName, FallbackValue='Unknown'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Compression Method" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.IsEncrypted, ElementName=AssetsListName, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Package, ElementName=AssetsListName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Included In Package" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+                        </DockPanel>
+                    </TabItem>
+                </TabControl>
+            </GroupBox>
+
+            <GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="4" VerticalAlignment="Stretch"
+                          ResizeBehavior="PreviousAndNext" MouseDoubleClick="OnGridSplitterDoubleClick"
+                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+
+            <GroupBox Grid.Column="2" adonisExtensions:LayerExtension.Layer="2"
+                      Padding="{adonisUi:Space 0}" Background="Transparent">
+                <Grid Margin="0 0 3 0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <TabControl Grid.Row="0" x:Name="TabControlName" Style="{StaticResource GameFilesTabControl}" />
+                    <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2" />
+                                <ColumnDefinition Width="24" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <controls:CustomRichTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="LogRtbName" Style="{StaticResource CustomRichTextBox}" />
+                            <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="-5 -5 5 5">
+                                <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Open Output Folder" Padding="0,4,0,4"
+                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory">
+                                    <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource FolderIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Button>
+                                <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Clear Logs" Padding="0,4,0,4"
+                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Clear_Logs">
+                                    <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TrashIcon}"/>
+                                        </Canvas>
+                                    </Viewbox>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Expander>
                 </Grid>
-
-                <Button x:Name="FilterDelete_Img" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center"
-                        Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Click="OnDeleteFilterClick"
-                        Visibility="Hidden">
-                    <Path Data="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8.46,11.88L9.87,10.47L12,12.59L14.12,10.47L15.53,11.88L13.41,14L15.53,16.12L14.12,17.53L12,15.41L9.88,17.53L8.47,16.12L10.59,14L8.46,11.88M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z"
-                          Fill="#FFEFEFEF" RenderTransformOrigin="0,0.4">
-                        <Path.RenderTransform>
-                            <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
-                        </Path.RenderTransform>
-                    </Path>
-                </Button>
-
-                <Grid Grid.Column="4" Margin="0,2,0,2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button Grid.Column="0" Height="19"
-                            Content="{x:Static properties:Resources.OpenImage}"
-                            HorizontalAlignment="Stretch" Margin="2.25,0,0,0" Click="OnImageOpenClick"/>
-                    <Button x:Name="FModel_Stop_Btn" Grid.Column="2" Height="19" Style="{StaticResource RedButton}" Click="OnStopClick"/>
-                    <Button x:Name="FModel_Extract_Btn" Grid.Column="4" Height="19"
-                            HorizontalAlignment="Stretch" Margin="0,0,2.25,0" Click="OnExtractClick"/>
-                </Grid>
-            </Grid>
+            </GroupBox>
         </Grid>
 
-        <!-- STATUS BAR BOTTOM -->
-        <StatusBar x:Name="FModel_StsBar" Grid.Row="2" VerticalAlignment="Bottom" Height="Auto" MinHeight="25">
-            <StatusBar.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="100"/>
-                        </Grid.ColumnDefinitions>
-                    </Grid>
-                </ItemsPanelTemplate>
-            </StatusBar.ItemsPanel>
-            <StatusBarItem Grid.Column="0">
-                <TextBlock x:Name="FModelVersion_TxtBlck" Text="FModel "/>
+        <StatusBar Grid.Row="3" MinHeight="28" MaxHeight="28"
+                   adonisExtensions:LayerExtension.Layer="3">
+            <StatusBar.Style>
+                <Style TargetType="{x:Type StatusBar}" BasedOn="{StaticResource {x:Type StatusBar}}">
+                    <Style.Triggers>
+                        <!--don't mind me, MultiDataTrigger just sucks-->
+                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Ready}">
+                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Completed}">
+                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Loading}">
+                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Stopping}">
+                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Stopped}">
+                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Failed}">
+                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding StatusChangeAttempted, Source={x:Static local:Services.ApplicationService.ThreadWorkerView}}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard Duration="0:0:0.8">
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(StatusBar.Background).(SolidColorBrush.Color)" FillBehavior="Stop">
+                                            <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                <DiscreteColorKeyFrame KeyTime="0:0:0" Value="#CE5555" />
+                                                <DiscreteColorKeyFrame KeyTime="0:0:0.2" Value="#C22B2B" />
+                                                <DiscreteColorKeyFrame KeyTime="0:0:0.4" Value="#CE5555" />
+                                                <DiscreteColorKeyFrame KeyTime="0:0:0.6" Value="#C22B2B" />
+                                                <DiscreteColorKeyFrame KeyTime="0:0:0.8" Value="#CE5555" />
+                                            </ColorAnimationUsingKeyFrames.KeyFrames>
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding OperationCancelled, Source={x:Static local:Services.ApplicationService.ThreadWorkerView}}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard Duration="0:0:1">
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(StatusBar.Background).(SolidColorBrush.Color)" FillBehavior="Stop">
+                                            <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                <DiscreteColorKeyFrame KeyTime="0:0:0" Value="#C22B2B" />
+                                                <DiscreteColorKeyFrame KeyTime="0:0:1" Value="#CE5555" />
+                                            </ColorAnimationUsingKeyFrames.KeyFrames>
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StatusBar.Style>
+
+            <StatusBarItem Margin="5,0,0,0" >
+                <TextBlock>
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Text" Value="{Binding Status}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Loading}">
+                                    <Setter Property="Text" Value="{Binding Status, StringFormat='{}{0} …'}" />
+                                </DataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding CanBeCanceled, Source={x:Static local:Services.ApplicationService.ThreadWorkerView}}" Value="True" />
+                                        <Condition Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Loading}" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Text" Value="{Binding Status, StringFormat='{}{0} …    ESC to Cancel'}" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </StatusBarItem>
-            <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Center" Height="Auto" MaxHeight="50">
-                <TextBlock x:Name="ProcessEvents_TxtBlck" Text="{Binding Pevent, Mode=TwoWay}" Height="Auto"/>
-            </StatusBarItem>
-            <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Right">
-                <TextBlock x:Name="State_TxtBlck" Text="{Binding State, Mode=TwoWay}" Background="{Binding StateBg, Mode=TwoWay}" Padding="5,0"/>
+
+            <StatusBarItem Margin="0 0 5 0" HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <StatusBarItem Margin="0 0 10 0" HorizontalContentAlignment="Stretch">
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource StatusBarIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </StatusBarItem>
+
+                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Export Data Enabled">
+                        <StatusBarItem.Style>
+                            <Style TargetType="StatusBarItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAutoExportData, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StatusBarItem.Style>
+                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="DTA" />
+                    </StatusBarItem>
+
+                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Properties Enabled">
+                        <StatusBarItem.Style>
+                            <Style TargetType="StatusBarItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAutoSaveProps, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StatusBarItem.Style>
+                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="PRP" />
+                    </StatusBarItem>
+
+                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Textures Enabled">
+                        <StatusBarItem.Style>
+                            <Style TargetType="StatusBarItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StatusBarItem.Style>
+                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="TEX" />
+                    </StatusBarItem>
+                    
+                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Materials Enabled">
+                        <StatusBarItem.Style>
+                            <Style TargetType="StatusBarItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StatusBarItem.Style>
+                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="MAT" />
+                    </StatusBarItem>
+                    
+                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Meshes Enabled">
+                        <StatusBarItem.Style>
+                            <Style TargetType="StatusBarItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StatusBarItem.Style>
+                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="MSH" />
+                    </StatusBarItem>
+
+                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Sounds Enabled">
+                        <StatusBarItem.Style>
+                            <Style TargetType="StatusBarItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StatusBarItem.Style>
+                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="SND" />
+                    </StatusBarItem>
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
     </Grid>
-</Window>
+</adonisControls:AdonisWindow>

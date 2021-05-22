@@ -1,0 +1,21 @@
+﻿<adonisControls:AdonisWindow x:Class="FModel.Views.Resources.Controls.ImagePopout"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed">
+    <adonisControls:AdonisWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </adonisControls:AdonisWindow.Resources>
+    <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <controls:MagnifierManager.Magnifier>
+            <controls:Magnifier Radius="150" ZoomFactor=".7" />
+        </controls:MagnifierManager.Magnifier>
+        
+        <Image x:Name="ImageCtrl" UseLayoutRounding="True" />
+    </DockPanel>
+</adonisControls:AdonisWindow>

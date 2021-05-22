@@ -2,58 +2,60 @@
      xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 
   <Color name="Bool"         foreground="#61AFEF"/>
-  <Color name="Digits"       foreground="#D19A66"/>
+  <Color name="Digits"       foreground="#F78C6C"/>
   <Color name="Comment"      foreground="SeaGreen"/>
-  <Color name="Punctuation"  foreground="#BBBBBB"/>
+  <Color name="Punctuation"  foreground="#89DDFF"/>
   <Color name="String"       foreground="#98C379"/>
-  <Color name="String2"      foreground="#98C379"/>
-
   <Color name="Section"      foreground="#7F848E"/>
+  <Color name="PropertyName" foreground="#FFCB6B"/>
+  <Color name="Plum"         foreground="#DDA0DD" />
 
-  <Color name="PropertyName" foreground="#E06C6C"/>
-
+  <RuleSet name="String">
+    <Span begin="\\" end="."/>
+  </RuleSet>
+  
   <RuleSet ignoreCase="true">
-
-    <Span color="String" multiline="false" >
+    <Span color="String" multiline="false" ruleSet="String">
       <Begin>'</Begin>
       <End>'</End>
     </Span>
+    <Span color="String" multiline="false" ruleSet="String">
+      <Begin>"</Begin>
+      <End>"</End>
+    </Span>
+
+    <Span color="Comment" multiline="false">
+      <Begin>;</Begin>
+    </Span>
+    <Span color="Comment" multiline="false">
+      <Begin>\#</Begin>
+    </Span>
+
+    <Span color="Section" multiline="false">
+      <Begin>\[</Begin>
+      <End>\]</End>
+    </Span>
+
+    <Rule color="Punctuation">
+      [?,;\(\)\[\]{}\+\=\-/%&lt;&gt;^+~!|&amp;]+
+    </Rule>
+
+    <Rule color="Digits">
+      \b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?f?
+    </Rule>
 
     <Keywords color="Bool" >
       <Word>true</Word>
       <Word>false</Word>
     </Keywords>
-
-    <Span color="String2" multiline="false"  >
-      <Begin>"</Begin>
-      <End>"</End>
-    </Span>
-
-    <!-- span for escape sequences -->
-    <Span  color="Comment" multiline="false">
-      <Begin>;</Begin>
-    </Span>
-    <Span  color="Comment" multiline="false">
-      <Begin>\#</Begin>
-    </Span>
-
-    <Span  color="Section" multiline="false">
-      <Begin>\[</Begin>
-      <End>\]</End>
-    </Span>
-
-    <Rule  color="PropertyName">
-      [a-zA-Z]
+    
+    <Rule color="PropertyName">
+      (\=|\))?(\+|-|!|,)?[A-Za-z0-9_. ]+?(?==)
     </Rule>
 
-    <Rule color="Punctuation">
-      [?,.;()\[\]{}+=_\-/%*&lt;&gt;^+~!|&amp;]+
+    <Rule color="Plum">
+      (?!=(%|\/))+.*(%|\/)+.+
     </Rule>
-
-    <Rule color="Digits">
-      \b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?
-    </Rule>
-
   </RuleSet>
 
 </SyntaxDefinition>

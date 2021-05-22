@@ -1,80 +1,124 @@
-﻿using FModel.Logger;
-using FModel.Utils;
-using FModel.ViewModels.ComboBox;
-using FModel.ViewModels.StatusBar;
-using FModel.Windows.DarkMessageBox;
+﻿using AdonisUI.Controls;
+using Microsoft.Win32;
+using Serilog;
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
+using FModel.Framework;
+using FModel.Services;
+using FModel.Settings;
+using Newtonsoft.Json;
+using Serilog.Sinks.SystemConsole.Themes;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace FModel
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
-        internal static Stopwatch StartTimer { get; private set; }
-        static bool framerateSet = false;
-
         protected override void OnStartup(StartupEventArgs e)
         {
-            StartTimer = Stopwatch.StartNew();
-
-            DebugHelper.Init(LogsFilePath); // get old settings too
-
-            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(ProgramLang.GetProgramLang());
-
-            DebugHelper.WriteLine("{0} {1}", "[FModel]", "––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––");
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Version]", Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Build]", Globals.Build);
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[OS]", Logger.Logger.GetOperatingSystemProductName(true));
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Runtime]", RuntimeInformation.FrameworkDescription);
-            DebugHelper.WriteLine("{0} {1} {2}", "[FModel]", "[Culture]", Thread.CurrentThread.CurrentUICulture);
-
-            StatusBarVm.statusBarViewModel.Set(FModel.Properties.Resources.Initializing, FModel.Properties.Resources.Loading);
-
             base.OnStartup(e);
-        }
 
-        public static string LogsFilePath
-        {
-            get
+            try
             {
-                string filename = string.Format("FModel-Log-{0:yyyy-MM-dd}.txt", DateTime.Now);
-
-                // Copy user settings from previous application version if necessary
-                if (FModel.Properties.Settings.Default.UpdateSettings)
-                    FModel.Properties.Settings.Default.Upgrade();
-
-                Folders.LoadFolders();
-
-                return Path.Combine(FModel.Properties.Settings.Default.OutputPath + "\\Logs", filename);
+                UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(
+                    File.ReadAllText(UserSettings.FilePath), JsonNetSerializer.SerializerSettings);
             }
+            catch
+            {
+                UserSettings.Default = new UserSettings();
+            }
+
+            if (!Directory.Exists(UserSettings.Default.OutputDirectory))
+            {
+                UserSettings.Default.OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Output");
+            }
+
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel"));
+            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"));
+            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
+            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
+            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Textures"));
+            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Sounds"));
+            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
+            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
+
+            Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: AnsiConsoleTheme.Literate).WriteTo.File(
+                path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.txt"),
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [FModel] [{Level:u3}] {Message:lj}{NewLine}{Exception}").CreateLogger();
+
+            Log.Information("Version {Version}", Constants.APP_VERSION);
+            Log.Information("{OS}", GetOperatingSystemProductName());
+            Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);
+            Log.Information("Culture {SysLang}", Thread.CurrentThread.CurrentUICulture);
         }
 
-        private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        private void AppExit(object sender, ExitEventArgs e)
         {
-            string errorMessage = string.Format(FModel.Properties.Resources.UnhandledExceptionOccured, e.Exception.Message);
-            DebugHelper.WriteException(e.Exception, "thrown in App.xaml.cs by OnDispatcherUnhandledException");
-            DarkMessageBoxHelper.Show(errorMessage, FModel.Properties.Resources.Error, MessageBoxButton.OK, MessageBoxImage.Error, true);
+            Log.Information("––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––");
+            Log.CloseAndFlush();
+            UserSettings.Save();
+            Environment.Exit(0);
+        }
+
+        private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            Log.Error("{Exception}", e.Exception);
+
+            var messageBox = new MessageBoxModel
+            {
+                Text = $"An unhandled exception occurred: {e.Exception.Message}",
+                Caption = "Fatal Error",
+                Icon = MessageBoxImage.Error,
+                Buttons = new[]
+                {
+                    MessageBoxButtons.Custom("Restart", EErrorKind.Restart),
+                    MessageBoxButtons.Custom("OK", EErrorKind.Ignore)
+                },
+                IsSoundEnabled = false
+            };
+
+            MessageBox.Show(messageBox);
+            if (messageBox.Result == MessageBoxResult.Custom && (EErrorKind) messageBox.ButtonPressed.Id != EErrorKind.Ignore)
+            {
+                ApplicationService.ApplicationView.Restart();
+            }
+
             e.Handled = true;
         }
 
-        internal static void SetFramerate()
+        private string GetOperatingSystemProductName()
         {
-            if (!framerateSet)
+            var productName = string.Empty;
+            try
             {
-                System.Windows.Media.Animation.Timeline.DesiredFrameRateProperty.OverrideMetadata(
-                    typeof(System.Windows.Media.Animation.Timeline),
-                    new FrameworkPropertyMetadata { DefaultValue = 10 });
-                framerateSet = true;
+                productName = GetRegistryValue(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName", RegistryHive.LocalMachine);
             }
+            catch
+            {
+                // ignored
+            }
+
+            if (string.IsNullOrEmpty(productName))
+                productName = Environment.OSVersion.VersionString;
+
+            return $"{productName} ({(Environment.Is64BitOperatingSystem ? "64" : "32")}-bit)";
+        }
+
+        private string GetRegistryValue(string path, string name = null, RegistryHive root = RegistryHive.CurrentUser)
+        {
+            using var rk = RegistryKey.OpenBaseKey(root, RegistryView.Default).OpenSubKey(path);
+            if (rk != null)
+                return rk.GetValue(name, null) as string;
+            return string.Empty;
         }
     }
 }

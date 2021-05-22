@@ -1,179 +1,21 @@
-# FModel
+# FModel [![Discord](https://discordapp.com/api/guilds/637265123144237061/widget.png?style=shield)](https://discord.gg/fdkNYYQ)
 
-<img src="https://fmodel.app/images/fmodel/fmodel.ico" align="right" alt="FModel Logo" width="128" height="128">
+&ensp;&ensp;&ensp;&ensp;Open-source software for exploring Unreal Engine games' files. From seeing the properties of an asset to listening to your favorite audio files, it has never been easier to navigate inside a game's assets. FModel support tens of file types and asset types, to display the most information possible and it also has the ability to let you <kbd>CTRL+LMB</kbd> on an asset path to display its properties too.
 
-Created in March 2019, FModel is a .PAK file explorer fully dedicated to Fortnite but also work with some other Unreal Engine's games. It quickly became popular to quickly generate images of new cosmetics added to the game.
-Over time, new features got added and new users discovered the program.
+<img src="https://user-images.githubusercontent.com/26126862/119065662-52534800-b9de-11eb-85fd-a47797daa062.png" align="center" alt="FModel">
 
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Features](#features)
-- [Installation](#installation)
-- [Acknowledgments](#acknowledgments)
-- [Support](#support)
-
-## Introduction
-
-[![Discord](https://discordapp.com/api/guilds/637265123144237061/widget.png?style=shield)](https://discord.gg/fdkNYYQ)
-
-Load one or several .PAK files, see assets properties, create icons for cosmetics, challenges, and much more. Built with C#, FModel is the most feature-rich software to leak on Fortnite and is 100% free.
-
-[![FModel Features](https://fmodel.app/images/fmodel/NsAZOdHbQU.png)](https://youtu.be/fSmWby80Tzc)
-<h5 align="center">FModel Features - Quick Overview</h5>
-
-## Features
-
-A few of the things you can do with FModel:
-
-* .PAK Files
-  - Load multiple files with different keys
-  - Load new assets only
-  - Load modified assets only
-  - Backup all current assets
-  - Jump to a specific directory
-* Assets
-  - Extract properties
-  - Export RAW data
-  - Bulk extract and export
-  - Search and filter them with ease
-  - Copy path / name
-* Icons
-  - All BR / STW cosmetics and challenges
-  - Create your own icon theme
-  - Merge selected icons into 1 image
-  - 15+ different languages available
-* Audio Player
-  - OGG / WAV / ADPCM / ... files
-  
 ## Installation
 
-[![](https://img.shields.io/github/release/iamasval/fmodel.svg)](https://github.com/iAmAsval/FModel/releases/latest)
-[![](https://img.shields.io/github/downloads/iAmAsval/FModel/latest/total?label=latest-release&logo=GitHub)](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip) [![](https://img.shields.io/github/downloads/iAmAsval/FModel/total?label=all-releases&logo=GitHub)](https://github.com/iAmAsval/FModel/releases)
-[![](https://img.shields.io/github/license/iamasval/fmodel.svg)](https://github.com/iAmAsval/FModel/blob/master/LICENSE)
-[![](https://ci.appveyor.com/api/projects/status/bqipyycg1404acyt/branch/master?svg=true)](https://ci.appveyor.com/project/iAmAsval/fmodel/branch/master)
-
-To use FModel, you need to have [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-desktop-3.1.3-windows-x64-installer) installed on your computer
-* **[Download](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)** the latest version.
+To use FModel, you need to have **[.NET 5](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-desktop-5.0.6-windows-x64-installer)** installed on your computer
+* **[Download](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)** the latest release.
 * **Extract FModel.exe** somewhere on your PC and launch it
-  * It is preferable to create a new folder, once you're gonna launch the executable, a folder `Output` will be created next to FModel.exe.
 
-## Acknowledgments
+## Authors
 
-### Contributors
+- [@Asval](https://github.com/iAmAsval)
+- [@Fabian](https://github.com/FabianFG)
+- [@amr](https://github.com/Amrsatrio)
+- [@GMatrix](https://github.com/GMatrixGames)
+- [@Tiger](https://github.com/XTigerHyperX)
 
-<table>
-    <tr>
-        <td align="center">
-            <a href="https://github.com/SirWaddles">
-                <img src="https://avatars1.githubusercontent.com/u/769399?s=200&v=4" width="100px;" alt="Waddlesworth"/><br/>
-                <sub><b>Waddlesworth</b></sub>
-            </a><br>
-            <a href="https://github.com/SirWaddles" title="Github">🔧</a>
-        </td>
-        <td align="center">
-            <a href="https://github.com/MaikyM">
-                <img src="https://avatars3.githubusercontent.com/u/51415805?s=200&v=4" width="100px;" alt="Maiky"/><br/>
-                <sub><b>Maiky</b></sub>
-            </a><br/>
-            <a href="https://github.com/MaikyM" title="Github">🔧</a>
-            <a href="https://twitter.com/MaikyMOficial" title="Twitter">🐦</a>
-        </td>
-        <td align="center">
-            <a href="https://github.com/FabianFG">
-                <img src="https://avatars2.githubusercontent.com/u/32957190?s=200&v=4" width="100px;" alt="Fabian"/><br>
-                <sub><b>Fabian</b></sub>
-            </a><br>
-            <a href="https://github.com/FabianFG" title="Github">🔧</a>
-            <a href="https://twitter.com/FunGamesLeaks" title="Twitter">🐦</a>
-        </td>
-	<td align="center">
-            <a href="https://github.com/NotOfficer">
-                <img src="https://avatars1.githubusercontent.com/u/29897990?s=200&v=4" width="100px;" alt="Officer"/><br>
-                <sub><b>Officer</b></sub>
-            </a><br>
-            <a href="https://github.com/NotOfficer" title="Github">🔧</a>
-            <a href="https://twitter.com/Not0fficer" title="Twitter">🐦</a>
-        </td>
-        <td align="center">
-            <a href="https://github.com/PsychoPast">
-                <img src="https://avatars0.githubusercontent.com/u/33565739?s=200&v=4" width="100px;" alt="PsychoPast"/><br>
-                <sub><b>PsychoPast</b></sub>
-            </a><br>
-            <a href="https://github.com/PsychoPast" title="Github">🔧</a>
-            <a href="https://twitter.com/xXPsychoPastXx" title="Twitter">🐦</a>
-        </td>
-  </tr>
-  <tr>
-	<td align="center">
-            <a href="https://github.com/JacksonPlayz">
-                <img src="https://avatars2.githubusercontent.com/u/18062275?s=200&v=4" width="100px;" alt="Jackson"/><br/>
-                <sub><b>Jackson</b></sub>
-            </a><br>
-            <a href="https://github.com/JacksonPlayz" title="Github">🔧</a>
-            <a href="https://twitter.com/NotJaackson" title="Twitter">🐦</a>
-        </td>
-	<td align="center">
-            <a href="https://github.com/GMatrixGames">
-                <img src="https://avatars2.githubusercontent.com/u/25112532?s=200&v=4" width="100px;" alt="GMatrixGames"/><br/>
-                <sub><b>GMatrixGames</b></sub>
-            </a><br>
-            <a href="https://github.com/GMatrixGames" title="Github">🔧</a>
-            <a href="https://twitter.com/GMatrixGames" title="Twitter">🐦</a>
-        </td>
-	<td align="center">
-            <a href="https://github.com/XTigerHyperX">
-                <img src="https://avatars2.githubusercontent.com/u/49372767?s=200&v=4" width="100px;" alt="XTigerHyperX"/><br/>
-                <sub><b>XTigerHyperX</b></sub>
-            </a><br>
-            <a href="https://github.com/XTigerHyperX" title="Github">🔧</a>
-            <a href="https://twitter.com/XTigerHyperX" title="Twitter">🐦</a>
-        </td>
-        <td align="center">
-            <a href="https://github.com/iFireMonkey">
-                <img src="https://avatars2.githubusercontent.com/u/38590471?s=200&v=4" width="100px;" alt="FireMonkey"/><br/>
-                <sub><b>FireMonkey</b></sub>
-            </a><br>
-            <a href="https://github.com/iFireMonkey" title="Github">🔧</a>
-            <a href="https://twitter.com/iFireMonkey" title="Twitter">🐦</a>
-        </td>
-    </tr>
-</table>
-
-### Credits
-
-This software uses the following open source packages:
-
-- [ASTCDecoder](https://github.com/Ryujinx/Ryujinx/tree/master/Ryujinx.Graphics.Texture/Astc)
-- [Audion.CSCore](https://github.com/tjscience/audion.cscore)
-- [Autoupdater.NET.Official](https://github.com/ravibpatel/AutoUpdater.NET)
-- [AvalonEdit](https://github.com/icsharpcode/AvalonEdit)
-- [CSCore](https://github.com/filoe/cscore)
-- [DotNetZip](https://github.com/haf/DotNetZip.Semverd)
-- [DiscordRichPresence](https://github.com/Lachee/discord-rpc-csharp)
-- [Extended.Wpf.Toolkit](https://github.com/xceedsoftware/wpftoolkit)
-- [K4os.Compression.LZ4.Streams](https://github.com/MiloszKrajewski/K4os.Compression.LZ4)
-- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
-- [NVorbis](https://github.com/NVorbis/NVorbis)
-- [Ookii.Dialogs.Wpf](https://github.com/augustoproiete/ookii-dialogs-wpf)
-- [PakReader](https://github.com/WorkingRobot/PakReader)
-- [SkiaSharp](https://github.com/mono/SkiaSharp)
-- [ToastNotifications](https://github.com/rafallopatka/ToastNotifications)
-- [MaterialDesignIcons](https://materialdesignicons.com/)
-- [Microsoft.Windows.SDK.Contracts](https://www.nuget.org/packages/Microsoft.Windows.SDK.Contracts)
-
-## Support
-
-This project is not my full time job, donations and stars are greatly appreciated.
-
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EP9SSWG8MW4UC&source=url">
-  <img src="https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal">
-  <img src="https://wakatime.com/badge/github/iAmAsval/FModel.svg">
-</a>
-<a href="https://starchart.cc/iamasval/fmodel.svg">
-  <img src="https://starchart.cc/iamasval/fmodel.svg">
-</a>
-
-## You may also like...
-
-- [UModel](https://github.com/gildor2/UEViewer) - **THE** Unreal Engine Viewer
+[![Donate](https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EP9SSWG8MW4UC&source=url)

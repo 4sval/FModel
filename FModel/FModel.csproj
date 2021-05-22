@@ -1,201 +1,185 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
-    <StartupObject>FModel.App</StartupObject>
-    <Authors>Asval</Authors>
-    <Company></Company>
-    <AssemblyVersion>3.1.2.0</AssemblyVersion>
-    <FileVersion>3.1.2.0</FileVersion>
-    <PackageIcon>FModel.ico</PackageIcon>
-    <PackageIconUrl />
-    <PackageProjectUrl>https://github.com/iAmAsval/FModel</PackageProjectUrl>
-    <Description></Description>
-    <Version>3.1.2</Version>
-    <Platforms>x64</Platforms>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>4.0.0</Version>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
+    <IsPackable>false</IsPackable>
+    <IsPublishable>true</IsPublishable>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-	  <PlatformTarget>x64</PlatformTarget>
-	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	  <NoWarn>1701;1702;NU1701</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1701;1702;NU1701</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>NU1701</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
-    <None Remove="FModel.ico" />
-    <None Remove="Resources\alert.ico" />
-    <None Remove="Resources\api-off.ico" />
-    <None Remove="Resources\api.ico" />
-    <None Remove="Resources\backup-restore.png" />
-    <None Remove="Resources\battlebreakers.ico" />
-    <None Remove="Resources\borderlands3.ico" />
-    <None Remove="Resources\BurbankBigCondensed-Bold.ttf" />
-    <None Remove="Resources\check-circle.ico" />
-    <None Remove="Resources\ColorPickerOne.png" />
-    <None Remove="Resources\ColorPickerTwo.png" />
-    <None Remove="Resources\content-copy.png" />
-    <None Remove="Resources\Cpp.xshd" />
-    <None Remove="Resources\delete-forever.png" />
-    <None Remove="Resources\egl2.ico" />
-    <None Remove="Resources\EIconDesign_Default.png" />
-    <None Remove="Resources\EIconDesign_Flat.png" />
-    <None Remove="Resources\EIconDesign_Mini.png" />
-    <None Remove="Resources\EIconDesign_NoBackground.png" />
-    <None Remove="Resources\EIconDesign_NoText.png" />
-    <None Remove="Resources\file-image.ico" />
-    <None Remove="Resources\file-multiple.png" />
-    <None Remove="Resources\file.png" />
-    <None Remove="Resources\fmodel.png" />
-    <None Remove="Resources\folder-download.png" />
-    <None Remove="Resources\fortnite.ico" />
-    <None Remove="Resources\image-plus.png" />
-    <None Remove="Resources\image-remove.png" />
-    <None Remove="Resources\Ini.xshd" />
-    <None Remove="Resources\Json.xshd" />
-    <None Remove="Resources\lock-open-variant.ico" />
-    <None Remove="Resources\minecraftdungeons.ico" />
-    <None Remove="Resources\open-in-new.png" />
-    <None Remove="Resources\pause.png" />
-    <None Remove="Resources\pencil.png" />
-    <None Remove="Resources\play.png" />
-    <None Remove="Resources\playlist-plus.png" />
-    <None Remove="Resources\power.png" />
-    <None Remove="Resources\progress-download.png" />
-    <None Remove="Resources\refresh.png" />
+    <None Remove="Resources\android.png" />
+    <None Remove="Resources\apple.png" />
+    <None Remove="Resources\battlebreakers.png" />
+    <None Remove="Resources\blueprint.png" />
+    <None Remove="Resources\borderlands.png" />
+    <None Remove="Resources\empty_folder.png" />
+    <None Remove="Resources\engine.png" />
+    <None Remove="Resources\fallenorder.png" />
+    <None Remove="Resources\FModel.ico" />
+    <None Remove="Resources\folder.png" />
+    <None Remove="Resources\fortnite.png" />
+    <None Remove="Resources\fortnitebr.png" />
+    <None Remove="Resources\gear.png" />
+    <None Remove="Resources\localization.png" />
+    <None Remove="Resources\materialicon.png" />
+    <None Remove="Resources\pc.png" />
+    <None Remove="Resources\puzzle.png" />
     <None Remove="Resources\roguecompany.png" />
-    <None Remove="Resources\rotate-3d.png" />
-    <None Remove="Resources\share-all.png" />
-    <None Remove="Resources\share.png" />
-    <None Remove="Resources\sign-direction-plus.png" />
-    <None Remove="Resources\sign-direction-remove.png" />
-    <None Remove="Resources\spellbreak.ico" />
-    <None Remove="Resources\stop.png" />
-    <None Remove="Resources\sod2.ico" />
-    <None Remove="Resources\T-Icon-Pets-64.png" />
-    <None Remove="Resources\T-Icon-Quests-64.png" />
-    <None Remove="Resources\thecycle.ico" />
-    <None Remove="Resources\theouterworlds.png" />
+    <None Remove="Resources\sound.png" />
+    <None Remove="Resources\creative.png" />
+    <None Remove="Resources\spellbreak.png" />
+    <None Remove="Resources\texture.png" />
+    <None Remove="Resources\thecycle.png" />
+    <None Remove="Resources\ui.png" />
+    <None Remove="Resources\valorant.png" />
+    <None Remove="Resources\weapon.png" />
+    <None Remove="Resources\windows.png" />
+    <None Remove="Resources\cinematics.png" />
+    <None Remove="Resources\archive.png" />
+    <None Remove="Resources\archive_enabled.png" />
+    <None Remove="Resources\archive_disabled.png" />
+    <None Remove="Resources\unknown_asset.png" />
+    <None Remove="Resources\asset.png" />
+    <None Remove="Resources\asset_ini.png" />
+    <None Remove="Resources\asset_psd.png" />
+    <None Remove="Resources\asset_png.png" />
+    <None Remove="Resources\athena.png" />
+    <None Remove="Resources\Json.xshd" />
+    <None Remove="Resources\Ini.xshd" />
+    <None Remove="Resources\Xml.xshd" />
+    <None Remove="Resources\Cpp.xshd" />
+    <None Remove="Resources\unix.png" />
+    <None Remove="Resources\linux.png" />
+    <None Remove="Resources\T_Placeholder_Item_Image.png" />
     <None Remove="Resources\T_ClipSize_Weapon_Stats.png" />
     <None Remove="Resources\T_DamagePerBullet_Weapon_Stats.png" />
-    <None Remove="Resources\T_Placeholder_Challenge_Image.png" />
-    <None Remove="Resources\T_Placeholder_Item_Image.png" />
     <None Remove="Resources\T_ReloadTime_Weapon_Stats.png" />
-    <None Remove="Resources\battle-breakers-item-background.png" />
-    <None Remove="Resources\valorant.live.ico" />
-    <None Remove="Resources\volume-minus.png" />
-    <None Remove="Resources\volume-mute.png" />
-    <None Remove="Resources\volume-plus.png" />
-    <None Remove="Resources\wifi-strength-off.ico" />
-    <None Remove="Resources\Xml.xshd" />
-    <None Include="FModel.ico">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <None Remove="Resources\T-Icon-Pets-64.png" />
+    <None Remove="Resources\T-Icon-Quests-64.png" />
+    <None Remove="Resources\city_pin.png" />
+    <None Remove="Resources\pin.png" />
+    <None Remove="Resources\Default.png" />
+    <None Remove="Resources\NoBackground.png" />
+    <None Remove="Resources\NoText.png" />
+    <None Remove="Resources\Flat.png" />
+    <None Remove="Resources\Cataba.png" />
+    <None Remove="Resources\BurbankBigCondensed-Bold.ttf" />
+    <None Remove="Resources\add_directory.png" />
+    <None Remove="Resources\delete.png" />
+    <None Remove="Resources\edit.png" />
+    <None Remove="Resources\go_to_directory.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Cpp.xshd" />
-    <EmbeddedResource Include="Resources\Ini.xshd" />
     <EmbeddedResource Include="Resources\Json.xshd" />
+    <EmbeddedResource Include="Resources\Ini.xshd" />
     <EmbeddedResource Include="Resources\Xml.xshd" />
-    <None Remove="Resources\Detex.dll" />
-    <EmbeddedResource Include="Resources\Detex.dll" />
+    <EmbeddedResource Include="Resources\Cpp.xshd" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AdonisUI.ClassicTheme.NET5" Version="1.17.1" />
+    <PackageReference Include="AdonisUI.NET5" Version="1.17.1" />
     <PackageReference Include="Autoupdater.NET.Official" Version="1.6.4" />
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
-    <PackageReference Include="DotNetZip" Version="1.15.0" />
     <PackageReference Include="EpicManifestParser" Version="1.2.0" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
-    <PackageReference Include="Fortnite-API-Wrapper" Version="2.2.0" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.6" />
-    <PackageReference Include="LZMA-SDK" Version="19.0.0" />
-    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NVorbis" Version="0.10.1" />
-    <PackageReference Include="Ookii.Dialogs.Wpf" Version="1.2.0" />
-    <PackageReference Include="SkiaSharp" Version="2.80.2" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
+    <PackageReference Include="RestSharp" Version="106.11.7" />
+    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
     <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.80.2" />
-    <PackageReference Include="System.Data.HashFunction.CityHash" Version="2.0.0" />
-    <PackageReference Include="ToastNotifications" Version="2.5.1" />
-    <PackageReference Include="ToastNotifications.Messages" Version="2.5.1" />
-    <PackageReference Include="Usmap.NET" Version="1.1.1" />
-    <PackageReference Include="WriteableBitmapEx" Version="1.6.7" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="FModel.ico" />
-    <Resource Include="Resources\alert.ico" />
-    <Resource Include="Resources\api-off.ico" />
-    <Resource Include="Resources\api.ico" />
-    <Resource Include="Resources\backup-restore.png" />
-    <Resource Include="Resources\battlebreakers.ico" />
-    <Resource Include="Resources\borderlands3.ico" />
-    <Resource Include="Resources\BurbankBigCondensed-Bold.ttf" />
-    <Resource Include="Resources\check-circle.ico" />
-    <Resource Include="Resources\ColorPickerOne.png" />
-    <Resource Include="Resources\ColorPickerTwo.png" />
-    <Resource Include="Resources\content-copy.png" />
-    <Resource Include="Resources\delete-forever.png" />
-    <Resource Include="Resources\egl2.ico" />
-    <Resource Include="Resources\EIconDesign_Default.png" />
-    <Resource Include="Resources\EIconDesign_Flat.png" />
-    <Resource Include="Resources\EIconDesign_Mini.png" />
-    <Resource Include="Resources\EIconDesign_NoBackground.png" />
-    <Resource Include="Resources\EIconDesign_NoText.png" />
-    <Resource Include="Resources\file-image.ico" />
-    <Resource Include="Resources\file-multiple.png" />
-    <Resource Include="Resources\file.png" />
-    <Resource Include="Resources\fmodel.png" />
-    <Resource Include="Resources\folder-download.png" />
-    <Resource Include="Resources\fortnite.ico" />
-    <Resource Include="Resources\image-plus.png" />
-    <Resource Include="Resources\image-remove.png" />
-    <Resource Include="Resources\lock-open-variant.ico" />
-    <Resource Include="Resources\minecraftdungeons.ico" />
-    <Resource Include="Resources\open-in-new.png" />
-    <Resource Include="Resources\pause.png" />
-    <Resource Include="Resources\pencil.png" />
-    <Resource Include="Resources\play.png" />
-    <Resource Include="Resources\playlist-plus.png" />
-    <Resource Include="Resources\power.png" />
-    <Resource Include="Resources\progress-download.png" />
-    <Resource Include="Resources\refresh.png" />
+    <ProjectReference Include="..\CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj" />
+    <ProjectReference Include="..\CUE4Parse\CUE4Parse-Fortnite\CUE4Parse-Fortnite.csproj" />
+    <ProjectReference Include="..\CUE4Parse\CUE4Parse\CUE4Parse.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\android.png" />
+    <Resource Include="Resources\apple.png" />
+    <Resource Include="Resources\battlebreakers.png" />
+    <Resource Include="Resources\blueprint.png" />
+    <Resource Include="Resources\borderlands.png" />
+    <Resource Include="Resources\fallenorder.png" />
+    <Resource Include="Resources\FModel.ico" />
+    <Resource Include="Resources\folder.png" />
+    <Resource Include="Resources\fortnite.png" />
+    <Resource Include="Resources\fortnitebr.png" />
+    <Resource Include="Resources\empty_folder.png" />
+    <Resource Include="Resources\engine.png" />
+    <Resource Include="Resources\gear.png" />
+    <Resource Include="Resources\localization.png" />
+    <Resource Include="Resources\materialicon.png" />
+    <Resource Include="Resources\pc.png" />
+    <Resource Include="Resources\puzzle.png" />
     <Resource Include="Resources\roguecompany.png" />
-    <Resource Include="Resources\share-all.png" />
-    <Resource Include="Resources\share.png" />
-    <Resource Include="Resources\sign-direction-plus.png" />
-    <Resource Include="Resources\sign-direction-remove.png" />
-    <Resource Include="Resources\spellbreak.ico" />
-    <Resource Include="Resources\stop.png" />
-    <Resource Include="Resources\sod2.ico" />
-    <Resource Include="Resources\T-Icon-Pets-64.png" />
-    <Resource Include="Resources\T-Icon-Quests-64.png" />
-    <Resource Include="Resources\thecycle.ico" />
-    <Resource Include="Resources\theouterworlds.png" />
+    <Resource Include="Resources\spellbreak.png" />
+    <Resource Include="Resources\sound.png" />
+    <Resource Include="Resources\creative.png" />
+    <Resource Include="Resources\texture.png" />
+    <Resource Include="Resources\thecycle.png" />
+    <Resource Include="Resources\valorant.png" />
+    <Resource Include="Resources\ui.png" />
+    <Resource Include="Resources\weapon.png" />
+    <Resource Include="Resources\windows.png" />
+    <Resource Include="Resources\cinematics.png" />
+    <Resource Include="Resources\archive.png" />
+    <Resource Include="Resources\archive_enabled.png" />
+    <Resource Include="Resources\archive_disabled.png" />
+    <Resource Include="Resources\unknown_asset.png" />
+    <Resource Include="Resources\asset.png" />
+    <Resource Include="Resources\asset_ini.png" />
+    <Resource Include="Resources\asset_psd.png" />
+    <Resource Include="Resources\asset_png.png" />
+    <Resource Include="Resources\athena.png" />
+    <Resource Include="Resources\unix.png" />
+    <Resource Include="Resources\linux.png" />
+    <Resource Include="Resources\T_Placeholder_Item_Image.png" />
     <Resource Include="Resources\T_ClipSize_Weapon_Stats.png" />
     <Resource Include="Resources\T_DamagePerBullet_Weapon_Stats.png" />
-    <Resource Include="Resources\T_Placeholder_Challenge_Image.png" />
-    <Resource Include="Resources\T_Placeholder_Item_Image.png" />
     <Resource Include="Resources\T_ReloadTime_Weapon_Stats.png" />
-    <Resource Include="Resources\battle-breakers-item-background.png" />
-    <Resource Include="Resources\valorant.live.ico" />
-    <Resource Include="Resources\volume-minus.png" />
-    <Resource Include="Resources\volume-mute.png" />
-    <Resource Include="Resources\volume-plus.png" />
-    <Resource Include="Resources\wifi-strength-off.ico" />
+    <Resource Include="Resources\T-Icon-Pets-64.png" />
+    <Resource Include="Resources\T-Icon-Quests-64.png" />
+    <Resource Include="Resources\city_pin.png" />
+    <Resource Include="Resources\pin.png" />
+    <Resource Include="Resources\Default.png" />
+    <Resource Include="Resources\NoBackground.png" />
+    <Resource Include="Resources\NoText.png" />
+    <Resource Include="Resources\Flat.png" />
+    <Resource Include="Resources\Cataba.png" />
+    <Resource Include="Resources\BurbankBigCondensed-Bold.ttf" />
+    <Resource Include="Resources\add_directory.png" />
+    <Resource Include="Resources\delete.png" />
+    <Resource Include="Resources\edit.png" />
+    <Resource Include="Resources\go_to_directory.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -203,11 +187,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -218,10 +197,4 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>PublicSettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
 </Project>

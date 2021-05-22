@@ -1,0 +1,53 @@
+﻿<adonisControls:AdonisWindow x:Class="FModel.Views.About"
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                             WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+                             IconVisibility="Collapsed" Width="500" SizeToContent="Height">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
+            <Setter Property="Title" Value="About" />
+        </Style>
+    </adonisControls:AdonisWindow.Style>
+    <adonisControls:AdonisWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </adonisControls:AdonisWindow.Resources>
+    <StackPanel Margin="30 10">
+        <StackPanel HorizontalAlignment="Center" Margin="0 0 0 30">
+            <TextBlock Text="404FMode!" FontSize="15" FontWeight="500" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="Made with &#x2665; by Asval" FontSize="30" FontWeight="700" Foreground="#DAE5F2" HorizontalAlignment="Center" />
+        </StackPanel>
+        
+        <StackPanel HorizontalAlignment="Center">
+            <TextBlock Text="History" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
+        </StackPanel>
+        <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30"
+                   Text="Since the release in March 2019, we've continuously added new features and improved old ones. It started as a simple UE4 file explorer to parse assets and, as things progressed, became really popular to datamine games and create items icons. FModel 4 is now the most complete and well-made version so far. It features dozens of settings for you to use to make FModel your own." />
+        
+        <StackPanel HorizontalAlignment="Center">
+            <TextBlock Text="Contributors" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
+        </StackPanel>
+        <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30"
+                   Text="With the help of Waddlesworth, Fabian, Maiky, GMatrix, Amr, Officer, Tiger, Mang0e, and a lot more, this project continues to exist. If you're making money off of FModel consider donating to sustain FModel's continued improvements." />
+        
+        <StackPanel HorizontalAlignment="Center">
+            <TextBlock Text="Donators" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
+        </StackPanel>
+        <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30"
+                   Text="Maiky &#x2665;, HYPEX &#x2665;, VenomLeaks &#x2665;, JayKey &#x2665;, Fevers &#x2665;, Netu &#x2665;, TheGameVlog &#x2665;, Quentin &#x2665;, Mikey, kyle, Yanteh, Shiina, SexyNutella, Alexander, Jinx, Tector, s0ll, imatrix, LamZykoss, Frenzy Leaks, LlamaLeaks, XTigerHyperX, FunGames, WeLoveFortnite." />
+        
+        <StackPanel HorizontalAlignment="Center">
+            <TextBlock Text="Powered by" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
+        </StackPanel>
+        <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30"
+                   Text="CUE4Parse, BenBot, Fortnite-Api, AdonisUI, AvalonEdit, CSCore, NVorbis, VgmStream, RestSharp, Serilog, Discord, K4os.Compression.LZ4, Ookii.Dialogs, Newtonsoft.Json, ..." />
+    </StackPanel>
+</adonisControls:AdonisWindow>

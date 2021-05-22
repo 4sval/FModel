@@ -1,0 +1,1633 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:FModel"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+                    xmlns:soundOut="clr-namespace:CSCore.SoundOut;assembly=CSCore"
+                    xmlns:audioControls="clr-namespace:FModel.Views.Resources.Controls.Aup"
+                    xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                    xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                    xmlns:adonisConverters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI"
+                    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI">
+
+    <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    
+    <Geometry x:Key="StatusBarIcon">M22,9v6c0,1.1-0.9,2-2,2h-1l0-2h1V9H4v6h6v2H4c-1.1,0-2-0.9-2-2V9c0-1.1,0.9-2,2-2h16C21.1,7,22,7.9,22,9z M14.04,17.99 c0.18,0.39,0.73,0.39,0.91,0l0.63-1.4l1.4-0.63c0.39-0.18,0.39-0.73,0-0.91l-1.4-0.63l-0.63-1.4c-0.18-0.39-0.73-0.39-0.91,0 l-0.63,1.4l-1.4,0.63c-0.39,0.18-0.39,0.73,0,0.91l1.4,0.63L14.04,17.99z M16.74,13.43c0.1,0.22,0.42,0.22,0.52,0l0.36-0.8 l0.8-0.36c0.22-0.1,0.22-0.42,0-0.52l-0.8-0.36l-0.36-0.8c-0.1-0.22-0.42-0.22-0.52,0l-0.36,0.8l-0.8,0.36 c-0.22,0.1-0.22,0.42,0,0.52l0.8,0.36L16.74,13.43z</Geometry>
+    <Geometry x:Key="SearchIcon">M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z</Geometry>
+    <Geometry x:Key="DirectoryIcon">M19.71,15.71l-3.59,3.59c-0.63,0.63-1.71,0.18-1.71-0.71V16h-7c-1.1,0-2-0.9-2-2V5c0-0.55,0.45-1,1-1h0c0.55,0,1,0.45,1,1 v9h7v-2.59c0-0.89,1.08-1.34,1.71-0.71l3.59,3.59C20.1,14.68,20.1,15.32,19.71,15.71z</Geometry>
+    <Geometry x:Key="AddIcon">M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z</Geometry>
+    <Geometry x:Key="RemoveIcon">M18.3,5.71L18.3,5.71c-0.39-0.39-1.02-0.39-1.41,0L12,10.59L7.11,5.7c-0.39-0.39-1.02-0.39-1.41,0l0,0 c-0.39,0.39-0.39,1.02,0,1.41L10.59,12L5.7,16.89c-0.39,0.39-0.39,1.02,0,1.41l0,0c0.39,0.39,1.02,0.39,1.41,0L12,13.41l4.89,4.89 c0.39,0.39,1.02,0.39,1.41,0l0,0c0.39-0.39,0.39-1.02,0-1.41L13.41,12l4.89-4.89C18.68,6.73,18.68,6.09,18.3,5.71z</Geometry>
+    <Geometry x:Key="ArrowIcon">M7.71,9.29l3.88,3.88l3.88-3.88c0.39-0.39,1.02-0.39,1.41,0l0,0c0.39,0.39,0.39,1.02,0,1.41l-4.59,4.59 c-0.39,0.39-1.02,0.39-1.41,0L6.29,10.7c-0.39-0.39-0.39-1.02,0-1.41l0,0C6.68,8.91,7.32,8.9,7.71,9.29z</Geometry>
+    <Geometry x:Key="KeyIcon">M3,17h18c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H3c-0.55,0-1-0.45-1-1v0C2,17.45,2.45,17,3,17z M2.5,12.57 c0.36,0.21,0.82,0.08,1.03-0.28L4,11.47l0.48,0.83c0.21,0.36,0.67,0.48,1.03,0.28l0,0c0.36-0.21,0.48-0.66,0.28-1.02L5.3,10.72 h0.95C6.66,10.72,7,10.38,7,9.97v0c0-0.41-0.34-0.75-0.75-0.75H5.3L5.77,8.4C5.98,8.04,5.86,7.58,5.5,7.37l0,0 C5.14,7.17,4.68,7.29,4.47,7.65L4,8.47L3.53,7.65C3.32,7.29,2.86,7.17,2.5,7.37l0,0C2.14,7.58,2.02,8.04,2.23,8.4L2.7,9.22H1.75 C1.34,9.22,1,9.56,1,9.97v0c0,0.41,0.34,0.75,0.75,0.75H2.7l-0.48,0.83C2.02,11.91,2.14,12.37,2.5,12.57L2.5,12.57z M10.5,12.57 L10.5,12.57c0.36,0.21,0.82,0.08,1.03-0.28L12,11.47l0.48,0.83c0.21,0.36,0.67,0.48,1.03,0.28l0,0c0.36-0.21,0.48-0.66,0.28-1.02 l-0.48-0.83h0.95c0.41,0,0.75-0.34,0.75-0.75v0c0-0.41-0.34-0.75-0.75-0.75H13.3l0.47-0.82c0.21-0.36,0.08-0.82-0.27-1.03l0,0 c-0.36-0.21-0.82-0.08-1.02,0.27L12,8.47l-0.47-0.82c-0.21-0.36-0.67-0.48-1.02-0.27l0,0c-0.36,0.21-0.48,0.67-0.27,1.03 l0.47,0.82H9.75C9.34,9.22,9,9.56,9,9.97v0c0,0.41,0.34,0.75,0.75,0.75h0.95l-0.48,0.83C10.02,11.91,10.14,12.37,10.5,12.57z M23,9.97c0-0.41-0.34-0.75-0.75-0.75H21.3l0.47-0.82c0.21-0.36,0.08-0.82-0.27-1.03l0,0c-0.36-0.21-0.82-0.08-1.02,0.27L20,8.47 l-0.47-0.82c-0.21-0.36-0.67-0.48-1.02-0.27l0,0c-0.36,0.21-0.48,0.67-0.27,1.03l0.47,0.82h-0.95C17.34,9.22,17,9.56,17,9.97v0 c0,0.41,0.34,0.75,0.75,0.75h0.95l-0.48,0.83c-0.21,0.36-0.08,0.82,0.28,1.02l0,0c0.36,0.21,0.82,0.08,1.03-0.28L20,11.47 l0.48,0.83c0.21,0.36,0.67,0.48,1.03,0.28l0,0c0.36-0.21,0.48-0.66,0.28-1.02l-0.48-0.83h0.95C22.66,10.72,23,10.38,23,9.97 L23,9.97z</Geometry>
+    <Geometry x:Key="BackupIcon">M19,11c0-3.87-3.13-7-7-7C8.78,4,6.07,6.18,5.26,9.15C2.82,9.71,1,11.89,1,14.5C1,17.54,3.46,20,6.5,20 c1.76,0,10.25,0,12,0l0,0c2.49-0.01,4.5-2.03,4.5-4.52C23,13.15,21.25,11.26,19,11z M13,13v2c0,0.55-0.45,1-1,1h0 c-0.55,0-1-0.45-1-1v-2H9.21c-0.45,0-0.67-0.54-0.35-0.85l2.79-2.79c0.2-0.2,0.51-0.2,0.71,0l2.79,2.79 c0.31,0.31,0.09,0.85-0.35,0.85H13z</Geometry>
+    <Geometry x:Key="ExpanderIcon">M16,17.01V11c0-0.55-0.45-1-1-1s-1,0.45-1,1v6.01h-1.79c-0.45,0-0.67,0.54-0.35,0.85l2.79,2.78c0.2,0.19,0.51,0.19,0.71,0 l2.79-2.78c0.32-0.31,0.09-0.85-0.35-0.85H16z M8.65,3.35L5.86,6.14c-0.32,0.31-0.1,0.85,0.35,0.85H8V13c0,0.55,0.45,1,1,1 s1-0.45,1-1V6.99h1.79c0.45,0,0.67-0.54,0.35-0.85L9.35,3.35C9.16,3.16,8.84,3.16,8.65,3.35z</Geometry>
+    <Geometry x:Key="FolderIcon">M20,6h-8l-1.41-1.41C10.21,4.21,9.7,4,9.17,4H4C2.9,4,2,4.9,2,6v12c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8 C22,6.9,21.1,6,20,6z M15.98,15.74l-1.07-0.82l-1.07,0.82c-0.39,0.29-0.92-0.08-0.78-0.55l0.42-1.36l-1.2-0.95 C11.91,12.6,12.12,12,12.59,12H14l0.43-1.34c0.15-0.46,0.8-0.46,0.95,0L15.82,12h1.41c0.47,0,0.68,0.6,0.31,0.89l-1.2,0.95 l0.42,1.36C16.91,15.66,16.37,16.04,15.98,15.74z</Geometry>
+    <Geometry x:Key="ExportIcon">M19.41,7.41l-4.83-4.83C14.21,2.21,13.7,2,13.17,2H6C4.9,2,4.01,2.9,4.01,4L4,20c0,1.1,0.89,2,1.99,2H18c1.1,0,2-0.9,2-2 V8.83C20,8.3,19.79,7.79,19.41,7.41z M14.8,15H13v3c0,0.55-0.45,1-1,1s-1-0.45-1-1v-3H9.21c-0.45,0-0.67-0.54-0.35-0.85l2.8-2.79 c0.2-0.19,0.51-0.19,0.71,0l2.79,2.79C15.46,14.46,15.24,15,14.8,15z M14,9c-0.55,0-1-0.45-1-1V3.5L18.5,9H14z</Geometry>
+    <Geometry x:Key="SaveIcon">M16.17,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V7.83c0-0.53-0.21-1.04-0.59-1.41l-2.83-2.83 C17.21,3.21,16.7,3,16.17,3z M12,18c-1.66,0-3-1.34-3-3s1.34-3,3-3s3,1.34,3,3S13.66,18,12,18z M14,10H7c-0.55,0-1-0.45-1-1V7 c0-0.55,0.45-1,1-1h7c0.55,0,1,0.45,1,1v2C15,9.55,14.55,10,14,10z</Geometry>
+    <Geometry x:Key="TextureIcon">M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M6.6,16.2l2-2.67 c0.2-0.27,0.6-0.27,0.8,0L11.25,16l2.6-3.47c0.2-0.27,0.6-0.27,0.8,0l2.75,3.67c0.25,0.33,0.01,0.8-0.4,0.8H7 C6.59,17,6.35,16.53,6.6,16.2z</Geometry>
+    <Geometry x:Key="CopyIcon">M3,7L3,7C2.45,7,2,7.45,2,8v13c0,1.1,0.9,2,2,2h11c0.55,0,1-0.45,1-1v0c0-0.55-0.45-1-1-1H4V8C4,7.45,3.55,7,3,7z M15.59,1.59C15.21,1.21,14.7,1,14.17,1H8C6.9,1,6.01,1.9,6.01,3L6,17c0,1.1,0.89,2,1.99,2H19c1.1,0,2-0.9,2-2V7.83 c0-0.53-0.21-1.04-0.59-1.41L15.59,1.59z M14,7V2.5L19.5,8H15C14.45,8,14,7.55,14,7z</Geometry>
+    <Geometry x:Key="DirectoriesIcon">M14.4,6l-0.24-1.2C14.07,4.34,13.66,4,13.18,4H6C5.45,4,5,4.45,5,5v15c0,0.55,0.45,1,1,1l0,0c0.55,0,1-0.45,1-1v-6h5.6 l0.24,1.2c0.09,0.47,0.5,0.8,0.98,0.8H19c0.55,0,1-0.45,1-1V7c0-0.55-0.45-1-1-1H14.4z</Geometry>
+    <Geometry x:Key="DirectoriesAddIcon">M20 1v3h3v2h-3v3h-2V6h-3V4h3V1h2zm-8 12c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm2-9.75V7h3v3h2.92c.05.39.08.79.08 1.2 0 3.32-2.67 7.25-8 11.8-5.33-4.55-8-8.48-8-11.8C4 6.22 7.8 3 12 3c.68 0 1.35.08 2 .25z</Geometry>
+    <Geometry x:Key="ExtractIcon">M20.29,10.29l-3.59-3.59C16.08,6.08,15,6.52,15,7.41V10H8c-2.76,0-5,2.24-5,5v3c0,0.55,0.45,1,1,1h0c0.55,0,1-0.45,1-1v-3 c0-1.65,1.35-3,3-3h7v2.59c0,0.89,1.08,1.34,1.71,0.71l3.59-3.59C20.68,11.32,20.68,10.68,20.29,10.29z</Geometry>
+    <Geometry x:Key="DiscordIcon">M22,24L16.75,19L17.38,21H4.5A2.5,2.5 0 0,1 2,18.5V3.5A2.5,2.5 0 0,1 4.5,1H19.5A2.5,2.5 0 0,1 22,3.5V24M12,6.8C9.32,6.8 7.44,7.95 7.44,7.95C8.47,7.03 10.27,6.5 10.27,6.5L10.1,6.33C8.41,6.36 6.88,7.53 6.88,7.53C5.16,11.12 5.27,14.22 5.27,14.22C6.67,16.03 8.75,15.9 8.75,15.9L9.46,15C8.21,14.73 7.42,13.62 7.42,13.62C7.42,13.62 9.3,14.9 12,14.9C14.7,14.9 16.58,13.62 16.58,13.62C16.58,13.62 15.79,14.73 14.54,15L15.25,15.9C15.25,15.9 17.33,16.03 18.73,14.22C18.73,14.22 18.84,11.12 17.12,7.53C17.12,7.53 15.59,6.36 13.9,6.33L13.73,6.5C13.73,6.5 15.53,7.03 16.56,7.95C16.56,7.95 14.68,6.8 12,6.8M9.93,10.59C10.58,10.59 11.11,11.16 11.1,11.86C11.1,12.55 10.58,13.13 9.93,13.13C9.29,13.13 8.77,12.55 8.77,11.86C8.77,11.16 9.28,10.59 9.93,10.59M14.1,10.59C14.75,10.59 15.27,11.16 15.27,11.86C15.27,12.55 14.75,13.13 14.1,13.13C13.46,13.13 12.94,12.55 12.94,11.86C12.94,11.16 13.45,10.59 14.1,10.59Z</Geometry>
+    <Geometry x:Key="BugIcon">M14,12H10V10H14M14,16H10V14H14M20,8H17.19C16.74,7.22 16.12,6.55 15.37,6.04L17,4.41L15.59,3L13.42,5.17C12.96,5.06 12.5,5 12,5C11.5,5 11.04,5.06 10.59,5.17L8.41,3L7,4.41L8.62,6.04C7.88,6.55 7.26,7.22 6.81,8H4V10H6.09C6.04,10.33 6,10.66 6,11V12H4V14H6V15C6,15.34 6.04,15.67 6.09,16H4V18H6.81C7.85,19.79 9.78,21 12,21C14.22,21 16.15,19.79 17.19,18H20V16H17.91C17.96,15.67 18,15.34 18,15V14H20V12H18V11C18,10.66 17.96,10.33 17.91,10H20V8Z</Geometry>
+    <Geometry x:Key="GiftIcon">M22 10.92L19.26 9.33C21.9 7.08 19.25 2.88 16.08 4.31L15.21 4.68L15.1 3.72C15 2.64 14.44 1.87 13.7 1.42C12.06 .467 9.56 1.12 9.16 3.5L6.41 1.92C5.45 1.36 4.23 1.69 3.68 2.65L2.68 4.38C2.4 4.86 2.57 5.47 3.05 5.75L10.84 10.25L12.34 7.65L14.07 8.65L12.57 11.25L20.36 15.75C20.84 16 21.46 15.86 21.73 15.38L22.73 13.65C23.28 12.69 22.96 11.47 22 10.92M12.37 5C11.5 5.25 10.8 4.32 11.24 3.55C11.5 3.07 12.13 2.91 12.61 3.18C13.38 3.63 13.23 4.79 12.37 5M17.56 8C16.7 8.25 16 7.32 16.44 6.55C16.71 6.07 17.33 5.91 17.8 6.18C18.57 6.63 18.42 7.79 17.56 8M20.87 16.88C21.28 16.88 21.67 16.74 22 16.5V20C22 21.11 21.11 22 20 22H4C2.9 22 2 21.11 2 20V11H10.15L11 11.5V20H13V12.65L19.87 16.61C20.17 16.79 20.5 16.88 20.87 16.88Z</Geometry>
+    <Geometry x:Key="GitHubIcon">M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z</Geometry>
+    <Geometry x:Key="InfoIcon">M11.5,2C6.81,2,3,5.81,3,10.5S6.81,19,11.5,19H12v3c4.86-2.34,8-7,8-11.5C20,5.81,16.19,2,11.5,2z M11.48,16 c-0.59,0-1.05-0.47-1.05-1.05c0-0.59,0.47-1.04,1.05-1.04c0.59,0,1.04,0.45,1.04,1.04C12.52,15.53,12.08,16,11.48,16z M13.99,9.83 c-0.63,0.93-1.23,1.21-1.56,1.81c-0.08,0.14-0.13,0.26-0.16,0.49c-0.05,0.39-0.36,0.68-0.75,0.68h-0.03 c-0.44,0-0.79-0.38-0.75-0.82c0.03-0.28,0.09-0.57,0.25-0.84c0.41-0.73,1.18-1.16,1.63-1.8c0.48-0.68,0.21-1.94-1.14-1.94 c-0.61,0-1.01,0.32-1.26,0.7c-0.19,0.29-0.57,0.39-0.89,0.25l0,0c-0.42-0.18-0.6-0.7-0.34-1.07C9.5,6.55,10.35,6,11.47,6 c1.23,0,2.08,0.56,2.51,1.26C14.34,7.87,14.56,8.99,13.99,9.83z</Geometry>
+    <Geometry x:Key="TrashIcon">M6,19c0,1.1,0.9,2,2,2h8c1.1,0,2-0.9,2-2V7H6V19z M9.17,12.59c-0.39-0.39-0.39-1.02,0-1.41c0.39-0.39,1.02-0.39,1.41,0 L12,12.59l1.41-1.41c0.39-0.39,1.02-0.39,1.41,0s0.39,1.02,0,1.41L13.41,14l1.41,1.41c0.39,0.39,0.39,1.02,0,1.41 s-1.02,0.39-1.41,0L12,15.41l-1.41,1.41c-0.39,0.39-1.02,0.39-1.41,0c-0.39-0.39-0.39-1.02,0-1.41L10.59,14L9.17,12.59z M18,4h-2.5 l-0.71-0.71C14.61,3.11,14.35,3,14.09,3H9.91c-0.26,0-0.52,0.11-0.7,0.29L8.5,4H6C5.45,4,5,4.45,5,5s0.45,1,1,1h12 c0.55,0,1-0.45,1-1S18.55,4,18,4z</Geometry>
+    <Geometry x:Key="HomeIcon">M18,4v16H6V4H18 M18,2H6C4.9,2,4,2.9,4,4v16c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V4C20,2.9,19.1,2,18,2L18,2z M7,19h10v-6H7 V19z M10,10h4v1h3V5H7v6h3V10z</Geometry>
+    <Geometry x:Key="RegexIcon">M16,16.92C15.67,16.97 15.34,17 15,17C14.66,17 14.33,16.97 14,16.92V13.41L11.5,15.89C11,15.5 10.5,15 10.11,14.5L12.59,12H9.08C9.03,11.67 9,11.34 9,11C9,10.66 9.03,10.33 9.08,10H12.59L10.11,7.5C10.3,7.25 10.5,7 10.76,6.76V6.76C11,6.5 11.25,6.3 11.5,6.11L14,8.59V5.08C14.33,5.03 14.66,5 15,5C15.34,5 15.67,5.03 16,5.08V8.59L18.5,6.11C19,6.5 19.5,7 19.89,7.5L17.41,10H20.92C20.97,10.33 21,10.66 21,11C21,11.34 20.97,11.67 20.92,12H17.41L19.89,14.5C19.7,14.75 19.5,15 19.24,15.24V15.24C19,15.5 18.75,15.7 18.5,15.89L16,13.41V16.92H16V16.92M5,19A2,2 0 0,1 7,17A2,2 0 0,1 9,19A2,2 0 0,1 7,21A2,2 0 0,1 5,19H5Z</Geometry>
+    <Geometry x:Key="BackspaceIcon">M22,3H7C6.31,3 5.77,3.35 5.41,3.88L0,12L5.41,20.11C5.77,20.64 6.31,21 7,21H22A2,2 0 0,0 24,19V5A2,2 0 0,0 22,3M19,15.59L17.59,17L14,13.41L10.41,17L9,15.59L12.59,12L9,8.41L10.41,7L14,10.59L17.59,7L19,8.41L15.41,12</Geometry>
+    <Geometry x:Key="AudioIcon">M3 10v4c0 .55.45 1 1 1h3l3.29 3.29c.63.63 1.71.18 1.71-.71V6.41c0-.89-1.08-1.34-1.71-.71L7 9H4c-.55 0-1 .45-1 1zm13.5 2c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 4.45v.2c0 .38.25.71.6.85C17.18 6.53 19 9.06 19 12s-1.82 5.47-4.4 6.5c-.36.14-.6.47-.6.85v.2c0 .63.63 1.07 1.21.85C18.6 19.11 21 15.84 21 12s-2.4-7.11-5.79-8.4c-.58-.23-1.21.22-1.21.85z</Geometry>
+    <Geometry x:Key="MapIcon">M14.65 4.98l-5-1.75c-.42-.15-.88-.15-1.3-.01L4.36 4.56C3.55 4.84 3 5.6 3 6.46v11.85c0 1.41 1.41 2.37 2.72 1.86l2.93-1.14c.22-.09.47-.09.69-.01l5 1.75c.42.15.88.15 1.3.01l3.99-1.34c.81-.27 1.36-1.04 1.36-1.9V5.69c0-1.41-1.41-2.37-2.72-1.86l-2.93 1.14c-.22.08-.46.09-.69.01zM15 18.89l-6-2.11V5.11l6 2.11v11.67z</Geometry>
+    <Geometry x:Key="ChallengesIcon">M12.09 2.91C10.08.9 7.07.49 4.65 1.67L8.28 5.3c.39.39.39 1.02 0 1.41L6.69 8.3c-.39.4-1.02.4-1.41 0L1.65 4.67C.48 7.1.89 10.09 2.9 12.1c1.86 1.86 4.58 2.35 6.89 1.48l7.96 7.96c1.03 1.03 2.69 1.03 3.71 0 1.03-1.03 1.03-2.69 0-3.71L13.54 9.9c.92-2.34.44-5.1-1.45-6.99z</Geometry>
+    <Geometry x:Key="MatchCaseIcon">M2.5 5.5C2.5 6.33 3.17 7 4 7h3.5v10.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V7H14c.83 0 1.5-.67 1.5-1.5S14.83 4 14 4H4c-.83 0-1.5.67-1.5 1.5zM20 9h-6c-.83 0-1.5.67-1.5 1.5S13.17 12 14 12h1.5v5.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V12H20c.83 0 1.5-.67 1.5-1.5S20.83 9 20 9z</Geometry>
+    <Geometry x:Key="CreatorIcon">M21 13h-6c-.55 0-1-.45-1-1s.45-1 1-1h6c.55 0 1 .45 1 1s-.45 1-1 1zm0-6h-6c-.55 0-1 .45-1 1s.45 1 1 1h6c.55 0 1-.45 1-1s-.45-1-1-1zm-6 10h6c.55 0 1-.45 1-1s-.45-1-1-1h-6c-.55 0-1 .45-1 1s.45 1 1 1zm-3-8v6c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2h6c1.1 0 2 .9 2 2zm-2.1 5.2l-1.26-1.68c-.2-.26-.59-.27-.8-.01L6.5 14.26l-.85-1.03c-.2-.25-.58-.24-.78.01l-.74.95c-.26.33-.02.81.39.81H9.5c.41 0 .65-.47.4-.8z</Geometry>
+    <Geometry x:Key="KeyboardIcon">M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm8 7H9c-.55 0-1-.45-1-1s.45-1 1-1h6c.55 0 1 .45 1 1s-.45 1-1 1zm1-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z</Geometry>
+    <Geometry x:Key="SearchUpIcon">M2.7,17.29c0.39,0.39,1.02,0.39,1.41,0l4.59-4.59c0.39-0.39,1.02-0.39,1.41,0l1.17,1.17c1.17,1.17,3.07,1.17,4.24,0 l4.18-4.17l1.44,1.44c0.31,0.31,0.85,0.09,0.85-0.35V6.5C22,6.22,21.78,6,21.5,6h-4.29c-0.45,0-0.67,0.54-0.35,0.85l1.44,1.44 l-4.17,4.17c-0.39,0.39-1.02,0.39-1.41,0l-1.17-1.17c-1.17-1.17-3.07-1.17-4.24,0L2.7,15.88C2.32,16.27,2.32,16.91,2.7,17.29z</Geometry>
+    <Geometry x:Key="WholeWordIcon">M18 10v3H6v-3c0-.55-.45-1-1-1s-1 .45-1 1v4c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1s-1 .45-1 1z</Geometry>
+    <Geometry x:Key="CloseIcon">M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm4.3 14.3c-.39.39-1.02.39-1.41 0L12 13.41 9.11 16.3c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41L10.59 12 7.7 9.11c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0L12 10.59l2.89-2.89c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L13.41 12l2.89 2.89c.38.38.38 1.02 0 1.41z</Geometry>
+    <Geometry x:Key="PlayIcon">M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.69L9.54 5.98C8.87 5.55 8 6.03 8 6.82z</Geometry>
+    <Geometry x:Key="PauseIcon">M8 19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2v10c0 1.1.9 2 2 2zm6-12v10c0 1.1.9 2 2 2s2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2z</Geometry>
+    <Geometry x:Key="StopIcon">M8 6h8c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2z</Geometry>
+    <Geometry x:Key="SkipNextIcon">M7.58 16.89l5.77-4.07c.56-.4.56-1.24 0-1.63L7.58 7.11C6.91 6.65 6 7.12 6 7.93v8.14c0 .81.91 1.28 1.58.82zM16 7v10c0 .55.45 1 1 1s1-.45 1-1V7c0-.55-.45-1-1-1s-1 .45-1 1z</Geometry>
+    <Geometry x:Key="SkipPreviousIcon">M7 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1zm3.66 6.82l5.77 4.07c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-5.77 4.07c-.57.4-.57 1.24 0 1.64z</Geometry>
+    <Geometry x:Key="AddAudioIcon">M13 10H3c-.55 0-1 .45-1 1s.45 1 1 1h10c.55 0 1-.45 1-1s-.45-1-1-1zm0-4H3c-.55 0-1 .45-1 1s.45 1 1 1h10c.55 0 1-.45 1-1s-.45-1-1-1zm5 8v-3c0-.55-.45-1-1-1s-1 .45-1 1v3h-3c-.55 0-1 .45-1 1s.45 1 1 1h3v3c0 .55.45 1 1 1s1-.45 1-1v-3h3c.55 0 1-.45 1-1s-.45-1-1-1h-3zM3 16h6c.55 0 1-.45 1-1s-.45-1-1-1H3c-.55 0-1 .45-1 1s.45 1 1 1z</Geometry>
+    <Geometry x:Key="SavePlaylistIcon">M14 6H4c-.55 0-1 .45-1 1s.45 1 1 1h10c.55 0 1-.45 1-1s-.45-1-1-1zm0 4H4c-.55 0-1 .45-1 1s.45 1 1 1h10c.55 0 1-.45 1-1s-.45-1-1-1zM4 16h6c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1zM19 6c-1.1 0-2 .9-2 2v6.18c-.31-.11-.65-.18-1-.18-1.84 0-3.28 1.64-2.95 3.54.21 1.21 1.2 2.2 2.41 2.41 1.9.33 3.54-1.11 3.54-2.95V8h2c.55 0 1-.45 1-1s-.45-1-1-1h-2z</Geometry>
+    <Geometry x:Key="ImageMergerIcon">M10 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12-8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-4 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm4-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z</Geometry>
+    
+    <Style x:Key="TabItemFillSpace" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+        <Setter Property="Width">
+            <Setter.Value>
+                <MultiBinding Converter="{x:Static converters:TabSizeConverter.Instance}">
+                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}" />
+                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}" Path="ActualWidth" />
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CustomSeparator" TargetType="Separator" BasedOn="{StaticResource {x:Type Separator}}">
+        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+        <Setter Property="Margin" Value="0 8" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Separator}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Separator Grid.Column="0" VerticalAlignment="Center" Margin="0"
+                                   Background="{TemplateBinding Background}"
+                                   Foreground="{TemplateBinding Foreground}"/>
+                        <TextBlock x:Name="TagTextBlock" Grid.Column="1" VerticalAlignment="Center" Text="{TemplateBinding Tag}"
+                                   FontWeight="SemiBold" FontSize="11" Margin="10 0" />
+                        <Separator Grid.Column="2" VerticalAlignment="Center" Margin="0"
+                                   Background="{TemplateBinding Background}"
+                                   Foreground="{TemplateBinding Foreground}"/>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Text" SourceName="TagTextBlock" Value="">
+                            <Setter Property="Margin" TargetName="TagTextBlock" Value="0" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style x:Key="CustomVerticalSeparator" TargetType="{x:Type Separator}" BasedOn="{StaticResource CustomSeparator}">
+        <Setter Property="Margin" Value="8 0"/>
+        <Setter Property="LayoutTransform">
+            <Setter.Value>
+                <TransformGroup>
+                    <TransformGroup.Children>
+                        <TransformCollection>
+                            <RotateTransform Angle="90"/>
+                        </TransformCollection>
+                    </TransformGroup.Children>
+                </TransformGroup>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DirectoryFilesListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="ItemsSource" Value="{Binding CUE4Parse.GameDirectory.DirectoryFilesView, IsAsync=True}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                    <Setter Property="Padding" Value="5 3" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="25" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Image x:Name="ListImage" Source="/FModel;component/Resources/archive.png"
+                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3 0" />
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="3" HorizontalAlignment="Right" Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
+                    </Grid>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsEnabled}" Value="True">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/archive_enabled.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/archive_disabled.png" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding CUE4Parse.GameDirectory.DirectoryFilesView.Count}" Value="0">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid>
+                                <TextBlock Text="No files found in given directory yet" FontWeight="SemiBold" TextAlignment="Center"
+                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Single}">
+                <Setter Property="SelectionMode" Value="Single" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.Multiple}">
+                <Setter Property="SelectionMode" Value="Extended" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.All}">
+                <Setter Property="SelectionMode" Value="Extended" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButNew}">
+                <Setter Property="SelectionMode" Value="Extended" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}}" Value="{x:Static local:ELoadingMode.AllButModified}">
+                <Setter Property="SelectionMode" Value="Extended" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    
+    <Style x:Key="AudioFilesListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="ItemsSource" Value="{Binding AudioPlayer.AudioFilesView, IsAsync=True}" />
+        <Setter Property="SelectedItem" Value="{Binding AudioPlayer.SelectedAudioFile}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="5 3" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="25" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="{Binding FileName}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="2" HorizontalAlignment="Right" Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
+                    </Grid>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding AudioPlayer.AudioFilesView.Count}" Value="0">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid>
+                                <TextBlock Text="No audio to play yet" FontWeight="SemiBold" TextAlignment="Center"
+                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="AssetsFolderTreeView" TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
+        <Setter Property="ItemsSource" Value="{Binding CUE4Parse.AssetsFolder.FoldersView, IsAsync=True}" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode" Value="NeverExpand"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <HierarchicalDataTemplate ItemsSource="{Binding FoldersView, IsAsync=True}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image x:Name="TreeImage" Source="/FModel;component/Resources/folder.png"
+                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
+                        <Border x:Name="TreeBadge" CornerRadius="5" Height="10" MinWidth="10" Background="#705542"
+                                Margin="-10.5 0 4.5 0" VerticalAlignment="Bottom">
+                            <TextBlock Text="{Binding AssetsList.Assets.Count}" Margin="2.5 0 2.5 0" Padding="1 0 0 0"
+                                       FontSize="7" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"  />
+                        </Border>
+                        <TextBlock Text="{Binding Header}" HorizontalAlignment="Left">
+                            <TextBlock.ToolTip>
+                                <ToolTip>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} has {1} folders and {2} files">
+                                                <Binding Path="Header" />
+                                                <Binding Path="FoldersView.Count" />
+                                                <Binding Path="AssetsList.Assets.Count" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </StackPanel>
+                    <HierarchicalDataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding FoldersView.Count}" Value="0">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/empty_folder.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding AssetsList.Assets.Count}" Value="0">
+                            <Setter TargetName="TreeBadge" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Config">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/gear.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Plugins">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/puzzle.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Windows">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/windows.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Android">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/android.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="IOS">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/apple.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Mac">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/apple.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Linux">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/linux.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="LinuxAArch64">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/linux.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Unix">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/unix.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Weapons">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/weapon.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Localization">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/localization.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Internationalization">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/localization.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="UI">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/ui.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Sounds">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/sound.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="2dAssets">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/texture.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Textures">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/texture.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Engine">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/engine.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="EngineContent">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/engine.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Platforms">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/pc.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Fortnite">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/fortnite.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="FortniteGame">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/fortnitebr.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="WorldExplorers">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/battlebreakers.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="OakGame">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/borderlands.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="ShooterGame">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/valorant.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="RogueCompany">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/roguecompany.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="g3">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/spellbreak.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="SwGame">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/fallenorder.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Prospect">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/thecycle.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Materials">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/materialicon.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header, Converter={x:Static converters:CaseInsensitiveStringEqualsConverter.Instance}, ConverterParameter='Blueprints'}" Value="True">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/blueprint.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Cinematics">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/cinematics.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Movies">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/cinematics.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Audio">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/sound.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Creative">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/creative.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="Athena">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/athena.png" />
+                        </DataTrigger>
+                    </HierarchicalDataTemplate.Triggers>
+                </HierarchicalDataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeViewItemStyle}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="controls:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected" Value="True"/>
+                    <Setter Property="Padding" Value="5 3" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TreeViewItem">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <Border x:Name="Border"
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="3"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"/>
+
+                                    <Border x:Name="SpotlightLayer"
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="3"
+                                            Background="{TemplateBinding adonisExtensions:CursorSpotlightExtension.BackgroundBrush}"
+                                            BorderBrush="{TemplateBinding adonisExtensions:CursorSpotlightExtension.BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}"
+                                            adonisExtensions:CursorSpotlightExtension.MouseEventSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=TreeViewItem}}"
+                                            SnapsToDevicePixels="False"/>
+
+                                    <ToggleButton x:Name="Expander"
+                                                  Grid.Row="0"
+                                                  Grid.Column="0"
+                                                  Width="12"
+                                                  Height="12"
+                                                  Focusable="False"
+                                                  ClickMode="Press"
+                                                  Foreground="{TemplateBinding Foreground}"
+                                                  IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.Expander}}"
+                                                  RenderTransformOrigin="0.5, 0.5">
+                                        <ToggleButton.Template>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border Background="Transparent">
+                                                    <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{TemplateBinding Foreground}" Data="{StaticResource ArrowIcon}"/>
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </ToggleButton.Template>
+                                        <ToggleButton.Margin>
+                                            <MultiBinding Converter="{x:Static adonisConverters:ValuesToThicknessConverter.Instance}">
+                                                <Binding Path="Padding.Left" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                                <Binding Source="0"/>
+                                                <Binding Source="8"/>
+                                                <Binding Source="0"/>
+                                            </MultiBinding>
+                                        </ToggleButton.Margin>
+                                        <ToggleButton.RenderTransform>
+                                            <RotateTransform x:Name="ExpanderRotateTransform"
+                                                             Angle="-90"/>
+                                        </ToggleButton.RenderTransform>
+                                    </ToggleButton>
+
+                                    <ContentPresenter x:Name="PART_Header"
+                                                      Grid.Row="0"
+                                                      Grid.Column="1"
+                                                      ContentSource="Header"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
+                                        <ContentPresenter.Margin>
+                                            <MultiBinding Converter="{x:Static adonisConverters:ValuesToThicknessConverter.Instance}">
+                                                <Binding Source="-5"/>
+                                                <Binding Path="Padding.Top" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                                <Binding Path="Padding.Right" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                                <Binding Path="Padding.Bottom" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                            </MultiBinding>
+                                        </ContentPresenter.Margin>
+                                    </ContentPresenter>
+
+                                    <ItemsPresenter x:Name="ItemsHost"
+                                                    Grid.Row="1"
+                                                    Grid.Column="1"
+                                                    Grid.ColumnSpan="2"/>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    
+                                    <Trigger Property="IsExpanded" Value="False">
+                                        <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+                                    </Trigger>
+
+                                    <Trigger Property="IsExpanded" Value="True">
+                                        <Trigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Angle"
+                                                                     Storyboard.TargetName="ExpanderRotateTransform"
+                                                                     Duration="00:00:0.2"
+                                                                     To="-45"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.EnterActions>
+                                        <Trigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Angle"
+                                                                     Storyboard.TargetName="ExpanderRotateTransform"
+                                                                     Duration="00:00:0.2"
+                                                                     From="-45"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.ExitActions>
+                                    </Trigger>
+
+                                    <Trigger Property="HasItems" Value="False">
+                                        <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
+                                    </Trigger>
+
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding CUE4Parse.AssetsFolder.FoldersView.Count, FallbackValue=0}" Value="0">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid>
+                                <TextBlock Text="No folder found in packages, make sure you loaded one" FontWeight="SemiBold" TextAlignment="Center"
+                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="AssetsListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="ItemsSource" Value="{Binding SelectedItem.AssetsList.AssetsView, ElementName=AssetsFolderName, IsAsync=True}" />
+        <Setter Property="SelectionMode" Value="Extended" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode" Value="NeverExpand"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement" Value="Docked"/>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Image x:Name="ListImage" Source="/FModel;component/Resources/unknown_asset.png"
+                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3 0" />
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding FullPath, Converter={x:Static converters:FullPathToFileConverter.Instance}}" />
+                    </Grid>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding FullPath, Converter={x:Static converters:FileExtensionEqualsConverter.Instance}, ConverterParameter='.uasset'}" Value="True">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding FullPath, Converter={x:Static converters:FileExtensionEqualsConverter.Instance}, ConverterParameter='.ini'}" Value="True">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_ini.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding FullPath, Converter={x:Static converters:FileExtensionEqualsConverter.Instance}, ConverterParameter='.png'}" Value="True">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_png.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding FullPath, Converter={x:Static converters:FileExtensionEqualsConverter.Instance}, ConverterParameter='.psd'}" Value="True">
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset_psd.png" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="5 3" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" Value="0">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid>
+                                <TextBlock Text="No asset found in folder" FontWeight="SemiBold" TextAlignment="Center"
+                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="GameFilesTabControl" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+        <Setter Property="ItemsSource" Value="{Binding CUE4Parse.TabControl.TabsItems, IsAsync=True}" />
+        <Setter Property="SelectedItem" Value="{Binding CUE4Parse.TabControl.SelectedTab}" />
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <DockPanel>
+                        <DockPanel.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding SelectedItem.TabCommand, ElementName=TabControlName}" CommandParameter="Open_Properties"/>
+                            <MouseBinding MouseAction="MiddleClick" Command="{Binding SelectedItem.TabCommand, ElementName=TabControlName}" CommandParameter="{Binding}" />
+                        </DockPanel.InputBindings>
+                        
+                        <TextBlock DockPanel.Dock="Left" Text="{Binding Header}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Header}">
+                            <TextBlock.Width>
+                                <MultiBinding Converter="{x:Static converters:TabSizeConverter.Instance}" ConverterParameter="6">
+                                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}" />
+                                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}" Path="ActualWidth" />
+                                </MultiBinding>
+                            </TextBlock.Width>
+                        </TextBlock>
+                        <Button adonisExtensions:CornerRadiusExtension.CornerRadius="5" Width="11" Height="11" Margin="10 0 -2.5 -1"
+                                DockPanel.Dock="Right" ToolTip="Close Tab" Command="{Binding TabCommand}" CommandParameter="Close_Tab" />
+                    </DockPanel>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" Grid.ColumnSpan="3" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
+                        <Image Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform"
+                               Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
+                               Source="{Binding SelectedItem.Image, ElementName=TabControlName}">
+                            <Image.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding SelectedItem.ImageCommand, ElementName=TabControlName}" CommandParameter="Open"/>
+                            </Image.InputBindings>
+                            <Image.ContextMenu>
+                                <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem Header="Open Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Open">
+                                        <MenuItem.Icon>
+                                            <Viewbox Width="16" Height="16">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M20,4H4C2.9,4,2,4.9,2,6v12c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V6C22,4.9,21.1,4,20,4z M20,18H4V6h16V18z" />
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M6,12c0.55,0,1-0.45,1-1V9h2c0.55,0,1-0.45,1-1S9.55,7,9,7H6C5.45,7,5,7.45,5,8v3C5,11.55,5.45,12,6,12z" />
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M15,17h3c0.55,0,1-0.45,1-1v-3c0-0.55-0.45-1-1-1s-1,0.45-1,1v2h-2c-0.55,0-1,0.45-1,1S14.45,17,15,17z" />
+                                                </Canvas>
+                                            </Viewbox>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Copy Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Copy">
+                                        <MenuItem.Icon>
+                                            <Viewbox Width="16" Height="16">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource CopyIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Save Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Save">
+                                        <MenuItem.Icon>
+                                            <Viewbox Width="16" Height="16">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </Image.ContextMenu>
+                        </Image>
+                    </Grid>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding SelectedItem.HasImage, ElementName=TabControlName}" Value="False">
+                            <Setter TargetName="DynamicArea" Property="Grid.ColumnSpan" Value="5" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <Grid KeyboardNavigation.TabNavigation="Local">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid x:Name="HeaderPanel" Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <WrapPanel x:Name="_HeaderPanel" Panel.ZIndex="1" IsItemsHost="True" Grid.Column="0"
+                                       KeyboardNavigation.TabIndex="1" Background="Transparent" />
+
+                            <Menu Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                                  HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="1">
+                                <MenuItem Command="{Binding CUE4Parse.TabControl.AddTabCommand}" ToolTip="Add New Tab" Width="30">
+                                    <MenuItem.Header>
+                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AddIcon}"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Header>
+                                </MenuItem>
+                            </Menu>
+                        </Grid>
+
+                        <Border x:Name="Border"
+                                Grid.Row="1"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                KeyboardNavigation.TabNavigation="Local"
+                                KeyboardNavigation.DirectionalNavigation="Contained"
+                                KeyboardNavigation.TabIndex="2">
+                            <Border.CornerRadius>
+                                <MultiBinding Converter="{x:Static adonisConverters:ValuesToCornerRadiusConverter.Instance}">
+                                    <Binding Source="0"/>
+                                    <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).TopRight" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                    <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).BottomRight" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                    <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).BottomLeft" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                </MultiBinding>
+                            </Border.CornerRadius>
+
+                            <ContentPresenter x:Name="PART_SelectedContentHost"
+                                              Margin="{adonisUi:Space 0, 1, 0, 0}"
+                                              ContentSource="SelectedContent" />
+                        </Border>
+
+                        <Border x:Name="SelectedItemHighlight"
+                                Grid.Row="1"
+                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBrush}}"
+                                Margin="{TemplateBinding BorderThickness}"
+                                VerticalAlignment="Top"
+                                Height="4">
+                            <Border.CornerRadius>
+                                <MultiBinding Converter="{x:Static adonisConverters:ValuesToCornerRadiusConverter.Instance}">
+                                    <Binding Source="0"/>
+                                    <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).TopRight" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                    <Binding Source="0"/>
+                                    <Binding Source="0"/>
+                                </MultiBinding>
+                            </Border.CornerRadius>
+                        </Border>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="2">
+                            <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2HighlightBrush}}"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="3">
+                            <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3HighlightBrush}}"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="4">
+                            <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4HighlightBrush}}"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+                                <MenuItem Header="Close" Command="{Binding TabCommand}" CommandParameter="Close_Tab">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource RemoveIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Close All Tabs" Command="{Binding TabCommand}" CommandParameter="Close_All_Tabs">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource RemoveIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Close Other Tabs" Command="{Binding TabCommand}" CommandParameter="Close_Other_Tabs">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource RemoveIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="Open Properties" Command="{Binding TabCommand}" CommandParameter="Open_Properties">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M20,4H4C2.9,4,2,4.9,2,6v12c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V6C22,4.9,21.1,4,20,4z M20,18H4V6h16V18z" />
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M6,12c0.55,0,1-0.45,1-1V9h2c0.55,0,1-0.45,1-1S9.55,7,9,7H6C5.45,7,5,7.45,5,8v3C5,11.55,5.45,12,6,12z" />
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M15,17h3c0.55,0,1-0.45,1-1v-3c0-0.55-0.45-1-1-1s-1,0.45-1,1v2h-2c-0.55,0-1,0.45-1,1S14.45,17,15,17z" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
+                                <MenuItem Header="Jump to Asset Folder" Command="{Binding GoToCommand}" CommandParameter="{Binding Directory}">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M20,6h-8l-1.41-1.41C10.21,4.21,9.7,4,9.17,4H4C2.9,4,2,4.9,2,6v12c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8 C22,6.9,21.1,6,20,6z M12,15.79V14H9c-0.55,0-1-0.45-1-1v0c0-0.55,0.45-1,1-1h3v-1.79c0-0.45,0.54-0.67,0.85-0.35l2.79,2.79 c0.2,0.2,0.2,0.51,0,0.71l-2.79,2.79C12.54,16.46,12,16.24,12,15.79z" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Copy Asset Name" Command="{Binding TabCommand}" CommandParameter="Copy_Asset_Name">
+                                    <MenuItem.Icon>
+                                        <Viewbox Width="16" Height="16">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource CopyIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type MenuItem}" TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Grid>
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                Panel.ZIndex="0"/>
+
+                        <Border x:Name="SpotlightLayer"
+                                Background="{TemplateBinding adonisExtensions:CursorSpotlightExtension.BackgroundBrush}"
+                                adonisExtensions:CursorSpotlightExtension.MouseEventSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"
+                                Panel.ZIndex="1"/>
+
+                        <adonisControls:RippleHost x:Name="RippleLayer"
+                                                   MouseEventSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"
+                                                   FadeInDuration="{TemplateBinding adonisExtensions:RippleExtension.FadeInDuration}"
+                                                   FadeOutDuration="{TemplateBinding adonisExtensions:RippleExtension.FadeOutDuration}"
+                                                   Background="{TemplateBinding adonisExtensions:RippleExtension.BackgroundBrush}"
+                                                   Foreground="{TemplateBinding adonisExtensions:RippleExtension.ForegroundBrush}"
+                                                   Visibility="Collapsed"
+                                                   Panel.ZIndex="2">
+
+                            <Grid x:Name="RippleLayerContent"
+                                  Margin="{TemplateBinding Padding}"
+                                  Visibility="Collapsed">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="{Binding Width, ElementName=IconColumn}"/>
+                                    <ColumnDefinition Width="{Binding Width, ElementName=HeaderColumn}" MinWidth="{Binding MinWidth, ElementName=HeaderColumn}"/>
+                                    <ColumnDefinition Width="{Binding Width, ElementName=InputGestureColumn}"/>
+                                    <ColumnDefinition Width="{Binding Width, ElementName=ArrowColumn}" SharedSizeGroup="ArrowColumn"/>
+                                </Grid.ColumnDefinitions>
+
+                                <ContentPresenter x:Name="RippleLayerIconPresenter"
+                                                  Grid.Column="0"
+                                                  Content="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static adonisConverters:IsImmutableFilterConverter.Instance}}"
+                                                  ContentTemplate="{TemplateBinding adonisExtensions:MenuItemExtension.IconTemplate}"
+                                                  TextElement.Foreground="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type adonisControls:RippleHost}}}"
+                                                  Margin="{Binding Margin, ElementName=IconPresenter}"/>
+
+                                <ContentPresenter x:Name="RippleLayerItemHeader"
+                                                  Grid.Column="1"
+                                                  Content="{Binding Header, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static adonisConverters:IsImmutableFilterConverter.Instance}}"
+                                                  ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                  TextElement.Foreground="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type adonisControls:RippleHost}}}"
+                                                  RecognizesAccessKey="True"
+                                                  VerticalAlignment="Center" 
+                                                  HorizontalAlignment="Stretch" 
+                                                  Margin="{Binding Margin, ElementName=ItemHeader}"/>
+
+                                <TextBlock x:Name="RippleLayerInputGesturePresenter"
+                                           Grid.Column="2"
+                                           Text="{TemplateBinding InputGestureText}" 
+                                           TextElement.Foreground="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type adonisControls:RippleHost}}}"
+                                           VerticalAlignment="Center" 
+                                           HorizontalAlignment="Stretch" 
+                                           Margin="{Binding Margin, ElementName=InputGesturePresenter}"/>
+
+                                <Viewbox x:Name="RippleLayerArrowPresenter"
+                                         Grid.Column="3"
+                                         Visibility="Collapsed"
+                                         Stretch="Uniform"
+                                         Margin="0, 4">
+                                    <ContentPresenter ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.Expander}}"
+                                                        RenderTransformOrigin="0.5, 0.5">
+                                        <ContentPresenter.RenderTransform>
+                                            <RotateTransform Angle="-90"/>
+                                        </ContentPresenter.RenderTransform>
+                                    </ContentPresenter>
+                                </Viewbox>
+
+                            </Grid>
+
+                        </adonisControls:RippleHost>
+
+                        <Grid Panel.ZIndex="3"
+                              Margin="{TemplateBinding Padding}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="CheckMarkColumn" x:Name="CheckMarkColumn"/>
+                                <ColumnDefinition Width="22" x:Name="IconColumn"/>
+                                <ColumnDefinition Width="*" MinWidth="130" x:Name="HeaderColumn"/>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="InputGestureColumn" x:Name="InputGestureColumn"/>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="ArrowColumn" x:Name="ArrowColumn"/>
+                            </Grid.ColumnDefinitions>
+
+                            <ContentPresenter x:Name="IconPresenter"
+                                              Grid.Column="1"
+                                              Content="{TemplateBinding Icon}"
+                                              ContentTemplate="{TemplateBinding adonisExtensions:MenuItemExtension.IconTemplate}"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"
+                                              Margin="0, 0, 4, 0"/>
+
+                            <ContentPresenter x:Name="ItemHeader"
+                                              Grid.Column="2"
+                                              Content="{TemplateBinding Header}"
+                                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"
+                                              RecognizesAccessKey="True"
+                                              VerticalAlignment="Center" 
+                                              HorizontalAlignment="Stretch" 
+                                              Margin="4, 0"/>
+
+                            <TextBlock x:Name="InputGesturePresenter"
+                                       Grid.Column="3"
+                                       Text="{TemplateBinding InputGestureText}" 
+                                       Foreground="{TemplateBinding Foreground}"
+                                       VerticalAlignment="Center" 
+                                       HorizontalAlignment="Stretch" 
+                                       Margin="4, 0"/>
+
+                            <Viewbox x:Name="ArrowPresenter"
+                                        Grid.Column="4"
+                                        Visibility="Collapsed"
+                                        Stretch="Uniform"
+                                        Margin="4, 4, 0, 4">
+                                <ContentPresenter ContentTemplate="{DynamicResource {x:Static adonisUi:Templates.Expander}}"
+                                                    RenderTransformOrigin="0.5, 0.5">
+                                    <ContentPresenter.RenderTransform>
+                                        <RotateTransform Angle="-90"/>
+                                    </ContentPresenter.RenderTransform>
+                                </ContentPresenter>
+                            </Viewbox>
+
+                        </Grid>
+
+                        <Popup x:Name="SubMenuPopup"
+                               Focusable="False"
+                               Placement="Right"
+                               AllowsTransparency="True"
+                               IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                               PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
+
+                            <Border x:Name="SubMenuPopupBorder"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}"
+                                    Margin="0, 0, 8, 8"
+                                    CornerRadius="{TemplateBinding adonisExtensions:CornerRadiusExtension.CornerRadius}">
+
+                                <StackPanel IsItemsHost="True"
+                                            KeyboardNavigation.DirectionalNavigation="Cycle"
+                                            Grid.IsSharedSizeScope="True"/>
+
+                            </Border>
+                        </Popup>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="HasItems" Value="True">
+                            <Setter Property="Visibility" Value="Visible" TargetName="ArrowPresenter"/>
+                        </Trigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="HasItems" Value="False"/>
+                                <Condition Property="Role" Value="TopLevelItem" />
+                            </MultiTrigger.Conditions>
+
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Placement" TargetName="SubMenuPopup" Value="Bottom"/>
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="IconPresenter"/>
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPresenter"/>
+                            <Setter Property="Width" Value="0" TargetName="IconColumn"/>
+                            <Setter Property="MinWidth" Value="0" TargetName="HeaderColumn"/>
+                            <Setter Property="Width" Value="0" TargetName="InputGestureColumn"/>
+                            <Setter Property="Padding" Value="4, 2"/>
+                            <Setter Property="CornerRadius" TargetName="Border" Value="{Binding Path=(adonisExtensions:CornerRadiusExtension.CornerRadius), RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                            <Setter Property="CornerRadius" TargetName="SpotlightLayer" Value="{Binding Path=(adonisExtensions:CornerRadiusExtension.CornerRadius), RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                        </MultiTrigger>
+
+                        <Trigger Property="Role" Value="TopLevelHeader">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Placement" TargetName="SubMenuPopup" Value="Bottom"/>
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="IconPresenter"/>
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPresenter"/>
+                            <Setter Property="Width" Value="0" TargetName="IconColumn"/>
+                            <Setter Property="MinWidth" Value="0" TargetName="HeaderColumn"/>
+                            <Setter Property="Width" Value="0" TargetName="InputGestureColumn"/>
+                            <Setter Property="Padding" Value="4, 2"/>
+                            <Setter Property="CornerRadius" TargetName="Border" Value="{Binding Path=(adonisExtensions:CornerRadiusExtension.CornerRadius), RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                            <Setter Property="CornerRadius" TargetName="SpotlightLayer" Value="{Binding Path=(adonisExtensions:CornerRadiusExtension.CornerRadius), RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                        </Trigger>
+
+                        <Trigger Property="Role" Value="SubmenuItem">
+                            <Setter Property="Visibility" TargetName="RippleLayer" Value="Visible"/>
+                        </Trigger>
+
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Content" TargetName="IconPresenter" Value="{x:Null}"/>
+                            <Setter Property="Content" TargetName="RippleLayerIconPresenter" Value="{x:Null}"/>
+                            <Setter Property="ContentTemplate" TargetName="IconPresenter" Value="{StaticResource MenuItemCheckMarkTemplate}"/>
+                            <Setter Property="ContentTemplate" TargetName="RippleLayerIconPresenter" Value="{StaticResource MenuItemCheckMarkTemplate}"/>
+                        </Trigger>
+
+                        <Trigger Property="HasDropShadow" SourceName="SubMenuPopup" Value="True">
+                            <Setter Property="Effect" TargetName="SubMenuPopupBorder">
+                                <Setter.Value>
+                                    <DropShadowEffect ShadowDepth="2"
+                                                      BlurRadius="8"
+                                                      Opacity="0.3"
+                                                      Direction="315"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Trigger.Setters>
+                                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBrush}}"/>
+                                <Setter Property="adonisExtensions:CursorSpotlightExtension.BackgroundBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBrush}}"/>
+                            </Trigger.Setters>
+                        </Trigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Role" Value="TopLevelHeader"/>
+                                <Condition Property="IsHighlighted" Value="True"/>
+                            </MultiTrigger.Conditions>
+
+                            <Setter Property="BorderBrush" TargetName="Border" Value="{Binding BorderBrush, RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                            <Setter Property="BorderThickness" TargetName="Border" Value="{Binding BorderThickness, RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                            <Setter Property="BorderBrush" TargetName="SpotlightLayer" Value="{Binding Path=(adonisExtensions:CursorSpotlightExtension.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                            <Setter Property="BorderThickness" TargetName="SpotlightLayer" Value="{Binding BorderThickness, RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                        </MultiTrigger>
+                        
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Role" Value="TopLevelItem"/>
+                                <Condition Property="IsHighlighted" Value="True"/>
+                                <Condition Property="HasItems" Value="False" />
+                            </MultiTrigger.Conditions>
+
+                            <Setter Property="BorderBrush" TargetName="Border" Value="{Binding BorderBrush, RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                            <Setter Property="BorderThickness" TargetName="Border" Value="{Binding BorderThickness, RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                            <Setter Property="BorderBrush" TargetName="SpotlightLayer" Value="{Binding Path=(adonisExtensions:CursorSpotlightExtension.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                            <Setter Property="BorderThickness" TargetName="SpotlightLayer" Value="{Binding BorderThickness, RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}}"/>
+                        </MultiTrigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Trigger.Setters>
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"/>
+                            </Trigger.Setters>
+                        </Trigger>
+
+                        <!--#region Triggers to support Foreground of RippleLayer-->
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding HeaderTemplate, RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsNullToBoolConverter.Instance}}" Value="False"/>
+                                <Condition Binding="{Binding Path=(adonisExtensions:MenuItemExtension.IconTemplate), RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsNullToBoolConverter.Instance}}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Visibility" TargetName="RippleLayerContent" Value="Visible"/>
+                                <Setter Property="Panel.ZIndex" TargetName="RippleLayer" Value="4"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding HeaderTemplate, RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsNullToBoolConverter.Instance}}" Value="False"/>
+                                <Condition Binding="{Binding Icon, RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsImmutableToBoolConverter.Instance}}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Visibility" TargetName="RippleLayerContent" Value="Visible"/>
+                                <Setter Property="Panel.ZIndex" TargetName="RippleLayer" Value="4"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Header, RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsImmutableToBoolConverter.Instance}}" Value="True"/>
+                                <Condition Binding="{Binding Path=(adonisExtensions:MenuItemExtension.IconTemplate), RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsNullToBoolConverter.Instance}}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Visibility" TargetName="RippleLayerContent" Value="Visible"/>
+                                <Setter Property="Panel.ZIndex" TargetName="RippleLayer" Value="4"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Header, RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsImmutableToBoolConverter.Instance}}" Value="True"/>
+                                <Condition Binding="{Binding Icon, RelativeSource={RelativeSource Self}, Converter={x:Static adonisConverters:IsImmutableToBoolConverter.Instance}}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Visibility" TargetName="RippleLayerContent" Value="Visible"/>
+                                <Setter Property="Panel.ZIndex" TargetName="RippleLayer" Value="4"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+
+                        <!--#endregion-->
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style x:Key="CustomExpanderDownHeaderStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Border DockPanel.Dock="Top" Background="Transparent">
+                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{TemplateBinding Foreground}" Data="{StaticResource ExpanderIcon}"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style x:Key="{x:Type Expander}" TargetType="Expander" BasedOn="{StaticResource {x:Type Expander}}">
+        <Setter Property="IsExpanded" Value="{Binding IsLoggerExpanded, Source={x:Static local:Settings.UserSettings.Default}}"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Expander}">
+                    <Border>
+                        <DockPanel>
+                            <ToggleButton x:Name="HeaderSite" DockPanel.Dock="Top"
+                                          ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                          ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          FocusVisualStyle="{StaticResource ExpanderHeaderFocusVisual}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          Style="{StaticResource CustomExpanderDownHeaderStyle}"/>
+
+                            <Border x:Name="ExpandSiteContainerWrapper"
+                                    DockPanel.Dock="Bottom"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+
+                                <ScrollViewer x:Name="ExpandSiteContainer"
+                                              Padding="0"
+                                              Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              HorizontalContentAlignment="Stretch"
+                                              VerticalContentAlignment="Bottom"
+                                              VerticalScrollBarVisibility="Hidden"
+                                              HorizontalScrollBarVisibility="Hidden">
+                                    <ScrollViewer.Height>
+                                        <MultiBinding Converter="{adonisConverters:MathConverter}" ConverterParameter="x*y">
+                                            <Binding Path="ActualHeight" ElementName="ExpandSite"/>
+                                            <Binding Path="Tag" RelativeSource="{RelativeSource Self}"/>
+                                        </MultiBinding>
+                                    </ScrollViewer.Height>
+                                    <ScrollViewer.Tag>
+                                        <system:Double>0.0</system:Double>
+                                    </ScrollViewer.Tag>
+
+                                    <ContentPresenter x:Name="ExpandSite"
+                                                      Focusable="False"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </ScrollViewer>
+                            </Border>
+                        </DockPanel>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="ExpandDirection" Value="Down"/>
+                                <Condition Property="VerticalContentAlignment" Value="Stretch"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Height" TargetName="ExpandSiteContainer">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{adonisConverters:MathConverter}" ConverterParameter="x*y">
+                                        <Binding Path="ActualHeight" ElementName="ExpandSiteContainerWrapper"/>
+                                        <Binding Path="Tag" RelativeSource="{RelativeSource Self}" />
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </MultiTrigger>
+                        
+                        <Trigger Property="IsExpanded" Value="True">
+                            <Setter Property="Margin" TargetName="HeaderSite" Value="0 0 0 5" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ExpandSiteContainer"
+                                                         Storyboard.TargetProperty="Tag"
+                                                         To="1"
+                                                         Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ExpandSiteContainer"
+                                                         Storyboard.TargetProperty="Tag"
+                                                         To="0"
+                                                         Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+                        <Trigger Property="IsExpanded" Value="False">
+                            <Setter Property="KeyboardNavigation.TabNavigation" TargetName="ExpandSite" Value="None"/>
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" SourceName="HeaderSite" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type avalonedit:TextEditor}" TargetType="avalonedit:TextEditor" BasedOn="{StaticResource {x:Type avalonedit:TextEditor}}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type avalonedit:TextEditor}">
+                    <Border
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}">
+                        <ScrollViewer
+							Focusable="False"
+							Name="PART_ScrollViewer"
+							CanContentScroll="True"
+							VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}"
+							HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
+							Content="{Binding TextArea, RelativeSource={RelativeSource TemplatedParent}}"
+							VerticalContentAlignment="Top"
+							HorizontalContentAlignment="Left"
+							Padding="{TemplateBinding Padding}"
+                            controls:CustomScrollViewer.VerticalOffset="{Binding ScrollPosition}"
+                            adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode="ExpandOnHover"
+                            adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement="Docked"
+                            adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode="NeverExpand"
+                            adonisExtensions:ScrollViewerExtension.HorizontalScrollBarPlacement="Docked"
+						/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="WordWrap" Value="True">
+                            <Setter TargetName="PART_ScrollViewer" Property="HorizontalScrollBarVisibility" Value="Disabled" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style x:Key="CustomRichTextBox" TargetType="RichTextBox">
+        <Setter Property="Height" Value="175" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border x:Name="Bd"
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="True"
+                            Background="{TemplateBinding Background}">
+                        <ScrollViewer Name="PART_ContentHost"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        
+        <Style.Resources>
+            <Style TargetType="{x:Type Paragraph}">
+                <Setter Property="Margin" Value="0" />
+            </Style>
+            <Style TargetType="{x:Type FlowDocument}" BasedOn="{StaticResource {x:Type FlowDocument}}">
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="FontFamily" Value="Consolas" />
+                <Setter Property="TextAlignment" Value="Left" />
+                <Setter Property="PageWidth" Value="{Binding ActualWidth, ElementName=LogRtbName, Mode=OneWay}" />
+            </Style>
+        </Style.Resources>
+    </Style>
+    
+    <ControlTemplate x:Key="CircleTemplate" TargetType="{x:Type controls:Magnifier}">
+        <Grid>
+            <Ellipse Fill="{TemplateBinding Background}" />
+            <Ellipse Stroke="{Binding Path=BorderBrush, RelativeSource={RelativeSource TemplatedParent}}" 
+                     StrokeThickness="{Binding Path=BorderThickness, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static converters:BorderThicknessToStrokeThicknessConverter.Instance}}">
+                <Ellipse.Fill>
+                    <VisualBrush x:Name="PART_VisualBrush" ViewboxUnits="Absolute" Visual="{Binding Path=Target, RelativeSource={RelativeSource TemplatedParent}}" />
+                </Ellipse.Fill>
+            </Ellipse>
+        </Grid>
+   </ControlTemplate>
+
+   <ControlTemplate x:Key="RectangleTemplate" TargetType="{x:Type controls:Magnifier}">
+       <Grid Background="{TemplateBinding Background}" >
+           <Rectangle Stroke="{Binding Path=BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"
+                      StrokeThickness="{Binding Path=BorderThickness, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static converters:BorderThicknessToStrokeThicknessConverter.Instance}}">
+               <Rectangle.Fill>
+                   <VisualBrush x:Name="PART_VisualBrush" ViewboxUnits="Absolute" Visual="{Binding Path=Target, RelativeSource={RelativeSource TemplatedParent}}" />
+               </Rectangle.Fill>
+           </Rectangle>
+       </Grid>
+   </ControlTemplate>
+
+   <Style TargetType="{x:Type controls:Magnifier}">
+      <Setter Property="IsHitTestVisible" Value="False" />
+      
+      <Style.Triggers>
+          <Trigger Property="FrameType" Value="Circle">
+              <Setter Property="Template" Value="{StaticResource CircleTemplate}" />
+          </Trigger>
+          <Trigger Property="FrameType" Value="Rectangle">
+              <Setter Property="Template" Value="{StaticResource RectangleTemplate}" />
+          </Trigger>
+          <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Template" Value="{x:Null}" />
+          </Trigger>
+      </Style.Triggers>
+   </Style>
+    
+    <Style x:Key="{x:Type ComboBoxItem}" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+        <Setter Property="Focusable" Value="False" />
+    </Style>
+
+    <Style x:Key="{x:Type ComboBox}" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+        <Setter Property="Focusable" Value="False" />
+    </Style>
+
+    <Style x:Key="{x:Type Button}" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Focusable" Value="False" />
+    </Style>
+    
+    <Style x:Key="{x:Static GridView.GridViewScrollViewerStyleKey}" TargetType="ScrollViewer" BasedOn="{StaticResource {x:Type ScrollViewer}}">
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="AlwaysExpand"/>
+        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
+    </Style>
+    
+    <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Type ScrollBar}}">
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="Height" Value="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeight}}" />
+                <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
+            </Trigger>
+
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Height" Value="Auto" />
+                <Setter Property="Width" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" />
+                <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
+            </Trigger>
+
+            <DataTrigger Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="2">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BorderBrush}}"/>
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="3">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4BorderBrush}}"/>
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="4">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4BorderBrush}}"/>
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    
+    <Style x:Key="PlayPauseToolbarButton" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Content">
+            <Setter.Value>
+                <Viewbox Width="16" Height="16">
+                    <Canvas Width="24" Height="24">
+                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource PlayIcon}" />
+                    </Canvas>
+                </Viewbox>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="ToolTip" Value="Play" />
+
+        <Style.Triggers>
+            
+            <DataTrigger Binding="{Binding AudioPlayer.PlayedFile.PlaybackState, Mode=OneWay}" Value="{x:Static soundOut:PlaybackState.Playing}">
+                <Setter Property="ToolTip" Value="Pause" />
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource PauseIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="2">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="3">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="4">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+            </DataTrigger>
+
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1HighlightBorderBrush}}"/>
+                <Setter Property="adonisExtensions:CursorSpotlightExtension.BackgroundBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBrush}}"/>
+                <Setter Property="adonisExtensions:CursorSpotlightExtension.BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1IntenseHighlightBorderBrush}}"/>
+            </Trigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="2"/>
+                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2HighlightBrush}}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2HighlightBorderBrush}}"/>
+                    <Setter Property="adonisExtensions:CursorSpotlightExtension.BackgroundBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2IntenseHighlightBrush}}"/>
+                    <Setter Property="adonisExtensions:CursorSpotlightExtension.BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2IntenseHighlightBorderBrush}}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="3"/>
+                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3HighlightBrush}}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3HighlightBorderBrush}}"/>
+                    <Setter Property="adonisExtensions:CursorSpotlightExtension.BackgroundBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3IntenseHighlightBrush}}"/>
+                    <Setter Property="adonisExtensions:CursorSpotlightExtension.BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3IntenseHighlightBorderBrush}}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=(adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="4"/>
+                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4HighlightBrush}}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4HighlightBorderBrush}}"/>
+                    <Setter Property="adonisExtensions:CursorSpotlightExtension.BackgroundBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4IntenseHighlightBrush}}"/>
+                    <Setter Property="adonisExtensions:CursorSpotlightExtension.BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4IntenseHighlightBorderBrush}}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+        </Style.Triggers>
+    </Style>
+    
+    <Style TargetType="{x:Type audioControls:Timeline}">
+        <Setter Property="ProgressBrush">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" >
+                    <GradientStop Color="#45B649" Offset="0.0" />
+                    <GradientStop Color="#DCE35B" Offset="1.0" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ProgressLineBrush" Value="Brown" />
+        <Setter Property="TickBrush" Value="#7F848E" />
+        <Setter Property="TimeBrush" Value="#DAE5F2" />
+        <Setter Property="MousePositionBrush" Value="Brown" />
+        <Setter Property="Height" Value="25" />
+        <Setter Property="Position" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="Source" Value="{Binding AudioPlayer}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type audioControls:Timeline}">
+                    <Border Name="PART_TimelineArea" Background="Transparent">
+                        <Grid Name="PART_Timeline" ClipToBounds="True">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Rectangle Name="PART_MousePosition" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                       Fill="{TemplateBinding MousePositionBrush}" Width="2" Visibility="Collapsed" />
+                            <Grid Name="PART_Length" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ClipToBounds="True" SnapsToDevicePixels="False" />
+                            <Grid Name="PART_ControlContainer" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                                <Border Name="PART_ProgressLine" BorderBrush="{TemplateBinding ProgressLineBrush}" 
+                                        Background="{TemplateBinding ProgressBrush}" Width="{TemplateBinding ActualWidth}"
+                                        VerticalAlignment="Stretch" HorizontalAlignment="Left" BorderThickness="0 0 1 0" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="{x:Type audioControls:SpectrumAnalyzer}">
+        <Setter Property="FrequencyBarCount" Value="75" />
+        <Setter Property="FrequencyBarBorderBrush" Value="#DAE5F2" />
+        <Setter Property="FrequencyBarBrush">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" >
+                    <GradientStop Color="#B5AC49" Offset="0.0" />
+                    <GradientStop Color="#3CA55C" Offset="1.0" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Source" Value="{Binding AudioPlayer}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type audioControls:SpectrumAnalyzer}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid Name="PART_Spectrum" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="{x:Type audioControls:Timeclock}">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="Margin" Value="0 15 15 0" />
+        <Setter Property="Source" Value="{Binding AudioPlayer}" />
+        <Setter Property="TimeForeground" Value="#DAE5F2" />
+        <Setter Property="LabelForeground" Value="#E5C07B" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type audioControls:Timeclock}">
+                    <Grid Name="PART_Timeclock" ClipToBounds="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                            
+                        <TextBlock Name="PART_Label" 
+                                   Text="{TemplateBinding Label}" 
+                                   FontFamily="{TemplateBinding LabelFont}"
+                                   Padding="0"
+                                   Foreground="{TemplateBinding LabelForeground}">
+                            <TextBlock.LayoutTransform>
+                                <ScaleTransform ScaleX=".75" ScaleY=".75" />
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                        <TextBlock Name="PART_Time" 
+                                   Text="00:00:00.00" 
+                                   Grid.Row="1"
+                                   HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                   FontFamily="{TemplateBinding TimeFont}"
+                                   Foreground="{TemplateBinding TimeForeground}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+</ResourceDictionary>

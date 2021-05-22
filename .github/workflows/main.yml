@@ -1,0 +1,32 @@
+name: Artifact Generator
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: GIT Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: .NET 5 Setup
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+
+      - name: .NET Restore
+        run: dotnet restore FModel
+
+      - name: .NET Publish
+        run: dotnet publish FModel -c Release -f net5.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false --no-self-contained -r win-x64
+
+      - name: EXE Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: FModel
+          path: D:\a\FModel4\FModel4\FModel\bin\Publish\

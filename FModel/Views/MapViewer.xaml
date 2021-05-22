@@ -1,0 +1,50 @@
+﻿<adonisControls:AdonisWindow x:Class="FModel.Views.MapViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+        xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        WindowStartupLocation="CenterScreen" IconVisibility="Collapsed"
+        Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}"
+        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.50'}">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
+            <Setter Property="Title" Value="Map Viewer" />
+        </Style>
+    </adonisControls:AdonisWindow.Style>
+    <adonisControls:AdonisWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </adonisControls:AdonisWindow.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        
+        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="50">
+            <CheckBox Content="Show Cities" IsEnabled="{Binding IsReady}" IsChecked="{Binding MapViewer.ShowCities, Mode=TwoWay}"
+                      Margin="0 0 0 10" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+            <CheckBox Content="Show Patrol Paths" IsEnabled="{Binding IsReady}" IsChecked="{Binding MapViewer.ShowPatrolPaths, Mode=TwoWay}"
+                      Margin="0 0 0 10" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+            <Button Content="Save Image" IsEnabled="{Binding IsReady}" Click="OnClick" />
+        </StackPanel>
+        <Grid Grid.Column="1">
+            <controls:MagnifierManager.Magnifier>
+                <controls:Magnifier Radius="200" ZoomFactor=".4" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" BorderThickness="1" />
+            </controls:MagnifierManager.Magnifier>
+            
+            <TextBlock Text="Map Viewer is loading, please wait..." HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Image UseLayoutRounding="True" Source="{Binding MapViewer.MapImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                   Visibility="{Binding IsReady, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <Image UseLayoutRounding="True" Source="{Binding MapViewer.CitiesImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                   Visibility="{Binding MapViewer.ShowCities, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <Image UseLayoutRounding="True" Source="{Binding MapViewer.PatrolPathImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                   Visibility="{Binding MapViewer.ShowPatrolPaths, Converter={StaticResource BoolToVisibilityConverter}}" />
+        </Grid>
+    </Grid>
+</adonisControls:AdonisWindow>

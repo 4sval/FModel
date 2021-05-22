@@ -1,0 +1,61 @@
+﻿using System.IO;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using FModel.Extensions;
+using FModel.Services;
+using FModel.Settings;
+using FModel.ViewModels;
+using FModel.Views.Resources.Controls;
+using Microsoft.Win32;
+using Serilog;
+
+namespace FModel.Views
+{
+    public partial class MapViewer
+    {
+        private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+
+        public MapViewer()
+        {
+            DataContext = _applicationView;
+            _applicationView.MapViewer.Initialize();
+
+            InitializeComponent();
+        }
+
+        private void OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_applicationView.MapViewer.MapImage == null) return;
+            var path = Path.Combine(UserSettings.Default.OutputDirectory, "Textures", "MiniMap.png");
+
+            var saveFileDialog = new SaveFileDialog
+            {
+                Title = "Save MiniMap",
+                FileName = "MiniMap.png",
+                InitialDirectory = path.SubstringBeforeLast('\\'),
+                Filter = "PNG Files (*.png)|*.png|All Files (*.*)|*.*"
+            };
+
+            if (!(bool) saveFileDialog.ShowDialog()) return;
+            path = saveFileDialog.FileName;
+
+            using var fileStream = new FileStream(path, FileMode.Create);
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(_applicationView.MapViewer.GetImageToSave()));
+            encoder.Save(fileStream);
+
+            if (File.Exists(path))
+            {
+                Log.Information("MiniMap.png successfully saved");
+                FLogger.AppendInformation();
+                FLogger.AppendText("Successfully saved 'MiniMap.png'", Constants.WHITE, true);
+            }
+            else
+            {
+                Log.Error("MiniMap.png could not be saved");
+                FLogger.AppendError();
+                FLogger.AppendText("Could not save 'MiniMap.png'", Constants.WHITE, true);
+            }
+        }
+    }
+}
