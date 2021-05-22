@@ -14,6 +14,7 @@ using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 
 namespace FModel.ViewModels
 {
@@ -182,11 +183,13 @@ namespace FModel.ViewModels
                             !poiData.TryGetValue(out FText text, "Text") ||
                             !poiData.TryGetValue(out FVector worldLocation, "WorldLocation") ||
                             discoveryQuest.AssetPathName.Text.Contains("Landmarks")) continue;
+                        var shaper = new CustomSKShaper(_imagePaint.Typeface);
+                        var shapedText = shaper.Shape(text.Text, _imagePaint);
 
                         var vector = GetMapPosition(worldLocation);
                         c.DrawPoint(vector.X, vector.Y, _pathPaint);
                         c.DrawBitmap(_cityPinBitmap, vector.X - 50, vector.Y - 90, _imagePaint);
-                        c.DrawText(text.Text, vector.X, vector.Y - 12.5F, _imagePaint);
+                        c.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _imagePaint);
                     }
                 }
 
