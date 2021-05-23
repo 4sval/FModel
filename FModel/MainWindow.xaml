@@ -278,7 +278,7 @@
                                 </Grid.RowDefinitions>
 
                                 <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="GAME DIRECTORY" />
-                                <ListBox Grid.Row="1" x:Name="DirectoryFilesListBox" Style="{StaticResource DirectoryFilesListBox}" />
+                                <ListBox Grid.Row="1" x:Name="DirectoryFilesListBox" Style="{StaticResource DirectoryFilesListBox}" MouseDoubleClick="OnMouseDoubleClick" />
                                 <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
                                 <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
                                     <Grid HorizontalAlignment="Stretch">

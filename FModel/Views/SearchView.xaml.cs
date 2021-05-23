@@ -36,7 +36,7 @@ namespace FModel.Views
 
             WindowState = WindowState.Minimized;
             MainWindow.YesWeCats.AssetsListName.ItemsSource = null;
-            var folder = new GoToCommand(null).JumpTo(assetItem.FullPath.SubstringBeforeLast('/'));
+            var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(assetItem.FullPath.SubstringBeforeLast('/'));
             if (folder == null) return;
 
             do { await Task.Delay(100); } while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Assets.Count);

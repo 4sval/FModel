@@ -233,5 +233,12 @@ namespace FModel
                 return o is AssetItem assetItem && filters.All(x => assetItem.FullPath.SubstringAfterLast('/').Contains(x, StringComparison.OrdinalIgnoreCase));
             };
         }
+
+        private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not ListBox listBox) return;
+            UserSettings.Default.LoadingMode = ELoadingMode.Multiple;
+            _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
+        }
     }
 }

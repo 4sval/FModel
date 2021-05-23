@@ -27,7 +27,7 @@ namespace FModel.Framework
 
         protected ViewModelCommand(TContextViewModel contextViewModel)
         {
-            ContextViewModel = contextViewModel /*?? throw new ArgumentNullException(nameof(contextViewModel))*/;
+            ContextViewModel = contextViewModel ?? throw new ArgumentNullException(nameof(contextViewModel));
         }
 
         public sealed override void Execute(object parameter)

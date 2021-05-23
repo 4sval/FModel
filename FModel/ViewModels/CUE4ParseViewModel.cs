@@ -617,17 +617,14 @@ namespace FModel.ViewModels
 
             if (Provider.TrySavePackage(fullPath, out var assets))
             {
-                foreach (var (key, value) in assets)
+                foreach (var kvp in assets)
                 {
-                    directory = Path.Combine(directory, UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled
-                        ? key : key.SubstringAfterLast('/')).Replace('\\', '/');
-                    Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
-                    File.WriteAllBytes(directory, value);
+                    var path = Path.Combine(directory, UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled
+                        ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
+                    Directory.CreateDirectory(path.SubstringBeforeLast('/'));
+                    File.WriteAllBytes(path, kvp.Value);
                 }
-            }
-
-            if (File.Exists(directory))
-            {
+                
                 Log.Information("{FileName} successfully exported", fileName);
                 FLogger.AppendInformation();
                 FLogger.AppendText($"Successfully exported '{fileName}'", Constants.WHITE, true);
