@@ -84,9 +84,9 @@ namespace FModel.Creator.Bases.FN
                 weaponStatHandle.TryGetValue(out UDataTable dataTable, "DataTable") &&
                 dataTable.TryGetDataTableRow(weaponRowName.Text, StringComparison.OrdinalIgnoreCase, out var weaponRowValue))
             {
-                if (weaponRowValue.TryGetValue(out float dmgPb, "DmgPB") && dmgPb != 0f)
+                if (weaponRowValue.TryGetValue(out float dmgPb, "DmgPB") && dmgPb != 0f && weaponRowValue.TryGetValue(out int bpc , "BulletsPerCartridge")&& bpc != 0f)
                 {
-                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "BF7E3CF34A9ACFF52E95EAAD4F09F133", "Damage to Player"), dmgPb, 200));
+                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "BF7E3CF34A9ACFF52E95EAAD4F09F133", "Damage to Player"), dmgPb * bpc, 200));
                 }
 
                 if (weaponRowValue.TryGetValue(out int clipSize, "ClipSize") && clipSize != 0)
