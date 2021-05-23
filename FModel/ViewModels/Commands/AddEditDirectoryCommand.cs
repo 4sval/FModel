@@ -12,7 +12,8 @@ namespace FModel.ViewModels.Commands
 
         public override void Execute(CustomDirectoriesViewModel contextViewModel, object parameter)
         {
-            if (parameter is not CustomDirectory customDir) return;
+            if (parameter is not CustomDirectory customDir)
+                customDir = new CustomDirectory();
 
             Helper.OpenWindow<AdonisWindow>("Custom Directory", () =>
             {

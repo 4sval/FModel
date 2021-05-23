@@ -461,6 +461,17 @@ namespace FModel.ViewModels
 
                     break;
                 }
+                case "udic":
+                {
+                    TabControl.SelectedTab.Image = null;
+                    if (Provider.TryCreateReader(fullPath, out var archive))
+                    {
+                        var header = new FDictionaryHeader(archive);
+                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), bulkSave);
+                    }
+                    
+                    break;
+                }
                 case "png":
                 case "jpg":
                 {
@@ -476,17 +487,6 @@ namespace FModel.ViewModels
                     FLogger.AppendWarning();
                     FLogger.AppendText($"Export '{fullPath.SubstringAfterLast('/')}' and change its extension if you want it to be an installable font file", Constants.WHITE, true);
                     break;
-                case "udic":
-                {
-                    TabControl.SelectedTab.Image = null;
-                    if (Provider.TryCreateReader(fullPath, out var archive))
-                    {
-                        var header = new FDictionaryHeader(archive);
-                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), bulkSave);
-                    }
-
-                    break;
-                }
                 case "ushaderbytecode":
                     TabControl.SelectedTab.Image = null;
                     break;

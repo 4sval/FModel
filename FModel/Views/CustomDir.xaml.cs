@@ -9,6 +9,10 @@ namespace FModel.Views
         {
             DataContext = customDir;
             InitializeComponent();
+            
+            Activate();
+            WpfSuckMyDick.Focus();
+            WpfSuckMyDick.SelectAll();
         }
 
         private void OnClick(object sender, RoutedEventArgs e)
