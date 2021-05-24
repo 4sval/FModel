@@ -131,7 +131,11 @@ namespace FModel.Creator.Bases
         }
 
         protected void DrawPreview(SKCanvas c)
-            => c.DrawBitmap(Preview ?? DefaultPreview, new SKRect(Margin, Margin, Width - Margin, Height - Margin), ImagePaint);
+        {
+            var i = Preview ?? DefaultPreview;
+            var x = i.Width < Width ? Width / 2 - i.Width / 2 : Margin;
+            c.DrawBitmap(i, new SKRect(x, Margin, x + i.Width - Margin * 2, i.Height - Margin), ImagePaint);
+        }
 
         protected void DrawTextBackground(SKCanvas c)
         {

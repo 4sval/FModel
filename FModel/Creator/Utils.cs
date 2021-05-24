@@ -107,9 +107,10 @@ namespace FModel.Creator
             if (material == null) return null;
             foreach (var textureParameter in material.TextureParameterValues)
             {
-                if (!(textureParameter.ParameterValue is UTexture2D texture)) continue;
+                if (textureParameter.ParameterValue is not UTexture2D texture) continue;
                 switch (textureParameter.ParameterInfo.Name.Text)
                 {
+                    case "MainTex":
                     case "TextureA":
                     case "TextureB":
                     case "OfferImage":

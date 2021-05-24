@@ -212,7 +212,6 @@ namespace FModel.Creator
                 case "GRMTStoreOffer":
                 case "GCosmeticEmote":
                 case "GCosmeticCard":
-                case "GGameModeInfo":
                 case "GCosmeticSkin":
                 case "GStoreOffer":
                 case "GAccolade":
@@ -226,6 +225,10 @@ namespace FModel.Creator
                 case "GLeagueDivision":
                     creator = new BaseDivision(_object, EIconStyle.Default);
                     return true;
+                // TODO: Draw this properly
+                // case "GGameModeInfo":
+                //     creator = new BaseGameModeInfo(_object, EIconStyle.Default);
+                //     return true;
                 default:
                     creator = null;
                     return false;

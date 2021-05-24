@@ -17,11 +17,11 @@ namespace FModel.Creator.Bases.FN
 
         public override void ParseForInfo()
         {
-            if (!(Object is UMaterialInstanceConstant material)) return;
+            if (Object is not UMaterialInstanceConstant material) return;
 
             foreach (var textureParameter in material.TextureParameterValues) // get texture from base material
             {
-                if (!(textureParameter.ParameterValue is UTexture2D texture) || Preview != null) continue;
+                if (textureParameter.ParameterValue is not UTexture2D texture || Preview != null) continue;
                 switch (textureParameter.ParameterInfo.Name.Text)
                 {
                     case "SeriesTexture":
