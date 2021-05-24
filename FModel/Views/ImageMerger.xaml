@@ -54,11 +54,11 @@
                     
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Images Per Row" VerticalAlignment="Center" Margin="0 0 10 0" />
                     <Slider x:Name="SizeSlider" Grid.Row="0" Grid.Column="1" TickPlacement="None" AutoToolTipPlacement="BottomRight"
-                            IsMoveToPointEnabled="True" Minimum="2" Maximum="20" TickFrequency="1" Thumb.DragCompleted="DrawPreview"/>
+                            IsMoveToPointEnabled="True" Minimum="2" Maximum="20" TickFrequency="1" MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview"/>
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Margin Between Images" VerticalAlignment="Center" Margin="0 0 10 0" />
                     <Slider Grid.Row="2" Grid.Column="1" Value="{Binding ImageMergerMargin, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                             TickPlacement="None" AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" Minimum="0" Maximum="50" TickFrequency="1"
-                            Thumb.DragCompleted="DrawPreview" />
+                            MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview" />
                 </Grid>
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button x:Name="AddButton" Content="Add" MinWidth="80" Padding="1,3,1,3" Click="OnImageAdd"/>
