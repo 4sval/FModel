@@ -163,6 +163,32 @@ namespace FModel.Creator
                     return true;
                 // Battle Breakers
                 case "WExpGenericAccountItemDefinition":
+                case "WExpGearAccountItemDefinition":
+                case "WExpHQWorkerLodgesDefinition":
+                case "WExpPersonalEventDefinition":
+                case "WExpUpgradePotionDefinition":
+                case "WExpAccountRewardDefinition":
+                case "WExpHQBlacksmithDefinition":
+                case "WExpHQSecretShopDefinition":
+                case "WExpHQMonsterPitDefinition":
+                case "WExpHQHeroTowerDefinition":
+                case "WExpVoucherItemDefinition":
+                case "WExpTreasureMapDefinition":
+                case "WExpHammerChestDefinition":
+                case "WExpHQWorkshopDefinition":
+                case "WExpUnlockableDefinition":
+                case "WExpHQSmelterDefinition":
+                case "WExpContainerDefinition":
+                case "WExpCharacterDefinition":
+                case "WExpHQMarketDefinition":
+                case "WExpGiftboxDefinition":
+                case "WExpStandInDefinition":
+                case "WExpRegionDefinition":
+                case "WExpHQMineDefinition":
+                case "WExpXpBookDefinition":
+                case "WExpTokenDefinition":
+                case "WExpItemDefinition":
+                case "WExpZoneDefinition":
                     creator = new BaseBreakersIcon(_object, EIconStyle.Default);
                     return true;
                 // Spellbreak

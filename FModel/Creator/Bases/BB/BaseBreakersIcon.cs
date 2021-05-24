@@ -17,12 +17,12 @@ namespace FModel.Creator.Bases.BB
 
         public override void ParseForInfo()
         {
-            if (Object.TryGetValue(out FSoftObjectPath iconTextureAssetData, "IconTextureAssetData"))
+            if (Object.TryGetValue(out FSoftObjectPath iconTextureAssetData, "IconTextureAssetData", "UnlockPortraitGuideImage"))
                 Preview = Utils.GetBitmap(iconTextureAssetData);
 
-            if (Object.TryGetValue(out FText displayName, "DisplayName"))
+            if (Object.TryGetValue(out FText displayName, "DisplayName", "RegionDisplayName", "ZoneName"))
                 DisplayName = displayName.Text;
-            if (Object.TryGetValue(out FText description, "Description"))
+            if (Object.TryGetValue(out FText description, "Description", "RegionShortName", "ZoneDescription"))
                 Description = description.Text;
         }
 
