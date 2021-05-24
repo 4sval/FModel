@@ -66,7 +66,7 @@ namespace FModel.Framework
 
         private void ObserveAll()
         {
-            foreach (T item in Items)
+            foreach (var item in Items)
                 item.PropertyChanged += ChildPropertyChanged;
         }
 
