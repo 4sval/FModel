@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using AdonisUI.Controls;
 using FModel.Extensions;
@@ -29,6 +30,11 @@ namespace FModel.Views
         {
             if (ImagePreview.Source != null)
                 await DrawPreview().ConfigureAwait(false);
+        }
+        private async void Click_DrawPreview(object sender, MouseButtonEventArgs e)
+        {
+            if (ImagePreview.Source != null)
+                await DrawPreview().ConfigureAwait(false);        
         }
 
         private async Task DrawPreview()
@@ -267,5 +273,6 @@ namespace FModel.Views
         }
 
         private void OnCopyImage(object sender, RoutedEventArgs e) => Clipboard.SetImage((BitmapSource) ImagePreview.Source);
+        
     }
 }
