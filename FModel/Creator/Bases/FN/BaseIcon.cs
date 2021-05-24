@@ -48,6 +48,8 @@ namespace FModel.Creator.Bases.FN
                 Preview = Utils.GetBitmap(otherPreview);
             else if (Object.TryGetValue(out UMaterialInstanceConstant materialInstancePreview, "EventCalloutImage"))
                 Preview = Utils.GetBitmap(materialInstancePreview);
+            else if (Object.TryGetValue(out FStructFallback brush, "IconBrush") && brush.TryGetValue(out UTexture2D res, "ResourceObject"))
+                Preview = Utils.GetBitmap(res);
 
             // text
             if (Object.TryGetValue(out FText displayName, "DisplayName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
