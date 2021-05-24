@@ -193,18 +193,31 @@ namespace FModel.Creator
                     creator = new BaseBreakersIcon(_object, EIconStyle.Default);
                     return true;
                 // Spellbreak
-                case "GQuest":
-                case "GAccolade":
-                case "GCosmeticCard":
-                case "GCosmeticSkin":
+                case "GTargetedTeleportActiveSkill":
+                case "GChronomasterV2ActiveSkill":
+                case "GShadowstepActiveSkill":
+                case "GGatewayActiveSkill":
+                case "GStealthActiveSkill":
+                case "GFeatherActiveSkill":
+                case "GCosmeticDropTrail":
+                case "GFlightActiveSkill":
+                case "GCosmeticRunTrail":
+                case "GCosmeticArtifact":
+                case "GCosmeticTriumph":
+                case "GWolfsbloodSkill":
+                case "GDashActiveSkill":
                 case "GCharacterPerk":
                 case "GCosmeticTitle":
                 case "GCosmeticBadge":
+                case "GRMTStoreOffer":
                 case "GCosmeticEmote":
-                case "GCosmeticTriumph":
-                case "GCosmeticRunTrail":
-                case "GCosmeticArtifact":
-                case "GCosmeticDropTrail":
+                case "GCosmeticCard":
+                case "GGameModeInfo":
+                case "GCosmeticSkin":
+                case "GStoreOffer":
+                case "GAccolade":
+                case "GRuneItem":
+                case "GQuest":
                     creator = new BaseSpellIcon(_object, EIconStyle.Default);
                     return true;
                 case "GLeagueTier":

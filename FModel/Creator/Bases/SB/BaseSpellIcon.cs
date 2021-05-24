@@ -24,8 +24,8 @@ namespace FModel.Creator.Bases.SB
         {
             Background = new[] {SKColor.Parse("FFFFFF"), SKColor.Parse("636363")};
             Border = new[] {SKColor.Parse("D0D0D0"), SKColor.Parse("FFFFFF")};
-            Width = Object.ExportType.StartsWith("BP_Cosmetic_Card") ? 1536 : 512;
-            Height = Object.ExportType.StartsWith("BP_Cosmetic_Card") ? 450 : 512;
+            Width = Object.ExportType.StartsWith("GCosmeticCard") ? 1536 : 512;
+            Height = Object.ExportType.StartsWith("GCosmeticCard") ? 450 : 512;
         }
 
         public override void ParseForInfo()
@@ -33,12 +33,12 @@ namespace FModel.Creator.Bases.SB
             if (Object.TryGetValue(out FName rarity, "Rarity"))
                 GetRarity(rarity);
 
-            if (Object.TryGetValue(out FSoftObjectPath preview, "IconTexture"))
+            if (Object.TryGetValue(out FSoftObjectPath preview, "IconTexture", "OfferTexture", "PortraitTexture"))
                 Preview = Utils.GetBitmap(preview);
-            else if (Object.TryGetValue(out FPackageIndex icon, "IconTexture"))
+            else if (Object.TryGetValue(out FPackageIndex icon, "IconTexture", "OfferTexture", "PortraitTexture"))
                 Preview = Utils.GetBitmap(icon);
 
-            if (Object.TryGetValue(out FText displayName, "DisplayName", "Title"))
+            if (Object.TryGetValue(out FText displayName, "DisplayName", "Title", "Name"))
                 DisplayName = displayName.Text;
             if (Object.TryGetValue(out FText description, "Description"))
                 Description = description.Text;
