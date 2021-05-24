@@ -46,11 +46,13 @@ namespace FModel.Creator.Bases.FN
                 Preview = Utils.GetBitmap(s);
             else if (Object.TryGetValue(out FPackageIndex otherPreview, "SmallPreviewImage", "ToastIcon", "access_item"))
                 Preview = Utils.GetBitmap(otherPreview);
+            else if (Object.TryGetValue(out UMaterialInstanceConstant materialInstancePreview, "EventCalloutImage"))
+                Preview = Utils.GetBitmap(materialInstancePreview);
 
             // text
-            if (Object.TryGetValue(out FText displayName, "DisplayName", "DefaultHeaderText", "UIDisplayName", "EntryName"))
+            if (Object.TryGetValue(out FText displayName, "DisplayName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
                 DisplayName = displayName.Text;
-            if (Object.TryGetValue(out FText description, "Description", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription"))
+            if (Object.TryGetValue(out FText description, "Description", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription"))
                 Description = description.Text;
             else if (Object.TryGetValue(out FText[] descriptions, "Description"))
                 Description = string.Join('\n', descriptions.Select(x => x.Text));
@@ -58,6 +60,16 @@ namespace FModel.Creator.Bases.FN
                 ShortDescription = shortDescription.Text;
             else if (Object.ExportType.Equals("AthenaItemWrapDefinition", StringComparison.OrdinalIgnoreCase))
                 ShortDescription = "Wrap";
+
+            // Only works on non-cataba designs
+            if (Object.TryGetValue(out FStructFallback eventArrowColor, "EventArrowColor") &&
+                eventArrowColor.TryGetValue(out FLinearColor specifiedArrowColor, "SpecifiedColor") &&
+                Object.TryGetValue(out FStructFallback eventArrowShadowColor, "EventArrowShadowColor") &&
+                eventArrowShadowColor.TryGetValue(out FLinearColor specifiedShadowColor, "SpecifiedColor"))
+            {
+                Background = new[] {SKColor.Parse(specifiedArrowColor.Hex), SKColor.Parse(specifiedShadowColor.Hex)};
+                Border = new[] {SKColor.Parse(specifiedShadowColor.Hex), SKColor.Parse(specifiedArrowColor.Hex)};
+            }
 
             Description = Utils.RemoveHtmlTags(Description);
         }

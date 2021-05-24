@@ -113,6 +113,7 @@ namespace FModel.Creator
                     case "TextureA":
                     case "TextureB":
                     case "OfferImage":
+                    case "KeyArtTexture":
                     {
                         return GetBitmap(texture);
                     }
