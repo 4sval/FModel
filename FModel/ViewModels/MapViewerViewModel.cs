@@ -198,14 +198,16 @@ namespace FModel.ViewModels
                 _landmarksBitmap = new SKBitmap(_mapBitmap.Width, _mapBitmap.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var cities = new SKCanvas(_citiesBitmap);
                 using var landmarks = new SKCanvas(_landmarksBitmap);
-                if (Utils.TryLoadObject("FortniteGame/Content/Quests/QuestIndicatorData", out UObject indicatorData) &&
+                if (Utils.TryLoadObject("FortniteGame/Content/Quests/QuestIndicatorData.QuestIndicatorData", out UObject indicatorData) &&
                     indicatorData.TryGetValue(out FStructFallback[] challengeMapPoiData, "ChallengeMapPoiData"))
                 {
                     foreach (var poiData in challengeMapPoiData)
                     {
                         if (!poiData.TryGetValue(out FSoftObjectPath discoveryQuest, "DiscoveryQuest") ||
                             !poiData.TryGetValue(out FText text, "Text") || string.IsNullOrEmpty(text.Text) ||
-                            !poiData.TryGetValue(out FVector worldLocation, "WorldLocation")) continue;
+                            !poiData.TryGetValue(out FVector worldLocation, "WorldLocation") ||
+                            !poiData.TryGetValue(out FName discoverBackend, "DiscoverObjectiveBackendName") ||
+                            discoverBackend.Text.Contains("papaya", StringComparison.OrdinalIgnoreCase)) continue;
                         
                         var shaper = new CustomSKShaper(_imagePaint.Typeface);
                         var shapedText = shaper.Shape(text.Text, _imagePaint);
