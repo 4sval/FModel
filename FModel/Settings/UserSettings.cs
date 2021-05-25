@@ -29,6 +29,11 @@ namespace FModel.Settings
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
 
+        public static void Delete()
+        {
+            if (File.Exists(FilePath)) File.Delete(FilePath);
+        }
+
         private string _outputDirectory;
         public string OutputDirectory
         {

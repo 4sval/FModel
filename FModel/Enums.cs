@@ -11,9 +11,9 @@ namespace FModel
 
     public enum EErrorKind
     {
-        Close,
         Ignore,
-        Restart
+        Restart,
+        ResetSettings
     }
 
     public enum SettingsOut

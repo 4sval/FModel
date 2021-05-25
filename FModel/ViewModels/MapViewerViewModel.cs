@@ -28,6 +28,13 @@ namespace FModel.ViewModels
             get => _showCities;
             set => SetProperty(ref _showCities, value, nameof(ShowCities));
         }
+        
+        private bool _showLandmarks;
+        public bool ShowLandmarks
+        {
+            get => _showLandmarks;
+            set => SetProperty(ref _showLandmarks, value, nameof(ShowLandmarks));
+        }
 
         private bool _showPatrolPaths;
         public bool ShowPatrolPaths
@@ -48,6 +55,13 @@ namespace FModel.ViewModels
         {
             get => _citiesImage;
             set => SetProperty(ref _citiesImage, value);
+        }
+        
+        private BitmapImage _landmarksImage;
+        public BitmapImage LandmarksImage
+        {
+            get => _landmarksImage;
+            set => SetProperty(ref _landmarksImage, value);
         }
 
         private BitmapImage _patrolPathImage;
@@ -81,6 +95,8 @@ namespace FModel.ViewModels
             c.DrawBitmap(_mapBitmap, 0, 0);
             if (ShowCities)
                 c.DrawBitmap(_citiesBitmap, 0, 0);
+            if (ShowLandmarks)
+                c.DrawBitmap(_landmarksBitmap, 0, 0);
             if (ShowPatrolPaths)
                 c.DrawBitmap(_patrolPathBitmap, 0, 0);
 
@@ -98,7 +114,12 @@ namespace FModel.ViewModels
         {
             switch (propertyName)
             {
-                case nameof(ShowCities) when _citiesBitmap == null && _mapBitmap != null:
+                case nameof(ShowCities) when _citiesBitmap == null && _landmarksBitmap == null && _mapBitmap != null:
+                {
+                    await LoadCities();
+                    break;
+                }
+                case nameof(ShowLandmarks) when _landmarksBitmap == null && _citiesBitmap == null && _mapBitmap != null:
                 {
                     await LoadCities();
                     break;
@@ -127,6 +148,7 @@ namespace FModel.ViewModels
         private const int WorldRadius = 135000;
         private SKBitmap _mapBitmap;
         private SKBitmap _citiesBitmap;
+        private SKBitmap _landmarksBitmap;
         private SKBitmap _patrolPathBitmap;
         private readonly SKBitmap _pinBitmap =
             SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/pin.png"))?.Stream);
@@ -141,7 +163,7 @@ namespace FModel.ViewModels
         private readonly SKPaint _pathPaint = new()
         {
             IsAntialias = true, FilterQuality = SKFilterQuality.High, IsStroke = true,
-            Style = SKPaintStyle.Stroke, StrokeWidth = 5, Color = SKColors.Red,
+            Style = SKPaintStyle.Stroke, StrokeWidth = 10, Color = SKColors.Red,
             ImageFilter = SKImageFilter.CreateDropShadow(4, 4, 8, 8, SKColors.Black)
         };
 
@@ -173,27 +195,38 @@ namespace FModel.ViewModels
             await _threadWorkerView.Begin(_ =>
             {
                 _citiesBitmap = new SKBitmap(_mapBitmap.Width, _mapBitmap.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using var c = new SKCanvas(_citiesBitmap);
+                _landmarksBitmap = new SKBitmap(_mapBitmap.Width, _mapBitmap.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var cities = new SKCanvas(_citiesBitmap);
+                using var landmarks = new SKCanvas(_landmarksBitmap);
                 if (Utils.TryLoadObject("FortniteGame/Content/Quests/QuestIndicatorData", out UObject indicatorData) &&
                     indicatorData.TryGetValue(out FStructFallback[] challengeMapPoiData, "ChallengeMapPoiData"))
                 {
                     foreach (var poiData in challengeMapPoiData)
                     {
                         if (!poiData.TryGetValue(out FSoftObjectPath discoveryQuest, "DiscoveryQuest") ||
-                            !poiData.TryGetValue(out FText text, "Text") ||
-                            !poiData.TryGetValue(out FVector worldLocation, "WorldLocation") ||
-                            discoveryQuest.AssetPathName.Text.Contains("Landmarks")) continue;
+                            !poiData.TryGetValue(out FText text, "Text") || string.IsNullOrEmpty(text.Text) ||
+                            !poiData.TryGetValue(out FVector worldLocation, "WorldLocation")) continue;
+                        
                         var shaper = new CustomSKShaper(_imagePaint.Typeface);
                         var shapedText = shaper.Shape(text.Text, _imagePaint);
-
                         var vector = GetMapPosition(worldLocation);
-                        c.DrawPoint(vector.X, vector.Y, _pathPaint);
-                        c.DrawBitmap(_cityPinBitmap, vector.X - 50, vector.Y - 90, _imagePaint);
-                        c.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _imagePaint);
+
+                        if (discoveryQuest.AssetPathName.Text.Contains("landmarks", StringComparison.OrdinalIgnoreCase))
+                        {
+                            landmarks.DrawPoint(vector.X, vector.Y, _pathPaint);
+                            landmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _imagePaint);
+                        }
+                        else
+                        {
+                            cities.DrawPoint(vector.X, vector.Y, _pathPaint);
+                            cities.DrawBitmap(_cityPinBitmap, vector.X - 50, vector.Y - 90, _imagePaint);
+                            cities.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _imagePaint);
+                        }
                     }
                 }
 
                 CitiesImage = GetImageSource(_citiesBitmap);
+                LandmarksImage = GetImageSource(_landmarksBitmap);
             });
         }
 

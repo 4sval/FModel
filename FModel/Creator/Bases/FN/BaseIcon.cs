@@ -61,7 +61,7 @@ namespace FModel.Creator.Bases.FN
             if (Object.TryGetValue(out FText shortDescription, "ShortDescription", "UIDisplaySubName"))
                 ShortDescription = shortDescription.Text;
             else if (Object.ExportType.Equals("AthenaItemWrapDefinition", StringComparison.OrdinalIgnoreCase))
-                ShortDescription = "Wrap";
+                ShortDescription = Utils.GetLocalizedResource("Fort.Cosmetics", "ItemWrapShortDescription", "Wrap");
 
             // Only works on non-cataba designs
             if (Object.TryGetValue(out FStructFallback eventArrowColor, "EventArrowColor") &&

@@ -80,6 +80,7 @@ namespace FModel
                 Icon = MessageBoxImage.Error,
                 Buttons = new[]
                 {
+                    MessageBoxButtons.Custom("Reset Settings", EErrorKind.ResetSettings),
                     MessageBoxButtons.Custom("Restart", EErrorKind.Restart),
                     MessageBoxButtons.Custom("OK", EErrorKind.Ignore)
                 },
@@ -89,6 +90,9 @@ namespace FModel
             MessageBox.Show(messageBox);
             if (messageBox.Result == MessageBoxResult.Custom && (EErrorKind) messageBox.ButtonPressed.Id != EErrorKind.Ignore)
             {
+                if ((EErrorKind) messageBox.ButtonPressed.Id == EErrorKind.ResetSettings)
+                    UserSettings.Delete();
+                
                 ApplicationService.ApplicationView.Restart();
             }
 

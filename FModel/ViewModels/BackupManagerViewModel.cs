@@ -23,7 +23,7 @@ namespace FModel.ViewModels
         private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
         private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
         private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
-        private readonly FGame _game;
+        private readonly string _gameName;
 
         private Backup _selectedBackup;
         public Backup SelectedBackup
@@ -35,9 +35,9 @@ namespace FModel.ViewModels
         public ObservableCollection<Backup> Backups { get; }
         public ICollectionView BackupsView { get; }
 
-        public BackupManagerViewModel(FGame game)
+        public BackupManagerViewModel(string gameName)
         {
-            _game = game;
+            _gameName = gameName;
             Backups = new ObservableCollection<Backup>();
             BackupsView = new ListCollectionView(Backups) {SortDescriptions = {new SortDescription("FileName", ListSortDirection.Ascending)}};
         }
@@ -46,7 +46,7 @@ namespace FModel.ViewModels
         {
             await _threadWorkerView.Begin(cancellationToken =>
             {
-                var backups = _apiEndpointView.FModelApi.GetBackups(cancellationToken, _game);
+                var backups = _apiEndpointView.FModelApi.GetBackups(cancellationToken, _gameName);
                 if (backups == null) return;
 
                 Application.Current.Dispatcher.Invoke(() =>
@@ -62,7 +62,7 @@ namespace FModel.ViewModels
             await _threadWorkerView.Begin(_ =>
             {
                 var backupFolder = Path.Combine(UserSettings.Default.OutputDirectory, "Backups");
-                var fileName = $"{_game}_{DateTime.Now:MMddyyyy}.fbkp";
+                var fileName = $"{_gameName}_{DateTime.Now:MMddyyyy}.fbkp";
                 var fullPath = Path.Combine(backupFolder, fileName);
 
                 using var fileStream = new FileStream(fullPath, FileMode.Create);
