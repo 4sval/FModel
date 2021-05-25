@@ -24,7 +24,7 @@ namespace FModel.ViewModels.Commands
                     Helper.OpenWindow<AdonisWindow>("AES Manager", () => new AesManager().Show());
                     break;
                 case "Directory_Backup":
-                    Helper.OpenWindow<AdonisWindow>("Backup Manager", () => new BackupManager(contextViewModel.CUE4Parse.Game).Show());
+                    Helper.OpenWindow<AdonisWindow>("Backup Manager", () => new BackupManager(contextViewModel.CUE4Parse.Provider.GameName).Show());
                     break;
                 case "Views_AudioPlayer":
                     Helper.OpenWindow<AdonisWindow>("Audio Player", () => new AudioPlayer().Show());

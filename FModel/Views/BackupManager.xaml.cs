@@ -7,9 +7,9 @@ namespace FModel.Views
     {
         private readonly BackupManagerViewModel _viewModel;
 
-        public BackupManager(FGame game)
+        public BackupManager(string gameName)
         {
-            DataContext = _viewModel = new BackupManagerViewModel(game);
+            DataContext = _viewModel = new BackupManagerViewModel(gameName);
             InitializeComponent();
         }
 

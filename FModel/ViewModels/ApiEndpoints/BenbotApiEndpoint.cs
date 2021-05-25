@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -16,7 +15,7 @@ namespace FModel.ViewModels.ApiEndpoints
 
         public async Task<AesResponse> GetAesKeysAsync(CancellationToken token)
         {
-            var request = new RestRequest("https://benbotfn.tk/api/v2/aes", Method.GET)
+            var request = new RestRequest("https://benbot.app/api/v2/aes", Method.GET)
             {
                 OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
             };
@@ -32,7 +31,7 @@ namespace FModel.ViewModels.ApiEndpoints
 
         public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token)
         {
-            var request = new RestRequest("https://benbotfn.tk/api/v1/mappings", Method.GET)
+            var request = new RestRequest("https://benbot.app/api/v1/mappings", Method.GET)
             {
                 OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
             };

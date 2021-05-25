@@ -105,8 +105,7 @@ namespace FModel.ViewModels
                 Icon = new Image {Source = new BitmapImage(new Uri("/FModel;component/Resources/add_directory.png", UriKind.Relative))},
                 HorizontalContentAlignment = HorizontalAlignment.Left,
                 VerticalContentAlignment = VerticalAlignment.Center,
-                Command = AddEditDirectoryCommand,
-                CommandParameter = new CustomDirectory()
+                Command = AddEditDirectoryCommand
             };
             yield return new Separator();
 

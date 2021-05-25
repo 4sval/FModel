@@ -29,6 +29,8 @@
         <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="50">
             <CheckBox Content="Show Cities" IsEnabled="{Binding IsReady}" IsChecked="{Binding MapViewer.ShowCities, Mode=TwoWay}"
                       Margin="0 0 0 10" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+            <CheckBox Content="Show Landmarks" IsEnabled="{Binding IsReady}" IsChecked="{Binding MapViewer.ShowLandmarks, Mode=TwoWay}"
+                      Margin="0 0 0 10" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
             <CheckBox Content="Show Patrol Paths" IsEnabled="{Binding IsReady}" IsChecked="{Binding MapViewer.ShowPatrolPaths, Mode=TwoWay}"
                       Margin="0 0 0 10" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
             <Button Content="Save Image" IsEnabled="{Binding IsReady}" Click="OnClick" />
@@ -43,6 +45,8 @@
                    Visibility="{Binding IsReady, Converter={StaticResource BoolToVisibilityConverter}}" />
             <Image UseLayoutRounding="True" Source="{Binding MapViewer.CitiesImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
                    Visibility="{Binding MapViewer.ShowCities, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <Image UseLayoutRounding="True" Source="{Binding MapViewer.LandmarksImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                   Visibility="{Binding MapViewer.ShowLandmarks, Converter={StaticResource BoolToVisibilityConverter}}" />
             <Image UseLayoutRounding="True" Source="{Binding MapViewer.PatrolPathImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
                    Visibility="{Binding MapViewer.ShowPatrolPaths, Converter={StaticResource BoolToVisibilityConverter}}" />
         </Grid>

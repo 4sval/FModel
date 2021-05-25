@@ -52,7 +52,7 @@ namespace FModel
             Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
 
             Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: AnsiConsoleTheme.Literate).WriteTo.File(
-                path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.txt"),
+                Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.txt"),
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [FModel] [{Level:u3}] {Message:lj}{NewLine}{Exception}").CreateLogger();
 
             Log.Information("Version {Version}", Constants.APP_VERSION);
@@ -80,6 +80,7 @@ namespace FModel
                 Icon = MessageBoxImage.Error,
                 Buttons = new[]
                 {
+                    MessageBoxButtons.Custom("Reset Settings", EErrorKind.ResetSettings),
                     MessageBoxButtons.Custom("Restart", EErrorKind.Restart),
                     MessageBoxButtons.Custom("OK", EErrorKind.Ignore)
                 },
@@ -89,6 +90,9 @@ namespace FModel
             MessageBox.Show(messageBox);
             if (messageBox.Result == MessageBoxResult.Custom && (EErrorKind) messageBox.ButtonPressed.Id != EErrorKind.Ignore)
             {
+                if ((EErrorKind) messageBox.ButtonPressed.Id == EErrorKind.ResetSettings)
+                    UserSettings.Delete();
+                
                 ApplicationService.ApplicationView.Restart();
             }
 

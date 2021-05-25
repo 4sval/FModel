@@ -53,17 +53,17 @@ namespace FModel.ViewModels.ApiEndpoints
             return _infos ?? GetInfosAsync(token, updateMode).GetAwaiter().GetResult();
         }
 
-        public async Task<Backup[]> GetBackupsAsync(CancellationToken token, FGame game)
+        public async Task<Backup[]> GetBackupsAsync(CancellationToken token, string gameName)
         {
-            var request = new RestRequest($"https://api.fmodel.app/v1/backups/{game}", Method.GET);
+            var request = new RestRequest($"https://api.fmodel.app/v1/backups/{gameName}", Method.GET);
             var response = await _client.ExecuteAsync<Backup[]>(request, token).ConfigureAwait(false);
             Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
             return response.Data;
         }
 
-        public Backup[] GetBackups(CancellationToken token, FGame game)
+        public Backup[] GetBackups(CancellationToken token, string gameName)
         {
-            return _backups ??= GetBackupsAsync(token, game).GetAwaiter().GetResult();
+            return _backups ??= GetBackupsAsync(token, gameName).GetAwaiter().GetResult();
         }
 
         public async Task<CommunityDesign> GetDesignAsync(string designName)

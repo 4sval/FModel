@@ -41,6 +41,14 @@ namespace FModel.Creator
         private const string _BURBANK_SMALL_BLACK = "burbanksmall-black";
         private const string _BURBANK_SMALL_BOLD = "burbanksmall-bold";
 
+        // Spellbreak
+        private const string _SPELLBREAK_BASE_PATH = "/Game/UI/Fonts/";
+        private const string _MONTSERRAT_SEMIBOLD = "Montserrat-Semibold";
+        private const string _MONTSERRAT_SEMIBOLD_ITALIC = "Montserrat-SemiBoldItalic";
+        private const string _NANUM_GOTHIC = "NanumGothic";
+        private const string _QUADRAT_BOLD = "Quadrat_Bold";
+        private const string _SEGOE_BOLD_ITALIC = "Segoe_Bold_Italic";
+        
         // WorldExplorers
         private const string _BATTLE_BREAKERS_BASE_PATH = "/Game/UMG/Fonts/Faces/";
         private const string _HEMIHEAD426 = "HemiHead426";
@@ -198,7 +206,23 @@ namespace FModel.Creator
                 case FGame.Dungeons:
                     break;
                 case FGame.g3:
+                {
+                    if (viewModel.Provider.TrySaveAsset(_SPELLBREAK_BASE_PATH + _QUADRAT_BOLD + _EXT, out data))
+                    {
+                        var m = new MemoryStream(data) {Position = 0};
+                        DisplayName = SKTypeface.FromStream(m);
+                    }
+                    else DisplayName = Default;
+
+                    if (viewModel.Provider.TrySaveAsset(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD + _EXT, out data))
+                    {
+                        var m = new MemoryStream(data) {Position = 0};
+                        Description = SKTypeface.FromStream(m);
+                    }
+                    else Description = Default;
+
                     break;
+                }
                 case FGame.StateOfDecay2:
                     break;
                 case FGame.Prospect:

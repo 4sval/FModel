@@ -73,6 +73,7 @@ namespace FModel.Creator
                 case "FortCurrencyItemDefinition":
                 case "FortResourceItemDefinition":
                 case "FortBackpackItemDefinition":
+                case "FortEventQuestMapDataAsset":
                 case "FortCodeTokenItemDefinition":
                 case "FortSchematicItemDefinition":
                 case "FortWorldMultiItemDefinition":
@@ -163,21 +164,59 @@ namespace FModel.Creator
                     return true;
                 // Battle Breakers
                 case "WExpGenericAccountItemDefinition":
+                case "WExpGearAccountItemDefinition":
+                case "WExpHQWorkerLodgesDefinition":
+                case "WExpPersonalEventDefinition":
+                case "WExpUpgradePotionDefinition":
+                case "WExpAccountRewardDefinition":
+                case "WExpHQBlacksmithDefinition":
+                case "WExpHQSecretShopDefinition":
+                case "WExpHQMonsterPitDefinition":
+                case "WExpHQHeroTowerDefinition":
+                case "WExpVoucherItemDefinition":
+                case "WExpTreasureMapDefinition":
+                case "WExpHammerChestDefinition":
+                case "WExpHQWorkshopDefinition":
+                case "WExpUnlockableDefinition":
+                case "WExpHQSmelterDefinition":
+                case "WExpContainerDefinition":
+                case "WExpCharacterDefinition":
+                case "WExpHQMarketDefinition":
+                case "WExpGiftboxDefinition":
+                case "WExpStandInDefinition":
+                case "WExpRegionDefinition":
+                case "WExpHQMineDefinition":
+                case "WExpXpBookDefinition":
+                case "WExpTokenDefinition":
+                case "WExpItemDefinition":
+                case "WExpZoneDefinition":
                     creator = new BaseBreakersIcon(_object, EIconStyle.Default);
                     return true;
                 // Spellbreak
-                case "GQuest":
-                case "GAccolade":
-                case "GCosmeticCard":
-                case "GCosmeticSkin":
+                case "GTargetedTeleportActiveSkill":
+                case "GChronomasterV2ActiveSkill":
+                case "GShadowstepActiveSkill":
+                case "GGatewayActiveSkill":
+                case "GStealthActiveSkill":
+                case "GFeatherActiveSkill":
+                case "GCosmeticDropTrail":
+                case "GFlightActiveSkill":
+                case "GCosmeticRunTrail":
+                case "GCosmeticArtifact":
+                case "GCosmeticTriumph":
+                case "GWolfsbloodSkill":
+                case "GDashActiveSkill":
                 case "GCharacterPerk":
                 case "GCosmeticTitle":
                 case "GCosmeticBadge":
+                case "GRMTStoreOffer":
                 case "GCosmeticEmote":
-                case "GCosmeticTriumph":
-                case "GCosmeticRunTrail":
-                case "GCosmeticArtifact":
-                case "GCosmeticDropTrail":
+                case "GCosmeticCard":
+                case "GCosmeticSkin":
+                case "GStoreOffer":
+                case "GAccolade":
+                case "GRuneItem":
+                case "GQuest":
                     creator = new BaseSpellIcon(_object, EIconStyle.Default);
                     return true;
                 case "GLeagueTier":
@@ -186,6 +225,10 @@ namespace FModel.Creator
                 case "GLeagueDivision":
                     creator = new BaseDivision(_object, EIconStyle.Default);
                     return true;
+                // TODO: Draw this properly
+                // case "GGameModeInfo":
+                //     creator = new BaseGameModeInfo(_object, EIconStyle.Default);
+                //     return true;
                 default:
                     creator = null;
                     return false;
