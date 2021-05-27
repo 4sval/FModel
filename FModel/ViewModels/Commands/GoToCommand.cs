@@ -32,7 +32,8 @@ namespace FModel.ViewModels.Commands
             {
                 foreach (var folder in root)
                 {
-                    if (!folder.Header.Equals(folders[i])) continue;
+                    if (!folder.Header.Equals(folders[i], i == 0 ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+                        continue;
 
                     folder.IsExpanded = true; // folder found = expand
 
