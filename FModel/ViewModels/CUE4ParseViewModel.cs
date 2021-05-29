@@ -599,7 +599,7 @@ namespace FModel.ViewModels
                 var width = img.Width;
                 var heigth = img.Height;
 
-                while (width < UPSCALE_SIZE || heigth < UPSCALE_SIZE)
+                while (width < UPSCALE_SIZE && heigth < UPSCALE_SIZE)
                 {
                     width *= 2;
                     heigth *= 2;
