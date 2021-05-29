@@ -19,6 +19,7 @@ using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion.Materials;
@@ -538,7 +539,8 @@ namespace FModel.ViewModels
             {
                 case UTexture2D texture:
                 {
-                    SetImage(texture.Decode());
+                    var filter = texture.GetOrDefault<FName>("Filter");
+                    SetImage(texture.Decode(), filter.IsNone ? null : filter.Text);
                     return true;
                 }
                 case UAkMediaAssetData:
@@ -587,17 +589,43 @@ namespace FModel.ViewModels
             return false;
         }
 
-        private void SetImage(SKImage img)
+        private void SetImage(SKImage img, string filter = null)
         {
-            using var stream = img.Encode().AsStream();
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.StreamSource = stream;
-            image.EndInit();
-            image.Freeze();
+            const int UPSCALE_SIZE = 512;
+            SKData data;
 
-            TabControl.SelectedTab.Image = image;
+            if (filter != null && img.Width < UPSCALE_SIZE && img.Height < UPSCALE_SIZE && filter.EndsWith("TF_Nearest", StringComparison.Ordinal))
+            {
+                var width = img.Width;
+                var heigth = img.Height;
+
+                while (width < UPSCALE_SIZE || heigth < UPSCALE_SIZE)
+                {
+                    width *= 2;
+                    heigth *= 2;
+                }
+
+                using var bitmap = SKBitmap.FromImage(img);
+                using var resized = bitmap.Resize(new SKImageInfo(width, heigth), SKFilterQuality.None);
+                data = resized.Encode(SKEncodedImageFormat.Png, 100); // maybe dispose 'img' at this point?
+            }
+            else
+            {
+                data = img.Encode(SKEncodedImageFormat.Png, 100);
+            }
+
+            using (data)
+            {
+                using var stream = data.AsStream(false);
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = stream;
+                image.EndInit();
+                image.Freeze();
+                TabControl.SelectedTab.Image = image;
+            }
+
             if (UserSettings.Default.IsAutoSaveTextures)
                 TabControl.SelectedTab.SaveImage(true);
         }
