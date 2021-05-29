@@ -82,8 +82,18 @@ namespace FModel.ViewModels
                 default:
                 {
                     Game = gameDirectory.SubstringBeforeLast("\\Content\\Paks").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
-                    Provider = new DefaultFileProvider(gameDirectory, SearchOption.TopDirectoryOnly, true,
-                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+
+                    if (Game == FGame.WorldExplorers)
+                    {
+                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo> {new(gameDirectory.SubstringBeforeLast('\\') + "\\EmbeddedPaks\\")},
+                            SearchOption.TopDirectoryOnly, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+                    }
+                    else
+                    {
+                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.TopDirectoryOnly, true,
+                            UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+                    }
+                    
                     break;
                 }
             }
@@ -202,7 +212,7 @@ namespace FModel.ViewModels
                 foreach (var file in GameDirectory.DirectoryFiles)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    if (!(Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is { } vfs))
+                    if (Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is not { } vfs)
                         continue;
 
                     file.IsEnabled = true;
