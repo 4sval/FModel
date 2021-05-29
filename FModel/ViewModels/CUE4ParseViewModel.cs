@@ -540,7 +540,8 @@ namespace FModel.ViewModels
                 case UTexture2D texture:
                 {
                     var filter = texture.GetOrDefault<FName>("Filter");
-                    SetImage(texture.Decode(), filter.IsNone ? null : filter.Text);
+                    var lodGroup = texture.GetOrDefault<FName>("LODGroup");
+                    SetImage(texture.Decode(), filter.IsNone ? null : filter.Text, lodGroup.IsNone ? null : lodGroup.Text);
                     return true;
                 }
                 case UAkMediaAssetData:
@@ -589,12 +590,14 @@ namespace FModel.ViewModels
             return false;
         }
 
-        private void SetImage(SKImage img, string filter = null)
+        private void SetImage(SKImage img, string filter = null, string lodGroup = null)
         {
             const int UPSCALE_SIZE = 512;
             SKData data;
 
-            if (filter != null && img.Width < UPSCALE_SIZE && img.Height < UPSCALE_SIZE && filter.EndsWith("TF_Nearest", StringComparison.Ordinal))
+            if ((filter != null && filter.EndsWith("TF_Nearest", StringComparison.Ordinal) ||
+                lodGroup != null && lodGroup.EndsWith("TEXTUREGROUP_Pixels2D", StringComparison.Ordinal)) &&
+                img.Width < UPSCALE_SIZE && img.Height < UPSCALE_SIZE)
             {
                 var width = img.Width;
                 var heigth = img.Height;
