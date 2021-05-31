@@ -539,9 +539,7 @@ namespace FModel.ViewModels
             {
                 case UTexture2D texture:
                 {
-                    var filter = texture.GetOrDefault<FName>("Filter");
-                    var lodGroup = texture.GetOrDefault<FName>("LODGroup");
-                    SetImage(texture.Decode(), filter.IsNone ? null : filter.Text, lodGroup.IsNone ? null : lodGroup.Text);
+                    SetImage(texture.Decode());
                     return true;
                 }
                 case UAkMediaAssetData:
@@ -590,45 +588,17 @@ namespace FModel.ViewModels
             return false;
         }
 
-        private void SetImage(SKImage img, string filter = null, string lodGroup = null)
+        private void SetImage(SKImage img)
         {
-            const int UPSCALE_SIZE = 512;
-            SKData data;
+            using var stream = img.Encode().AsStream();
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.StreamSource = stream;
+            image.EndInit();
+            image.Freeze();
 
-            if ((filter != null && filter.EndsWith("TF_Nearest", StringComparison.Ordinal) ||
-                lodGroup != null && lodGroup.EndsWith("TEXTUREGROUP_Pixels2D", StringComparison.Ordinal)) &&
-                img.Width < UPSCALE_SIZE && img.Height < UPSCALE_SIZE)
-            {
-                var width = img.Width;
-                var heigth = img.Height;
-
-                while (width < UPSCALE_SIZE && heigth < UPSCALE_SIZE)
-                {
-                    width *= 2;
-                    heigth *= 2;
-                }
-
-                using var bitmap = SKBitmap.FromImage(img);
-                using var resized = bitmap.Resize(new SKImageInfo(width, heigth), SKFilterQuality.None);
-                data = resized.Encode(SKEncodedImageFormat.Png, 100); // maybe dispose 'img' at this point?
-            }
-            else
-            {
-                data = img.Encode(SKEncodedImageFormat.Png, 100);
-            }
-
-            using (data)
-            {
-                using var stream = data.AsStream(false);
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = stream;
-                image.EndInit();
-                image.Freeze();
-                TabControl.SelectedTab.Image = image;
-            }
-
+            TabControl.SelectedTab.Image = image;
             if (UserSettings.Default.IsAutoSaveTextures)
                 TabControl.SelectedTab.SaveImage(true);
         }

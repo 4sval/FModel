@@ -31,7 +31,7 @@ namespace FModel.Views
         {
             var whatShouldIDo = _applicationView.SettingsView.Save();
             if (whatShouldIDo == SettingsOut.Restart)
-                _applicationView.Restart();
+                _applicationView.RestartWithWarning();
 
             Close();
 
