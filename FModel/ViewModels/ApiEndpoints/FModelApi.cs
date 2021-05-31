@@ -109,7 +109,7 @@ namespace FModel.ViewModels.ApiEndpoints
         {
             if (args != null)
             {
-                if (!args.IsUpdateAvailable) return;
+                if (new Version(args.CurrentVersion) == args.InstalledVersion) return;
                 var messageBox = new MessageBoxModel
                 {
                     Text = $"FModel {args.CurrentVersion} is available. You are using version {args.InstalledVersion}. Do you want to update the application now?",

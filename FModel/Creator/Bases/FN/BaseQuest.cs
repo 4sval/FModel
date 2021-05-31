@@ -114,7 +114,7 @@ namespace FModel.Creator.Bases.FN
                     }
                     else if (!_unauthorizedReward.Contains(name.Text))
                     {
-                        _reward = new Reward(quantity, primaryAssetName);
+                        _reward = new Reward(quantity, $"{name}:{primaryAssetName}");
                     }
                 }
             }
