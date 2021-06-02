@@ -19,7 +19,6 @@ using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Localization;
-using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion.Materials;
@@ -533,7 +532,7 @@ namespace FModel.ViewModels
                 ExportData(fullPath);
         }
 
-        private bool CheckExport(UExport export) // return if this loads an image
+        private bool CheckExport(UObject export) // return if this loads an image
         {
             switch (export)
             {
@@ -574,9 +573,9 @@ namespace FModel.ViewModels
 
                     return false;
                 }
-                case UObject uObject:
+                default:
                 {
-                    using var package = new CreatorPackage(uObject, UserSettings.Default.CosmeticStyle);
+                    using var package = new CreatorPackage(export, UserSettings.Default.CosmeticStyle);
                     if (!package.TryConstructCreator(out var creator)) return false;
 
                     creator.ParseForInfo();
@@ -584,8 +583,6 @@ namespace FModel.ViewModels
                     return true;
                 }
             }
-
-            return false;
         }
 
         private void SetImage(SKImage img)
