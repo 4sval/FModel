@@ -391,6 +391,7 @@ namespace FModel.ViewModels
             {
                 case "ini":
                 case "txt":
+                case "log":
                 case "po":
                 case "bat":
                 case "xml":

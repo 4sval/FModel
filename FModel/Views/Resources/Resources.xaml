@@ -384,6 +384,9 @@
                         <DataTrigger Binding="{Binding Header}" Value="Athena">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/athena.png" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Header}" Value="StateOfDecay2">
+                            <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/stateofdecay2.png" />
+                        </DataTrigger>
                     </HierarchicalDataTemplate.Triggers>
                 </HierarchicalDataTemplate>
             </Setter.Value>
