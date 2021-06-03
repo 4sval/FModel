@@ -33,10 +33,7 @@ jobs:
         uses: papeloto/action-zip@v1
         with:
           files: ./FModel/bin/Publish/FModel.exe
-          dest: FModel.zip
-
-      - name: test
-        run: tree
+          dest: FModel.zip # will end up in working directory not the Publish folder
 
       - name: GIT Release
         uses: marvinpinto/action-automatic-releases@latest
