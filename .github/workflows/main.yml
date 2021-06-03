@@ -1,4 +1,4 @@
-name: Artifact Generator
+name: FModel Builder
 
 on:
   workflow_dispatch:
@@ -32,14 +32,15 @@ jobs:
       - name: ZIP File
         uses: papeloto/action-zip@v1
         with:
-          files: D:\a\FModel\FModel\FModel\bin\Publish\
+          files: ./FModel/bin/Publish/FModel.exe
           dest: FModel.zip
 
       - name: GIT Release
-        uses: ncipollo/release-action@v1
+        uses: marvinpinto/action-automatic-releases@latest
         with:
-          artifacts: D:\a\FModel\FModel\FModel\bin\Publish\FModel.zip
-          artifactErrorsFailBuild: true
-          name: "FModel v${{ github.event.inputs.appVersion }}"
-          tag: ${{ github.event.inputs.appVersion }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "FModel v${{ github.event.inputs.appVersion }}"
+          automatic_release_tag: ${{ github.event.inputs.appVersion }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: false
+          files: |
+            */FModel/bin/Publish/FModel.zip
