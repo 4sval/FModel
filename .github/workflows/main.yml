@@ -1,7 +1,12 @@
-name: Artifact Generator
+name: FModel Builder
 
 on:
   workflow_dispatch:
+    inputs:
+        appVersion:
+          description: 'FModel Version And Release Tag'
+          required: true
+          default: '4.0.X.X'
 
 jobs:
   build:
@@ -22,10 +27,19 @@ jobs:
         run: dotnet restore FModel
 
       - name: .NET Publish
-        run: dotnet publish FModel -c Release -f net5.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false --no-self-contained -r win-x64
+        run: dotnet publish FModel -c Release -f net5.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false -p:AssemblyVersion=${{ github.event.inputs.appVersion }} -p:FileVersion=${{ github.event.inputs.appVersion }} --no-self-contained -r win-x64
 
-      - name: EXE Upload
-        uses: actions/upload-artifact@v2
+      - name: ZIP File
+        uses: papeloto/action-zip@v1
         with:
-          name: FModel
-          path: D:\a\FModel\FModel\FModel\bin\Publish\
+          files: ./FModel/bin/Publish/FModel.exe
+          dest: FModel.zip
+
+      - name: GIT Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          title: "FModel v${{ github.event.inputs.appVersion }}"
+          automatic_release_tag: ${{ github.event.inputs.appVersion }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: false
+          files: ./FModel/bin/Publish/FModel.zip
