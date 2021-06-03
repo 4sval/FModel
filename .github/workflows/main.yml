@@ -35,6 +35,9 @@ jobs:
           files: ./FModel/bin/Publish/FModel.exe
           dest: FModel.zip
 
+      - name: test
+        run: tree
+
       - name: GIT Release
         uses: marvinpinto/action-automatic-releases@latest
         with:
@@ -42,5 +45,4 @@ jobs:
           automatic_release_tag: ${{ github.event.inputs.appVersion }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: false
-          files: |
-            */FModel/bin/Publish/FModel.zip
+          files: FModel.zip
