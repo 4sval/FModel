@@ -22,23 +22,23 @@
             <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="BrTemplate">
                 <StackPanel VerticalAlignment="Center" Margin="50">
-                    <CheckBox Content="Show Cities" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="Show Landmarks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="Show NPCs Path" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                    <CheckBox Content="ApolloGameplay_MapPoi" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="ApolloGameplay_MapLandmark" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="ApolloGameplay_PatrolPath" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="PrTemplate">
                 <StackPanel VerticalAlignment="Center" Margin="25 0">
-                    <CheckBox Content="PapayaGameplay_CannonballGame" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_SkydiveGame" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_ShootingTargets" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_ParkourGame" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_TimeTrials" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_VendingMachines" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_MusicBlocks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaEffects_Concert" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaAudio_StageVolumes" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaEffects_Directionals" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                    <CheckBox Content="PapayaGameplay_CannonballGame" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="PapayaGameplay_SkydiveGame" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="PapayaGameplay_ShootingTargets" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="PapayaGameplay_ParkourGame" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="PapayaGameplay_TimeTrials" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="PapayaGameplay_VendingMachines" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="PapayaGameplay_MusicBlocks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="PapayaEffects_Concert" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="PapayaAudio_StageVolumes" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
+                    <CheckBox Content="PapayaEffects_Directionals" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Checked="ToggleOnChange" Unchecked="ToggleOnChange" />
                 </StackPanel>
             </DataTemplate>
         </ResourceDictionary>
@@ -98,6 +98,8 @@
 
             <TextBlock Text="Minimap is loading, please wait..." HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Image UseLayoutRounding="True" Source="{Binding MapViewer.MapImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                   Visibility="{Binding IsReady, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <Image UseLayoutRounding="True" Source="{Binding MapViewer.LayerImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
                    Visibility="{Binding IsReady, Converter={StaticResource BoolToVisibilityConverter}}" />
         </Grid>
     </Grid>

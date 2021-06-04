@@ -23,7 +23,7 @@ namespace FModel.Creator.Bases.FN
         public SKBitmap SeriesBackground { get; protected set; }
         protected string ShortDescription { get; set; }
         protected string CosmeticSource { get; set; }
-        protected SKBitmap[] UserFacingFlags { get; set; }
+        protected Dictionary<string, SKBitmap> UserFacingFlags { get; set; }
 
         public BaseIcon(UObject uObject, EIconStyle style) : base(uObject, style)
         {
@@ -269,24 +269,24 @@ namespace FModel.Creator.Bases.FN
             if (!itemCategories.TryGetValue(out FStructFallback[] tertiaryCategories, "TertiaryCategories"))
                 return;
 
-            UserFacingFlags = new SKBitmap[userFacingFlags.Count];
-            for (var i = 0; i < UserFacingFlags.Length; i++)
+            UserFacingFlags = new Dictionary<string, SKBitmap>(userFacingFlags.Count);
+            foreach (var flag in userFacingFlags)
             {
-                if (userFacingFlags[i].Equals("Cosmetics.UserFacingFlags.HasUpgradeQuests", StringComparison.OrdinalIgnoreCase))
+                if (flag.Equals("Cosmetics.UserFacingFlags.HasUpgradeQuests", StringComparison.OrdinalIgnoreCase))
                 {
                     if (Object.ExportType.Equals("AthenaPetCarrierItemDefinition", StringComparison.OrdinalIgnoreCase))
-                        UserFacingFlags[i] = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T-Icon-Pets-64.png"))?.Stream);
-                    else UserFacingFlags[i] = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T-Icon-Quests-64.png"))?.Stream);
+                        UserFacingFlags[flag] = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T-Icon-Pets-64.png"))?.Stream);
+                    else UserFacingFlags[flag] = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T-Icon-Quests-64.png"))?.Stream);
                 }
                 else
                 {
                     foreach (var category in tertiaryCategories)
                     {
-                        if (category.TryGetValue(out FGameplayTagContainer tagContainer, "TagContainer") && tagContainer.TryGetGameplayTag(userFacingFlags[i], out _) &&
+                        if (category.TryGetValue(out FGameplayTagContainer tagContainer, "TagContainer") && tagContainer.TryGetGameplayTag(flag, out _) &&
                             category.TryGetValue(out FStructFallback categoryBrush, "CategoryBrush") && categoryBrush.TryGetValue(out FStructFallback brushXxs, "Brush_XXS") &&
                             brushXxs.TryGetValue(out FPackageIndex resourceObject, "ResourceObject") && Utils.TryGetPackageIndexExport(resourceObject, out UTexture2D texture))
                         {
-                            UserFacingFlags[i] = Utils.GetBitmap(texture);
+                            UserFacingFlags[flag] = Utils.GetBitmap(texture);
                         }
                     }
                 }
@@ -299,7 +299,7 @@ namespace FModel.Creator.Bases.FN
 
             const int size = 25;
             var x = Margin * (int) 2.5;
-            foreach (var flag in UserFacingFlags)
+            foreach (var flag in UserFacingFlags.Values)
             {
                 if (flag == null) continue;
 

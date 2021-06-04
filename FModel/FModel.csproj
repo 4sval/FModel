@@ -78,8 +78,6 @@
     <None Remove="Resources\T_ReloadTime_Weapon_Stats.png" />
     <None Remove="Resources\T-Icon-Pets-64.png" />
     <None Remove="Resources\T-Icon-Quests-64.png" />
-    <None Remove="Resources\city_pin.png" />
-    <None Remove="Resources\pin.png" />
     <None Remove="Resources\Default.png" />
     <None Remove="Resources\NoBackground.png" />
     <None Remove="Resources\NoText.png" />
@@ -170,8 +168,6 @@
     <Resource Include="Resources\T_ReloadTime_Weapon_Stats.png" />
     <Resource Include="Resources\T-Icon-Pets-64.png" />
     <Resource Include="Resources\T-Icon-Quests-64.png" />
-    <Resource Include="Resources\city_pin.png" />
-    <Resource Include="Resources\pin.png" />
     <Resource Include="Resources\Default.png" />
     <Resource Include="Resources\NoBackground.png" />
     <Resource Include="Resources\NoText.png" />

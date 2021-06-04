@@ -74,5 +74,11 @@ namespace FModel.Views
                 break;
             }
         }
+
+        private async void ToggleOnChange(object sender, RoutedEventArgs e)
+        {
+            if (sender is not CheckBox checkBox) return;
+            await _applicationView.MapViewer.GenericToggle(checkBox.Content.ToString(), checkBox.IsChecked ?? true);
+        }
     }
 }

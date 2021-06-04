@@ -45,11 +45,11 @@
                     </Grid.ColumnDefinitions>
                     
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Output Directory *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding OutputDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding OutputDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseOutput" Margin="0 0 0 5" />
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Game Directory *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding GameDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding GameDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="1" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" Margin="0 0 0 5" />
                     
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Update Mode" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Receive updates each time a new release is pushed to GitHub&#10;Receive updates each time a new commit is pushed to GitHub" />

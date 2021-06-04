@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using CUE4Parse.UE4.Assets.Exports;
+﻿using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
@@ -21,7 +20,6 @@ namespace FModel.Creator.Bases.FN
         private string _source;
         private string _season;
         private bool _lowerDrawn;
-        private bool _hasStyle;
 
         public BaseCommunity(UObject uObject, EIconStyle style, string designName) : base(uObject, style)
         {
@@ -89,8 +87,9 @@ namespace FModel.Creator.Bases.FN
                 Description += GetCosmeticSet(set.Text, _design.DrawSetShort);
             if (_design.DrawSeason && gameplayTags.TryGetGameplayTag("Cosmetics.Filter.Season.", out var season))
                 _season = GetCosmeticSeason(season.Text, _design.DrawSeasonShort);
-            if (gameplayTags.Any(x => x.Text.StartsWith("Cosmetics.UserFacingFlags.")))
-                _hasStyle = true;
+
+            var triggers = _design.GameplayTags.DrawCustomOnly ? new[] {"Cosmetics.UserFacingFlags."} : new[] {"Cosmetics.UserFacingFlags.", "Homebase.Class.", "NPC.CharacterType.Survivor.Defender."};
+            GetUserFacingFlags(gameplayTags.GetAllGameplayTags(triggers));
         }
 
         private string GetCosmeticSet(string setName, bool bShort)
@@ -291,7 +290,7 @@ namespace FModel.Creator.Bases.FN
 
         private void DrawUserFacingFlags(SKCanvas c, bool customOnly)
         {
-            if (!_hasStyle) return;
+            if (UserFacingFlags == null || UserFacingFlags.Count < 1) return;
             if (customOnly)
             {
                 c.DrawBitmap(_design.GameplayTags.Custom, 0, 0, ImagePaint);

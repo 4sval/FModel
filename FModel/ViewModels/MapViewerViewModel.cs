@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using CUE4Parse.UE4.Assets.Exports;
@@ -13,8 +14,15 @@ using SkiaSharp;
 
 namespace FModel.ViewModels
 {
+    public class MapLayer
+    {
+        public SKBitmap Layer;
+        public bool IsEnabled;
+    }
+    
     public class MapViewerViewModel : ViewModel
     {
+        private const string _FIRST_BITMAP = "mapBase";
         private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
 
         private int _mapIndex = -1;
@@ -48,13 +56,23 @@ namespace FModel.ViewModels
             get => _mapImage;
             set => SetProperty(ref _mapImage, value);
         }
+        private BitmapImage _layerImage;
+        public BitmapImage LayerImage
+        {
+            get => _layerImage;
+            set => SetProperty(ref _layerImage, value);
+        }
 
-        private readonly List<SKBitmap>[] _bitmaps; // first bitmap is the displayed map, others are overlays of the map
+        private readonly Dictionary<string, MapLayer>[] _bitmaps; // first bitmap is the displayed map, others are overlays of the map
         private readonly CUE4ParseViewModel _cue4Parse;
 
         public MapViewerViewModel(CUE4ParseViewModel cue4Parse)
         {
-            _bitmaps = new[] {new List<SKBitmap>(), new List<SKBitmap>()};
+            _bitmaps = new[]
+            {
+                new Dictionary<string, MapLayer>(),
+                new Dictionary<string, MapLayer>()
+            };
             _cue4Parse = cue4Parse;
         }
 
@@ -69,27 +87,35 @@ namespace FModel.ViewModels
 
         public BitmapImage GetImageToSave()
         {
-            var ret = new SKBitmap(_bitmaps[MapIndex][0].Width, _bitmaps[MapIndex][0].Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var ret = new SKBitmap(_bitmaps[MapIndex][_FIRST_BITMAP].Layer.Width, _bitmaps[MapIndex][_FIRST_BITMAP].Layer.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
-            c.DrawBitmap(_bitmaps[MapIndex][0], 0, 0);
+            foreach (var layer in _bitmaps[MapIndex].Values.Where(layer => layer.IsEnabled))
+            {
+                c.DrawBitmap(layer.Layer, 0, 0);
+            }
 
             return GetImageSource(ret);
         }
 
-        protected override bool SetProperty<T>(ref T storage, T value, string propertyName = null)
+        public async Task GenericToggle(string key, bool enabled)
         {
-            var ret = base.SetProperty(ref storage, value, propertyName);
-            CheckForStuffToDraw(propertyName);
-            return ret;
+            if (_bitmaps[MapIndex].TryGetValue(key, out var layer) && layer.Layer != null)
+            {
+                layer.IsEnabled = enabled;
+            }
+            else // load layer
+            {
+                switch (key)
+                {
+                    
+                }
+            }
         }
 
-        private async void CheckForStuffToDraw(string propertyName = null)
+        protected override bool SetProperty<T>(ref T storage, T value, string propertyName = null) // don't delete, else nothing will update for some reason
         {
-            switch (propertyName)
-            {
-                
-            }
+            return base.SetProperty(ref storage, value, propertyName);
         }
 
         private BitmapImage GetImageSource(SKBitmap bitmap)
@@ -120,14 +146,14 @@ namespace FModel.ViewModels
 
         private FVector2D GetMapPosition(FVector vector)
         {
-            var nx = (vector.Y + _mapRadius) / (_mapRadius * 2) * _bitmaps[MapIndex][0].Width;
-            var ny = (1 - (vector.X + _mapRadius) / (_mapRadius * 2)) * _bitmaps[MapIndex][0].Height;
+            var nx = (vector.Y + _mapRadius) / (_mapRadius * 2) * _bitmaps[MapIndex][_FIRST_BITMAP].Layer.Width;
+            var ny = (1 - (vector.X + _mapRadius) / (_mapRadius * 2)) * _bitmaps[MapIndex][_FIRST_BITMAP].Layer.Height;
             return new FVector2D(nx, ny);
         }
         
         private async Task LoadBrMiniMap()
         {
-            if (_bitmaps[0].Count > 0) return;
+            if (_bitmaps[0].TryGetValue(_FIRST_BITMAP, out var layer) && layer.Layer != null) return;
             await _threadWorkerView.Begin(_ =>
             {
                 if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerBR.Default__UIMapManagerBR_C", out UObject mapManager) ||
@@ -136,22 +162,22 @@ namespace FModel.ViewModels
                     !cachedExpressionData.TryGetValue(out FStructFallback parameters, "Parameters") ||
                     !parameters.TryGetValue(out UTexture2D[] textureValues, "TextureValues")) return;
                 
-                _bitmaps[0].Add(Utils.GetBitmap(textureValues[0]));
-                _brMiniMapImage = GetImageSource(_bitmaps[0][0]);
+                _bitmaps[0][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(textureValues[0]), IsEnabled = true};
+                _brMiniMapImage = GetImageSource(_bitmaps[0][_FIRST_BITMAP].Layer);
             });
         }
 
         private async Task LoadPrMiniMap()
         {
-            if (_bitmaps[1].Count > 0) return;
+            if (_bitmaps[1].TryGetValue(_FIRST_BITMAP, out var layer) && layer.Layer != null) return;
             await _threadWorkerView.Begin(_ =>
             {
                 if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerPapaya.Default__UIMapManagerPapaya_C", out UObject mapManager) ||
                     !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") ||
                     mapMaterial.ReferencedTextures.Count < 1) return;
 
-                _bitmaps[1].Add(Utils.GetBitmap(mapMaterial.ReferencedTextures[0] as UTexture2D));
-                _prMiniMapImage = GetImageSource(_bitmaps[1][0]);
+                _bitmaps[1][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(mapMaterial.ReferencedTextures[0] as UTexture2D), IsEnabled = true};
+                _prMiniMapImage = GetImageSource(_bitmaps[1][_FIRST_BITMAP].Layer);
             });
         }
     }
