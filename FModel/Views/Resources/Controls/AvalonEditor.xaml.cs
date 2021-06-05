@@ -95,9 +95,8 @@ namespace FModel.Views.Resources.Controls
         {
             if (DataContext is not TabItem tabItem || Keyboard.Modifiers != ModifierKeys.Control)
                 return;
-
+            
             var fontSize = tabItem.FontSize + e.Delta / 50.0;
-
             tabItem.FontSize = fontSize switch
             {
                 < 6 => 6,
