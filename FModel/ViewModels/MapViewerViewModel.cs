@@ -434,7 +434,6 @@ namespace FModel.ViewModels
                             path.LineTo(vector.X, vector.Y);
                         }
 
-                        path.Close();
                         c.DrawPath(path, _pathPaint);
                         c.DrawText(gameplayTags.GameplayTags[0].Text.SubstringAfterLast("."), vector.X, vector.Y - 12.5F, _imagePaint);
                     }
@@ -559,19 +558,22 @@ namespace FModel.ViewModels
                     if (!uObject.ExportType.Equals("BP_Waypoint_Parent_Papaya_C", StringComparison.OrdinalIgnoreCase)) continue;
 
                     if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
-                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
-                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
-
+                        !Utils.TryGetPackageIndexExport(rootComponent, out UObject root) ||
+                        !root.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+                    
                     var vector = GetMapPosition(relativeLocation, _prRadius);
-                    if (path.IsEmpty)
+                    if (path.IsEmpty || uObject.TryGetValue(out bool startsTrial, "StartsTrial") && startsTrial)
                     {
                         path.MoveTo(vector.X, vector.Y);
                         c.DrawText(name, vector.X, vector.Y - 12.5F, _imagePaint);
                     }
+                    else if (uObject.TryGetValue(out bool endsTrial, "EndsTrial") && endsTrial)
+                    {
+                        c.DrawPath(path, _pathPaint);
+                        path = new SKPath();
+                    }
                     else path.LineTo(vector.X, vector.Y);
                 }
-                path.Close();
-                c.DrawPath(path, _pathPaint);
 
                 _bitmaps[1][file] = new MapLayer {Layer = waypointBitmap, IsEnabled = false};
             });
