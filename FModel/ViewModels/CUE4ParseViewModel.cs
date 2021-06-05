@@ -82,7 +82,17 @@ namespace FModel.ViewModels
                 default:
                 {
                     Game = gameDirectory.SubstringBeforeLast("\\Content\\").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
-                    Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+
+                    if (Game == FGame.StateOfDecay2)
+                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
+                            {
+                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
+                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
+                            },
+                            SearchOption.AllDirectories, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+                    else
+                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+
                     break;
                 }
             }
