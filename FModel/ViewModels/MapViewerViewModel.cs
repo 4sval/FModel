@@ -24,6 +24,12 @@ namespace FModel.ViewModels
         public SKBitmap Layer;
         public bool IsEnabled;
     }
+
+    public enum EWaypointType
+    {
+        Parkour,
+        TimeTrials
+    }
     
     public class MapViewerViewModel : ViewModel
     {
@@ -71,6 +77,41 @@ namespace FModel.ViewModels
         {
             get => _prSkydive;
             set => SetProperty(ref _prSkydive, value, "PapayaGameplay_SkydiveGame");
+        }
+        
+        private bool _prShootingTargets;
+        public bool PrShootingTargets
+        {
+            get => _prShootingTargets;
+            set => SetProperty(ref _prShootingTargets, value, "PapayaGameplay_ShootingTargets");
+        }
+        
+        private bool _prParkour;
+        public bool PrParkour
+        {
+            get => _prParkour;
+            set => SetProperty(ref _prParkour, value, "PapayaGameplay_ParkourGame");
+        }
+        
+        private bool _prTimeTrials;
+        public bool PrTimeTrials
+        {
+            get => _prTimeTrials;
+            set => SetProperty(ref _prTimeTrials, value, "PapayaGameplay_TimeTrials");
+        }
+        
+        private bool _prVendingMachines;
+        public bool PrVendingMachines
+        {
+            get => _prVendingMachines;
+            set => SetProperty(ref _prVendingMachines, value, "PapayaGameplay_VendingMachines");
+        }
+        
+        private bool _prMusicBlocks;
+        public bool PrMusicBlocks
+        {
+            get => _prMusicBlocks;
+            set => SetProperty(ref _prMusicBlocks, value, "PapayaGameplay_MusicBlocks");
         }
 
         #endregion
@@ -179,6 +220,21 @@ namespace FModel.ViewModels
                         break;
                     case "PapayaGameplay_SkydiveGame":
                         await LoadSkydiveGame();
+                        break;
+                    case "PapayaGameplay_ShootingTargets":
+                        await LoadShootingTargets();
+                        break;
+                    case "PapayaGameplay_ParkourGame":
+                        await LoadWaypoint(EWaypointType.Parkour);
+                        break;
+                    case "PapayaGameplay_TimeTrials":
+                        await LoadWaypoint(EWaypointType.TimeTrials);
+                        break;
+                    case "PapayaGameplay_VendingMachines":
+                        await LoadVendingMachines();
+                        break;
+                    case "PapayaGameplay_MusicBlocks":
+                        await LoadMusicBlocks();
                         break;
                 }
                 _bitmaps[MapIndex][key].IsEnabled = true;
@@ -439,6 +495,158 @@ namespace FModel.ViewModels
                 }
 
                 _bitmaps[1]["PapayaGameplay_SkydiveGame"] = new MapLayer {Layer = skydiveBitmap, IsEnabled = false};
+            });
+        }
+        
+        private async Task LoadShootingTargets()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                var shootingTargetsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(shootingTargetsBitmap);
+
+                var bDone = false;
+                var exports = Utils.LoadExports("/PapayaGameplay/LevelOverlays/PapayaGameplay_ShootingTargets");
+                foreach (var export in exports)
+                {
+                    if (export is not { } uObject) continue;
+                    if (!uObject.ExportType.Equals("PapayaShootingTarget_C", StringComparison.OrdinalIgnoreCase)) continue;
+
+                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+
+                    var vector = GetMapPosition(relativeLocation, _prRadius);
+                    c.DrawPoint(vector.X, vector.Y, _pathPaint);
+                    if (bDone) continue;
+                    
+                    bDone = true;
+                    c.DrawText("Shooting Target", vector.X, vector.Y - 12.5F, _imagePaint);
+                }
+
+                _bitmaps[1]["PapayaGameplay_ShootingTargets"] = new MapLayer {Layer = shootingTargetsBitmap, IsEnabled = false};
+            });
+        }
+
+        private async Task LoadWaypoint(EWaypointType type)
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                var waypointBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(waypointBitmap);
+
+                string file;
+                string name;
+                switch (type)
+                {
+                    case EWaypointType.Parkour:
+                        file = "PapayaGameplay_ParkourGame";
+                        name = "Parkour";
+                        break;
+                    case EWaypointType.TimeTrials:
+                        file = "PapayaGameplay_TimeTrials";
+                        name = "Time Trials";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                }
+                
+                var path = new SKPath();
+                var exports = Utils.LoadExports($"/PapayaGameplay/LevelOverlays/{file}");
+                foreach (var export in exports)
+                {
+                    if (export is not { } uObject) continue;
+                    if (!uObject.ExportType.Equals("BP_Waypoint_Parent_Papaya_C", StringComparison.OrdinalIgnoreCase)) continue;
+
+                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+
+                    var vector = GetMapPosition(relativeLocation, _prRadius);
+                    if (path.IsEmpty)
+                    {
+                        path.MoveTo(vector.X, vector.Y);
+                        c.DrawText(name, vector.X, vector.Y - 12.5F, _imagePaint);
+                    }
+                    else path.LineTo(vector.X, vector.Y);
+                }
+                path.Close();
+                c.DrawPath(path, _pathPaint);
+
+                _bitmaps[1][file] = new MapLayer {Layer = waypointBitmap, IsEnabled = false};
+            });
+        }
+
+        private async Task LoadVendingMachines()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                var set = new HashSet<string>();
+                var timeTrialsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(timeTrialsBitmap);
+
+                var exports = Utils.LoadExports("/PapayaGameplay/LevelOverlays/PapayaGameplay_VendingMachines");
+                foreach (var export in exports)
+                {
+                    if (export is not { } uObject) continue;
+                    if (!uObject.ExportType.Equals("B_Papaya_VendingMachine_Boat_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_BoogieBomb_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_Burger_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_CrashPad_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_FishingPole_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_Grappler_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_Jetpack_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_PaintGrenade_Blue_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_PaintGrenade_Red_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_PaintLauncher_Blue_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_PaintLauncher_Red_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_PlungerBow_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_Quad_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_Tomato_C", StringComparison.OrdinalIgnoreCase)) continue;
+
+                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out UObject root) ||
+                        !root.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+
+                    var name = uObject.ExportType.SubstringAfter("B_Papaya_VendingMachine_").SubstringBeforeLast("_C");
+                    var vector = GetMapPosition(relativeLocation, _prRadius);
+                    c.DrawPoint(vector.X, vector.Y, _pathPaint);
+                    if (!set.Add(name)) continue;
+                    
+                    c.DrawText(name, vector.X, vector.Y - 12.5F, _imagePaint);
+                }
+
+                _bitmaps[1]["PapayaGameplay_VendingMachines"] = new MapLayer {Layer = timeTrialsBitmap, IsEnabled = false};
+            });
+        }
+        
+        private async Task LoadMusicBlocks()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                var shootingTargetsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(shootingTargetsBitmap);
+
+                var bDone = false;
+                var exports = Utils.LoadExports("/PapayaGameplay/LevelOverlays/PapayaGameplay_MusicBlocks");
+                foreach (var export in exports)
+                {
+                    if (export is not { } uObject) continue;
+                    if (!uObject.ExportType.Equals("MusicBlock_Piano3_Papaya_C", StringComparison.OrdinalIgnoreCase)) continue;
+
+                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+
+                    var vector = GetMapPosition(relativeLocation, _prRadius);
+                    c.DrawPoint(vector.X, vector.Y, _pathPaint);
+                    if (bDone) continue;
+                    
+                    bDone = true;
+                    c.DrawText("Music Blocks", vector.X, vector.Y - 12.5F, _imagePaint);
+                }
+
+                _bitmaps[1]["PapayaGameplay_MusicBlocks"] = new MapLayer {Layer = shootingTargetsBitmap, IsEnabled = false};
             });
         }
     }

@@ -39,14 +39,16 @@
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                     <CheckBox Content="Skydive" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrSkydive}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
-                    <CheckBox Content="PapayaGameplay_ShootingTargets" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_ParkourGame" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_TimeTrials" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_VendingMachines" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_MusicBlocks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaEffects_Concert" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaAudio_StageVolumes" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaEffects_Directionals" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                    <CheckBox Content="Shooting Targets" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrShootingTargets}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Parkour" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrParkour}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Time Trials" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrTimeTrials}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Vending Machines" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrVendingMachines}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Music Blocks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrMusicBlocks}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                 </StackPanel>
             </DataTemplate>
         </ResourceDictionary>
