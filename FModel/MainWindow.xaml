@@ -14,11 +14,8 @@
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
             <Setter Property="Title" Value="FModel" />
             <Style.Triggers>
-                <DataTrigger
-                    Binding="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}"
-                    Value="True">
-                    <Setter Property="Title"
-                            Value="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, StringFormat={}FModel - {0}}" />
+                <DataTrigger Binding="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
+                    <Setter Property="Title" Value="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, StringFormat={}FModel - {0}}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>

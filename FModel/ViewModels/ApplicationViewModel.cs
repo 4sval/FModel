@@ -44,7 +44,6 @@ namespace FModel.ViewModels
             set
             {
                 SetProperty(ref _status, value);
-                RaisePropertyChanged(nameof(TitleExtra));
                 IsReady = Status != EStatusKind.Loading && Status != EStatusKind.Stopping;
             }
         }
