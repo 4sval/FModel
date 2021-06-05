@@ -303,7 +303,7 @@ namespace FModel.Settings
             set => SetProperty(ref _customDirectories, value);
         }
 
-        private DateTime _lastAesReload = DateTime.Today;
+        private DateTime _lastAesReload = DateTime.Today.AddDays(-1);
         public DateTime LastAesReload
         {
             get => _lastAesReload;
