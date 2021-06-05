@@ -81,17 +81,8 @@ namespace FModel.ViewModels
                 }
                 default:
                 {
-                    Game = gameDirectory.SubstringBeforeLast("\\Content\\Paks").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
-
-                    Provider = Game switch
-                    {
-                        FGame.WorldExplorers => new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo> {new(gameDirectory.SubstringBeforeLast('\\') + "\\EmbeddedPaks\\")}, SearchOption.TopDirectoryOnly,
-                            true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]),
-                        FGame.BendGame => new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo> {new(gameDirectory.SubstringBeforeLast('\\') + "\\sfpaks\\")}, SearchOption.AllDirectories,
-                            true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]),
-                        _ => new DefaultFileProvider(gameDirectory, SearchOption.TopDirectoryOnly, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game])
-                    };
-
+                    Game = gameDirectory.SubstringBeforeLast("\\Content\\").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
+                    Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
                     break;
                 }
             }

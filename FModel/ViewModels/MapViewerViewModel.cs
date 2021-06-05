@@ -31,32 +31,46 @@ namespace FModel.ViewModels
 
         #region BINDINGS
         
-        private bool _poisCheck;
-        public bool PoisCheck
+        private bool _brPois;
+        public bool BrPois
         {
-            get => _poisCheck;
-            set => SetProperty(ref _poisCheck, value, "ApolloGameplay_MapPois");
+            get => _brPois;
+            set => SetProperty(ref _brPois, value, "ApolloGameplay_MapPois");
         }
         
-        private bool _brLandmarksCheck;
-        public bool BrLandmarksCheck
+        private bool _brLandmarks;
+        public bool BrLandmarks
         {
-            get => _brLandmarksCheck;
-            set => SetProperty(ref _brLandmarksCheck, value, "ApolloGameplay_MapLandmarks");
+            get => _brLandmarks;
+            set => SetProperty(ref _brLandmarks, value, "ApolloGameplay_MapLandmarks");
         }
         
-        private bool _patrolsPathCheck;
-        public bool PatrolsPathCheck
+        private bool _brPatrolsPath;
+        public bool BrPatrolsPath
         {
-            get => _patrolsPathCheck;
-            set => SetProperty(ref _patrolsPathCheck, value, "ApolloGameplay_PatrolsPath");
+            get => _brPatrolsPath;
+            set => SetProperty(ref _brPatrolsPath, value, "ApolloGameplay_PatrolsPath");
         }
         
-        private bool _prLandmarksCheck;
-        public bool PrLandmarksCheck
+        private bool _prLandmarks;
+        public bool PrLandmarks
         {
-            get => _prLandmarksCheck;
-            set => SetProperty(ref _prLandmarksCheck, value, "PapayaGameplay_MapLandmarks");
+            get => _prLandmarks;
+            set => SetProperty(ref _prLandmarks, value, "PapayaGameplay_MapLandmarks");
+        }
+        
+        private bool _prCannonball;
+        public bool PrCannonball
+        {
+            get => _prCannonball;
+            set => SetProperty(ref _prCannonball, value, "PapayaGameplay_CannonballGame");
+        }
+        
+        private bool _prSkydive;
+        public bool PrSkydive
+        {
+            get => _prSkydive;
+            set => SetProperty(ref _prSkydive, value, "PapayaGameplay_SkydiveGame");
         }
 
         #endregion
@@ -159,6 +173,12 @@ namespace FModel.ViewModels
                         break;
                     case "ApolloGameplay_PatrolsPath":
                         await LoadPatrolsPath();
+                        break;
+                    case "PapayaGameplay_CannonballGame":
+                        await LoadCannonballGame();
+                        break;
+                    case "PapayaGameplay_SkydiveGame":
+                        await LoadSkydiveGame();
                         break;
                 }
                 _bitmaps[MapIndex][key].IsEnabled = true;
@@ -333,7 +353,7 @@ namespace FModel.ViewModels
                     var exports = Utils.LoadExports(overlayWorld.AssetPathName.Text.SubstringBeforeLast("."));
                     foreach (var export in exports)
                     {
-                        if (!(export is UObject uObject)) continue;
+                        if (export is not { } uObject) continue;
                         if (!uObject.ExportType.Equals("FortAthenaPatrolPath", StringComparison.OrdinalIgnoreCase) ||
                             !uObject.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags") ||
                             !uObject.TryGetValue(out FPackageIndex[] patrolPoints, "PatrolPoints")) continue;
@@ -365,6 +385,60 @@ namespace FModel.ViewModels
                 }
 
                 _bitmaps[0]["ApolloGameplay_PatrolsPath"] = new MapLayer {Layer = patrolsPathBitmap, IsEnabled = false};
+            });
+        }
+
+        private async Task LoadCannonballGame()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                var cannonballBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(cannonballBitmap);
+
+                var exports = Utils.LoadExports("/PapayaGameplay/LevelOverlays/PapayaGameplay_CannonballGame");
+                foreach (var export in exports)
+                {
+                    if (export is not { } uObject) continue;
+                    if (!uObject.ExportType.Equals("BP_CannonballGame_Target_C", StringComparison.OrdinalIgnoreCase) &&
+                        !uObject.ExportType.Equals("CannonballGame_VehicleSpawner_C", StringComparison.OrdinalIgnoreCase)) continue;
+
+                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+
+                    var vector = GetMapPosition(relativeLocation, _prRadius);
+                    c.DrawPoint(vector.X, vector.Y, _pathPaint);
+                    c.DrawText(Utils.GetLocalizedResource("", "D998BEF44F051E0885C6C58565934BEA", "Cannonball"), vector.X, vector.Y - 12.5F, _imagePaint);
+                }
+
+                _bitmaps[1]["PapayaGameplay_CannonballGame"] = new MapLayer {Layer = cannonballBitmap, IsEnabled = false};
+            });
+        }
+
+        private async Task LoadSkydiveGame()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                var skydiveBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(skydiveBitmap);
+
+                var exports = Utils.LoadExports("/PapayaGameplay/LevelOverlays/PapayaGameplay_SkydiveGame");
+                foreach (var export in exports)
+                {
+                    if (export is not { } uObject) continue;
+                    if (!uObject.ExportType.Equals("BP_Waypoint_Papaya_Skydive_Start_C", StringComparison.OrdinalIgnoreCase)) continue;
+
+                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !uObject.TryGetValue(out FText minigameActivityName, "MinigameActivityName") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+
+                    var vector = GetMapPosition(relativeLocation, _prRadius);
+                    c.DrawPoint(vector.X, vector.Y, _pathPaint);
+                    c.DrawText(minigameActivityName.Text, vector.X, vector.Y - 12.5F, _imagePaint);
+                }
+
+                _bitmaps[1]["PapayaGameplay_SkydiveGame"] = new MapLayer {Layer = skydiveBitmap, IsEnabled = false};
             });
         }
     }

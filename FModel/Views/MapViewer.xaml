@@ -23,20 +23,22 @@
             <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="BrTemplate">
                 <StackPanel VerticalAlignment="Center" Margin="50">
-                    <CheckBox Content="Points Of Interest" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PoisCheck}"
+                    <CheckBox Content="Points Of Interest" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrPois}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
-                    <CheckBox Content="Landmarks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrLandmarksCheck}"
+                    <CheckBox Content="Landmarks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrLandmarks}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
-                    <CheckBox Content="Patrols Path" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PatrolsPathCheck}"
+                    <CheckBox Content="Patrols Path" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrPatrolsPath}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="PrTemplate">
                 <StackPanel VerticalAlignment="Center" Margin="25 0">
-                    <CheckBox Content="Landmarks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrLandmarksCheck}"
+                    <CheckBox Content="Landmarks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrLandmarks}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
-                    <CheckBox Content="PapayaGameplay_CannonballGame" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-                    <CheckBox Content="PapayaGameplay_SkydiveGame" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                    <CheckBox Content="Cannonball" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrCannonball}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Skydive" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrSkydive}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                     <CheckBox Content="PapayaGameplay_ShootingTargets" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
                     <CheckBox Content="PapayaGameplay_ParkourGame" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
                     <CheckBox Content="PapayaGameplay_TimeTrials" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
