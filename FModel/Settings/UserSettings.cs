@@ -210,7 +210,8 @@ namespace FModel.Settings
             {FGame.Indiana, EGame.GAME_UE4_LATEST},
             {FGame.RogueCompany, EGame.GAME_UE4_LATEST},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
-            {FGame.Platform, EGame.GAME_UE4_24}
+            {FGame.Platform, EGame.GAME_UE4_24},
+            {FGame.BendGame, EGame.GAME_UE4_11}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -233,7 +234,8 @@ namespace FModel.Settings
             {FGame.Indiana, UE4Version.VER_UE4_DETERMINE_BY_GAME},
             {FGame.RogueCompany, UE4Version.VER_UE4_DETERMINE_BY_GAME},
             {FGame.SwGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Platform, UE4Version.VER_UE4_DETERMINE_BY_GAME}
+            {FGame.Platform, UE4Version.VER_UE4_DETERMINE_BY_GAME},
+            {FGame.BendGame, UE4Version.VER_UE4_DETERMINE_BY_GAME}
         };
         public IDictionary<FGame, UE4Version> OverridedUEVersion
         {
@@ -292,7 +294,8 @@ namespace FModel.Settings
             {FGame.Indiana, new List<CustomDirectory>()},
             {FGame.RogueCompany, new List<CustomDirectory>()},
             {FGame.SwGame, new List<CustomDirectory>()},
-            {FGame.Platform, new List<CustomDirectory>()}
+            {FGame.Platform, new List<CustomDirectory>()},
+            {FGame.BendGame, new List<CustomDirectory>()}
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {

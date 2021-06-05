@@ -483,6 +483,7 @@ namespace FModel.ViewModels
                 }
                 case "png":
                 case "jpg":
+                case "bmp":
                 {
                     if (Provider.TrySaveAsset(fullPath, out var data))
                     {
@@ -497,6 +498,7 @@ namespace FModel.ViewModels
                     FLogger.AppendText($"Export '{fullPath.SubstringAfterLast('/')}' and change its extension if you want it to be an installable font file", Constants.WHITE, true);
                     break;
                 case "ushaderbytecode":
+                case "ushadercode":
                     TabControl.SelectedTab.Image = null;
                     break;
                 default:
