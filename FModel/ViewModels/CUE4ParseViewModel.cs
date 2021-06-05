@@ -83,17 +83,15 @@ namespace FModel.ViewModels
                 {
                     Game = gameDirectory.SubstringBeforeLast("\\Content\\Paks").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
 
-                    if (Game == FGame.WorldExplorers)
+                    Provider = Game switch
                     {
-                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo> {new(gameDirectory.SubstringBeforeLast('\\') + "\\EmbeddedPaks\\")},
-                            SearchOption.TopDirectoryOnly, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
-                    }
-                    else
-                    {
-                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.TopDirectoryOnly, true,
-                            UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
-                    }
-                    
+                        FGame.WorldExplorers => new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo> {new(gameDirectory.SubstringBeforeLast('\\') + "\\EmbeddedPaks\\")}, SearchOption.TopDirectoryOnly,
+                            true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]),
+                        FGame.BendGame => new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo> {new(gameDirectory.SubstringBeforeLast('\\') + "\\sfpaks\\")}, SearchOption.AllDirectories,
+                            true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]),
+                        _ => new DefaultFileProvider(gameDirectory, SearchOption.TopDirectoryOnly, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game])
+                    };
+
                     break;
                 }
             }
@@ -480,7 +478,7 @@ namespace FModel.ViewModels
                         var header = new FDictionaryHeader(archive);
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), bulkSave);
                     }
-                    
+
                     break;
                 }
                 case "png":
@@ -644,7 +642,7 @@ namespace FModel.ViewModels
                     Directory.CreateDirectory(path.SubstringBeforeLast('/'));
                     File.WriteAllBytes(path, kvp.Value);
                 }
-                
+
                 Log.Information("{FileName} successfully exported", fileName);
                 FLogger.AppendInformation();
                 FLogger.AppendText($"Successfully exported '{fileName}'", Constants.WHITE, true);

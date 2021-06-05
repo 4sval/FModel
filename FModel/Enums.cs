@@ -88,7 +88,9 @@ namespace FModel
         [Description("Star Wars: Jedi Fallen Order")]
         SwGame,
         [Description("Core")]
-        Platform
+        Platform,
+        [Description("Days Gone")]
+        BendGame
     }
 
     public enum ELoadingMode

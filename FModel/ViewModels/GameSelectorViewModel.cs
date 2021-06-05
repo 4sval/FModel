@@ -60,6 +60,7 @@ namespace FModel.ViewModels
             yield return GetUnrealEngineGame("shoebill", "\\SwGame\\Content\\Paks");
             yield return GetUnrealEngineGame("Snoek", "\\StateOfDecay2\\Content\\Paks");
             yield return GetUnrealEngineGame("a99769d95d8f400baad1f67ab5dfe508", "\\Core\\Platform\\Content\\Paks");
+            yield return GetUnrealEngineGame("Nebula", "\\BendGame\\Content\\Paks");
             yield return GetRiotGame("VALORANT", "ShooterGame\\Content\\Paks");
             yield return new DetectedGame {GameName = "Valorant [LIVE]", GameDirectory = Constants._VAL_LIVE_TRIGGER};
             yield return GetMojangGame("MinecraftDungeons", "\\dungeons\\dungeons\\Dungeons\\Content\\Paks");

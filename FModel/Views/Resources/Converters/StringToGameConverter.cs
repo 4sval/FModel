@@ -13,6 +13,7 @@ namespace FModel.Views.Resources.Converters
             return value switch
             {
                 "Newt" => "Spellbreak",
+                "Nebula" => "Days Gone",
                 "Fortnite" => "Fortnite",
                 "VALORANT" => "Valorant",
                 "Pewee" => "Rogue Company",

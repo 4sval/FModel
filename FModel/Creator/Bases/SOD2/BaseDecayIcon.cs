@@ -23,7 +23,6 @@ namespace FModel.Creator.Bases.SOD2
             if (Object.TryGetValue(out FStructFallback stackingInfo, "StackingInfo") &&
                 stackingInfo.TryGetValue(out int maxStackCount, "MaxStackCount"))
                 _maxStackCount = maxStackCount;
-
             
             if (Object.Class.SuperStruct != null && Utils.TryGetPackageIndexExport(Object.Class.SuperStruct, out UObject t))
             {
@@ -59,6 +58,14 @@ namespace FModel.Creator.Bases.SOD2
             DrawPreview(c);
 
             return SKImage.FromBitmap(ret);
+        }
+
+        private new void DrawPreview(SKCanvas c)
+        {
+            c.DrawBitmap(Preview ?? DefaultPreview, new SKRect(Margin, Margin, Width - Margin, Height - Margin), new SKPaint
+            {
+                // BlendMode = SKBlendMode.SrcATop -- Need Asval's assistance.
+            });
         }
 
         private new void DrawBackground(SKCanvas c)
