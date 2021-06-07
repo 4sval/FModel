@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using CUE4Parse.UE4.Assets.Exports;
@@ -34,6 +35,7 @@ namespace FModel.ViewModels
     public class MapViewerViewModel : ViewModel
     {
         private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
+        private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
 
         #region BINDINGS
         
@@ -267,13 +269,17 @@ namespace FModel.ViewModels
 
         private void TriggerChange()
         {
+            var layerCount = _bitmaps[_mapIndex].Count(x => x.Value.IsEnabled);
+            var layerString = $"{layerCount} Layer{(layerCount > 1 ? "s" : "")}";
             switch (_mapIndex)
             {
                 case 0:
+                    _discordHandler.UpdateButDontSavePresence(null, $"Map Viewer: Battle Royale ({layerString})");
                     _mapImage = _brMiniMapImage;
                     _layerImage = _brLayerImage;
                     break;
                 case 1:
+                    _discordHandler.UpdateButDontSavePresence(null, $"Map Viewer: Party Royale ({layerString})");
                     _mapImage = _prMiniMapImage;
                     _layerImage = _prLayerImage;
                     break;
@@ -569,6 +575,7 @@ namespace FModel.ViewModels
                     }
                     else if (uObject.TryGetValue(out bool endsTrial, "EndsTrial") && endsTrial)
                     {
+                        path.LineTo(vector.X, vector.Y);
                         c.DrawPath(path, _pathPaint);
                         path = new SKPath();
                     }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -23,6 +24,8 @@ namespace FModel.Views
 
             InitializeComponent();
         }
+
+        private void OnClosing(object sender, CancelEventArgs e) => DiscordService.DiscordHandler.UpdateToSavedPresence();
 
         private void OnClick(object sender, RoutedEventArgs e)
         {
