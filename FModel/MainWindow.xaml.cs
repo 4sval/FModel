@@ -12,6 +12,7 @@ using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Editing;
+using Sentry;
 
 namespace FModel
 {
@@ -53,6 +54,7 @@ namespace FModel
         {
             _applicationView.CustomDirectories.Save();
             _discordHandler.Dispose();
+            SentrySdk.Close();
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)

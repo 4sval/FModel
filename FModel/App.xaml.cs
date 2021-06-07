@@ -11,6 +11,7 @@ using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using Newtonsoft.Json;
+using Sentry;
 using Serilog.Sinks.SystemConsole.Themes;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -26,6 +27,12 @@ namespace FModel
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            SentrySdk.Init(options =>
+            {
+                options.Dsn = "https://2e872a5034c940e787015e5d07e7d82e@o811367.ingest.sentry.io/5805297";
+                options.TracesSampleRate = 1.0;
+                options.AddExceptionFilterForType<OperationCanceledException>();
+            });
 
             try
             {
