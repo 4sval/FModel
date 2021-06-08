@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AutoUpdaterDotNET;
+using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using Newtonsoft.Json;
 using RestSharp;
@@ -13,7 +14,6 @@ using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
-using FModel.Settings;
 
 namespace FModel.ViewModels.ApiEndpoints
 {
