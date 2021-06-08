@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AdonisUI.Controls;
 using CUE4Parse.Encryption.Aes;
@@ -19,6 +20,7 @@ using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion.Materials;
@@ -540,7 +542,13 @@ namespace FModel.ViewModels
             {
                 case UTexture2D texture:
                 {
-                    SetImage(texture.Decode());
+                    var bNearest = false;
+                    if (texture.TryGetValue(out FName trigger, "LODGroup", "Filter") && !trigger.IsNone)
+                        bNearest = trigger.Text.EndsWith("TEXTUREGROUP_Pixels2D", StringComparison.OrdinalIgnoreCase) ||
+                                   trigger.Text.EndsWith("TF_Nearest", StringComparison.OrdinalIgnoreCase);
+
+                    TabControl.SelectedTab.ImageRender = bNearest ? BitmapScalingMode.NearestNeighbor : BitmapScalingMode.Linear;
+                    SetImage(texture.Decode(bNearest));
                     return true;
                 }
                 case UAkMediaAssetData:

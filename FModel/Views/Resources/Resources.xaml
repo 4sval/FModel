@@ -647,7 +647,7 @@
                         <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" Grid.ColumnSpan="3" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
                         <Image Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform"
                                Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
-                               Source="{Binding SelectedItem.Image, ElementName=TabControlName}">
+                               Source="{Binding SelectedItem.Image, ElementName=TabControlName}" RenderOptions.BitmapScalingMode="{Binding SelectedItem.ImageRender, ElementName=TabControlName}">
                             <Image.InputBindings>
                                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding SelectedItem.ImageCommand, ElementName=TabControlName}" CommandParameter="Open"/>
                             </Image.InputBindings>
