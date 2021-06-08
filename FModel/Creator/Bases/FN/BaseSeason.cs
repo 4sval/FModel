@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.i18N;
@@ -10,10 +10,17 @@ using SkiaSharp.HarfBuzz;
 
 namespace FModel.Creator.Bases.FN
 {
+    public class Page
+    {
+        public int LevelsNeededForUnlock;
+        public int RewardsNeededForUnlock;
+        public Reward[] RewardEntryList;
+    }
+    
     public class BaseSeason : UCreator
     {
         private Reward _firstWinReward;
-        private Dictionary<int, List<Reward>> _bookXpSchedule;
+        private Page[] _bookXpSchedule;
         private const int _headerHeight = 150;
         // keep the list because rewards are ordered by least to most important
         // we only care about the most but we also have filters so we can't just take the last reward
@@ -27,8 +34,8 @@ namespace FModel.Creator.Bases.FN
 
         public override void ParseForInfo()
         {
-            _bookXpSchedule = new Dictionary<int, List<Reward>>();
-
+            _bookXpSchedule = Array.Empty<Page>();
+            
             if (Object.TryGetValue(out FText displayName, "DisplayName"))
                 DisplayName = displayName.Text.ToUpperInvariant();
 
@@ -45,56 +52,48 @@ namespace FModel.Creator.Bases.FN
                 }
             }
 
-            var freeLevels = Array.Empty<FStructFallback>();
-            var paidLevels = Array.Empty<FStructFallback>();
-            if (Object.TryGetValue(out FPackageIndex[] additionalSeasonData, "AdditionalSeasonData") &&
-                additionalSeasonData.Length > 0 && Utils.TryGetPackageIndexExport(additionalSeasonData[0], out UObject data) &&
-                data.TryGetValue(out FStructFallback battlePassXpScheduleFree, "BattlePassXpScheduleFree") &&
-                battlePassXpScheduleFree.TryGetValue(out freeLevels, "Levels") &&
-                data.TryGetValue(out FStructFallback battlePassXpSchedulePaid, "BattlePassXpSchedulePaid") &&
-                battlePassXpSchedulePaid.TryGetValue(out paidLevels, "Levels"))
+            if (Object.TryGetValue(out FPackageIndex[] additionalSeasonData, "AdditionalSeasonData"))
             {
-                // we got them boys
-            }
-            else if (Object.TryGetValue(out FStructFallback bookXpScheduleFree, "BookXpScheduleFree") &&
-                     bookXpScheduleFree.TryGetValue(out freeLevels, "Levels") &&
-                     Object.TryGetValue(out FStructFallback bookXpSchedulePaid, "BookXpSchedulePaid") &&
-                     bookXpSchedulePaid.TryGetValue(out paidLevels, "Levels"))
-            {
-                // we got them boys
-            }
-
-            for (var i = 0; i < freeLevels.Length; i++)
-            {
-                _bookXpSchedule[i] = new List<Reward>();
-                if (!freeLevels[i].TryGetValue(out rewards, "Rewards")) continue;
-
-                foreach (var reward in rewards)
+                foreach (var data in additionalSeasonData)
                 {
-                    if (!reward.TryGetValue(out FSoftObjectPath itemDefinition, "ItemDefinition") ||
-                        itemDefinition.AssetPathName.Text.Contains("/Items/Tokens/") ||
-                        !Utils.TryLoadObject(itemDefinition.AssetPathName.Text, out UObject uObject)) continue;
-                    
-                    _bookXpSchedule[i].Add(new Reward(uObject));
+                    if (!Utils.TryGetPackageIndexExport(data, out UObject packageIndex) ||
+                        !packageIndex.TryGetValue(out FStructFallback[] pageList, "PageList")) continue;
+
+                    var i = 0;
+                    _bookXpSchedule = new Page[pageList.Length];
+                    foreach (var page in pageList)
+                    {
+                        if (!page.TryGetValue(out int levelsNeededForUnlock, "LevelsNeededForUnlock") ||
+                            !page.TryGetValue(out int rewardsNeededForUnlock, "RewardsNeededForUnlock") ||
+                            !page.TryGetValue(out FPackageIndex[] rewardEntryList, "RewardEntryList"))
+                            continue;
+                        
+                        var p = new Page
+                        {
+                            LevelsNeededForUnlock = levelsNeededForUnlock,
+                            RewardsNeededForUnlock = rewardsNeededForUnlock,
+                            RewardEntryList = new Reward[rewardEntryList.Length]
+                        };
+
+                        for (var j = 0; j < p.RewardEntryList.Length; j++)
+                        {
+                            if (!Utils.TryGetPackageIndexExport(rewardEntryList[j], out packageIndex) ||
+                                !packageIndex.TryGetValue(out FStructFallback battlePassOffer, "BattlePassOffer") ||
+                                !battlePassOffer.TryGetValue(out FStructFallback rewardItem, "RewardItem") ||
+                                !rewardItem.TryGetValue(out FSoftObjectPath itemDefinition, "ItemDefinition") ||
+                                !Utils.TryLoadObject(itemDefinition.AssetPathName.Text, out UObject uObject)) continue;
+
+                            p.RewardEntryList[j] = new Reward(uObject);
+                        }
+
+                        _bookXpSchedule[i++] = p;
+                    }
+
                     break;
                 }
             }
 
-            for (var i = 0; i < paidLevels.Length; i++)
-            {
-                if (!paidLevels[i].TryGetValue(out rewards, "Rewards")) continue;
-
-                foreach (var reward in rewards)
-                {
-                    if (!reward.TryGetValue(out FSoftObjectPath itemDefinition, "ItemDefinition") ||
-                        !Utils.TryLoadObject(itemDefinition.AssetPathName.Text, out UObject uObject)) continue;
-                    
-                    _bookXpSchedule[i].Add(new Reward(uObject));
-                    break;
-                }
-            }
-
-            Height += 100 * _bookXpSchedule.Count / 10;
+            Height += 100 * _bookXpSchedule.Sum(x => x.RewardEntryList.Length) / _bookXpSchedule.Length;
         }
 
         public override SKImage Draw()
@@ -151,23 +150,15 @@ namespace FModel.Creator.Bases.FN
         {
             var x = 20;
             var y = _headerHeight + 50;
-            foreach (var (index, reward) in _bookXpSchedule)
+            foreach (var page in _bookXpSchedule)
             {
-                if (index == 0 || reward.Count == 0 || !reward[0].HasReward())
-                    continue;
-
-                c.DrawText(index.ToString(), new SKPoint(x + _DEFAULT_AREA_SIZE / 2, y - 5), _bookPaint);
-                reward[0].DrawSeason(c, x, y, _DEFAULT_AREA_SIZE);
-
-                if (index != 1 && index % 10 == 0)
+                foreach (var reward in page.RewardEntryList)
                 {
-                    y += _DEFAULT_AREA_SIZE + 20;
-                    x = 20;
-                }
-                else
-                {
+                    reward.DrawSeason(c, x, y, _DEFAULT_AREA_SIZE);
                     x += _DEFAULT_AREA_SIZE + 20;
                 }
+                y += _DEFAULT_AREA_SIZE + 20;
+                x = 20;
             }
         }
     }

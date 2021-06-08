@@ -30,6 +30,13 @@ namespace FModel
             SentrySdk.Init(options =>
             {
                 options.Dsn = "https://2e872a5034c940e787015e5d07e7d82e@o811367.ingest.sentry.io/5805297";
+#if DEBUG
+                options.Environment = "dev";
+#elif RELEASE
+                options.Environment = "prod";
+#else
+                options.Environment = "what";
+#endif
                 options.TracesSampleRate = 1.0;
                 options.AddExceptionFilterForType<OperationCanceledException>();
             });
@@ -79,6 +86,7 @@ namespace FModel
         private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             Log.Error("{Exception}", e.Exception);
+            SentrySdk.CaptureException(e.Exception);
 
             var messageBox = new MessageBoxModel
             {

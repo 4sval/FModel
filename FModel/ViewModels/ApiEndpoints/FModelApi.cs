@@ -108,12 +108,12 @@ namespace FModel.ViewModels.ApiEndpoints
         
         private void CheckForUpdateEvent(UpdateInfoEventArgs args)
         {
-            if (args != null)
+            if (args is {CurrentVersion: { }})
             {
-                Version currentVersion = new Version(args.CurrentVersion);
+                var currentVersion = new Version(args.CurrentVersion);
                 if (currentVersion == args.InstalledVersion) return;
 
-                bool downgrade = currentVersion < args.InstalledVersion;
+                var downgrade = currentVersion < args.InstalledVersion;
                 var messageBox = new MessageBoxModel
                 {
                     Text = $"The latest version of FModel {UserSettings.Default.UpdateMode} is {args.CurrentVersion}. You are using version {args.InstalledVersion}. Do you want to {(downgrade ? "downgrade" : "update")} the application now?",
