@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AutoUpdaterDotNET;
+using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using Newtonsoft.Json;
 using RestSharp;
@@ -109,11 +110,14 @@ namespace FModel.ViewModels.ApiEndpoints
         {
             if (args != null)
             {
-                if (new Version(args.CurrentVersion) == args.InstalledVersion) return;
+                Version currentVersion = new Version(args.CurrentVersion);
+                if (currentVersion == args.InstalledVersion) return;
+
+                bool downgrade = currentVersion < args.InstalledVersion;
                 var messageBox = new MessageBoxModel
                 {
-                    Text = $"FModel {args.CurrentVersion} is available. You are using version {args.InstalledVersion}. Do you want to update the application now?",
-                    Caption = "Update Available",
+                    Text = $"The latest version of FModel {UserSettings.Default.UpdateMode} is {args.CurrentVersion}. You are using version {args.InstalledVersion}. Do you want to {(downgrade ? "downgrade" : "update")} the application now?",
+                    Caption = $"{(downgrade ? "Downgrade" : "Update")} Available",
                     Icon = MessageBoxImage.Question,
                     Buttons = MessageBoxButtons.YesNo(),
                     IsSoundEnabled = false
