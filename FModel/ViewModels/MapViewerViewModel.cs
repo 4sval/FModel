@@ -171,7 +171,7 @@ namespace FModel.ViewModels
         public async void Initialize()
         {
             Utils.Typefaces ??= new Typefaces(_cue4Parse);
-            _imagePaint.Typeface = Utils.Typefaces.Bottom ?? Utils.Typefaces.DisplayName;
+            _textPaint.Typeface = _fillPaint.Typeface = Utils.Typefaces.Bottom ?? Utils.Typefaces.DisplayName;
             await LoadBrMiniMap();
             await LoadPrMiniMap();
             TriggerChange();
@@ -289,11 +289,16 @@ namespace FModel.ViewModels
             RaisePropertyChanged(nameof(LayerImage));
         }
         
-        private readonly SKPaint _imagePaint = new()
+        private readonly SKPaint _textPaint = new()
         {
             IsAntialias = true, FilterQuality = SKFilterQuality.High,
-            Color = SKColors.White, TextAlign = SKTextAlign.Center, TextSize = 25,
-            ImageFilter = SKImageFilter.CreateDropShadow(4, 4, 8, 8, SKColors.Black)
+            Color = SKColors.White, TextAlign = SKTextAlign.Center, TextSize = 26
+        };
+        private readonly SKPaint _fillPaint = new()
+        {
+            IsAntialias = true, FilterQuality = SKFilterQuality.High,
+            IsStroke = true, Color = SKColors.Black, TextSize = 26,
+            TextAlign = SKTextAlign.Center
         };
         private readonly SKPaint _pathPaint = new()
         {
@@ -364,26 +369,31 @@ namespace FModel.ViewModels
                             !poiData.TryGetValue(out FVector worldLocation, "WorldLocation") ||
                             !poiData.TryGetValue(out FName discoverBackend, "DiscoverObjectiveBackendName")) continue;
                         
-                        var shaper = new CustomSKShaper(_imagePaint.Typeface);
-                        var shapedText = shaper.Shape(text.Text, _imagePaint);
+                        var shaper = new CustomSKShaper(_textPaint.Typeface);
+                        var shapedText = shaper.Shape(text.Text, _textPaint);
 
                         if (discoverBackend.Text.Contains("papaya", StringComparison.OrdinalIgnoreCase))
                         {
+                            _fillPaint.StrokeWidth = 5;
                             var vector = GetMapPosition(worldLocation, _prRadius);
                             prLandmarks.DrawPoint(vector.X, vector.Y, _pathPaint);
-                            prLandmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _imagePaint);
+                            prLandmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _fillPaint);
+                            prLandmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _textPaint);
                         }
                         else if (discoveryQuest.AssetPathName.Text.Contains("landmarks", StringComparison.OrdinalIgnoreCase))
                         {
+                            _fillPaint.StrokeWidth = 5;
                             var vector = GetMapPosition(worldLocation, _brRadius);
                             brLandmarks.DrawPoint(vector.X, vector.Y, _pathPaint);
-                            brLandmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _imagePaint);
+                            brLandmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _fillPaint);
+                            brLandmarks.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _textPaint);
                         }
                         else
                         {
+                            _fillPaint.StrokeWidth = 10;
                             var vector = GetMapPosition(worldLocation, _brRadius);
-                            pois.DrawPoint(vector.X, vector.Y, _pathPaint);
-                            pois.DrawShapedText(shaper, text.Text, vector.X - shapedText.Points[^1].X / 2, vector.Y - 12.5F, _imagePaint);
+                            pois.DrawShapedText(shaper, text.Text.ToUpperInvariant(), vector.X - shapedText.Points[^1].X / 2, vector.Y, _fillPaint);
+                            pois.DrawShapedText(shaper, text.Text.ToUpperInvariant(), vector.X - shapedText.Points[^1].X / 2, vector.Y, _textPaint);
                         }
                     }
                 }
@@ -398,6 +408,7 @@ namespace FModel.ViewModels
         {
             await _threadWorkerView.Begin(_ =>
             {
+                _fillPaint.StrokeWidth = 5;
                 var patrolsPathBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(patrolsPathBitmap);
 
@@ -420,6 +431,9 @@ namespace FModel.ViewModels
                             !uObject.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags") ||
                             !uObject.TryGetValue(out FPackageIndex[] patrolPoints, "PatrolPoints")) continue;
 
+                        var displayName = gameplayTags.GameplayTags[0].Text.SubstringAfterLast(".");
+                        if (displayName.Equals("Generic", StringComparison.OrdinalIgnoreCase)) continue;
+
                         if (!Utils.TryGetPackageIndexExport(patrolPoints[0], out uObject) ||
                             !uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
                             !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
@@ -439,9 +453,10 @@ namespace FModel.ViewModels
                             vector = GetMapPosition(relativeLocation, _brRadius);
                             path.LineTo(vector.X, vector.Y);
                         }
-
+                        
                         c.DrawPath(path, _pathPaint);
-                        c.DrawText(gameplayTags.GameplayTags[0].Text.SubstringAfterLast("."), vector.X, vector.Y - 12.5F, _imagePaint);
+                        c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
+                        c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
                     }
                 }
 
@@ -453,6 +468,7 @@ namespace FModel.ViewModels
         {
             await _threadWorkerView.Begin(_ =>
             {
+                _fillPaint.StrokeWidth = 5;
                 var cannonballBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(cannonballBitmap);
 
@@ -467,9 +483,12 @@ namespace FModel.ViewModels
                         !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
+                    var displayName = Utils.GetLocalizedResource("", "D998BEF44F051E0885C6C58565934BEA", "Cannonball");
                     var vector = GetMapPosition(relativeLocation, _prRadius);
+                    
                     c.DrawPoint(vector.X, vector.Y, _pathPaint);
-                    c.DrawText(Utils.GetLocalizedResource("", "D998BEF44F051E0885C6C58565934BEA", "Cannonball"), vector.X, vector.Y - 12.5F, _imagePaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
                 }
 
                 _bitmaps[1]["PapayaGameplay_CannonballGame"] = new MapLayer {Layer = cannonballBitmap, IsEnabled = false};
@@ -480,6 +499,7 @@ namespace FModel.ViewModels
         {
             await _threadWorkerView.Begin(_ =>
             {
+                _fillPaint.StrokeWidth = 5;
                 var skydiveBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(skydiveBitmap);
 
@@ -495,8 +515,10 @@ namespace FModel.ViewModels
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                     var vector = GetMapPosition(relativeLocation, _prRadius);
+                    
                     c.DrawPoint(vector.X, vector.Y, _pathPaint);
-                    c.DrawText(minigameActivityName.Text, vector.X, vector.Y - 12.5F, _imagePaint);
+                    c.DrawText(minigameActivityName.Text, vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText(minigameActivityName.Text, vector.X, vector.Y - 12.5F, _textPaint);
                 }
 
                 _bitmaps[1]["PapayaGameplay_SkydiveGame"] = new MapLayer {Layer = skydiveBitmap, IsEnabled = false};
@@ -507,6 +529,7 @@ namespace FModel.ViewModels
         {
             await _threadWorkerView.Begin(_ =>
             {
+                _fillPaint.StrokeWidth = 5;
                 var shootingTargetsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(shootingTargetsBitmap);
 
@@ -526,7 +549,8 @@ namespace FModel.ViewModels
                     if (bDone) continue;
                     
                     bDone = true;
-                    c.DrawText("Shooting Target", vector.X, vector.Y - 12.5F, _imagePaint);
+                    c.DrawText("Shooting Target", vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText("Shooting Target", vector.X, vector.Y - 12.5F, _textPaint);
                 }
 
                 _bitmaps[1]["PapayaGameplay_ShootingTargets"] = new MapLayer {Layer = shootingTargetsBitmap, IsEnabled = false};
@@ -537,6 +561,7 @@ namespace FModel.ViewModels
         {
             await _threadWorkerView.Begin(_ =>
             {
+                _fillPaint.StrokeWidth = 5;
                 var waypointBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(waypointBitmap);
 
@@ -571,7 +596,8 @@ namespace FModel.ViewModels
                     if (path.IsEmpty || uObject.TryGetValue(out bool startsTrial, "StartsTrial") && startsTrial)
                     {
                         path.MoveTo(vector.X, vector.Y);
-                        c.DrawText(name, vector.X, vector.Y - 12.5F, _imagePaint);
+                        c.DrawText(name, vector.X, vector.Y - 12.5F, _fillPaint);
+                        c.DrawText(name, vector.X, vector.Y - 12.5F, _textPaint);
                     }
                     else if (uObject.TryGetValue(out bool endsTrial, "EndsTrial") && endsTrial)
                     {
@@ -590,6 +616,7 @@ namespace FModel.ViewModels
         {
             await _threadWorkerView.Begin(_ =>
             {
+                _fillPaint.StrokeWidth = 5;
                 var set = new HashSet<string>();
                 var timeTrialsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(timeTrialsBitmap);
@@ -622,7 +649,8 @@ namespace FModel.ViewModels
                     c.DrawPoint(vector.X, vector.Y, _pathPaint);
                     if (!set.Add(name)) continue;
                     
-                    c.DrawText(name, vector.X, vector.Y - 12.5F, _imagePaint);
+                    c.DrawText(name, vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText(name, vector.X, vector.Y - 12.5F, _textPaint);
                 }
 
                 _bitmaps[1]["PapayaGameplay_VendingMachines"] = new MapLayer {Layer = timeTrialsBitmap, IsEnabled = false};
@@ -633,6 +661,7 @@ namespace FModel.ViewModels
         {
             await _threadWorkerView.Begin(_ =>
             {
+                _fillPaint.StrokeWidth = 5;
                 var shootingTargetsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(shootingTargetsBitmap);
 
@@ -652,7 +681,8 @@ namespace FModel.ViewModels
                     if (bDone) continue;
                     
                     bDone = true;
-                    c.DrawText("Music Blocks", vector.X, vector.Y - 12.5F, _imagePaint);
+                    c.DrawText("Music Blocks", vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText("Music Blocks", vector.X, vector.Y - 12.5F, _textPaint);
                 }
 
                 _bitmaps[1]["PapayaGameplay_MusicBlocks"] = new MapLayer {Layer = shootingTargetsBitmap, IsEnabled = false};
