@@ -64,28 +64,35 @@ namespace FModel.ViewModels
 
                 _keysFromSettings.MainKey = key;
             }
+            else if (!_keysFromSettings.HasDynamicKeys)
+            {
+                HasChange = true;
+                _keysFromSettings.DynamicKeys = new List<DynamicKey>
+                {
+                    new()
+                    {
+                        Key = key,
+                        FileName = collection[e.CollectionIndex].Name,
+                        Guid = collection[e.CollectionIndex].Guid.ToString()
+                    }
+                };
+            }
+            else if (_keysFromSettings.DynamicKeys.FirstOrDefault(x => x.Guid == collection[e.CollectionIndex].Guid.ToString()) is { } d)
+            {
+                if (!HasChange)
+                    HasChange = FixKey(d.Key) != key;
+
+                d.Key = key;
+            }
             else
             {
-                if (!_keysFromSettings.HasDynamicKeys)
+                HasChange = true;
+                _keysFromSettings.DynamicKeys.Add(new DynamicKey
                 {
-                    HasChange = true;
-                    _keysFromSettings.DynamicKeys = new[]
-                    {
-                        new DynamicKey
-                        {
-                            Key = key,
-                            FileName = collection[e.CollectionIndex].Name,
-                            Guid = collection[e.CollectionIndex].Guid.ToString()
-                        }
-                    };
-                }
-                else if (_keysFromSettings.DynamicKeys.FirstOrDefault(x => x.Guid == collection[e.CollectionIndex].Guid.ToString()) is { } d)
-                {
-                    if (!HasChange)
-                        HasChange = FixKey(d.Key) != key;
-
-                    d.Key = key;
-                }
+                    Key = key,
+                    FileName = collection[e.CollectionIndex].Name,
+                    Guid = collection[e.CollectionIndex].Guid.ToString()
+                });
             }
         }
 

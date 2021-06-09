@@ -243,7 +243,7 @@ namespace FModel.ViewModels
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     var aes = _apiEndpointView.BenbotApi.GetAesKeys(cancellationToken);
-                    if (aes == null) return;
+                    if (aes?.MainKey == null && aes?.DynamicKeys == null && aes?.Version == null) return;
 
                     UserSettings.Default.AesKeys[Game] = aes;
                 });
