@@ -35,6 +35,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -62,8 +63,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="UE4 Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE4 version to use when parsing assets" />
-                    <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeGames}" SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Assets Language" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Language used and shown when parsing assets" />
+                    <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AssetLanguages}" SelectedItem="{Binding SettingsView.SelectedAssetLanguage, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -72,8 +73,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="UE4 Sub-Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE4 sub-version to use when parsing assets" />
-                    <ComboBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeVersions}" SelectedItem="{Binding SettingsView.SelectedUeVersion, Mode=TwoWay}"
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Discord Rich Presence" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.DiscordRpcs}" SelectedItem="{Binding SettingsView.SelectedDiscordRpc, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -82,8 +83,10 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Assets Language" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Language used and shown when parsing assets" />
-                    <ComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AssetLanguages}" SelectedItem="{Binding SettingsView.SelectedAssetLanguage, Mode=TwoWay}"
+                    <Separator Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="ADVANCED"></Separator>
+                    
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="UE4 Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE4 version to use when parsing assets" />
+                    <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeGames}" SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -92,8 +95,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Keep Directory Structure" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Auto Export &#38; Save assets inside their game directory" />
-                    <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.DirectoryStructures}" SelectedItem="{Binding SettingsView.SelectedDirectoryStructure, Mode=TwoWay}"
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="UE4 Sub-Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE4 sub-version to use when parsing assets" />
+                    <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeVersions}" SelectedItem="{Binding SettingsView.SelectedUeVersion, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -102,8 +105,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Compressed Audio" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="What to do when encountering a compressed audio file" />
-                    <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.CompressedAudios}" SelectedItem="{Binding SettingsView.SelectedCompressedAudio, Mode=TwoWay}"
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Keep Directory Structure" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Auto Export &#38; Save assets inside their game directory" />
+                    <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.DirectoryStructures}" SelectedItem="{Binding SettingsView.SelectedDirectoryStructure, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -112,7 +115,17 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Compressed Audio" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="What to do when encountering a compressed audio file" />
+                    <ComboBox Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.CompressedAudios}" SelectedItem="{Binding SettingsView.SelectedCompressedAudio, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -125,7 +138,7 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                    <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
+                    <ComboBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.Style>
                             <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
@@ -137,16 +150,6 @@
                                 </Style.Triggers>
                             </Style>
                         </ComboBox.Style>
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Discord Rich Presence" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.DiscordRpcs}" SelectedItem="{Binding SettingsView.SelectedDiscordRpc, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
