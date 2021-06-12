@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
@@ -132,7 +132,7 @@ namespace FModel.Settings
             set => SetProperty(ref _loadingMode, value);
         }
 
-        private EUpdateMode _updateMode = EUpdateMode.Stable;
+        private EUpdateMode _updateMode = EUpdateMode.Beta;
         public EUpdateMode UpdateMode
         {
             get => _updateMode;
