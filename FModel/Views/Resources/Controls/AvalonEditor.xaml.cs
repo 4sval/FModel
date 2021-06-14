@@ -23,11 +23,12 @@ namespace FModel.Views.Resources.Controls
 
         public AvalonEditor()
         {
-            CommandBindings.Add(new CommandBinding(NavigationCommands.Search, (s, e) => FindNext(e.Parameter != null)));
+            CommandBindings.Add(new CommandBinding(NavigationCommands.Search, (_, e) => FindNext(e.Parameter != null)));
 
             InitializeComponent();
             YesWeEditor = MyAvalonEditor;
             YesWeSearch = WpfSuckMyDick;
+            
             MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
             MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
         }

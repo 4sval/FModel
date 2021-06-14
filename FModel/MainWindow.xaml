@@ -435,9 +435,26 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-
-                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}"
-                                           Tag="{Binding SelectedItem.Header, ElementName=AssetsFolderName, FallbackValue='ASSETS LIST', Converter={x:Static converters:FolderToSeparatorTagConverter.Instance}}" />
+                                
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Button Grid.Column="0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Width="24" Height="24"
+                                            Command="{Binding MenuCommand}" CommandParameter="{Binding SelectedItem, ElementName=AssetsFolderName}" ToolTip="Open Upper Folder">
+                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ArrowBackIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Button>
+                                
+                                    <Separator Grid.Column="1" Style="{StaticResource CustomSeparator}"
+                                               Tag="{Binding SelectedItem.Header, ElementName=AssetsFolderName, FallbackValue='ASSETS LIST', Converter={x:Static converters:FolderToSeparatorTagConverter.Instance}}" />
+                                </Grid>
+                                
                                 <ListBox Grid.Row="1" x:Name="AssetsListName" Style="{StaticResource AssetsListBox}" PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick">
                                     <ListBox.ContextMenu>
                                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">

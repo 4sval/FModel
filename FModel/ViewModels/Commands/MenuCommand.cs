@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using AdonisUI.Controls;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Settings;
 using FModel.Views;
@@ -13,7 +15,7 @@ namespace FModel.ViewModels.Commands
         {
         }
 
-        public override void Execute(ApplicationViewModel contextViewModel, object parameter)
+        public override async void Execute(ApplicationViewModel contextViewModel, object parameter)
         {
             switch (parameter)
             {
@@ -58,6 +60,14 @@ namespace FModel.ViewModels.Commands
                     break;
                 case "ToolBox_Open_Output_Directory":
                     Process.Start(new ProcessStartInfo {FileName = UserSettings.Default.OutputDirectory, UseShellExecute = true});
+                    break;
+                case TreeItem selectedFolder:
+                    MainWindow.YesWeCats.AssetsListName.ItemsSource = null;
+                    var folder = contextViewModel.CustomDirectories.GoToCommand.JumpTo(selectedFolder.PathAtThisPoint.SubstringBeforeLast('/'));
+                    if (folder == null) return;
+                    
+                    do { await Task.Delay(100); } while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Assets.Count);
+                    MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 2; // assets tab
                     break;
             }
         }

@@ -38,6 +38,9 @@ namespace FModel.Views
             MainWindow.YesWeCats.AssetsListName.ItemsSource = null;
             var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(assetItem.FullPath.SubstringBeforeLast('/'));
             if (folder == null) return;
+            
+            MainWindow.YesWeCats.Activate();
+            MainWindow.YesWeCats.WindowState = WindowState.Normal;
 
             do { await Task.Delay(100); } while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Assets.Count);
             MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 2; // assets tab
