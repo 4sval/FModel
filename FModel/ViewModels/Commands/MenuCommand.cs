@@ -15,7 +15,7 @@ namespace FModel.ViewModels.Commands
         {
         }
 
-        public override async void Execute(ApplicationViewModel contextViewModel, object parameter)
+        public override void Execute(ApplicationViewModel contextViewModel, object parameter)
         {
             switch (parameter)
             {

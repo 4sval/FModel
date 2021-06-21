@@ -1,7 +1,10 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using FModel.Services;
 
 namespace FModel.Views.Resources.Controls
 {
@@ -22,11 +25,17 @@ namespace FModel.Views.Resources.Controls
             var folders = pathAtThisPoint.Split('/');
             for (var i = 0; i < folders.Length; i++)
             {
-                InMeDaddy.Children.Add(new TextBlock
+                var textBlock = new TextBlock
                 {
                     Text = folders[i],
+                    Background = Brushes.Transparent,
+                    Cursor = Cursors.Hand,
+                    Tag = i + 1,
                     Margin = new Thickness(0, 3, 0, 0)
-                });
+                };
+                textBlock.MouseUp += OnMouseClick;
+                
+                InMeDaddy.Children.Add(textBlock);
                 if (i >= folders.Length - 1) continue;
 
                 InMeDaddy.Children.Add(new Viewbox
@@ -46,6 +55,16 @@ namespace FModel.Views.Resources.Controls
                     }
                 });
             }
+        }
+
+        private void OnMouseClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not TextBlock {DataContext: string pathAtThisPoint, Tag: int index}) return;
+
+            var directory = string.Join('/', pathAtThisPoint.Split('/').Take(index));
+            if (pathAtThisPoint.Equals(directory)) return;
+            
+            ApplicationService.ApplicationView.CustomDirectories.GoToCommand.JumpTo(directory);
         }
     }
 }
