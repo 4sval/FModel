@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
-using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
@@ -38,12 +37,6 @@ namespace FModel.Creator
 
         public static bool TryGetDisplayAsset(UObject uObject, out SKBitmap preview)
         {
-            if (uObject.TryGetValue(out FSoftObjectPath displayAsset, "DisplayAssetPath"))
-            {
-                preview = GetDisplayAsset(displayAsset);
-                return preview != null;
-            }
-
             if (uObject.TryGetValue(out FSoftObjectPath sidePanelIcon, "SidePanelIcon"))
             {
                 preview = GetBitmap(sidePanelIcon);
@@ -61,19 +54,6 @@ namespace FModel.Creator
             return preview != null;
         }
 
-        public static SKBitmap GetDisplayAsset(FSoftObjectPath path)
-        {
-            if (!TryLoadObject(path.AssetPathName.Text, out UObject obj)) return null;
-
-            if (obj.TryGetValue(out FStructFallback type, "DetailsImage") &&
-                type.TryGetValue(out FPackageIndex resource, "ResourceObject") && resource.ResolvedObject?.Outer != null &&
-                !resource.ResolvedObject.Outer.Name.Text.Contains("FortniteGame/Content/Athena/Prototype/Textures/"))
-            {
-                return GetBitmap(resource);
-            }
-
-            return null;
-        }
         public static SKBitmap GetBitmap(FPackageIndex packageIndex)
         {
             while (true)
