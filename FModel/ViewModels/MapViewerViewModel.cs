@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -412,13 +412,26 @@ namespace FModel.ViewModels
                 var patrolsPathBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(patrolsPathBitmap);
 
-                if (!Utils.TryLoadObject("FortniteGame/Plugins/GameFeatures/NPCLibrary/Content/GameFeatureData.GameFeatureData", out UObject gameFeatureData) ||
-                    !gameFeatureData.TryGetValue(out FPackageIndex levelOverlayConfig, "LevelOverlayConfig") ||
-                    !Utils.TryGetPackageIndexExport(levelOverlayConfig, out UObject npcLibrary) ||
-                    !npcLibrary.TryGetValue(out FStructFallback[] overlayList, "OverlayList"))
-                    return;
+                var gameFeatureDatas = new List<string>
+                {
+                    "FortniteGame/Plugins/GameFeatures/NPCLibrary/Content/GameFeatureData.GameFeatureData",
+                    "FortniteGame/Plugins/GameFeatures/BattlepassS17/Content/GameFeatureData.GameFeatureData"
+                };
 
-                foreach (var overlay in overlayList)
+                var overlays = new List<FStructFallback>();
+                
+                foreach (var path in gameFeatureDatas)
+                {
+                    if (!Utils.TryLoadObject(path, out UObject gameFeatureData) ||
+                        !gameFeatureData.TryGetValue(out FPackageIndex levelOverlayConfig, "LevelOverlayConfig") ||
+                        !Utils.TryGetPackageIndexExport(levelOverlayConfig, out UObject npcLibrary) ||
+                        !npcLibrary.TryGetValue(out FStructFallback[] overlayList, "OverlayList"))
+                        return;
+                    
+                    overlays.AddRange(overlayList);
+                }
+
+                foreach (var overlay in overlays)
                 {
                     if (!overlay.TryGetValue(out FSoftObjectPath overlayWorld, "OverlayWorld"))
                         continue;
