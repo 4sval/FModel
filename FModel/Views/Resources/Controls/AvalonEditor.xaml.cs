@@ -20,7 +20,6 @@ namespace FModel.Views.Resources.Controls
         private readonly Regex _hexColorRegex = new("\"Hex\": \"(?'target'[0-9A-Fa-f]{3,8})\"$",
             RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         private readonly System.Windows.Controls.ToolTip _toolTip = new();
-        private JsonFoldingStrategies _manager;
 
         public AvalonEditor()
         {
@@ -82,9 +81,7 @@ namespace FModel.Views.Resources.Controls
             if (sender is not TextEditor avalonEditor || DataContext is not TabItem tabItem ||
                 avalonEditor.Document == null || string.IsNullOrEmpty(avalonEditor.Document.Text))
                 return;
-
-            _manager ??= new JsonFoldingStrategies(avalonEditor);
-            _manager.UpdateFoldings(tabItem.Document);
+            
             avalonEditor.Document.FileName = tabItem.Directory + '/' + tabItem.Header.SubstringBeforeLast('.');
             if (!tabItem.ShouldScroll) return;
 

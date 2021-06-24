@@ -15,6 +15,7 @@ namespace FModel.Views.Resources.Controls
         private readonly Regex _hexColorRegex = new("\"Hex\": \"(?'target'[0-9A-Fa-f]{3,8})\"$",
             RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         private readonly System.Windows.Controls.ToolTip _toolTip = new();
+        private JsonFoldingStrategies _manager;
 
         public PropertiesPopout(TabItem contextViewModel)
         {
@@ -30,6 +31,8 @@ namespace FModel.Views.Resources.Controls
             MyAvalonEditor.ScrollToVerticalOffset(contextViewModel.ScrollPosition);
             MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
             MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
+            _manager = new JsonFoldingStrategies(MyAvalonEditor);
+            _manager.UpdateFoldings(MyAvalonEditor.Document);
         }
 
         private void OnMouseHover(object sender, MouseEventArgs e)
