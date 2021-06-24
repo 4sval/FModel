@@ -7,6 +7,7 @@
                     xmlns:audioControls="clr-namespace:FModel.Views.Resources.Controls.Aup"
                     xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                     xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                    xmlns:folding="clr-namespace:ICSharpCode.AvalonEdit.Folding;assembly=ICSharpCode.AvalonEdit"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                     xmlns:adonisConverters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI"
                     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
@@ -1633,6 +1634,13 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+    
+    <Style TargetType="{x:Type folding:FoldingMargin}">
+        <Setter Property="FoldingMarkerBrush" Value="#262630" />
+        <Setter Property="FoldingMarkerBackgroundBrush" Value="#262630" />
+        <Setter Property="SelectedFoldingMarkerBrush" Value="#808080" />
+        <Setter Property="SelectedFoldingMarkerBackgroundBrush" Value="#2A2B34" />
     </Style>
     
 </ResourceDictionary>

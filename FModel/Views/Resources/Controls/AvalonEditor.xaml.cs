@@ -20,15 +20,15 @@ namespace FModel.Views.Resources.Controls
         private readonly Regex _hexColorRegex = new("\"Hex\": \"(?'target'[0-9A-Fa-f]{3,8})\"$",
             RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         private readonly System.Windows.Controls.ToolTip _toolTip = new();
+        private JsonFoldingStrategies _manager;
 
         public AvalonEditor()
         {
             CommandBindings.Add(new CommandBinding(NavigationCommands.Search, (_, e) => FindNext(e.Parameter != null)));
-
             InitializeComponent();
+            
             YesWeEditor = MyAvalonEditor;
             YesWeSearch = WpfSuckMyDick;
-            
             MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
             MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
         }
@@ -83,6 +83,8 @@ namespace FModel.Views.Resources.Controls
                 avalonEditor.Document == null || string.IsNullOrEmpty(avalonEditor.Document.Text))
                 return;
 
+            _manager ??= new JsonFoldingStrategies(avalonEditor);
+            _manager.UpdateFoldings(tabItem.Document);
             avalonEditor.Document.FileName = tabItem.Directory + '/' + tabItem.Header.SubstringBeforeLast('.');
             if (!tabItem.ShouldScroll) return;
 

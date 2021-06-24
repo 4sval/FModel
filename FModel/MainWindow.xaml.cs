@@ -240,7 +240,7 @@ namespace FModel
 
         private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is not ListBox listBox) return;
+            if (!_applicationView.IsReady || sender is not ListBox listBox) return;
             UserSettings.Default.LoadingMode = ELoadingMode.Multiple;
             _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
         }
