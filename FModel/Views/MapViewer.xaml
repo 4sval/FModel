@@ -29,6 +29,12 @@
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                     <CheckBox Content="Patrols Path" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrPatrolsPath}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Upgrade Benches" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrUpgradeBenches}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Phonebooths" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrPhonebooths}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Alien Artifacts" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrAlienArtifacts}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="PrTemplate">

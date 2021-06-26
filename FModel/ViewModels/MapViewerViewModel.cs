@@ -60,6 +60,27 @@ namespace FModel.ViewModels
             set => SetProperty(ref _brPatrolsPath, value, "ApolloGameplay_PatrolsPath");
         }
         
+        private bool _brUpgradeBenches;
+        public bool BrUpgradeBenches
+        {
+            get => _brUpgradeBenches;
+            set => SetProperty(ref _brUpgradeBenches, value, "ApolloGameplay_UpgradeBenches");
+        }
+        
+        private bool _brPhonebooths;
+        public bool BrPhonebooths
+        {
+            get => _brPhonebooths;
+            set => SetProperty(ref _brPhonebooths, value, "ApolloGameplay_Phonebooths");
+        }
+        
+        private bool _brAlienArtifacts;
+        public bool BrAlienArtifacts
+        {
+            get => _brAlienArtifacts;
+            set => SetProperty(ref _brAlienArtifacts, value, "ApolloGameplay_AlienArtifacts");
+        }
+        
         private bool _prLandmarks;
         public bool PrLandmarks
         {
@@ -216,6 +237,15 @@ namespace FModel.ViewModels
                         break;
                     case "ApolloGameplay_PatrolsPath":
                         await LoadPatrolsPath();
+                        break;
+                    case "ApolloGameplay_UpgradeBenches":
+                        await LoadUpgradeBenches();
+                        break;
+                    case "ApolloGameplay_Phonebooths":
+                        await LoadPhonebooths();
+                        break;
+                    case "ApolloGameplay_AlienArtifacts":
+                        await LoadAlienArtifacts();
                         break;
                     case "PapayaGameplay_CannonballGame":
                         await LoadCannonballGame();
@@ -412,65 +442,40 @@ namespace FModel.ViewModels
                 var patrolsPathBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(patrolsPathBitmap);
 
-                var gameFeatureDatas = new List<string>
+                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Apollo_Terrain_NPCLibraryS17_Overlay");
+                foreach (var export in exports)
                 {
-                    "FortniteGame/Plugins/GameFeatures/NPCLibrary/Content/GameFeatureData.GameFeatureData",
-                    "FortniteGame/Plugins/GameFeatures/BattlepassS17/Content/GameFeatureData.GameFeatureData"
-                };
+                    if (export is not { } uObject) continue;
+                    if (!uObject.ExportType.Equals("FortAthenaPatrolPath", StringComparison.OrdinalIgnoreCase) ||
+                        !uObject.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags") ||
+                        !uObject.TryGetValue(out FPackageIndex[] patrolPoints, "PatrolPoints")) continue;
 
-                var overlays = new List<FStructFallback>();
-                
-                foreach (var path in gameFeatureDatas)
-                {
-                    if (!Utils.TryLoadObject(path, out UObject gameFeatureData) ||
-                        !gameFeatureData.TryGetValue(out FPackageIndex levelOverlayConfig, "LevelOverlayConfig") ||
-                        !Utils.TryGetPackageIndexExport(levelOverlayConfig, out UObject npcLibrary) ||
-                        !npcLibrary.TryGetValue(out FStructFallback[] overlayList, "OverlayList"))
-                        return;
-                    
-                    overlays.AddRange(overlayList);
-                }
+                    var displayName = gameplayTags.GameplayTags[0].Text.SubstringAfterLast(".");
+                    if (displayName.Equals("Generic", StringComparison.OrdinalIgnoreCase)) continue;
 
-                foreach (var overlay in overlays)
-                {
-                    if (!overlay.TryGetValue(out FSoftObjectPath overlayWorld, "OverlayWorld"))
-                        continue;
+                    if (!Utils.TryGetPackageIndexExport(patrolPoints[0], out uObject) ||
+                        !uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
-                    var exports = Utils.LoadExports(overlayWorld.AssetPathName.Text.SubstringBeforeLast("."));
-                    foreach (var export in exports)
+                    var path = new SKPath();
+                    var vector = GetMapPosition(relativeLocation, _brRadius);
+                    path.MoveTo(vector.X, vector.Y);
+
+                    for (var i = 1; i < patrolPoints.Length; i++)
                     {
-                        if (export is not { } uObject) continue;
-                        if (!uObject.ExportType.Equals("FortAthenaPatrolPath", StringComparison.OrdinalIgnoreCase) ||
-                            !uObject.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags") ||
-                            !uObject.TryGetValue(out FPackageIndex[] patrolPoints, "PatrolPoints")) continue;
-
-                        var displayName = gameplayTags.GameplayTags[0].Text.SubstringAfterLast(".");
-                        if (displayName.Equals("Generic", StringComparison.OrdinalIgnoreCase)) continue;
-
-                        if (!Utils.TryGetPackageIndexExport(patrolPoints[0], out uObject) ||
-                            !uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        if (!Utils.TryGetPackageIndexExport(patrolPoints[i], out uObject) ||
+                            !uObject.TryGetValue(out rootComponent, "RootComponent") ||
                             !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
-                            !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+                            !uObject.TryGetValue(out relativeLocation, "RelativeLocation")) continue;
 
-                        var path = new SKPath();
-                        var vector = GetMapPosition(relativeLocation, _brRadius);
-                        path.MoveTo(vector.X, vector.Y);
-
-                        for (var i = 1; i < patrolPoints.Length; i++)
-                        {
-                            if (!Utils.TryGetPackageIndexExport(patrolPoints[i], out uObject) ||
-                                !uObject.TryGetValue(out rootComponent, "RootComponent") ||
-                                !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
-                                !uObject.TryGetValue(out relativeLocation, "RelativeLocation")) continue;
-
-                            vector = GetMapPosition(relativeLocation, _brRadius);
-                            path.LineTo(vector.X, vector.Y);
-                        }
-                        
-                        c.DrawPath(path, _pathPaint);
-                        c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
-                        c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
+                        vector = GetMapPosition(relativeLocation, _brRadius);
+                        path.LineTo(vector.X, vector.Y);
                     }
+                    
+                    c.DrawPath(path, _pathPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
                 }
 
                 _bitmaps[0]["ApolloGameplay_PatrolsPath"] = new MapLayer {Layer = patrolsPathBitmap, IsEnabled = false};
@@ -699,6 +704,93 @@ namespace FModel.ViewModels
                 }
 
                 _bitmaps[1]["PapayaGameplay_MusicBlocks"] = new MapLayer {Layer = shootingTargetsBitmap, IsEnabled = false};
+            });
+        }
+        
+        private async Task LoadUpgradeBenches()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                _fillPaint.StrokeWidth = 5;
+                var upgradeBenchesBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(upgradeBenchesBitmap);
+
+                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Apollo_Terrain_NPCLibrary_Stations_UpgradeBenches");
+                foreach (var export in exports)
+                {
+                    if (export is not { } uObject) continue;
+                    if (!uObject.ExportType.Equals("B_Athena_Spawner_UpgradeStation_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    var displayName = uObject.Name["B_Athena_Spawner_".Length..];
+
+                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+
+                    var vector = GetMapPosition(relativeLocation, _brRadius);
+                    c.DrawPoint(vector.X, vector.Y, _pathPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
+                }
+
+                _bitmaps[0]["ApolloGameplay_UpgradeBenches"] = new MapLayer {Layer = upgradeBenchesBitmap, IsEnabled = false};
+            });
+        }
+        
+        private async Task LoadPhonebooths()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                _fillPaint.StrokeWidth = 5;
+                var phoneboothsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(phoneboothsBitmap);
+
+                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Apollo_Terrain_NPCLibrary_Stations_Phonebooths");
+                foreach (var export in exports)
+                {
+                    if (export is not { } uObject) continue;
+                    if (!uObject.ExportType.Equals("B_Athena_Spawner_Payphone_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    var displayName = uObject.Name["B_Athena_Spawner_".Length..];
+
+                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+
+                    var vector = GetMapPosition(relativeLocation, _brRadius);
+                    c.DrawPoint(vector.X, vector.Y, _pathPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
+                }
+
+                _bitmaps[0]["ApolloGameplay_Phonebooths"] = new MapLayer {Layer = phoneboothsBitmap, IsEnabled = false};
+            });
+        }
+        
+        private async Task LoadAlienArtifacts()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                _fillPaint.StrokeWidth = 5;
+                var alienArtifactsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(alienArtifactsBitmap);
+
+                var exports = Utils.LoadExports("/BattlepassS17/Maps/Apollo_ItemCollect_S17_Overlay");
+                foreach (var export in exports)
+                {
+                    if (export is not { } uObject) continue;
+                    if (!uObject.ExportType.Equals("BP_S17_AlienArtifact_Variant1_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    var displayName = uObject.Name;
+
+                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+
+                    var vector = GetMapPosition(relativeLocation, _brRadius);
+                    c.DrawPoint(vector.X, vector.Y, _pathPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
+                }
+
+                _bitmaps[0]["ApolloGameplay_AlienArtifacts"] = new MapLayer {Layer = alienArtifactsBitmap, IsEnabled = false};
             });
         }
     }
