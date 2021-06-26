@@ -35,6 +35,8 @@
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                     <CheckBox Content="Alien Artifacts" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrAlienArtifacts}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Tags Location" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrTagsLocation}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="PrTemplate">

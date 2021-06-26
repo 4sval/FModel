@@ -38,6 +38,7 @@ namespace FModel.ViewModels.Commands
 
         public override async void Execute(LoadingModesViewModel contextViewModel, object parameter)
         {
+            if (_applicationView.CUE4Parse.GameDirectory.HasNoFile) return;
 #if DEBUG
             var loadingTime = Stopwatch.StartNew();
 #endif

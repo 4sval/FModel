@@ -80,6 +80,7 @@ namespace FModel.ViewModels
 
     public class GameDirectoryViewModel : ViewModel
     {
+        public bool HasNoFile => DirectoryFiles.Count < 1;
         public readonly ObservableCollection<FileItem> DirectoryFiles;
         public ICollectionView DirectoryFilesView { get; }
 

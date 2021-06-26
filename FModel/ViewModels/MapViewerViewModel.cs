@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Objects;
@@ -72,6 +73,13 @@ namespace FModel.ViewModels
         {
             get => _brPhonebooths;
             set => SetProperty(ref _brPhonebooths, value, "ApolloGameplay_Phonebooths");
+        }
+
+        private bool _brTagsLocation;
+        public bool BrTagsLocation
+        {
+            get => _brTagsLocation;
+            set => SetProperty(ref _brTagsLocation, value, "ApolloGameplay_TagsLocation");
         }
         
         private bool _brAlienArtifacts;
@@ -246,6 +254,9 @@ namespace FModel.ViewModels
                         break;
                     case "ApolloGameplay_AlienArtifacts":
                         await LoadAlienArtifacts();
+                        break;
+                    case "ApolloGameplay_TagsLocation":
+                        await LoadTagsLocation();
                         break;
                     case "PapayaGameplay_CannonballGame":
                         await LoadCannonballGame();
@@ -791,6 +802,39 @@ namespace FModel.ViewModels
                 }
 
                 _bitmaps[0]["ApolloGameplay_AlienArtifacts"] = new MapLayer {Layer = alienArtifactsBitmap, IsEnabled = false};
+            });
+        }
+
+        private async Task LoadTagsLocation()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                _fillPaint.StrokeWidth = 5;
+                var tagsLocationBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(tagsLocationBitmap);
+                
+                if (!Utils.TryLoadObject("FortniteGame/Content/Quests/QuestTagToLocationDataRows.QuestTagToLocationDataRows", out UDataTable locationData))
+                    return;
+
+                foreach (var (key, uObject) in locationData.RowMap)
+                {
+                    if (key.Text.StartsWith("Athena.Location.POI", StringComparison.OrdinalIgnoreCase) ||
+                        key.Text.StartsWith("Athena.Location.Unnamed", StringComparison.OrdinalIgnoreCase) ||
+                        key.Text.Contains(".Tandem.", StringComparison.OrdinalIgnoreCase) ||
+                        !uObject.TryGetValue(out FVector worldLocation, "WorldLocation")) continue;
+
+                    var parts = key.Text.Split('.');
+                    var displayName = parts[^2];
+                    if (!int.TryParse(parts[^1], out var _))
+                        displayName += " " + parts[^1];
+                        
+                    var vector = GetMapPosition(worldLocation, _brRadius);
+                    c.DrawPoint(vector.X, vector.Y, _pathPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
+                }
+
+                _bitmaps[0]["ApolloGameplay_TagsLocation"] = new MapLayer {Layer = tagsLocationBitmap, IsEnabled = false};
             });
         }
     }

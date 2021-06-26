@@ -205,7 +205,7 @@ namespace FModel.Settings
             {FGame.Dungeons, EGame.GAME_UE4_LATEST},
             {FGame.WorldExplorers, EGame.GAME_UE4_LATEST},
             {FGame.g3, EGame.GAME_UE4_22},
-            {FGame.StateOfDecay2, EGame.GAME_UE4_13},
+            {FGame.StateOfDecay2, EGame.GAME_SOD2},
             {FGame.Prospect, EGame.GAME_UE4_LATEST},
             {FGame.Indiana, EGame.GAME_UE4_LATEST},
             {FGame.RogueCompany, EGame.GAME_UE4_LATEST},
