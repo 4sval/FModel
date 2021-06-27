@@ -79,7 +79,7 @@ namespace FModel.Views.Resources.Controls
                     _manager.FoldToggle(MyAvalonEditor.CaretOffset);
                     break;
                 case >= Key.D0 and <= Key.D9 when Keyboard.IsKeyDown(Key.K) && Keyboard.Modifiers.HasFlag(ModifierKeys.Control):
-                    _manager.FoldAtLevel(int.Parse(e.Key.ToString()[1].ToString()));
+                    _manager.FoldToggleAtLevel(int.Parse(e.Key.ToString()[1].ToString()));
                     break;
             }
         }

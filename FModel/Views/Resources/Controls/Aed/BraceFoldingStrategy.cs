@@ -42,7 +42,7 @@ namespace FModel.Views.Resources.Controls
 				foldSection[^1].IsFolded = !foldSection[^1].IsFolded;
 		}
 
-		public void FoldAtLevel(int level = 0)
+		public void FoldToggleAtLevel(int level = 0)
 		{
 			if (_foldingManager.AllFoldings == null)
 				return;
@@ -50,7 +50,7 @@ namespace FModel.Views.Resources.Controls
 			foreach (var folding in _foldingManager.AllFoldings)
 			{
 				if (folding.Tag is not CustomNewFolding realFolding) continue;
-				if (realFolding.Level == level) folding.IsFolded = true;
+				if (realFolding.Level == level) folding.IsFolded = !folding.IsFolded;
 			}
 		}
 	}
