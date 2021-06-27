@@ -5,60 +5,23 @@ using ICSharpCode.AvalonEdit.Folding;
 
 namespace FModel.Views.Resources.Controls
 {
-	/// <summary>
-	/// https://github.com/JTranOrg/JTranEdit/blob/master/JTranEdit/Classes/BraceFoldingStrategy.cs
-	/// </summary>
-	public interface IFoldingStrategy
+	public class JsonFoldingStrategies
 	{
-		IEnumerable<NewFolding> UpdateFoldings(TextDocument document);
-		void CollapseAll();
-		void ExpandAll();
-	}
-
-	public class JsonFoldingStrategies : IFoldingStrategy
-	{
-		private readonly List<IFoldingStrategy> _strategies = new();
+		private readonly BraceFoldingStrategy _strategy;
 		private readonly FoldingManager _foldingManager;
-		private readonly IComparer<NewFolding> _comparer = new FoldingComparer();
 
 		public JsonFoldingStrategies(TextEditor avalonEditor)
 		{
 			_foldingManager = FoldingManager.Install(avalonEditor.TextArea);
-			_strategies.Add(new BraceFoldingStrategy(avalonEditor, '{', '}'));
-			_strategies.Add(new BraceFoldingStrategy(avalonEditor, '[', ']'));
+			_strategy = new BraceFoldingStrategy(avalonEditor);
 		}
 
-		public IEnumerable<NewFolding> UpdateFoldings(TextDocument document)
+		public void UpdateFoldings(TextDocument document)
 		{
-			var foldings = new List<NewFolding>();
-			foreach (var strategy in _strategies)
-			{
-				foldings.AddRange(strategy.UpdateFoldings(document));
-			}
-
-			foldings.Sort(_comparer);
-			_foldingManager.UpdateFoldings(foldings, -1);
-
-			return foldings;
+			_foldingManager.UpdateFoldings(_strategy.UpdateFoldings(document), -1);
 		}
 
-		public void CollapseAll()
-		{
-			if (_foldingManager.AllFoldings == null)
-				return;
-
-			foreach (var folding in _foldingManager.AllFoldings)
-			{
-				folding.IsFolded = true;
-			}
-
-			// Unfold the first fold (if any) to give a useful overview on content
-			var foldSection = _foldingManager.GetNextFolding(0);
-			if (foldSection != null)
-				foldSection.IsFolded = false;
-		}
-
-		public void ExpandAll()
+		public void UnfoldAll()
 		{
 			if (_foldingManager.AllFoldings == null)
 				return;
@@ -68,72 +31,91 @@ namespace FModel.Views.Resources.Controls
 				folding.IsFolded = false;
 			}
 		}
-
-		private class FoldingComparer : IComparer<NewFolding>
+		
+		public void FoldToggle(int offset)
 		{
-			public int Compare(NewFolding x, NewFolding y)
+			if (_foldingManager.AllFoldings == null)
+				return;
+
+			var foldSection = _foldingManager.GetFoldingsContaining(offset);
+			if (foldSection.Count > 0)
+				foldSection[^1].IsFolded = !foldSection[^1].IsFolded;
+		}
+
+		public void FoldAtLevel(int level = 0)
+		{
+			if (_foldingManager.AllFoldings == null)
+				return;
+
+			foreach (var folding in _foldingManager.AllFoldings)
 			{
-				return x.StartOffset.CompareTo(y.StartOffset);
+				if (folding.Tag is not CustomNewFolding realFolding) continue;
+				if (realFolding.Level == level) folding.IsFolded = true;
 			}
 		}
 	}
 
-	public class BraceFoldingStrategy : IFoldingStrategy
+	public class BraceFoldingStrategy
 	{
-		private readonly char _opening;
-		private readonly char _closing;
-	    
-	    public BraceFoldingStrategy(TextEditor editor, char o, char c)
+	    public BraceFoldingStrategy(TextEditor editor)
 	    {
-		    _opening = o;
-		    _closing = c;
 		    UpdateFoldings(editor.Document);
 	    }
 
-	    public IEnumerable<NewFolding> UpdateFoldings(TextDocument document)
+	    public IEnumerable<CustomNewFolding> UpdateFoldings(TextDocument document)
 		{
 			return CreateNewFoldings(document);
 		}
 
-		public IEnumerable<NewFolding> CreateNewFoldings(ITextSource document)
+		public IEnumerable<CustomNewFolding> CreateNewFoldings(ITextSource document)
 		{
-			var newFoldings = new List<NewFolding>();
+			var newFoldings = new List<CustomNewFolding>();
 			var startOffsets = new Stack<int>();
 			var lastNewLineOffset = 0;
+			var level = -1;
 			
 			for (var i = 0; i < document.TextLength; i++)
 			{
 				var c = document.GetCharAt(i);
-				if (c == _opening)
+				switch (c)
 				{
-					startOffsets.Push(i);
-				}
-				else if (c == _closing && startOffsets.Count > 0)
-				{
-					var startOffset = startOffsets.Pop();
-					if (startOffset < lastNewLineOffset)
+					case '{' or '[':
+						level++;
+						startOffsets.Push(i);
+						break;
+					case '}' or ']' when startOffsets.Count > 0:
 					{
-						newFoldings.Add(new NewFolding(startOffset, i + 1));
+						var startOffset = startOffsets.Pop();
+						if (startOffset < lastNewLineOffset)
+						{
+							newFoldings.Add(new CustomNewFolding(startOffset, i + 1, level));
+						}
+						level--;
+						break;
 					}
-				}
-				else if (c is '\n' or '\r')
-				{
-					lastNewLineOffset = i + 1;
+					case '\n' or '\r':
+						lastNewLineOffset = i + 1;
+						break;
 				}
 			}
 			
 			newFoldings.Sort((a, b) => a.StartOffset.CompareTo(b.StartOffset));
 			return newFoldings;
 		}
-
-		public void CollapseAll()
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public void ExpandAll()
-		{
-			throw new System.NotImplementedException();
-		}
     }
+
+	public class CustomNewFolding : NewFolding
+	{
+		public int Level { get; }
+		
+		public CustomNewFolding(int start, int end, int level) : base(start, end)
+		{
+			Level = level;
+		}
+
+		public override string ToString()
+		{
+			return $"[{Level}] {StartOffset} -> {EndOffset}";
+		}
+	}
 }
