@@ -11,7 +11,6 @@ using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using Newtonsoft.Json;
-using Sentry;
 using Serilog.Sinks.SystemConsole.Themes;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -24,22 +23,13 @@ namespace FModel
     /// </summary>
     public partial class App
     {
+        [DllImport("kernel32.dll")]
+        private static extern bool AttachConsole(int dwProcessId);
+        
         protected override void OnStartup(StartupEventArgs e)
         {
+            AttachConsole(-1);
             base.OnStartup(e);
-            SentrySdk.Init(options =>
-            {
-                options.Dsn = "https://2e872a5034c940e787015e5d07e7d82e@o811367.ingest.sentry.io/5805297";
-#if DEBUG
-                options.Environment = "dev";
-#elif RELEASE
-                options.Environment = "prod";
-#else
-                options.Environment = "what";
-#endif
-                options.TracesSampleRate = 1.0;
-                options.AddExceptionFilterForType<OperationCanceledException>();
-            });
 
             try
             {
@@ -86,7 +76,6 @@ namespace FModel
         private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             Log.Error("{Exception}", e.Exception);
-            SentrySdk.CaptureException(e.Exception);
 
             var messageBox = new MessageBoxModel
             {

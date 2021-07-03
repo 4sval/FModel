@@ -4,7 +4,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FModel.Views.Resources.Controls;
-using Sentry;
 using Serilog;
 
 namespace FModel.ViewModels
@@ -97,7 +96,6 @@ namespace FModel.ViewModels
                         CurrentCancellationTokenSource = null; // kill token
 
                         Log.Error("{Exception}", e);
-                        SentrySdk.CaptureException(e);
                         
                         FLogger.AppendError();
                         FLogger.AppendText(e.Message, Constants.WHITE, true);

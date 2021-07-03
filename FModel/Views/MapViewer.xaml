@@ -22,7 +22,7 @@
             
             <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="BrTemplate">
-                <StackPanel VerticalAlignment="Center" Margin="50">
+                <StackPanel VerticalAlignment="Center" Margin="25 0">
                     <CheckBox Content="Points Of Interest" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrPois}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                     <CheckBox Content="Landmarks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrLandmarks}"
