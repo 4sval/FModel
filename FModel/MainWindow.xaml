@@ -129,12 +129,12 @@
                     <MenuItem Header="Save Textures" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}" />
-                    <!--<MenuItem Header="Save Meshes" IsCheckable="True" StaysOpenOnClick="True"
-                              InputGestureText="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding IsAutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />-->
                     <MenuItem Header="Save Materials" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}}" />
+                    <MenuItem Header="Save Meshes" IsCheckable="True" StaysOpenOnClick="True"
+                              InputGestureText="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
+                              IsChecked="{Binding IsAutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />
                     <MenuItem Header="Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />

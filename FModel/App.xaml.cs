@@ -28,7 +28,9 @@ namespace FModel
         
         protected override void OnStartup(StartupEventArgs e)
         {
+#if DEBUG
             AttachConsole(-1);
+#endif
             base.OnStartup(e);
 
             try

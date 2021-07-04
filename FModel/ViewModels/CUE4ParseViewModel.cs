@@ -17,6 +17,7 @@ using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Sound;
+using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Localization;
@@ -24,6 +25,7 @@ using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion.Materials;
+using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse_Conversion.Textures;
 using EpicManifestParser.Objects;
@@ -579,6 +581,28 @@ namespace FModel.ViewModels
                         Log.Error("{FileName} could not be saved", savedFileName);
                         FLogger.AppendError();
                         FLogger.AppendText($"Could not saved '{savedFileName}'", Constants.WHITE, true);
+                    }
+
+                    return false;
+                }
+                case UStaticMesh mesh when UserSettings.Default.IsAutoSaveMeshes:
+                {
+                    var msh = new MeshExporter(mesh.Convert(), true);
+                    foreach (var staticMesh in msh.StaticMeshes)
+                    {
+                        if (staticMesh.TryWriteTo(
+                            Path.Combine(UserSettings.Default.OutputDirectory, "Saves"), out var savedFileName))
+                        {
+                            Log.Information("{FileName} successfully saved", savedFileName);
+                            FLogger.AppendInformation();
+                            FLogger.AppendText($"Successfully saved '{savedFileName}'", Constants.WHITE, true);
+                        }
+                        else
+                        {
+                            Log.Error("{FileName} could not be saved", savedFileName);
+                            FLogger.AppendError();
+                            FLogger.AppendText($"Could not saved '{savedFileName}'", Constants.WHITE, true);
+                        }
                     }
 
                     return false;

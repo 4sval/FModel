@@ -290,12 +290,12 @@
                     <TextBlock Grid.Row="10" Grid.Column="0" Text="Auto Save Textures *" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="10" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding AutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <!-- <TextBlock Grid.Row="11" Grid.Column="0" Text="Auto Save Meshes *" VerticalAlignment="Center" Margin="0 0 0 5" /> -->
-                    <!-- <controls:HotkeyTextBox Grid.Row="11" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5" -->
-                    <!--                         HotKey="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" /> -->
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Auto Save Materials *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="12" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Auto Save Materials *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="11" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding AutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Auto Save Meshes *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="12" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                                            HotKey="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                     <TextBlock Grid.Row="13" Grid.Column="0" Text="Auto Open Sounds *" VerticalAlignment="Center" />
                     <controls:HotkeyTextBox Grid.Row="13" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
                                             HotKey="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
