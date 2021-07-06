@@ -16,6 +16,7 @@ using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -24,6 +25,7 @@ using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Wwise;
+using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Materials;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Sounds;
@@ -564,13 +566,13 @@ namespace FModel.ViewModels
                     SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                     return false;
                 }
-                case UMaterialInterface material when UserSettings.Default.IsAutoSaveMaterials:
+                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials:
+                case UStaticMesh when UserSettings.Default.IsAutoSaveMeshes:
+                case USkeletalMesh when UserSettings.Default.IsAutoSaveMeshes:
                 {
-                    var mat = new MaterialExporter(material);
-                    if (mat.TryWriteTo(
-                        Path.Combine(UserSettings.Default.OutputDirectory, "Saves"),
-                        Path.Combine(UserSettings.Default.OutputDirectory, "Textures"),
-                        out var savedFileName))
+                    var toSave = new Exporter(export);
+                    var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
+                    if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
                     {
                         Log.Information("{FileName} successfully saved", savedFileName);
                         FLogger.AppendInformation();
@@ -580,29 +582,7 @@ namespace FModel.ViewModels
                     {
                         Log.Error("{FileName} could not be saved", savedFileName);
                         FLogger.AppendError();
-                        FLogger.AppendText($"Could not saved '{savedFileName}'", Constants.WHITE, true);
-                    }
-
-                    return false;
-                }
-                case UStaticMesh mesh when UserSettings.Default.IsAutoSaveMeshes:
-                {
-                    var msh = new MeshExporter(mesh.Convert(), true);
-                    foreach (var staticMesh in msh.StaticMeshes)
-                    {
-                        if (staticMesh.TryWriteTo(
-                            Path.Combine(UserSettings.Default.OutputDirectory, "Saves"), out var savedFileName))
-                        {
-                            Log.Information("{FileName} successfully saved", savedFileName);
-                            FLogger.AppendInformation();
-                            FLogger.AppendText($"Successfully saved '{savedFileName}'", Constants.WHITE, true);
-                        }
-                        else
-                        {
-                            Log.Error("{FileName} could not be saved", savedFileName);
-                            FLogger.AppendError();
-                            FLogger.AppendText($"Could not saved '{savedFileName}'", Constants.WHITE, true);
-                        }
+                        FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
                     }
 
                     return false;
