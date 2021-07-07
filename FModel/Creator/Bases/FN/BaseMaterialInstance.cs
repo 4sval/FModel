@@ -19,6 +19,8 @@ namespace FModel.Creator.Bases.FN
         {
             if (Object is not UMaterialInstanceConstant material) return;
 
+            // MY ONLY GOTO
+            texture_finding:
             foreach (var textureParameter in material.TextureParameterValues) // get texture from base material
             {
                 if (textureParameter.ParameterValue is not UTexture2D texture || Preview != null) continue;
@@ -44,6 +46,9 @@ namespace FModel.Creator.Bases.FN
 
                 if (material == null) return;
             }
+
+            if (Preview == null)
+                goto texture_finding;
 
             foreach (var vectorParameter in material.VectorParameterValues)
             {

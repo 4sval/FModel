@@ -24,6 +24,7 @@ using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
+using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Materials;
@@ -87,7 +88,7 @@ namespace FModel.ViewModels
                 }
                 default:
                 {
-                    Game = gameDirectory.SubstringBeforeLast("\\Content\\").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
+                    Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
 
                     if (Game == FGame.StateOfDecay2)
                         Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
@@ -482,7 +483,7 @@ namespace FModel.ViewModels
                     TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))
                     {
-                        var header = new FDictionaryHeader(archive);
+                        var header = new FOodleDictionaryArchive(archive).Header;
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), bulkSave);
                     }
 
@@ -506,8 +507,17 @@ namespace FModel.ViewModels
                     break;
                 case "ushaderbytecode":
                 case "ushadercode":
+                {
                     TabControl.SelectedTab.Image = null;
+
+                    if (Provider.TryCreateReader(fullPath, out var archive))
+                    {
+                        var ar = new FShaderCodeArchive(archive);
+                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), bulkSave);
+                    }
+
                     break;
+                }
                 default:
                 {
                     var exports = Provider.LoadObjectExports(fullPath);
