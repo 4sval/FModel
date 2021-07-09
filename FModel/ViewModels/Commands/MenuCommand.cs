@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Threading.Tasks;
 using AdonisUI.Controls;
-using FModel.Extensions;
 using FModel.Framework;
 using FModel.Settings;
 using FModel.Views;

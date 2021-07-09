@@ -580,13 +580,13 @@ namespace FModel.ViewModels
                 case UStaticMesh when UserSettings.Default.IsAutoSaveMeshes:
                 case USkeletalMesh when UserSettings.Default.IsAutoSaveMeshes:
                 {
-                    var toSave = new Exporter(export);
+                    var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat);
                     var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
                     if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
                     {
-                        Log.Information("{FileName} successfully saved", savedFileName);
+                        Log.Information("Successfully saved {FileName}", savedFileName);
                         FLogger.AppendInformation();
-                        FLogger.AppendText($"Successfully saved '{savedFileName}'", Constants.WHITE, true);
+                        FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
                     }
                     else
                     {

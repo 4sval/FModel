@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
 using CUE4Parse.UE4.Versions;
+using CUE4Parse_Conversion.Meshes;
+using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -427,6 +429,27 @@ namespace FModel.Settings
         {
             get => _nextAudio;
             set => SetProperty(ref _nextAudio, value);
+        }
+
+        private EMeshFormat _meshExportFormat = EMeshFormat.ActorX;
+        public EMeshFormat MeshExportFormat
+        {
+            get => _meshExportFormat;
+            set => SetProperty(ref _meshExportFormat, value);
+        }
+        
+        private ELodFormat _lodExportFormat = ELodFormat.FirstLod;
+        public ELodFormat LodExportFormat
+        {
+            get => _lodExportFormat;
+            set => SetProperty(ref _lodExportFormat, value);
+        }
+        
+        private ETextureFormat _textureExportFormat = ETextureFormat.Png;
+        public ETextureFormat TextureExportFormat
+        {
+            get => _textureExportFormat;
+            set => SetProperty(ref _textureExportFormat, value);
         }
     }
 }

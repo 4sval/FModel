@@ -19,7 +19,6 @@ namespace FModel.Creator.Bases.FN
         {
             if (Object is not UMaterialInstanceConstant material) return;
 
-            // MY ONLY GOTO
             texture_finding:
             foreach (var textureParameter in material.TextureParameterValues) // get texture from base material
             {
