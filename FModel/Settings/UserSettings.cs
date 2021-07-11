@@ -212,7 +212,7 @@ namespace FModel.Settings
             {FGame.Indiana, EGame.GAME_UE4_LATEST},
             {FGame.RogueCompany, EGame.GAME_UE4_LATEST},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
-            {FGame.Platform, EGame.GAME_UE4_24},
+            {FGame.Platform, EGame.GAME_UE4_25},
             {FGame.BendGame, EGame.GAME_UE4_11}
         };
         public IDictionary<FGame, EGame> OverridedGame
