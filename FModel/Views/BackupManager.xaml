@@ -36,7 +36,7 @@
         </Grid.ColumnDefinitions>
         
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Text="Keep in mind, you don't load backups, you load your files and compare them with the backup. It's not that hard to understand..." />
+                   Text="Because it looks like it's pretty hard to understand, you don't load backups, you load your files and compare them with the backup. Also, by clicking the download button you don't create your own backup you download a pre-made one. Kinda crazy we have to explain this, who will even read anyway..." />
         
         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="OnCreateBackupClick"
                 Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Content="Create" />
