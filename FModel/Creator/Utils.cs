@@ -251,7 +251,7 @@ namespace FModel.Creator
             if (string.IsNullOrEmpty(text)) return null;
 
             var spaceWidth = paint.MeasureText(" ");
-            var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            var lines = text.Replace("\\n", "\n").Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
             var ret = new List<string>(lines.Length);
             foreach (var line in lines)
