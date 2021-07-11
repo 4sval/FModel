@@ -14,11 +14,8 @@
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
             <Setter Property="Title" Value="FModel" />
             <Style.Triggers>
-                <DataTrigger
-                    Binding="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}"
-                    Value="True">
-                    <Setter Property="Title"
-                            Value="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, StringFormat={}FModel - {0}}" />
+                <DataTrigger Binding="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
+                    <Setter Property="Title" Value="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, StringFormat={}FModel - {0}}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -132,12 +129,12 @@
                     <MenuItem Header="Save Textures" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}" />
-                    <!--<MenuItem Header="Save Meshes" IsCheckable="True" StaysOpenOnClick="True"
-                              InputGestureText="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding IsAutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />-->
                     <MenuItem Header="Save Materials" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}}" />
+                    <MenuItem Header="Save Meshes" IsCheckable="True" StaysOpenOnClick="True"
+                              InputGestureText="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
+                              IsChecked="{Binding IsAutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />
                     <MenuItem Header="Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
@@ -438,9 +435,10 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-
-                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}"
-                                           Tag="{Binding SelectedItem.Header, ElementName=AssetsFolderName, FallbackValue='ASSETS LIST', Converter={x:Static converters:FolderToSeparatorTagConverter.Instance}}" />
+                                
+                                <controls:Breadcrumb Grid.Row="0" MaxWidth="{Binding ActualWidth, ElementName=AssetsSearchName}" HorizontalAlignment="Left" Margin="0 5 0 5"
+                                                     DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName, FallbackValue='No/Directory/Detected/In/Folder'}"/>
+                                
                                 <ListBox Grid.Row="1" x:Name="AssetsListName" Style="{StaticResource AssetsListBox}" PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick">
                                     <ListBox.ContextMenu>
                                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">

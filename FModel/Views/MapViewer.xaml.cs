@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using FModel.Extensions;
 using FModel.Services;
@@ -22,6 +24,8 @@ namespace FModel.Views
 
             InitializeComponent();
         }
+
+        private void OnClosing(object sender, CancelEventArgs e) => DiscordService.DiscordHandler.UpdateToSavedPresence();
 
         private void OnClick(object sender, RoutedEventArgs e)
         {
@@ -55,6 +59,22 @@ namespace FModel.Views
                 Log.Error("MiniMap.png could not be saved");
                 FLogger.AppendError();
                 FLogger.AppendText("Could not save 'MiniMap.png'", Constants.WHITE, true);
+            }
+        }
+        
+        private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            var i = 0;
+            foreach (var item in MapTree.Items)
+            {
+                if (item is not TreeViewItem {IsSelected: true})
+                {
+                    i++;
+                    continue;
+                }
+                
+                _applicationView.MapViewer.MapIndex = i;
+                break;
             }
         }
     }

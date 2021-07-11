@@ -44,7 +44,6 @@ namespace FModel.ViewModels
             set
             {
                 SetProperty(ref _status, value);
-                RaisePropertyChanged(nameof(TitleExtra));
                 IsReady = Status != EStatusKind.Loading && Status != EStatusKind.Stopping;
             }
         }
@@ -105,6 +104,11 @@ namespace FModel.ViewModels
             UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDetectedGame.GameDirectory;
             if (!bAlreadyLaunched || gameDirectory.Equals(gameLauncherViewModel.SelectedDetectedGame.GameDirectory)) return;
 
+            RestartWithWarning();
+        }
+
+        public void RestartWithWarning()
+        {
             MessageBox.Show("It looks like you just changed something.\nFModel will restart to apply your changes.", "Uh oh, a restart is needed", MessageBoxButton.OK, MessageBoxImage.Warning);
             Restart();
         }

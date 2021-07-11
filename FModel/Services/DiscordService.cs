@@ -22,7 +22,7 @@ namespace FModel.Services
 
         private readonly Assets _staticAssets = new()
         {
-            LargeImageKey = "official_logo", SmallImageKey = "verified", SmallImageText = $"v{Constants.APP_VERSION[..5]}"
+            LargeImageKey = "official_logo", SmallImageKey = "verified", SmallImageText = $"v{Constants.APP_VERSION}"
         };
 
         private readonly Button[] _buttons =
@@ -38,7 +38,7 @@ namespace FModel.Services
                 Assets = _staticAssets,
                 Timestamps = _timestamps,
                 Buttons = _buttons,
-                State = $"{game.GetDescription()} - Idling"
+                Details = $"{game.GetDescription()} - Idling"
             };
 
             _client.OnReady += (_, args) => Log.Information("{Username}#{Discriminator} ({UserId}) is now ready", args.User.Username, args.User.Discriminator, args.User.ID);
@@ -60,7 +60,7 @@ namespace FModel.Services
             _client.Invoke();
         }
 
-        public void UpdateButDontSavePresence(string details, string state)
+        public void UpdateButDontSavePresence(string details = null, string state = null)
         {
             if (!_client.IsInitialized) return;
             _client.SetPresence(new RichPresence
@@ -68,8 +68,8 @@ namespace FModel.Services
                 Assets = _staticAssets,
                 Timestamps = _timestamps,
                 Buttons = _buttons,
-                Details = details,
-                State = state
+                Details = details ?? _currentPresence.Details,
+                State = state ?? _currentPresence.State
             });
             _client.Invoke();
         }

@@ -6,13 +6,14 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
     <Version>4.0.0</Version>
-    <AssemblyVersion>4.0.0.1</AssemblyVersion>
-    <FileVersion>4.0.0.1</FileVersion>
+    <AssemblyVersion>4.0.1.0</AssemblyVersion>
+    <FileVersion>4.0.1.0</FileVersion>
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <StartupObject>FModel.App</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -71,14 +72,13 @@
     <None Remove="Resources\Cpp.xshd" />
     <None Remove="Resources\unix.png" />
     <None Remove="Resources\linux.png" />
+    <None Remove="Resources\stateofdecay2.png" />
     <None Remove="Resources\T_Placeholder_Item_Image.png" />
     <None Remove="Resources\T_ClipSize_Weapon_Stats.png" />
     <None Remove="Resources\T_DamagePerBullet_Weapon_Stats.png" />
     <None Remove="Resources\T_ReloadTime_Weapon_Stats.png" />
     <None Remove="Resources\T-Icon-Pets-64.png" />
     <None Remove="Resources\T-Icon-Quests-64.png" />
-    <None Remove="Resources\city_pin.png" />
-    <None Remove="Resources\pin.png" />
     <None Remove="Resources\Default.png" />
     <None Remove="Resources\NoBackground.png" />
     <None Remove="Resources\NoText.png" />
@@ -162,14 +162,13 @@
     <Resource Include="Resources\athena.png" />
     <Resource Include="Resources\unix.png" />
     <Resource Include="Resources\linux.png" />
+    <Resource Include="Resources\stateofdecay2.png" />
     <Resource Include="Resources\T_Placeholder_Item_Image.png" />
     <Resource Include="Resources\T_ClipSize_Weapon_Stats.png" />
     <Resource Include="Resources\T_DamagePerBullet_Weapon_Stats.png" />
     <Resource Include="Resources\T_ReloadTime_Weapon_Stats.png" />
     <Resource Include="Resources\T-Icon-Pets-64.png" />
     <Resource Include="Resources\T-Icon-Quests-64.png" />
-    <Resource Include="Resources\city_pin.png" />
-    <Resource Include="Resources\pin.png" />
     <Resource Include="Resources\Default.png" />
     <Resource Include="Resources\NoBackground.png" />
     <Resource Include="Resources\NoText.png" />

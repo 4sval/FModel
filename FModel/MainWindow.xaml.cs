@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -57,8 +57,10 @@ namespace FModel
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
+#if !DEBUG
             ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
-            
+#endif
+
             switch (UserSettings.Default.AesReload)
             {
                 case EAesReload.Always:
@@ -236,7 +238,7 @@ namespace FModel
 
         private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is not ListBox listBox) return;
+            if (!_applicationView.IsReady || sender is not ListBox listBox) return;
             UserSettings.Default.LoadingMode = ELoadingMode.Multiple;
             _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
         }

@@ -35,6 +35,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -45,11 +46,11 @@
                     </Grid.ColumnDefinitions>
                     
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Output Directory *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding OutputDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding OutputDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseOutput" Margin="0 0 0 5" />
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Game Directory *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding GameDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding GameDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="1" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" Margin="0 0 0 5" />
                     
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Update Mode" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Receive updates each time a new release is pushed to GitHub&#10;Receive updates each time a new commit is pushed to GitHub" />
@@ -62,8 +63,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="UE4 Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE4 version to use when parsing assets" />
-                    <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeGames}" SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Assets Language" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Language used and shown when parsing assets" />
+                    <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AssetLanguages}" SelectedItem="{Binding SettingsView.SelectedAssetLanguage, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -72,8 +73,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="UE4 Sub-Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE4 sub-version to use when parsing assets" />
-                    <ComboBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeVersions}" SelectedItem="{Binding SettingsView.SelectedUeVersion, Mode=TwoWay}"
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Discord Rich Presence" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.DiscordRpcs}" SelectedItem="{Binding SettingsView.SelectedDiscordRpc, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -82,8 +83,10 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Assets Language" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Language used and shown when parsing assets" />
-                    <ComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AssetLanguages}" SelectedItem="{Binding SettingsView.SelectedAssetLanguage, Mode=TwoWay}"
+                    <Separator Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" Tag="ADVANCED"></Separator>
+                    
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="UE4 Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE4 version to use when parsing assets" />
+                    <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeGames}" SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -92,8 +95,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Keep Directory Structure" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Auto Export &#38; Save assets inside their game directory" />
-                    <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.DirectoryStructures}" SelectedItem="{Binding SettingsView.SelectedDirectoryStructure, Mode=TwoWay}"
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="UE4 Sub-Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE4 sub-version to use when parsing assets" />
+                    <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeVersions}" SelectedItem="{Binding SettingsView.SelectedUeVersion, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -102,8 +105,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Compressed Audio" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="What to do when encountering a compressed audio file" />
-                    <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.CompressedAudios}" SelectedItem="{Binding SettingsView.SelectedCompressedAudio, Mode=TwoWay}"
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Keep Directory Structure" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Auto Export &#38; Save assets inside their game directory" />
+                    <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.DirectoryStructures}" SelectedItem="{Binding SettingsView.SelectedDirectoryStructure, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -112,7 +115,17 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Compressed Audio" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="What to do when encountering a compressed audio file" />
+                    <ComboBox Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.CompressedAudios}" SelectedItem="{Binding SettingsView.SelectedCompressedAudio, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -125,7 +138,7 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                    <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
+                    <ComboBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.Style>
                             <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
@@ -137,16 +150,6 @@
                                 </Style.Triggers>
                             </Style>
                         </ComboBox.Style>
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Discord Rich Presence" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.DiscordRpcs}" SelectedItem="{Binding SettingsView.SelectedDiscordRpc, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -225,6 +228,58 @@
                     </Grid>
                 </Grid>
             </DataTemplate>
+            <DataTemplate x:Key="ModelsTemplate">
+                <Grid adonisExtensions:LayerExtension.Layer="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Mesh Export Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding SettingsView.MeshExportFormats}" SelectedItem="{Binding SettingsView.SelectedMeshExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Level Of Detail Export Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="1" Grid.Column="2" ItemsSource="{Binding SettingsView.LodExportFormats}" SelectedItem="{Binding SettingsView.SelectedLodExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Texture Export Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="2" Grid.Column="2" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </DataTemplate>
             <DataTemplate x:Key="KeybindingsTemplate">
                 <Grid adonisExtensions:LayerExtension.Layer="2">
                     <Grid.RowDefinitions>
@@ -287,12 +342,12 @@
                     <TextBlock Grid.Row="10" Grid.Column="0" Text="Auto Save Textures *" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="10" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding AutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <!-- <TextBlock Grid.Row="11" Grid.Column="0" Text="Auto Save Meshes *" VerticalAlignment="Center" Margin="0 0 0 5" /> -->
-                    <!-- <controls:HotkeyTextBox Grid.Row="11" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5" -->
-                    <!--                         HotKey="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" /> -->
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Auto Save Materials *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="12" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Auto Save Materials *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="11" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding AutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Auto Save Meshes *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="12" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                                            HotKey="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                     <TextBlock Grid.Row="13" Grid.Column="0" Text="Auto Open Sounds *" VerticalAlignment="Center" />
                     <controls:HotkeyTextBox Grid.Row="13" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
                                             HotKey="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
@@ -361,6 +416,22 @@
                         </Style.Triggers>
                     </Style>
                 </TreeViewItem.Style>
+            </TreeViewItem>
+            <TreeViewItem Tag="ModelsTemplate">
+                <TreeViewItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center" Margin="-20 4 7.5 4">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M2,6c0.55,0,1-0.45,1-1V4c0-0.55,0.45-1,1-1h1c0.55,0,1-0.45,1-1S5.55,1,5,1H4C2.34,1,1,2.34,1,4v1C1,5.55,1.45,6,2,6z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M5,21H4c-0.55,0-1-0.45-1-1v-1c0-0.55-0.45-1-1-1c-0.55,0-1,0.45-1,1v1c0,1.66,1.34,3,3,3h1c0.55,0,1-0.45,1-1 S5.55,21,5,21z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M20,1h-1c-0.55,0-1,0.45-1,1s0.45,1,1,1h1c0.55,0,1,0.45,1,1v1c0,0.55,0.45,1,1,1c0.55,0,1-0.45,1-1V4 C23,2.34,21.66,1,20,1z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M22,18c-0.55,0-1,0.45-1,1v1c0,0.55-0.45,1-1,1h-1c-0.55,0-1,0.45-1,1s0.45,1,1,1h1c1.66,0,3-1.34,3-3v-1 C23,18.45,22.55,18,22,18z" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M19,14.87V9.13c0-0.72-0.38-1.38-1-1.73l-5-2.88c-0.31-0.18-0.65-0.27-1-0.27s-0.69,0.09-1,0.27L6,7.39 C5.38,7.75,5,8.41,5,9.13v5.74c0,0.72,0.38,1.38,1,1.73l5,2.88c0.31,0.18,0.65,0.27,1,0.27s0.69-0.09,1-0.27l5-2.88 C18.62,16.25,19,15.59,19,14.87z M11,17.17l-4-2.3v-4.63l4,2.33V17.17z M12,10.84L8.04,8.53L12,6.25l3.96,2.28L12,10.84z M17,14.87l-4,2.3v-4.6l4-2.33V14.87z" />
+                            </Canvas>
+                        </Viewbox>
+                        <TextBlock Text="Models" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    </StackPanel>
+                </TreeViewItem.Header>
             </TreeViewItem>
             <TreeViewItem Tag="KeybindingsTemplate">
                 <TreeViewItem.Header>

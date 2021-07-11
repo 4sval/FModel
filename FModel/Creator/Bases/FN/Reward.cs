@@ -120,13 +120,13 @@ namespace FModel.Creator.Bases.FN
                     _theReward = new BaseIcon(null, EIconStyle.Default);
                     _theReward.Border[0] = SKColor.Parse("FFDB67");
                     _theReward.Background[0] = SKColor.Parse("8F4A20");
-                    _theReward.Preview = Utils.GetBitmap("FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-FNBR-BattlePoints.T-FNBR-BattlePoints");
+                    _theReward.Preview = Utils.GetBitmap("FortniteGame/Content/Athena/UI/Frontend/Art/T_UI_BP_BattleStar_L.T_UI_BP_BattleStar_L");
                     break;
                 case "athenaseasonalxp":
                     _theReward = new BaseIcon(null, EIconStyle.Default);
                     _theReward.Border[0] = SKColor.Parse("E6FDB1");
                     _theReward.Background[0] = SKColor.Parse("51830F");
-                    _theReward.Preview = Utils.GetBitmap("FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-FNBR-XPMedium.T-FNBR-XPMedium");
+                    _theReward.Preview = Utils.GetBitmap("FortniteGame/Content/UI/Foundation/Textures/Icons/Items/T-FNBR-XPUncommon-L.T-FNBR-XPUncommon-L");
                     break;
                 case "mtxgiveaway":
                     _theReward = new BaseIcon(null, EIconStyle.Default);

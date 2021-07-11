@@ -30,6 +30,7 @@ namespace FModel.Views
         {
             _applicationView.AudioPlayer.Stop();
             _applicationView.AudioPlayer.Dispose();
+            DiscordService.DiscordHandler.UpdateToSavedPresence();
         }
 
         private void OnDeviceSwap(object sender, SelectionChangedEventArgs e)

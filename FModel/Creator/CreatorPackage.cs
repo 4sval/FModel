@@ -5,6 +5,7 @@ using FModel.Creator.Bases;
 using FModel.Creator.Bases.BB;
 using FModel.Creator.Bases.FN;
 using FModel.Creator.Bases.SB;
+using FModel.Creator.Bases.SOD2;
 
 namespace FModel.Creator
 {
@@ -125,7 +126,8 @@ namespace FModel.Creator
                 case "MaterialInstanceConstant"
                     when _object.Owner != null &&
                          (_object.Owner.Name.EndsWith($"/MI_OfferImages/{_object.Name}") ||
-                          _object.Owner.Name.EndsWith($"/RenderSwitch_Materials/{_object.Name}")):
+                          _object.Owner.Name.EndsWith($"/RenderSwitch_Materials/{_object.Name}") ||
+                          _object.Owner.Name.EndsWith($"/MI_BPTile/{_object.Name}")):
                     creator = new BaseMaterialInstance(_object, _style);
                     return true;
                 case "FortMtxOfferData":
@@ -225,10 +227,38 @@ namespace FModel.Creator
                 case "GLeagueDivision":
                     creator = new BaseDivision(_object, EIconStyle.Default);
                     return true;
-                // TODO: Draw this properly
-                // case "GGameModeInfo":
-                //     creator = new BaseGameModeInfo(_object, EIconStyle.Default);
-                //     return true;
+                // State of Decay 2
+                case "CureItem":
+                case "AmmoItem":
+                case "Pro_Brake_C":
+                case "BackpackItem":
+                case "MagicAmmoItem":
+                case "ConsumableItem":
+                case "MeleeWeaponItem":
+                case "CloseCombatItem":
+                case "FacilityModItem":
+                case "RangedWeaponItem":
+                case "MiscellaneousItem":
+                case "RepairVehicleItem":
+                case "ResourceItemBase_C":
+                case "FuelResourceBase_C":
+                case "MedsResourceBase_C":
+                case "PartsResourceBase_C":
+                case "RangedWeaponModItem":
+                case "VehicleDeliveryItem":
+                case "ConsumableBase_BP_C":
+                case "SmallBackpackBase_C":
+                case "LargeBackpackBase_C":
+                case "MediumBackpackBase_C":
+                case "ConsumableMedsBase_BP_C":
+                case "MaterialsResourceBase_C":
+                case "ExtraLargeBackpackBase_C":
+                case "ExtraSmallBackpackBase_C":
+                case "ConsumableStimsBase_BP_C":
+                case "Consumable_TimedStatBuff_Base_BP_C":
+                case "Consumable_SuspendFatigue_Base_BP_C":
+                    creator = new BaseDecayIcon(_object, EIconStyle.Default);
+                    return true;
                 default:
                     creator = null;
                     return false;

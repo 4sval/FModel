@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
 using CUE4Parse.UE4.Versions;
+using CUE4Parse_Conversion.Meshes;
+using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -132,7 +134,7 @@ namespace FModel.Settings
             set => SetProperty(ref _loadingMode, value);
         }
 
-        private EUpdateMode _updateMode = EUpdateMode.Stable;
+        private EUpdateMode _updateMode = EUpdateMode.Beta;
         public EUpdateMode UpdateMode
         {
             get => _updateMode;
@@ -205,12 +207,13 @@ namespace FModel.Settings
             {FGame.Dungeons, EGame.GAME_UE4_LATEST},
             {FGame.WorldExplorers, EGame.GAME_UE4_LATEST},
             {FGame.g3, EGame.GAME_UE4_22},
-            {FGame.StateOfDecay2, EGame.GAME_UE4_LATEST},
+            {FGame.StateOfDecay2, EGame.GAME_SOD2},
             {FGame.Prospect, EGame.GAME_UE4_LATEST},
             {FGame.Indiana, EGame.GAME_UE4_LATEST},
             {FGame.RogueCompany, EGame.GAME_UE4_LATEST},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
-            {FGame.Platform, EGame.GAME_UE4_24}
+            {FGame.Platform, EGame.GAME_UE4_25},
+            {FGame.BendGame, EGame.GAME_UE4_11}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -233,7 +236,8 @@ namespace FModel.Settings
             {FGame.Indiana, UE4Version.VER_UE4_DETERMINE_BY_GAME},
             {FGame.RogueCompany, UE4Version.VER_UE4_DETERMINE_BY_GAME},
             {FGame.SwGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Platform, UE4Version.VER_UE4_DETERMINE_BY_GAME}
+            {FGame.Platform, UE4Version.VER_UE4_DETERMINE_BY_GAME},
+            {FGame.BendGame, UE4Version.VER_UE4_DETERMINE_BY_GAME}
         };
         public IDictionary<FGame, UE4Version> OverridedUEVersion
         {
@@ -292,7 +296,8 @@ namespace FModel.Settings
             {FGame.Indiana, new List<CustomDirectory>()},
             {FGame.RogueCompany, new List<CustomDirectory>()},
             {FGame.SwGame, new List<CustomDirectory>()},
-            {FGame.Platform, new List<CustomDirectory>()}
+            {FGame.Platform, new List<CustomDirectory>()},
+            {FGame.BendGame, new List<CustomDirectory>()}
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {
@@ -300,7 +305,7 @@ namespace FModel.Settings
             set => SetProperty(ref _customDirectories, value);
         }
 
-        private DateTime _lastAesReload = DateTime.Today;
+        private DateTime _lastAesReload = DateTime.Today.AddDays(-1);
         public DateTime LastAesReload
         {
             get => _lastAesReload;
@@ -424,6 +429,27 @@ namespace FModel.Settings
         {
             get => _nextAudio;
             set => SetProperty(ref _nextAudio, value);
+        }
+
+        private EMeshFormat _meshExportFormat = EMeshFormat.ActorX;
+        public EMeshFormat MeshExportFormat
+        {
+            get => _meshExportFormat;
+            set => SetProperty(ref _meshExportFormat, value);
+        }
+        
+        private ELodFormat _lodExportFormat = ELodFormat.FirstLod;
+        public ELodFormat LodExportFormat
+        {
+            get => _lodExportFormat;
+            set => SetProperty(ref _lodExportFormat, value);
+        }
+        
+        private ETextureFormat _textureExportFormat = ETextureFormat.Png;
+        public ETextureFormat TextureExportFormat
+        {
+            get => _textureExportFormat;
+            set => SetProperty(ref _textureExportFormat, value);
         }
     }
 }

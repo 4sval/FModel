@@ -1,13 +1,14 @@
 ﻿<adonisControls:AdonisWindow x:Class="FModel.Views.MapViewer"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FModel"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-        WindowStartupLocation="CenterScreen" IconVisibility="Collapsed"
+        WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" SizeToContent="Width" ResizeMode="CanMinimize" Closing="OnClosing"
         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}"
-        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.50'}">
+        MinWidth="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.50'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
             <Setter Property="Title" Value="Map Viewer" />
@@ -18,37 +19,106 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            
+            <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
+            <DataTemplate x:Key="BrTemplate">
+                <StackPanel VerticalAlignment="Center" Margin="25 0">
+                    <CheckBox Content="Points Of Interest" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrPois}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Landmarks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrLandmarks}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Patrols Path" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrPatrolsPath}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Upgrade Benches" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrUpgradeBenches}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Phonebooths" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrPhonebooths}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Alien Artifacts" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrAlienArtifacts}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Tags Location" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrTagsLocation}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                </StackPanel>
+            </DataTemplate>
+            <DataTemplate x:Key="PrTemplate">
+                <StackPanel VerticalAlignment="Center" Margin="25 0">
+                    <CheckBox Content="Landmarks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrLandmarks}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Cannonball" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrCannonball}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Skydive" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrSkydive}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Shooting Targets" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrShootingTargets}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Parkour" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrParkour}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Time Trials" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrTimeTrials}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Vending Machines" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrVendingMachines}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                    <CheckBox Content="Music Blocks" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.PrMusicBlocks}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
+                </StackPanel>
+            </DataTemplate>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" MinWidth="300" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         
-        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="50">
-            <CheckBox Content="Show Cities" IsEnabled="{Binding IsReady}" IsChecked="{Binding MapViewer.ShowCities, Mode=TwoWay}"
-                      Margin="0 0 0 10" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-            <CheckBox Content="Show Landmarks" IsEnabled="{Binding IsReady}" IsChecked="{Binding MapViewer.ShowLandmarks, Mode=TwoWay}"
-                      Margin="0 0 0 10" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-            <CheckBox Content="Show Patrol Paths" IsEnabled="{Binding IsReady}" IsChecked="{Binding MapViewer.ShowPatrolPaths, Mode=TwoWay}"
-                      Margin="0 0 0 10" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-            <Button Content="Save Image" IsEnabled="{Binding IsReady}" Click="OnClick" />
-        </StackPanel>
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            
+            <TreeView Grid.Row="0" Grid.RowSpan="3" x:Name="MapTree" SelectedItemChanged="OnSelectedItemChanged"
+                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                <TreeViewItem Tag="BrTemplate" IsSelected="True">
+                    <TreeViewItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" HorizontalAlignment="Center" Margin="-20 4 7.5 4">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource GliderIcon}" />
+                                </Canvas>
+                            </Viewbox>
+                            <TextBlock Text="Battle Royale" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </TreeViewItem.Header>
+                </TreeViewItem>
+                <TreeViewItem Tag="PrTemplate">
+                    <TreeViewItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="16" Height="16" HorizontalAlignment="Center" Margin="-20 4 7.5 4">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource AnchorIcon}" />
+                                </Canvas>
+                            </Viewbox>
+                            <TextBlock Text="Party Royale" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </TreeViewItem.Header>
+                </TreeViewItem>
+            </TreeView>
+            
+            <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+                <ContentControl ContentTemplateSelector="{StaticResource TagTemplateSelector}" Content="{Binding SelectedItem.Tag, ElementName=MapTree}" />
+            </Grid>
+            
+            <Button Grid.Row="2" Content="Save Image" Margin="5" IsEnabled="{Binding IsReady}" VerticalAlignment="Bottom" Click="OnClick" />
+        </Grid>
+        
+        <Grid Grid.Column="1" HorizontalAlignment="Stretch">
             <controls:MagnifierManager.Magnifier>
                 <controls:Magnifier Radius="200" ZoomFactor=".4" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" BorderThickness="1" />
             </controls:MagnifierManager.Magnifier>
-            
-            <TextBlock Text="Map Viewer is loading, please wait..." HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <TextBlock Text="Minimap is loading, please wait..." HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Image UseLayoutRounding="True" Source="{Binding MapViewer.MapImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
                    Visibility="{Binding IsReady, Converter={StaticResource BoolToVisibilityConverter}}" />
-            <Image UseLayoutRounding="True" Source="{Binding MapViewer.CitiesImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
-                   Visibility="{Binding MapViewer.ShowCities, Converter={StaticResource BoolToVisibilityConverter}}" />
-            <Image UseLayoutRounding="True" Source="{Binding MapViewer.LandmarksImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
-                   Visibility="{Binding MapViewer.ShowLandmarks, Converter={StaticResource BoolToVisibilityConverter}}" />
-            <Image UseLayoutRounding="True" Source="{Binding MapViewer.PatrolPathImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
-                   Visibility="{Binding MapViewer.ShowPatrolPaths, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <Image UseLayoutRounding="True" Source="{Binding MapViewer.LayerImage}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                   Visibility="{Binding IsReady, Converter={StaticResource BoolToVisibilityConverter}}" />
         </Grid>
     </Grid>
 </adonisControls:AdonisWindow>

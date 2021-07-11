@@ -23,8 +23,14 @@ namespace FModel
     /// </summary>
     public partial class App
     {
+        [DllImport("kernel32.dll")]
+        private static extern bool AttachConsole(int dwProcessId);
+        
         protected override void OnStartup(StartupEventArgs e)
         {
+#if DEBUG
+            AttachConsole(-1);
+#endif
             base.OnStartup(e);
 
             try

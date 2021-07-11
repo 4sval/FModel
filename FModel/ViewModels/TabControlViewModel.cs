@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using FModel.Extensions;
 using FModel.Settings;
@@ -123,6 +124,13 @@ namespace FModel.ViewModels
                 SetProperty(ref _image, value);
                 RaisePropertyChanged("HasImage");
             }
+        }
+
+        private BitmapScalingMode _imageRender = BitmapScalingMode.Linear;
+        public BitmapScalingMode ImageRender
+        {
+            get => _imageRender;
+            set => SetProperty(ref _imageRender, value);
         }
 
         public bool HasImage => Image != null;

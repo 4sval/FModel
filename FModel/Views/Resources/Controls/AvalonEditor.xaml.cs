@@ -23,9 +23,9 @@ namespace FModel.Views.Resources.Controls
 
         public AvalonEditor()
         {
-            CommandBindings.Add(new CommandBinding(NavigationCommands.Search, (s, e) => FindNext(e.Parameter != null)));
-
+            CommandBindings.Add(new CommandBinding(NavigationCommands.Search, (_, e) => FindNext(e.Parameter != null)));
             InitializeComponent();
+            
             YesWeEditor = MyAvalonEditor;
             YesWeSearch = WpfSuckMyDick;
             MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
@@ -81,7 +81,7 @@ namespace FModel.Views.Resources.Controls
             if (sender is not TextEditor avalonEditor || DataContext is not TabItem tabItem ||
                 avalonEditor.Document == null || string.IsNullOrEmpty(avalonEditor.Document.Text))
                 return;
-
+            
             avalonEditor.Document.FileName = tabItem.Directory + '/' + tabItem.Header.SubstringBeforeLast('.');
             if (!tabItem.ShouldScroll) return;
 
@@ -95,9 +95,8 @@ namespace FModel.Views.Resources.Controls
         {
             if (DataContext is not TabItem tabItem || Keyboard.Modifiers != ModifierKeys.Control)
                 return;
-
+            
             var fontSize = tabItem.FontSize + e.Delta / 50.0;
-
             tabItem.FontSize = fontSize switch
             {
                 < 6 => 6,

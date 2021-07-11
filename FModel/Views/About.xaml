@@ -1,6 +1,7 @@
 ﻿<adonisControls:AdonisWindow x:Class="FModel.Views.About"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:local="clr-namespace:FModel"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
                              IconVisibility="Collapsed" Width="500" SizeToContent="Height">
@@ -18,7 +19,7 @@
     </adonisControls:AdonisWindow.Resources>
     <StackPanel Margin="30 10">
         <StackPanel HorizontalAlignment="Center" Margin="0 0 0 30">
-            <TextBlock Text="404FMode!" FontSize="15" FontWeight="500" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="{Binding Source={x:Static local:Constants.APP_VERSION}, StringFormat={}FModel {0}}" FontSize="15" FontWeight="500" Foreground="#9DA3DD" FontStretch="Expanded" />
             <TextBlock Text="Made with &#x2665; by Asval" FontSize="30" FontWeight="700" Foreground="#DAE5F2" HorizontalAlignment="Center" />
         </StackPanel>
         

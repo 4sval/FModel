@@ -18,4 +18,13 @@ To use FModel, you need to have **[.NET 5](https://dotnet.microsoft.com/download
 - [@GMatrix](https://github.com/GMatrixGames)
 - [@Tiger](https://github.com/XTigerHyperX)
 
+## Support
+
 [![Donate](https://img.shields.io/badge/Paypal-Donate-00457C.svg?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EP9SSWG8MW4UC&source=url)
+
+<p>This project is supported by:</p>
+<p>
+  <a href="https://www.jetbrains.com/">
+    <img src="https://cdn.fmodel.app/i/svg/jetbrains.svg" width="256px">
+  </a>
+</p>

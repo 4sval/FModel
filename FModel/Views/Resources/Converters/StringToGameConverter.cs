@@ -12,14 +12,16 @@ namespace FModel.Views.Resources.Converters
         {
             return value switch
             {
+                "Newt" => "Spellbreak",
+                "Nebula" => "Days Gone",
                 "Fortnite" => "Fortnite",
+                "VALORANT" => "Valorant",
                 "Pewee" => "Rogue Company",
-                "Rosemallow" => "The Outer Worlds",
                 "Catnip" => "Borderlands 3",
                 "AzaleaAlpha" => "The Cycle",
+                "Snoek" => "State of Decay 2",
+                "Rosemallow" => "The Outer Worlds",
                 "WorldExplorersLive" => "Battle Breakers",
-                "Newt" => "Spellbreak",
-                "VALORANT" => "Valorant",
                 "MinecraftDungeons" => "Minecraft Dungeons",
                 "shoebill" => "Star Wars: Jedi Fallen Order",
                 "a99769d95d8f400baad1f67ab5dfe508" => "Core",

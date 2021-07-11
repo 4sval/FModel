@@ -96,6 +96,7 @@ namespace FModel.ViewModels
                         CurrentCancellationTokenSource = null; // kill token
 
                         Log.Error("{Exception}", e);
+                        
                         FLogger.AppendError();
                         FLogger.AppendText(e.Message, Constants.WHITE, true);
                         return;

@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
-using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
@@ -38,12 +37,6 @@ namespace FModel.Creator
 
         public static bool TryGetDisplayAsset(UObject uObject, out SKBitmap preview)
         {
-            if (uObject.TryGetValue(out FSoftObjectPath displayAsset, "DisplayAssetPath"))
-            {
-                preview = GetDisplayAsset(displayAsset);
-                return preview != null;
-            }
-
             if (uObject.TryGetValue(out FSoftObjectPath sidePanelIcon, "SidePanelIcon"))
             {
                 preview = GetBitmap(sidePanelIcon);
@@ -61,35 +54,22 @@ namespace FModel.Creator
             return preview != null;
         }
 
-        public static SKBitmap GetDisplayAsset(FSoftObjectPath path)
-        {
-            if (!TryLoadObject(path.AssetPathName.Text, out UObject obj)) return null;
-
-            if (obj.TryGetValue(out FStructFallback type, "DetailsImage") &&
-                type.TryGetValue(out FPackageIndex resource, "ResourceObject") && resource.ResolvedObject?.Outer != null &&
-                !resource.ResolvedObject.Outer.Name.Text.Contains("FortniteGame/Content/Athena/Prototype/Textures/"))
-            {
-                return GetBitmap(resource);
-            }
-
-            return null;
-        }
         public static SKBitmap GetBitmap(FPackageIndex packageIndex)
         {
             while (true)
             {
-                if (!TryGetPackageIndexExport(packageIndex, out UExport export)) return null;
+                if (!TryGetPackageIndexExport(packageIndex, out UObject export)) return null;
                 switch (export)
                 {
                     case UTexture2D texture:
                         return GetBitmap(texture);
                     case UMaterialInstanceConstant material:
                         return GetBitmap(material);
-                    case UObject uObject:
+                    default:
                     {
-                        if (uObject.TryGetValue(out FSoftObjectPath previewImage, "LargePreviewImage", "SmallPreviewImage")) return GetBitmap(previewImage);
-                        if (uObject.TryGetValue(out string largePreview, "LargePreviewImage")) return GetBitmap(largePreview);
-                        if (uObject.TryGetValue(out FPackageIndex smallPreview, "SmallPreviewImage"))
+                        if (export.TryGetValue(out FSoftObjectPath previewImage, "LargePreviewImage", "SmallPreviewImage")) return GetBitmap(previewImage);
+                        if (export.TryGetValue(out string largePreview, "LargePreviewImage")) return GetBitmap(largePreview);
+                        if (export.TryGetValue(out FPackageIndex smallPreview, "SmallPreviewImage"))
                         {
                             packageIndex = smallPreview;
                             continue;
@@ -97,8 +77,6 @@ namespace FModel.Creator
 
                         return null;
                     }
-                    default:
-                        return null;
                 }
             }
         }
@@ -139,7 +117,7 @@ namespace FModel.Creator
             return bmp;
         }
 
-        public static bool TryGetPackageIndexExport<T>(FPackageIndex packageIndex, out T export) where T : UExport
+        public static bool TryGetPackageIndexExport<T>(FPackageIndex packageIndex, out T export) where T : UObject
         {
             if (packageIndex.ResolvedObject == null)
             {
@@ -172,19 +150,19 @@ namespace FModel.Creator
         }
 
         // fullpath must be either without any extension or with the export objectname
-        public static bool TryLoadObject<T>(string fullPath, out T export) where T : UExport
+        public static bool TryLoadObject<T>(string fullPath, out T export) where T : UObject
         {
             return _applicationView.CUE4Parse.Provider.TryLoadObject(fullPath, out export);
         }
 
-        public static IEnumerable<UExport> LoadExports(string fullPath)
+        public static IEnumerable<UObject> LoadExports(string fullPath)
         {
             return _applicationView.CUE4Parse.Provider.LoadObjectExports(fullPath);
         }
 
-        public static string GetLocalizedResource(string namespacee, string key, string defaultValue)
+        public static string GetLocalizedResource(string @namespace, string key, string defaultValue)
         {
-            return _applicationView.CUE4Parse.Provider.GetLocalizedString(namespacee, key, defaultValue);
+            return _applicationView.CUE4Parse.Provider.GetLocalizedString(@namespace, key, defaultValue);
         }
 
         public static string GetFullPath(string partialPath)

@@ -5,7 +5,7 @@
          xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
          xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
          xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed"
+         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" PreviewKeyDown="OnPreviewKeyDown"
          Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.40'}">
     <adonisControls:AdonisWindow.Resources>
         <ResourceDictionary>

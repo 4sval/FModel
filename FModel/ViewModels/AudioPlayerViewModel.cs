@@ -15,6 +15,7 @@ using System.Windows.Data;
 using CSCore.CoreAudioAPI;
 using FModel.Extensions;
 using FModel.Framework;
+using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Controls;
@@ -154,6 +155,7 @@ namespace FModel.ViewModels
 
     public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     {
+        private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
         private static IWaveSource _waveSource;
         private static ISoundOut _soundOut;
         private Timer _sourceTimer;
@@ -385,6 +387,7 @@ namespace FModel.ViewModels
         public void Play()
         {
             if (_soundOut == null || IsPlaying) return;
+            _discordHandler.UpdateButDontSavePresence(null, $"Audio Player: {PlayedFile.FileName} ({PlayedFile.Duration:g})");
             _soundOut.Play();
         }
 
