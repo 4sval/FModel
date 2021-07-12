@@ -1,0 +1,39 @@
+﻿<SyntaxDefinition name="Changelog" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+    
+    <RuleSet name="diff">
+        <Span multiline="false" foreground="#98C379">
+            <Begin>^\+</Begin>
+            <End>.*(?:\t|\s{2,})+</End>
+        </Span>
+        <Span multiline="false" foreground="#E06C75">
+            <Begin>^\-</Begin>
+            <End>.*(?:\t|\s{2,})+</End>
+        </Span>
+        <Span multiline="false" foreground="#61AFEF">
+            <Begin>^\~</Begin>
+            <End>.*(?:\t|\s{2,})+</End>
+        </Span>
+    </RuleSet>
+    
+    <RuleSet name="doc" ignoreCase="false">
+        <Span multiline="false" foreground="#7F848E">
+            <Begin>.*(?:\t|\#{1}|\s{2,})+</Begin>
+            <End>\r\n</End>
+        </Span>
+        <Span multiline="false" underline="true">
+            <Begin>^[0-9]\..*</Begin>
+        </Span>
+        <Keywords underline="true">
+            <Word>ADDED</Word>
+            <Word>FIXED</Word>
+            <Word>REMOVED</Word>
+            <Word>IMPROVED</Word>
+        </Keywords>
+    </RuleSet>
+    
+    <RuleSet>
+        <Import ruleSet="diff" />
+        <Import ruleSet="doc" />
+    </RuleSet>
+
+</SyntaxDefinition>

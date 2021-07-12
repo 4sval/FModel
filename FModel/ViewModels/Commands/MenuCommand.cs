@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using AdonisUI.Controls;
 using FModel.Framework;
+using FModel.Services;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
@@ -45,7 +46,8 @@ namespace FModel.ViewModels.Commands
                     Process.Start(new ProcessStartInfo {FileName = Constants.DONATE_LINK, UseShellExecute = true});
                     break;
                 case "Help_Changelog":
-                    Process.Start(new ProcessStartInfo {FileName = Constants.CHANGELOG_LINK, UseShellExecute = true});
+                    UserSettings.Default.ShowChangelog = true;
+                    ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
                     break;
                 case "Help_BugsReport":
                     Process.Start(new ProcessStartInfo {FileName = Constants.ISSUE_LINK, UseShellExecute = true});

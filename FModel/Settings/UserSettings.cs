@@ -35,6 +35,13 @@ namespace FModel.Settings
         {
             if (File.Exists(FilePath)) File.Delete(FilePath);
         }
+        
+        private bool _showChangelog = true;
+        public bool ShowChangelog
+        {
+            get => _showChangelog;
+            set => SetProperty(ref _showChangelog, value);
+        }
 
         private string _outputDirectory;
         public string OutputDirectory

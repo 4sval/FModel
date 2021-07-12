@@ -12,6 +12,7 @@ namespace FModel.Extensions
         private static readonly IHighlightingDefinition _iniHighlighter = LoadHighlighter("Ini.xshd");
         private static readonly IHighlightingDefinition _xmlHighlighter = LoadHighlighter("Xml.xshd");
         private static readonly IHighlightingDefinition _cppHighlighter = LoadHighlighter("Cpp.xshd");
+        private static readonly IHighlightingDefinition _changelogHighlighter = LoadHighlighter("Changelog.xshd");
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IHighlightingDefinition LoadHighlighter(string resourceName)
@@ -35,6 +36,8 @@ namespace FModel.Extensions
                 case "h":
                 case "cpp":
                     return _cppHighlighter;
+                case "changelog":
+                    return _changelogHighlighter;
                 case "bat":
                 case "txt":
                 case "po":

@@ -418,7 +418,6 @@ namespace FModel.ViewModels
 
                         TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), bulkSave);
                     }
-
                     break;
                 }
                 case "locmeta":
@@ -429,7 +428,6 @@ namespace FModel.ViewModels
                         var metadata = new FTextLocalizationMetaDataResource(archive);
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), bulkSave);
                     }
-
                     break;
                 }
                 case "locres":
@@ -440,7 +438,6 @@ namespace FModel.ViewModels
                         var locres = new FTextLocalizationResource(archive);
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), bulkSave);
                     }
-
                     break;
                 }
                 case "bin":
@@ -451,7 +448,6 @@ namespace FModel.ViewModels
                         var registry = new FAssetRegistryState(archive);
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), bulkSave);
                     }
-
                     break;
                 }
                 case "bnk":
@@ -467,7 +463,6 @@ namespace FModel.ViewModels
                             SaveAndPlaySound(fullPath.SubstringBeforeWithLast("/") + name, "WEM", data);
                         }
                     }
-
                     break;
                 }
                 case "wem":
@@ -486,7 +481,6 @@ namespace FModel.ViewModels
                         var header = new FOodleDictionaryArchive(archive).Header;
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), bulkSave);
                     }
-
                     break;
                 }
                 case "png":
@@ -496,9 +490,8 @@ namespace FModel.ViewModels
                     if (Provider.TrySaveAsset(fullPath, out var data))
                     {
                         using var stream = new MemoryStream(data) {Position = 0};
-                        SetImage(SKImage.FromBitmap(SKBitmap.Decode(stream)));
+                        TabControl.SelectedTab.SetImage(SKImage.FromBitmap(SKBitmap.Decode(stream)));
                     }
-
                     break;
                 }
                 case "ufont":
@@ -509,13 +502,11 @@ namespace FModel.ViewModels
                 case "ushadercode":
                 {
                     TabControl.SelectedTab.Image = null;
-
                     if (Provider.TryCreateReader(fullPath, out var archive))
                     {
                         var ar = new FShaderCodeArchive(archive);
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), bulkSave);
                     }
-
                     break;
                 }
                 default:
@@ -562,7 +553,7 @@ namespace FModel.ViewModels
                                    trigger.Text.EndsWith("TF_Nearest", StringComparison.OrdinalIgnoreCase);
 
                     TabControl.SelectedTab.ImageRender = bNearest ? BitmapScalingMode.NearestNeighbor : BitmapScalingMode.Linear;
-                    SetImage(texture.Decode(bNearest));
+                    TabControl.SelectedTab.SetImage(texture.Decode(bNearest));
                     return true;
                 }
                 case UAkMediaAssetData:
@@ -576,25 +567,31 @@ namespace FModel.ViewModels
                     SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                     return false;
                 }
-                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials:
-                case UStaticMesh when UserSettings.Default.IsAutoSaveMeshes:
-                case USkeletalMesh when UserSettings.Default.IsAutoSaveMeshes:
+                case UMaterialInterface:
+                case UStaticMesh:
+                case USkeletalMesh:
                 {
-                    var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat);
-                    var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
-                    if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
+                    if (UserSettings.Default.IsAutoSaveMeshes || UserSettings.Default.IsAutoSaveMaterials)
                     {
-                        Log.Information("Successfully saved {FileName}", savedFileName);
-                        FLogger.AppendInformation();
-                        FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+                        var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat);
+                        var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
+                        if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
+                        {
+                            Log.Information("Successfully saved {FileName}", savedFileName);
+                            FLogger.AppendInformation();
+                            FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+                        }
+                        else
+                        {
+                            Log.Error("{FileName} could not be saved", savedFileName);
+                            FLogger.AppendError();
+                            FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
+                        }
                     }
                     else
                     {
-                        Log.Error("{FileName} could not be saved", savedFileName);
-                        FLogger.AppendError();
-                        FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
+                        // preview
                     }
-
                     return false;
                 }
                 default:
@@ -603,25 +600,10 @@ namespace FModel.ViewModels
                     if (!package.TryConstructCreator(out var creator)) return false;
 
                     creator.ParseForInfo();
-                    SetImage(creator.Draw());
+                    TabControl.SelectedTab.SetImage(creator.Draw());
                     return true;
                 }
             }
-        }
-
-        private void SetImage(SKImage img)
-        {
-            using var stream = img.Encode().AsStream();
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.StreamSource = stream;
-            image.EndInit();
-            image.Freeze();
-
-            TabControl.SelectedTab.Image = image;
-            if (UserSettings.Default.IsAutoSaveTextures)
-                TabControl.SelectedTab.SaveImage(true);
         }
 
         private void SaveAndPlaySound(string fullPath, string ext, byte[] data)

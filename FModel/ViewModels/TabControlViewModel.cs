@@ -14,6 +14,7 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using Microsoft.Win32;
 using Serilog;
+using SkiaSharp;
 
 namespace FModel.ViewModels
 {
@@ -196,6 +197,21 @@ namespace FModel.ViewModels
 
             Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
             SaveCheck(directory, fileName);
+        }
+        
+        public void SetImage(SKImage img)
+        {
+            using var stream = img.Encode().AsStream();
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.StreamSource = stream;
+            image.EndInit();
+            image.Freeze();
+
+            Image = image;
+            if (UserSettings.Default.IsAutoSaveTextures)
+                SaveImage(true);
         }
 
         public void SaveImage(bool autoSave)

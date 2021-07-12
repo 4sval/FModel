@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AutoUpdaterDotNET;
+using FModel.Extensions;
+using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using Newtonsoft.Json;
@@ -23,6 +25,7 @@ namespace FModel.ViewModels.ApiEndpoints
         private Info _infos;
         private Backup[] _backups;
         private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
+        private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
         
         public FModelApi(IRestClient client) : base(client)
         {
@@ -106,12 +109,17 @@ namespace FModel.ViewModels.ApiEndpoints
             }
         }
         
-        private void CheckForUpdateEvent(UpdateInfoEventArgs args)
+        private async void CheckForUpdateEvent(UpdateInfoEventArgs args)
         {
             if (args is {CurrentVersion: { }})
             {
                 var currentVersion = new Version(args.CurrentVersion);
-                if (currentVersion == args.InstalledVersion) return;
+                if (currentVersion == args.InstalledVersion)
+                {
+                    if (UserSettings.Default.ShowChangelog)
+                        await ShowChangelog(args);
+                    return;
+                }
 
                 var downgrade = currentVersion < args.InstalledVersion;
                 var messageBox = new MessageBoxModel
@@ -125,16 +133,18 @@ namespace FModel.ViewModels.ApiEndpoints
                 
                 MessageBox.Show(messageBox);
                 if (messageBox.Result != MessageBoxResult.Yes) return;
-                
+
                 try
                 {
                     if (AutoUpdater.DownloadUpdate(args))
                     {
+                        UserSettings.Default.ShowChangelog = true;
                         Application.Current.Shutdown();
                     }
                 }
                 catch (Exception exception)
                 {
+                    UserSettings.Default.ShowChangelog = false;
                     MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -144,6 +154,16 @@ namespace FModel.ViewModels.ApiEndpoints
                     "There is a problem reaching the update server, please check your internet connection or try again later.",
                     "Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private async Task ShowChangelog(UpdateInfoEventArgs args)
+        {
+            var request = new RestRequest(args.ChangelogURL, Method.GET);
+            var response = await _client.ExecuteAsync(request).ConfigureAwait(false);
+            _applicationView.CUE4Parse.TabControl.AddTab($"Release Notes: {args.CurrentVersion}");
+            _applicationView.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("changelog");
+            _applicationView.CUE4Parse.TabControl.SelectedTab.SetDocumentText(response.Content, false);
+            UserSettings.Default.ShowChangelog = false;
         }
     }
 }
