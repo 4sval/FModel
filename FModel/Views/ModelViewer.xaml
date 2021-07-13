@@ -1,0 +1,59 @@
+﻿<adonisControls:AdonisWindow x:Class="FModel.Views.ModelViewer"
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:local="clr-namespace:FModel"
+                             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                             xmlns:helix="http://helix-toolkit.org/wpf/SharpDX"
+                             WindowStartupLocation="CenterScreen" ResizeMode="CanResize" IconVisibility="Collapsed"
+                             Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}"
+                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.65'}">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
+            <Setter Property="Title" Value="Model Viewer" />
+        </Style>
+    </adonisControls:AdonisWindow.Style>
+    <adonisControls:AdonisWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </adonisControls:AdonisWindow.Resources>
+    <Grid>
+        <helix:Viewport3DX Title="{Binding Title}"
+                           ShowCoordinateSystem="True"
+                           IsCoordinateSystemMoverEnabled="False"
+                           CoordinateSystemAxisXColor="#FC3854"
+                           CoordinateSystemAxisYColor="#85CB22"
+                           CoordinateSystemAxisZColor="#388EED"
+                           IsChangeFieldOfViewEnabled="False"
+                           ShowViewCube="False"
+                           ShowCameraTarget="False"
+                           Camera="{Binding Cam}"
+                           IsShadowMappingEnabled="True"
+                           EnableSSAO="True"
+                           MSAA="Maximum"
+                           FXAALevel="Ultra"
+                           SSAOQuality="High"
+                           UseDefaultGestures="False"
+                           EffectsManager="{Binding EffectManager}"
+                           BackgroundColor="#262630">
+            <helix:Viewport3DX.InputBindings>
+                <MouseBinding Command="helix:ViewportCommands.Rotate" Gesture="MiddleClick" />
+                <MouseBinding Command="helix:ViewportCommands.Pan" Gesture="Shift+MiddleClick"></MouseBinding>
+            </helix:Viewport3DX.InputBindings>
+            
+            <helix:GroupModel3D>
+                <helix:DirectionalLight3D Direction="0, 0, -1" Color="White" />
+                <helix:DirectionalLight3D Direction="0, -1, 0" Color="White"/>
+            </helix:GroupModel3D>
+            <helix:GroupModel3D>
+                <helix:SpotLight3D Direction="0, 1, 0" Color="Red" Position="0, -2, 0"/>
+                <helix:PointLight3D Position="3, 0, 0" Color="Green"/>
+            </helix:GroupModel3D>
+            
+            <helix:MeshGeometryModel3D Geometry="{Binding CubeMesh}" Material="{Binding Red}" />
+        </helix:Viewport3DX>
+    </Grid>
+</adonisControls:AdonisWindow>

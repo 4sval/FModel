@@ -160,6 +160,8 @@ namespace FModel.ViewModels.ApiEndpoints
         {
             var request = new RestRequest(args.ChangelogURL, Method.GET);
             var response = await _client.ExecuteAsync(request).ConfigureAwait(false);
+            if (string.IsNullOrEmpty(response.Content)) return;
+            
             _applicationView.CUE4Parse.TabControl.AddTab($"Release Notes: {args.CurrentVersion}");
             _applicationView.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("changelog");
             _applicationView.CUE4Parse.TabControl.SelectedTab.SetDocumentText(response.Content, false);

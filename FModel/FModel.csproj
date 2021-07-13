@@ -108,6 +108,7 @@
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
     <PackageReference Include="EpicManifestParser" Version="1.2.0" />
+    <PackageReference Include="HelixToolkit.SharpDX.Core.Wpf" Version="2.17.0" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.6" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NVorbis" Version="0.10.1" />

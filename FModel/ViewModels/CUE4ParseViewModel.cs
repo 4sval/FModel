@@ -590,7 +590,10 @@ namespace FModel.ViewModels
                     }
                     else
                     {
-                        // preview
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            Helper.OpenWindow<AdonisWindow>("Model Viewer", () => new ModelViewer(export).Show());
+                        });
                     }
                     return false;
                 }
