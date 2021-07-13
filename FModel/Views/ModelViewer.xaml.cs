@@ -1,23 +1,19 @@
-﻿using System;
-using CUE4Parse.UE4.Assets.Exports;
-using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
-using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+﻿using CUE4Parse.UE4.Assets.Exports;
+using FModel.Services;
 using FModel.ViewModels;
 
 namespace FModel.Views
 {
     public partial class ModelViewer
     {
-        public ModelViewer(UObject export)
+        private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+        
+        public ModelViewer()
         {
-            DataContext = export switch
-            {
-                UStaticMesh st => new ModelViewerViewModel(st),
-                USkeletalMesh sk => new ModelViewerViewModel(sk),
-                _ => throw new NotImplementedException()
-            };
-
+            DataContext = _applicationView;
             InitializeComponent();
         }
+
+        public void Load(UObject export) => _applicationView.ModelViewer.LoadExport(export);
     }
 }

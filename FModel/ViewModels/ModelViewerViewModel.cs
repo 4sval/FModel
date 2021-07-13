@@ -1,5 +1,8 @@
-﻿using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
+﻿using System;
+using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse_Conversion.Meshes;
 using FModel.Framework;
 using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
@@ -23,124 +26,110 @@ namespace FModel.ViewModels
             set => SetProperty(ref _cam, value);
         }
         
-        private Geometry3D _cubeMesh;
-        public Geometry3D CubeMesh
+        private Geometry3D _mesh;
+        public Geometry3D Mesh
         {
-            get => _cubeMesh;
-            set => SetProperty(ref _cubeMesh, value);
+            get => _mesh;
+            set => SetProperty(ref _mesh, value);
         }
         
-        private Material _red;
-        public Material Red
+        private Material _meshMat;
+        public Material MeshMat
         {
-            get => _red;
-            set => SetProperty(ref _red, value);
+            get => _meshMat;
+            set => SetProperty(ref _meshMat, value);
         }
 
-        public ModelViewerViewModel(UStaticMesh? mesh)
+        public ModelViewerViewModel()
         {
             EffectManager = new DefaultEffectsManager();
-            Cam = new PerspectiveCamera();
-            if (mesh?.RenderData == null || mesh.RenderData.LODs.Length < 1) return;
-            
-            var builder = new MeshBuilder();
-            for (var i = 0; i < mesh.RenderData.LODs.Length; i++)
+            Cam = new PerspectiveCamera
             {
-                if (mesh.RenderData.LODs[i] is not
-                {
-                    VertexBuffer: not null,
-                    PositionVertexBuffer: not null,
-                    ColorVertexBuffer: not null,
-                    IndexBuffer: not null
-                } srcLod) continue;
-                
-                var numVerts = srcLod.PositionVertexBuffer.Verts.Length;
-                for (var j = 0; j < numVerts; j++)
-                {
-                    var suv = srcLod.VertexBuffer.UV[j];
-                    builder.Positions.Add(new Vector3(srcLod.PositionVertexBuffer.Verts[j].X, srcLod.PositionVertexBuffer.Verts[j].Y, srcLod.PositionVertexBuffer.Verts[j].Z));
-                    builder.Normals.Add(new Vector3(suv.Normal[2].X, suv.Normal[2].Y, suv.Normal[2].Z));
-                }
-                
-                for (var j = 0; j < srcLod.IndexBuffer.Indices16.Length; j++)
-                {
-                    builder.TriangleIndices.Add(srcLod.IndexBuffer[j]);
-                }
-                break;
+                NearPlaneDistance = 0.1,
+                FarPlaneDistance = 10000000,
+                FieldOfView = 80
+            };
+        }
+
+        public void LoadExport(UObject export)
+        {
+            switch (export)
+            {
+                case UStaticMesh st:
+                    LoadStaticMesh(st);
+                    break;
+                case USkeletalMesh sk:
+                    LoadSkeletalMesh(sk);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            builder.Scale(0.05, 0.05, 0.05);
-            CubeMesh = builder.ToMesh();
-            Red = PhongMaterials.Red;
         }
         
-        public ModelViewerViewModel(USkeletalMesh? mesh)
+        private void LoadStaticMesh(UStaticMesh mesh)
         {
-            EffectManager = new DefaultEffectsManager();
-            Cam = new PerspectiveCamera();
-            if (mesh == null || mesh.LODModels?.Length < 1) return;
+            if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Length <= 0)
+            {
+                return;
+            }
+
+            var max = convertedMesh.BoundingBox.Max.Max();
+            Cam.UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 1, 0);
+            Cam.Position = new System.Windows.Media.Media3D.Point3D(max / 2, max, max / 2);
+            Cam.LookDirection = new System.Windows.Media.Media3D.Vector3D(-Cam.Position.X, -Cam.Position.Y / 2, -Cam.Position.Z);
             
             var builder = new MeshBuilder();
-            for (var i = 0; i < mesh.LODModels.Length; i++)
+            for (var i = 0; i < convertedMesh.LODs.Length; i++)
             {
-                if (mesh.LODModels[i] is not { } srcLod) continue;
-                
-                var bUseVerticesFromSections = false;
-                var vertexCount = srcLod.VertexBufferGPUSkin.GetVertexCount();
-                if (vertexCount == 0 && srcLod.Sections.Length > 0 && srcLod.Sections[0].SoftVertices.Length > 0)
+                for (var j = 0; j < convertedMesh.LODs[i].NumVerts; j++)
                 {
-                    bUseVerticesFromSections = true;
-                    for (var j = 0; j < srcLod.Sections.Length; j++)
-                    {
-                        vertexCount += srcLod.Sections[i].SoftVertices.Length;
-                    }
+                    var suv = convertedMesh.LODs[i].Verts[j];
+                    builder.Positions.Add(new Vector3(suv.Position.X, suv.Position.Y, suv.Position.Z));
+                    builder.Normals.Add(new Vector3(suv.Normal.X, suv.Normal.Y, suv.Normal.Z));
                 }
-                
-                var chunkIndex = -1;
-                var chunkVertexIndex = 0;
-                long lastChunkVertex = -1;
-                var vertBuffer = srcLod.VertexBufferGPUSkin;
-                
-                for (var j = 0; j < vertexCount; j++)
+
+                var numIndices = convertedMesh.LODs[i].Indices.Value.Length;
+                for (var j = 0; j < numIndices; j++)
                 {
-                    while (j >= lastChunkVertex) // this will fix any issues with empty chunks or sections
-                    {
-                        // proceed to next chunk or section
-                        if (srcLod.Chunks.Length > 0)
-                        {
-                            // pre-UE4.13 code: chunks
-                            var c = srcLod.Chunks[++chunkIndex];
-                            lastChunkVertex = c.BaseVertexIndex + c.NumRigidVertices + c.NumSoftVertices;
-                        }
-                        else
-                        {
-                            // UE4.13+ code: chunk information migrated to sections
-                            var s = srcLod.Sections[++chunkIndex];
-                            lastChunkVertex = s.BaseVertexIndex + s.NumVertices;
-                        }
-                        chunkVertexIndex = 0;
-                    }
-                    
-                    FSkelMeshVertexBase v;
-                    if (bUseVerticesFromSections)
-                        v = srcLod.Sections[chunkIndex].SoftVertices[chunkVertexIndex++];
-                    else if (!vertBuffer.bUseFullPrecisionUVs)
-                        v = vertBuffer.VertsHalf[j];
-                    else
-                        v = vertBuffer.VertsFloat[j];
-                    
-                    builder.Positions.Add(new Vector3(v.Pos.X, v.Pos.Y, v.Pos.Z));
-                    builder.Normals.Add(new Vector3(v.Normal[2].X, v.Normal[2].Y, v.Normal[2].Z));
-                }
-                
-                for (var j = 0; j < srcLod.Indices.Indices16.Length; j++)
-                {
-                    builder.TriangleIndices.Add(srcLod.Indices.Indices16[j]);
+                    builder.TriangleIndices.Add(convertedMesh.LODs[i].Indices.Value[j]);
                 }
                 break;
             }
-            builder.Scale(0.05, 0.05, 0.05);
-            CubeMesh = builder.ToMesh();
-            Red = PhongMaterials.Red;
+            Mesh = builder.ToMesh();
+            MeshMat = DiffuseMaterials.White;
+        }
+        
+        private void LoadSkeletalMesh(USkeletalMesh mesh)
+        {
+            if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Length <= 0)
+            {
+                return;
+            }
+
+            var max = convertedMesh.BoundingBox.Max.Max();
+            Cam.UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 1, 0);
+            Cam.Position = new System.Windows.Media.Media3D.Point3D(max / 2, max, max / 2);
+            Cam.LookDirection = new System.Windows.Media.Media3D.Vector3D(-Cam.Position.X, -Cam.Position.Y / 2, -Cam.Position.Z);
+            
+            var builder = new MeshBuilder();
+            for (var i = 0; i < convertedMesh.LODs.Length; i++)
+            {
+                for (var j = 0; j < convertedMesh.LODs[i].NumVerts; j++)
+                {
+                    var suv = convertedMesh.LODs[i].Verts[j];
+                    builder.Positions.Add(new Vector3(suv.Position.X, suv.Position.Y, suv.Position.Z));
+                    builder.Normals.Add(new Vector3(suv.Normal.X, suv.Normal.Y, suv.Normal.Z));
+                }
+
+                var numIndices = convertedMesh.LODs[i].Indices.Value.Length;
+                for (var j = 0; j < numIndices; j++)
+                {
+                    builder.TriangleIndices.Add(convertedMesh.LODs[i].Indices.Value[j]);
+                }
+                break;
+            }
+            Mesh = builder.ToMesh();
+            MeshMat = DiffuseMaterials.White;
         }
     }
 }

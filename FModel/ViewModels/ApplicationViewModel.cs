@@ -69,6 +69,7 @@ namespace FModel.ViewModels
         public AesManagerViewModel AesManager { get; }
         public AudioPlayerViewModel AudioPlayer { get; }
         public MapViewerViewModel MapViewer { get; }
+        public ModelViewerViewModel ModelViewer { get; }
 
         public ApplicationViewModel()
         {
@@ -89,6 +90,7 @@ namespace FModel.ViewModels
             AesManager = new AesManagerViewModel(CUE4Parse);
             MapViewer = new MapViewerViewModel(CUE4Parse);
             AudioPlayer = new AudioPlayerViewModel();
+            ModelViewer = new ModelViewerViewModel();
             Status = EStatusKind.Ready;
         }
 

@@ -592,7 +592,8 @@ namespace FModel.ViewModels
                     {
                         Application.Current.Dispatcher.Invoke(delegate
                         {
-                            Helper.OpenWindow<AdonisWindow>("Model Viewer", () => new ModelViewer(export).Show());
+                            var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
+                            modelViewer.Load(export);
                         });
                     }
                     return false;
