@@ -51,7 +51,7 @@ namespace FModel.ViewModels
         private DeleteDirectoryCommand _deleteDirectoryCommand;
         public DeleteDirectoryCommand DeleteDirectoryCommand => _deleteDirectoryCommand ??= new DeleteDirectoryCommand(this);
 
-        public readonly ObservableCollection<Control> _directories;
+        private readonly ObservableCollection<Control> _directories;
         public ReadOnlyObservableCollection<Control> Directories { get; }
 
         private readonly FGame _game;

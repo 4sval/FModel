@@ -567,7 +567,7 @@ namespace FModel.ViewModels
                     SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                     return false;
                 }
-                case UMaterialInterface:
+                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials:
                 case UStaticMesh:
                 case USkeletalMesh:
                 {

@@ -4,8 +4,9 @@
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:helix="http://helix-toolkit.org/wpf/SharpDX"
-                             WindowStartupLocation="CenterScreen" ResizeMode="CanResize" IconVisibility="Collapsed"
-                             Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.50'}"
+                             WindowStartupLocation="CenterScreen" ResizeMode="CanResize" IconVisibility="Collapsed" Background="#262630"
+                             PreviewKeyDown="OnWindowKeyDown"
+                             Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.60'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.50'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
@@ -20,45 +21,27 @@
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
-        <helix:Viewport3DX Title="{Binding Title}"
-                           ShowCoordinateSystem="True"
-                           IsCoordinateSystemMoverEnabled="False"
-                           CoordinateSystemAxisXColor="#FC3854"
-                           CoordinateSystemAxisYColor="#85CB22"
-                           CoordinateSystemAxisZColor="#388EED"
-                           IsChangeFieldOfViewEnabled="False"
-                           ShowViewCube="False"
-                           ShowCameraTarget="False"
-                           Camera="{Binding ModelViewer.Cam}"
-                           IsShadowMappingEnabled="True"
-                           EnableSSAO="True"
-                           MSAA="Maximum"
-                           FXAALevel="Ultra"
-                           SSAOQuality="High"
-                           UseDefaultGestures="False"
-                           EffectsManager="{Binding ModelViewer.EffectManager}"
+        <helix:Viewport3DX EffectsManager="{Binding ModelViewer.EffectManager}" Camera="{Binding ModelViewer.Cam}"
+                           IsChangeFieldOfViewEnabled="False" IsMoveEnabled="False" UseDefaultGestures="False"
+                           ShowViewCube="False" ShowCameraTarget="False" ModelUpDirection="0,0,1"
+                           EnableSSAO="True" MSAA="Maximum" FXAALevel="Ultra" SSAOQuality="High"
                            BackgroundColor="#262630">
             <helix:Viewport3DX.InputBindings>
-                <MouseBinding Command="helix:ViewportCommands.Rotate" Gesture="MiddleClick" />
-                <MouseBinding Command="helix:ViewportCommands.Pan" Gesture="Shift+MiddleClick"></MouseBinding>
+                <MouseBinding Command="helix:ViewportCommands.Rotate" Gesture="LeftClick" />
+                <MouseBinding Command="helix:ViewportCommands.Zoom" Gesture="RightClick" />
+                <MouseBinding Command="helix:ViewportCommands.Pan" Gesture="MiddleClick" />
             </helix:Viewport3DX.InputBindings>
             
-            <helix:GroupModel3D>
-                <helix:DirectionalLight3D Direction="0, 0, -1" Color="White" />
-                <helix:DirectionalLight3D Direction="0, -1, 0" Color="White"/>
-            </helix:GroupModel3D>
+            <helix:DirectionalLight3D Direction="0, 0, -1" Color="White" />
+            <helix:DirectionalLight3D Direction="0, -1, 0" Color="White"/>
             
-            <helix:GroupModel3D>
-                <helix:MeshGeometryModel3D Geometry="{Binding ModelViewer.Mesh}" Material="{Binding ModelViewer.MeshMat}">
-                    <helix:MeshGeometryModel3D.Transform>
-                        <RotateTransform3D>
-                            <RotateTransform3D.Rotation>
-                                <AxisAngleRotation3D Axis="1,0,0" Angle="-90"/>
-                            </RotateTransform3D.Rotation>
-                        </RotateTransform3D>
-                    </helix:MeshGeometryModel3D.Transform>
-                </helix:MeshGeometryModel3D>
-            </helix:GroupModel3D>
+            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.XAxis}" Color="#FC3854" />
+            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.YAxis}" Color="#85CB22" />
+            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.ZAxis}" Color="#388EED" />
+            
+            <helix:MeshGeometryModel3D Geometry="{Binding ModelViewer.Mesh}"
+                                       Material="{Binding ModelViewer.MeshMat}"
+                                       RenderWireframe="{Binding ModelViewer.ShowWireframe}" />
         </helix:Viewport3DX>
     </Grid>
 </adonisControls:AdonisWindow>
