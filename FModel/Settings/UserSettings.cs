@@ -217,7 +217,7 @@ namespace FModel.Settings
             {FGame.StateOfDecay2, EGame.GAME_SOD2},
             {FGame.Prospect, EGame.GAME_UE4_LATEST},
             {FGame.Indiana, EGame.GAME_UE4_LATEST},
-            {FGame.RogueCompany, EGame.GAME_UE4_LATEST},
+            {FGame.RogueCompany, EGame.GAME_ROGUECOMPANY},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
             {FGame.Platform, EGame.GAME_UE4_25},
             {FGame.BendGame, EGame.GAME_UE4_11}

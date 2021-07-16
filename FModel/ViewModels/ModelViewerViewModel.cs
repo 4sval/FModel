@@ -185,7 +185,7 @@ namespace FModel.ViewModels
         {
             for (var j = 0; j < sections.Length; j++)
             {
-                if (sections[j].Material.Value is not { } unrealMaterial)
+                if (sections[j].Material?.Value is not { } unrealMaterial)
                     continue;
                     
                 var parameters = new CMaterialParams();
