@@ -65,6 +65,7 @@ namespace FModel.Creator
                 case "FortBadgeItemDefinition":
                 case "FortAwardItemDefinition":
                 case "FortGadgetItemDefinition":
+                case "AthenaCharmItemDefinition":
                 case "FortPlaysetItemDefinition":
                 case "FortGiftBoxItemDefinition":
                 case "FortOutpostItemDefinition":
@@ -75,6 +76,7 @@ namespace FModel.Creator
                 case "FortResourceItemDefinition":
                 case "FortBackpackItemDefinition":
                 case "FortEventQuestMapDataAsset":
+                case "FortWeaponModItemDefinition":
                 case "FortCodeTokenItemDefinition":
                 case "FortSchematicItemDefinition":
                 case "FortWorldMultiItemDefinition":
