@@ -395,6 +395,16 @@ namespace FModel.ViewModels
             TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(ext);
             switch (ext)
             {
+                case "uasset":
+                case "umap":
+                {
+                    var exports = Provider.LoadObjectExports(fullPath);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), bulkSave);
+
+                    if (bulkSave || !exports.Any(CheckExport))
+                        TabControl.SelectedTab.Image = null;
+                    break;
+                }
                 case "ini":
                 case "txt":
                 case "log":
@@ -511,11 +521,8 @@ namespace FModel.ViewModels
                 }
                 default:
                 {
-                    var exports = Provider.LoadObjectExports(fullPath);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), bulkSave);
-
-                    if (bulkSave || !exports.Any(CheckExport))
-                        TabControl.SelectedTab.Image = null;
+                    FLogger.AppendWarning();
+                    FLogger.AppendText($"The file '{fullPath.SubstringAfterLast('/').SubstringBeforeLast('.')}' is an unknown file type. If this is a mistake, we are already working to fix it!", Constants.WHITE, true);
                     break;
                 }
             }
