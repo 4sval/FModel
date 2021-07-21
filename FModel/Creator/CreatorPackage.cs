@@ -127,9 +127,9 @@ namespace FModel.Creator
                     return true;
                 case "MaterialInstanceConstant"
                     when _object.Owner != null &&
-                         (_object.Owner.Name.EndsWith($"/MI_OfferImages/{_object.Name}") ||
-                          _object.Owner.Name.EndsWith($"/RenderSwitch_Materials/{_object.Name}") ||
-                          _object.Owner.Name.EndsWith($"/MI_BPTile/{_object.Name}")):
+                         (_object.Owner.Name.EndsWith($"/MI_OfferImages/{_object.Name}", StringComparison.OrdinalIgnoreCase) ||
+                          _object.Owner.Name.EndsWith($"/RenderSwitch_Materials/{_object.Name}", StringComparison.OrdinalIgnoreCase) ||
+                          _object.Owner.Name.EndsWith($"/MI_BPTile/{_object.Name}", StringComparison.OrdinalIgnoreCase)):
                     creator = new BaseMaterialInstance(_object, _style);
                     return true;
                 case "FortMtxOfferData":
