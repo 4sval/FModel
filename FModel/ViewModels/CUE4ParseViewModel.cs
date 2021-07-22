@@ -68,24 +68,24 @@ namespace FModel.ViewModels
 
         public CUE4ParseViewModel(string gameDirectory)
         {
-            var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
             switch (gameDirectory)
             {
                 case Constants._FN_LIVE_TRIGGER:
                 {
                     Game = FGame.FortniteGame;
-                    Provider = new StreamedFileProvider("FortniteLive", true, versions);
+                    Provider = new StreamedFileProvider("FortniteLive", true, new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]));
                     break;
                 }
                 case Constants._VAL_LIVE_TRIGGER:
                 {
                     Game = FGame.ShooterGame;
-                    Provider = new StreamedFileProvider("ValorantLive", true, versions);
+                    Provider = new StreamedFileProvider("ValorantLive", true, new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]));
                     break;
                 }
                 default:
                 {
                     Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
+                    var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
 
                     if (Game == FGame.StateOfDecay2)
                         Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
