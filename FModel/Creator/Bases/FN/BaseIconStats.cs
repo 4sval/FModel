@@ -64,13 +64,13 @@ namespace FModel.Creator.Bases.FN
 
             if (Object.TryGetValue(out FStructFallback maxStackSize, "MaxStackSize"))
             {
-                if (maxStackSize.TryGetValue(out float v, "Value") && v > -1)
+                if (maxStackSize.TryGetValue(out float v, "Value") && v > 0)
                 {
-                    _statistics.Add(new IconStat("Max Stack", v));
+                    _statistics.Add(new IconStat("Max Stack", v , 15));
                 }
                 else if (TryGetCurveTableStat(maxStackSize, out var s))
                 {
-                    _statistics.Add(new IconStat("Max Stack", s));
+                    _statistics.Add(new IconStat("Max Stack", s , 15));
                 }
             }
 
@@ -84,9 +84,9 @@ namespace FModel.Creator.Bases.FN
                 weaponStatHandle.TryGetValue(out UDataTable dataTable, "DataTable") &&
                 dataTable.TryGetDataTableRow(weaponRowName.Text, StringComparison.OrdinalIgnoreCase, out var weaponRowValue))
             {
-                if (weaponRowValue.TryGetValue(out float dmgPb, "DmgPB") && dmgPb != 0f && weaponRowValue.TryGetValue(out int bpc , "BulletsPerCartridge")&& bpc != 0f)
+                if (weaponRowValue.TryGetValue(out float dmgPb, "DmgPB") && dmgPb != 0f && weaponRowValue.TryGetValue(out int bpc , "BulletsPerCartridge"))
                 {
-                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "BF7E3CF34A9ACFF52E95EAAD4F09F133", "Damage to Player"), dmgPb * bpc, 200));
+                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "BF7E3CF34A9ACFF52E95EAAD4F09F133", "Damage to Player"), dmgPb * (bpc != 0f ? bpc : 1), 200));
                 }
 
                 if (weaponRowValue.TryGetValue(out int clipSize, "ClipSize") && clipSize != 0)
