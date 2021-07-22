@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using AdonisUI.Controls;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
@@ -25,10 +24,9 @@ using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
-using CUE4Parse_Conversion.Materials;
-using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse_Conversion.Textures;
 using EpicManifestParser.Objects;
@@ -70,20 +68,19 @@ namespace FModel.ViewModels
 
         public CUE4ParseViewModel(string gameDirectory)
         {
+            var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
             switch (gameDirectory)
             {
                 case Constants._FN_LIVE_TRIGGER:
                 {
                     Game = FGame.FortniteGame;
-                    Provider = new StreamedFileProvider("FortniteLive", true, UserSettings.Default.OverridedGame[Game],
-                        UserSettings.Default.OverridedUEVersion[Game]);
+                    Provider = new StreamedFileProvider("FortniteLive", true, versions);
                     break;
                 }
                 case Constants._VAL_LIVE_TRIGGER:
                 {
                     Game = FGame.ShooterGame;
-                    Provider = new StreamedFileProvider("ValorantLive", true, UserSettings.Default.OverridedGame[Game],
-                        UserSettings.Default.OverridedUEVersion[Game]);
+                    Provider = new StreamedFileProvider("ValorantLive", true, versions);
                     break;
                 }
                 default:
@@ -96,9 +93,9 @@ namespace FModel.ViewModels
                                 new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
                                 new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
                             },
-                            SearchOption.AllDirectories, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+                            SearchOption.AllDirectories, true, versions);
                     else
-                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versions);
 
                     break;
                 }
@@ -379,17 +376,21 @@ namespace FModel.ViewModels
         public void Extract(string fullPath, bool addNewTab = false, bool bulkSave = false)
         {
             Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", fullPath);
+
+            var directory = fullPath.SubstringBeforeLast('/');
+            var fileName = fullPath.SubstringAfterLast('/');
+            var ext = fullPath.SubstringAfterLast('.').ToLower();
+
             if (addNewTab && TabControl.CanAddTabs)
             {
-                TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'));
+                TabControl.AddTab(fileName, directory);
             }
             else
             {
-                TabControl.SelectedTab.Header = fullPath.SubstringAfterLast('/');
-                TabControl.SelectedTab.Directory = fullPath.SubstringBeforeLast('/');
+                TabControl.SelectedTab.Header = fileName;
+                TabControl.SelectedTab.Directory = directory;
             }
 
-            var ext = fullPath.SubstringAfterLast('.').ToLower();
             TabControl.SelectedTab.ResetDocumentText();
             TabControl.SelectedTab.ScrollTrigger = null;
             TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(ext);
@@ -450,7 +451,7 @@ namespace FModel.ViewModels
                     }
                     break;
                 }
-                case "bin":
+                case "bin" when fileName.StartsWith("AssetRegistry"):
                 {
                     TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))
@@ -506,7 +507,7 @@ namespace FModel.ViewModels
                 }
                 case "ufont":
                     FLogger.AppendWarning();
-                    FLogger.AppendText($"Export '{fullPath.SubstringAfterLast('/')}' and change its extension if you want it to be an installable font file", Constants.WHITE, true);
+                    FLogger.AppendText($"Export '{fileName}' and change its extension if you want it to be an installable font file", Constants.WHITE, true);
                     break;
                 case "ushaderbytecode":
                 case "ushadercode":
@@ -522,7 +523,7 @@ namespace FModel.ViewModels
                 default:
                 {
                     FLogger.AppendWarning();
-                    FLogger.AppendText($"The file '{fullPath.SubstringAfterLast('/').SubstringBeforeLast('.')}' is an unknown file type. If this is a mistake, we are already working to fix it!", Constants.WHITE, true);
+                    FLogger.AppendText($"The file '{fileName}' is of an unknown type. If this is a mistake, we are already working to fix it!", Constants.WHITE, true);
                     break;
                 }
             }
