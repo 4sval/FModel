@@ -1,4 +1,16 @@
-﻿using System;
+﻿using AdonisUI.Controls;
+
+using FModel.Extensions;
+using FModel.Settings;
+using FModel.Views.Resources.Controls;
+
+using Microsoft.Win32;
+
+using Serilog;
+
+using SkiaSharp;
+
+using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
@@ -9,18 +21,14 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using AdonisUI.Controls;
-using FModel.Extensions;
-using FModel.Settings;
-using FModel.Views.Resources.Controls;
-using Microsoft.Win32;
-using Serilog;
-using SkiaSharp;
 
 namespace FModel.Views
 {
     public partial class ImageMerger
     {
+        private const string FILENAME = "Preview.png";
+        private byte[] _imagebuffer;
+
         public ImageMerger()
         {
             InitializeComponent();
@@ -34,7 +42,7 @@ namespace FModel.Views
         private async void Click_DrawPreview(object sender, MouseButtonEventArgs e)
         {
             if (ImagePreview.Source != null)
-                await DrawPreview().ConfigureAwait(false);        
+                await DrawPreview().ConfigureAwait(false);
         }
 
         private async Task DrawPreview()
@@ -60,9 +68,9 @@ namespace FModel.Views
 
                 if (item.ContentStringFormat.EndsWith(".tif"))
                 {
-                    var mem = new MemoryStream();
-                    await stream.CopyToAsync(mem);
-                    System.Drawing.Image.FromStream(mem).Save(ms, ImageFormat.Png);
+                    await using var tmp = new MemoryStream();
+                    await stream.CopyToAsync(tmp);
+                    System.Drawing.Image.FromStream(tmp).Save(ms, ImageFormat.Png);
                 }
                 else
                 {
@@ -97,20 +105,19 @@ namespace FModel.Views
 
             await Task.Run(() =>
             {
-                using var ret = new SKBitmap(maxWidth - margin, maxHeight - margin, SKColorType.Rgba8888, SKAlphaType.Unpremul);
-                using var c = new SKCanvas(ret);
+                using var bmp = new SKBitmap(maxWidth - margin, maxHeight - margin, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var canvas = new SKCanvas(bmp);
 
                 for (var i = 0; i < images.Length; i++)
                 {
                     using (images[i])
                     {
-                        c.DrawBitmap(images[i], positions[i], new SKPaint {FilterQuality = SKFilterQuality.High, IsAntialias = true});
+                        canvas.DrawBitmap(images[i], positions[i], new SKPaint {FilterQuality = SKFilterQuality.High, IsAntialias = true});
                     }
                 }
 
-                var image = SKImage.FromBitmap(ret);
-                using var encoded = image.Encode();
-                using var stream = encoded.AsStream();
+                using var data = bmp.Encode(SKEncodedImageFormat.Png, 100);
+                using var stream = new MemoryStream(_imagebuffer = data.ToArray());
                 var photo = new BitmapImage();
                 photo.BeginInit();
                 photo.CacheOption = BitmapCacheOption.OnLoad;
@@ -141,8 +148,9 @@ namespace FModel.Views
                 Multiselect = true,
                 Filter = "Image Files (*.png,*.bmp,*.jpg,*.jpeg,*.jfif,*.jpe,*.tiff,*.tif)|*.png;*.bmp;*.jpg;*.jpeg;*.jfif;*.jpe;*.tiff;*.tif|All Files (*.*)|*.*"
             };
+            var result = fileBrowser.ShowDialog();
+            if (!result.HasValue || !result.Value) return;
 
-            if (!(bool) fileBrowser.ShowDialog()) return;
             foreach (var file in fileBrowser.FileNames)
             {
                 ImagesListBox.Items.Add(new ListBoxItem
@@ -254,25 +262,41 @@ namespace FModel.Views
                 var saveFileDialog = new SaveFileDialog
                 {
                     Title = "Save Image",
-                    FileName = "Preview.png",
+                    FileName = FILENAME,
                     InitialDirectory = UserSettings.Default.OutputDirectory,
                     Filter = "Png Files (*.png)|*.png|All Files (*.*)|*.*"
                 };
+                var result = saveFileDialog.ShowDialog();
+                if (!result.HasValue || !result.Value) return;
 
-                if (!(bool) saveFileDialog.ShowDialog()) return;
-                using var fileStream = new FileStream(saveFileDialog.FileName, FileMode.Create);
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create((BitmapSource) ImagePreview.Source));
-                encoder.Save(fileStream);
+                using (var fs = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                {
+                    fs.Write(_imagebuffer, 0, _imagebuffer.Length);
+                }
 
-                if (!File.Exists(saveFileDialog.FileName)) return;
-                Log.Information("{FileName} successfully saved", saveFileDialog.FileName.SubstringAfterLast('\\'));
-                FLogger.AppendInformation();
-                FLogger.AppendText($"Successfully saved '{saveFileDialog.FileName.SubstringAfterLast('\\')}'", Constants.WHITE, true);
+                SaveCheck(saveFileDialog.FileName, Path.GetFileName(saveFileDialog.FileName));
             });
         }
 
-        private void OnCopyImage(object sender, RoutedEventArgs e) => Clipboard.SetImage((BitmapSource) ImagePreview.Source);
-        
+        private static void SaveCheck(string path, string fileName)
+        {
+            if (File.Exists(path))
+            {
+                Log.Information("{FileName} successfully saved", fileName);
+                FLogger.AppendInformation();
+                FLogger.AppendText($"Successfully saved '{fileName}'", Constants.WHITE, true);
+            }
+            else
+            {
+                Log.Error("{FileName} could not be saved", fileName);
+                FLogger.AppendError();
+                FLogger.AppendText($"Could not save '{fileName}'", Constants.WHITE, true);
+            }
+        }
+
+        private void OnCopyImage(object sender, RoutedEventArgs e)
+        {
+            ClipboardExtensions.SetImage(_imagebuffer, FILENAME);
+        }
     }
 }
