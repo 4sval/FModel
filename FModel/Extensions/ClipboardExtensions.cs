@@ -2,7 +2,9 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 
@@ -10,7 +12,7 @@ namespace FModel.Extensions
 {
     public static class ClipboardExtensions
     {
-        public static void SetClipboardImage(byte[] pngBytes, string fileName = null)
+        public static void SetImage(byte[] pngBytes, string fileName = null)
         {
             Clipboard.Clear();
             var data = new DataObject();
@@ -21,7 +23,7 @@ namespace FModel.Extensions
             // As PNG. Gimp will prefer this over the other two
             data.SetData("PNG", pngMs, false);
             // As DIB. This is (wrongly) accepted as ARGB by many applications
-            using var dibMemStream = new MemoryStream(ConvertToDib(pngBytes));
+            using var dibMemStream = new MemoryStream(ConvertToDib(image));
             data.SetData(DataFormats.Dib, dibMemStream, false);
             // Optional fileName
             if (!string.IsNullOrEmpty(fileName))
@@ -33,13 +35,63 @@ namespace FModel.Extensions
             Clipboard.SetDataObject(data, true);
         }
 
+        public static byte[] ConvertToDib(Image image)
+        {
+            byte[] bm32bData;
+            var width = image.Width;
+            var height = image.Height;
+
+            // Ensure image is 32bppARGB by painting it on a new 32bppARGB image.
+            using (var bm32b = new Bitmap(width, height, PixelFormat.Format32bppPArgb))
+            {
+                using (var gr = Graphics.FromImage(bm32b))
+                {
+                    gr.DrawImage(image, new Rectangle(0, 0, width, height));
+                }
+                // Bitmap format has its lines reversed.
+                bm32b.RotateFlip(RotateFlipType.Rotate180FlipX);
+                bm32bData = GetRawBytes(bm32b);
+            }
+
+            // BITMAPINFOHEADER struct for DIB.
+            const int hdrSize = 0x28;
+            var fullImage = new byte[hdrSize + 12 + bm32bData.Length];
+            //Int32 biSize;
+            WriteIntToByteArray(fullImage, 0x00, 4, true, hdrSize);
+            //Int32 biWidth;
+            WriteIntToByteArray(fullImage, 0x04, 4, true, (uint)width);
+            //Int32 biHeight;
+            WriteIntToByteArray(fullImage, 0x08, 4, true, (uint)height);
+            //Int16 biPlanes;
+            WriteIntToByteArray(fullImage, 0x0C, 2, true, 1);
+            //Int16 biBitCount;
+            WriteIntToByteArray(fullImage, 0x0E, 2, true, 32);
+            //BITMAPCOMPRESSION biCompression = BITMAPCOMPRESSION.BITFIELDS;
+            WriteIntToByteArray(fullImage, 0x10, 4, true, 3);
+            //Int32 biSizeImage;
+            WriteIntToByteArray(fullImage, 0x14, 4, true, (uint)bm32bData.Length);
+            // These are all 0. Since .net clears new arrays, don't bother writing them.
+            //Int32 biXPelsPerMeter = 0;
+            //Int32 biYPelsPerMeter = 0;
+            //Int32 biClrUsed = 0;
+            //Int32 biClrImportant = 0;
+
+            // The aforementioned "BITFIELDS": colour masks applied to the Int32 pixel value to get the R, G and B values.
+            WriteIntToByteArray(fullImage, hdrSize + 0, 4, true, 0x00FF0000);
+            WriteIntToByteArray(fullImage, hdrSize + 4, 4, true, 0x0000FF00);
+            WriteIntToByteArray(fullImage, hdrSize + 8, 4, true, 0x000000FF);
+
+            Unsafe.CopyBlockUnaligned(ref fullImage[hdrSize + 12], ref bm32bData[0], (uint)bm32bData.Length);
+            return fullImage;
+        }
+
         private static byte[] ConvertToDib(byte[] pngBytes = null)
         {
             byte[] bm32bData;
             int width, height;
 
+            using (var skBmp = SKBitmap.Decode(pngBytes))
             {
-                using var skBmp = SKBitmap.Decode(pngBytes);
                 width = skBmp.Width;
                 height = skBmp.Height;
                 using var rotated = new SKBitmap(new SKImageInfo(width, height, skBmp.ColorType));
@@ -77,8 +129,23 @@ namespace FModel.Extensions
             WriteIntToByteArray(fullImage, hdrSize + 0, 4, true, 0x00FF0000);
             WriteIntToByteArray(fullImage, hdrSize + 4, 4, true, 0x0000FF00);
             WriteIntToByteArray(fullImage, hdrSize + 8, 4, true, 0x000000FF);
-            Buffer.BlockCopy(bm32bData, 0, fullImage, hdrSize + 12, bm32bData.Length);
+
+            Unsafe.CopyBlockUnaligned(ref fullImage[hdrSize + 12], ref bm32bData[0], (uint)bm32bData.Length);
             return fullImage;
+        }
+
+        public static unsafe byte[] GetRawBytes(Bitmap bmp)
+        {
+            var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            var bmpData = bmp.LockBits(rect, ImageLockMode.ReadOnly, bmp.PixelFormat);
+            var bytes = (uint)(Math.Abs(bmpData.Stride) * bmp.Height);
+            var buffer = new byte[bytes];
+            fixed (byte* pBuffer = buffer)
+            {
+                Unsafe.CopyBlockUnaligned(pBuffer, bmpData.Scan0.ToPointer(), bytes);
+            }
+            bmp.UnlockBits(bmpData);
+            return buffer;
         }
 
         private static void WriteIntToByteArray(byte[] data, int startIndex, int bytes, bool littleEndian, uint value)

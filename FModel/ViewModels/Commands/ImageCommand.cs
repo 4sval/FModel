@@ -40,7 +40,7 @@ namespace FModel.ViewModels.Commands
                     break;
                 }
                 case "Copy":
-                    ClipboardExtensions.SetClipboardImage(contextViewModel.ImageBuffer, Path.ChangeExtension(contextViewModel.Header, ".png"));
+                    ClipboardExtensions.SetImage(contextViewModel.ImageBuffer, Path.ChangeExtension(contextViewModel.Header, ".png"));
                     break;
                 case "Save":
                     contextViewModel.SaveImage(false);
