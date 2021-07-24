@@ -115,6 +115,7 @@ namespace FModel.ViewModels
             }
         }
 
+        public byte[] ImageBuffer { get; set; }
         private BitmapImage _image;
         public BitmapImage Image
         {
@@ -201,7 +202,8 @@ namespace FModel.ViewModels
         
         public void SetImage(SKImage img)
         {
-            using var stream = img.Encode().AsStream();
+            using var data = img.Encode();
+            using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
             var image = new BitmapImage();
             image.BeginInit();
             image.CacheOption = BitmapCacheOption.OnLoad;

@@ -1,8 +1,12 @@
-﻿using System.Windows;
-using System.Windows.Media;
-using AdonisUI.Controls;
+﻿using AdonisUI.Controls;
+
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Views.Resources.Controls;
+
+using System.IO;
+using System.Windows;
+using System.Windows.Media;
 
 namespace FModel.ViewModels.Commands
 {
@@ -36,7 +40,7 @@ namespace FModel.ViewModels.Commands
                     break;
                 }
                 case "Copy":
-                    Clipboard.SetImage(contextViewModel.Image);
+                    ClipboardExtensions.SetClipboardImage(contextViewModel.ImageBuffer, Path.ChangeExtension(contextViewModel.Header, ".png"));
                     break;
                 case "Save":
                     contextViewModel.SaveImage(false);
