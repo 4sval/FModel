@@ -1,5 +1,18 @@
-﻿using FModel.Framework;
+﻿using FModel.Extensions;
+using FModel.Framework;
+using FModel.Settings;
 using FModel.ViewModels.Commands;
+using FModel.Views.Resources.Controls;
+
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Highlighting;
+
+using Microsoft.Win32;
+
+using Serilog;
+
+using SkiaSharp;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -7,14 +20,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using FModel.Extensions;
-using FModel.Settings;
-using FModel.Views.Resources.Controls;
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Highlighting;
-using Microsoft.Win32;
-using Serilog;
-using SkiaSharp;
 
 namespace FModel.ViewModels
 {
@@ -187,8 +192,8 @@ namespace FModel.ViewModels
                     InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Saves"),
                     Filter = "JSON Files (*.json)|*.json|INI Files (*.ini)|*.ini|XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
                 };
-
-                if (!(bool) saveFileDialog.ShowDialog()) return;
+                var result = saveFileDialog.ShowDialog();
+                if (!result.HasValue || !result.Value) return;
                 directory = saveFileDialog.FileName;
             }
             else
@@ -202,7 +207,7 @@ namespace FModel.ViewModels
         
         public void SetImage(SKImage img)
         {
-            using var data = img.Encode();
+            using var data = img.Encode(SKEncodedImageFormat.Png, 100);
             using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
             var image = new BitmapImage();
             image.BeginInit();
@@ -221,7 +226,7 @@ namespace FModel.ViewModels
             if (!HasImage) return;
             var fileName = Path.ChangeExtension(Header, ".png");
             var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Textures",
-                UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled ? Directory : "", fileName).Replace('\\', '/');
+                UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled ? Directory : "", fileName!).Replace('\\', '/');
 
             if (!autoSave)
             {
@@ -232,8 +237,8 @@ namespace FModel.ViewModels
                     InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Textures"),
                     Filter = "PNG Files (*.png)|*.png|All Files (*.*)|*.*"
                 };
-
-                if (!(bool) saveFileDialog.ShowDialog()) return;
+                var result = saveFileDialog.ShowDialog();
+                if (!result.HasValue || !result.Value) return;
                 directory = saveFileDialog.FileName;
             }
             else
@@ -241,14 +246,15 @@ namespace FModel.ViewModels
                 System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
             }
 
-            using var fileStream = new FileStream(directory, FileMode.Create);
-            var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(Image));
-            encoder.Save(fileStream);
+            using (var fs = new FileStream(directory, FileMode.Create, FileAccess.Write, FileShare.Read))
+            {
+                fs.Write(ImageBuffer, 0, ImageBuffer.Length);
+            }
+
             SaveCheck(directory, fileName);
         }
 
-        private void SaveCheck(string path, string fileName)
+        private static void SaveCheck(string path, string fileName)
         {
             if (File.Exists(path))
             {
@@ -343,7 +349,7 @@ namespace FModel.ViewModels
             });
         }
 
-        private IEnumerable<TabItem> EnumerateTabs()
+        private static IEnumerable<TabItem> EnumerateTabs()
         {
             yield return new TabItem("New Tab", string.Empty);
         }
