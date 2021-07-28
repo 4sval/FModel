@@ -119,8 +119,9 @@ namespace FModel.ViewModels
                 SetProperty(ref _highlighter, value);
             }
         }
+        
+        public byte[] ImageBuffer { get; private set; }
 
-        public byte[] ImageBuffer { get; set; }
         private BitmapImage _image;
         public BitmapImage Image
         {
@@ -130,6 +131,17 @@ namespace FModel.ViewModels
                 if (_image == value) return;
                 SetProperty(ref _image, value);
                 RaisePropertyChanged("HasImage");
+            }
+        }
+        
+        private bool _noAlpha;
+        public bool NoAlpha
+        {
+            get => _noAlpha;
+            set
+            {
+                SetProperty(ref _noAlpha, value);
+                ResetImage();
             }
         }
 
@@ -204,10 +216,14 @@ namespace FModel.ViewModels
             Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
             SaveCheck(directory, fileName);
         }
-        
+
+        private SKImage _img;
+        public void ResetImage() => SetImage(_img);
         public void SetImage(SKImage img)
         {
-            using var data = img.Encode(SKEncodedImageFormat.Png, 100);
+            _img = img;
+            
+            using var data = _img.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
             using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
             var image = new BitmapImage();
             image.BeginInit();

@@ -654,6 +654,7 @@
                             </Image.InputBindings>
                             <Image.ContextMenu>
                                 <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem Header="Disable Alpha Channel" IsCheckable="True" IsChecked="{Binding DataContext.NoAlpha}" />
                                     <MenuItem Header="Open Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Open">
                                         <MenuItem.Icon>
                                             <Viewbox Width="16" Height="16">

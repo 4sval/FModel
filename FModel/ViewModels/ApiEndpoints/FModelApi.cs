@@ -24,6 +24,7 @@ namespace FModel.ViewModels.ApiEndpoints
         private News _news;
         private Info _infos;
         private Backup[] _backups;
+        private Game _game;
         private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
         private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
         
@@ -69,6 +70,19 @@ namespace FModel.ViewModels.ApiEndpoints
         {
             return _backups ??= GetBackupsAsync(token, gameName).GetAwaiter().GetResult();
         }
+        
+        public async Task<Game> GetGamesAsync(CancellationToken token, string gameName)
+        {
+            var request = new RestRequest($"https://api.fmodel.app/v1/games/{gameName}", Method.GET);
+            var response = await _client.ExecuteAsync<Game>(request, token).ConfigureAwait(false);
+            Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+            return response.Data;
+        }
+        
+        public Game GetGames(CancellationToken token, string gameName)
+        {
+            return _game ??= GetGamesAsync(token, gameName).GetAwaiter().GetResult();
+        }
 
         public async Task<CommunityDesign> GetDesignAsync(string designName)
         {
@@ -109,15 +123,15 @@ namespace FModel.ViewModels.ApiEndpoints
             }
         }
         
-        private async void CheckForUpdateEvent(UpdateInfoEventArgs args)
+        private void CheckForUpdateEvent(UpdateInfoEventArgs args)
         {
             if (args is {CurrentVersion: { }})
             {
-                var currentVersion = new Version(args.CurrentVersion);
+                var currentVersion = new System.Version(args.CurrentVersion);
                 if (currentVersion == args.InstalledVersion)
                 {
                     if (UserSettings.Default.ShowChangelog)
-                        await ShowChangelog(args);
+                        ShowChangelog(args);
                     return;
                 }
 
@@ -156,10 +170,10 @@ namespace FModel.ViewModels.ApiEndpoints
             }
         }
 
-        private async Task ShowChangelog(UpdateInfoEventArgs args)
+        private void ShowChangelog(UpdateInfoEventArgs args)
         {
             var request = new RestRequest(args.ChangelogURL, Method.GET);
-            var response = await _client.ExecuteAsync(request).ConfigureAwait(false);
+            var response = _client.Execute(request);
             if (string.IsNullOrEmpty(response.Content)) return;
             
             _applicationView.CUE4Parse.TabControl.AddTab($"Release Notes: {args.CurrentVersion}");

@@ -24,6 +24,22 @@ namespace FModel.ViewModels.ApiEndpoints.Models
         [J] public string DownloadUrl { get; private set; }
         [J] public long FileSize { get; private set; }
     }
+    
+    [DebuggerDisplay("{" + nameof(DisplayName) + "}")]
+    public class Game
+    {
+        [J] public string DisplayName { get; private set; }
+        [J] public Dictionary<string, Version> Versions { get; private set; }
+    }
+    
+    [DebuggerDisplay("{" + nameof(GameEnum) + "}")]
+    public class Version
+    {
+        [J("game")] public string GameEnum { get; private set; }
+        [J] public int UeVer { get; private set; }
+        [J] public Dictionary<string, int> CustomVersions { get; private set; }
+        [J] public Dictionary<string, bool> Options { get; private set; }
+    }
 
     [DebuggerDisplay("{" + nameof(Mode) + "}")]
     public class Info
