@@ -561,7 +561,7 @@ namespace FModel.ViewModels
                                    trigger.Text.EndsWith("TF_Nearest", StringComparison.OrdinalIgnoreCase);
 
                     TabControl.SelectedTab.ImageRender = bNearest ? BitmapScalingMode.NearestNeighbor : BitmapScalingMode.Linear;
-                    TabControl.SelectedTab.SetImage(texture.Decode(bNearest));
+                    TabControl.SelectedTab.SetImage(texture.Decode());
                     return true;
                 }
                 case UAkMediaAssetData:

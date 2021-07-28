@@ -114,7 +114,7 @@ namespace FModel.ViewModels
         
         private void LoadStaticMesh(UStaticMesh mesh)
         {
-            if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Length <= 0)
+            if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
             {
                 return;
             }
@@ -139,7 +139,7 @@ namespace FModel.ViewModels
         
         private void LoadSkeletalMesh(USkeletalMesh mesh)
         {
-            if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Length <= 0)
+            if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
             {
                 return;
             }
