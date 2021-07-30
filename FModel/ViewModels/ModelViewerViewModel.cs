@@ -168,7 +168,7 @@ namespace FModel.ViewModels
                 var u = BitConverter.ToSingle(BitConverter.GetBytes((int) verts[i].UV.U));
                 var v = BitConverter.ToSingle(BitConverter.GetBytes((int) verts[i].UV.V));
                 builder.AddNode(
-                    new Vector3(verts[i].Position.X, verts[i].Position.Y, verts[i].Position.Z),
+                    new Vector3(verts[i].Position.X, -verts[i].Position.Y, verts[i].Position.Z),
                     new Vector3(verts[i].Normal.X, verts[i].Normal.Y, verts[i].Normal.Z),
                     new Vector2(u, v));
             }
