@@ -124,8 +124,7 @@ namespace FModel.ViewModels
             var pushedMaterial = false;
             foreach (var lod in convertedMesh.LODs)
             {
-                if (lod?.Sections.Value.Length <= 0)
-                    continue;
+                if (lod.SkipLod) continue;
                 
                 PushLod(lod.Verts, lod.Indices.Value);
                 if (!pushedMaterial)
@@ -149,8 +148,7 @@ namespace FModel.ViewModels
             var pushedMaterial = false;
             foreach (var lod in convertedMesh.LODs)
             {
-                if (lod?.Sections.Value.Length <= 0)
-                    continue;
+                if (lod.SkipLod) continue;
                 
                 PushLod(lod.Verts, lod.Indices.Value);
                 if (!pushedMaterial)
@@ -167,10 +165,12 @@ namespace FModel.ViewModels
             var builder = new MeshBuilder {TextureCoordinates = new Vector2Collection()};
             for (var i = 0; i < verts.Length; i++)
             {
+                var u = BitConverter.ToSingle(BitConverter.GetBytes((int) verts[i].UV.U));
+                var v = BitConverter.ToSingle(BitConverter.GetBytes((int) verts[i].UV.V));
                 builder.AddNode(
                     new Vector3(verts[i].Position.X, verts[i].Position.Y, verts[i].Position.Z),
                     new Vector3(verts[i].Normal.X, verts[i].Normal.Y, verts[i].Normal.Z),
-                    new Vector2(verts[i].UV.U, verts[i].UV.V));
+                    new Vector2(u, v));
             }
             
             for (var i = 0; i < indices.Length; i++)
