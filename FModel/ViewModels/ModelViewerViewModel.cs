@@ -183,13 +183,13 @@ namespace FModel.ViewModels
         {
             for (var j = 0; j < sections.Length; j++)
             {
-                if (sections[j].Material?.Value is not { } unrealMaterial)
+                if (sections[j].Material == null || !sections[j].Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
                     continue;
                     
                 var parameters = new CMaterialParams();
                 unrealMaterial.GetParams(parameters);
                 if (parameters.Diffuse is not UTexture2D diffuse) continue;
-                MeshMat = new DiffuseMaterial {DiffuseMap = new TextureModel(diffuse.Decode().Encode().AsStream())};
+                MeshMat = new DiffuseMaterial {DiffuseMap = new TextureModel(diffuse.Decode()?.Encode().AsStream())};
                 break;
             }
         }

@@ -22,7 +22,7 @@ namespace FModel.Creator.Bases.FN
             texture_finding:
             foreach (var textureParameter in material.TextureParameterValues) // get texture from base material
             {
-                if (textureParameter.ParameterValue is not UTexture2D texture || Preview != null) continue;
+                if (!textureParameter.ParameterValue.TryLoad<UTexture2D>(out var texture) || Preview != null) continue;
                 switch (textureParameter.ParameterInfo.Name.Text)
                 {
                     case "SeriesTexture":
