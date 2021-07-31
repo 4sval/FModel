@@ -145,11 +145,11 @@ namespace FModel.ViewModels
             }
         }
 
-        private BitmapScalingMode _imageRender = BitmapScalingMode.Linear;
-        public BitmapScalingMode ImageRender
+        private bool _renderNearestNeighbor;
+        public bool RenderNearestNeighbor
         {
-            get => _imageRender;
-            set => SetProperty(ref _imageRender, value);
+            get => _renderNearestNeighbor;
+            set => SetProperty(ref _renderNearestNeighbor, value);
         }
 
         public bool HasImage => Image != null;

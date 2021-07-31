@@ -5,6 +5,7 @@ using FModel.Views.Resources.Controls;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
+using FModel.Views.Resources.Converters;
 
 namespace FModel.ViewModels.Commands
 {
@@ -32,7 +33,7 @@ namespace FModel.ViewModels.Commands
                             WindowState = contextViewModel.Image.Height > 1000 ? WindowState.Maximized : WindowState.Normal,
                             ImageCtrl = {Source = contextViewModel.Image}
                         };
-                        RenderOptions.SetBitmapScalingMode(popout.ImageCtrl, contextViewModel.ImageRender);
+                        RenderOptions.SetBitmapScalingMode(popout.ImageCtrl, BoolToRenderModeConverter.Instance.Convert(contextViewModel.RenderNearestNeighbor));
                         popout.Show();
                     });
                     break;

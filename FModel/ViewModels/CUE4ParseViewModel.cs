@@ -549,18 +549,13 @@ namespace FModel.ViewModels
                 ExportData(fullPath);
         }
 
-        private bool CheckExport(UObject export) // return if this loads an image
+        private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
         {
             switch (export)
             {
                 case UTexture2D texture:
                 {
-                    var bNearest = false;
-                    if (texture.TryGetValue(out FName trigger, "LODGroup", "Filter") && !trigger.IsNone)
-                        bNearest = trigger.Text.EndsWith("TEXTUREGROUP_Pixels2D", StringComparison.OrdinalIgnoreCase) ||
-                                   trigger.Text.EndsWith("TF_Nearest", StringComparison.OrdinalIgnoreCase);
-
-                    TabControl.SelectedTab.ImageRender = bNearest ? BitmapScalingMode.NearestNeighbor : BitmapScalingMode.Linear;
+                    TabControl.SelectedTab.RenderNearestNeighbor = texture.bRenderNearestNeighbor;
                     TabControl.SelectedTab.SetImage(texture.Decode());
                     return true;
                 }
@@ -604,7 +599,7 @@ namespace FModel.ViewModels
                             modelViewer.Load(export);
                         });
                     }
-                    return false;
+                    return true;
                 }
                 default:
                 {
