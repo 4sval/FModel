@@ -27,6 +27,11 @@ namespace FModel.Views
             }
         }
 
+        private async void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            await _applicationView.SettingsView.InitPresets(_applicationView.CUE4Parse.Provider.GameName);
+        }
+
         private async void OnClick(object sender, RoutedEventArgs e)
         {
             var whatShouldIDo = _applicationView.SettingsView.Save();
@@ -81,6 +86,13 @@ namespace FModel.Views
                 UserSettings.Default.LastOpenedSettingTab = i;
                 break;
             }
+        }
+
+        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is not ComboBox {SelectedItem: string s}) return;
+            if (s == "None") _applicationView.SettingsView.ResetPreset();
+            else _applicationView.SettingsView.SwitchPreset(s);
         }
     }
 }

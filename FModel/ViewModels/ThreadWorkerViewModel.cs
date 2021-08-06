@@ -3,6 +3,7 @@ using FModel.Services;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FModel.Extensions;
 using FModel.Views.Resources.Controls;
 using Serilog;
 
@@ -99,6 +100,7 @@ namespace FModel.ViewModels
                         
                         FLogger.AppendError();
                         FLogger.AppendText(e.Message, Constants.WHITE, true);
+                        FLogger.AppendText("      " + e.StackTrace.SubstringBefore('\n').Trim(), Constants.WHITE, true);
                         return;
                     }
                 }

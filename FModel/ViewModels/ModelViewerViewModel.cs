@@ -185,7 +185,7 @@ namespace FModel.ViewModels
             {
                 if (sections[j].Material == null || !sections[j].Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
                     continue;
-                    
+
                 var parameters = new CMaterialParams();
                 unrealMaterial.GetParams(parameters);
                 if (parameters.Diffuse is not UTexture2D diffuse) continue;

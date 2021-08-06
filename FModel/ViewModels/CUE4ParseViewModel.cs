@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using AdonisUI.Controls;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
@@ -21,7 +20,6 @@ using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Localization;
-using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
@@ -139,7 +137,7 @@ namespace FModel.ViewModels
 
                                 var manifest = new Manifest(manifestData, new ManifestOptions
                                 {
-                                    ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/ChunksV3/", UriKind.Absolute),
+                                    ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/ChunksV4/", UriKind.Absolute),
                                     ChunkCacheDirectory = chunksDir
                                 });
 

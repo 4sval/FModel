@@ -2,17 +2,22 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
+using FModel.ViewModels.ApiEndpoints.Models;
 
 namespace FModel.ViewModels
 {
     public class SettingsViewModel : ViewModel
     {
+        private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
+        private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
         private readonly DiscordHandler _discordHandler = DiscordService.DiscordHandler;
 
         private EUpdateMode _selectedUpdateMode;
@@ -20,6 +25,13 @@ namespace FModel.ViewModels
         {
             get => _selectedUpdateMode;
             set => SetProperty(ref _selectedUpdateMode, value);
+        }
+
+        private string _selectedPreset;
+        public string SelectedPreset
+        {
+            get => _selectedPreset;
+            set => SetProperty(ref _selectedPreset, value);
         }
 
         private EGame _selectedUeGame;
@@ -107,6 +119,7 @@ namespace FModel.ViewModels
         }
 
         public ReadOnlyObservableCollection<EUpdateMode> UpdateModes { get; private set; }
+        public ObservableCollection<string> Presets { get; private set; }
         public ReadOnlyObservableCollection<EGame> UeGames { get; private set; }
         public ReadOnlyObservableCollection<UE4Version> UeVersions { get; private set; }
         public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
@@ -121,9 +134,11 @@ namespace FModel.ViewModels
         public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
 
         private readonly FGame _game;
+        private Game _gamePreset;
         private string _outputSnapshot;
         private string _gameSnapshot;
         private EUpdateMode _updateModeSnapshot;
+        private string _presetSnapshot;
         private EGame _ueGameSnapshot;
         private UE4Version _ueVersionSnapshot;
         private ELanguage _assetLanguageSnapshot;
@@ -145,6 +160,7 @@ namespace FModel.ViewModels
             _outputSnapshot = UserSettings.Default.OutputDirectory;
             _gameSnapshot = UserSettings.Default.GameDirectory;
             _updateModeSnapshot = UserSettings.Default.UpdateMode;
+            _presetSnapshot = UserSettings.Default.Presets[_game];
             _ueGameSnapshot = UserSettings.Default.OverridedGame[_game];
             _ueVersionSnapshot = UserSettings.Default.OverridedUEVersion[_game];
             _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
@@ -157,6 +173,7 @@ namespace FModel.ViewModels
             _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
 
             SelectedUpdateMode = _updateModeSnapshot;
+            SelectedPreset = _presetSnapshot;
             SelectedUeGame = _ueGameSnapshot;
             SelectedUeVersion = _ueVersionSnapshot;
             SelectedAssetLanguage = _assetLanguageSnapshot;
@@ -171,6 +188,7 @@ namespace FModel.ViewModels
             SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
             UpdateModes = new ReadOnlyObservableCollection<EUpdateMode>(new ObservableCollection<EUpdateMode>(EnumerateUpdateModes()));
+            Presets = new ObservableCollection<string>(EnumeratePresets());
             UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
             UeVersions = new ReadOnlyObservableCollection<UE4Version>(new ObservableCollection<UE4Version>(EnumerateUeVersions()));
             AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
@@ -183,6 +201,34 @@ namespace FModel.ViewModels
             MeshExportFormats = new ReadOnlyObservableCollection<EMeshFormat>(new ObservableCollection<EMeshFormat>(EnumerateMeshExportFormat()));
             LodExportFormats = new ReadOnlyObservableCollection<ELodFormat>(new ObservableCollection<ELodFormat>(EnumerateLodExportFormat()));
             TextureExportFormats = new ReadOnlyObservableCollection<ETextureFormat>(new ObservableCollection<ETextureFormat>(EnumerateTextureExportFormat()));
+        }
+
+        public async Task InitPresets(string gameName)
+        {
+            await _threadWorkerView.Begin(cancellationToken =>
+            {
+                if (string.IsNullOrEmpty(gameName)) return;
+                _gamePreset = _apiEndpointView.FModelApi.GetGames(cancellationToken, gameName);
+            });
+            
+            if (_gamePreset?.Versions == null) return;
+            foreach (var version in _gamePreset.Versions.Keys)
+            {
+                Presets.Add(version);
+            }
+        }
+
+        public void SwitchPreset(string key)
+        {
+            if (_gamePreset?.Versions == null || !_gamePreset.Versions.TryGetValue(key, out var version)) return;
+            SelectedUeGame = version.GameEnum.ToEnum(EGame.GAME_UE4_LATEST);
+            SelectedUeVersion = (UE4Version)version.UeVer;
+        }
+        
+        public void ResetPreset()
+        {
+            SelectedUeGame = _ueGameSnapshot;
+            SelectedUeVersion = _ueVersionSnapshot;
         }
 
         public SettingsOut Save()
@@ -198,6 +244,7 @@ namespace FModel.ViewModels
                 ret = SettingsOut.ReloadLocres;
 
             UserSettings.Default.UpdateMode = SelectedUpdateMode;
+            UserSettings.Default.Presets[_game] = SelectedPreset;
             UserSettings.Default.OverridedGame[_game] = SelectedUeGame;
             UserSettings.Default.OverridedUEVersion[_game] = SelectedUeVersion;
             UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
@@ -218,6 +265,10 @@ namespace FModel.ViewModels
         }
 
         private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues(SelectedUpdateMode.GetType()).Cast<EUpdateMode>();
+        private IEnumerable<string> EnumeratePresets()
+        {
+            yield return "None";
+        }
         private IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues(SelectedUeGame.GetType()).Cast<EGame>();
         private IEnumerable<UE4Version> EnumerateUeVersions() => Enum.GetValues(SelectedUeVersion.GetType()).Cast<UE4Version>();
         private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues(SelectedAssetLanguage.GetType()).Cast<ELanguage>();

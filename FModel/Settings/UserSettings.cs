@@ -204,6 +204,30 @@ namespace FModel.Settings
             set => SetProperty(ref _imageMergerMargin, value);
         }
 
+        private IDictionary<FGame, string> _presets = new Dictionary<FGame, string>
+        {
+            {FGame.Unknown, "None"},
+            {FGame.FortniteGame, "None"},
+            {FGame.ShooterGame, "None"},
+            {FGame.DeadByDaylight, "None"},
+            {FGame.OakGame, "None"},
+            {FGame.Dungeons, "None"},
+            {FGame.WorldExplorers, "None"},
+            {FGame.g3, "None"},
+            {FGame.StateOfDecay2, "None"},
+            {FGame.Prospect, "None"},
+            {FGame.Indiana, "None"},
+            {FGame.RogueCompany, "None"},
+            {FGame.SwGame, "None"},
+            {FGame.Platform, "None"},
+            {FGame.BendGame, "None"}
+        };
+        public IDictionary<FGame, string> Presets
+        {
+            get => _presets;
+            set => SetProperty(ref _presets, value);
+        }
+
         private IDictionary<FGame, EGame> _overridedGame = new Dictionary<FGame, EGame>
         {
             {FGame.Unknown, EGame.GAME_UE4_LATEST},
