@@ -71,19 +71,31 @@ namespace FModel.ViewModels
                 case Constants._FN_LIVE_TRIGGER:
                 {
                     Game = FGame.FortniteGame;
-                    Provider = new StreamedFileProvider("FortniteLive", true, new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]));
+                    Provider = new StreamedFileProvider("FortniteLive", true,
+                        new VersionContainer(
+                            UserSettings.Default.OverridedGame[Game],
+                            UserSettings.Default.OverridedUEVersion[Game],
+                            UserSettings.Default.OverridedCustomVersions[Game],
+                            UserSettings.Default.OverridedOptions[Game]));
                     break;
                 }
                 case Constants._VAL_LIVE_TRIGGER:
                 {
                     Game = FGame.ShooterGame;
-                    Provider = new StreamedFileProvider("ValorantLive", true, new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]));
+                    Provider = new StreamedFileProvider("ValorantLive", true,
+                        new VersionContainer(
+                            UserSettings.Default.OverridedGame[Game],
+                            UserSettings.Default.OverridedUEVersion[Game],
+                            UserSettings.Default.OverridedCustomVersions[Game],
+                            UserSettings.Default.OverridedOptions[Game]));
                     break;
                 }
                 default:
                 {
                     Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
-                    var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+                    var versions = new VersionContainer(
+                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game],
+                        UserSettings.Default.OverridedCustomVersions[Game], UserSettings.Default.OverridedOptions[Game]);
 
                     if (Game == FGame.StateOfDecay2)
                         Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>

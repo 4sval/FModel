@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
+using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
@@ -206,21 +207,21 @@ namespace FModel.Settings
 
         private IDictionary<FGame, string> _presets = new Dictionary<FGame, string>
         {
-            {FGame.Unknown, "None"},
-            {FGame.FortniteGame, "None"},
-            {FGame.ShooterGame, "None"},
-            {FGame.DeadByDaylight, "None"},
-            {FGame.OakGame, "None"},
-            {FGame.Dungeons, "None"},
-            {FGame.WorldExplorers, "None"},
-            {FGame.g3, "None"},
-            {FGame.StateOfDecay2, "None"},
-            {FGame.Prospect, "None"},
-            {FGame.Indiana, "None"},
-            {FGame.RogueCompany, "None"},
-            {FGame.SwGame, "None"},
-            {FGame.Platform, "None"},
-            {FGame.BendGame, "None"}
+            {FGame.Unknown, Constants._NO_PRESET_TRIGGER},
+            {FGame.FortniteGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.ShooterGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.DeadByDaylight, Constants._NO_PRESET_TRIGGER},
+            {FGame.OakGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.Dungeons, Constants._NO_PRESET_TRIGGER},
+            {FGame.WorldExplorers, Constants._NO_PRESET_TRIGGER},
+            {FGame.g3, Constants._NO_PRESET_TRIGGER},
+            {FGame.StateOfDecay2, Constants._NO_PRESET_TRIGGER},
+            {FGame.Prospect, Constants._NO_PRESET_TRIGGER},
+            {FGame.Indiana, Constants._NO_PRESET_TRIGGER},
+            {FGame.RogueCompany, Constants._NO_PRESET_TRIGGER},
+            {FGame.SwGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.Platform, Constants._NO_PRESET_TRIGGER},
+            {FGame.BendGame, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -274,6 +275,54 @@ namespace FModel.Settings
         {
             get => _overridedUEVersion;
             set => SetProperty(ref _overridedUEVersion, value);
+        }
+        
+        private IDictionary<FGame, List<FCustomVersion>> _overridedCustomVersions = new Dictionary<FGame, List<FCustomVersion>>
+        {
+            {FGame.Unknown, null},
+            {FGame.FortniteGame, null},
+            {FGame.ShooterGame, null},
+            {FGame.DeadByDaylight, null},
+            {FGame.OakGame, null},
+            {FGame.Dungeons, null},
+            {FGame.WorldExplorers, null},
+            {FGame.g3, null},
+            {FGame.StateOfDecay2, null},
+            {FGame.Prospect, null},
+            {FGame.Indiana, null},
+            {FGame.RogueCompany, null},
+            {FGame.SwGame, null},
+            {FGame.Platform, null},
+            {FGame.BendGame, null}
+        };
+        public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
+        {
+            get => _overridedCustomVersions;
+            set => SetProperty(ref _overridedCustomVersions, value);
+        }
+        
+        private IDictionary<FGame, Dictionary<string, bool>> _overridedOptions = new Dictionary<FGame, Dictionary<string, bool>>
+        {
+            {FGame.Unknown, null},
+            {FGame.FortniteGame, null},
+            {FGame.ShooterGame, null},
+            {FGame.DeadByDaylight, null},
+            {FGame.OakGame, null},
+            {FGame.Dungeons, null},
+            {FGame.WorldExplorers, null},
+            {FGame.g3, null},
+            {FGame.StateOfDecay2, null},
+            {FGame.Prospect, null},
+            {FGame.Indiana, null},
+            {FGame.RogueCompany, null},
+            {FGame.SwGame, null},
+            {FGame.Platform, null},
+            {FGame.BendGame, null}
+        };
+        public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
+        {
+            get => _overridedOptions;
+            set => SetProperty(ref _overridedOptions, value);
         }
 
         private IDictionary<FGame, IList<CustomDirectory>> _customDirectories = new Dictionary<FGame, IList<CustomDirectory>>

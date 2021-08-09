@@ -21,5 +21,7 @@ namespace FModel
 
         public const string _FN_LIVE_TRIGGER = "fortnite-live.manifest";
         public const string _VAL_LIVE_TRIGGER = "valorant-live.manifest";
+
+        public const string _NO_PRESET_TRIGGER = "Hand Made";
     }
 }

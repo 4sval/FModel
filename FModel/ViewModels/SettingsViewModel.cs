@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CUE4Parse.UE4.Objects.Core.Misc;
+using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
@@ -31,7 +33,11 @@ namespace FModel.ViewModels
         public string SelectedPreset
         {
             get => _selectedPreset;
-            set => SetProperty(ref _selectedPreset, value);
+            set
+            {
+                SetProperty(ref _selectedPreset, value);
+                RaisePropertyChanged("EnableElements");
+            }
         }
 
         private EGame _selectedUeGame;
@@ -46,6 +52,20 @@ namespace FModel.ViewModels
         {
             get => _selectedUeVersion;
             set => SetProperty(ref _selectedUeVersion, value);
+        }
+        
+        private List<FCustomVersion> _selectedCustomVersions;
+        public List<FCustomVersion> SelectedCustomVersions
+        {
+            get => _selectedCustomVersions;
+            set => SetProperty(ref _selectedCustomVersions, value);
+        }
+        
+        private Dictionary<string, bool> _selectedOptions;
+        public Dictionary<string, bool> SelectedOptions
+        {
+            get => _selectedOptions;
+            set => SetProperty(ref _selectedOptions, value);
         }
 
         private ELanguage _selectedAssetLanguage;
@@ -133,6 +153,8 @@ namespace FModel.ViewModels
         public ReadOnlyObservableCollection<ELodFormat> LodExportFormats { get; private set; }
         public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
 
+        public bool EnableElements => SelectedPreset == Constants._NO_PRESET_TRIGGER;
+
         private readonly FGame _game;
         private Game _gamePreset;
         private string _outputSnapshot;
@@ -141,6 +163,8 @@ namespace FModel.ViewModels
         private string _presetSnapshot;
         private EGame _ueGameSnapshot;
         private UE4Version _ueVersionSnapshot;
+        private List<FCustomVersion> _customVersionsSnapshot;
+        private Dictionary<string, bool> _optionsSnapshot;
         private ELanguage _assetLanguageSnapshot;
         private EEnabledDisabled _directoryStructureSnapshot;
         private ECompressedAudio _compressedAudioSnapshot;
@@ -163,6 +187,8 @@ namespace FModel.ViewModels
             _presetSnapshot = UserSettings.Default.Presets[_game];
             _ueGameSnapshot = UserSettings.Default.OverridedGame[_game];
             _ueVersionSnapshot = UserSettings.Default.OverridedUEVersion[_game];
+            _customVersionsSnapshot = UserSettings.Default.OverridedCustomVersions[_game];
+            _optionsSnapshot = UserSettings.Default.OverridedOptions[_game];
             _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
             _directoryStructureSnapshot = UserSettings.Default.KeepDirectoryStructure;
             _compressedAudioSnapshot = UserSettings.Default.CompressedAudioMode;
@@ -176,6 +202,8 @@ namespace FModel.ViewModels
             SelectedPreset = _presetSnapshot;
             SelectedUeGame = _ueGameSnapshot;
             SelectedUeVersion = _ueVersionSnapshot;
+            SelectedCustomVersions = _customVersionsSnapshot;
+            SelectedOptions = _optionsSnapshot;
             SelectedAssetLanguage = _assetLanguageSnapshot;
             SelectedDirectoryStructure = _directoryStructureSnapshot;
             SelectedCompressedAudio = _compressedAudioSnapshot;
@@ -223,12 +251,26 @@ namespace FModel.ViewModels
             if (_gamePreset?.Versions == null || !_gamePreset.Versions.TryGetValue(key, out var version)) return;
             SelectedUeGame = version.GameEnum.ToEnum(EGame.GAME_UE4_LATEST);
             SelectedUeVersion = (UE4Version)version.UeVer;
+            
+            SelectedCustomVersions = new List<FCustomVersion>();
+            foreach (var (guid, v) in version.CustomVersions)
+            {
+                SelectedCustomVersions.Add(new FCustomVersion {Key = new FGuid(guid), Version = v});
+            }
+
+            SelectedOptions = new Dictionary<string, bool>();
+            foreach (var (k, v) in version.Options)
+            {
+                SelectedOptions[k] = v;
+            }
         }
         
         public void ResetPreset()
         {
             SelectedUeGame = _ueGameSnapshot;
             SelectedUeVersion = _ueVersionSnapshot;
+            SelectedCustomVersions = _customVersionsSnapshot;
+            SelectedOptions = _optionsSnapshot;
         }
 
         public SettingsOut Save()
@@ -236,6 +278,7 @@ namespace FModel.ViewModels
             var ret = SettingsOut.Nothing;
 
             if (_ueGameSnapshot != SelectedUeGame || _ueVersionSnapshot != SelectedUeVersion || // comboboxes
+                _customVersionsSnapshot != SelectedCustomVersions || _optionsSnapshot != SelectedOptions ||
                 _outputSnapshot != UserSettings.Default.OutputDirectory || // textbox
                 _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
                 ret = SettingsOut.Restart;
@@ -247,6 +290,8 @@ namespace FModel.ViewModels
             UserSettings.Default.Presets[_game] = SelectedPreset;
             UserSettings.Default.OverridedGame[_game] = SelectedUeGame;
             UserSettings.Default.OverridedUEVersion[_game] = SelectedUeVersion;
+            UserSettings.Default.OverridedCustomVersions[_game] = SelectedCustomVersions;
+            UserSettings.Default.OverridedOptions[_game] = SelectedOptions;
             UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
             UserSettings.Default.KeepDirectoryStructure = SelectedDirectoryStructure;
             UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
@@ -267,7 +312,7 @@ namespace FModel.ViewModels
         private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues(SelectedUpdateMode.GetType()).Cast<EUpdateMode>();
         private IEnumerable<string> EnumeratePresets()
         {
-            yield return "None";
+            yield return Constants._NO_PRESET_TRIGGER;
         }
         private IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues(SelectedUeGame.GetType()).Cast<EGame>();
         private IEnumerable<UE4Version> EnumerateUeVersions() => Enum.GetValues(SelectedUeVersion.GetType()).Cast<UE4Version>();
