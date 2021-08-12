@@ -519,6 +519,11 @@ namespace FModel.ViewModels
                     FLogger.AppendWarning();
                     FLogger.AppendText($"Export '{fileName}' and change its extension if you want it to be an installable font file", Constants.WHITE, true);
                     break;
+                case "otf":
+                case "ttf":
+                    FLogger.AppendWarning();
+                    FLogger.AppendText($"Export '{fileName}' if you want it to be an installable font file", Constants.WHITE, true);
+                    break;
                 case "ushaderbytecode":
                 case "ushadercode":
                 {
