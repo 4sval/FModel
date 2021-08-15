@@ -63,6 +63,7 @@ namespace FModel.ViewModels
         public SearchViewModel SearchVm { get; }
         public TabControlViewModel TabControl { get; }
         public int LocalizedResourcesCount { get; set; }
+        public int VirtualPathCount { get; set; }
 
         public CUE4ParseViewModel(string gameDirectory)
         {
@@ -334,6 +335,27 @@ namespace FModel.ViewModels
                 }
 
                 Utils.Typefaces = new Typefaces(this);
+            });
+        }
+
+        public async Task LoadVirtualPaths()
+        {
+            if (VirtualPathCount > 0) return;
+            await _threadWorkerView.Begin(cancellationToken =>
+            {
+                VirtualPathCount = Provider.LoadVirtualPaths(cancellationToken);
+#if DEBUG
+                if (VirtualPathCount > 0)
+                {
+                    FLogger.AppendInformation();
+                    FLogger.AppendText($"{VirtualPathCount} virtual paths loaded!", Constants.WHITE, true);
+                }
+                else
+                {
+                    FLogger.AppendError();
+                    FLogger.AppendText("Could not load virtual paths, plugin manifest may not exist", Constants.WHITE, true);
+                }
+#endif
             });
         }
 
