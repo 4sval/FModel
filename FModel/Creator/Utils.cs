@@ -119,34 +119,7 @@ namespace FModel.Creator
 
         public static bool TryGetPackageIndexExport<T>(FPackageIndex packageIndex, out T export) where T : UObject
         {
-            if (packageIndex.ResolvedObject == null)
-            {
-                export = default;
-                return false;
-            }
-
-            var outerChain = new List<string>();
-            var current = packageIndex.ResolvedObject.Outer;
-            while (current != null)
-            {
-                outerChain.Add(current.Name.Text);
-                current = current.Outer;
-            }
-
-            if (outerChain.Count < 1)
-            {
-                export = default;
-                return false;
-            }
-
-            if (!_applicationView.CUE4Parse.Provider.TryLoadPackage(outerChain[^1], out var pkg))
-            {
-                export = default;
-                return false;
-            }
-
-            export = pkg.GetExport(packageIndex.ResolvedObject.Index) as T;
-            return export != null;
+            return packageIndex.TryLoad(out export);
         }
 
         // fullpath must be either without any extension or with the export objectname
