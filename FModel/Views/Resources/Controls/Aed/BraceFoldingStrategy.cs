@@ -47,10 +47,18 @@ namespace FModel.Views.Resources.Controls
 			if (_foldingManager.AllFoldings == null)
 				return;
 
+			var dowhat = -1;
+			var foldunfold = false;
 			foreach (var folding in _foldingManager.AllFoldings)
 			{
-				if (folding.Tag is not CustomNewFolding realFolding) continue;
-				if (realFolding.Level == level) folding.IsFolded = !folding.IsFolded;
+				if (folding.Tag is not CustomNewFolding realFolding || realFolding.Level != level) continue;
+
+				if (dowhat < 0) // determine if we fold or unfold based on the first one
+				{
+					dowhat = 1;
+					foldunfold = !folding.IsFolded;
+				}
+				folding.IsFolded = foldunfold;
 			}
 		}
 	}

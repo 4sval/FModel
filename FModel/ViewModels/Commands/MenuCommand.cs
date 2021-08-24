@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 using AdonisUI.Controls;
 using FModel.Framework;
 using FModel.Services;
@@ -14,7 +16,7 @@ namespace FModel.ViewModels.Commands
         {
         }
 
-        public override void Execute(ApplicationViewModel contextViewModel, object parameter)
+        public override async void Execute(ApplicationViewModel contextViewModel, object parameter)
         {
             switch (parameter)
             {
@@ -61,7 +63,41 @@ namespace FModel.ViewModels.Commands
                 case "ToolBox_Open_Output_Directory":
                     Process.Start(new ProcessStartInfo {FileName = UserSettings.Default.OutputDirectory, UseShellExecute = true});
                     break;
+                case "ToolBox_Expand_All":
+                    await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
+                    {
+                        foreach (var folder in contextViewModel.CUE4Parse.AssetsFolder.Folders)
+                        {
+                            LoopFolders(cancellationToken, folder, true);
+                        }
+                    });
+                    break;
+                case "ToolBox_Collapse_All":
+                    await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
+                    {
+                        foreach (var folder in contextViewModel.CUE4Parse.AssetsFolder.Folders)
+                        {
+                            LoopFolders(cancellationToken, folder, false);
+                        }
+                    });
+                    break;
+                case TreeItem selectedFolder:
+                    selectedFolder.IsSelected = false;
+                    selectedFolder.IsSelected = true;
+                    break;
             }
+        }
+
+        private void LoopFolders(CancellationToken cancellationToken, TreeItem parent, bool isExpanded)
+        {
+            if (parent.IsExpanded != isExpanded)
+            {
+                parent.IsExpanded = isExpanded;
+                Thread.Sleep(10);
+            }
+            
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var f in parent.Folders) LoopFolders(cancellationToken, f, isExpanded);
         }
     }
 }

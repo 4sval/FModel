@@ -39,6 +39,7 @@
     <None Remove="Resources\fallenorder.png" />
     <None Remove="Resources\FModel.ico" />
     <None Remove="Resources\folder.png" />
+    <None Remove="Resources\label.png" />
     <None Remove="Resources\fortnite.png" />
     <None Remove="Resources\fortnitebr.png" />
     <None Remove="Resources\gear.png" />
@@ -134,6 +135,7 @@
     <Resource Include="Resources\fallenorder.png" />
     <Resource Include="Resources\FModel.ico" />
     <Resource Include="Resources\folder.png" />
+    <Resource Include="Resources\label.png" />
     <Resource Include="Resources\fortnite.png" />
     <Resource Include="Resources\fortnitebr.png" />
     <Resource Include="Resources\empty_folder.png" />

@@ -90,7 +90,7 @@ namespace FModel.ViewModels.Commands
 #if DEBUG
             loadingTime.Stop();
             FLogger.AppendDebug();
-            FLogger.AppendText($"{_applicationView.CUE4Parse.SearchVm.SearchResults.Count} packages and a lot of localized resources loaded in {loadingTime.Elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)} seconds", Constants.WHITE, true);
+            FLogger.AppendText($"{_applicationView.CUE4Parse.SearchVm.SearchResults.Count} packages, {_applicationView.CUE4Parse.LocalizedResourcesCount} localized resources, and {_applicationView.CUE4Parse.VirtualPathCount} virtual paths loaded in {loadingTime.Elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)} seconds", Constants.WHITE, true);
 #endif
         }
 

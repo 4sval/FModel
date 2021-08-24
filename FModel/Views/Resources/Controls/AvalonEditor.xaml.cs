@@ -39,8 +39,14 @@ namespace FModel.Views.Resources.Controls
                 case Key.Escape:
                     ((TabItem) DataContext).HasSearchOpen = false;
                     break;
-                case Key.Enter when ((TabItem) DataContext).HasSearchOpen:
+                case Key.Enter when !Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) && ((TabItem) DataContext).HasSearchOpen:
                     FindNext();
+                    break;
+                case Key.Enter when Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) && ((TabItem) DataContext).HasSearchOpen:
+                    var old = ((TabItem)DataContext).SearchUp;
+                    ((TabItem) DataContext).SearchUp = true;
+                    FindNext();
+                    ((TabItem) DataContext).SearchUp = old;
                     break;
             }
         }

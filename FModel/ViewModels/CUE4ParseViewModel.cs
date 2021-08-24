@@ -330,7 +330,7 @@ namespace FModel.ViewModels
                 }
                 else
                 {
-                    FLogger.AppendError();
+                    FLogger.AppendWarning();
                     FLogger.AppendText($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true);
                 }
 
@@ -344,7 +344,6 @@ namespace FModel.ViewModels
             await _threadWorkerView.Begin(cancellationToken =>
             {
                 VirtualPathCount = Provider.LoadVirtualPaths(cancellationToken);
-#if DEBUG
                 if (VirtualPathCount > 0)
                 {
                     FLogger.AppendInformation();
@@ -352,10 +351,9 @@ namespace FModel.ViewModels
                 }
                 else
                 {
-                    FLogger.AppendError();
+                    FLogger.AppendWarning();
                     FLogger.AppendText("Could not load virtual paths, plugin manifest may not exist", Constants.WHITE, true);
                 }
-#endif
             });
         }
 
