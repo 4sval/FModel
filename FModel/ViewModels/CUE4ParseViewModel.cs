@@ -535,6 +535,16 @@ namespace FModel.ViewModels
                     }
                     break;
                 }
+                case "svg":
+                {
+                    if (Provider.TrySaveAsset(fullPath, out var data))
+                    {
+                        using var stream = new MemoryStream(data) { Position = 0 };
+                        var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                        TabControl.SelectedTab.SetImage(SKImage.FromPicture(svg.Load(stream), new SKSizeI(512, 512)));
+                    }
+                    break;
+                }
                 case "ufont":
                     FLogger.AppendWarning();
                     FLogger.AppendText($"Export '{fileName}' and change its extension if you want it to be an installable font file", Constants.WHITE, true);
