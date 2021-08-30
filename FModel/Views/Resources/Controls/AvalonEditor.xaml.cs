@@ -43,10 +43,11 @@ namespace FModel.Views.Resources.Controls
                     FindNext();
                     break;
                 case Key.Enter when Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) && ((TabItem) DataContext).HasSearchOpen:
-                    var old = ((TabItem)DataContext).SearchUp;
-                    ((TabItem) DataContext).SearchUp = true;
+                    var dc = (TabItem)DataContext;
+                    var old = dc.SearchUp;
+                    dc.SearchUp = true;
                     FindNext();
-                    ((TabItem) DataContext).SearchUp = old;
+                    dc.SearchUp = old;
                     break;
             }
         }

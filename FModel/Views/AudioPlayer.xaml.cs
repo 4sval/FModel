@@ -1,5 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -49,6 +51,9 @@ namespace FModel.Views
 
         private void OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (e.OriginalSource is TextBox)
+                return;
+            
             if (UserSettings.Default.AddAudio.IsTriggered(e.Key))
             {
                 var openFileDialog = new OpenFileDialog
@@ -76,6 +81,18 @@ namespace FModel.Views
         private void OnAudioFileMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             _applicationView.AudioPlayer.PlayPauseOnForce();
+        }
+        
+        private void OnFilterTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is not TextBox textBox)
+                return;
+
+            var filters = textBox.Text.Trim().Split(' ');
+            _applicationView.AudioPlayer.AudioFilesView.Filter = o =>
+            {
+                return o is AudioFile audio && filters.All(x => audio.FileName.Contains(x, StringComparison.OrdinalIgnoreCase));
+            };
         }
     }
 }
