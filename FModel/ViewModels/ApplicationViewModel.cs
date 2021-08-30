@@ -47,19 +47,13 @@ namespace FModel.ViewModels
                 IsReady = Status != EStatusKind.Loading && Status != EStatusKind.Stopping;
             }
         }
-
-        private MenuCommand _menuCommand;
-        public ExtractNewTabCommand ExtractNewTabCommand => _extractNewTabCommand ??= new ExtractNewTabCommand(this);
-        private ExtractNewTabCommand _extractNewTabCommand;
+        
+        public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);
+        private RightClickMenuCommand _rightClickMenuCommand;
         public MenuCommand MenuCommand => _menuCommand ??= new MenuCommand(this);
-        private ExportDataCommand _exportDataCommand;
-        public ExportDataCommand ExportDataCommand => _exportDataCommand ??= new ExportDataCommand(this);
-        private SavePropertyCommand _savePropertyCommand;
-        public SavePropertyCommand SavePropertyCommand => _savePropertyCommand ??= new SavePropertyCommand(this);
-        private SaveTextureCommand _saveTextureCommand;
-        public SaveTextureCommand SaveTextureCommand => _saveTextureCommand ??= new SaveTextureCommand(this);
-        private CopyCommand _copyCommand;
+        private MenuCommand _menuCommand;
         public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
+        private CopyCommand _copyCommand;
 
         public string TitleExtra => $"{CUE4Parse.Game.GetDescription()} ({UserSettings.Default.OverridedGame[CUE4Parse.Game]}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
         public LoadingModesViewModel LoadingModes { get; }
