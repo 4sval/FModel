@@ -1,0 +1,22 @@
+name: Feature Request
+description: Submit a new feature request
+title: "Feature Title"
+labels: [suggestion]
+assignees:
+  - iAmAsval
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request! Before going any further, make sure what you're about to submit doesn't already exist.
+        Your feature request will be closed without explanation if you don't follow the following rules:
+        - This template shouldn't be used to ask how to use FModel or a certain feature FModel provides
+        - We absolutely do not support modding
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Tell us what you want FModel to be able to do
+      placeholder: Please describe with details and how it could be done if possible...
+    validations:
+      required: true
