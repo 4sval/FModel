@@ -90,7 +90,9 @@ namespace FModel
         [Description("Core")]
         Platform,
         [Description("Days Gone")]
-        BendGame
+        BendGame,
+        [Description("Sea of Thieves")]
+        Athena
     }
 
     public enum ELoadingMode
