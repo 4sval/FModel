@@ -205,6 +205,8 @@ namespace FModel.Creator
                     break;
                 case FGame.Dungeons:
                     break;
+                case FGame.Athena:
+                    break;
                 case FGame.g3:
                 {
                     if (viewModel.Provider.TrySaveAsset(_SPELLBREAK_BASE_PATH + _QUADRAT_BOLD + _EXT, out data))
