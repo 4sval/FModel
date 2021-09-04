@@ -25,6 +25,7 @@ namespace FModel.Views.Resources.Converters
                 "MinecraftDungeons" => "Minecraft Dungeons",
                 "shoebill" => "Star Wars: Jedi Fallen Order",
                 "a99769d95d8f400baad1f67ab5dfe508" => "Core",
+                "SeaOfThieves" => "Sea of Thieves",
                 _ => value,
             };
         }
