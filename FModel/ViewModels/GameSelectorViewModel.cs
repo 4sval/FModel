@@ -64,6 +64,7 @@ namespace FModel.ViewModels
             yield return GetRiotGame("VALORANT", "ShooterGame\\Content\\Paks");
             yield return new DetectedGame {GameName = "Valorant [LIVE]", GameDirectory = Constants._VAL_LIVE_TRIGGER};
             yield return GetMojangGame("MinecraftDungeons", "\\dungeons\\dungeons\\Dungeons\\Content\\Paks");
+            yield return GetUnrealEngineGame("Sea Of Thieves", "\\Athena\\Content\\Paks")
         }
 
         private LauncherInstalled _launcherInstalled;
