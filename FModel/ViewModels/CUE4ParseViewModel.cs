@@ -218,7 +218,8 @@ namespace FModel.ViewModels
                 {
                     cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
 
-                    var k = key.Key.Length == 66 ? key.Key.Trim() : Constants.ZERO_64_CHAR;
+                    var k = key.Key.Trim();
+                    if (k.Length != 66) k = Constants.ZERO_64_CHAR;
                     Provider.SubmitKey(key.Guid, new FAesKey(k));
                 }
 

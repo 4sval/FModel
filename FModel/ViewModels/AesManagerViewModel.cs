@@ -56,7 +56,7 @@ namespace FModel.ViewModels
             if (e.PropertyName != "Key" || sender is not FullyObservableCollection<FileItem> collection)
                 return;
 
-            var key = collection[e.CollectionIndex].Key = FixKey(collection[e.CollectionIndex].Key);
+            var key = FixKey(collection[e.CollectionIndex].Key);
             if (e.CollectionIndex == 0)
             {
                 if (!HasChange)
