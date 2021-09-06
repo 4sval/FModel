@@ -218,7 +218,7 @@ namespace FModel.ViewModels
                 {
                     cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
 
-                    var k = key.Key.Length == 66 ? key.Key : Constants.ZERO_64_CHAR;
+                    var k = key.Key.Length == 66 ? key.Key.Trim() : Constants.ZERO_64_CHAR;
                     Provider.SubmitKey(key.Guid, new FAesKey(k));
                 }
 
@@ -481,7 +481,7 @@ namespace FModel.ViewModels
                     }
                     break;
                 }
-                case "bin" when fileName.StartsWith("AssetRegistry"):
+                case "bin" when fileName.EndsWith("AssetRegistry.bin"):
                 {
                     TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))

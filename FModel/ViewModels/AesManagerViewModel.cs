@@ -56,7 +56,7 @@ namespace FModel.ViewModels
             if (e.PropertyName != "Key" || sender is not FullyObservableCollection<FileItem> collection)
                 return;
 
-            var key = FixKey(collection[e.CollectionIndex].Key);
+            var key = collection[e.CollectionIndex].Key = FixKey(collection[e.CollectionIndex].Key);
             if (e.CollectionIndex == 0)
             {
                 if (!HasChange)
@@ -114,7 +114,7 @@ namespace FModel.ViewModels
             if (key.StartsWith("0x"))
                 key = key[2..];
 
-            return "0x" + key.ToUpper();
+            return "0x" + key.ToUpper().Trim();
         }
 
         private IEnumerable<FileItem> EnumerateAesKeys()

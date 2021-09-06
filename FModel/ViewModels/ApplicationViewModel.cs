@@ -47,7 +47,7 @@ namespace FModel.ViewModels
                 IsReady = Status != EStatusKind.Loading && Status != EStatusKind.Stopping;
             }
         }
-        
+
         public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);
         private RightClickMenuCommand _rightClickMenuCommand;
         public MenuCommand MenuCommand => _menuCommand ??= new MenuCommand(this);
@@ -56,6 +56,7 @@ namespace FModel.ViewModels
         private CopyCommand _copyCommand;
 
         public string TitleExtra => $"{CUE4Parse.Game.GetDescription()} ({UserSettings.Default.OverridedGame[CUE4Parse.Game]}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
+
         public LoadingModesViewModel LoadingModes { get; }
         public CustomDirectoriesViewModel CustomDirectories { get; }
         public CUE4ParseViewModel CUE4Parse { get; }

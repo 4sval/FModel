@@ -16,7 +16,7 @@ namespace FModel
         public const string BLUE = "#528BCC";
 
         public const string DONATE_LINK = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EP9SSWG8MW4UC&source=url";
-        public const string ISSUE_LINK = "https://github.com/iAmAsval/FModel/issues/new";
+        public const string ISSUE_LINK = "https://github.com/iAmAsval/FModel/issues/new/choose";
         public const string DISCORD_LINK = "https://discord.gg/fdkNYYQ";
 
         public const string _FN_LIVE_TRIGGER = "fortnite-live.manifest";

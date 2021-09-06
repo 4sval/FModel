@@ -1,0 +1,45 @@
+name: Bug Report
+description: File a bug report
+title: "Bug Title"
+labels: [bug]
+assignees:
+  - iAmAsval
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Keep in mind that screenshots and log files help us a lot so don't forget to provide one or both of those (drag and drop files in a text area).
+        Your bug report will be closed without explanation if you don't follow the following rules:
+        - Bad bug explanation will result in bad support and probably on a negative tone
+        - This template shouldn't be used to ask how to use FModel or a certain feature FModel provides
+        - Bug reports must always use the latest FModel with the latest available version of the game you use
+        - If you can't load files, it's probably because of your AES key, no need to file a report
+        - We absolutely do not support modding
+  - type: input
+    id: game
+    attributes:
+      label: Game
+      placeholder: ex. Fortnite, Valorant, ...
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Error
+      description: Tell us what FModel says about the error, from the console and / or the log file
+      placeholder: ex. [ERR] Could not export 'EditorClientAssetRegistry.bin'
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction steps
+      description: How do you trigger this bug? Please walk us through it step by step.
+      placeholder: |
+        1.
+        2.
+        3.
+        ...
+    validations:
+      required: true

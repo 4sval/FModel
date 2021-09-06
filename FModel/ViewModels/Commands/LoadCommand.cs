@@ -39,12 +39,20 @@ namespace FModel.ViewModels.Commands
         public override async void Execute(LoadingModesViewModel contextViewModel, object parameter)
         {
             if (_applicationView.CUE4Parse.GameDirectory.HasNoFile) return;
+            if (_applicationView.CUE4Parse.Provider.Files.Count <= 0)
+            {
+                FLogger.AppendError();
+                FLogger.AppendText("An encrypted file has been found. In order to decrypt it, please specify a working AES encryption key", Constants.WHITE, true);
+                return;
+            }
+            
             if (_applicationView.CUE4Parse.Game == FGame.FortniteGame &&
                 _applicationView.CUE4Parse.Provider.MappingsContainer == null)
             {
                 FLogger.AppendError();
                 FLogger.AppendText("Mappings could not get pulled, extracting assets might not work properly. If so, press F12 or please restart.", Constants.WHITE, true);
             }
+            
 #if DEBUG
             var loadingTime = Stopwatch.StartNew();
 #endif
