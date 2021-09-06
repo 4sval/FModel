@@ -274,7 +274,11 @@ namespace FModel.Settings
             {
                 FGame.Dungeons, new List<CustomDirectory>
                 {
+                    new("Levels"), "Dungeons/Content/data/Lovika/Levels"),
+                    new("Friendlies"), "Dungeons/Content/Actor/Characters/Friendlies",
+                    new("Skins"), "Dungeons/Content/Actor/Characters/Player/Master/Skins",
                     new("Strings", "Dungeons/Content/Localization/")
+            
                 }
             },
             {
