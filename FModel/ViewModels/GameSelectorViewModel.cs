@@ -104,7 +104,7 @@ namespace FModel.ViewModels
 
         private DetectedGame GetMojangGame(string gameName, string pakDirectory)
         {
-            _launcherSettings ??= GetDataLauncherInstalls<LauncherSettings>("\\.minecraft_dungeons\\launcher_settings.json");
+            _launcherSettings ??= GetDataLauncherInstalls<LauncherSettings>("\\.minecraft\\launcher_settings.json");
             if (_launcherSettings is {ProductLibraryDir: { }})
                 return new DetectedGame {GameName = gameName, GameDirectory = $"{_launcherSettings.ProductLibraryDir}{pakDirectory}"};
 
