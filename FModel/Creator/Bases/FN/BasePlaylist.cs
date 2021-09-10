@@ -38,7 +38,9 @@ namespace FModel.Creator.Bases.FN
                 !_apiEndpointView.FortniteApi.TryGetBytes(playlist.Data.Images.Showcase, out var image))
                 return;
 
-            Preview = Utils.GetBitmap(image).Resize(1024, 512); // Force size to 1024x512 to prevent huge previews.
+            Preview = Utils.GetBitmap(image).ResizeWithRatio(1024, 512);
+            Width = Preview.Width;
+            Height = Preview.Height;
         }
 
         public override SKImage Draw()

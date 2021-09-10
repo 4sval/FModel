@@ -108,13 +108,19 @@ namespace FModel.Creator
         public static SKBitmap GetBitmap(byte[] data) => SKBitmap.Decode(data);
 
         public static SKBitmap Resize(this SKBitmap me, int size) => me.Resize(size, size);
-
         public static SKBitmap Resize(this SKBitmap me, int width, int height)
         {
             var bmp = new SKBitmap(new SKImageInfo(width, height), SKBitmapAllocFlags.ZeroPixels);
             using var pixmap = bmp.PeekPixels();
             me.ScalePixels(pixmap, SKFilterQuality.Medium);
             return bmp;
+        }
+        public static SKBitmap ResizeWithRatio(this SKBitmap me, double width, double height)
+        {
+            var ratioX = width / me.Width;
+            var ratioY = height / me.Height;
+            var ratio = ratioX < ratioY ? ratioX : ratioY;
+            return me.Resize(Convert.ToInt32(me.Width * ratio), Convert.ToInt32(me.Height * ratio));
         }
 
         public static bool TryGetPackageIndexExport<T>(FPackageIndex packageIndex, out T export) where T : UObject
