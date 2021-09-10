@@ -78,6 +78,7 @@ namespace FModel
             await _applicationView.AesManager.UpdateProvider(true);
             await _applicationView.CUE4Parse.InitBenMappings();
             await _applicationView.InitVgmStream();
+            await _applicationView.InitOodle();
 
             if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
                 _discordHandler.Initialize(_applicationView.CUE4Parse.Game);
