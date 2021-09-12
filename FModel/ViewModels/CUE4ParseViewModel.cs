@@ -482,7 +482,7 @@ namespace FModel.ViewModels
                     }
                     break;
                 }
-                case "bin" when fileName.EndsWith("AssetRegistry.bin"):
+                case "bin" when fileName.Contains("AssetRegistry"):
                 {
                     TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))
