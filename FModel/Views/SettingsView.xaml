@@ -323,6 +323,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -369,23 +370,26 @@
                     <TextBlock Grid.Row="12" Grid.Column="0" Text="Auto Save Meshes *" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="12" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="13" Grid.Column="0" Text="Auto Open Sounds *" VerticalAlignment="Center" />
-                    <controls:HotkeyTextBox Grid.Row="13" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
+                    <TextBlock Grid.Row="13" Grid.Column="0" Text="Auto Save Animations *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="13" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                                            HotKey="{Binding AutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="14" Grid.Column="0" Text="Auto Open Sounds *" VerticalAlignment="Center" />
+                    <controls:HotkeyTextBox Grid.Row="14" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
                                             HotKey="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                     
-                    <Separator Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
                     
-                    <TextBlock Grid.Row="15" Grid.Column="0" Text="Add Audio File" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="15" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding AddAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="16" Grid.Column="0" Text="Play / Pause Current Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="16" Grid.Column="0" Text="Add Audio File" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="16" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding PlayPauseAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="17" Grid.Column="0" Text="Previous Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding AddAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="17" Grid.Column="0" Text="Play / Pause Current Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="17" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding PreviousAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="18" Grid.Column="0" Text="Next Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding PlayPauseAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="18" Grid.Column="0" Text="Previous Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="18" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                                            HotKey="{Binding PreviousAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="19" Grid.Column="0" Text="Next Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="19" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding NextAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                 </Grid>
             </DataTemplate>

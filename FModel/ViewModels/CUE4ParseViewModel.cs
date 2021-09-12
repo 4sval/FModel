@@ -13,6 +13,7 @@ using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.Sound;
@@ -616,11 +617,12 @@ namespace FModel.ViewModels
                     SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                     return false;
                 }
-                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials:
                 case UStaticMesh:
                 case USkeletalMesh:
+                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials: // don't trigger model viewer if false
+                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations: // don't trigger model viewer if false
                 {
-                    if (UserSettings.Default.IsAutoSaveMeshes || UserSettings.Default.IsAutoSaveMaterials)
+                    if (UserSettings.Default.IsAutoSaveMaterials || UserSettings.Default.IsAutoSaveMeshes || UserSettings.Default.IsAutoSaveAnimations)
                     {
                         var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat);
                         var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));

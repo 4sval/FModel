@@ -100,6 +100,13 @@ namespace FModel.Settings
             set => SetProperty(ref _isAutoSaveMeshes, value);
         }
 
+        private bool _isAutoSaveAnimations;
+        public bool IsAutoSaveAnimations
+        {
+            get => _isAutoSaveAnimations;
+            set => SetProperty(ref _isAutoSaveAnimations, value);
+        }
+
         private bool _isAutoOpenSounds = true;
         public bool IsAutoOpenSounds
         {
@@ -479,7 +486,14 @@ namespace FModel.Settings
             set => SetProperty(ref _autoSaveMeshes, value);
         }
 
-        private Hotkey _autoOpenSounds = new(Key.F6);
+        private Hotkey _autoSaveAnimations = new(Key.F6);
+        public Hotkey AutoSaveAnimations
+        {
+            get => _autoSaveAnimations;
+            set => SetProperty(ref _autoSaveAnimations, value);
+        }
+
+        private Hotkey _autoOpenSounds = new(Key.F7);
         public Hotkey AutoOpenSounds
         {
             get => _autoOpenSounds;
