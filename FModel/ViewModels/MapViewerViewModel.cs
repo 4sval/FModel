@@ -54,6 +54,13 @@ namespace FModel.ViewModels
             set => SetProperty(ref _brLandmarks, value, "ApolloGameplay_MapLandmarks");
         }
         
+        private bool _brTagsLocation;
+        public bool BrTagsLocation
+        {
+            get => _brTagsLocation;
+            set => SetProperty(ref _brTagsLocation, value, "ApolloGameplay_TagsLocation");
+        }
+        
         private bool _brPatrolsPath;
         public bool BrPatrolsPath
         {
@@ -75,18 +82,25 @@ namespace FModel.ViewModels
             set => SetProperty(ref _brPhonebooths, value, "ApolloGameplay_Phonebooths");
         }
 
-        private bool _brTagsLocation;
-        public bool BrTagsLocation
+        private bool _brVendingMachines;
+        public bool BrVendingMachines
         {
-            get => _brTagsLocation;
-            set => SetProperty(ref _brTagsLocation, value, "ApolloGameplay_TagsLocation");
+            get => _brVendingMachines;
+            set => SetProperty(ref _brVendingMachines, value, "ApolloGameplay_VendingMachines");
         }
         
-        private bool _brAlienArtifacts;
-        public bool BrAlienArtifacts
+        private bool _brFireflies;
+        public bool BrFireflies
         {
-            get => _brAlienArtifacts;
-            set => SetProperty(ref _brAlienArtifacts, value, "ApolloGameplay_AlienArtifacts");
+            get => _brFireflies;
+            set => SetProperty(ref _brFireflies, value, "ApolloGameplay_Fireflies");
+        }
+        
+        private bool _brInks;
+        public bool BrInks
+        {
+            get => _brInks;
+            set => SetProperty(ref _brInks, value, "ApolloGameplay_Inks");
         }
         
         private bool _prLandmarks;
@@ -243,6 +257,9 @@ namespace FModel.ViewModels
                     case "PapayaGameplay_MapLandmarks":
                         await LoadQuestIndicatorData();
                         break;
+                    case "ApolloGameplay_TagsLocation":
+                        await LoadTagsLocation();
+                        break;
                     case "ApolloGameplay_PatrolsPath":
                         await LoadPatrolsPath();
                         break;
@@ -252,11 +269,14 @@ namespace FModel.ViewModels
                     case "ApolloGameplay_Phonebooths":
                         await LoadPhonebooths();
                         break;
-                    case "ApolloGameplay_AlienArtifacts":
-                        await LoadAlienArtifacts();
+                    case "ApolloGameplay_VendingMachines":
+                        await LoadBrVendingMachines();
                         break;
-                    case "ApolloGameplay_TagsLocation":
-                        await LoadTagsLocation();
+                    case "ApolloGameplay_Fireflies":
+                        await LoadFireflies();
+                        break;
+                    case "ApolloGameplay_Inks":
+                        await LoadInks();
                         break;
                     case "PapayaGameplay_CannonballGame":
                         await LoadCannonballGame();
@@ -274,7 +294,7 @@ namespace FModel.ViewModels
                         await LoadWaypoint(EWaypointType.TimeTrials);
                         break;
                     case "PapayaGameplay_VendingMachines":
-                        await LoadVendingMachines();
+                        await LoadPrVendingMachines();
                         break;
                     case "PapayaGameplay_MusicBlocks":
                         await LoadMusicBlocks();
@@ -453,24 +473,20 @@ namespace FModel.ViewModels
                 var patrolsPathBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(patrolsPathBitmap);
 
-                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Apollo_Terrain_NPCLibraryS17_Overlay");
+                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Apollo_Terrain_NPCLibrary_Overlay_S18");
                 foreach (var export in exports)
                 {
-                    if (export is not { } uObject) continue;
-                    if (!uObject.ExportType.Equals("FortAthenaPatrolPath", StringComparison.OrdinalIgnoreCase) ||
-                        !uObject.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags") ||
-                        !uObject.TryGetValue(out FPackageIndex[] patrolPoints, "PatrolPoints")) continue;
+                    if (!export.ExportType.Equals("FortAthenaPatrolPath", StringComparison.OrdinalIgnoreCase) ||
+                        !export.TryGetValue(out FPackageIndex[] patrolPoints, "PatrolPoints")) continue;
 
-                    var displayName = gameplayTags.GameplayTags[0].Text.SubstringAfterLast(".");
-                    if (displayName.Equals("Generic", StringComparison.OrdinalIgnoreCase)) continue;
-
-                    if (!Utils.TryGetPackageIndexExport(patrolPoints[0], out uObject) ||
+                    if (!Utils.TryGetPackageIndexExport(patrolPoints[0], out UObject uObject) ||
                         !uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
                         !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                     var path = new SKPath();
                     var vector = GetMapPosition(relativeLocation, _brRadius);
+                    var displayName = export.Name["FortAthenaPatrolPath_Tandem_S18_".Length..];
                     path.MoveTo(vector.X, vector.Y);
 
                     for (var i = 1; i < patrolPoints.Length; i++)
@@ -504,12 +520,11 @@ namespace FModel.ViewModels
                 var exports = Utils.LoadExports("/PapayaGameplay/LevelOverlays/PapayaGameplay_CannonballGame");
                 foreach (var export in exports)
                 {
-                    if (export is not { } uObject) continue;
-                    if (!uObject.ExportType.Equals("BP_CannonballGame_Target_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("CannonballGame_VehicleSpawner_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!export.ExportType.Equals("BP_CannonballGame_Target_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("CannonballGame_VehicleSpawner_C", StringComparison.OrdinalIgnoreCase)) continue;
 
-                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
-                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                    if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                     var displayName = Utils.GetLocalizedResource("", "D998BEF44F051E0885C6C58565934BEA", "Cannonball");
@@ -535,12 +550,11 @@ namespace FModel.ViewModels
                 var exports = Utils.LoadExports("/PapayaGameplay/LevelOverlays/PapayaGameplay_SkydiveGame");
                 foreach (var export in exports)
                 {
-                    if (export is not { } uObject) continue;
-                    if (!uObject.ExportType.Equals("BP_Waypoint_Papaya_Skydive_Start_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!export.ExportType.Equals("BP_Waypoint_Papaya_Skydive_Start_C", StringComparison.OrdinalIgnoreCase)) continue;
 
-                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
-                        !uObject.TryGetValue(out FText minigameActivityName, "MinigameActivityName") ||
-                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                    if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !export.TryGetValue(out FText minigameActivityName, "MinigameActivityName") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                     var vector = GetMapPosition(relativeLocation, _prRadius);
@@ -566,11 +580,10 @@ namespace FModel.ViewModels
                 var exports = Utils.LoadExports("/PapayaGameplay/LevelOverlays/PapayaGameplay_ShootingTargets");
                 foreach (var export in exports)
                 {
-                    if (export is not { } uObject) continue;
-                    if (!uObject.ExportType.Equals("PapayaShootingTarget_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!export.ExportType.Equals("PapayaShootingTarget_C", StringComparison.OrdinalIgnoreCase)) continue;
 
-                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
-                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                    if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                     var vector = GetMapPosition(relativeLocation, _prRadius);
@@ -614,21 +627,20 @@ namespace FModel.ViewModels
                 var exports = Utils.LoadExports($"/PapayaGameplay/LevelOverlays/{file}");
                 foreach (var export in exports)
                 {
-                    if (export is not { } uObject) continue;
-                    if (!uObject.ExportType.Equals("BP_Waypoint_Parent_Papaya_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!export.ExportType.Equals("BP_Waypoint_Parent_Papaya_C", StringComparison.OrdinalIgnoreCase)) continue;
 
-                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                    if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
                         !Utils.TryGetPackageIndexExport(rootComponent, out UObject root) ||
                         !root.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
                     
                     var vector = GetMapPosition(relativeLocation, _prRadius);
-                    if (path.IsEmpty || uObject.TryGetValue(out bool startsTrial, "StartsTrial") && startsTrial)
+                    if (path.IsEmpty || export.TryGetValue(out bool startsTrial, "StartsTrial") && startsTrial)
                     {
                         path.MoveTo(vector.X, vector.Y);
                         c.DrawText(name, vector.X, vector.Y - 12.5F, _fillPaint);
                         c.DrawText(name, vector.X, vector.Y - 12.5F, _textPaint);
                     }
-                    else if (uObject.TryGetValue(out bool endsTrial, "EndsTrial") && endsTrial)
+                    else if (export.TryGetValue(out bool endsTrial, "EndsTrial") && endsTrial)
                     {
                         path.LineTo(vector.X, vector.Y);
                         c.DrawPath(path, _pathPaint);
@@ -641,7 +653,7 @@ namespace FModel.ViewModels
             });
         }
 
-        private async Task LoadVendingMachines()
+        private async Task LoadPrVendingMachines()
         {
             await _threadWorkerView.Begin(_ =>
             {
@@ -653,27 +665,26 @@ namespace FModel.ViewModels
                 var exports = Utils.LoadExports("/PapayaGameplay/LevelOverlays/PapayaGameplay_VendingMachines");
                 foreach (var export in exports)
                 {
-                    if (export is not { } uObject) continue;
-                    if (!uObject.ExportType.Equals("B_Papaya_VendingMachine_Boat_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_BoogieBomb_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_Burger_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_CrashPad_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_FishingPole_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_Grappler_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_Jetpack_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_PaintGrenade_Blue_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_PaintGrenade_Red_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_PaintLauncher_Blue_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_PaintLauncher_Red_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_PlungerBow_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_Quad_C", StringComparison.OrdinalIgnoreCase) &&
-                        !uObject.ExportType.Equals("B_Papaya_VendingMachine_Tomato_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!export.ExportType.Equals("B_Papaya_VendingMachine_Boat_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_BoogieBomb_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_Burger_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_CrashPad_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_FishingPole_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_Grappler_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_Jetpack_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_PaintGrenade_Blue_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_PaintGrenade_Red_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_PaintLauncher_Blue_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_PaintLauncher_Red_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_PlungerBow_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_Quad_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Papaya_VendingMachine_Tomato_C", StringComparison.OrdinalIgnoreCase)) continue;
 
-                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                    if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
                         !Utils.TryGetPackageIndexExport(rootComponent, out UObject root) ||
                         !root.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
-                    var name = uObject.ExportType.SubstringAfter("B_Papaya_VendingMachine_").SubstringBeforeLast("_C");
+                    var name = export.ExportType.SubstringAfter("B_Papaya_VendingMachine_").SubstringBeforeLast("_C");
                     var vector = GetMapPosition(relativeLocation, _prRadius);
                     c.DrawPoint(vector.X, vector.Y, _pathPaint);
                     if (!set.Add(name)) continue;
@@ -698,11 +709,10 @@ namespace FModel.ViewModels
                 var exports = Utils.LoadExports("/PapayaGameplay/LevelOverlays/PapayaGameplay_MusicBlocks");
                 foreach (var export in exports)
                 {
-                    if (export is not { } uObject) continue;
-                    if (!uObject.ExportType.Equals("MusicBlock_Piano3_Papaya_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!export.ExportType.Equals("MusicBlock_Piano3_Papaya_C", StringComparison.OrdinalIgnoreCase)) continue;
 
-                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
-                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                    if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                     var vector = GetMapPosition(relativeLocation, _prRadius);
@@ -729,12 +739,11 @@ namespace FModel.ViewModels
                 var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Apollo_Terrain_NPCLibrary_Stations_UpgradeBenches");
                 foreach (var export in exports)
                 {
-                    if (export is not { } uObject) continue;
-                    if (!uObject.ExportType.Equals("B_Athena_Spawner_UpgradeStation_C", StringComparison.OrdinalIgnoreCase)) continue;
-                    var displayName = uObject.Name["B_Athena_Spawner_".Length..];
+                    if (!export.ExportType.Equals("B_Athena_Spawner_UpgradeStation_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    var displayName = export.Name["B_Athena_Spawner_".Length..];
 
-                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
-                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                    if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                     var vector = GetMapPosition(relativeLocation, _brRadius);
@@ -758,12 +767,11 @@ namespace FModel.ViewModels
                 var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Apollo_Terrain_NPCLibrary_Stations_Phonebooths");
                 foreach (var export in exports)
                 {
-                    if (export is not { } uObject) continue;
-                    if (!uObject.ExportType.Equals("B_Athena_Spawner_Payphone_C", StringComparison.OrdinalIgnoreCase)) continue;
-                    var displayName = uObject.Name["B_Athena_Spawner_".Length..];
+                    if (!export.ExportType.Equals("B_Athena_Spawner_Payphone_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    var displayName = export.Name["B_Athena_Spawner_".Length..];
 
-                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
-                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                    if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                     var vector = GetMapPosition(relativeLocation, _brRadius);
@@ -776,23 +784,23 @@ namespace FModel.ViewModels
             });
         }
         
-        private async Task LoadAlienArtifacts()
+        private async Task LoadBrVendingMachines()
         {
             await _threadWorkerView.Begin(_ =>
             {
                 _fillPaint.StrokeWidth = 5;
-                var alienArtifactsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using var c = new SKCanvas(alienArtifactsBitmap);
+                var vendingMachinesBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(vendingMachinesBitmap);
 
-                var exports = Utils.LoadExports("/BattlepassS17/Maps/Apollo_ItemCollect_S17_Overlay");
+                var exports = Utils.LoadExports("FortniteGame/Content/Athena/Apollo/Maps/Special/ItemCollections/Apollo_Item_VendingMachines");
                 foreach (var export in exports)
                 {
-                    if (export is not { } uObject) continue;
-                    if (!uObject.ExportType.Equals("BP_S17_AlienArtifact_Variant1_C", StringComparison.OrdinalIgnoreCase)) continue;
-                    var displayName = uObject.Name;
+                    if (!export.ExportType.Equals("B_Athena_Spawner_VendingMachine_MendingOnly_C", StringComparison.OrdinalIgnoreCase) &&
+                        !export.ExportType.Equals("B_Athena_Spawner_VendingMachine_Random_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    var displayName = $"{(export.ExportType.Contains("Mending") ? "MM" : "WOM")}_{export.Name["B_Athena_Spawner_VendingMachine_Random".Length..]}";
 
-                    if (!uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
-                        !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                    if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                     var vector = GetMapPosition(relativeLocation, _brRadius);
@@ -801,7 +809,74 @@ namespace FModel.ViewModels
                     c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
                 }
 
-                _bitmaps[0]["ApolloGameplay_AlienArtifacts"] = new MapLayer {Layer = alienArtifactsBitmap, IsEnabled = false};
+                _bitmaps[0]["ApolloGameplay_VendingMachines"] = new MapLayer {Layer = vendingMachinesBitmap, IsEnabled = false};
+            });
+        }
+
+        private async Task LoadInks()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                _fillPaint.StrokeWidth = 5;
+                var inksBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(inksBitmap);
+                
+                if (!Utils.TryLoadObject("BattlePassS18/Maps/BattlepassS18_LevelOverlay_Config.BattlepassS18_LevelOverlay_Config", out UObject config) ||
+                    !config.TryGetValue(out FStructFallback[] overlayList, "OverlayList") || overlayList.Length < 1)
+                    return;
+
+                foreach (var overlay in overlayList)
+                {
+                    if (!overlay.TryGetValue(out FSoftObjectPath overlayWorld, "OverlayWorld")) continue;
+                    
+                    var exports = Utils.LoadExports(overlayWorld.AssetPathName.Text.SubstringBeforeLast("."));
+                    foreach (var export in exports)
+                    {
+                        if (!export.ExportType.StartsWith("BP_S18_ToonInk_CollectibleColor", StringComparison.OrdinalIgnoreCase)) continue;
+
+                        if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                            !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
+                            !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+                        
+                        if (!export.TryGetValue(out FPackageIndex questIconComponent, "QuestIconComponent") ||
+                            !Utils.TryGetPackageIndexExport(questIconComponent, out uObject) ||
+                            !uObject.TryGetValue(out FStructFallback mapIconData, "MapIconData") ||
+                            !mapIconData.TryGetValue(out FPackageIndex mapIcon, "MapIcon")) continue;
+
+                        var vector = GetMapPosition(relativeLocation, _brRadius);
+                        c.DrawBitmap(Utils.GetBitmap(mapIcon), vector.X, vector.Y);
+                    }
+                }
+
+                _bitmaps[0]["ApolloGameplay_Inks"] = new MapLayer {Layer = inksBitmap, IsEnabled = false};
+            });
+        }
+        
+        private async Task LoadFireflies()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                _fillPaint.StrokeWidth = 5;
+                var firefliesBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(firefliesBitmap);
+
+                var exports = Utils.LoadExports("FortniteGame/Content/Athena/Apollo/Maps/Special/ItemCollections/Apollo_Item_Fireflies");
+                foreach (var export in exports)
+                {
+                    if (!export.ExportType.Equals("BP_BGACSpawner_Fireflies_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    var displayName = $"FF_{export.Name["BP_BGACSpawnerFireFlies".Length..]}";
+
+                    if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                        !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
+                        !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+
+                    var vector = GetMapPosition(relativeLocation, _brRadius);
+                    c.DrawPoint(vector.X, vector.Y, _pathPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
+                    c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
+                }
+
+                _bitmaps[0]["ApolloGameplay_Fireflies"] = new MapLayer {Layer = firefliesBitmap, IsEnabled = false};
             });
         }
 

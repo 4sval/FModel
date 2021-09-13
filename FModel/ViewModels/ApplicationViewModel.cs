@@ -1,4 +1,4 @@
-﻿using FModel.Extensions;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -61,7 +61,7 @@ namespace FModel.ViewModels
         public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
         private CopyCommand _copyCommand;
 
-        public string TitleExtra => $"{CUE4Parse.Game.GetDescription()} ({UserSettings.Default.OverridedGame[CUE4Parse.Game]}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
+        public string TitleExtra => $"{UserSettings.Default.UpdateMode} - {CUE4Parse.Game.GetDescription()} ({UserSettings.Default.OverridedGame[CUE4Parse.Game]}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
         public LoadingModesViewModel LoadingModes { get; }
         public CustomDirectoriesViewModel CustomDirectories { get; }
