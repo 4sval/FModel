@@ -85,7 +85,13 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="Export Data" Command="{Binding ExportDataCommand}" CommandParameter="{Binding SelectedItems, ElementName=AssetsListName}">
+                <MenuItem Header="Export Data" Command="{Binding RightClickMenuCommand}">
+                    <MenuItem.CommandParameter>
+                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                            <Binding Source="Assets_Export_Data" />
+                            <Binding Path="SelectedItems" ElementName="AssetsListName" />
+                        </MultiBinding>
+                    </MenuItem.CommandParameter>
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -94,7 +100,13 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Save Property" Command="{Binding SavePropertyCommand}" CommandParameter="{Binding SelectedItems, ElementName=AssetsListName}">
+                <MenuItem Header="Save Property" Command="{Binding RightClickMenuCommand}">
+                    <MenuItem.CommandParameter>
+                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                            <Binding Source="Assets_Save_Properties" />
+                            <Binding Path="SelectedItems" ElementName="AssetsListName" />
+                        </MultiBinding>
+                    </MenuItem.CommandParameter>
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -103,7 +115,13 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Save Texture" Command="{Binding SaveTextureCommand}" CommandParameter="{Binding SelectedItems, ElementName=AssetsListName}">
+                <MenuItem Header="Save Texture" Command="{Binding RightClickMenuCommand}">
+                    <MenuItem.CommandParameter>
+                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                            <Binding Source="Assets_Save_Texture" />
+                            <Binding Path="SelectedItems" ElementName="AssetsListName" />
+                        </MultiBinding>
+                    </MenuItem.CommandParameter>
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -549,36 +567,6 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <!-- <MenuItem Header="Save Material" Command="{Binding DataContext.RightClickMenuCommand}"> -->
-                                            <!--     <MenuItem.CommandParameter> -->
-                                            <!--         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}"> -->
-                                            <!--             <Binding Source="Assets_Save_Material" /> -->
-                                            <!--             <Binding Path="SelectedItems" /> -->
-                                            <!--         </MultiBinding> -->
-                                            <!--     </MenuItem.CommandParameter> -->
-                                            <!--     <MenuItem.Icon> -->
-                                            <!--         <Viewbox Width="16" Height="16"> -->
-                                            <!--             <Canvas Width="24" Height="24"> -->
-                                            <!--                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MaterialIcon}" /> -->
-                                            <!--             </Canvas> -->
-                                            <!--         </Viewbox> -->
-                                            <!--     </MenuItem.Icon> -->
-                                            <!-- </MenuItem> -->
-                                            <!-- <MenuItem Header="Save Mesh" Command="{Binding DataContext.RightClickMenuCommand}"> -->
-                                            <!--     <MenuItem.CommandParameter> -->
-                                            <!--         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}"> -->
-                                            <!--             <Binding Source="Assets_Save_Mesh" /> -->
-                                            <!--             <Binding Path="SelectedItems" /> -->
-                                            <!--         </MultiBinding> -->
-                                            <!--     </MenuItem.CommandParameter> -->
-                                            <!--     <MenuItem.Icon> -->
-                                            <!--         <Viewbox Width="16" Height="16"> -->
-                                            <!--             <Canvas Width="24" Height="24"> -->
-                                            <!--                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MeshIcon}" /> -->
-                                            <!--             </Canvas> -->
-                                            <!--         </Viewbox> -->
-                                            <!--     </MenuItem.Icon> -->
-                                            <!-- </MenuItem> -->
                                             <Separator />
                                             <MenuItem Header="Copy">
                                                 <MenuItem.Icon>
