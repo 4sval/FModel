@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CUE4Parse-Fortnite", "..\CU
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CUE4Parse-Conversion", "..\CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj", "{D0E1E8F7-F56D-469A-8E24-C2439B9FFD83}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CUE4Parse-Natives", "..\CUE4Parse\CUE4Parse-Natives\builddir\CUE4Parse-Natives.vcxproj", "{5A57D90F-44F6-3F94-AC61-66E23DB2160E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{D0E1E8F7-F56D-469A-8E24-C2439B9FFD83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0E1E8F7-F56D-469A-8E24-C2439B9FFD83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0E1E8F7-F56D-469A-8E24-C2439B9FFD83}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A57D90F-44F6-3F94-AC61-66E23DB2160E}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{5A57D90F-44F6-3F94-AC61-66E23DB2160E}.Debug|Any CPU.Build.0 = Debug|x64
-		{5A57D90F-44F6-3F94-AC61-66E23DB2160E}.Release|Any CPU.ActiveCfg = Release|x64
-		{5A57D90F-44F6-3F94-AC61-66E23DB2160E}.Release|Any CPU.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
