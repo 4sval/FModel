@@ -10,7 +10,6 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.i18N;
 using CUE4Parse.UE4.Objects.Core.Math;
-using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Creator;
 using FModel.Extensions;
@@ -96,11 +95,11 @@ namespace FModel.ViewModels
             set => SetProperty(ref _brFireflies, value, "ApolloGameplay_Fireflies");
         }
         
-        private bool _brInks;
-        public bool BrInks
+        private bool _brCorruptionZones;
+        public bool BrCorruptionZones
         {
-            get => _brInks;
-            set => SetProperty(ref _brInks, value, "ApolloGameplay_Inks");
+            get => _brCorruptionZones;
+            set => SetProperty(ref _brCorruptionZones, value, "ApolloGameplay_CorruptionZones");
         }
         
         private bool _prLandmarks;
@@ -228,8 +227,14 @@ namespace FModel.ViewModels
 
             foreach (var (key, value) in _bitmaps[MapIndex])
             {
-                if (!value.IsEnabled || !withMap && key == _FIRST_BITMAP) continue;
-                c.DrawBitmap(value.Layer, new SKRect(0, 0, _widthHeight, _widthHeight));
+                if (!value.IsEnabled || !withMap && key == _FIRST_BITMAP)
+                    continue;
+
+                SKPaint p = null;
+                if (key == "ApolloGameplay_CorruptionZones")
+                    p = new SKPaint { BlendMode = SKBlendMode.Color };
+                
+                c.DrawBitmap(value.Layer, new SKRect(0, 0, _widthHeight, _widthHeight), p);
             }
 
             return ret;
@@ -275,8 +280,8 @@ namespace FModel.ViewModels
                     case "ApolloGameplay_Fireflies":
                         await LoadFireflies();
                         break;
-                    case "ApolloGameplay_Inks":
-                        await LoadInks();
+                    case "ApolloGameplay_CorruptionZones":
+                        await LoadCorruptionZones();
                         break;
                     case "PapayaGameplay_CannonballGame":
                         await LoadCannonballGame();
@@ -387,7 +392,7 @@ namespace FModel.ViewModels
                     !mapMaterial.TryGetValue(out FStructFallback cachedExpressionData, "CachedExpressionData") ||
                     !cachedExpressionData.TryGetValue(out FStructFallback parameters, "Parameters") ||
                     !parameters.TryGetValue(out UTexture2D[] textureValues, "TextureValues")) return;
-                
+
                 _bitmaps[0][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(textureValues[0]), IsEnabled = true};
                 _brMiniMapImage = GetImageSource(_bitmaps[0][_FIRST_BITMAP].Layer);
             });
@@ -812,45 +817,6 @@ namespace FModel.ViewModels
                 _bitmaps[0]["ApolloGameplay_VendingMachines"] = new MapLayer {Layer = vendingMachinesBitmap, IsEnabled = false};
             });
         }
-
-        private async Task LoadInks()
-        {
-            await _threadWorkerView.Begin(_ =>
-            {
-                _fillPaint.StrokeWidth = 5;
-                var inksBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using var c = new SKCanvas(inksBitmap);
-                
-                if (!Utils.TryLoadObject("BattlePassS18/Maps/BattlepassS18_LevelOverlay_Config.BattlepassS18_LevelOverlay_Config", out UObject config) ||
-                    !config.TryGetValue(out FStructFallback[] overlayList, "OverlayList") || overlayList.Length < 1)
-                    return;
-
-                foreach (var overlay in overlayList)
-                {
-                    if (!overlay.TryGetValue(out FSoftObjectPath overlayWorld, "OverlayWorld")) continue;
-                    
-                    var exports = Utils.LoadExports(overlayWorld.AssetPathName.Text.SubstringBeforeLast("."));
-                    foreach (var export in exports)
-                    {
-                        if (!export.ExportType.StartsWith("BP_S18_ToonInk_CollectibleColor", StringComparison.OrdinalIgnoreCase)) continue;
-
-                        if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
-                            !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
-                            !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
-                        
-                        if (!export.TryGetValue(out FPackageIndex questIconComponent, "QuestIconComponent") ||
-                            !Utils.TryGetPackageIndexExport(questIconComponent, out uObject) ||
-                            !uObject.TryGetValue(out FStructFallback mapIconData, "MapIconData") ||
-                            !mapIconData.TryGetValue(out FPackageIndex mapIcon, "MapIcon")) continue;
-
-                        var vector = GetMapPosition(relativeLocation, _brRadius);
-                        c.DrawBitmap(Utils.GetBitmap(mapIcon), vector.X, vector.Y);
-                    }
-                }
-
-                _bitmaps[0]["ApolloGameplay_Inks"] = new MapLayer {Layer = inksBitmap, IsEnabled = false};
-            });
-        }
         
         private async Task LoadFireflies()
         {
@@ -885,11 +851,11 @@ namespace FModel.ViewModels
             await _threadWorkerView.Begin(_ =>
             {
                 _fillPaint.StrokeWidth = 5;
-                var tagsLocationBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using var c = new SKCanvas(tagsLocationBitmap);
-                
                 if (!Utils.TryLoadObject("FortniteGame/Content/Quests/QuestTagToLocationDataRows.QuestTagToLocationDataRows", out UDataTable locationData))
                     return;
+                
+                var tagsLocationBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(tagsLocationBitmap);
 
                 foreach (var (key, uObject) in locationData.RowMap)
                 {
@@ -910,6 +876,37 @@ namespace FModel.ViewModels
                 }
 
                 _bitmaps[0]["ApolloGameplay_TagsLocation"] = new MapLayer {Layer = tagsLocationBitmap, IsEnabled = false};
+            });
+        }
+        
+        private async Task LoadCorruptionZones()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                _fillPaint.StrokeWidth = 5;
+                if (!Utils.TryLoadObject("FortniteGame/Content/Athena/Apollo/Environments/Landscape/Materials/Corruption/T_InitialCorruptionAreas.T_InitialCorruptionAreas", out UTexture2D corruption)) 
+                    return;
+
+                var overlay = Utils.GetBitmap(corruption);
+                var width = overlay.Width;
+                var height = overlay.Height;
+                var rotatedBitmap = new SKBitmap(width, height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+
+                using var c = new SKCanvas(rotatedBitmap);
+                c.Clear();
+                c.Translate(0, width);
+                c.RotateDegrees(-90);
+                c.DrawRect(0, 0, width, height, new SKPaint
+                {
+                    IsAntialias = true, FilterQuality = SKFilterQuality.High,
+                    Shader = SKShader.CreateCompose(SKShader.CreateSweepGradient(new SKPoint(width / 2f, height / 2f),new [] {
+                        SKColor.Parse("#352176"), SKColor.Parse("#fd78fa"), SKColor.Parse("#f0b843"), SKColor.Parse("#e54a21")
+                    }, null), SKShader.CreatePerlinNoiseTurbulence(0.05f, 0.05f, 4, 0), SKBlendMode.SrcOver)
+                });
+                c.DrawBitmap(overlay, 0, 0, new SKPaint { BlendMode = SKBlendMode.Darken });
+                rotatedBitmap.ClearToTransparent();
+
+                _bitmaps[0]["ApolloGameplay_CorruptionZones"] = new MapLayer {Layer = rotatedBitmap.Resize(_widthHeight, _widthHeight), IsEnabled = false};
             });
         }
     }

@@ -107,6 +107,13 @@ namespace FModel.Creator
         public static SKBitmap GetBitmap(UTexture2D texture) => texture.IsVirtual ? null : SKBitmap.Decode(texture.Decode()?.Encode());
         public static SKBitmap GetBitmap(byte[] data) => SKBitmap.Decode(data);
 
+        public static SKBitmap ResizeWithRatio(this SKBitmap me, double width, double height)
+        {
+            var ratioX = width / me.Width;
+            var ratioY = height / me.Height;
+            var ratio = ratioX < ratioY ? ratioX : ratioY;
+            return me.Resize(Convert.ToInt32(me.Width * ratio), Convert.ToInt32(me.Height * ratio));
+        }
         public static SKBitmap Resize(this SKBitmap me, int size) => me.Resize(size, size);
         public static SKBitmap Resize(this SKBitmap me, int width, int height)
         {
@@ -115,12 +122,14 @@ namespace FModel.Creator
             me.ScalePixels(pixmap, SKFilterQuality.Medium);
             return bmp;
         }
-        public static SKBitmap ResizeWithRatio(this SKBitmap me, double width, double height)
-        {
-            var ratioX = width / me.Width;
-            var ratioY = height / me.Height;
-            var ratio = ratioX < ratioY ? ratioX : ratioY;
-            return me.Resize(Convert.ToInt32(me.Width * ratio), Convert.ToInt32(me.Height * ratio));
+        
+        public static void ClearToTransparent(this SKBitmap me) {
+            var colors = me.Pixels;
+            for (var n = 0; n < colors.Length; n++) {
+                if (colors[n] != SKColors.Black) continue;
+                colors[n] = SKColors.Transparent;
+            }
+            me.Pixels = colors;
         }
 
         public static bool TryGetPackageIndexExport<T>(FPackageIndex packageIndex, out T export) where T : UObject
