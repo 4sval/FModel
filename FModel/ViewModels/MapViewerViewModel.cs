@@ -102,6 +102,13 @@ namespace FModel.ViewModels
             set => SetProperty(ref _brCorruptionZones, value, "ApolloGameplay_CorruptionZones");
         }
         
+        private bool _brCubeMovements;
+        public bool BrCubeMovements
+        {
+            get => _brCubeMovements;
+            set => SetProperty(ref _brCubeMovements, value, "ApolloGameplay_CubeMovements");
+        }
+        
         private bool _prLandmarks;
         public bool PrLandmarks
         {
@@ -282,6 +289,9 @@ namespace FModel.ViewModels
                         break;
                     case "ApolloGameplay_CorruptionZones":
                         await LoadCorruptionZones();
+                        break;
+                    case "ApolloGameplay_CubeMovements":
+                        await LoadCubeMovements();
                         break;
                     case "PapayaGameplay_CannonballGame":
                         await LoadCannonballGame();
@@ -908,6 +918,75 @@ namespace FModel.ViewModels
 
                 _bitmaps[0]["ApolloGameplay_CorruptionZones"] = new MapLayer {Layer = rotatedBitmap.Resize(_widthHeight, _widthHeight), IsEnabled = false};
             });
+        }
+        
+        /// <summary>
+        /// FortniteGame/Plugins/GameFeatures/CorruptionGameplay/Content/CorruptionGameplay_LevelOverlay.uasset
+        /// too lazy to filters
+        /// </summary>
+        private async Task LoadCubeMovements()
+        {
+            await _threadWorkerView.Begin(_ =>
+            {
+                _fillPaint.StrokeWidth = 5;
+                var cubeMovementsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(cubeMovementsBitmap);
+                
+                if (!Utils.TryLoadObject("/CorruptionGameplay/Levels/CorruptionGameplay_ApolloTerrain_Overlay.BP_CubeMovementGradient_2", out UObject overlay) ||
+                    !overlay.TryGetValue(out FSoftObjectPath[] cubeMovementStaticPaths, "cubeMovementStaticPaths") || cubeMovementStaticPaths.Length < 1)
+                    return;
+                
+                var oldColor = _pathPaint.Color;
+                _pathPaint.Color = SKColors.Purple;
+                foreach (var cubeMovementStaticPath in cubeMovementStaticPaths)
+                {
+                    var objectPath = cubeMovementStaticPath.AssetPathName.Text.SubstringBeforeLast(".");
+                    var objectName = cubeMovementStaticPath.SubPathString.SubstringAfterLast(".");
+                    if (!Utils.TryLoadObject($"{objectPath}.{objectName}", out UObject staticPath))
+                        continue;
+
+                    DrawCubeMovements(c, staticPath);
+                }
+                
+                if (Utils.TryLoadObject("/CorruptionGameplay/Levels/CubeMovement/Apollo_CM_Gold_Overlay.CM_Spline_Gold", out UObject goldPath))
+                {
+                    _pathPaint.Color = SKColors.Gold;
+                    DrawCubeMovements(c, goldPath);
+                }
+
+                _pathPaint.Color = oldColor;
+                _bitmaps[0]["ApolloGameplay_CubeMovements"] = new MapLayer {Layer = cubeMovementsBitmap, IsEnabled = false};
+            });
+        }
+
+        private void DrawCubeMovements(SKCanvas c, UObject staticPath)
+        {
+            if (!staticPath.TryGetValue(out FStructFallback[] pathTravelers, "PathTravelers") || pathTravelers.Length < 1 ||
+                !pathTravelers[0].TryGetValue(out FPackageIndex[] generatedSplinesArray, "GeneratedSplinesArray") || generatedSplinesArray.Length < 1 ||
+                !pathTravelers[0].TryGetValue(out FStructFallback[] stepMetaData, "StepMetaData") || stepMetaData.Length < 1)
+                return;
+
+            var bDone = false;
+            var path = new SKPath();
+            for (var i = 0; i < generatedSplinesArray.Length; i++)
+            {
+                if (!stepMetaData[i].TryGetValue(out bool bSkipStep, "bSkipStep") || bSkipStep ||
+                    !Utils.TryGetPackageIndexExport(generatedSplinesArray[i], out UObject uObject) ||
+                    !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
+                        
+                var vector = GetMapPosition(relativeLocation, _brRadius);
+                if (!bDone)
+                {
+                    path.MoveTo(vector.X, vector.Y);
+                    bDone = true;
+                }
+                else
+                {
+                    path.LineTo(vector.X, vector.Y);
+                }
+            }
+                    
+            c.DrawPath(path, _pathPaint);
         }
     }
 }

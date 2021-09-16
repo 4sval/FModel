@@ -42,6 +42,8 @@
                     <CheckBox Content="Corruption Zones" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrCorruptionZones}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}"
                               ToolTip="Saving the image with Corruption Zones enabled will smooth these ugly sharp edges"/>
+                    <CheckBox Content="Cube Movements" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrCubeMovements}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="PrTemplate">
