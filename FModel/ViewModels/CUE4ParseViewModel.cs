@@ -349,7 +349,7 @@ namespace FModel.ViewModels
                 if (VirtualPathCount > 0)
                 {
                     FLogger.AppendInformation();
-                    FLogger.AppendText($"{VirtualPathCount} virtual paths loaded!", Constants.WHITE, true);
+                    FLogger.AppendText($"{VirtualPathCount} virtual paths loaded", Constants.WHITE, true);
                 }
                 else
                 {
