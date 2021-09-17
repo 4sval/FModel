@@ -162,6 +162,7 @@ namespace FModel.Creator
                 case "PlaylistUserOptionColorEnum":
                 case "PlaylistUserOptionFloatEnum":
                 case "PlaylistUserOptionFloatRange":
+                case "PlaylistUserTintedIconIntEnum":
                 case "PlaylistUserOptionPrimaryAsset":
                 case "PlaylistUserOptionCollisionProfileEnum":
                     creator = new BaseUserControl(_object, _style);
