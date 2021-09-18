@@ -943,15 +943,15 @@ namespace FModel.ViewModels
                     var objectPath = cubeMovementStaticPath.AssetPathName.Text.SubstringBeforeLast(".");
                     var objectName = cubeMovementStaticPath.SubPathString.SubstringAfterLast(".");
                     if (!Utils.TryLoadObject($"{objectPath}.{objectName}", out UObject staticPath))
-                        continue;
-
-                    DrawCubeMovements(c, staticPath);
+                        return;
+                
+                    DrawCubeMovements(c, staticPath, true);
                 }
                 
                 if (Utils.TryLoadObject("/CorruptionGameplay/Levels/CubeMovement/Apollo_CM_Gold_Overlay.CM_Spline_Gold", out UObject goldPath))
                 {
                     _pathPaint.Color = SKColors.Gold;
-                    DrawCubeMovements(c, goldPath);
+                    DrawCubeMovements(c, goldPath, false);
                 }
 
                 _pathPaint.Color = oldColor;
@@ -959,30 +959,51 @@ namespace FModel.ViewModels
             });
         }
 
-        private void DrawCubeMovements(SKCanvas c, UObject staticPath)
+        private void DrawCubeMovements(SKCanvas c, UObject staticPath, bool fixLocation)
         {
             if (!staticPath.TryGetValue(out FStructFallback[] pathTravelers, "PathTravelers") || pathTravelers.Length < 1 ||
                 !pathTravelers[0].TryGetValue(out FPackageIndex[] generatedSplinesArray, "GeneratedSplinesArray") || generatedSplinesArray.Length < 1 ||
                 !pathTravelers[0].TryGetValue(out FStructFallback[] stepMetaData, "StepMetaData") || stepMetaData.Length < 1)
                 return;
 
+            UObject uObject;
+            var parentRelativeLocation = new FVector();
+            if (fixLocation)
+            {
+                if (!pathTravelers[0].TryGetValue(out FPackageIndex pathTraveler, "PathTraveler") ||
+                    !Utils.TryGetPackageIndexExport(pathTraveler, out uObject) ||
+                    !uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
+                    !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
+                    !uObject.TryGetValue(out parentRelativeLocation, "RelativeLocation"))
+                    return;
+            }
+
             var bDone = false;
             var path = new SKPath();
             for (var i = 0; i < generatedSplinesArray.Length; i++)
             {
                 if (!stepMetaData[i].TryGetValue(out bool bSkipStep, "bSkipStep") || bSkipStep ||
-                    !Utils.TryGetPackageIndexExport(generatedSplinesArray[i], out UObject uObject) ||
+                    !Utils.TryGetPackageIndexExport(generatedSplinesArray[i], out uObject) ||
                     !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
-                        
-                var vector = GetMapPosition(relativeLocation, _brRadius);
-                if (!bDone)
+
+                if (!uObject.TryGetValue(out FStructFallback splineCurves, "SplineCurves") ||
+                    !splineCurves.TryGetValue(out FStructFallback positions, "Position") ||
+                    !positions.TryGetValue(out FStructFallback[] positionPoints, "Points")) continue;
+
+                for (var j = 0; j < positionPoints.Length; j++)
                 {
-                    path.MoveTo(vector.X, vector.Y);
-                    bDone = true;
-                }
-                else
-                {
-                    path.LineTo(vector.X, vector.Y);
+                    if (!positionPoints[j].TryGetValue(out FVector position, "OutVal")) continue;
+
+                    var vector = GetMapPosition(parentRelativeLocation + relativeLocation + position, _brRadius);
+                    if (!bDone)
+                    {
+                        path.MoveTo(vector.X, vector.Y);
+                        bDone = true;
+                    }
+                    else
+                    {
+                        path.LineTo(vector.X, vector.Y);
+                    }
                 }
             }
                     
