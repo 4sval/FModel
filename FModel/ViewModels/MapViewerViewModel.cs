@@ -931,11 +931,11 @@ namespace FModel.ViewModels
                 _fillPaint.StrokeWidth = 5;
                 var cubeMovementsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(cubeMovementsBitmap);
-                
+
                 if (!Utils.TryLoadObject("/CorruptionGameplay/Levels/CorruptionGameplay_ApolloTerrain_Overlay.BP_CubeMovementGradient_2", out UObject overlay) ||
                     !overlay.TryGetValue(out FSoftObjectPath[] cubeMovementStaticPaths, "cubeMovementStaticPaths") || cubeMovementStaticPaths.Length < 1)
                     return;
-                
+
                 var oldColor = _pathPaint.Color;
                 _pathPaint.Color = SKColors.Purple;
                 foreach (var cubeMovementStaticPath in cubeMovementStaticPaths)
@@ -947,7 +947,7 @@ namespace FModel.ViewModels
                 
                     DrawCubeMovements(c, staticPath, true);
                 }
-                
+
                 if (Utils.TryLoadObject("/CorruptionGameplay/Levels/CubeMovement/Apollo_CM_Gold_Overlay.CM_Spline_Gold", out UObject goldPath))
                 {
                     _pathPaint.Color = SKColors.Gold;
@@ -962,8 +962,7 @@ namespace FModel.ViewModels
         private void DrawCubeMovements(SKCanvas c, UObject staticPath, bool fixLocation)
         {
             if (!staticPath.TryGetValue(out FStructFallback[] pathTravelers, "PathTravelers") || pathTravelers.Length < 1 ||
-                !pathTravelers[0].TryGetValue(out FPackageIndex[] generatedSplinesArray, "GeneratedSplinesArray") || generatedSplinesArray.Length < 1 ||
-                !pathTravelers[0].TryGetValue(out FStructFallback[] stepMetaData, "StepMetaData") || stepMetaData.Length < 1)
+                !pathTravelers[0].TryGetValue(out FPackageIndex[] generatedSplinesArray, "GeneratedSplinesArray") || generatedSplinesArray.Length < 1)
                 return;
 
             UObject uObject;
@@ -980,21 +979,20 @@ namespace FModel.ViewModels
 
             var bDone = false;
             var path = new SKPath();
-            for (var i = 0; i < generatedSplinesArray.Length; i++)
+            foreach (var generatedSpline in generatedSplinesArray)
             {
-                if (!stepMetaData[i].TryGetValue(out bool bSkipStep, "bSkipStep") || bSkipStep ||
-                    !Utils.TryGetPackageIndexExport(generatedSplinesArray[i], out uObject) ||
+                if (!Utils.TryGetPackageIndexExport(generatedSpline, out uObject) ||
                     !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                 if (!uObject.TryGetValue(out FStructFallback splineCurves, "SplineCurves") ||
                     !splineCurves.TryGetValue(out FStructFallback positions, "Position") ||
                     !positions.TryGetValue(out FStructFallback[] positionPoints, "Points")) continue;
 
-                for (var j = 0; j < positionPoints.Length; j++)
+                foreach (var positionPoint in positionPoints)
                 {
-                    if (!positionPoints[j].TryGetValue(out FVector position, "OutVal")) continue;
+                    if (!positionPoint.TryGetValue(out FVector point, "OutVal")) continue;
 
-                    var vector = GetMapPosition(parentRelativeLocation + relativeLocation + position, _brRadius);
+                    var vector = GetMapPosition(parentRelativeLocation + relativeLocation + point, _brRadius);
                     if (!bDone)
                     {
                         path.MoveTo(vector.X, vector.Y);
@@ -1006,7 +1004,7 @@ namespace FModel.ViewModels
                     }
                 }
             }
-                    
+
             c.DrawPath(path, _pathPaint);
         }
     }
