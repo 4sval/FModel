@@ -97,7 +97,7 @@ namespace FModel
             if (messageBox.Result == MessageBoxResult.Custom && (EErrorKind) messageBox.ButtonPressed.Id != EErrorKind.Ignore)
             {
                 if ((EErrorKind) messageBox.ButtonPressed.Id == EErrorKind.ResetSettings)
-                    UserSettings.Delete();
+                    UserSettings.Default = new UserSettings();
                 
                 ApplicationService.ApplicationView.Restart();
             }

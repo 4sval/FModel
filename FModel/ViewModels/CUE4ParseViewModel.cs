@@ -6,8 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using AdonisUI.Controls;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
@@ -15,6 +13,7 @@ using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.Sound;
@@ -22,13 +21,11 @@ using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.Localization;
-using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
-using CUE4Parse_Conversion.Materials;
-using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse_Conversion.Textures;
 using EpicManifestParser.Objects;
@@ -67,6 +64,7 @@ namespace FModel.ViewModels
         public SearchViewModel SearchVm { get; }
         public TabControlViewModel TabControl { get; }
         public int LocalizedResourcesCount { get; set; }
+        public int VirtualPathCount { get; set; }
 
         public CUE4ParseViewModel(string gameDirectory)
         {
@@ -75,20 +73,31 @@ namespace FModel.ViewModels
                 case Constants._FN_LIVE_TRIGGER:
                 {
                     Game = FGame.FortniteGame;
-                    Provider = new StreamedFileProvider("FortniteLive", true, UserSettings.Default.OverridedGame[Game],
-                        UserSettings.Default.OverridedUEVersion[Game]);
+                    Provider = new StreamedFileProvider("FortniteLive", true,
+                        new VersionContainer(
+                            UserSettings.Default.OverridedGame[Game],
+                            UserSettings.Default.OverridedUEVersion[Game],
+                            UserSettings.Default.OverridedCustomVersions[Game],
+                            UserSettings.Default.OverridedOptions[Game]));
                     break;
                 }
                 case Constants._VAL_LIVE_TRIGGER:
                 {
                     Game = FGame.ShooterGame;
-                    Provider = new StreamedFileProvider("ValorantLive", true, UserSettings.Default.OverridedGame[Game],
-                        UserSettings.Default.OverridedUEVersion[Game]);
+                    Provider = new StreamedFileProvider("ValorantLive", true,
+                        new VersionContainer(
+                            UserSettings.Default.OverridedGame[Game],
+                            UserSettings.Default.OverridedUEVersion[Game],
+                            UserSettings.Default.OverridedCustomVersions[Game],
+                            UserSettings.Default.OverridedOptions[Game]));
                     break;
                 }
                 default:
                 {
                     Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
+                    var versions = new VersionContainer(
+                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game],
+                        UserSettings.Default.OverridedCustomVersions[Game], UserSettings.Default.OverridedOptions[Game]);
 
                     if (Game == FGame.StateOfDecay2)
                         Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
@@ -96,9 +105,9 @@ namespace FModel.ViewModels
                                 new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
                                 new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
                             },
-                            SearchOption.AllDirectories, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+                            SearchOption.AllDirectories, true, versions);
                     else
-                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game]);
+                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versions);
 
                     break;
                 }
@@ -142,7 +151,7 @@ namespace FModel.ViewModels
 
                                 var manifest = new Manifest(manifestData, new ManifestOptions
                                 {
-                                    ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/ChunksV3/", UriKind.Absolute),
+                                    ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/ChunksV4/", UriKind.Absolute),
                                     ChunkCacheDirectory = chunksDir
                                 });
 
@@ -210,7 +219,8 @@ namespace FModel.ViewModels
                 {
                     cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
 
-                    var k = key.Key.Length == 66 ? key.Key : Constants.ZERO_64_CHAR;
+                    var k = key.Key.Trim();
+                    if (k.Length != 66) k = Constants.ZERO_64_CHAR;
                     Provider.SubmitKey(key.Guid, new FAesKey(k));
                 }
 
@@ -322,11 +332,30 @@ namespace FModel.ViewModels
                 }
                 else
                 {
-                    FLogger.AppendError();
+                    FLogger.AppendWarning();
                     FLogger.AppendText($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true);
                 }
 
                 Utils.Typefaces = new Typefaces(this);
+            });
+        }
+
+        public async Task LoadVirtualPaths()
+        {
+            if (VirtualPathCount > 0) return;
+            await _threadWorkerView.Begin(cancellationToken =>
+            {
+                VirtualPathCount = Provider.LoadVirtualPaths(cancellationToken);
+                if (VirtualPathCount > 0)
+                {
+                    FLogger.AppendInformation();
+                    FLogger.AppendText($"{VirtualPathCount} virtual paths loaded", Constants.WHITE, true);
+                }
+                else
+                {
+                    FLogger.AppendWarning();
+                    FLogger.AppendText("Could not load virtual paths, plugin manifest may not exist", Constants.WHITE, true);
+                }
             });
         }
 
@@ -379,22 +408,36 @@ namespace FModel.ViewModels
         public void Extract(string fullPath, bool addNewTab = false, bool bulkSave = false)
         {
             Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", fullPath);
+
+            var directory = fullPath.SubstringBeforeLast('/');
+            var fileName = fullPath.SubstringAfterLast('/');
+            var ext = fullPath.SubstringAfterLast('.').ToLower();
+
             if (addNewTab && TabControl.CanAddTabs)
             {
-                TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'));
+                TabControl.AddTab(fileName, directory);
             }
             else
             {
-                TabControl.SelectedTab.Header = fullPath.SubstringAfterLast('/');
-                TabControl.SelectedTab.Directory = fullPath.SubstringBeforeLast('/');
+                TabControl.SelectedTab.Header = fileName;
+                TabControl.SelectedTab.Directory = directory;
             }
 
-            var ext = fullPath.SubstringAfterLast('.').ToLower();
             TabControl.SelectedTab.ResetDocumentText();
             TabControl.SelectedTab.ScrollTrigger = null;
             TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(ext);
             switch (ext)
             {
+                case "uasset":
+                case "umap":
+                {
+                    var exports = Provider.LoadObjectExports(fullPath);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), bulkSave);
+
+                    if (bulkSave || !exports.Any(CheckExport))
+                        TabControl.SelectedTab.Image = null;
+                    break;
+                }
                 case "ini":
                 case "txt":
                 case "log":
@@ -418,7 +461,6 @@ namespace FModel.ViewModels
 
                         TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), bulkSave);
                     }
-
                     break;
                 }
                 case "locmeta":
@@ -429,7 +471,6 @@ namespace FModel.ViewModels
                         var metadata = new FTextLocalizationMetaDataResource(archive);
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), bulkSave);
                     }
-
                     break;
                 }
                 case "locres":
@@ -440,10 +481,9 @@ namespace FModel.ViewModels
                         var locres = new FTextLocalizationResource(archive);
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), bulkSave);
                     }
-
                     break;
                 }
-                case "bin":
+                case "bin" when fileName.Contains("AssetRegistry"):
                 {
                     TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))
@@ -451,7 +491,6 @@ namespace FModel.ViewModels
                         var registry = new FAssetRegistryState(archive);
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), bulkSave);
                     }
-
                     break;
                 }
                 case "bnk":
@@ -467,7 +506,6 @@ namespace FModel.ViewModels
                             SaveAndPlaySound(fullPath.SubstringBeforeWithLast("/") + name, "WEM", data);
                         }
                     }
-
                     break;
                 }
                 case "wem":
@@ -486,7 +524,6 @@ namespace FModel.ViewModels
                         var header = new FOodleDictionaryArchive(archive).Header;
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), bulkSave);
                     }
-
                     break;
                 }
                 case "png":
@@ -496,35 +533,44 @@ namespace FModel.ViewModels
                     if (Provider.TrySaveAsset(fullPath, out var data))
                     {
                         using var stream = new MemoryStream(data) {Position = 0};
-                        SetImage(SKImage.FromBitmap(SKBitmap.Decode(stream)));
+                        TabControl.SelectedTab.SetImage(SKImage.FromBitmap(SKBitmap.Decode(stream)));
                     }
-
+                    break;
+                }
+                case "svg":
+                {
+                    if (Provider.TrySaveAsset(fullPath, out var data))
+                    {
+                        using var stream = new MemoryStream(data) { Position = 0 };
+                        var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                        TabControl.SelectedTab.SetImage(SKImage.FromPicture(svg.Load(stream), new SKSizeI(512, 512)));
+                    }
                     break;
                 }
                 case "ufont":
                     FLogger.AppendWarning();
-                    FLogger.AppendText($"Export '{fullPath.SubstringAfterLast('/')}' and change its extension if you want it to be an installable font file", Constants.WHITE, true);
+                    FLogger.AppendText($"Export '{fileName}' and change its extension if you want it to be an installable font file", Constants.WHITE, true);
+                    break;
+                case "otf":
+                case "ttf":
+                    FLogger.AppendWarning();
+                    FLogger.AppendText($"Export '{fileName}' if you want it to be an installable font file", Constants.WHITE, true);
                     break;
                 case "ushaderbytecode":
                 case "ushadercode":
                 {
                     TabControl.SelectedTab.Image = null;
-
                     if (Provider.TryCreateReader(fullPath, out var archive))
                     {
                         var ar = new FShaderCodeArchive(archive);
                         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), bulkSave);
                     }
-
                     break;
                 }
                 default:
                 {
-                    var exports = Provider.LoadObjectExports(fullPath);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), bulkSave);
-
-                    if (bulkSave || !exports.Any(CheckExport))
-                        TabControl.SelectedTab.Image = null;
+                    FLogger.AppendWarning();
+                    FLogger.AppendText($"The file '{fileName}' is of an unknown type. If this is a mistake, we are already working to fix it!", Constants.WHITE, true);
                     break;
                 }
             }
@@ -550,19 +596,14 @@ namespace FModel.ViewModels
                 ExportData(fullPath);
         }
 
-        private bool CheckExport(UObject export) // return if this loads an image
+        private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
         {
             switch (export)
             {
                 case UTexture2D texture:
                 {
-                    var bNearest = false;
-                    if (texture.TryGetValue(out FName trigger, "LODGroup", "Filter") && !trigger.IsNone)
-                        bNearest = trigger.Text.EndsWith("TEXTUREGROUP_Pixels2D", StringComparison.OrdinalIgnoreCase) ||
-                                   trigger.Text.EndsWith("TF_Nearest", StringComparison.OrdinalIgnoreCase);
-
-                    TabControl.SelectedTab.ImageRender = bNearest ? BitmapScalingMode.NearestNeighbor : BitmapScalingMode.Linear;
-                    SetImage(texture.Decode(bNearest));
+                    TabControl.SelectedTab.RenderNearestNeighbor = texture.bRenderNearestNeighbor;
+                    TabControl.SelectedTab.SetImage(texture.Decode());
                     return true;
                 }
                 case UAkMediaAssetData:
@@ -576,26 +617,37 @@ namespace FModel.ViewModels
                     SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                     return false;
                 }
-                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials:
-                case UStaticMesh when UserSettings.Default.IsAutoSaveMeshes:
-                case USkeletalMesh when UserSettings.Default.IsAutoSaveMeshes:
+                case UStaticMesh:
+                case USkeletalMesh:
+                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials: // don't trigger model viewer if false
+                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations: // don't trigger model viewer if false
                 {
-                    var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat);
-                    var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
-                    if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
+                    if (UserSettings.Default.IsAutoSaveMaterials || UserSettings.Default.IsAutoSaveMeshes || UserSettings.Default.IsAutoSaveAnimations)
                     {
-                        Log.Information("Successfully saved {FileName}", savedFileName);
-                        FLogger.AppendInformation();
-                        FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+                        var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat);
+                        var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
+                        if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
+                        {
+                            Log.Information("Successfully saved {FileName}", savedFileName);
+                            FLogger.AppendInformation();
+                            FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+                        }
+                        else
+                        {
+                            Log.Error("{FileName} could not be saved", savedFileName);
+                            FLogger.AppendError();
+                            FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
+                        }
                     }
                     else
                     {
-                        Log.Error("{FileName} could not be saved", savedFileName);
-                        FLogger.AppendError();
-                        FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
+                            modelViewer.Load(export);
+                        });
                     }
-
-                    return false;
+                    return true;
                 }
                 default:
                 {
@@ -603,25 +655,10 @@ namespace FModel.ViewModels
                     if (!package.TryConstructCreator(out var creator)) return false;
 
                     creator.ParseForInfo();
-                    SetImage(creator.Draw());
+                    TabControl.SelectedTab.SetImage(creator.Draw());
                     return true;
                 }
             }
-        }
-
-        private void SetImage(SKImage img)
-        {
-            using var stream = img.Encode().AsStream();
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.StreamSource = stream;
-            image.EndInit();
-            image.Freeze();
-
-            TabControl.SelectedTab.Image = image;
-            if (UserSettings.Default.IsAutoSaveTextures)
-                TabControl.SelectedTab.SaveImage(true);
         }
 
         private void SaveAndPlaySound(string fullPath, string ext, byte[] data)

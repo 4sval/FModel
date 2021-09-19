@@ -15,7 +15,7 @@
             <Setter Property="Title" Value="FModel" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
-                    <Setter Property="Title" Value="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, StringFormat={}FModel - {0}}" />
+                    <Setter Property="Title" Value="{Binding DataContext.TitleExtra, RelativeSource={RelativeSource Self}, StringFormat={}FModel {0}}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -85,7 +85,13 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="Export Data" Command="{Binding ExportDataCommand}" CommandParameter="{Binding SelectedItems, ElementName=AssetsListName}">
+                <MenuItem Header="Export Data" Command="{Binding RightClickMenuCommand}">
+                    <MenuItem.CommandParameter>
+                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                            <Binding Source="Assets_Export_Data" />
+                            <Binding Path="SelectedItems" ElementName="AssetsListName" />
+                        </MultiBinding>
+                    </MenuItem.CommandParameter>
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -94,7 +100,13 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Save Property" Command="{Binding SavePropertyCommand}" CommandParameter="{Binding SelectedItems, ElementName=AssetsListName}">
+                <MenuItem Header="Save Property" Command="{Binding RightClickMenuCommand}">
+                    <MenuItem.CommandParameter>
+                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                            <Binding Source="Assets_Save_Properties" />
+                            <Binding Path="SelectedItems" ElementName="AssetsListName" />
+                        </MultiBinding>
+                    </MenuItem.CommandParameter>
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -103,7 +115,13 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Save Texture" Command="{Binding SaveTextureCommand}" CommandParameter="{Binding SelectedItems, ElementName=AssetsListName}">
+                <MenuItem Header="Save Texture" Command="{Binding RightClickMenuCommand}">
+                    <MenuItem.CommandParameter>
+                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                            <Binding Source="Assets_Save_Texture" />
+                            <Binding Path="SelectedItems" ElementName="AssetsListName" />
+                        </MultiBinding>
+                    </MenuItem.CommandParameter>
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -135,6 +153,9 @@
                     <MenuItem Header="Save Meshes" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />
+                    <MenuItem Header="Save Animations" IsCheckable="True" StaysOpenOnClick="True"
+                              InputGestureText="{Binding AutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}"
+                              IsChecked="{Binding IsAutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}" />
                     <MenuItem Header="Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
@@ -194,7 +215,7 @@
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource GitHubIcon}" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource NoteIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
@@ -304,99 +325,143 @@
                         </DockPanel>
                     </TabItem>
                     <TabItem Style="{StaticResource TabItemFillSpace}" Header="Folders">
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Top" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" MaxWidth="375"
-                                       Text="Open folders to navigate through your loaded files. Badges indicate how many assets are in the folder. To better optimize things, it is recommended to use your hotkeys, to quickly switch between tabs." />
-                            <Grid DockPanel.Dock="Top">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-
-                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" />
-                                <TreeView Grid.Row="1" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
-                                    <TreeView.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Extract Folder's Assets" Click="OnFolderExtractClick">
-                                                <MenuItem.Icon>
-                                                    <Viewbox Width="16" Height="16">
-                                                        <Canvas Width="24" Height="24">
-                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
-                                                        </Canvas>
-                                                    </Viewbox>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <MenuItem Header="Export Folder's Assets Data" Click="OnFolderExportClick">
-                                                <MenuItem.Icon>
-                                                    <Viewbox Width="16" Height="16">
-                                                        <Canvas Width="24" Height="24">
-                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExportIcon}" />
-                                                        </Canvas>
-                                                    </Viewbox>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <MenuItem Header="Save Folder's Assets Properties" Click="OnFolderSaveClick">
-                                                <MenuItem.Icon>
-                                                    <Viewbox Width="16" Height="16">
-                                                        <Canvas Width="24" Height="24">
-                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
-                                                        </Canvas>
-                                                    </Viewbox>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <Separator />
-                                            <MenuItem Header="Save Directory" Click="OnSaveDirectoryClick">
-                                                <MenuItem.Icon>
-                                                    <Viewbox Width="16" Height="16">
-                                                        <Canvas Width="24" Height="24">
-                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DirectoriesAddIcon}" />
-                                                        </Canvas>
-                                                    </Viewbox>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <MenuItem Header="Copy Directory Path" Click="OnCopyDirectoryPathClick">
-                                                <MenuItem.Icon>
-                                                    <Viewbox Width="16" Height="16">
-                                                        <Canvas Width="24" Height="24">
-                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource CopyIcon}" />
-                                                        </Canvas>
-                                                    </Viewbox>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                        </ContextMenu>
-                                    </TreeView.ContextMenu>
-                                </TreeView>
-                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
-                                <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
-                                    <Grid HorizontalAlignment="Stretch">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Assets Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Folders Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Package, ElementName=AssetsFolderName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Included In Package" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=AssetsFolderName, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Package Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Version, ElementName=AssetsFolderName, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Package Version" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                    </Grid>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="5" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <Image Source="/FModel;component/Resources/label.png"
+                                           Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
+                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}'{0}' has {1} folders and {2} files">
+                                                <Binding Path="SelectedItem.Header" ElementName="AssetsFolderName" FallbackValue="None" />
+                                                <Binding Path="SelectedItem.FoldersView.Count" ElementName="AssetsFolderName" FallbackValue="0" />
+                                                <Binding Path="SelectedItem.AssetsList.Assets.Count" ElementName="AssetsFolderName" FallbackValue="0" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Bring Selected Folder To View" Padding="4"
+                                            Command="{Binding MenuCommand}" CommandParameter="{Binding SelectedItem, ElementName=AssetsFolderName}">
+                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource LocateMeIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Button>
+                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Expand All (not appropriate for huge amount of folders)" Padding="4"
+                                            Command="{Binding MenuCommand}" CommandParameter="ToolBox_Expand_All">
+                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource UnfoldIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Button>
+                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Collapse All (not appropriate for huge amount of folders)" Padding="4"
+                                            Command="{Binding MenuCommand}" CommandParameter="ToolBox_Collapse_All">
+                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource FoldIcon}"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
-                        </DockPanel>
+                            <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
+                            <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
+                                <TreeView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Extract Folder's Assets" Click="OnFolderExtractClick">
+                                            <MenuItem.Icon>
+                                                <Viewbox Width="16" Height="16">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Export Folder's Assets Data" Click="OnFolderExportClick">
+                                            <MenuItem.Icon>
+                                                <Viewbox Width="16" Height="16">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExportIcon}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Save Folder's Assets Properties" Click="OnFolderSaveClick">
+                                            <MenuItem.Icon>
+                                                <Viewbox Width="16" Height="16">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator />
+                                        <MenuItem Header="Save Directory" Click="OnSaveDirectoryClick">
+                                            <MenuItem.Icon>
+                                                <Viewbox Width="16" Height="16">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DirectoriesAddIcon}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy Directory Path" Click="OnCopyDirectoryPathClick">
+                                            <MenuItem.Icon>
+                                                <Viewbox Width="16" Height="16">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource CopyIcon}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </TreeView.ContextMenu>
+                            </TreeView>
+                            <Separator Grid.Row="3" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
+                            <StackPanel Grid.Row="4" Orientation="Vertical" Margin="0 0 0 5">
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Assets Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Folders Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Package, ElementName=AssetsFolderName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Included In Package" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=AssetsFolderName, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Package Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Version, ElementName=AssetsFolderName, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Package Version" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
                     </TabItem>
                     <TabItem Style="{StaticResource TabItemFillSpace}"
                              Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
@@ -442,7 +507,13 @@
                                 <ListBox Grid.Row="1" x:Name="AssetsListName" Style="{StaticResource AssetsListBox}" PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick">
                                     <ListBox.ContextMenu>
                                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                            <MenuItem Header="Extract in New Tab" Command="{Binding DataContext.ExtractNewTabCommand}" CommandParameter="{Binding SelectedItems}">
+                                            <MenuItem Header="Extract in New Tab" Command="{Binding DataContext.RightClickMenuCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                        <Binding Source="Assets_Extract_New_Tab" />
+                                                        <Binding Path="SelectedItems" />
+                                                    </MultiBinding>
+                                                </MenuItem.CommandParameter>
                                                 <MenuItem.Icon>
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
@@ -451,7 +522,13 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Export Data" Command="{Binding DataContext.ExportDataCommand}" CommandParameter="{Binding SelectedItems}">
+                                            <MenuItem Header="Export Data" Command="{Binding DataContext.RightClickMenuCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                        <Binding Source="Assets_Export_Data" />
+                                                        <Binding Path="SelectedItems" />
+                                                    </MultiBinding>
+                                                </MenuItem.CommandParameter>
                                                 <MenuItem.Icon>
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
@@ -460,7 +537,13 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Save Properties" Command="{Binding DataContext.SavePropertyCommand}" CommandParameter="{Binding SelectedItems}">
+                                            <MenuItem Header="Save Properties" Command="{Binding DataContext.RightClickMenuCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                        <Binding Source="Assets_Save_Properties" />
+                                                        <Binding Path="SelectedItems" />
+                                                    </MultiBinding>
+                                                </MenuItem.CommandParameter>
                                                 <MenuItem.Icon>
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
@@ -469,7 +552,13 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Save Texture" Command="{Binding DataContext.SaveTextureCommand}" CommandParameter="{Binding SelectedItems}">
+                                            <MenuItem Header="Save Texture" Command="{Binding DataContext.RightClickMenuCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                        <Binding Source="Assets_Save_Texture" />
+                                                        <Binding Path="SelectedItems" />
+                                                    </MultiBinding>
+                                                </MenuItem.CommandParameter>
                                                 <MenuItem.Icon>
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
@@ -770,6 +859,19 @@
                             </Style>
                         </StatusBarItem.Style>
                         <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="MSH" />
+                    </StatusBarItem>
+
+                    <StatusBarItem Width="35" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Animations Enabled">
+                        <StatusBarItem.Style>
+                            <Style TargetType="StatusBarItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StatusBarItem.Style>
+                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="ANM" />
                     </StatusBarItem>
 
                     <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Sounds Enabled">

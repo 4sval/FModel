@@ -1,8 +1,3 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -10,10 +5,21 @@ using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
+
 using Ionic.Zip;
+
+using Oodle.NET;
+
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
+
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using OodleCUE4 = CUE4Parse.Compression.Oodle;
 
 namespace FModel.ViewModels
 {
@@ -48,20 +54,15 @@ namespace FModel.ViewModels
             }
         }
 
-        private MenuCommand _menuCommand;
-        public ExtractNewTabCommand ExtractNewTabCommand => _extractNewTabCommand ??= new ExtractNewTabCommand(this);
-        private ExtractNewTabCommand _extractNewTabCommand;
+        public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);
+        private RightClickMenuCommand _rightClickMenuCommand;
         public MenuCommand MenuCommand => _menuCommand ??= new MenuCommand(this);
-        private ExportDataCommand _exportDataCommand;
-        public ExportDataCommand ExportDataCommand => _exportDataCommand ??= new ExportDataCommand(this);
-        private SavePropertyCommand _savePropertyCommand;
-        public SavePropertyCommand SavePropertyCommand => _savePropertyCommand ??= new SavePropertyCommand(this);
-        private SaveTextureCommand _saveTextureCommand;
-        public SaveTextureCommand SaveTextureCommand => _saveTextureCommand ??= new SaveTextureCommand(this);
-        private CopyCommand _copyCommand;
+        private MenuCommand _menuCommand;
         public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
+        private CopyCommand _copyCommand;
 
-        public string TitleExtra => $"{CUE4Parse.Game.GetDescription()} ({UserSettings.Default.OverridedGame[CUE4Parse.Game]}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
+        public string TitleExtra => $"{UserSettings.Default.UpdateMode} - {CUE4Parse.Game.GetDescription()} ({UserSettings.Default.OverridedGame[CUE4Parse.Game]}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
+
         public LoadingModesViewModel LoadingModes { get; }
         public CustomDirectoriesViewModel CustomDirectories { get; }
         public CUE4ParseViewModel CUE4Parse { get; }
@@ -69,6 +70,8 @@ namespace FModel.ViewModels
         public AesManagerViewModel AesManager { get; }
         public AudioPlayerViewModel AudioPlayer { get; }
         public MapViewerViewModel MapViewer { get; }
+        public ModelViewerViewModel ModelViewer { get; }
+        private OodleCompressor _oodle;
 
         public ApplicationViewModel()
         {
@@ -89,6 +92,7 @@ namespace FModel.ViewModels
             AesManager = new AesManagerViewModel(CUE4Parse);
             MapViewer = new MapViewerViewModel(CUE4Parse);
             AudioPlayer = new AudioPlayerViewModel();
+            ModelViewer = new ModelViewerViewModel();
             Status = EStatusKind.Ready;
         }
 
@@ -151,10 +155,10 @@ namespace FModel.ViewModels
 
         public async Task InitVgmStream()
         {
-            var vgmZipFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "test.zip");
+            var vgmZipFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-win.zip");
             if (File.Exists(vgmZipFilePath)) return;
 
-            await ApplicationService.ApiEndpointView.BenbotApi.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/test.zip", vgmZipFilePath);
+            await ApplicationService.ApiEndpointView.BenbotApi.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
             if (new FileInfo(vgmZipFilePath).Length > 0)
             {
                 var zip = ZipFile.Read(vgmZipFilePath);
@@ -165,6 +169,34 @@ namespace FModel.ViewModels
             {
                 FLogger.AppendError();
                 FLogger.AppendText("Could not download VgmStream", Constants.WHITE, true);
+            }
+        }
+
+        public async Task InitOodle()
+        {
+            var dataDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
+            var oodlePath = Path.Combine(dataDir.FullName, OodleCUE4.OODLE_DLL_NAME);
+
+            if (File.Exists(OodleCUE4.OODLE_DLL_NAME))
+            {
+                File.Move(OodleCUE4.OODLE_DLL_NAME, oodlePath, true);
+            }
+            else if (!File.Exists(oodlePath))
+            {
+                var result = await OodleCUE4.DownloadOodleDll(oodlePath);
+                if (!result) return;
+            }
+
+            if (File.Exists("oo2core_8_win64.dll"))
+                File.Delete("oo2core_8_win64.dll");
+
+            _oodle = new OodleCompressor(oodlePath);
+
+            unsafe
+            {
+                OodleCUE4.DecompressFunc = (bufferPtr, bufferSize, outputPtr, outputSize, a, b, c, d, e, f, g, h, i, threadModule) =>
+                    _oodle.Decompress(new IntPtr(bufferPtr), bufferSize, new IntPtr(outputPtr), outputSize,
+                                      (OodleLZ_FuzzSafe)a, (OodleLZ_CheckCRC)b, (OodleLZ_Verbosity)c, d, e, f, g, h, i, (OodleLZ_Decode_ThreadPhase)threadModule);
             }
         }
     }

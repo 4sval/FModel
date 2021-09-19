@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
+using FModel.Views.Resources.Controls;
 using Ookii.Dialogs.Wpf;
 
 namespace FModel.Views
@@ -25,6 +26,11 @@ namespace FModel.Views
                 treeItem.IsSelected = i == UserSettings.Default.LastOpenedSettingTab;
                 i++;
             }
+        }
+
+        private async void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            await _applicationView.SettingsView.InitPresets(_applicationView.CUE4Parse.Provider.GameName);
         }
 
         private async void OnClick(object sender, RoutedEventArgs e)
@@ -81,6 +87,39 @@ namespace FModel.Views
                 UserSettings.Default.LastOpenedSettingTab = i;
                 break;
             }
+        }
+
+        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is not ComboBox {SelectedItem: string s}) return;
+            if (s == Constants._NO_PRESET_TRIGGER) _applicationView.SettingsView.ResetPreset();
+            else _applicationView.SettingsView.SwitchPreset(s);
+        }
+
+        private void OpenCustomVersions(object sender, RoutedEventArgs e)
+        {
+            var dictionary = new DictionaryEditor(
+                _applicationView.SettingsView.SelectedCustomVersions,
+                "Versioning Configuration (Custom Versions)",
+                _applicationView.SettingsView.EnableElements);
+            var result = dictionary.ShowDialog();
+            if (!result.HasValue || !result.Value)
+                return;
+
+            _applicationView.SettingsView.SelectedCustomVersions = dictionary.CustomVersions;
+        }
+
+        private void OpenOptions(object sender, RoutedEventArgs e)
+        {
+            var dictionary = new DictionaryEditor(
+                _applicationView.SettingsView.SelectedOptions,
+                "Versioning Configuration (Options)",
+                _applicationView.SettingsView.EnableElements);
+            var result = dictionary.ShowDialog();
+            if (!result.HasValue || !result.Value)
+                return;
+            
+            _applicationView.SettingsView.SelectedOptions = dictionary.Options;
         }
     }
 }

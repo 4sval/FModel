@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Threading;
 using AdonisUI.Controls;
 using FModel.Framework;
+using FModel.Services;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
@@ -13,7 +15,7 @@ namespace FModel.ViewModels.Commands
         {
         }
 
-        public override void Execute(ApplicationViewModel contextViewModel, object parameter)
+        public override async void Execute(ApplicationViewModel contextViewModel, object parameter)
         {
             switch (parameter)
             {
@@ -45,7 +47,8 @@ namespace FModel.ViewModels.Commands
                     Process.Start(new ProcessStartInfo {FileName = Constants.DONATE_LINK, UseShellExecute = true});
                     break;
                 case "Help_Changelog":
-                    Process.Start(new ProcessStartInfo {FileName = Constants.CHANGELOG_LINK, UseShellExecute = true});
+                    UserSettings.Default.ShowChangelog = true;
+                    ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
                     break;
                 case "Help_BugsReport":
                     Process.Start(new ProcessStartInfo {FileName = Constants.ISSUE_LINK, UseShellExecute = true});
@@ -59,7 +62,41 @@ namespace FModel.ViewModels.Commands
                 case "ToolBox_Open_Output_Directory":
                     Process.Start(new ProcessStartInfo {FileName = UserSettings.Default.OutputDirectory, UseShellExecute = true});
                     break;
+                case "ToolBox_Expand_All":
+                    await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
+                    {
+                        foreach (var folder in contextViewModel.CUE4Parse.AssetsFolder.Folders)
+                        {
+                            LoopFolders(cancellationToken, folder, true);
+                        }
+                    });
+                    break;
+                case "ToolBox_Collapse_All":
+                    await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
+                    {
+                        foreach (var folder in contextViewModel.CUE4Parse.AssetsFolder.Folders)
+                        {
+                            LoopFolders(cancellationToken, folder, false);
+                        }
+                    });
+                    break;
+                case TreeItem selectedFolder:
+                    selectedFolder.IsSelected = false;
+                    selectedFolder.IsSelected = true;
+                    break;
             }
+        }
+
+        private void LoopFolders(CancellationToken cancellationToken, TreeItem parent, bool isExpanded)
+        {
+            if (parent.IsExpanded != isExpanded)
+            {
+                parent.IsExpanded = isExpanded;
+                Thread.Sleep(10);
+            }
+            
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var f in parent.Folders) LoopFolders(cancellationToken, f, isExpanded);
         }
     }
 }

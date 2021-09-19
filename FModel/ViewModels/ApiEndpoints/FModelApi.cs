@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AutoUpdaterDotNET;
+using FModel.Extensions;
+using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using Newtonsoft.Json;
@@ -22,7 +24,9 @@ namespace FModel.ViewModels.ApiEndpoints
         private News _news;
         private Info _infos;
         private Backup[] _backups;
+        private Game _game;
         private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
+        private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
         
         public FModelApi(IRestClient client) : base(client)
         {
@@ -65,6 +69,19 @@ namespace FModel.ViewModels.ApiEndpoints
         public Backup[] GetBackups(CancellationToken token, string gameName)
         {
             return _backups ??= GetBackupsAsync(token, gameName).GetAwaiter().GetResult();
+        }
+        
+        public async Task<Game> GetGamesAsync(CancellationToken token, string gameName)
+        {
+            var request = new RestRequest($"https://api.fmodel.app/v1/games/{gameName}", Method.GET);
+            var response = await _client.ExecuteAsync<Game>(request, token).ConfigureAwait(false);
+            Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+            return response.Data;
+        }
+        
+        public Game GetGames(CancellationToken token, string gameName)
+        {
+            return _game ??= GetGamesAsync(token, gameName).GetAwaiter().GetResult();
         }
 
         public async Task<CommunityDesign> GetDesignAsync(string designName)
@@ -110,8 +127,13 @@ namespace FModel.ViewModels.ApiEndpoints
         {
             if (args is {CurrentVersion: { }})
             {
-                var currentVersion = new Version(args.CurrentVersion);
-                if (currentVersion == args.InstalledVersion) return;
+                var currentVersion = new System.Version(args.CurrentVersion);
+                if (currentVersion == args.InstalledVersion)
+                {
+                    if (UserSettings.Default.ShowChangelog)
+                        ShowChangelog(args);
+                    return;
+                }
 
                 var downgrade = currentVersion < args.InstalledVersion;
                 var messageBox = new MessageBoxModel
@@ -125,16 +147,18 @@ namespace FModel.ViewModels.ApiEndpoints
                 
                 MessageBox.Show(messageBox);
                 if (messageBox.Result != MessageBoxResult.Yes) return;
-                
+
                 try
                 {
                     if (AutoUpdater.DownloadUpdate(args))
                     {
+                        UserSettings.Default.ShowChangelog = true;
                         Application.Current.Shutdown();
                     }
                 }
                 catch (Exception exception)
                 {
+                    UserSettings.Default.ShowChangelog = false;
                     MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -144,6 +168,18 @@ namespace FModel.ViewModels.ApiEndpoints
                     "There is a problem reaching the update server, please check your internet connection or try again later.",
                     "Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void ShowChangelog(UpdateInfoEventArgs args)
+        {
+            var request = new RestRequest(args.ChangelogURL, Method.GET);
+            var response = _client.Execute(request);
+            if (string.IsNullOrEmpty(response.Content)) return;
+            
+            _applicationView.CUE4Parse.TabControl.AddTab($"Release Notes: {args.CurrentVersion}");
+            _applicationView.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("changelog");
+            _applicationView.CUE4Parse.TabControl.SelectedTab.SetDocumentText(response.Content, false);
+            UserSettings.Default.ShowChangelog = false;
         }
     }
 }

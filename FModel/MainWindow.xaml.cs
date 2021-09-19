@@ -37,6 +37,8 @@ namespace FModel
                 {new KeyGesture(UserSettings.Default.AutoSaveMaterials.Key, UserSettings.Default.AutoSaveMaterials.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveMeshes", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoSaveMeshes.Key, UserSettings.Default.AutoSaveMeshes.Modifiers)}), OnAutoTriggerExecuted));
+            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveAnimations", typeof(MainWindow), new InputGestureCollection
+                {new KeyGesture(UserSettings.Default.AutoSaveAnimations.Key, UserSettings.Default.AutoSaveAnimations.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoOpenSounds", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoOpenSounds.Key, UserSettings.Default.AutoOpenSounds.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection {new KeyGesture(Key.F12)}), OnMappingsReload));
@@ -78,6 +80,7 @@ namespace FModel
             await _applicationView.AesManager.UpdateProvider(true);
             await _applicationView.CUE4Parse.InitBenMappings();
             await _applicationView.InitVgmStream();
+            await _applicationView.InitOodle();
 
             if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
                 _discordHandler.Initialize(_applicationView.CUE4Parse.Game);
@@ -150,6 +153,9 @@ namespace FModel
                     break;
                 case "AutoSaveMeshes":
                     UserSettings.Default.IsAutoSaveMeshes = !UserSettings.Default.IsAutoSaveMeshes;
+                    break;
+                case "AutoSaveAnimations":
+                    UserSettings.Default.IsAutoSaveAnimations = !UserSettings.Default.IsAutoSaveAnimations;
                     break;
                 case "AutoOpenSounds":
                     UserSettings.Default.IsAutoOpenSounds = !UserSettings.Default.IsAutoOpenSounds;

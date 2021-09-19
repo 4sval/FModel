@@ -65,6 +65,7 @@ namespace FModel.Creator
                 case "FortBadgeItemDefinition":
                 case "FortAwardItemDefinition":
                 case "FortGadgetItemDefinition":
+                case "AthenaCharmItemDefinition":
                 case "FortPlaysetItemDefinition":
                 case "FortGiftBoxItemDefinition":
                 case "FortOutpostItemDefinition":
@@ -75,6 +76,7 @@ namespace FModel.Creator
                 case "FortResourceItemDefinition":
                 case "FortBackpackItemDefinition":
                 case "FortEventQuestMapDataAsset":
+                case "FortWeaponModItemDefinition":
                 case "FortCodeTokenItemDefinition":
                 case "FortSchematicItemDefinition":
                 case "FortWorldMultiItemDefinition":
@@ -125,9 +127,9 @@ namespace FModel.Creator
                     return true;
                 case "MaterialInstanceConstant"
                     when _object.Owner != null &&
-                         (_object.Owner.Name.EndsWith($"/MI_OfferImages/{_object.Name}") ||
-                          _object.Owner.Name.EndsWith($"/RenderSwitch_Materials/{_object.Name}") ||
-                          _object.Owner.Name.EndsWith($"/MI_BPTile/{_object.Name}")):
+                         (_object.Owner.Name.EndsWith($"/MI_OfferImages/{_object.Name}", StringComparison.OrdinalIgnoreCase) ||
+                          _object.Owner.Name.EndsWith($"/RenderSwitch_Materials/{_object.Name}", StringComparison.OrdinalIgnoreCase) ||
+                          _object.Owner.Name.EndsWith($"/MI_BPTile/{_object.Name}", StringComparison.OrdinalIgnoreCase)):
                     creator = new BaseMaterialInstance(_object, _style);
                     return true;
                 case "FortMtxOfferData":
@@ -160,6 +162,7 @@ namespace FModel.Creator
                 case "PlaylistUserOptionColorEnum":
                 case "PlaylistUserOptionFloatEnum":
                 case "PlaylistUserOptionFloatRange":
+                case "PlaylistUserTintedIconIntEnum":
                 case "PlaylistUserOptionPrimaryAsset":
                 case "PlaylistUserOptionCollisionProfileEnum":
                     creator = new BaseUserControl(_object, _style);

@@ -14,13 +14,14 @@ namespace FModel
         public const string GREEN = "#98C379";
         public const string YELLOW = "#E5C07B";
         public const string BLUE = "#528BCC";
-
-        public const string DONATE_LINK = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EP9SSWG8MW4UC&source=url";
-        public const string CHANGELOG_LINK = "https://github.com/iAmAsval/FModel/releases/latest";
-        public const string ISSUE_LINK = "https://github.com/iAmAsval/FModel/issues/new";
-        public const string DISCORD_LINK = "https://discord.gg/fdkNYYQ";
+        
+        public const string ISSUE_LINK = "https://github.com/iAmAsval/FModel/issues/new/choose";
+        public const string DONATE_LINK = "https://fmodel.app/donate";
+        public const string DISCORD_LINK = "https://fmodel.app/discord";
 
         public const string _FN_LIVE_TRIGGER = "fortnite-live.manifest";
         public const string _VAL_LIVE_TRIGGER = "valorant-live.manifest";
+
+        public const string _NO_PRESET_TRIGGER = "Hand Made";
     }
 }

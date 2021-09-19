@@ -114,7 +114,7 @@ namespace FModel.ViewModels
             if (key.StartsWith("0x"))
                 key = key[2..];
 
-            return "0x" + key.ToUpper();
+            return "0x" + key.ToUpper().Trim();
         }
 
         private IEnumerable<FileItem> EnumerateAesKeys()

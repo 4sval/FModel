@@ -39,12 +39,20 @@ namespace FModel.ViewModels.Commands
         public override async void Execute(LoadingModesViewModel contextViewModel, object parameter)
         {
             if (_applicationView.CUE4Parse.GameDirectory.HasNoFile) return;
+            if (_applicationView.CUE4Parse.Provider.Files.Count <= 0)
+            {
+                FLogger.AppendError();
+                FLogger.AppendText("An encrypted file has been found. In order to decrypt it, please specify a working AES encryption key", Constants.WHITE, true);
+                return;
+            }
+            
             if (_applicationView.CUE4Parse.Game == FGame.FortniteGame &&
                 _applicationView.CUE4Parse.Provider.MappingsContainer == null)
             {
                 FLogger.AppendError();
                 FLogger.AppendText("Mappings could not get pulled, extracting assets might not work properly. If so, press F12 or please restart.", Constants.WHITE, true);
             }
+            
 #if DEBUG
             var loadingTime = Stopwatch.StartNew();
 #endif
@@ -53,6 +61,7 @@ namespace FModel.ViewModels.Commands
             MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
 
             await _applicationView.CUE4Parse.LoadLocalizedResources(); // load locres if not already loaded
+            await _applicationView.CUE4Parse.LoadVirtualPaths(); // load virtual paths if not already loaded
             Helper.CloseWindow<AdonisWindow>("Search View"); // close search window if opened
 
             await _threadWorkerView.Begin(async cancellationToken =>
@@ -89,7 +98,7 @@ namespace FModel.ViewModels.Commands
 #if DEBUG
             loadingTime.Stop();
             FLogger.AppendDebug();
-            FLogger.AppendText($"{_applicationView.CUE4Parse.SearchVm.SearchResults.Count} packages and a lot of localized resources loaded in {loadingTime.Elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)} seconds", Constants.WHITE, true);
+            FLogger.AppendText($"{_applicationView.CUE4Parse.SearchVm.SearchResults.Count} packages, {_applicationView.CUE4Parse.LocalizedResourcesCount} localized resources, and {_applicationView.CUE4Parse.VirtualPathCount} virtual paths loaded in {loadingTime.Elapsed.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)} seconds", Constants.WHITE, true);
 #endif
         }
 

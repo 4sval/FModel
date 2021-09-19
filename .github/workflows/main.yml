@@ -18,6 +18,9 @@ jobs:
         with:
           submodules: 'true'
 
+      - name: Fetch Submodules Recursively
+        run: git submodule update --init --recursive
+
       - name: .NET 5 Setup
         uses: actions/setup-dotnet@v1
         with:
@@ -27,7 +30,7 @@ jobs:
         run: dotnet restore FModel
 
       - name: .NET Publish
-        run: dotnet publish FModel -c Release -f net5.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false -p:AssemblyVersion=${{ github.event.inputs.appVersion }} -p:FileVersion=${{ github.event.inputs.appVersion }} --no-self-contained -r win-x64
+        run: dotnet publish FModel -c Release --no-self-contained -r win-x64 -f net5.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false -p:AssemblyVersion=${{ github.event.inputs.appVersion }} -p:FileVersion=${{ github.event.inputs.appVersion }}
 
       - name: ZIP File
         uses: papeloto/action-zip@v1

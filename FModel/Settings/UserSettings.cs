@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
+using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
@@ -34,6 +35,13 @@ namespace FModel.Settings
         public static void Delete()
         {
             if (File.Exists(FilePath)) File.Delete(FilePath);
+        }
+        
+        private bool _showChangelog = true;
+        public bool ShowChangelog
+        {
+            get => _showChangelog;
+            set => SetProperty(ref _showChangelog, value);
         }
 
         private string _outputDirectory;
@@ -90,6 +98,13 @@ namespace FModel.Settings
         {
             get => _isAutoSaveMeshes;
             set => SetProperty(ref _isAutoSaveMeshes, value);
+        }
+
+        private bool _isAutoSaveAnimations;
+        public bool IsAutoSaveAnimations
+        {
+            get => _isAutoSaveAnimations;
+            set => SetProperty(ref _isAutoSaveAnimations, value);
         }
 
         private bool _isAutoOpenSounds = true;
@@ -197,20 +212,44 @@ namespace FModel.Settings
             set => SetProperty(ref _imageMergerMargin, value);
         }
 
+        private IDictionary<FGame, string> _presets = new Dictionary<FGame, string>
+        {
+            {FGame.Unknown, Constants._NO_PRESET_TRIGGER},
+            {FGame.FortniteGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.ShooterGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.DeadByDaylight, Constants._NO_PRESET_TRIGGER},
+            {FGame.OakGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.Dungeons, Constants._NO_PRESET_TRIGGER},
+            {FGame.WorldExplorers, Constants._NO_PRESET_TRIGGER},
+            {FGame.g3, Constants._NO_PRESET_TRIGGER},
+            {FGame.StateOfDecay2, Constants._NO_PRESET_TRIGGER},
+            {FGame.Prospect, Constants._NO_PRESET_TRIGGER},
+            {FGame.Indiana, Constants._NO_PRESET_TRIGGER},
+            {FGame.RogueCompany, Constants._NO_PRESET_TRIGGER},
+            {FGame.SwGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.Platform, Constants._NO_PRESET_TRIGGER},
+            {FGame.BendGame, Constants._NO_PRESET_TRIGGER}
+        };
+        public IDictionary<FGame, string> Presets
+        {
+            get => _presets;
+            set => SetProperty(ref _presets, value);
+        }
+
         private IDictionary<FGame, EGame> _overridedGame = new Dictionary<FGame, EGame>
         {
             {FGame.Unknown, EGame.GAME_UE4_LATEST},
             {FGame.FortniteGame, EGame.GAME_UE4_LATEST},
-            {FGame.ShooterGame, EGame.GAME_VALORANT},
+            {FGame.ShooterGame, EGame.GAME_Valorant},
             {FGame.DeadByDaylight, EGame.GAME_UE4_LATEST},
-            {FGame.OakGame, EGame.GAME_BORDERLANDS3},
+            {FGame.OakGame, EGame.GAME_Borderlands3},
             {FGame.Dungeons, EGame.GAME_UE4_LATEST},
             {FGame.WorldExplorers, EGame.GAME_UE4_LATEST},
             {FGame.g3, EGame.GAME_UE4_22},
-            {FGame.StateOfDecay2, EGame.GAME_SOD2},
+            {FGame.StateOfDecay2, EGame.GAME_StateOfDecay2},
             {FGame.Prospect, EGame.GAME_UE4_LATEST},
             {FGame.Indiana, EGame.GAME_UE4_LATEST},
-            {FGame.RogueCompany, EGame.GAME_UE4_LATEST},
+            {FGame.RogueCompany, EGame.GAME_RogueCompany},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
             {FGame.Platform, EGame.GAME_UE4_25},
             {FGame.BendGame, EGame.GAME_UE4_11}
@@ -244,6 +283,54 @@ namespace FModel.Settings
             get => _overridedUEVersion;
             set => SetProperty(ref _overridedUEVersion, value);
         }
+        
+        private IDictionary<FGame, List<FCustomVersion>> _overridedCustomVersions = new Dictionary<FGame, List<FCustomVersion>>
+        {
+            {FGame.Unknown, null},
+            {FGame.FortniteGame, null},
+            {FGame.ShooterGame, null},
+            {FGame.DeadByDaylight, null},
+            {FGame.OakGame, null},
+            {FGame.Dungeons, null},
+            {FGame.WorldExplorers, null},
+            {FGame.g3, null},
+            {FGame.StateOfDecay2, null},
+            {FGame.Prospect, null},
+            {FGame.Indiana, null},
+            {FGame.RogueCompany, null},
+            {FGame.SwGame, null},
+            {FGame.Platform, null},
+            {FGame.BendGame, null}
+        };
+        public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
+        {
+            get => _overridedCustomVersions;
+            set => SetProperty(ref _overridedCustomVersions, value);
+        }
+        
+        private IDictionary<FGame, Dictionary<string, bool>> _overridedOptions = new Dictionary<FGame, Dictionary<string, bool>>
+        {
+            {FGame.Unknown, null},
+            {FGame.FortniteGame, null},
+            {FGame.ShooterGame, null},
+            {FGame.DeadByDaylight, null},
+            {FGame.OakGame, null},
+            {FGame.Dungeons, null},
+            {FGame.WorldExplorers, null},
+            {FGame.g3, null},
+            {FGame.StateOfDecay2, null},
+            {FGame.Prospect, null},
+            {FGame.Indiana, null},
+            {FGame.RogueCompany, null},
+            {FGame.SwGame, null},
+            {FGame.Platform, null},
+            {FGame.BendGame, null}
+        };
+        public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
+        {
+            get => _overridedOptions;
+            set => SetProperty(ref _overridedOptions, value);
+        }
 
         private IDictionary<FGame, IList<CustomDirectory>> _customDirectories = new Dictionary<FGame, IList<CustomDirectory>>
         {
@@ -274,6 +361,9 @@ namespace FModel.Settings
             {
                 FGame.Dungeons, new List<CustomDirectory>
                 {
+                    new("Levels", "Dungeons/Content/data/Lovika/Levels"),
+                    new("Friendlies", "Dungeons/Content/Actor/Characters/Friendlies"),
+                    new("Skins", "Dungeons/Content/Actor/Characters/Player/Master/Skins"),
                     new("Strings", "Dungeons/Content/Localization/")
                 }
             },
@@ -396,7 +486,14 @@ namespace FModel.Settings
             set => SetProperty(ref _autoSaveMeshes, value);
         }
 
-        private Hotkey _autoOpenSounds = new(Key.F6);
+        private Hotkey _autoSaveAnimations = new(Key.F6);
+        public Hotkey AutoSaveAnimations
+        {
+            get => _autoSaveAnimations;
+            set => SetProperty(ref _autoSaveAnimations, value);
+        }
+
+        private Hotkey _autoOpenSounds = new(Key.F7);
         public Hotkey AutoOpenSounds
         {
             get => _autoOpenSounds;

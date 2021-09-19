@@ -85,7 +85,7 @@ namespace FModel.Creator
             if (material == null) return null;
             foreach (var textureParameter in material.TextureParameterValues)
             {
-                if (textureParameter.ParameterValue is not UTexture2D texture) continue;
+                if (!textureParameter.ParameterValue.TryLoad<UTexture2D>(out var texture)) continue;
                 switch (textureParameter.ParameterInfo.Name.Text)
                 {
                     case "MainTex":
@@ -107,8 +107,14 @@ namespace FModel.Creator
         public static SKBitmap GetBitmap(UTexture2D texture) => texture.IsVirtual ? null : SKBitmap.Decode(texture.Decode()?.Encode());
         public static SKBitmap GetBitmap(byte[] data) => SKBitmap.Decode(data);
 
+        public static SKBitmap ResizeWithRatio(this SKBitmap me, double width, double height)
+        {
+            var ratioX = width / me.Width;
+            var ratioY = height / me.Height;
+            var ratio = ratioX < ratioY ? ratioX : ratioY;
+            return me.Resize(Convert.ToInt32(me.Width * ratio), Convert.ToInt32(me.Height * ratio));
+        }
         public static SKBitmap Resize(this SKBitmap me, int size) => me.Resize(size, size);
-
         public static SKBitmap Resize(this SKBitmap me, int width, int height)
         {
             var bmp = new SKBitmap(new SKImageInfo(width, height), SKBitmapAllocFlags.ZeroPixels);
@@ -116,37 +122,19 @@ namespace FModel.Creator
             me.ScalePixels(pixmap, SKFilterQuality.Medium);
             return bmp;
         }
+        
+        public static void ClearToTransparent(this SKBitmap me) {
+            var colors = me.Pixels;
+            for (var n = 0; n < colors.Length; n++) {
+                if (colors[n] != SKColors.Black) continue;
+                colors[n] = SKColors.Transparent;
+            }
+            me.Pixels = colors;
+        }
 
         public static bool TryGetPackageIndexExport<T>(FPackageIndex packageIndex, out T export) where T : UObject
         {
-            if (packageIndex.ResolvedObject == null)
-            {
-                export = default;
-                return false;
-            }
-
-            var outerChain = new List<string>();
-            var current = packageIndex.ResolvedObject.Outer;
-            while (current != null)
-            {
-                outerChain.Add(current.Name.Text);
-                current = current.Outer;
-            }
-
-            if (outerChain.Count < 1)
-            {
-                export = default;
-                return false;
-            }
-
-            if (!_applicationView.CUE4Parse.Provider.TryLoadPackage(outerChain[^1], out var pkg))
-            {
-                export = default;
-                return false;
-            }
-
-            export = pkg.GetExport(packageIndex.ResolvedObject.Index) as T;
-            return export != null;
+            return packageIndex.TryLoad(out export);
         }
 
         // fullpath must be either without any extension or with the export objectname
