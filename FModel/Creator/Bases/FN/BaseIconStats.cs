@@ -114,7 +114,7 @@ namespace FModel.Creator.Bases.FN
                     weaponRowValue.TryGetValue(out UDataTable durabilityTable, "Durability") &&
                     weaponRowValue.TryGetValue(out FName durabilityRowName, "DurabilityRowName") &&
                     durabilityTable.TryGetDataTableRow(durabilityRowName.Text, StringComparison.OrdinalIgnoreCase, out var durability) &&
-                    durability.TryGetValue(out int duraByRarity, GetRarityName(Object.GetOrDefault<FName>("Rarity"))))
+                    durability.TryGetValue(out int duraByRarity, Object.GetOrDefault("Rarity", EFortRarity.Uncommon).GetDescription()))
                 {
                     _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "6FA2882140CB69DE32FD73A392F0585B", "Durability"), duraByRarity, 20));
                 }
@@ -151,44 +151,6 @@ namespace FModel.Creator.Bases.FN
 
             statValue = 0F;
             return false;
-        }
-
-        private string GetRarityName(FName r)
-        {
-            var rarity = EFortRarity.Uncommon;
-            switch (r.Text)
-            {
-                case "EFortRarity::Common":
-                case "EFortRarity::Handmade":
-                    rarity = EFortRarity.Common;
-                    break;
-                case "EFortRarity::Rare":
-                case "EFortRarity::Sturdy":
-                    rarity = EFortRarity.Rare;
-                    break;
-                case "EFortRarity::Epic":
-                case "EFortRarity::Quality":
-                    rarity = EFortRarity.Epic;
-                    break;
-                case "EFortRarity::Legendary":
-                case "EFortRarity::Fine":
-                    rarity = EFortRarity.Legendary;
-                    break;
-                case "EFortRarity::Mythic":
-                case "EFortRarity::Elegant":
-                    rarity = EFortRarity.Mythic;
-                    break;
-                case "EFortRarity::Transcendent":
-                case "EFortRarity::Masterwork":
-                    rarity = EFortRarity.Transcendent;
-                    break;
-                case "EFortRarity::Unattainable":
-                case "EFortRarity::Badass":
-                    rarity = EFortRarity.Unattainable;
-                    break;
-            }
-
-            return rarity.GetDescription();
         }
 
         private readonly SKPaint _informationPaint = new()

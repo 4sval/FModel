@@ -33,7 +33,7 @@ namespace FModel.Creator.Bases.FN
         {
             // rarity
             if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
-            else GetRarity(Object.GetOrDefault<FName>("Rarity")); // default is uncommon
+            else GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
 
             // preview
             if (isUsingDisplayAsset && Utils.TryGetDisplayAsset(Object, out var preview))
@@ -165,44 +165,11 @@ namespace FModel.Creator.Bases.FN
             }
         }
 
-        private void GetRarity(FName r)
+        private void GetRarity(EFortRarity r)
         {
             if (!Utils.TryLoadObject("FortniteGame/Content/Balance/RarityData.RarityData", out UObject export)) return;
 
-            var rarity = EFortRarity.Uncommon;
-            switch (r.Text)
-            {
-                case "EFortRarity::Common":
-                case "EFortRarity::Handmade":
-                    rarity = EFortRarity.Common;
-                    break;
-                case "EFortRarity::Rare":
-                case "EFortRarity::Sturdy":
-                    rarity = EFortRarity.Rare;
-                    break;
-                case "EFortRarity::Epic":
-                case "EFortRarity::Quality":
-                    rarity = EFortRarity.Epic;
-                    break;
-                case "EFortRarity::Legendary":
-                case "EFortRarity::Fine":
-                    rarity = EFortRarity.Legendary;
-                    break;
-                case "EFortRarity::Mythic":
-                case "EFortRarity::Elegant":
-                    rarity = EFortRarity.Mythic;
-                    break;
-                case "EFortRarity::Transcendent":
-                case "EFortRarity::Masterwork":
-                    rarity = EFortRarity.Transcendent;
-                    break;
-                case "EFortRarity::Unattainable":
-                case "EFortRarity::Badass":
-                    rarity = EFortRarity.Unattainable;
-                    break;
-            }
-
-            if (export.GetByIndex<FStructFallback>((int) rarity) is { } data &&
+            if (export.GetByIndex<FStructFallback>((int) r) is { } data &&
                 data.TryGetValue(out FLinearColor color1, "Color1") &&
                 data.TryGetValue(out FLinearColor color2, "Color2") &&
                 data.TryGetValue(out FLinearColor color3, "Color3"))
