@@ -72,7 +72,7 @@ namespace FModel.Creator.Bases.FN
                     Description += "\n" + completionText.Text;
                 if (Object.TryGetValue(out FSoftObjectPath tandemCharacterData, "TandemCharacterData") &&
                     Utils.TryLoadObject(tandemCharacterData.AssetPathName.Text, out UObject uObject) &&
-                    uObject.TryGetValue(out FSoftObjectPath tandemIcon, "SidePanelIcon", "EntryListIcon", "ToastIcon"))
+                    uObject.TryGetValue(out FSoftObjectPath tandemIcon, "EntryListIcon", "ToastIcon"))
                 {
                     Preview = Utils.GetBitmap(tandemIcon);
                 }

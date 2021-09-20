@@ -40,7 +40,7 @@ namespace FModel.Creator.Bases.FN
                 Preview = preview;
             else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
                 Preview = Utils.GetBitmap(itemDefinition);
-            else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "SidePanelIcon", "EntryListIcon", "SmallPreviewImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
+            else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
                 Preview = Utils.GetBitmap(largePreview);
             else if (Object.TryGetValue(out string s, "LargePreviewImage") && !string.IsNullOrEmpty(s))
                 Preview = Utils.GetBitmap(s);
