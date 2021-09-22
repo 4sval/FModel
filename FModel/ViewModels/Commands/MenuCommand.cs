@@ -30,8 +30,8 @@ namespace FModel.ViewModels.Commands
                 case "Directory_Backup":
                     Helper.OpenWindow<AdonisWindow>("Backup Manager", () => new BackupManager(contextViewModel.CUE4Parse.Provider.GameName).Show());
                     break;
-                case "Directory_PackagesInfo":
-                    contextViewModel.CUE4Parse.TabControl.AddTab("Packages Info");
+                case "Directory_ArchivesInfo":
+                    contextViewModel.CUE4Parse.TabControl.AddTab("Archives Info");
                     contextViewModel.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
                     contextViewModel.CUE4Parse.TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(contextViewModel.CUE4Parse.GameDirectory.DirectoryFiles, Formatting.Indented), false);
                     break;
