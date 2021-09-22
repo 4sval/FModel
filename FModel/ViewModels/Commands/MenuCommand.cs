@@ -1,11 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Threading;
 using AdonisUI.Controls;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
+using Newtonsoft.Json;
 
 namespace FModel.ViewModels.Commands
 {
@@ -27,6 +29,11 @@ namespace FModel.ViewModels.Commands
                     break;
                 case "Directory_Backup":
                     Helper.OpenWindow<AdonisWindow>("Backup Manager", () => new BackupManager(contextViewModel.CUE4Parse.Provider.GameName).Show());
+                    break;
+                case "Directory_PackagesInfo":
+                    contextViewModel.CUE4Parse.TabControl.AddTab("Packages Info");
+                    contextViewModel.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+                    contextViewModel.CUE4Parse.TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(contextViewModel.CUE4Parse.GameDirectory.DirectoryFiles, Formatting.Indented), false);
                     break;
                 case "Views_AudioPlayer":
                     Helper.OpenWindow<AdonisWindow>("Audio Player", () => new AudioPlayer().Show());

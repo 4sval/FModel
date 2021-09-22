@@ -315,9 +315,19 @@ namespace FModel.ViewModels
         public void AddTab(string header = null, string directory = null)
         {
             if (!CanAddTabs) return;
+
+            var h = header ?? "New Tab";
+            var d = directory ?? string.Empty;
+            if (SelectedTab is { Header : "New Tab" })
+            {
+                SelectedTab.Header = h;
+                SelectedTab.Directory = d;
+                return;
+            }
+            
             Application.Current.Dispatcher.Invoke(() =>
             {
-                _tabItems.Add(new TabItem(header ?? "New Tab", directory ?? string.Empty));
+                _tabItems.Add(new TabItem(h, d));
                 SelectedTab = _tabItems.Last();
             });
         }

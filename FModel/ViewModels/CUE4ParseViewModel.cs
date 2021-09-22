@@ -20,6 +20,7 @@ using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
+using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
@@ -229,7 +230,12 @@ namespace FModel.ViewModels
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     if (Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is not { } vfs)
+                    {
+                        if (Provider.UnloadedVfs.FirstOrDefault(x => x.Name == file.Name) is IoStoreReader store)
+                            file.FileCount = (int)store.Info.TocEntryCount - 1;
+
                         continue;
+                    }
 
                     file.IsEnabled = true;
                     file.MountPoint = vfs.MountPoint;
