@@ -167,7 +167,7 @@ namespace FModel.ViewModels
             {
                 builder.AddNode(
                     new Vector3(verts[i].Position.X, -verts[i].Position.Y, verts[i].Position.Z),
-                    new Vector3(verts[i].Normal.X, verts[i].Normal.Y, verts[i].Normal.Z),
+                    new Vector3(verts[i].Normal.X, -verts[i].Normal.Y, verts[i].Normal.Z),
                     new Vector2(verts[i].UV.U, verts[i].UV.V));
             }
             
