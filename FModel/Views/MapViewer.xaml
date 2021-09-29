@@ -19,7 +19,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
+
             <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="BrTemplate">
                 <StackPanel VerticalAlignment="Center" Margin="25 0">
@@ -41,7 +41,7 @@
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                     <CheckBox Content="Corruption Zones" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrCorruptionZones}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}"
-                              ToolTip="Saving the image with Corruption Zones enabled will smooth these ugly sharp edges"/>
+                              ToolTip="Saving the image with Corruption Zones enabled will better blend this overlay with the map"/>
                     <CheckBox Content="Cube Movements" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" IsChecked="{Binding MapViewer.BrCubeMovements}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.MapViewer}}}" IsEnabled="{Binding IsReady}" />
                 </StackPanel>
@@ -73,14 +73,14 @@
             <ColumnDefinition Width="Auto" MinWidth="300" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        
+
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            
+
             <TreeView Grid.Row="0" Grid.RowSpan="3" x:Name="MapTree" SelectedItemChanged="OnSelectedItemChanged"
                       Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
                 <TreeViewItem Tag="BrTemplate" IsSelected="True">
@@ -108,14 +108,14 @@
                     </TreeViewItem.Header>
                 </TreeViewItem>
             </TreeView>
-            
+
             <Grid Grid.Row="1" HorizontalAlignment="Stretch">
                 <ContentControl ContentTemplateSelector="{StaticResource TagTemplateSelector}" Content="{Binding SelectedItem.Tag, ElementName=MapTree}" />
             </Grid>
-            
+
             <Button Grid.Row="2" Content="Save Image" Margin="5" IsEnabled="{Binding IsReady}" VerticalAlignment="Bottom" Click="OnClick" />
         </Grid>
-        
+
         <Grid Grid.Column="1" HorizontalAlignment="Stretch">
             <controls:MagnifierManager.Magnifier>
                 <controls:Magnifier Radius="200" ZoomFactor=".4" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" BorderThickness="1" />

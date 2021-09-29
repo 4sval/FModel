@@ -371,7 +371,7 @@ namespace FModel.ViewModels
             {
                 Thread.Sleep(10);
                 cancellationToken.ThrowIfCancellationRequested();
-                Extract(asset.FullPath, TabControl.HasNoTabs);
+                try {Extract(asset.FullPath, TabControl.HasNoTabs);} catch {/**/}
             }
 
             foreach (var f in folder.Folders) ExtractFolder(cancellationToken, f);
@@ -395,7 +395,7 @@ namespace FModel.ViewModels
             {
                 Thread.Sleep(10);
                 cancellationToken.ThrowIfCancellationRequested();
-                Extract(asset.FullPath, TabControl.HasNoTabs, true);
+                try {Extract(asset.FullPath, TabControl.HasNoTabs, true);} catch {/**/}
             }
 
             foreach (var f in folder.Folders) SaveFolder(cancellationToken, f);
@@ -625,25 +625,10 @@ namespace FModel.ViewModels
                 }
                 case UStaticMesh:
                 case USkeletalMesh:
-                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials: // don't trigger model viewer if false
-                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations: // don't trigger model viewer if false
                 {
-                    if (UserSettings.Default.IsAutoSaveMaterials || UserSettings.Default.IsAutoSaveMeshes || UserSettings.Default.IsAutoSaveAnimations)
+                    if (UserSettings.Default.IsAutoSaveMeshes)
                     {
-                        var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat);
-                        var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
-                        if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
-                        {
-                            Log.Information("Successfully saved {FileName}", savedFileName);
-                            FLogger.AppendInformation();
-                            FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
-                        }
-                        else
-                        {
-                            Log.Error("{FileName} could not be saved", savedFileName);
-                            FLogger.AppendError();
-                            FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
-                        }
+                        SaveExport(export);
                     }
                     else
                     {
@@ -653,6 +638,12 @@ namespace FModel.ViewModels
                             modelViewer.Load(export);
                         });
                     }
+                    return true;
+                }
+                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials:
+                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations:
+                {
+                    SaveExport(export);
                     return true;
                 }
                 default:
@@ -694,6 +685,24 @@ namespace FModel.ViewModels
                 var audioPlayer = Helper.GetWindow<AudioPlayer>("Audio Player", () => new AudioPlayer().Show());
                 audioPlayer.Load(data, savedAudioPath);
             });
+        }
+
+        private void SaveExport(UObject export)
+        {
+            var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat);
+            var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
+            if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
+            {
+                Log.Information("Successfully saved {FileName}", savedFileName);
+                FLogger.AppendInformation();
+                FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+            }
+            else
+            {
+                Log.Error("{FileName} could not be saved", savedFileName);
+                FLogger.AppendError();
+                FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
+            }
         }
 
         public void ExportData(string fullPath)

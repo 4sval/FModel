@@ -31,49 +31,49 @@ namespace FModel.ViewModels
         Parkour,
         TimeTrials
     }
-    
+
     public class MapViewerViewModel : ViewModel
     {
         private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
         private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
 
         #region BINDINGS
-        
+
         private bool _brPois;
         public bool BrPois
         {
             get => _brPois;
             set => SetProperty(ref _brPois, value, "ApolloGameplay_MapPois");
         }
-        
+
         private bool _brLandmarks;
         public bool BrLandmarks
         {
             get => _brLandmarks;
             set => SetProperty(ref _brLandmarks, value, "ApolloGameplay_MapLandmarks");
         }
-        
+
         private bool _brTagsLocation;
         public bool BrTagsLocation
         {
             get => _brTagsLocation;
             set => SetProperty(ref _brTagsLocation, value, "ApolloGameplay_TagsLocation");
         }
-        
+
         private bool _brPatrolsPath;
         public bool BrPatrolsPath
         {
             get => _brPatrolsPath;
             set => SetProperty(ref _brPatrolsPath, value, "ApolloGameplay_PatrolsPath");
         }
-        
+
         private bool _brUpgradeBenches;
         public bool BrUpgradeBenches
         {
             get => _brUpgradeBenches;
             set => SetProperty(ref _brUpgradeBenches, value, "ApolloGameplay_UpgradeBenches");
         }
-        
+
         private bool _brPhonebooths;
         public bool BrPhonebooths
         {
@@ -87,77 +87,77 @@ namespace FModel.ViewModels
             get => _brVendingMachines;
             set => SetProperty(ref _brVendingMachines, value, "ApolloGameplay_VendingMachines");
         }
-        
+
         private bool _brFireflies;
         public bool BrFireflies
         {
             get => _brFireflies;
             set => SetProperty(ref _brFireflies, value, "ApolloGameplay_Fireflies");
         }
-        
+
         private bool _brCorruptionZones;
         public bool BrCorruptionZones
         {
             get => _brCorruptionZones;
             set => SetProperty(ref _brCorruptionZones, value, "ApolloGameplay_CorruptionZones");
         }
-        
+
         private bool _brCubeMovements;
         public bool BrCubeMovements
         {
             get => _brCubeMovements;
             set => SetProperty(ref _brCubeMovements, value, "ApolloGameplay_CubeMovements");
         }
-        
+
         private bool _prLandmarks;
         public bool PrLandmarks
         {
             get => _prLandmarks;
             set => SetProperty(ref _prLandmarks, value, "PapayaGameplay_MapLandmarks");
         }
-        
+
         private bool _prCannonball;
         public bool PrCannonball
         {
             get => _prCannonball;
             set => SetProperty(ref _prCannonball, value, "PapayaGameplay_CannonballGame");
         }
-        
+
         private bool _prSkydive;
         public bool PrSkydive
         {
             get => _prSkydive;
             set => SetProperty(ref _prSkydive, value, "PapayaGameplay_SkydiveGame");
         }
-        
+
         private bool _prShootingTargets;
         public bool PrShootingTargets
         {
             get => _prShootingTargets;
             set => SetProperty(ref _prShootingTargets, value, "PapayaGameplay_ShootingTargets");
         }
-        
+
         private bool _prParkour;
         public bool PrParkour
         {
             get => _prParkour;
             set => SetProperty(ref _prParkour, value, "PapayaGameplay_ParkourGame");
         }
-        
+
         private bool _prTimeTrials;
         public bool PrTimeTrials
         {
             get => _prTimeTrials;
             set => SetProperty(ref _prTimeTrials, value, "PapayaGameplay_TimeTrials");
         }
-        
+
         private bool _prVendingMachines;
         public bool PrVendingMachines
         {
             get => _prVendingMachines;
             set => SetProperty(ref _prVendingMachines, value, "PapayaGameplay_VendingMachines");
         }
-        
+
         private bool _prMusicBlocks;
         public bool PrMusicBlocks
         {
@@ -177,7 +177,7 @@ namespace FModel.ViewModels
             get => _mapImage;
             set => SetProperty(ref _mapImage, value);
         }
-        
+
         private BitmapImage _brLayerImage;
         private BitmapImage _prLayerImage;
         private BitmapImage _layerImage;
@@ -239,8 +239,8 @@ namespace FModel.ViewModels
 
                 SKPaint p = null;
                 if (key == "ApolloGameplay_CorruptionZones")
-                    p = new SKPaint { BlendMode = SKBlendMode.Color };
-                
+                    p = new SKPaint { BlendMode = SKBlendMode.Difference };
+
                 c.DrawBitmap(value.Layer, new SKRect(0, 0, _widthHeight, _widthHeight), p);
             }
 
@@ -253,7 +253,7 @@ namespace FModel.ViewModels
             if (bool.TryParse(value.ToString(), out var b)) GenericToggle(propertyName, b);
             return ret;
         }
-        
+
         private async void GenericToggle(string key, bool enabled)
         {
             if (_bitmaps[MapIndex].TryGetValue(key, out var layer) && layer.Layer != null)
@@ -360,11 +360,11 @@ namespace FModel.ViewModels
                     _layerImage = _prLayerImage;
                     break;
             }
-                
+
             RaisePropertyChanged(nameof(MapImage));
             RaisePropertyChanged(nameof(LayerImage));
         }
-        
+
         private readonly SKPaint _textPaint = new()
         {
             IsAntialias = true, FilterQuality = SKFilterQuality.High,
@@ -389,12 +389,12 @@ namespace FModel.ViewModels
             var ny = (1 - (vector.X + mapRadius) / (mapRadius * 2)) * _widthHeight;
             return new FVector2D(nx, ny);
         }
-        
+
         private async Task LoadBrMiniMap()
         {
             if (_bitmaps[0].TryGetValue(_FIRST_BITMAP, out var brMap) && brMap.Layer != null)
                 return; // if map already loaded
-            
+
             await _threadWorkerView.Begin(_ =>
             {
                 if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerBR.Default__UIMapManagerBR_C", out UObject mapManager) ||
@@ -412,7 +412,7 @@ namespace FModel.ViewModels
         {
             if (_bitmaps[1].TryGetValue(_FIRST_BITMAP, out var prMap) && prMap.Layer != null)
                 return; // if map already loaded
-            
+
             await _threadWorkerView.Begin(_ =>
             {
                 if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerPapaya.Default__UIMapManagerPapaya_C", out UObject mapManager) ||
@@ -423,7 +423,7 @@ namespace FModel.ViewModels
                 _prMiniMapImage = GetImageSource(_bitmaps[1][_FIRST_BITMAP].Layer);
             });
         }
-        
+
         private async Task LoadQuestIndicatorData()
         {
             await _threadWorkerView.Begin(_ =>
@@ -434,7 +434,7 @@ namespace FModel.ViewModels
                 using var pois = new SKCanvas(poisBitmap);
                 using var brLandmarks = new SKCanvas(brLandmarksBitmap);
                 using var prLandmarks = new SKCanvas(prLandmarksBitmap);
-                
+
                 if (Utils.TryLoadObject("FortniteGame/Content/Quests/QuestIndicatorData", out UObject indicatorData) &&
                     indicatorData.TryGetValue(out FStructFallback[] challengeMapPoiData, "ChallengeMapPoiData"))
                 {
@@ -444,7 +444,7 @@ namespace FModel.ViewModels
                             !poiData.TryGetValue(out FText text, "Text") || string.IsNullOrEmpty(text.Text) ||
                             !poiData.TryGetValue(out FVector worldLocation, "WorldLocation") ||
                             !poiData.TryGetValue(out FName discoverBackend, "DiscoverObjectiveBackendName")) continue;
-                        
+
                         var shaper = new CustomSKShaper(_textPaint.Typeface);
                         var shapedText = shaper.Shape(text.Text, _textPaint);
 
@@ -479,7 +479,7 @@ namespace FModel.ViewModels
                 _bitmaps[1]["PapayaGameplay_MapLandmarks"] = new MapLayer {Layer = prLandmarksBitmap, IsEnabled = false};
             });
         }
-        
+
         private async Task LoadPatrolsPath()
         {
             await _threadWorkerView.Begin(_ =>
@@ -514,7 +514,7 @@ namespace FModel.ViewModels
                         vector = GetMapPosition(relativeLocation, _brRadius);
                         path.LineTo(vector.X, vector.Y);
                     }
-                    
+
                     c.DrawPath(path, _pathPaint);
                     c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
                     c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
@@ -544,7 +544,7 @@ namespace FModel.ViewModels
 
                     var displayName = Utils.GetLocalizedResource("", "D998BEF44F051E0885C6C58565934BEA", "Cannonball");
                     var vector = GetMapPosition(relativeLocation, _prRadius);
-                    
+
                     c.DrawPoint(vector.X, vector.Y, _pathPaint);
                     c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
                     c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
@@ -573,7 +573,7 @@ namespace FModel.ViewModels
                         !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
 
                     var vector = GetMapPosition(relativeLocation, _prRadius);
-                    
+
                     c.DrawPoint(vector.X, vector.Y, _pathPaint);
                     c.DrawText(minigameActivityName.Text, vector.X, vector.Y - 12.5F, _fillPaint);
                     c.DrawText(minigameActivityName.Text, vector.X, vector.Y - 12.5F, _textPaint);
@@ -582,7 +582,7 @@ namespace FModel.ViewModels
                 _bitmaps[1]["PapayaGameplay_SkydiveGame"] = new MapLayer {Layer = skydiveBitmap, IsEnabled = false};
             });
         }
-        
+
         private async Task LoadShootingTargets()
         {
             await _threadWorkerView.Begin(_ =>
@@ -604,7 +604,7 @@ namespace FModel.ViewModels
                     var vector = GetMapPosition(relativeLocation, _prRadius);
                     c.DrawPoint(vector.X, vector.Y, _pathPaint);
                     if (bDone) continue;
-                    
+
                     bDone = true;
                     c.DrawText("Shooting Target", vector.X, vector.Y - 12.5F, _fillPaint);
                     c.DrawText("Shooting Target", vector.X, vector.Y - 12.5F, _textPaint);
@@ -637,7 +637,7 @@ namespace FModel.ViewModels
                     default:
                         throw new ArgumentOutOfRangeException(nameof(type), type, null);
                 }
-                
+
                 var path = new SKPath();
                 var exports = Utils.LoadExports($"/PapayaGameplay/LevelOverlays/{file}");
                 foreach (var export in exports)
@@ -647,7 +647,7 @@ namespace FModel.ViewModels
                     if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
                         !Utils.TryGetPackageIndexExport(rootComponent, out UObject root) ||
                         !root.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
-                    
+
                     var vector = GetMapPosition(relativeLocation, _prRadius);
                     if (path.IsEmpty || export.TryGetValue(out bool startsTrial, "StartsTrial") && startsTrial)
                     {
@@ -703,7 +703,7 @@ namespace FModel.ViewModels
                     var vector = GetMapPosition(relativeLocation, _prRadius);
                     c.DrawPoint(vector.X, vector.Y, _pathPaint);
                     if (!set.Add(name)) continue;
-                    
+
                     c.DrawText(name, vector.X, vector.Y - 12.5F, _fillPaint);
                     c.DrawText(name, vector.X, vector.Y - 12.5F, _textPaint);
                 }
@@ -711,7 +711,7 @@ namespace FModel.ViewModels
                 _bitmaps[1]["PapayaGameplay_VendingMachines"] = new MapLayer {Layer = timeTrialsBitmap, IsEnabled = false};
             });
         }
-        
+
         private async Task LoadMusicBlocks()
         {
             await _threadWorkerView.Begin(_ =>
@@ -733,7 +733,7 @@ namespace FModel.ViewModels
                     var vector = GetMapPosition(relativeLocation, _prRadius);
                     c.DrawPoint(vector.X, vector.Y, _pathPaint);
                     if (bDone) continue;
-                    
+
                     bDone = true;
                     c.DrawText("Music Blocks", vector.X, vector.Y - 12.5F, _fillPaint);
                     c.DrawText("Music Blocks", vector.X, vector.Y - 12.5F, _textPaint);
@@ -742,7 +742,7 @@ namespace FModel.ViewModels
                 _bitmaps[1]["PapayaGameplay_MusicBlocks"] = new MapLayer {Layer = shootingTargetsBitmap, IsEnabled = false};
             });
         }
-        
+
         private async Task LoadUpgradeBenches()
         {
             await _threadWorkerView.Begin(_ =>
@@ -770,7 +770,7 @@ namespace FModel.ViewModels
                 _bitmaps[0]["ApolloGameplay_UpgradeBenches"] = new MapLayer {Layer = upgradeBenchesBitmap, IsEnabled = false};
             });
         }
-        
+
         private async Task LoadPhonebooths()
         {
             await _threadWorkerView.Begin(_ =>
@@ -798,7 +798,7 @@ namespace FModel.ViewModels
                 _bitmaps[0]["ApolloGameplay_Phonebooths"] = new MapLayer {Layer = phoneboothsBitmap, IsEnabled = false};
             });
         }
-        
+
         private async Task LoadBrVendingMachines()
         {
             await _threadWorkerView.Begin(_ =>
@@ -827,7 +827,7 @@ namespace FModel.ViewModels
                 _bitmaps[0]["ApolloGameplay_VendingMachines"] = new MapLayer {Layer = vendingMachinesBitmap, IsEnabled = false};
             });
         }
-        
+
         private async Task LoadFireflies()
         {
             await _threadWorkerView.Begin(_ =>
@@ -863,7 +863,7 @@ namespace FModel.ViewModels
                 _fillPaint.StrokeWidth = 5;
                 if (!Utils.TryLoadObject("FortniteGame/Content/Quests/QuestTagToLocationDataRows.QuestTagToLocationDataRows", out UDataTable locationData))
                     return;
-                
+
                 var tagsLocationBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(tagsLocationBitmap);
 
@@ -878,7 +878,7 @@ namespace FModel.ViewModels
                     var displayName = parts[^2];
                     if (!int.TryParse(parts[^1], out var _))
                         displayName += " " + parts[^1];
-                        
+
                     var vector = GetMapPosition(worldLocation, _brRadius);
                     c.DrawPoint(vector.X, vector.Y, _pathPaint);
                     c.DrawText(displayName, vector.X, vector.Y - 12.5F, _fillPaint);
@@ -888,13 +888,13 @@ namespace FModel.ViewModels
                 _bitmaps[0]["ApolloGameplay_TagsLocation"] = new MapLayer {Layer = tagsLocationBitmap, IsEnabled = false};
             });
         }
-        
+
         private async Task LoadCorruptionZones()
         {
             await _threadWorkerView.Begin(_ =>
             {
                 _fillPaint.StrokeWidth = 5;
-                if (!Utils.TryLoadObject("FortniteGame/Content/Athena/Apollo/Environments/Landscape/Materials/Corruption/T_InitialCorruptionAreas.T_InitialCorruptionAreas", out UTexture2D corruption)) 
+                if (!Utils.TryLoadObject("FortniteGame/Content/Athena/Apollo/Environments/Landscape/Materials/Corruption/T_InitialCorruptionAreas.T_InitialCorruptionAreas", out UTexture2D corruption))
                     return;
 
                 var overlay = Utils.GetBitmap(corruption);
@@ -906,20 +906,14 @@ namespace FModel.ViewModels
                 c.Clear();
                 c.Translate(0, width);
                 c.RotateDegrees(-90);
-                c.DrawRect(0, 0, width, height, new SKPaint
-                {
-                    IsAntialias = true, FilterQuality = SKFilterQuality.High,
-                    Shader = SKShader.CreateCompose(SKShader.CreateSweepGradient(new SKPoint(width / 2f, height / 2f),new [] {
-                        SKColor.Parse("#352176"), SKColor.Parse("#fd78fa"), SKColor.Parse("#f0b843"), SKColor.Parse("#e54a21")
-                    }, null), SKShader.CreatePerlinNoiseTurbulence(0.05f, 0.05f, 4, 0), SKBlendMode.SrcOver)
-                });
-                c.DrawBitmap(overlay, 0, 0, new SKPaint { BlendMode = SKBlendMode.Darken });
-                rotatedBitmap.ClearToTransparent();
+
+                overlay.ClearToTransparent(SKColors.Lime);
+                c.DrawBitmap(overlay, 0, 0);
 
                 _bitmaps[0]["ApolloGameplay_CorruptionZones"] = new MapLayer {Layer = rotatedBitmap.Resize(_widthHeight, _widthHeight), IsEnabled = false};
             });
         }
-        
+
         /// <summary>
         /// FortniteGame/Plugins/GameFeatures/CorruptionGameplay/Content/CorruptionGameplay_LevelOverlay.uasset
         /// too lazy to filters
@@ -944,7 +938,7 @@ namespace FModel.ViewModels
                     var objectName = cubeMovementStaticPath.SubPathString.SubstringAfterLast(".");
                     if (!Utils.TryLoadObject($"{objectPath}.{objectName}", out UObject staticPath))
                         return;
-                
+
                     DrawCubeMovements(c, staticPath, true);
                 }
 

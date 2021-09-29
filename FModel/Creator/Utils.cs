@@ -46,7 +46,7 @@ namespace FModel.Creator
             var path = $"/Game/Catalog/MI_OfferImages/MI_{uObject.Name.Replace("Athena_Commando_", string.Empty)}";
             if (!TryLoadObject(path, out UMaterialInstanceConstant material)) // non-obfuscated item definition
             {
-                if (!TryLoadObject($"{path[..path.LastIndexOf('_')]}_{path.SubstringAfterLast('_').ToLower()}", out material)) // Try to get MI with lowercase obfuscation 
+                if (!TryLoadObject($"{path[..path.LastIndexOf('_')]}_{path.SubstringAfterLast('_').ToLower()}", out material)) // Try to get MI with lowercase obfuscation
                     TryLoadObject(path[..path.LastIndexOf('_')], out material); // hopefully gets obfuscated item definition
             }
 
@@ -122,11 +122,11 @@ namespace FModel.Creator
             me.ScalePixels(pixmap, SKFilterQuality.Medium);
             return bmp;
         }
-        
-        public static void ClearToTransparent(this SKBitmap me) {
+
+        public static void ClearToTransparent(this SKBitmap me, SKColor colorToDelete) {
             var colors = me.Pixels;
             for (var n = 0; n < colors.Length; n++) {
-                if (colors[n] != SKColors.Black) continue;
+                if (colors[n] != colorToDelete) continue;
                 colors[n] = SKColors.Transparent;
             }
             me.Pixels = colors;
