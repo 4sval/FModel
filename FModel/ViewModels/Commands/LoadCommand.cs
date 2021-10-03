@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,14 +45,14 @@ namespace FModel.ViewModels.Commands
                 FLogger.AppendText("An encrypted file has been found. In order to decrypt it, please specify a working AES encryption key", Constants.WHITE, true);
                 return;
             }
-            
+
             if (_applicationView.CUE4Parse.Game == FGame.FortniteGame &&
                 _applicationView.CUE4Parse.Provider.MappingsContainer == null)
             {
                 FLogger.AppendError();
                 FLogger.AppendText("Mappings could not get pulled, extracting assets might not work properly. If so, press F12 or please restart.", Constants.WHITE, true);
             }
-            
+
 #if DEBUG
             var loadingTime = Stopwatch.StartNew();
 #endif
@@ -61,6 +61,7 @@ namespace FModel.ViewModels.Commands
             MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
 
             await _applicationView.CUE4Parse.LoadLocalizedResources(); // load locres if not already loaded
+            await _applicationView.CUE4Parse.LoadHotfixedLocalizedResources(); // load hofixed locres
             await _applicationView.CUE4Parse.LoadVirtualPaths(); // load virtual paths if not already loaded
             Helper.CloseWindow<AdonisWindow>("Search View"); // close search window if opened
 

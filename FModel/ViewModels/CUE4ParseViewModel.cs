@@ -346,6 +346,36 @@ namespace FModel.ViewModels
             });
         }
 
+        /// <summary>
+        /// Load hotfixed localized resources
+        /// </summary>
+        /// <remarks>Functions only when LoadLocalizedResources is used prior to this.</remarks>
+        public async Task LoadHotfixedLocalizedResources()
+        {
+            var i = 0;
+            if (LocalizedResourcesCount <= 0) return;
+            await _threadWorkerView.Begin(cancellationToken =>
+            {
+                var hotfixes = ApplicationService.ApiEndpointView.BenbotApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
+
+                foreach (var entries in hotfixes)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (!Provider.LocalizedResources.ContainsKey(entries.Key))
+                        Provider.LocalizedResources[entries.Key] = new Dictionary<string, string>();
+
+                    foreach (var keyValue in entries.Value)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        Provider.LocalizedResources[entries.Key][keyValue.Key] = keyValue.Value;
+                        i++;
+                    }
+                }
+            });
+
+            LocalizedResourcesCount += i;
+        }
+
         public async Task LoadVirtualPaths()
         {
             if (VirtualPathCount > 0) return;

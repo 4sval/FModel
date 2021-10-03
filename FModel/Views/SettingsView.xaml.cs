@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using FModel.Services;
 using FModel.Settings;
@@ -45,6 +45,7 @@ namespace FModel.Views
             {
                 _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
                 await _applicationView.CUE4Parse.LoadLocalizedResources();
+                await _applicationView.CUE4Parse.LoadHotfixedLocalizedResources();
             }
         }
 
