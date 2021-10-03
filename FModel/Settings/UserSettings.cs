@@ -36,7 +36,7 @@ namespace FModel.Settings
         {
             if (File.Exists(FilePath)) File.Delete(FilePath);
         }
-        
+
         private bool _showChangelog = true;
         public bool ShowChangelog
         {
@@ -228,7 +228,9 @@ namespace FModel.Settings
             {FGame.RogueCompany, Constants._NO_PRESET_TRIGGER},
             {FGame.SwGame, Constants._NO_PRESET_TRIGGER},
             {FGame.Platform, Constants._NO_PRESET_TRIGGER},
-            {FGame.BendGame, Constants._NO_PRESET_TRIGGER}
+            {FGame.BendGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.TslGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.PortalWars, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -252,7 +254,9 @@ namespace FModel.Settings
             {FGame.RogueCompany, EGame.GAME_RogueCompany},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
             {FGame.Platform, EGame.GAME_UE4_25},
-            {FGame.BendGame, EGame.GAME_UE4_11}
+            {FGame.BendGame, EGame.GAME_UE4_11},
+            {FGame.TslGame, EGame.GAME_PlayerUnknownsBattlegrounds},
+            {FGame.PortalWars, EGame.GAME_UE4_LATEST},
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -276,14 +280,16 @@ namespace FModel.Settings
             {FGame.RogueCompany, UE4Version.VER_UE4_DETERMINE_BY_GAME},
             {FGame.SwGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
             {FGame.Platform, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.BendGame, UE4Version.VER_UE4_DETERMINE_BY_GAME}
+            {FGame.BendGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
+            {FGame.TslGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
+            {FGame.PortalWars, UE4Version.VER_UE4_DETERMINE_BY_GAME}
         };
         public IDictionary<FGame, UE4Version> OverridedUEVersion
         {
             get => _overridedUEVersion;
             set => SetProperty(ref _overridedUEVersion, value);
         }
-        
+
         private IDictionary<FGame, List<FCustomVersion>> _overridedCustomVersions = new Dictionary<FGame, List<FCustomVersion>>
         {
             {FGame.Unknown, null},
@@ -300,14 +306,16 @@ namespace FModel.Settings
             {FGame.RogueCompany, null},
             {FGame.SwGame, null},
             {FGame.Platform, null},
-            {FGame.BendGame, null}
+            {FGame.BendGame, null},
+            {FGame.TslGame, null},
+            {FGame.PortalWars, null}
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
             get => _overridedCustomVersions;
             set => SetProperty(ref _overridedCustomVersions, value);
         }
-        
+
         private IDictionary<FGame, Dictionary<string, bool>> _overridedOptions = new Dictionary<FGame, Dictionary<string, bool>>
         {
             {FGame.Unknown, null},
@@ -324,7 +332,9 @@ namespace FModel.Settings
             {FGame.RogueCompany, null},
             {FGame.SwGame, null},
             {FGame.Platform, null},
-            {FGame.BendGame, null}
+            {FGame.BendGame, null},
+            {FGame.TslGame, null},
+            {FGame.PortalWars, null}
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
@@ -387,7 +397,9 @@ namespace FModel.Settings
             {FGame.RogueCompany, new List<CustomDirectory>()},
             {FGame.SwGame, new List<CustomDirectory>()},
             {FGame.Platform, new List<CustomDirectory>()},
-            {FGame.BendGame, new List<CustomDirectory>()}
+            {FGame.BendGame, new List<CustomDirectory>()},
+            {FGame.TslGame, new List<CustomDirectory>()},
+            {FGame.PortalWars, new List<CustomDirectory>()}
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {
@@ -534,14 +546,14 @@ namespace FModel.Settings
             get => _meshExportFormat;
             set => SetProperty(ref _meshExportFormat, value);
         }
-        
+
         private ELodFormat _lodExportFormat = ELodFormat.FirstLod;
         public ELodFormat LodExportFormat
         {
             get => _lodExportFormat;
             set => SetProperty(ref _lodExportFormat, value);
         }
-        
+
         private ETextureFormat _textureExportFormat = ETextureFormat.Png;
         public ETextureFormat TextureExportFormat
         {

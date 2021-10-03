@@ -90,7 +90,11 @@ namespace FModel
         [Description("Core")]
         Platform,
         [Description("Days Gone")]
-        BendGame
+        BendGame,
+        [Description("PLAYERUNKNOWN'S BATTLEGROUNDS")]
+        TslGame,
+        [Description("Splitgate")]
+        PortalWars
     }
 
     public enum ELoadingMode
