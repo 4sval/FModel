@@ -1,9 +1,11 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using FModel.Extensions;
+using FModel.Framework;
 using FModel.ViewModels;
 using ICSharpCode.AvalonEdit;
 using SkiaSharp;
@@ -20,12 +22,14 @@ namespace FModel.Views.Resources.Controls
         private readonly Regex _hexColorRegex = new("\"Hex\": \"(?'target'[0-9A-Fa-f]{3,8})\"$",
             RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         private readonly System.Windows.Controls.ToolTip _toolTip = new();
+        private readonly NavigationList<int> _caretList = new();
+        private bool _ignoreCaret = true;
 
         public AvalonEditor()
         {
             CommandBindings.Add(new CommandBinding(NavigationCommands.Search, (_, e) => FindNext(e.Parameter != null)));
             InitializeComponent();
-            
+
             YesWeEditor = MyAvalonEditor;
             YesWeSearch = WpfSuckMyDick;
             MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
@@ -48,6 +52,23 @@ namespace FModel.Views.Resources.Controls
                     dc.SearchUp = true;
                     FindNext();
                     dc.SearchUp = old;
+                    break;
+                case Key.System: // Alt
+                    if (Keyboard.IsKeyDown(Key.Left))
+                    {
+                        if (_caretList.Count == 0)
+                            return;
+                        var movep = _caretList.MovePrevious;
+                        MyAvalonEditor.CaretOffset = movep;
+                        MyAvalonEditor.TextArea.Caret.BringCaretToView();
+                    } else if ((Keyboard.IsKeyDown(Key.Right)))
+                    {
+                        if (_caretList.Count == 0)
+                            return;
+                        var move = _caretList.MoveNext;
+                        MyAvalonEditor.CaretOffset = move;
+                        MyAvalonEditor.TextArea.Caret.BringCaretToView();
+                    }
                     break;
             }
         }
@@ -88,7 +109,8 @@ namespace FModel.Views.Resources.Controls
             if (sender is not TextEditor avalonEditor || DataContext is not TabItem tabItem ||
                 avalonEditor.Document == null || string.IsNullOrEmpty(avalonEditor.Document.Text))
                 return;
-            
+            _caretList.Clear();
+            _ignoreCaret = true;
             avalonEditor.Document.FileName = tabItem.Directory + '/' + tabItem.Header.SubstringBeforeLast('.');
             if (!tabItem.ShouldScroll) return;
 
@@ -102,7 +124,7 @@ namespace FModel.Views.Resources.Controls
         {
             if (DataContext is not TabItem tabItem || Keyboard.Modifiers != ModifierKeys.Control)
                 return;
-            
+
             var fontSize = tabItem.FontSize + e.Delta / 50.0;
             tabItem.FontSize = fontSize switch
             {
@@ -185,6 +207,23 @@ namespace FModel.Views.Resources.Controls
         private void OnCloseClick(object sender, RoutedEventArgs e)
         {
             ((TabItem) DataContext).HasSearchOpen = false;
+        }
+
+        private void SaveCaretLoc(int offset)
+        {
+            if (_ignoreCaret) { _ignoreCaret = false; return;} // first always point to the end of the file for some reason
+            if (_caretList.Count >= 10)
+                _caretList.RemoveAt(0);
+            if (!_caretList.Contains(offset))
+            {
+                _caretList.Add(offset);
+                _caretList.CurrentIndex = _caretList.Count-1;
+            }
+        }
+
+        private void OnMouseRelease(object sender, MouseButtonEventArgs e)
+        {
+            SaveCaretLoc(MyAvalonEditor.CaretOffset);
         }
     }
 }

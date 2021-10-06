@@ -357,6 +357,7 @@ namespace FModel.ViewModels
             await _threadWorkerView.Begin(cancellationToken =>
             {
                 var hotfixes = ApplicationService.ApiEndpointView.BenbotApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
+                if (hotfixes == null) return;
 
                 foreach (var entries in hotfixes)
                 {
