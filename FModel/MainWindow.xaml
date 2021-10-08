@@ -342,14 +342,14 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            
+
                             <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="5" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                
+
                                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                                     <Image Source="/FModel;component/Resources/label.png"
                                            Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
@@ -457,7 +457,7 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    
+
                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="0" Grid.Column="1" Text="Assets Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
@@ -481,7 +481,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                
+
                                 <Grid Grid.Column="0" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -509,11 +509,11 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                
+
                                 <controls:Breadcrumb Grid.Row="0" MaxWidth="{Binding ActualWidth, ElementName=AssetsSearchName}" HorizontalAlignment="Left" Margin="0 5 0 5"
                                                      DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName, FallbackValue='No/Directory/Detected/In/Folder'}"/>
-                                
-                                <ListBox Grid.Row="1" x:Name="AssetsListName" Style="{StaticResource AssetsListBox}" PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick">
+
+                                <ListBox Grid.Row="1" x:Name="AssetsListName" Style="{StaticResource AssetsListBox}" PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick" PreviewKeyDown="OnPreviewKeyDown">
                                     <ListBox.ContextMenu>
                                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                                             <MenuItem Header="Extract in New Tab" Command="{Binding DataContext.RightClickMenuCommand}">
@@ -643,7 +643,7 @@
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        
+
                                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.Offset, ElementName=AssetsListName, FallbackValue=0, StringFormat='{}0x{0:X}'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="0" Grid.Column="1" Text="Offset" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.Size, ElementName=AssetsListName, FallbackValue=0, Converter={x:Static converters:SizeToStringConverter.Instance}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
@@ -673,7 +673,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    
+
                     <TabControl Grid.Row="0" x:Name="TabControlName" Style="{StaticResource GameFilesTabControl}" />
                     <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down">
                         <Grid>
@@ -682,7 +682,7 @@
                                 <ColumnDefinition Width="2" />
                                 <ColumnDefinition Width="24" />
                             </Grid.ColumnDefinitions>
-                            
+
                             <controls:CustomRichTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="LogRtbName" Style="{StaticResource CustomRichTextBox}" />
                             <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="-5 -5 5 5">
                                 <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Open Output Folder" Padding="0,4,0,4"
@@ -843,7 +843,7 @@
                         </StatusBarItem.Style>
                         <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="TEX" />
                     </StatusBarItem>
-                    
+
                     <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Materials Enabled">
                         <StatusBarItem.Style>
                             <Style TargetType="StatusBarItem">
@@ -856,7 +856,7 @@
                         </StatusBarItem.Style>
                         <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="MAT" />
                     </StatusBarItem>
-                    
+
                     <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Meshes Enabled">
                         <StatusBarItem.Style>
                             <Style TargetType="StatusBarItem">

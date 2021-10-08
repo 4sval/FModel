@@ -352,6 +352,8 @@ namespace FModel.ViewModels
         /// <remarks>Functions only when LoadLocalizedResources is used prior to this.</remarks>
         public async Task LoadHotfixedLocalizedResources()
         {
+            if (Game != FGame.FortniteGame) return;
+
             var i = 0;
             if (LocalizedResourcesCount <= 0) return;
             await _threadWorkerView.Begin(cancellationToken =>

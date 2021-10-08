@@ -248,5 +248,18 @@ namespace FModel
             UserSettings.Default.LoadingMode = ELoadingMode.Multiple;
             _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
         }
+
+        private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (!_applicationView.IsReady || sender is not ListBox listBox) return;
+
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    var selectedItems = listBox.SelectedItems.Cast<AssetItem>().ToList();
+                    await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
+                    break;
+            }
+        }
     }
 }
