@@ -384,7 +384,7 @@ namespace FModel.ViewModels
             if (VirtualPathCount > 0) return;
             await _threadWorkerView.Begin(cancellationToken =>
             {
-                VirtualPathCount = Provider.LoadVirtualPaths(cancellationToken);
+                VirtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedUEVersion[Game], cancellationToken);
                 if (VirtualPathCount > 0)
                 {
                     FLogger.AppendInformation();
@@ -665,7 +665,7 @@ namespace FModel.ViewModels
                     }
                     else
                     {
-                        Application.Current.Dispatcher.Invoke(delegate
+                        Application.Current.Dispatcher.Invoke(() =>
                         {
                             var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
                             modelViewer.Load(export);
