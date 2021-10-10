@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,11 +31,14 @@ using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse_Conversion.Textures;
 using EpicManifestParser.Objects;
+using FModel;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
+using FModel.ViewModels;
+using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using Newtonsoft.Json;
@@ -269,7 +273,17 @@ namespace FModel.ViewModels
                     UserSettings.Default.AesKeys[Game] = aes;
                 });
             }
+            if (Game == FGame.Dungeons) // Checks if game is Dungeons
+            {
+                WebClient client = new WebClient();
+                var downloadString = client.DownloadString("https://sirvibegodlol.github.io/aes/latestAES.json");
+                var aes = downloadString;
+                AesResponse aesResponse = new AesResponse();
+                aesResponse.MainKey = aes;
+                UserSettings.Default.AesKeys[Game] = aesResponse;
+            }
         }
+
 
         public async Task InitInformation()
         {
