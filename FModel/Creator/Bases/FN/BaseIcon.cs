@@ -78,7 +78,7 @@ namespace FModel.Creator.Bases.FN
 
         public override void ParseForInfo()
         {
-            ParseForReward(UserSettings.Default.CosmeticDisplayAsset == EEnabledDisabled.Enabled);
+            ParseForReward(UserSettings.Default.CosmeticDisplayAsset);
 
             if (Object.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags"))
                 CheckGameplayTags(gameplayTags);

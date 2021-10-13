@@ -119,7 +119,7 @@ namespace FModel.ViewModels
                 SetProperty(ref _highlighter, value);
             }
         }
-        
+
         public byte[] ImageBuffer { get; private set; }
 
         private BitmapImage _image;
@@ -133,7 +133,7 @@ namespace FModel.ViewModels
                 RaisePropertyChanged("HasImage");
             }
         }
-        
+
         private bool _noAlpha;
         public bool NoAlpha
         {
@@ -193,7 +193,7 @@ namespace FModel.ViewModels
         {
             var fileName = Path.ChangeExtension(Header, ".json");
             var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Saves",
-                UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled ? Directory : "", fileName).Replace('\\', '/');
+                UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName).Replace('\\', '/');
 
             if (!autoSave)
             {
@@ -222,7 +222,7 @@ namespace FModel.ViewModels
         public void SetImage(SKImage img)
         {
             _img = img;
-            
+
             using var data = _img.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
             using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
             var image = new BitmapImage();
@@ -242,7 +242,7 @@ namespace FModel.ViewModels
             if (!HasImage) return;
             var fileName = Path.ChangeExtension(Header, ".png");
             var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Textures",
-                UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled ? Directory : "", fileName!).Replace('\\', '/');
+                UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
 
             if (!autoSave)
             {
@@ -324,7 +324,7 @@ namespace FModel.ViewModels
                 SelectedTab.Directory = d;
                 return;
             }
-            
+
             Application.Current.Dispatcher.Invoke(() =>
             {
                 _tabItems.Add(new TabItem(h, d));

@@ -51,14 +51,6 @@ namespace FModel
         Never
     }
 
-    public enum EEnabledDisabled
-    {
-        [Description("Disabled")]
-        Disabled,
-        [Description("Enabled")]
-        Enabled
-    }
-
     public enum FGame
     {
         [Description("Unknown")]

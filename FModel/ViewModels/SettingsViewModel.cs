@@ -53,14 +53,14 @@ namespace FModel.ViewModels
             get => _selectedUeVersion;
             set => SetProperty(ref _selectedUeVersion, value);
         }
-        
+
         private List<FCustomVersion> _selectedCustomVersions;
         public List<FCustomVersion> SelectedCustomVersions
         {
             get => _selectedCustomVersions;
             set => SetProperty(ref _selectedCustomVersions, value);
         }
-        
+
         private Dictionary<string, bool> _selectedOptions;
         public Dictionary<string, bool> SelectedOptions
         {
@@ -89,13 +89,6 @@ namespace FModel.ViewModels
             set => SetProperty(ref _selectedDiscordRpc, value);
         }
 
-        private EEnabledDisabled _selectedDirectoryStructure;
-        public EEnabledDisabled SelectedDirectoryStructure
-        {
-            get => _selectedDirectoryStructure;
-            set => SetProperty(ref _selectedDirectoryStructure, value);
-        }
-
         private ECompressedAudio _selectedCompressedAudio;
         public ECompressedAudio SelectedCompressedAudio
         {
@@ -110,27 +103,20 @@ namespace FModel.ViewModels
             set => SetProperty(ref _selectedCosmeticStyle, value);
         }
 
-        private EEnabledDisabled _selectedCosmeticDisplayAsset;
-        public EEnabledDisabled SelectedCosmeticDisplayAsset
-        {
-            get => _selectedCosmeticDisplayAsset;
-            set => SetProperty(ref _selectedCosmeticDisplayAsset, value);
-        }
-        
         private EMeshFormat _selectedMeshExportFormat;
         public EMeshFormat SelectedMeshExportFormat
         {
             get => _selectedMeshExportFormat;
             set => SetProperty(ref _selectedMeshExportFormat, value);
         }
-        
+
         private ELodFormat _selectedLodExportFormat;
         public ELodFormat SelectedLodExportFormat
         {
             get => _selectedLodExportFormat;
             set => SetProperty(ref _selectedLodExportFormat, value);
         }
-        
+
         private ETextureFormat _selectedTextureExportFormat;
         public ETextureFormat SelectedTextureExportFormat
         {
@@ -145,10 +131,8 @@ namespace FModel.ViewModels
         public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
         public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
         public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
-        public ReadOnlyObservableCollection<EEnabledDisabled> DirectoryStructures { get; private set; }
         public ReadOnlyObservableCollection<ECompressedAudio> CompressedAudios { get; private set; }
         public ReadOnlyObservableCollection<EIconStyle> CosmeticStyles { get; private set; }
-        public ReadOnlyObservableCollection<EEnabledDisabled> CosmeticDisplayAssets { get; private set; }
         public ReadOnlyObservableCollection<EMeshFormat> MeshExportFormats { get; private set; }
         public ReadOnlyObservableCollection<ELodFormat> LodExportFormats { get; private set; }
         public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
@@ -166,10 +150,8 @@ namespace FModel.ViewModels
         private List<FCustomVersion> _customVersionsSnapshot;
         private Dictionary<string, bool> _optionsSnapshot;
         private ELanguage _assetLanguageSnapshot;
-        private EEnabledDisabled _directoryStructureSnapshot;
         private ECompressedAudio _compressedAudioSnapshot;
         private EIconStyle _cosmeticStyleSnapshot;
-        private EEnabledDisabled _cosmeticDisplayAssetSnapshot;
         private EMeshFormat _meshExportFormatSnapshot;
         private ELodFormat _lodExportFormatSnapshot;
         private ETextureFormat _textureExportFormatSnapshot;
@@ -190,10 +172,8 @@ namespace FModel.ViewModels
             _customVersionsSnapshot = UserSettings.Default.OverridedCustomVersions[_game];
             _optionsSnapshot = UserSettings.Default.OverridedOptions[_game];
             _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
-            _directoryStructureSnapshot = UserSettings.Default.KeepDirectoryStructure;
             _compressedAudioSnapshot = UserSettings.Default.CompressedAudioMode;
             _cosmeticStyleSnapshot = UserSettings.Default.CosmeticStyle;
-            _cosmeticDisplayAssetSnapshot = UserSettings.Default.CosmeticDisplayAsset;
             _meshExportFormatSnapshot = UserSettings.Default.MeshExportFormat;
             _lodExportFormatSnapshot = UserSettings.Default.LodExportFormat;
             _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
@@ -205,10 +185,8 @@ namespace FModel.ViewModels
             SelectedCustomVersions = _customVersionsSnapshot;
             SelectedOptions = _optionsSnapshot;
             SelectedAssetLanguage = _assetLanguageSnapshot;
-            SelectedDirectoryStructure = _directoryStructureSnapshot;
             SelectedCompressedAudio = _compressedAudioSnapshot;
             SelectedCosmeticStyle = _cosmeticStyleSnapshot;
-            SelectedCosmeticDisplayAsset = _cosmeticDisplayAssetSnapshot;
             SelectedMeshExportFormat = _meshExportFormatSnapshot;
             SelectedLodExportFormat = _lodExportFormatSnapshot;
             SelectedTextureExportFormat = _textureExportFormatSnapshot;
@@ -222,10 +200,8 @@ namespace FModel.ViewModels
             AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
             AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
             DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
-            DirectoryStructures = new ReadOnlyObservableCollection<EEnabledDisabled>(new ObservableCollection<EEnabledDisabled>(EnumerateEnabledDisabled()));
             CompressedAudios = new ReadOnlyObservableCollection<ECompressedAudio>(new ObservableCollection<ECompressedAudio>(EnumerateCompressedAudios()));
             CosmeticStyles = new ReadOnlyObservableCollection<EIconStyle>(new ObservableCollection<EIconStyle>(EnumerateCosmeticStyles()));
-            CosmeticDisplayAssets = new ReadOnlyObservableCollection<EEnabledDisabled>(new ObservableCollection<EEnabledDisabled>(EnumerateEnabledDisabled()));
             MeshExportFormats = new ReadOnlyObservableCollection<EMeshFormat>(new ObservableCollection<EMeshFormat>(EnumerateMeshExportFormat()));
             LodExportFormats = new ReadOnlyObservableCollection<ELodFormat>(new ObservableCollection<ELodFormat>(EnumerateLodExportFormat()));
             TextureExportFormats = new ReadOnlyObservableCollection<ETextureFormat>(new ObservableCollection<ETextureFormat>(EnumerateTextureExportFormat()));
@@ -238,7 +214,7 @@ namespace FModel.ViewModels
                 if (string.IsNullOrEmpty(gameName)) return;
                 _gamePreset = _apiEndpointView.FModelApi.GetGames(cancellationToken, gameName);
             });
-            
+
             if (_gamePreset?.Versions == null) return;
             foreach (var version in _gamePreset.Versions.Keys)
             {
@@ -251,7 +227,7 @@ namespace FModel.ViewModels
             if (_gamePreset?.Versions == null || !_gamePreset.Versions.TryGetValue(key, out var version)) return;
             SelectedUeGame = version.GameEnum.ToEnum(EGame.GAME_UE4_LATEST);
             SelectedUeVersion = (UE4Version)version.UeVer;
-            
+
             SelectedCustomVersions = new List<FCustomVersion>();
             foreach (var (guid, v) in version.CustomVersions)
             {
@@ -264,7 +240,7 @@ namespace FModel.ViewModels
                 SelectedOptions[k] = v;
             }
         }
-        
+
         public void ResetPreset()
         {
             SelectedUeGame = _ueGameSnapshot;
@@ -293,10 +269,8 @@ namespace FModel.ViewModels
             UserSettings.Default.OverridedCustomVersions[_game] = SelectedCustomVersions;
             UserSettings.Default.OverridedOptions[_game] = SelectedOptions;
             UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
-            UserSettings.Default.KeepDirectoryStructure = SelectedDirectoryStructure;
             UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
             UserSettings.Default.CosmeticStyle = SelectedCosmeticStyle;
-            UserSettings.Default.CosmeticDisplayAsset = SelectedCosmeticDisplayAsset;
             UserSettings.Default.MeshExportFormat = SelectedMeshExportFormat;
             UserSettings.Default.LodExportFormat = SelectedLodExportFormat;
             UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
@@ -321,7 +295,6 @@ namespace FModel.ViewModels
         private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues(SelectedDiscordRpc.GetType()).Cast<EDiscordRpc>();
         private IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues(SelectedCompressedAudio.GetType()).Cast<ECompressedAudio>();
         private IEnumerable<EIconStyle> EnumerateCosmeticStyles() => Enum.GetValues(SelectedCosmeticStyle.GetType()).Cast<EIconStyle>();
-        private IEnumerable<EEnabledDisabled> EnumerateEnabledDisabled() => Enum.GetValues(SelectedCosmeticDisplayAsset.GetType()).Cast<EEnabledDisabled>();
         private IEnumerable<EMeshFormat> EnumerateMeshExportFormat() => Enum.GetValues(SelectedMeshExportFormat.GetType()).Cast<EMeshFormat>();
         private IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues(SelectedLodExportFormat.GetType()).Cast<ELodFormat>();
         private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues(SelectedTextureExportFormat.GetType()).Cast<ETextureFormat>();

@@ -95,13 +95,6 @@ namespace FModel.ViewModels
             set => SetProperty(ref _brFireflies, value, "ApolloGameplay_Fireflies");
         }
 
-        private bool _brCorruptionZones;
-        public bool BrCorruptionZones
-        {
-            get => _brCorruptionZones;
-            set => SetProperty(ref _brCorruptionZones, value, "ApolloGameplay_CorruptionZones");
-        }
-
         private bool _brCubeMovements;
         public bool BrCubeMovements
         {
@@ -237,11 +230,7 @@ namespace FModel.ViewModels
                 if (!value.IsEnabled || !withMap && key == _FIRST_BITMAP)
                     continue;
 
-                SKPaint p = null;
-                if (key == "ApolloGameplay_CorruptionZones")
-                    p = new SKPaint { BlendMode = SKBlendMode.Difference };
-
-                c.DrawBitmap(value.Layer, new SKRect(0, 0, _widthHeight, _widthHeight), p);
+                c.DrawBitmap(value.Layer, new SKRect(0, 0, _widthHeight, _widthHeight));
             }
 
             return ret;
@@ -286,9 +275,6 @@ namespace FModel.ViewModels
                         break;
                     case "ApolloGameplay_Fireflies":
                         await LoadFireflies();
-                        break;
-                    case "ApolloGameplay_CorruptionZones":
-                        await LoadCorruptionZones();
                         break;
                     case "ApolloGameplay_CubeMovements":
                         await LoadCubeMovements();
@@ -886,31 +872,6 @@ namespace FModel.ViewModels
                 }
 
                 _bitmaps[0]["ApolloGameplay_TagsLocation"] = new MapLayer {Layer = tagsLocationBitmap, IsEnabled = false};
-            });
-        }
-
-        private async Task LoadCorruptionZones()
-        {
-            await _threadWorkerView.Begin(_ =>
-            {
-                _fillPaint.StrokeWidth = 5;
-                if (!Utils.TryLoadObject("FortniteGame/Content/Athena/Apollo/Environments/Landscape/Materials/Corruption/T_InitialCorruptionAreas.T_InitialCorruptionAreas", out UTexture2D corruption))
-                    return;
-
-                var overlay = Utils.GetBitmap(corruption);
-                var width = overlay.Width;
-                var height = overlay.Height;
-                var rotatedBitmap = new SKBitmap(width, height, SKColorType.Rgba8888, SKAlphaType.Opaque);
-
-                using var c = new SKCanvas(rotatedBitmap);
-                c.Clear();
-                c.Translate(0, width);
-                c.RotateDegrees(-90);
-
-                overlay.ClearToTransparent(SKColors.Lime);
-                c.DrawBitmap(overlay, 0, 0);
-
-                _bitmaps[0]["ApolloGameplay_CorruptionZones"] = new MapLayer {Layer = rotatedBitmap.Resize(_widthHeight, _widthHeight), IsEnabled = false};
             });
         }
 

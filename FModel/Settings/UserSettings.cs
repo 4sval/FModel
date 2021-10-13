@@ -156,8 +156,8 @@ namespace FModel.Settings
             set => SetProperty(ref _updateMode, value);
         }
 
-        private EEnabledDisabled _keepDirectoryStructure = EEnabledDisabled.Enabled;
-        public EEnabledDisabled KeepDirectoryStructure
+        private bool _keepDirectoryStructure = true;
+        public bool KeepDirectoryStructure
         {
             get => _keepDirectoryStructure;
             set => SetProperty(ref _keepDirectoryStructure, value);
@@ -198,8 +198,8 @@ namespace FModel.Settings
             set => SetProperty(ref _cosmeticStyle, value);
         }
 
-        private EEnabledDisabled _cosmeticDisplayAsset = EEnabledDisabled.Disabled;
-        public EEnabledDisabled CosmeticDisplayAsset
+        private bool _cosmeticDisplayAsset;
+        public bool CosmeticDisplayAsset
         {
             get => _cosmeticDisplayAsset;
             set => SetProperty(ref _cosmeticDisplayAsset, value);
@@ -552,6 +552,13 @@ namespace FModel.Settings
         {
             get => _lodExportFormat;
             set => SetProperty(ref _lodExportFormat, value);
+        }
+
+        private bool _saveSkeletonAsMesh;
+        public bool SaveSkeletonAsMesh
+        {
+            get => _saveSkeletonAsMesh;
+            set => SetProperty(ref _saveSkeletonAsMesh, value);
         }
 
         private ETextureFormat _textureExportFormat = ETextureFormat.Png;

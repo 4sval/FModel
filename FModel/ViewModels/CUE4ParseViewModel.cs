@@ -696,8 +696,7 @@ namespace FModel.ViewModels
             var userDir = Path.Combine(UserSettings.Default.OutputDirectory, "Sounds");
             if (fullPath.StartsWith("/")) fullPath = fullPath[1..];
             var savedAudioPath = Path.Combine(userDir,
-                UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled
-                    ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLower()}";
+                UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLower()}";
 
             if (!UserSettings.Default.IsAutoOpenSounds)
             {
@@ -747,8 +746,7 @@ namespace FModel.ViewModels
             {
                 foreach (var kvp in assets)
                 {
-                    var path = Path.Combine(directory, UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled
-                        ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
+                    var path = Path.Combine(directory, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
                     Directory.CreateDirectory(path.SubstringBeforeLast('/'));
                     File.WriteAllBytes(path, kvp.Value);
                 }

@@ -30,7 +30,7 @@ namespace FModel.Creator.Bases.FN
 
         public override void ParseForInfo()
         {
-            ParseForReward(UserSettings.Default.CosmeticDisplayAsset == EEnabledDisabled.Enabled);
+            ParseForReward(UserSettings.Default.CosmeticDisplayAsset);
 
             if (Object.TryGetValue(out FPackageIndex series, "Series") && Utils.TryGetPackageIndexExport(series, out UObject export))
                 _rarityName = export.Name;
