@@ -673,6 +673,7 @@ namespace FModel.ViewModels
                     }
                     return true;
                 }
+                case USkeleton when UserSettings.Default.IsAutoSaveMeshes && UserSettings.Default.SaveSkeletonAsMesh:
                 case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials:
                 case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations:
                 {
