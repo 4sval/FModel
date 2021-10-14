@@ -97,7 +97,7 @@ csharp_style_throw_expression = true:suggestion
 csharp_style_conditional_delegate_call = true:suggestion
 
 # Space preferences
-csharp_space_after_cast = false
+csharp_space_after_cast = true
 csharp_space_after_colon_in_inheritance_clause = true
 csharp_space_after_comma = true
 csharp_space_after_dot = false
