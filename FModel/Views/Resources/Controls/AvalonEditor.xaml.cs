@@ -24,7 +24,7 @@ namespace FModel.Views.Resources.Controls
         private readonly Regex _hexColorRegex = new("\"Hex\": \"(?'target'[0-9A-Fa-f]{3,8})\"$",
             RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         private readonly System.Windows.Controls.ToolTip _toolTip = new();
-        private Dictionary<string, NavigationList<int>> _savedCarets= new();
+        private readonly Dictionary<string, NavigationList<int>> _savedCarets = new();
         private NavigationList<int> _caretsOffsets
         {
             get
@@ -223,7 +223,7 @@ namespace FModel.Views.Resources.Controls
 
         private void OnTabClose(object sender, EventArgs eventArgs)
         {
-            if (sender is not TabItem tab|| eventArgs is not TabControlViewModel.TabEventArgs e)
+            if (sender is not TabControlViewModel tab|| eventArgs is not TabControlViewModel.TabEventArgs e)
                 return;
             var fileName = e.TabToRemove.Document.FileName;
             if (_savedCarets.ContainsKey(fileName))
