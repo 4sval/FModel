@@ -1,4 +1,5 @@
-﻿using FModel.Extensions;
+﻿using System;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Settings;
 using FModel.ViewModels.Commands;
@@ -349,9 +350,16 @@ namespace FModel.ViewModels
                 }
 
                 _tabItems.Remove(tabToDelete);
+                OnTabRemove?.Invoke(this, new TabEventArgs(tabToDelete));
             });
         }
 
+        public class TabEventArgs : EventArgs
+        {
+            public TabItem TabToRemove { get; set; }
+            public TabEventArgs(TabItem tab) { TabToRemove = tab; }
+        }
+        public event EventHandler OnTabRemove;
         public void GoLeftTab() => SelectedTab = _tabItems.Previous(SelectedTab);
         public void GoRightTab() => SelectedTab = _tabItems.Next(SelectedTab);
 

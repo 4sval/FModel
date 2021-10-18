@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
+using FModel.Services;
 using FModel.ViewModels;
 using ICSharpCode.AvalonEdit;
 using SkiaSharp;
@@ -21,7 +24,17 @@ namespace FModel.Views.Resources.Controls
         private readonly Regex _hexColorRegex = new("\"Hex\": \"(?'target'[0-9A-Fa-f]{3,8})\"$",
             RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         private readonly System.Windows.Controls.ToolTip _toolTip = new();
-        private readonly NavigationList<int> _caretList = new();
+        private Dictionary<string, NavigationList<int>> _savedCarets= new();
+        private NavigationList<int> _caretsOffsets
+        {
+            get
+            {
+                if (MyAvalonEditor.Document != null)
+                    return _savedCarets.GetOrAdd(MyAvalonEditor.Document.FileName, () => new NavigationList<int>());
+                else
+                    return new NavigationList<int>();
+            }
+        }
         private bool _ignoreCaret = true;
 
         public AvalonEditor()
@@ -33,6 +46,8 @@ namespace FModel.Views.Resources.Controls
             YesWeSearch = WpfSuckMyDick;
             MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
             MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
+
+            ApplicationService.ApplicationView.CUE4Parse.TabControl.OnTabRemove += OnTabClose;
         }
 
         private void OnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -55,17 +70,13 @@ namespace FModel.Views.Resources.Controls
                 case Key.System: // Alt
                     if (Keyboard.IsKeyDown(Key.Left))
                     {
-                        if (_caretList.Count == 0)
-                            return;
-                        var movep = _caretList.MovePrevious;
-                        MyAvalonEditor.CaretOffset = movep;
+                        if (_caretsOffsets.Count == 0) return;
+                        MyAvalonEditor.CaretOffset = _caretsOffsets.MovePrevious;
                         MyAvalonEditor.TextArea.Caret.BringCaretToView();
                     } else if ((Keyboard.IsKeyDown(Key.Right)))
                     {
-                        if (_caretList.Count == 0)
-                            return;
-                        var move = _caretList.MoveNext;
-                        MyAvalonEditor.CaretOffset = move;
+                        if (_caretsOffsets.Count == 0) return;
+                        MyAvalonEditor.CaretOffset = _caretsOffsets.MoveNext;
                         MyAvalonEditor.TextArea.Caret.BringCaretToView();
                     }
                     break;
@@ -108,9 +119,11 @@ namespace FModel.Views.Resources.Controls
             if (sender is not TextEditor avalonEditor || DataContext is not TabItem tabItem ||
                 avalonEditor.Document == null || string.IsNullOrEmpty(avalonEditor.Document.Text))
                 return;
-            _caretList.Clear();
-            _ignoreCaret = true;
-            avalonEditor.Document.FileName = tabItem.Directory + '/' + tabItem.Header.SubstringBeforeLast('.');
+            avalonEditor.Document.FileName = tabItem.Directory + '/' + StringExtensions.SubstringBeforeLast(tabItem.Header, '.');
+
+            if (!_savedCarets.ContainsKey(avalonEditor.Document.FileName))
+                _ignoreCaret = true;
+
             if (!tabItem.ShouldScroll) return;
 
             var lineNumber = avalonEditor.Document.Text.GetLineNumber(tabItem.ScrollTrigger);
@@ -208,15 +221,24 @@ namespace FModel.Views.Resources.Controls
             ((TabItem) DataContext).HasSearchOpen = false;
         }
 
+        private void OnTabClose(object sender, EventArgs eventArgs)
+        {
+            if (sender is not TabItem tab|| eventArgs is not TabControlViewModel.TabEventArgs e)
+                return;
+            var fileName = e.TabToRemove.Document.FileName;
+            if (_savedCarets.ContainsKey(fileName))
+                _savedCarets.Remove(fileName);
+        }
+
         private void SaveCaretLoc(int offset)
         {
             if (_ignoreCaret) { _ignoreCaret = false; return;} // first always point to the end of the file for some reason
-            if (_caretList.Count >= 10)
-                _caretList.RemoveAt(0);
-            if (!_caretList.Contains(offset))
+            if (_caretsOffsets.Count >= 10)
+                _caretsOffsets.RemoveAt(0);
+            if (!_caretsOffsets.Contains(offset))
             {
-                _caretList.Add(offset);
-                _caretList.CurrentIndex = _caretList.Count-1;
+                _caretsOffsets.Add(offset);
+                _caretsOffsets.CurrentIndex = _caretsOffsets.Count-1;
             }
         }
 
