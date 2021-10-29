@@ -722,7 +722,7 @@ namespace FModel.ViewModels
 
         private void SaveExport(UObject export)
         {
-            var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat);
+            var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
             var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
             if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
             {
