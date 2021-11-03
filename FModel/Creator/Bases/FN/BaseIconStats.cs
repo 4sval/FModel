@@ -145,7 +145,7 @@ namespace FModel.Creator.Bases.FN
                 curveTable.TryGetCurveTableRow(rowName.Text, StringComparison.OrdinalIgnoreCase, out var rowValue) &&
                 rowValue.TryGetValue(out FSimpleCurveKey[] keys, "Keys") && keys.Length > 0)
             {
-                statValue = keys[0].KeyValue;
+                statValue = keys[0].Value;
                 return true;
             }
 
