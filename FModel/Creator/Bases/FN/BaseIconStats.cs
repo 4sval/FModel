@@ -255,7 +255,7 @@ namespace FModel.Creator.Bases.FN
 
         public void Draw(SKCanvas c, SKColor sliderColor, int width, int height, ref float y)
         {
-            while (_statPaint.MeasureText(_statName) > height * 2)
+            while (_statPaint.MeasureText(_statName) > height * 2 - 40)
             {
                 _statPaint.TextSize -= 1;
             }
