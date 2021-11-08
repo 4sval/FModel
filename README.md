@@ -6,7 +6,7 @@
 
 ## Installation
 
-To use FModel, you need to have **[.NET 5](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-desktop-5.0.10-windows-x64-installer)** installed on your computer
+To use FModel, you need to install the **[.NET 6](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-desktop-6.0.0-windows-x64-installer)** runtime on your computer
 * **[Download](https://github.com/iAmAsval/FModel/releases/latest/download/FModel.zip)** the latest release.
 * **Extract FModel.exe** somewhere on your PC and launch it
 
