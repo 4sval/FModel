@@ -482,6 +482,11 @@ namespace FModel.ViewModels
                 case "log":
                 case "po":
                 case "bat":
+                case "dat":
+                case "cfg":
+                case "ide":
+                case "ipl":
+                case "zon":
                 case "xml":
                 case "h":
                 case "uproject":
