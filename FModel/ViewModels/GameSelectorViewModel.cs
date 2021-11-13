@@ -68,6 +68,9 @@ namespace FModel.ViewModels
             yield return GetMojangGame("MinecraftDungeons", "\\dungeons\\dungeons\\Dungeons\\Content\\Paks");
             yield return GetSteamGame(578080, "\\TslGame\\Content\\Paks"); // PUBG
             yield return GetSteamGame(677620, "\\PortalWars\\Content\\Paks"); // Splitgate
+            yield return GetRockstarGamesGame("GTA III - Definitive Edition", "\\Gameface\\Content\\Paks");
+            yield return GetRockstarGamesGame("GTA San Andreas - Definitive Edition", "\\Gameface\\Content\\Paks");
+            yield return GetRockstarGamesGame("GTA Vice City - Definitive Edition", "\\Gameface\\Content\\Paks");
         }
 
         private LauncherInstalled _launcherInstalled;
@@ -122,6 +125,25 @@ namespace FModel.ViewModels
                 return new DetectedGame { GameName = steamInfo.Name, GameDirectory = $"{steamInfo.GameRoot}{pakDirectory}" };
 
             Log.Warning("Could not find {GameId} in steam manifests", id);
+            return null;
+        }
+
+        private DetectedGame GetRockstarGamesGame(string key, string pakDirectory)
+        {
+            var installLocation = string.Empty;
+            try
+            {
+                installLocation = App.GetRegistryValue(@$"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{key}", "InstallLocation", RegistryHive.LocalMachine);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            if (!string.IsNullOrEmpty(installLocation))
+                return new DetectedGame { GameName = key, GameDirectory = $"{installLocation}{pakDirectory}" };
+
+            Log.Warning("Could not find {GameName} in the registry", key);
             return null;
         }
 

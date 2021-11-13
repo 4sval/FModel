@@ -25,7 +25,7 @@ namespace FModel
     {
         [DllImport("kernel32.dll")]
         private static extern bool AttachConsole(int dwProcessId);
-        
+
         protected override void OnStartup(StartupEventArgs e)
         {
 #if DEBUG
@@ -98,7 +98,7 @@ namespace FModel
             {
                 if ((EErrorKind) messageBox.ButtonPressed.Id == EErrorKind.ResetSettings)
                     UserSettings.Default = new UserSettings();
-                
+
                 ApplicationService.ApplicationView.Restart();
             }
 
@@ -123,7 +123,7 @@ namespace FModel
             return $"{productName} ({(Environment.Is64BitOperatingSystem ? "64" : "32")}-bit)";
         }
 
-        private string GetRegistryValue(string path, string name = null, RegistryHive root = RegistryHive.CurrentUser)
+        public static string GetRegistryValue(string path, string name = null, RegistryHive root = RegistryHive.CurrentUser)
         {
             using var rk = RegistryKey.OpenBaseKey(root, RegistryView.Default).OpenSubKey(path);
             if (rk != null)

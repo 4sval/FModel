@@ -614,7 +614,7 @@ namespace FModel.ViewModels
                 default:
                 {
                     FLogger.AppendWarning();
-                    FLogger.AppendText($"The file '{fileName}' is of an unknown type. If this is a mistake, we are already working to fix it!", Constants.WHITE, true);
+                    FLogger.AppendText($"The file '{fileName}' is of an unknown type.", Constants.WHITE, true);
                     break;
                 }
             }

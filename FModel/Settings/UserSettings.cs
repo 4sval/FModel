@@ -230,7 +230,8 @@ namespace FModel.Settings
             {FGame.Platform, Constants._NO_PRESET_TRIGGER},
             {FGame.BendGame, Constants._NO_PRESET_TRIGGER},
             {FGame.TslGame, Constants._NO_PRESET_TRIGGER},
-            {FGame.PortalWars, Constants._NO_PRESET_TRIGGER}
+            {FGame.PortalWars, Constants._NO_PRESET_TRIGGER},
+            {FGame.Gameface, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -257,6 +258,7 @@ namespace FModel.Settings
             {FGame.BendGame, EGame.GAME_UE4_11},
             {FGame.TslGame, EGame.GAME_PlayerUnknownsBattlegrounds},
             {FGame.PortalWars, EGame.GAME_UE4_LATEST},
+            {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -282,7 +284,8 @@ namespace FModel.Settings
             {FGame.Platform, UE4Version.VER_UE4_DETERMINE_BY_GAME},
             {FGame.BendGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
             {FGame.TslGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.PortalWars, UE4Version.VER_UE4_DETERMINE_BY_GAME}
+            {FGame.PortalWars, UE4Version.VER_UE4_DETERMINE_BY_GAME},
+            {FGame.Gameface, UE4Version.VER_UE4_DETERMINE_BY_GAME}
         };
         public IDictionary<FGame, UE4Version> OverridedUEVersion
         {
@@ -308,7 +311,8 @@ namespace FModel.Settings
             {FGame.Platform, null},
             {FGame.BendGame, null},
             {FGame.TslGame, null},
-            {FGame.PortalWars, null}
+            {FGame.PortalWars, null},
+            {FGame.Gameface, null}
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
@@ -334,7 +338,8 @@ namespace FModel.Settings
             {FGame.Platform, null},
             {FGame.BendGame, null},
             {FGame.TslGame, null},
-            {FGame.PortalWars, null}
+            {FGame.PortalWars, null},
+            {FGame.Gameface, null}
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
@@ -399,7 +404,8 @@ namespace FModel.Settings
             {FGame.Platform, new List<CustomDirectory>()},
             {FGame.BendGame, new List<CustomDirectory>()},
             {FGame.TslGame, new List<CustomDirectory>()},
-            {FGame.PortalWars, new List<CustomDirectory>()}
+            {FGame.PortalWars, new List<CustomDirectory>()},
+            {FGame.Gameface, new List<CustomDirectory>()}
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {

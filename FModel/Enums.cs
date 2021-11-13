@@ -86,7 +86,9 @@ namespace FModel
         [Description("PLAYERUNKNOWN'S BATTLEGROUNDS")]
         TslGame,
         [Description("Splitgate")]
-        PortalWars
+        PortalWars,
+        [Description("GTA: The Trilogy - Definitive Edition")]
+        Gameface
     }
 
     public enum ELoadingMode
