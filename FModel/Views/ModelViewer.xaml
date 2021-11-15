@@ -31,17 +31,15 @@
                 <MouseBinding Command="helix:ViewportCommands.Zoom" Gesture="RightClick" />
                 <MouseBinding Command="helix:ViewportCommands.Pan" Gesture="MiddleClick" />
             </helix:Viewport3DX.InputBindings>
-            
+
             <helix:DirectionalLight3D Direction="0, 0, -1" Color="White" />
             <helix:DirectionalLight3D Direction="0, -1, 0" Color="White"/>
-            
+
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.XAxis}" Color="#FC3854" />
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.YAxis}" Color="#85CB22" />
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.ZAxis}" Color="#388EED" />
-            
-            <helix:MeshGeometryModel3D Geometry="{Binding ModelViewer.Mesh}"
-                                       Material="{Binding ModelViewer.MeshMat}"
-                                       RenderWireframe="{Binding ModelViewer.ShowWireframe}" />
+
+            <helix:GroupModel3D ItemsSource="{Binding ModelViewer.Group3d}" />
         </helix:Viewport3DX>
     </Grid>
 </adonisControls:AdonisWindow>
