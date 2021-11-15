@@ -14,7 +14,6 @@ using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
 using Camera = HelixToolkit.Wpf.SharpDX.Camera;
 using Geometry3D = HelixToolkit.SharpDX.Core.Geometry3D;
-using Material = HelixToolkit.Wpf.SharpDX.Material;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
 
 namespace FModel.ViewModels
@@ -69,19 +68,19 @@ namespace FModel.ViewModels
             get => _group3d;
             set => SetProperty(ref _group3d, value);
         }
-        public Material MainMaterial { get; } = PhongMaterials.White;
 
         private readonly int[] _FACES_INDEX = { 1, 0, 2 };
 
         public ModelViewerViewModel()
         {
             EffectManager = new DefaultEffectsManager();
+            Group3d = new ObservableElement3DCollection();
             Cam = new PerspectiveCamera { NearPlaneDistance = 0.1, FarPlaneDistance = 99999999, FieldOfView = 80 };
         }
 
         public void LoadExport(UObject export)
         {
-            Group3d = new ObservableElement3DCollection();
+            Group3d.Clear();
             switch (export)
             {
                 case UStaticMesh st:
@@ -145,7 +144,7 @@ namespace FModel.ViewModels
                         var n = new Vector3(vert.Normal.X, -vert.Normal.Y, vert.Normal.Z);
                         var uv = new Vector2(vert.UV.U, vert.UV.V);
                         builder.AddNode(p, n, uv);
-                        builder.TriangleIndices.Add(j * 3 + t); // one mesh part is "j * 3 + k" use "id" if you're building the full mesh
+                        builder.TriangleIndices.Add(j * 3 + t); // one mesh part is "j * 3 + t" use "id" if you're building the full mesh
                     }
                 }
 
@@ -159,8 +158,9 @@ namespace FModel.ViewModels
 
                 Group3d.Add(new MeshGeometryModel3D
                 {
+                    Name = unrealMaterial.Name,
                     Geometry = builder.ToMeshGeometry3D(),
-                    Material = new PhongMaterial
+                    Material = new DiffuseMaterial
                     {
                         DiffuseMap = new TextureModel(diffuse.Decode()?.Encode().AsStream())
                     }

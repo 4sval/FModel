@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.ComponentModel;
+using System.Windows.Input;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Services;
 using FModel.Settings;
@@ -17,6 +18,10 @@ namespace FModel.Views
         }
 
         public void Load(UObject export) => _applicationView.ModelViewer.LoadExport(export);
+        private void OnClosing(object sender, CancelEventArgs e)
+        {
+            group.ItemsSource = null; // <3
+        }
 
         private void OnWindowKeyDown(object sender, KeyEventArgs e)
         {

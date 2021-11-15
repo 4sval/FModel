@@ -65,6 +65,7 @@ namespace FModel.ViewModels
         public SearchViewModel SearchVm { get; }
         public TabControlViewModel TabControl { get; }
         public int LocalizedResourcesCount { get; set; }
+        public bool HotfixedResourcesDone { get; set; } = false;
         public int VirtualPathCount { get; set; }
 
         public CUE4ParseViewModel(string gameDirectory)
@@ -354,13 +355,13 @@ namespace FModel.ViewModels
         {
             if (Game != FGame.FortniteGame) return;
 
-            var i = 0;
-            if (LocalizedResourcesCount <= 0) return;
+            if (HotfixedResourcesDone) return;
             await _threadWorkerView.Begin(cancellationToken =>
             {
                 var hotfixes = ApplicationService.ApiEndpointView.BenbotApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
                 if (hotfixes == null) return;
 
+                HotfixedResourcesDone = true;
                 foreach (var entries in hotfixes)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -371,12 +372,10 @@ namespace FModel.ViewModels
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         Provider.LocalizedResources[entries.Key][keyValue.Key] = keyValue.Value;
-                        i++;
+                        LocalizedResourcesCount++;
                     }
                 }
             });
-
-            LocalizedResourcesCount += i;
         }
 
         public async Task LoadVirtualPaths()
