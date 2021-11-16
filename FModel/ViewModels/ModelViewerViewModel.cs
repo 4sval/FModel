@@ -223,7 +223,7 @@ namespace FModel.ViewModels
                 }
                 else
                 {
-                    m = new PBRMaterial() { AlbedoColor = new Color4(1, 0, 0, 0) }; //PhongMaterials.Red;
+                    m = new PBRMaterial { AlbedoColor = new Color4(1, 0, 0, 1) }; //PhongMaterials.Red;
                 }
 
                 Group3d.Add(new MeshGeometryModel3D
