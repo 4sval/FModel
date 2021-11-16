@@ -11,10 +11,9 @@ using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
 using HelixToolkit.SharpDX.Core;
-using HelixToolkit.SharpDX.Core.Model;
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
-using SharpDX.DXGI;
+using SharpDX.Direct3D11;
 using Camera = HelixToolkit.Wpf.SharpDX.Camera;
 using Geometry3D = HelixToolkit.SharpDX.Core.Geometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
@@ -58,11 +57,33 @@ namespace FModel.ViewModels
             set => SetProperty(ref _zAxis, value);
         }
 
+        private FillMode _fillMode
+        {
+            get => _showWireframe ? FillMode.Wireframe : FillMode.Solid;
+        }
+
         private bool _showWireframe;
         public bool ShowWireframe
         {
             get => _showWireframe;
-            set => SetProperty(ref _showWireframe, value);
+            set
+            {
+                SetProperty(ref _showWireframe, value);
+                foreach (var g in Group3d)
+                {
+                    if (g is not MeshGeometryModel3D geometryModel)
+                        continue;
+
+                    geometryModel.FillMode = _fillMode;
+                }
+            }
+        }
+
+        private bool _appendModeEnabled;
+        public bool AppendModeEnabled
+        {
+            get => _appendModeEnabled;
+            set => SetProperty(ref _appendModeEnabled, value);
         }
 
         private ObservableElement3DCollection _group3d;
@@ -72,7 +93,7 @@ namespace FModel.ViewModels
             set => SetProperty(ref _group3d, value);
         }
 
-        private readonly int[] _FACES_INDEX = { 1, 0, 2 };
+        private readonly int[] _facesIndex = { 1, 0, 2 };
 
         public ModelViewerViewModel()
         {
@@ -83,7 +104,7 @@ namespace FModel.ViewModels
 
         public void LoadExport(UObject export)
         {
-            Clear();
+            if (!AppendModeEnabled) Clear();
             switch (export)
             {
                 case UStaticMesh st:
@@ -94,6 +115,17 @@ namespace FModel.ViewModels
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public void HideToggleAll()
+        {
+            foreach (var g in Group3d)
+            {
+                if (g is not MeshGeometryModel3D geometryModel)
+                    continue;
+
+                geometryModel.IsRendering = !geometryModel.IsRendering;
             }
         }
 
@@ -139,7 +171,7 @@ namespace FModel.ViewModels
                 // NumFaces * 3 (triangle) = next section FirstIndex
                 for (var j = 0; j < section.NumFaces; j++) // draw a triangle for each face
                 {
-                    foreach (var t in _FACES_INDEX) // triangle face 1 then 0 then 2
+                    foreach (var t in _facesIndex) // triangle face 1 then 0 then 2
                     {
                         var id = section.FirstIndex + j * 3 + t;
                         var vert = verts[indices[id]];
@@ -182,7 +214,8 @@ namespace FModel.ViewModels
                     Name = unrealMaterial.Name,
                     Geometry = builder.ToMeshGeometry3D(),
                     Material = m,
-                    IsRendering = isRendering
+                    IsRendering = isRendering,
+                    FillMode = _fillMode
                 });
             }
         }

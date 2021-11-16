@@ -2,7 +2,6 @@
 using System.Windows.Input;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Services;
-using FModel.Settings;
 using FModel.ViewModels;
 
 namespace FModel.Views
@@ -22,12 +21,15 @@ namespace FModel.Views
 
         private void OnWindowKeyDown(object sender, KeyEventArgs e)
         {
-            /*if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key))
-                _applicationView.ModelViewer.PreviousLod();
-            else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key))
-                _applicationView.ModelViewer.NextLod();
-            else */if (e.Key == Key.W)
-                _applicationView.ModelViewer.ShowWireframe = !_applicationView.ModelViewer.ShowWireframe;
+            switch (e.Key)
+            {
+                case Key.W:
+                    _applicationView.ModelViewer.ShowWireframe = !_applicationView.ModelViewer.ShowWireframe;
+                    break;
+                case Key.H:
+                    _applicationView.ModelViewer.HideToggleAll();
+                    break;
+            }
         }
     }
 }

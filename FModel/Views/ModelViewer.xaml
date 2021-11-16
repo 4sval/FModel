@@ -4,6 +4,7 @@
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                              xmlns:helix="http://helix-toolkit.org/wpf/SharpDX"
                              WindowStartupLocation="CenterScreen" ResizeMode="CanResize" IconVisibility="Collapsed" Background="#262630"
                              PreviewKeyDown="OnWindowKeyDown" Closing="OnClosing"
@@ -22,42 +23,43 @@
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="{adonisUi:Space 1}" />
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="250" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="4*" />
+        </Grid.ColumnDefinitions>
 
-        <Menu Grid.Row="0">
-            <MenuItem Header="Append" />
-        </Menu>
+        <Grid Grid.Column="0" Background="#2A2B34">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="3*" />
-            </Grid.ColumnDefinitions>
-
-            <ListBox Grid.Column="0" Style="{StaticResource MaterialsListBox}" />
-            <helix:Viewport3DX Grid.Column="1" EffectsManager="{Binding ModelViewer.EffectManager}" Camera="{Binding ModelViewer.Cam}"
-                               IsChangeFieldOfViewEnabled="False" IsMoveEnabled="False" UseDefaultGestures="False" ShowViewCube="False"
-                               ShowCameraTarget="False" ModelUpDirection="0,0,1" EnableSSAO="True" MSAA="Maximum" FXAALevel="Ultra"
-                               SSAOQuality="High" BackgroundColor="#262630">
-                <helix:Viewport3DX.InputBindings>
-                    <MouseBinding Command="helix:ViewportCommands.Rotate" Gesture="LeftClick" />
-                    <MouseBinding Command="helix:ViewportCommands.Zoom" Gesture="RightClick" />
-                    <MouseBinding Command="helix:ViewportCommands.Pan" Gesture="MiddleClick" />
-                </helix:Viewport3DX.InputBindings>
-
-                <helix:AmbientLight3D Color="DimGray" />
-                <helix:DirectionalLight3D Direction="{Binding ModelViewer.Cam.LookDirection}" Color="White" />
-
-                <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.XAxis}" Color="#FC3854" />
-                <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.YAxis}" Color="#85CB22" />
-                <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.ZAxis}" Color="#388EED" />
-
-                <helix:GroupModel3D x:Name="MyAntiCrashGroup" ItemsSource="{Binding ModelViewer.Group3d}" />
-            </helix:Viewport3DX>
+            <ListBox Grid.Row="0" Style="{StaticResource MaterialsListBox}" />
+            <CheckBox Content="Append Mode" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="0 0 0 5"
+                      Grid.Row="1" IsChecked="{Binding ModelViewer.AppendModeEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
         </Grid>
+
+        <GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="4" VerticalAlignment="Stretch" ResizeBehavior="PreviousAndNext"
+                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+
+        <helix:Viewport3DX Grid.Column="2" EffectsManager="{Binding ModelViewer.EffectManager}" Camera="{Binding ModelViewer.Cam}"
+                           IsChangeFieldOfViewEnabled="False" IsMoveEnabled="False" UseDefaultGestures="False" ShowViewCube="False"
+                           ShowCameraTarget="False" ModelUpDirection="0,0,1" BackgroundColor="#2A2B34">
+            <helix:Viewport3DX.InputBindings>
+                <MouseBinding Command="helix:ViewportCommands.Rotate" Gesture="LeftClick" />
+                <MouseBinding Command="helix:ViewportCommands.Zoom" Gesture="RightClick" />
+                <MouseBinding Command="helix:ViewportCommands.Pan" Gesture="MiddleClick" />
+            </helix:Viewport3DX.InputBindings>
+
+            <helix:AmbientLight3D Color="DimGray" />
+            <helix:DirectionalLight3D Direction="{Binding ModelViewer.Cam.LookDirection}" Color="White" />
+
+            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.XAxis}" Color="#FC3854" />
+            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.YAxis}" Color="#85CB22" />
+            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.ZAxis}" Color="#388EED" />
+
+            <helix:GroupModel3D x:Name="MyAntiCrashGroup" ItemsSource="{Binding ModelViewer.Group3d}" />
+        </helix:Viewport3DX>
     </Grid>
 </adonisControls:AdonisWindow>
