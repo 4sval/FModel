@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Windows.Input;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Services;
@@ -28,6 +28,9 @@ namespace FModel.Views
                     break;
                 case Key.H:
                     _applicationView.ModelViewer.HideToggleAll();
+                    break;
+                case Key.D:
+                        _applicationView.ModelViewer.ToggleDiffuseOnly();
                     break;
             }
         }

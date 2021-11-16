@@ -1,4 +1,4 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.ModelViewer"
+<adonisControls:AdonisWindow x:Class="FModel.Views.ModelViewer"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
@@ -52,7 +52,6 @@
                 <MouseBinding Command="helix:ViewportCommands.Pan" Gesture="MiddleClick" />
             </helix:Viewport3DX.InputBindings>
 
-            <helix:AmbientLight3D Color="DimGray" />
             <helix:DirectionalLight3D Direction="{Binding ModelViewer.Cam.LookDirection}" Color="White" />
 
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.XAxis}" Color="#FC3854" />

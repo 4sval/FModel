@@ -57,11 +57,6 @@ namespace FModel.ViewModels
             set => SetProperty(ref _zAxis, value);
         }
 
-        private FillMode _fillMode
-        {
-            get => _showWireframe ? FillMode.Wireframe : FillMode.Solid;
-        }
-
         private bool _showWireframe;
         public bool ShowWireframe
         {
@@ -73,8 +68,7 @@ namespace FModel.ViewModels
                 {
                     if (g is not MeshGeometryModel3D geometryModel)
                         continue;
-
-                    geometryModel.FillMode = _fillMode;
+                    geometryModel.RenderWireframe = !_showWireframe;
                 }
             }
         }
@@ -99,7 +93,7 @@ namespace FModel.ViewModels
         {
             EffectManager = new DefaultEffectsManager();
             Group3d = new ObservableElement3DCollection();
-            Cam = new PerspectiveCamera { NearPlaneDistance = 0.1, FarPlaneDistance = 99999999, FieldOfView = 80 };
+            Cam = new PerspectiveCamera { NearPlaneDistance = 0.1, FarPlaneDistance = double.PositiveInfinity, FieldOfView = 80 };
         }
 
         public void LoadExport(UObject export)
@@ -126,6 +120,27 @@ namespace FModel.ViewModels
                     continue;
 
                 geometryModel.IsRendering = !geometryModel.IsRendering;
+            }
+        }
+
+        public void ToggleDiffuseOnly()
+        {
+            foreach (var g in Group3d)
+            {
+                if (g is not MeshGeometryModel3D geometryModel)
+                    continue;
+
+                if (geometryModel.Material is PBRMaterial mat)
+                {
+                    mat.RenderAmbientOcclusionMap = !mat.RenderAmbientOcclusionMap;
+                    mat.RenderDisplacementMap = !mat.RenderDisplacementMap;
+                    mat.RenderEmissiveMap = !mat.RenderEmissiveMap;
+                    mat.RenderEnvironmentMap = !mat.RenderEnvironmentMap;
+                    mat.RenderIrradianceMap = !mat.RenderIrradianceMap;
+                    mat.RenderRoughnessMetallicMap = !mat.RenderRoughnessMetallicMap;
+                    mat.RenderShadowMap = !mat.RenderShadowMap;
+                    mat.RenderNormalMap = !mat.RenderNormalMap;
+                }
             }
         }
 
@@ -177,6 +192,7 @@ namespace FModel.ViewModels
                         var vert = verts[indices[id]];
                         var p = new Vector3(vert.Position.X, -vert.Position.Y, vert.Position.Z);
                         var n = new Vector3(vert.Normal.X, -vert.Normal.Y, vert.Normal.Z);
+                        n.Normalize();
                         var uv = new Vector2(vert.UV.U, vert.UV.V);
                         builder.AddNode(p, n, uv);
                         builder.TriangleIndices.Add(j * 3 + t); // one mesh part is "j * 3 + t" use "id" if you're building the full mesh
@@ -186,15 +202,16 @@ namespace FModel.ViewModels
                 if (section.Material == null || !section.Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
                     continue;
 
-                var m = new PhongMaterial { RenderShadowMap = true, EnableAutoTangent = true };
+                var m = new PBRMaterial { RenderShadowMap = true, EnableAutoTangent = true };
+
                 var parameters = new CMaterialParams();
                 unrealMaterial.GetParams(parameters);
-
+                m.EnableFlatShading = true;
                 var isRendering = !parameters.IsNull;
                 if (isRendering)
                 {
                     if (parameters.Diffuse is UTexture2D diffuse)
-                        m.DiffuseMap = new TextureModel(diffuse.Decode()?.Encode().AsStream());
+                        m.AlbedoMap = new TextureModel(diffuse.Decode()?.Encode().AsStream());
                     if (parameters.Normal is UTexture2D normal)
                         m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
                     // if (parameters.Specular is UTexture2D specular)
@@ -206,7 +223,7 @@ namespace FModel.ViewModels
                 }
                 else
                 {
-                    m = PhongMaterials.Red;
+                    m = new PBRMaterial() { AlbedoColor = new Color4(1, 0, 0, 0) }; //PhongMaterials.Red;
                 }
 
                 Group3d.Add(new MeshGeometryModel3D
@@ -215,7 +232,7 @@ namespace FModel.ViewModels
                     Geometry = builder.ToMeshGeometry3D(),
                     Material = m,
                     IsRendering = isRendering,
-                    FillMode = _fillMode
+                    FillMode = FillMode.Solid
                 });
             }
         }
@@ -229,13 +246,13 @@ namespace FModel.ViewModels
             Cam.LookDirection = new System.Windows.Media.Media3D.Vector3D(-Cam.Position.X, -Cam.Position.Y, 0);
 
             var lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(max.X, 0, 0));
+            lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(100, 0, 0));
             XAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(0, max.Y, 0));
+            lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(0, 100, 0));
             YAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(0, 0, max.Z));
+            lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(0, 0, 100));
             ZAxis = lineBuilder.ToLineGeometry3D();
         }
 
