@@ -206,7 +206,7 @@ namespace FModel.ViewModels
 
                 var parameters = new CMaterialParams();
                 unrealMaterial.GetParams(parameters);
-                m.EnableFlatShading = true;
+
                 var isRendering = !parameters.IsNull;
                 if (isRendering)
                 {
