@@ -17,20 +17,24 @@ namespace FModel.Views
         }
 
         public void Load(UObject export) => _applicationView.ModelViewer.LoadExport(export);
-        private void OnClosing(object sender, CancelEventArgs e) => MyAntiCrashGroup.ItemsSource = null; // <3
+        private void OnClosing(object sender, CancelEventArgs e)
+        {
+            _applicationView.ModelViewer.AppendModeEnabled = false;
+            MyAntiCrashGroup.ItemsSource = null; // <3
+        }
 
         private void OnWindowKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
                 case Key.W:
-                    _applicationView.ModelViewer.ShowWireframe = !_applicationView.ModelViewer.ShowWireframe;
+                    _applicationView.ModelViewer.WirefreameToggle();
                     break;
                 case Key.H:
-                    _applicationView.ModelViewer.HideToggleAll();
+                    _applicationView.ModelViewer.RenderingToggle();
                     break;
                 case Key.D:
-                        _applicationView.ModelViewer.ToggleDiffuseOnly();
+                    _applicationView.ModelViewer.DiffuseOnlyToggle();
                     break;
             }
         }

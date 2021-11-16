@@ -13,7 +13,6 @@ using FModel.Framework;
 using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
-using SharpDX.Direct3D11;
 using Camera = HelixToolkit.Wpf.SharpDX.Camera;
 using Geometry3D = HelixToolkit.SharpDX.Core.Geometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
@@ -57,22 +56,6 @@ namespace FModel.ViewModels
             set => SetProperty(ref _zAxis, value);
         }
 
-        private bool _showWireframe;
-        public bool ShowWireframe
-        {
-            get => _showWireframe;
-            set
-            {
-                SetProperty(ref _showWireframe, value);
-                foreach (var g in Group3d)
-                {
-                    if (g is not MeshGeometryModel3D geometryModel)
-                        continue;
-                    geometryModel.RenderWireframe = !_showWireframe;
-                }
-            }
-        }
-
         private bool _appendModeEnabled;
         public bool AppendModeEnabled
         {
@@ -112,7 +95,7 @@ namespace FModel.ViewModels
             }
         }
 
-        public void HideToggleAll()
+        public void RenderingToggle()
         {
             foreach (var g in Group3d)
             {
@@ -123,7 +106,18 @@ namespace FModel.ViewModels
             }
         }
 
-        public void ToggleDiffuseOnly()
+        public void WirefreameToggle()
+        {
+            foreach (var g in Group3d)
+            {
+                if (g is not MeshGeometryModel3D geometryModel)
+                    continue;
+
+                geometryModel.RenderWireframe = !geometryModel.RenderWireframe;
+            }
+        }
+
+        public void DiffuseOnlyToggle()
         {
             foreach (var g in Group3d)
             {
@@ -134,7 +128,7 @@ namespace FModel.ViewModels
                 {
                     mat.RenderAmbientOcclusionMap = !mat.RenderAmbientOcclusionMap;
                     mat.RenderDisplacementMap = !mat.RenderDisplacementMap;
-                    mat.RenderEmissiveMap = !mat.RenderEmissiveMap;
+                    // mat.RenderEmissiveMap = !mat.RenderEmissiveMap;
                     mat.RenderEnvironmentMap = !mat.RenderEnvironmentMap;
                     mat.RenderIrradianceMap = !mat.RenderIrradianceMap;
                     mat.RenderRoughnessMetallicMap = !mat.RenderRoughnessMetallicMap;
@@ -203,7 +197,6 @@ namespace FModel.ViewModels
                     continue;
 
                 var m = new PBRMaterial { RenderShadowMap = true, EnableAutoTangent = true };
-
                 var parameters = new CMaterialParams();
                 unrealMaterial.GetParams(parameters);
 
@@ -215,11 +208,17 @@ namespace FModel.ViewModels
                     if (parameters.Normal is UTexture2D normal)
                         m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
                     // if (parameters.Specular is UTexture2D specular)
-                    //     m.SpecularColorMap = new TextureModel(specular.Decode()?.Encode().AsStream());
-                    // if (parameters.UseMobileSpecular)
-                    //     m.SpecularShininess = parameters.MobileSpecularPower;
+                    //     m.AmbientOcculsionMap = new TextureModel(specular.Decode()?.Encode().AsStream());
+                    // if (parameters.Specular is UTexture2D specularPower)
+                    // {
+                    //     m.RoughnessFactor = parameters.MobileSpecularPower;
+                    //     m.RoughnessMetallicMap = new TextureModel(specularPower.Decode()?.Encode().AsStream());
+                    // }
                     // if (parameters.Emissive is UTexture2D emissive)
+                    // {
+                    //     m.EmissiveColor = Color4.White; // FortniteGame/Content/Characters/Player/Female/Medium/Bodies/F_MED_Obsidian/Meshes/F_MED_Obsidian.uasset
                     //     m.EmissiveMap = new TextureModel(emissive.Decode()?.Encode().AsStream());
+                    // }
                 }
                 else
                 {
@@ -231,8 +230,7 @@ namespace FModel.ViewModels
                     Name = unrealMaterial.Name,
                     Geometry = builder.ToMeshGeometry3D(),
                     Material = m,
-                    IsRendering = isRendering,
-                    FillMode = FillMode.Solid
+                    IsRendering = isRendering
                 });
             }
         }

@@ -4,9 +4,8 @@
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-                             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                              xmlns:helix="http://helix-toolkit.org/wpf/SharpDX"
-                             WindowStartupLocation="CenterScreen" ResizeMode="CanResize" IconVisibility="Collapsed" Background="#262630"
+                             WindowStartupLocation="CenterScreen" ResizeMode="CanResize" IconVisibility="Collapsed"
                              PreviewKeyDown="OnWindowKeyDown" Closing="OnClosing"
                              Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.60'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.60'}">
@@ -29,7 +28,7 @@
             <ColumnDefinition Width="4*" />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" Background="#2A2B34">
+        <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -41,7 +40,7 @@
         </Grid>
 
         <GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="4" VerticalAlignment="Stretch" ResizeBehavior="PreviousAndNext"
-                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
 
         <helix:Viewport3DX Grid.Column="2" EffectsManager="{Binding ModelViewer.EffectManager}" Camera="{Binding ModelViewer.Cam}"
                            IsChangeFieldOfViewEnabled="False" IsMoveEnabled="False" UseDefaultGestures="False" ShowViewCube="False"
