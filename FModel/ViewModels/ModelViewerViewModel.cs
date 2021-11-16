@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
@@ -10,8 +11,10 @@ using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
 using HelixToolkit.SharpDX.Core;
+using HelixToolkit.SharpDX.Core.Model;
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
+using SharpDX.DXGI;
 using Camera = HelixToolkit.Wpf.SharpDX.Camera;
 using Geometry3D = HelixToolkit.SharpDX.Core.Geometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
@@ -80,7 +83,7 @@ namespace FModel.ViewModels
 
         public void LoadExport(UObject export)
         {
-            Group3d.Clear();
+            Clear();
             switch (export)
             {
                 case UStaticMesh st:
@@ -151,19 +154,35 @@ namespace FModel.ViewModels
                 if (section.Material == null || !section.Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
                     continue;
 
+                var m = new PhongMaterial { RenderShadowMap = true, EnableAutoTangent = true };
                 var parameters = new CMaterialParams();
                 unrealMaterial.GetParams(parameters);
-                if (parameters.Diffuse is not UTexture2D diffuse)
-                    continue;
+
+                var isRendering = !parameters.IsNull;
+                if (isRendering)
+                {
+                    if (parameters.Diffuse is UTexture2D diffuse)
+                        m.DiffuseMap = new TextureModel(diffuse.Decode()?.Encode().AsStream());
+                    if (parameters.Normal is UTexture2D normal)
+                        m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
+                    // if (parameters.Specular is UTexture2D specular)
+                    //     m.SpecularColorMap = new TextureModel(specular.Decode()?.Encode().AsStream());
+                    // if (parameters.UseMobileSpecular)
+                    //     m.SpecularShininess = parameters.MobileSpecularPower;
+                    // if (parameters.Emissive is UTexture2D emissive)
+                    //     m.EmissiveMap = new TextureModel(emissive.Decode()?.Encode().AsStream());
+                }
+                else
+                {
+                    m = PhongMaterials.Red;
+                }
 
                 Group3d.Add(new MeshGeometryModel3D
                 {
                     Name = unrealMaterial.Name,
                     Geometry = builder.ToMeshGeometry3D(),
-                    Material = new DiffuseMaterial
-                    {
-                        DiffuseMap = new TextureModel(diffuse.Decode()?.Encode().AsStream())
-                    }
+                    Material = m,
+                    IsRendering = isRendering
                 });
             }
         }
@@ -185,6 +204,15 @@ namespace FModel.ViewModels
             lineBuilder = new LineBuilder();
             lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(0, 0, max.Z));
             ZAxis = lineBuilder.ToLineGeometry3D();
+        }
+
+        private void Clear()
+        {
+            foreach (var g in Group3d.ToList())
+            {
+                g.Dispose();
+                Group3d.Remove(g);
+            }
         }
     }
 }

@@ -61,7 +61,6 @@ namespace FModel.ViewModels.Commands
             MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
 
             await _applicationView.CUE4Parse.LoadLocalizedResources(); // load locres if not already loaded
-            await _applicationView.CUE4Parse.LoadHotfixedLocalizedResources(); // load hofixed locres
             await _applicationView.CUE4Parse.LoadVirtualPaths(); // load virtual paths if not already loaded
             Helper.CloseWindow<AdonisWindow>("Search View"); // close search window if opened
 

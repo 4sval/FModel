@@ -328,21 +328,26 @@ namespace FModel.ViewModels
 
         public async Task LoadLocalizedResources()
         {
+            await LoadGameLocalizedResources();
+            await LoadHotfixedLocalizedResources();
+            if (LocalizedResourcesCount > 0)
+            {
+                FLogger.AppendInformation();
+                FLogger.AppendText($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true);
+            }
+            else
+            {
+                FLogger.AppendWarning();
+                FLogger.AppendText($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true);
+            }
+        }
+
+        private async Task LoadGameLocalizedResources()
+        {
             if (LocalizedResourcesCount > 0) return;
             await _threadWorkerView.Begin(cancellationToken =>
             {
                 LocalizedResourcesCount = Provider.LoadLocalization(UserSettings.Default.AssetLanguage, cancellationToken);
-                if (LocalizedResourcesCount > 0)
-                {
-                    FLogger.AppendInformation();
-                    FLogger.AppendText($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true);
-                }
-                else
-                {
-                    FLogger.AppendWarning();
-                    FLogger.AppendText($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true);
-                }
-
                 Utils.Typefaces = new Typefaces(this);
             });
         }
@@ -350,8 +355,8 @@ namespace FModel.ViewModels
         /// <summary>
         /// Load hotfixed localized resources
         /// </summary>
-        /// <remarks>Functions only when LoadLocalizedResources is used prior to this.</remarks>
-        public async Task LoadHotfixedLocalizedResources()
+        /// <remarks>Functions only when LoadLocalizedResources is used prior to this (Asval: Why?).</remarks>
+        private async Task LoadHotfixedLocalizedResources()
         {
             if (Game != FGame.FortniteGame) return;
 

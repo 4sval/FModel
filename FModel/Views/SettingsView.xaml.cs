@@ -45,7 +45,6 @@ namespace FModel.Views
             {
                 _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
                 await _applicationView.CUE4Parse.LoadLocalizedResources();
-                await _applicationView.CUE4Parse.LoadHotfixedLocalizedResources();
             }
         }
 
@@ -119,7 +118,7 @@ namespace FModel.Views
             var result = dictionary.ShowDialog();
             if (!result.HasValue || !result.Value)
                 return;
-            
+
             _applicationView.SettingsView.SelectedOptions = dictionary.Options;
         }
     }
