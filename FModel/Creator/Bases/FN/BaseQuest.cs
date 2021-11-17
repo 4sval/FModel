@@ -2,6 +2,8 @@
 using System.Linq;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Engine;
+using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.i18N;
 using CUE4Parse.UE4.Objects.UObject;
@@ -72,9 +74,15 @@ namespace FModel.Creator.Bases.FN
                     Description += "\n" + completionText.Text;
                 if (Object.TryGetValue(out FSoftObjectPath tandemCharacterData, "TandemCharacterData") &&
                     Utils.TryLoadObject(tandemCharacterData.AssetPathName.Text, out UObject uObject) &&
-                    uObject.TryGetValue(out FSoftObjectPath tandemIcon, "EntryListIcon", "ToastIcon"))
+                    uObject.TryGetValue(out FSoftObjectPath tandemIcon, "EntryListIcon", "ToastIcon") &&
+                    Utils.TryLoadObject(tandemIcon.AssetPathName.Text, out UObject iconObject))
                 {
-                    Preview = Utils.GetBitmap(tandemIcon);
+                    Preview = iconObject switch
+                    {
+                        UTexture2D text => Utils.GetBitmap(text),
+                        UMaterialInstanceConstant mat => Utils.GetBitmap(mat),
+                        _ => Preview
+                    };
                 }
             }
 
