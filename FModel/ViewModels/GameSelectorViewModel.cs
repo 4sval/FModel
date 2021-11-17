@@ -283,6 +283,7 @@ namespace FModel.ViewModels
             private static List<string> GetSteamLibs()
             {
                 var steamPath = GetSteamPath();
+                if (steamPath == null) return new List<string>();
                 var libraries = new List<string> { steamPath };
 
                 var listFile = Path.Combine(steamPath, @"steamapps\libraryfolders.vdf");
