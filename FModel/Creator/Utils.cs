@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -93,6 +93,7 @@ namespace FModel.Creator
                     case "TextureB":
                     case "OfferImage":
                     case "KeyArtTexture":
+                    case "NPC-Portrait":
                     {
                         return GetBitmap(texture);
                     }
