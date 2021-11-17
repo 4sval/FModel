@@ -44,13 +44,15 @@
 
         <helix:Viewport3DX Grid.Column="2" EffectsManager="{Binding ModelViewer.EffectManager}" Camera="{Binding ModelViewer.Cam}"
                            IsChangeFieldOfViewEnabled="False" IsMoveEnabled="False" UseDefaultGestures="False" ShowViewCube="False"
-                           ShowCameraTarget="False" ModelUpDirection="0,0,1" BackgroundColor="#2A2B34">
+                           ShowCameraTarget="False" ModelUpDirection="0,0,1" BackgroundColor="#2A2B34"
+                           EnableSSAO="True" SSAOIntensity="1"  MSAA="Maximum" EnableSwapChainRendering="True">
             <helix:Viewport3DX.InputBindings>
                 <MouseBinding Command="helix:ViewportCommands.Rotate" Gesture="LeftClick" />
                 <MouseBinding Command="helix:ViewportCommands.Zoom" Gesture="RightClick" />
                 <MouseBinding Command="helix:ViewportCommands.Pan" Gesture="MiddleClick" />
             </helix:Viewport3DX.InputBindings>
 
+            <helix:EnvironmentMap3D Texture="{Binding ModelViewer.HDRi}"/>
             <helix:DirectionalLight3D Direction="{Binding ModelViewer.Cam.LookDirection}" Color="White" />
 
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.XAxis}" Color="#FC3854" />

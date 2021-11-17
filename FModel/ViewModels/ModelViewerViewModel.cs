@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Net;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
@@ -10,9 +14,13 @@ using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
+using FModel.Services;
+using FModel.Settings;
 using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
+using RestSharp;
 using SharpDX;
+using SkiaSharp;
 using Camera = HelixToolkit.Wpf.SharpDX.Camera;
 using Geometry3D = HelixToolkit.SharpDX.Core.Geometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
@@ -70,6 +78,10 @@ namespace FModel.ViewModels
             set => SetProperty(ref _group3d, value);
         }
 
+        public TextureModel HDRi { get; private set; }
+
+        private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+
         private readonly int[] _facesIndex = { 1, 0, 2 };
 
         public ModelViewerViewModel()
@@ -77,6 +89,34 @@ namespace FModel.ViewModels
             EffectManager = new DefaultEffectsManager();
             Group3d = new ObservableElement3DCollection();
             Cam = new PerspectiveCamera { NearPlaneDistance = 0.1, FarPlaneDistance = double.PositiveInfinity, FieldOfView = 80 };
+            LoadHDRi();
+        }
+
+        private void LoadHDRi()
+        {
+            var hdri = new FileInfo(
+                Path.Combine(UserSettings.Default.OutputDirectory, ".data", "approaching_storm.jpg"));
+            if (!hdri.Exists)
+            {
+                var request = new RestRequest($"https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/approaching_storm.jpg", Method.GET);
+                var response = new RestClient().ExecuteAsync(request).Result;
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    var b = new Bitmap(1, 1);
+                    b.SetPixel(0, 0, System.Drawing.Color.DarkGray);
+                    var stream = new MemoryStream();
+                    b.Save(stream, ImageFormat.Jpeg);
+                    HDRi = TextureModel.Create(stream);
+                    return;
+                }
+                // Blur makes reflections soft but these black borders...
+                // var temp = SKImage.FromBitmap(SKBitmap.Decode(response.RawBytes));
+                // var blur = SKImageFilter.CreateBlur(20, 20, SKShaderTileMode.Clamp); // this adds black borders. WHY?
+                // var blurred = temp.ApplyImageFilter(blur, temp.Info.Rect, temp.Info.Rect, out SKRectI _, out SKPoint _);
+                using (var writer = hdri.OpenWrite())
+                    writer.Write(response.RawBytes);
+            }
+            HDRi = new TextureModel(hdri.ToString());
         }
 
         public void LoadExport(UObject export)
@@ -126,9 +166,9 @@ namespace FModel.ViewModels
 
                 if (geometryModel.Material is PBRMaterial mat)
                 {
-                    mat.RenderAmbientOcclusionMap = !mat.RenderAmbientOcclusionMap;
+                    //mat.RenderAmbientOcclusionMap = !mat.RenderAmbientOcclusionMap;
                     mat.RenderDisplacementMap = !mat.RenderDisplacementMap;
-                    // mat.RenderEmissiveMap = !mat.RenderEmissiveMap;
+                    //mat.RenderEmissiveMap = !mat.RenderEmissiveMap;
                     mat.RenderEnvironmentMap = !mat.RenderEnvironmentMap;
                     mat.RenderIrradianceMap = !mat.RenderIrradianceMap;
                     mat.RenderRoughnessMetallicMap = !mat.RenderRoughnessMetallicMap;
@@ -196,7 +236,7 @@ namespace FModel.ViewModels
                 if (section.Material == null || !section.Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
                     continue;
 
-                var m = new PBRMaterial { RenderShadowMap = true, EnableAutoTangent = true };
+                var m = new PBRMaterial() { RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true };
                 var parameters = new CMaterialParams();
                 unrealMaterial.GetParams(parameters);
 
@@ -207,6 +247,49 @@ namespace FModel.ViewModels
                         m.AlbedoMap = new TextureModel(diffuse.Decode()?.Encode().AsStream());
                     if (parameters.Normal is UTexture2D normal)
                         m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
+
+                    if (_applicationView.CUE4Parse.Game == FGame.FortniteGame)
+                    {
+                        // Fortnite's Specular Texture Channels
+                        // R Specular
+                        // G Metallic
+                        // B Roughness
+                        if (parameters.Specular is UTexture2D specular)
+                        {
+                            var mip = specular.GetFirstMip();
+                            TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap,
+                                out var data, out var colorType);
+
+                            unsafe
+                            {
+                                var offset = 0;
+                                fixed (byte* d = data)
+                                    for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                    {
+                                        d[offset] = 0;
+                                        (d[offset+1], d[offset+2]) = (d[offset+2], d[offset+1]); // swap G and B
+                                        offset += 4;
+                                    }
+                            }
+
+                            var width = mip.SizeX;
+                            var height = mip.SizeY;
+                            using var bitmap = new SKBitmap(new SKImageInfo(width, height, colorType, SKAlphaType.Unpremul));
+                            unsafe
+                            {
+                                fixed (byte* p = data)
+                                {
+                                    bitmap.SetPixels(new IntPtr(p));
+                                }
+                            }
+
+                            // R -> AO G -> Roughness B -> Metallic
+                            m.RoughnessMetallicMap = new TextureModel(bitmap.Encode(SKEncodedImageFormat.Png, 100).AsStream());
+                            m.RenderAmbientOcclusionMap = false; // red channel is not ao
+                            m.MetallicFactor = 1;
+                            m.RoughnessFactor = 1;
+                        }
+                    }
                     // if (parameters.Specular is UTexture2D specular)
                     //     m.AmbientOcculsionMap = new TextureModel(specular.Decode()?.Encode().AsStream());
                     // if (parameters.Specular is UTexture2D specularPower)
