@@ -296,7 +296,7 @@ namespace FModel.ViewModels
 
                 Group3d.Add(new MeshGeometryModel3D
                 {
-                    Name = unrealMaterial.Name,
+                    Name = unrealMaterial.Name.Replace('-', '_'),
                     Geometry = builder.ToMeshGeometry3D(),
                     Material = m,
                     IsRendering = isRendering
