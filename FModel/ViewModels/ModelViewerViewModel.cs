@@ -356,7 +356,7 @@ namespace FModel.ViewModels
             ret.ZAxis = lineBuilder.ToLineGeometry3D();
 
             ret.Position = new Point3D(box.Max.X + meanX * 2, meanZ, -box.Min.Y - meanY * 2);
-            ret.LookDirection = new Vector3D(-ret.Position.X, 0, -ret.Position.Z - meanY);
+            ret.LookDirection = new Vector3D(-ret.Position.X + meanX, 0, -ret.Position.Z - meanY);
             return ret;
         }
 
