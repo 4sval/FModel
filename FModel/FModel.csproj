@@ -186,6 +186,7 @@
     <Resource Include="Resources\delete.png" />
     <Resource Include="Resources\edit.png" />
     <Resource Include="Resources\go_to_directory.png" />
+    <Resource Include="Resources\approaching_storm_cubemap.dds" />
   </ItemGroup>
 
   <ItemGroup>

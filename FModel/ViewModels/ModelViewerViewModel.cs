@@ -4,6 +4,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Media.Media3D;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
@@ -94,33 +97,16 @@ namespace FModel.ViewModels
 
         private void LoadHDRi()
         {
-            var hdri = new FileInfo(
-                Path.Combine(UserSettings.Default.OutputDirectory, ".data", "approaching_storm.jpg"));
-            if (!hdri.Exists)
-            {
-                var request = new RestRequest($"https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/approaching_storm.jpg", Method.GET);
-                var response = new RestClient().ExecuteAsync(request).Result;
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    var b = new Bitmap(1, 1);
-                    b.SetPixel(0, 0, System.Drawing.Color.DarkGray);
-                    var stream = new MemoryStream();
-                    b.Save(stream, ImageFormat.Jpeg);
-                    HDRi = TextureModel.Create(stream);
-                    return;
-                }
-                // Blur makes reflections soft but these black borders...
-                // var temp = SKImage.FromBitmap(SKBitmap.Decode(response.RawBytes));
-                // var blur = SKImageFilter.CreateBlur(20, 20, SKShaderTileMode.Clamp); // this adds black borders. WHY?
-                // var blurred = temp.ApplyImageFilter(blur, temp.Info.Rect, temp.Info.Rect, out SKRectI _, out SKPoint _);
-                using (var writer = hdri.OpenWrite())
-                    writer.Write(response.RawBytes);
-            }
-            HDRi = new TextureModel(hdri.ToString());
+            var cubeMap = Application.GetResourceStream(new Uri("/FModel;component/Resources/approaching_storm_cubemap.dds",
+                UriKind.Relative));
+            HDRi = TextureModel.Create(cubeMap?.Stream);
         }
 
         public void LoadExport(UObject export)
         {
+#if DEBUG
+            LoadHDRi();
+#endif
             if (!AppendModeEnabled) Clear();
             switch (export)
             {
@@ -185,7 +171,7 @@ namespace FModel.ViewModels
                 return;
             }
 
-            SetupCameraAndAxis(convertedMesh.BoundingBox.Min, convertedMesh.BoundingBox.Max);
+            if (!AppendModeEnabled) SetupCameraAndAxis(convertedMesh.BoundingBox.Min, convertedMesh.BoundingBox.Max);
 
             foreach (var lod in convertedMesh.LODs)
             {
@@ -224,8 +210,8 @@ namespace FModel.ViewModels
                     {
                         var id = section.FirstIndex + j * 3 + t;
                         var vert = verts[indices[id]];
-                        var p = new Vector3(vert.Position.X, -vert.Position.Y, vert.Position.Z);
-                        var n = new Vector3(vert.Normal.X, -vert.Normal.Y, vert.Normal.Z);
+                        var p = new Vector3(vert.Position.X, vert.Position.Z, -vert.Position.Y); // up direction is Y
+                        var n = new Vector3(vert.Normal.X, vert.Normal.Z, -vert.Normal.Y);
                         n.Normalize();
                         var uv = new Vector2(vert.UV.U, vert.UV.V);
                         builder.AddNode(p, n, uv);
@@ -322,9 +308,9 @@ namespace FModel.ViewModels
         {
             var minOfMin = min.Min();
             var maxOfMax = max.Max();
-            Cam.UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 0, 1);
-            Cam.Position = new System.Windows.Media.Media3D.Point3D(maxOfMax, maxOfMax, (minOfMin + maxOfMax) / 1.25);
-            Cam.LookDirection = new System.Windows.Media.Media3D.Vector3D(-Cam.Position.X, -Cam.Position.Y, 0);
+            Cam.UpDirection = new Vector3D(0, 1, 0);
+            Cam.Position = new Point3D(maxOfMax, maxOfMax, (minOfMin + maxOfMax) / 1.25);
+            Cam.LookDirection = new Vector3D(-Cam.Position.X, -Cam.Position.Y, 0);
 
             var lineBuilder = new LineBuilder();
             lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(100, 0, 0));
