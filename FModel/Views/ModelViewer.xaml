@@ -34,7 +34,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <ListBox Grid.Row="0" Style="{StaticResource MaterialsListBox}" />
+            <ListBox Grid.Row="0" Style="{StaticResource MaterialsListBox}" MouseDoubleClick="OnMouseDoubleClick" />
             <CheckBox Content="Append Mode" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="0 0 0 5"
                       Grid.Row="1" IsChecked="{Binding ModelViewer.AppendModeEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
         </Grid>
@@ -52,14 +52,14 @@
                 <MouseBinding Command="helix:ViewportCommands.Pan" Gesture="MiddleClick" />
             </helix:Viewport3DX.InputBindings>
 
-            <helix:EnvironmentMap3D Texture="{Binding ModelViewer.HDRi}"/>
+            <helix:EnvironmentMap3D Texture="{Binding ModelViewer.HDRi}" />
             <helix:DirectionalLight3D Direction="{Binding ModelViewer.Cam.LookDirection}" Color="White" />
 
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.XAxis}" Color="#FC3854" />
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.YAxis}" Color="#85CB22" />
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.ZAxis}" Color="#388EED" />
 
-            <helix:GroupModel3D x:Name="MyAntiCrashGroup" ItemsSource="{Binding ModelViewer.Group3d}" />
+            <helix:GroupModel3D x:Name="MyAntiCrashGroup" ItemsSource="{Binding ModelViewer.Group3d}" Mouse3DDown="OnMouse3DDown" />
         </helix:Viewport3DX>
     </Grid>
 </adonisControls:AdonisWindow>

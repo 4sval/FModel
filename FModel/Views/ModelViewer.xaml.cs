@@ -1,8 +1,10 @@
 using System.ComponentModel;
+using System.Windows.Controls;
 using System.Windows.Input;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Services;
 using FModel.ViewModels;
+using HelixToolkit.Wpf.SharpDX;
 
 namespace FModel.Views
 {
@@ -37,6 +39,21 @@ namespace FModel.Views
                     _applicationView.ModelViewer.DiffuseOnlyToggle();
                     break;
             }
+        }
+
+        private void OnMouse3DDown(object sender, MouseDown3DEventArgs e)
+        {
+            if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) || e.HitTestResult.ModelHit is not MeshGeometryModel3D m) return;
+            _applicationView.ModelViewer.SelectedGeometry = m;
+        }
+
+        private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource is not TextBlock or Image)
+                return;
+
+            if (!_applicationView.IsReady || sender is not ListBox { SelectedItem: MeshGeometryModel3D }) return;
+            _applicationView.ModelViewer.FocusOnSelectedGeometry();
         }
     }
 }

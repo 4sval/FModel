@@ -92,7 +92,7 @@ namespace FModel.ViewModels
             AesManager = new AesManagerViewModel(CUE4Parse);
             MapViewer = new MapViewerViewModel(CUE4Parse);
             AudioPlayer = new AudioPlayerViewModel();
-            ModelViewer = new ModelViewerViewModel();
+            ModelViewer = new ModelViewerViewModel(CUE4Parse.Game);
             Status = EStatusKind.Ready;
         }
 

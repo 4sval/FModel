@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using CUE4Parse.UE4.Assets.Exports;
@@ -17,11 +13,8 @@ using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
-using FModel.Services;
-using FModel.Settings;
 using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
-using RestSharp;
 using SharpDX;
 using SkiaSharp;
 using Camera = HelixToolkit.Wpf.SharpDX.Camera;
@@ -74,6 +67,21 @@ namespace FModel.ViewModels
             set => SetProperty(ref _appendModeEnabled, value);
         }
 
+        private MeshGeometryModel3D _selectedGeometry;
+        public MeshGeometryModel3D SelectedGeometry
+        {
+            get => _selectedGeometry;
+            set
+            {
+                SetProperty(ref _selectedGeometry, value);
+                if (!_geometries.TryGetValue(_selectedGeometry, out var camAxis)) return;
+
+                XAxis = camAxis.XAxis;
+                YAxis = camAxis.YAxis;
+                ZAxis = camAxis.ZAxis;
+            }
+        }
+
         private ObservableElement3DCollection _group3d;
         public ObservableElement3DCollection Group3d
         {
@@ -83,12 +91,17 @@ namespace FModel.ViewModels
 
         public TextureModel HDRi { get; private set; }
 
-        private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
-
+        private readonly FGame _game;
         private readonly int[] _facesIndex = { 1, 0, 2 };
+        private readonly List<UObject> _meshes;
+        private readonly Dictionary<MeshGeometryModel3D, CamAxisHolder> _geometries;
 
-        public ModelViewerViewModel()
+        public ModelViewerViewModel(FGame game)
         {
+            _game = game;
+            _meshes = new List<UObject>();
+            _geometries = new Dictionary<MeshGeometryModel3D, CamAxisHolder>();
+
             EffectManager = new DefaultEffectsManager();
             Group3d = new ObservableElement3DCollection();
             Cam = new PerspectiveCamera { NearPlaneDistance = 0.1, FarPlaneDistance = double.PositiveInfinity, FieldOfView = 90 };
@@ -107,6 +120,8 @@ namespace FModel.ViewModels
             LoadHDRi();
 #endif
             if (!AppendModeEnabled) Clear();
+
+            _meshes.Add(export);
             switch (export)
             {
                 case UStaticMesh st:
@@ -115,9 +130,27 @@ namespace FModel.ViewModels
                 case USkeletalMesh sk:
                     LoadSkeletalMesh(sk);
                     break;
-                default:
+                default: // idiot
                     throw new ArgumentOutOfRangeException();
             }
+
+            if (_geometries.Count < 1) return;
+            foreach (var geometry in _geometries.Keys)
+            {
+                // Tag is used as a flag to tell if the geometry is already in Group3d
+                if (geometry.Tag is not (bool and false)) continue;
+
+                geometry.Tag = true;
+                Group3d.Add(geometry);
+            }
+
+            if (AppendModeEnabled || Group3d[0] is not MeshGeometryModel3D selected ||
+                !_geometries.TryGetValue(selected, out var camAxis)) return;
+
+            SelectedGeometry = selected;
+            Cam.UpDirection = new Vector3D(0, 1, 0);
+            Cam.Position = camAxis.Position;
+            Cam.LookDirection = camAxis.LookDirection;
         }
 
         public void RenderingToggle()
@@ -163,6 +196,12 @@ namespace FModel.ViewModels
             }
         }
 
+        public void FocusOnSelectedGeometry()
+        {
+            if (!_geometries.TryGetValue(_selectedGeometry, out var camAxis)) return;
+            Cam.AnimateTo(camAxis.Position, camAxis.LookDirection, new Vector3D(0, 1, 0), 500);
+        }
+
         private void LoadStaticMesh(UStaticMesh mesh)
         {
             if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
@@ -170,12 +209,11 @@ namespace FModel.ViewModels
                 return;
             }
 
-            if (!AppendModeEnabled) SetupCameraAndAxis(convertedMesh.BoundingBox);
-
+            var camAxis = SetupCameraAndAxis(convertedMesh.BoundingBox);
             foreach (var lod in convertedMesh.LODs)
             {
                 if (lod.SkipLod) continue;
-                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value);
+                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, camAxis);
                 break;
             }
         }
@@ -187,17 +225,16 @@ namespace FModel.ViewModels
                 return;
             }
 
-            if (!AppendModeEnabled) SetupCameraAndAxis(convertedMesh.BoundingBox);
-
+            var camAxis = SetupCameraAndAxis(convertedMesh.BoundingBox);
             foreach (var lod in convertedMesh.LODs)
             {
                 if (lod.SkipLod) continue;
-                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value);
+                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, camAxis);
                 break;
             }
         }
 
-        private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices)
+        private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices, CamAxisHolder camAxis)
         {
             foreach (var section in sections) // each section is a mesh part with its own material
             {
@@ -233,7 +270,7 @@ namespace FModel.ViewModels
                     if (parameters.Normal is UTexture2D normal)
                         m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
 
-                    if (_applicationView.CUE4Parse.Game == FGame.FortniteGame)
+                    if (_game == FGame.FortniteGame)
                     {
                         // Fortnite's Specular Texture Channels
                         // R Specular
@@ -293,44 +330,54 @@ namespace FModel.ViewModels
                     m = new PBRMaterial { AlbedoColor = new Color4(1, 0, 0, 1) }; //PhongMaterials.Red;
                 }
 
-                Group3d.Add(new MeshGeometryModel3D
+                _geometries.Add(new MeshGeometryModel3D
                 {
-                    Name = unrealMaterial.Name.Replace('-', '_'),
-                    Geometry = builder.ToMeshGeometry3D(),
-                    Material = m,
-                    IsRendering = isRendering
-                });
+                    Name = unrealMaterial.Name.Replace('-', '_'), Geometry = builder.ToMeshGeometry3D(),
+                    Material = m, IsRendering = isRendering, Tag = false // flag
+                }, camAxis);
             }
         }
 
-        private void SetupCameraAndAxis(FBox box)
+        private CamAxisHolder SetupCameraAndAxis(FBox box)
         {
+            var ret = new CamAxisHolder();
             var meanX = (box.Max.X + box.Min.X) / 2;
             var meanY = (box.Max.Y + box.Min.Y) / 2;
             var meanZ = (box.Max.Z + box.Min.Z) / 2;
 
             var lineBuilder = new LineBuilder();
             lineBuilder.AddLine(new Vector3(box.Min.X, meanZ, -meanY), new Vector3(box.Max.X, meanZ, -meanY));
-            XAxis = lineBuilder.ToLineGeometry3D();
+            ret.XAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
             lineBuilder.AddLine(new Vector3(meanX, box.Min.Z, -meanY), new Vector3(meanX, box.Max.Z, -meanY));
-            YAxis = lineBuilder.ToLineGeometry3D();
+            ret.YAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
             lineBuilder.AddLine(new Vector3(meanX, meanZ, -box.Min.Y), new Vector3(meanX, meanZ, -box.Max.Y));
-            ZAxis = lineBuilder.ToLineGeometry3D();
+            ret.ZAxis = lineBuilder.ToLineGeometry3D();
 
-            Cam.UpDirection = new Vector3D(0, 1, 0);
-            Cam.Position = new Point3D(box.Max.X + meanX * 2, meanZ * 1.25, -box.Min.Y -meanY * 2);
-            Cam.LookDirection = new Vector3D(-Cam.Position.X, 0, -Cam.Position.Z - meanY);
+            ret.Position = new Point3D(box.Max.X + meanX * 2, meanZ, -box.Min.Y - meanY * 2);
+            ret.LookDirection = new Vector3D(-ret.Position.X, 0, -ret.Position.Z - meanY);
+            return ret;
         }
 
         private void Clear()
         {
+            _meshes.Clear();
+            _geometries.Clear();
             foreach (var g in Group3d.ToList())
             {
                 g.Dispose();
                 Group3d.Remove(g);
             }
         }
+    }
+
+    public class CamAxisHolder
+    {
+        public Point3D Position;
+        public Vector3D LookDirection;
+        public Geometry3D XAxis;
+        public Geometry3D YAxis;
+        public Geometry3D ZAxis;
     }
 }

@@ -619,6 +619,7 @@
 
     <Style x:Key="MaterialsListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="ItemsSource" Value="{Binding ModelViewer.Group3d, IsAsync=True}" />
+        <Setter Property="SelectedItem" Value="{Binding ModelViewer.SelectedGeometry}" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
