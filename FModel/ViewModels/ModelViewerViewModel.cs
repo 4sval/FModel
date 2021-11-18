@@ -91,14 +91,13 @@ namespace FModel.ViewModels
         {
             EffectManager = new DefaultEffectsManager();
             Group3d = new ObservableElement3DCollection();
-            Cam = new PerspectiveCamera { NearPlaneDistance = 0.1, FarPlaneDistance = double.PositiveInfinity, FieldOfView = 80 };
+            Cam = new PerspectiveCamera { NearPlaneDistance = 0.1, FarPlaneDistance = double.PositiveInfinity, FieldOfView = 90 };
             LoadHDRi();
         }
 
         private void LoadHDRi()
         {
-            var cubeMap = Application.GetResourceStream(new Uri("/FModel;component/Resources/approaching_storm_cubemap.dds",
-                UriKind.Relative));
+            var cubeMap = Application.GetResourceStream(new Uri("/FModel;component/Resources/approaching_storm_cubemap.dds", UriKind.Relative));
             HDRi = TextureModel.Create(cubeMap?.Stream);
         }
 
@@ -171,7 +170,7 @@ namespace FModel.ViewModels
                 return;
             }
 
-            if (!AppendModeEnabled) SetupCameraAndAxis(convertedMesh.BoundingBox.Min, convertedMesh.BoundingBox.Max);
+            if (!AppendModeEnabled) SetupCameraAndAxis(convertedMesh.BoundingBox);
 
             foreach (var lod in convertedMesh.LODs)
             {
@@ -188,7 +187,7 @@ namespace FModel.ViewModels
                 return;
             }
 
-            SetupCameraAndAxis(convertedMesh.BoundingBox.Min, convertedMesh.BoundingBox.Max);
+            if (!AppendModeEnabled) SetupCameraAndAxis(convertedMesh.BoundingBox);
 
             foreach (var lod in convertedMesh.LODs)
             {
@@ -222,7 +221,7 @@ namespace FModel.ViewModels
                 if (section.Material == null || !section.Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
                     continue;
 
-                var m = new PBRMaterial() { RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true };
+                var m = new PBRMaterial { RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true };
                 var parameters = new CMaterialParams();
                 unrealMaterial.GetParams(parameters);
 
@@ -304,23 +303,25 @@ namespace FModel.ViewModels
             }
         }
 
-        private void SetupCameraAndAxis(FVector min, FVector max)
+        private void SetupCameraAndAxis(FBox box)
         {
-            var minOfMin = min.Min();
-            var maxOfMax = max.Max();
-            Cam.UpDirection = new Vector3D(0, 1, 0);
-            Cam.Position = new Point3D(maxOfMax, maxOfMax, (minOfMin + maxOfMax) / 1.25);
-            Cam.LookDirection = new Vector3D(-Cam.Position.X, -Cam.Position.Y, 0);
+            var meanX = (box.Max.X + box.Min.X) / 2;
+            var meanY = (box.Max.Y + box.Min.Y) / 2;
+            var meanZ = (box.Max.Z + box.Min.Z) / 2;
 
             var lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(100, 0, 0));
+            lineBuilder.AddLine(new Vector3(box.Min.X, meanZ, -meanY), new Vector3(box.Max.X, meanZ, -meanY));
             XAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(0, 100, 0));
+            lineBuilder.AddLine(new Vector3(meanX, box.Min.Z, -meanY), new Vector3(meanX, box.Max.Z, -meanY));
             YAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(0, 0, 0), new Vector3(0, 0, 100));
+            lineBuilder.AddLine(new Vector3(meanX, meanZ, -box.Min.Y), new Vector3(meanX, meanZ, -box.Max.Y));
             ZAxis = lineBuilder.ToLineGeometry3D();
+
+            Cam.UpDirection = new Vector3D(0, 1, 0);
+            Cam.Position = new Point3D(box.Max.X + meanX * 2, meanZ * 1.25, -box.Min.Y -meanY * 2);
+            Cam.LookDirection = new Vector3D(-Cam.Position.X, 0, -Cam.Position.Z - meanY);
         }
 
         private void Clear()
