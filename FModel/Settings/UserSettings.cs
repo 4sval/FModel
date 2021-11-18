@@ -114,6 +114,13 @@ namespace FModel.Settings
             set => SetProperty(ref _isAutoOpenSounds, value);
         }
 
+        private bool _isAutoOpenMeshes = true;
+        public bool IsAutoOpenMeshes
+        {
+            get => _isAutoOpenMeshes;
+            set => SetProperty(ref _isAutoOpenMeshes, value);
+        }
+
         private bool _isLoggerExpanded = true;
         public bool IsLoggerExpanded
         {
@@ -516,6 +523,13 @@ namespace FModel.Settings
         {
             get => _autoOpenSounds;
             set => SetProperty(ref _autoOpenSounds, value);
+        }
+
+        private Hotkey _autoOpenMeshes = new(Key.F8);
+        public Hotkey AutoOpenMeshes
+        {
+            get => _autoOpenMeshes;
+            set => SetProperty(ref _autoOpenMeshes, value);
         }
 
         private Hotkey _addAudio = new(Key.N, ModifierKeys.Control);

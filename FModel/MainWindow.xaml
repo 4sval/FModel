@@ -168,6 +168,9 @@
                     <MenuItem Header="Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
+                    <MenuItem Header="Open Model Viewer" IsCheckable="True" StaysOpenOnClick="True"
+                              InputGestureText="{Binding AutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
+                              IsChecked="{Binding AutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Views">

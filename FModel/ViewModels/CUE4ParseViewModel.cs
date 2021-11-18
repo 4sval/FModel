@@ -668,17 +668,17 @@ namespace FModel.ViewModels
                 case UStaticMesh:
                 case USkeletalMesh:
                 {
-                    if (UserSettings.Default.IsAutoSaveMeshes)
-                    {
-                        SaveExport(export);
-                    }
-                    else
+                    if (UserSettings.Default.IsAutoOpenMeshes)
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
                             modelViewer.Load(export);
                         });
+                    }
+                    if (UserSettings.Default.IsAutoSaveMeshes)
+                    {
+                        SaveExport(export);
                     }
                     return true;
                 }
