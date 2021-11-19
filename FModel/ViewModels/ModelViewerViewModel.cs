@@ -216,7 +216,7 @@ namespace FModel.ViewModels
             _geometries.Add(new MeshGeometryModel3D
             {
                 Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
-                Name = materialInstance.Name.Replace('-', '_'), Geometry = builder.ToMeshGeometry3D(),
+                Name = FixName(materialInstance.Name), Geometry = builder.ToMeshGeometry3D(),
                 Material = m, IsRendering = isRendering, Tag = false // flag
             }, camAxis);
         }
@@ -280,7 +280,7 @@ namespace FModel.ViewModels
                 var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial);
                 _geometries.Add(new MeshGeometryModel3D
                 {
-                    Name = unrealMaterial.Name.Replace('-', '_'), Geometry = builder.ToMeshGeometry3D(),
+                    Name = FixName(unrealMaterial.Name), Geometry = builder.ToMeshGeometry3D(),
                     Material = m, IsTransparent = isTransparent, IsRendering = isRendering, Tag = false // flag
                 }, camAxis);
             }
@@ -327,6 +327,12 @@ namespace FModel.ViewModels
                             parameters.RoughnessValue = 1;
                             parameters.MetallicValue = 1;
                             break;
+                        }
+                        case FGame.ShooterGame:
+                        {
+                            parameters.RoughnessValue = 1;
+                            parameters.MetallicValue = 1;
+                            goto case FGame.Gameface;
                         }
                         case FGame.Gameface:
                         {
@@ -392,6 +398,17 @@ namespace FModel.ViewModels
             ret.Position = new Point3D(box.Max.X + meanX * 2, meanZ, -box.Min.Y - meanY * 2);
             ret.LookDirection = new Vector3D(-ret.Position.X + meanX, 0, -ret.Position.Z - meanY);
             return ret;
+        }
+
+        private string FixName(string input)
+        {
+            if (input.Length < 1)
+                return "Material_Has_No_Name";
+
+            if (int.TryParse(input[0].ToString(), out _))
+                input = input[1..];
+
+            return input.Replace('-', '_');
         }
 
         private void Clear()
