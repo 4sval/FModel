@@ -689,6 +689,15 @@ namespace FModel.ViewModels
                     SaveExport(export);
                     return true;
                 }
+                case UMaterialInstance when UserSettings.Default.IsAutoOpenMeshes:
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
+                        modelViewer.Load(export);
+                    });
+                    return true;
+                }
                 default:
                 {
                     using var package = new CreatorPackage(export, UserSettings.Default.CosmeticStyle);

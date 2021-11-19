@@ -130,6 +130,9 @@ namespace FModel.ViewModels
                 case USkeletalMesh sk:
                     LoadSkeletalMesh(sk);
                     break;
+                case UMaterialInstance mi:
+                    LoadMaterialInstance(mi);
+                    break;
                 default: // idiot
                     throw new ArgumentOutOfRangeException();
             }
@@ -202,6 +205,22 @@ namespace FModel.ViewModels
             Cam.AnimateTo(camAxis.Position, camAxis.LookDirection, new Vector3D(0, 1, 0), 500);
         }
 
+        private void LoadMaterialInstance(UMaterialInstance materialInstance)
+        {
+            var builder = new MeshBuilder();
+            builder.AddSphere(Vector3.Zero, 10);
+
+            var camAxis = SetupCameraAndAxis(new FBox(new FVector(-15), new FVector(15)));
+            var (m, isRendering) = LoadMaterial(materialInstance);
+
+            _geometries.Add(new MeshGeometryModel3D
+            {
+                Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
+                Name = materialInstance.Name.Replace('-', '_'), Geometry = builder.ToMeshGeometry3D(),
+                Material = m, IsRendering = isRendering, Tag = false // flag
+            }, camAxis);
+        }
+
         private void LoadStaticMesh(UStaticMesh mesh)
         {
             if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
@@ -258,77 +277,7 @@ namespace FModel.ViewModels
                 if (section.Material == null || !section.Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
                     continue;
 
-                var m = new PBRMaterial { RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true };
-                var parameters = new CMaterialParams();
-                unrealMaterial.GetParams(parameters);
-
-                var isRendering = !parameters.IsNull;
-                if (isRendering)
-                {
-                    if (parameters.Diffuse is UTexture2D diffuse)
-                        m.AlbedoMap = new TextureModel(diffuse.Decode()?.Encode().AsStream());
-                    if (parameters.Normal is UTexture2D normal)
-                        m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
-
-                    if (_game == FGame.FortniteGame)
-                    {
-                        // Fortnite's Specular Texture Channels
-                        // R Specular
-                        // G Metallic
-                        // B Roughness
-                        if (parameters.Specular is UTexture2D specular)
-                        {
-                            var mip = specular.GetFirstMip();
-                            TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap,
-                                out var data, out var colorType);
-
-                            unsafe
-                            {
-                                var offset = 0;
-                                fixed (byte* d = data)
-                                    for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
-                                    {
-                                        d[offset] = 0;
-                                        (d[offset+1], d[offset+2]) = (d[offset+2], d[offset+1]); // swap G and B
-                                        offset += 4;
-                                    }
-                            }
-
-                            var width = mip.SizeX;
-                            var height = mip.SizeY;
-                            using var bitmap = new SKBitmap(new SKImageInfo(width, height, colorType, SKAlphaType.Unpremul));
-                            unsafe
-                            {
-                                fixed (byte* p = data)
-                                {
-                                    bitmap.SetPixels(new IntPtr(p));
-                                }
-                            }
-
-                            // R -> AO G -> Roughness B -> Metallic
-                            m.RoughnessMetallicMap = new TextureModel(bitmap.Encode(SKEncodedImageFormat.Png, 100).AsStream());
-                            m.RenderAmbientOcclusionMap = false; // red channel is not ao
-                            m.MetallicFactor = 1;
-                            m.RoughnessFactor = 1;
-                        }
-                    }
-                    // if (parameters.Specular is UTexture2D specular)
-                    //     m.AmbientOcculsionMap = new TextureModel(specular.Decode()?.Encode().AsStream());
-                    // if (parameters.Specular is UTexture2D specularPower)
-                    // {
-                    //     m.RoughnessFactor = parameters.MobileSpecularPower;
-                    //     m.RoughnessMetallicMap = new TextureModel(specularPower.Decode()?.Encode().AsStream());
-                    // }
-                    // if (parameters.Emissive is UTexture2D emissive)
-                    // {
-                    //     m.EmissiveColor = Color4.White; // FortniteGame/Content/Characters/Player/Female/Medium/Bodies/F_MED_Obsidian/Meshes/F_MED_Obsidian.uasset
-                    //     m.EmissiveMap = new TextureModel(emissive.Decode()?.Encode().AsStream());
-                    // }
-                }
-                else
-                {
-                    m = new PBRMaterial { AlbedoColor = new Color4(1, 0, 0, 1) }; //PhongMaterials.Red;
-                }
+                var (m, isRendering) = LoadMaterial(unrealMaterial);
 
                 _geometries.Add(new MeshGeometryModel3D
                 {
@@ -336,6 +285,83 @@ namespace FModel.ViewModels
                     Material = m, IsRendering = isRendering, Tag = false // flag
                 }, camAxis);
             }
+        }
+
+        private (PBRMaterial material, bool isRendering) LoadMaterial(UMaterialInterface unrealMaterial)
+        {
+            var m = new PBRMaterial { RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true };
+            var parameters = new CMaterialParams();
+            unrealMaterial.GetParams(parameters);
+
+            var isRendering = !parameters.IsNull;
+            if (isRendering)
+            {
+                if (parameters.Diffuse is UTexture2D diffuse)
+                    m.AlbedoMap = new TextureModel(diffuse.Decode()?.Encode().AsStream());
+                if (parameters.Normal is UTexture2D normal)
+                    m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
+
+                if (_game == FGame.FortniteGame)
+                {
+                    // Fortnite's Specular Texture Channels
+                    // R Specular
+                    // G Metallic
+                    // B Roughness
+                    if (parameters.Specular is UTexture2D specular)
+                    {
+                        var mip = specular.GetFirstMip();
+                        TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap,
+                            out var data, out var colorType);
+
+                        unsafe
+                        {
+                            var offset = 0;
+                            fixed (byte* d = data)
+                                for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                {
+                                    d[offset] = 0;
+                                    (d[offset+1], d[offset+2]) = (d[offset+2], d[offset+1]); // swap G and B
+                                    offset += 4;
+                                }
+                        }
+
+                        var width = mip.SizeX;
+                        var height = mip.SizeY;
+                        using var bitmap = new SKBitmap(new SKImageInfo(width, height, colorType, SKAlphaType.Unpremul));
+                        unsafe
+                        {
+                            fixed (byte* p = data)
+                            {
+                                bitmap.SetPixels(new IntPtr(p));
+                            }
+                        }
+
+                        // R -> AO G -> Roughness B -> Metallic
+                        m.RoughnessMetallicMap = new TextureModel(bitmap.Encode(SKEncodedImageFormat.Png, 100).AsStream());
+                        m.RenderAmbientOcclusionMap = false; // red channel is not ao
+                        m.MetallicFactor = 1;
+                        m.RoughnessFactor = 1;
+                    }
+                }
+                // if (parameters.Specular is UTexture2D specular)
+                //     m.AmbientOcculsionMap = new TextureModel(specular.Decode()?.Encode().AsStream());
+                // if (parameters.Specular is UTexture2D specularPower)
+                // {
+                //     m.RoughnessFactor = parameters.MobileSpecularPower;
+                //     m.RoughnessMetallicMap = new TextureModel(specularPower.Decode()?.Encode().AsStream());
+                // }
+                // if (parameters.Emissive is UTexture2D emissive)
+                // {
+                //     m.EmissiveColor = Color4.White; // FortniteGame/Content/Characters/Player/Female/Medium/Bodies/F_MED_Obsidian/Meshes/F_MED_Obsidian.uasset
+                //     m.EmissiveMap = new TextureModel(emissive.Decode()?.Encode().AsStream());
+                // }
+            }
+            else
+            {
+                m = new PBRMaterial { AlbedoColor = new Color4(1, 0, 0, 1) }; //PhongMaterials.Red;
+            }
+
+            return (m, isRendering);
         }
 
         private CamAxisHolder SetupCameraAndAxis(FBox box)
