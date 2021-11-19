@@ -74,7 +74,7 @@ namespace FModel.ViewModels
             set
             {
                 SetProperty(ref _selectedGeometry, value);
-                if (!_geometries.TryGetValue(_selectedGeometry, out var camAxis)) return;
+                if (_selectedGeometry == null || !_geometries.TryGetValue(_selectedGeometry, out var camAxis)) return;
 
                 XAxis = camAxis.XAxis;
                 YAxis = camAxis.YAxis;

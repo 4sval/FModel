@@ -170,7 +170,7 @@
                               IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
                     <MenuItem Header="Open Model Viewer" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding AutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />
+                              IsChecked="{Binding IsAutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Views">
@@ -897,6 +897,19 @@
                             </Style>
                         </StatusBarItem.Style>
                         <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="SND" />
+                    </StatusBarItem>
+
+                    <StatusBarItem Width="33" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Meshes Enabled">
+                        <StatusBarItem.Style>
+                            <Style TargetType="StatusBarItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StatusBarItem.Style>
+                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="OMV" />
                     </StatusBarItem>
                 </StackPanel>
             </StatusBarItem>
