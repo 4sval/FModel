@@ -265,8 +265,8 @@ namespace FModel.ViewModels
                     {
                         var id = section.FirstIndex + j * 3 + t;
                         var vert = verts[indices[id]];
-                        var p = new Vector3(vert.Position.X, vert.Position.Z, -vert.Position.Y); // up direction is Y
-                        var n = new Vector3(vert.Normal.X, vert.Normal.Z, -vert.Normal.Y);
+                        var p = new Vector3(vert.Position.X, vert.Position.Z, vert.Position.Y); // up direction is Y
+                        var n = new Vector3(vert.Normal.X, vert.Normal.Z, vert.Normal.Y);
                         n.Normalize();
                         var uv = new Vector2(vert.UV.U, vert.UV.V);
                         builder.AddNode(p, n, uv);
@@ -386,17 +386,17 @@ namespace FModel.ViewModels
             var meanZ = (box.Max.Z + box.Min.Z) / 2;
 
             var lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(box.Min.X, meanZ, -meanY), new Vector3(box.Max.X, meanZ, -meanY));
+            lineBuilder.AddLine(new Vector3(box.Min.X, meanZ, meanY), new Vector3(box.Max.X, meanZ, meanY));
             ret.XAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(meanX, box.Min.Z, -meanY), new Vector3(meanX, box.Max.Z, -meanY));
+            lineBuilder.AddLine(new Vector3(meanX, box.Min.Z, meanY), new Vector3(meanX, box.Max.Z, meanY));
             ret.YAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(meanX, meanZ, -box.Min.Y), new Vector3(meanX, meanZ, -box.Max.Y));
+            lineBuilder.AddLine(new Vector3(meanX, meanZ, box.Min.Y), new Vector3(meanX, meanZ, box.Max.Y));
             ret.ZAxis = lineBuilder.ToLineGeometry3D();
 
-            ret.Position = new Point3D(box.Max.X + meanX * 2, meanZ, -box.Min.Y - meanY * 2);
-            ret.LookDirection = new Vector3D(-ret.Position.X + meanX, 0, -ret.Position.Z - meanY);
+            ret.Position = new Point3D(box.Max.X + meanX * 2, meanZ, box.Min.Y + meanY * 2);
+            ret.LookDirection = new Vector3D(-ret.Position.X + meanX, 0, -ret.Position.Z + meanY);
             return ret;
         }
 
