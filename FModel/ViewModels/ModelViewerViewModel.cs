@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media.Media3D;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -60,50 +62,48 @@ namespace FModel.ViewModels
             set => SetProperty(ref _zAxis, value);
         }
 
-        private bool _appendModeEnabled;
-        public bool AppendModeEnabled
+        private ModelAndCam _selectedModel; // selected mesh
+        public ModelAndCam SelectedModel
         {
-            get => _appendModeEnabled;
-            set => SetProperty(ref _appendModeEnabled, value);
-        }
-
-        private MeshGeometryModel3D _selectedGeometry;
-        public MeshGeometryModel3D SelectedGeometry
-        {
-            get => _selectedGeometry;
+            get => _selectedModel;
             set
             {
-                SetProperty(ref _selectedGeometry, value);
-                if (_selectedGeometry == null || !_geometries.TryGetValue(_selectedGeometry, out var camAxis)) return;
+                SetProperty(ref _selectedModel, value);
+                if (_selectedModel == null) return;
 
-                XAxis = camAxis.XAxis;
-                YAxis = camAxis.YAxis;
-                ZAxis = camAxis.ZAxis;
+                XAxis = _selectedModel.XAxis;
+                YAxis = _selectedModel.YAxis;
+                ZAxis = _selectedModel.ZAxis;
+                Cam.UpDirection = new Vector3D(0, 1, 0);
+                Cam.Position = _selectedModel.Position;
+                Cam.LookDirection = _selectedModel.LookDirection;
             }
         }
 
-        private ObservableElement3DCollection _group3d;
-        public ObservableElement3DCollection Group3d
+        private readonly ObservableCollection<ModelAndCam> _loadedModels; // mesh list
+        public ICollectionView LoadedModelsView { get; }
+
+        private bool _appendMode;
+        public bool AppendMode
         {
-            get => _group3d;
-            set => SetProperty(ref _group3d, value);
+            get => _appendMode;
+            set => SetProperty(ref _appendMode, value);
         }
+
+        public bool CanAppend => SelectedModel != null;
 
         public TextureModel HDRi { get; private set; }
 
         private readonly FGame _game;
         private readonly int[] _facesIndex = { 1, 0, 2 };
-        private readonly List<UObject> _meshes;
-        private readonly Dictionary<MeshGeometryModel3D, CamAxisHolder> _geometries;
 
         public ModelViewerViewModel(FGame game)
         {
             _game = game;
-            _meshes = new List<UObject>();
-            _geometries = new Dictionary<MeshGeometryModel3D, CamAxisHolder>();
+            _loadedModels = new ObservableCollection<ModelAndCam>();
 
             EffectManager = new DefaultEffectsManager();
-            Group3d = new ObservableElement3DCollection();
+            LoadedModelsView = new ListCollectionView(_loadedModels);
             Cam = new PerspectiveCamera { NearPlaneDistance = 0.1, FarPlaneDistance = double.PositiveInfinity, FieldOfView = 90 };
             LoadHDRi();
         }
@@ -119,46 +119,32 @@ namespace FModel.ViewModels
 #if DEBUG
             LoadHDRi();
 #endif
-            if (!AppendModeEnabled) Clear();
-
-            _meshes.Add(export);
-            switch (export)
+            ModelAndCam p;
+            if (AppendMode && CanAppend)
+                p = SelectedModel;
+            else
             {
-                case UStaticMesh st:
-                    LoadStaticMesh(st);
-                    break;
-                case USkeletalMesh sk:
-                    LoadSkeletalMesh(sk);
-                    break;
-                case UMaterialInstance mi:
-                    LoadMaterialInstance(mi);
-                    break;
-                default: // idiot
-                    throw new ArgumentOutOfRangeException();
+                p = new ModelAndCam(export);
+                _loadedModels.Add(p);
             }
-
-            if (_geometries.Count < 1) return;
-            foreach (var geometry in _geometries.Keys)
+            bool valid = export switch
             {
-                // Tag is used as a flag to tell if the geometry is already in Group3d
-                if (geometry.Tag is not (bool and false)) continue;
+                UStaticMesh st => TryLoadStaticMesh(st, ref p),
+                USkeletalMesh sk => TryLoadSkeletalMesh(sk, ref p),
+                UMaterialInstance mi => TryLoadMaterialInstance(mi, ref p),
+                _ => throw new ArgumentOutOfRangeException(nameof(export))
+            };
 
-                geometry.Tag = true;
-                Group3d.Add(geometry);
-            }
+            if (!valid)
+                return;
 
-            if (AppendModeEnabled || Group3d[0] is not MeshGeometryModel3D selected ||
-                !_geometries.TryGetValue(selected, out var camAxis)) return;
-
-            SelectedGeometry = selected;
-            Cam.UpDirection = new Vector3D(0, 1, 0);
-            Cam.Position = camAxis.Position;
-            Cam.LookDirection = camAxis.LookDirection;
+            SelectedModel = p;
         }
 
         public void RenderingToggle()
         {
-            foreach (var g in Group3d)
+            if (SelectedModel == null) return;
+            foreach (var g in SelectedModel.Group3d)
             {
                 if (g is not MeshGeometryModel3D geometryModel)
                     continue;
@@ -166,10 +152,10 @@ namespace FModel.ViewModels
                 geometryModel.IsRendering = !geometryModel.IsRendering;
             }
         }
-
         public void WirefreameToggle()
         {
-            foreach (var g in Group3d)
+            if (SelectedModel == null) return;
+            foreach (var g in SelectedModel.Group3d)
             {
                 if (g is not MeshGeometryModel3D geometryModel)
                     continue;
@@ -177,88 +163,90 @@ namespace FModel.ViewModels
                 geometryModel.RenderWireframe = !geometryModel.RenderWireframe;
             }
         }
-
         public void DiffuseOnlyToggle()
         {
-            foreach (var g in Group3d)
+            if (SelectedModel == null) return;
+            foreach (var g in SelectedModel.Group3d)
             {
-                if (g is not MeshGeometryModel3D geometryModel)
+                if (g is not MeshGeometryModel3D { Material: PBRMaterial mat })
                     continue;
 
-                if (geometryModel.Material is PBRMaterial mat)
-                {
-                    //mat.RenderAmbientOcclusionMap = !mat.RenderAmbientOcclusionMap;
-                    mat.RenderDisplacementMap = !mat.RenderDisplacementMap;
-                    //mat.RenderEmissiveMap = !mat.RenderEmissiveMap;
-                    mat.RenderEnvironmentMap = !mat.RenderEnvironmentMap;
-                    mat.RenderIrradianceMap = !mat.RenderIrradianceMap;
-                    mat.RenderRoughnessMetallicMap = !mat.RenderRoughnessMetallicMap;
-                    mat.RenderShadowMap = !mat.RenderShadowMap;
-                    mat.RenderNormalMap = !mat.RenderNormalMap;
-                }
+                //mat.RenderAmbientOcclusionMap = !mat.RenderAmbientOcclusionMap;
+                mat.RenderDisplacementMap = !mat.RenderDisplacementMap;
+                //mat.RenderEmissiveMap = !mat.RenderEmissiveMap;
+                mat.RenderEnvironmentMap = !mat.RenderEnvironmentMap;
+                mat.RenderIrradianceMap = !mat.RenderIrradianceMap;
+                mat.RenderRoughnessMetallicMap = !mat.RenderRoughnessMetallicMap;
+                mat.RenderShadowMap = !mat.RenderShadowMap;
+                mat.RenderNormalMap = !mat.RenderNormalMap;
             }
         }
-
-        public void FocusOnSelectedGeometry()
+        public void FocusOnSelectedMesh()
         {
-            if (!_geometries.TryGetValue(_selectedGeometry, out var camAxis)) return;
-            Cam.AnimateTo(camAxis.Position, camAxis.LookDirection, new Vector3D(0, 1, 0), 500);
+            Cam.AnimateTo(SelectedModel.Position, SelectedModel.LookDirection, new Vector3D(0, 1, 0), 500);
         }
 
-        private void LoadMaterialInstance(UMaterialInstance materialInstance)
+        private bool TryLoadMaterialInstance(UMaterialInstance materialInstance, ref ModelAndCam cam)
         {
             var builder = new MeshBuilder();
             builder.AddSphere(Vector3.Zero, 10);
 
-            var camAxis = SetupCameraAndAxis(new FBox(new FVector(-15), new FVector(15)));
-            var (m, isRendering, _) = LoadMaterial(materialInstance);
+            SetupCameraAndAxis(new FBox(new FVector(-15), new FVector(15)), ref cam);
+            var (m, isRendering, isTransparent) = LoadMaterial(materialInstance);
 
-            _geometries.Add(new MeshGeometryModel3D
+            cam.Group3d.Add(new MeshGeometryModel3D
             {
                 Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
                 Name = FixName(materialInstance.Name), Geometry = builder.ToMeshGeometry3D(),
-                Material = m, IsRendering = isRendering, Tag = false // flag
-            }, camAxis);
+                Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+            });
+            return true;
         }
 
-        private void LoadStaticMesh(UStaticMesh mesh)
+        private bool TryLoadStaticMesh(UStaticMesh mesh, ref ModelAndCam cam)
         {
             if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
             {
-                return;
+                cam = null;
+                return false;
             }
 
-            var camAxis = SetupCameraAndAxis(convertedMesh.BoundingBox);
+            SetupCameraAndAxis(convertedMesh.BoundingBox, ref cam);
             foreach (var lod in convertedMesh.LODs)
             {
                 if (lod.SkipLod) continue;
-                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, camAxis);
+                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, ref cam);
                 break;
             }
+
+            return true;
         }
 
-        private void LoadSkeletalMesh(USkeletalMesh mesh)
+        private bool TryLoadSkeletalMesh(USkeletalMesh mesh, ref ModelAndCam cam)
         {
             if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
             {
-                return;
+                cam = null;
+                return false;
             }
 
-            var camAxis = SetupCameraAndAxis(convertedMesh.BoundingBox);
+            SetupCameraAndAxis(convertedMesh.BoundingBox, ref cam);
             foreach (var lod in convertedMesh.LODs)
             {
                 if (lod.SkipLod) continue;
-                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, camAxis);
+                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, ref cam);
                 break;
             }
+
+            return true;
         }
 
-        private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices, CamAxisHolder camAxis)
+        private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices, ref ModelAndCam cam)
         {
             foreach (var section in sections) // each section is a mesh part with its own material
             {
                 var builder = new MeshBuilder();
-                // NumFaces * 3 (triangle) = next section FirstIndex
+                cam.TriangleCount += section.NumFaces; // NumFaces * 3 (triangle) = next section FirstIndex
                 for (var j = 0; j < section.NumFaces; j++) // draw a triangle for each face
                 {
                     foreach (var t in _facesIndex) // triangle face 1 then 0 then 2
@@ -278,11 +266,11 @@ namespace FModel.ViewModels
                     continue;
 
                 var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial);
-                _geometries.Add(new MeshGeometryModel3D
+                cam.Group3d.Add(new MeshGeometryModel3D
                 {
                     Name = FixName(unrealMaterial.Name), Geometry = builder.ToMeshGeometry3D(),
-                    Material = m, IsTransparent = isTransparent, IsRendering = isRendering, Tag = false // flag
-                }, camAxis);
+                    Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+                });
             }
         }
 
@@ -330,9 +318,24 @@ namespace FModel.ViewModels
                         }
                         case FGame.ShooterGame:
                         {
+                            // Valorant's Specular Texture Channels
+                            // R Metallic
+                            // G Specular
+                            // B Roughness
+                            unsafe
+                            {
+                                var offset = 0;
+                                fixed (byte* d = data)
+                                    for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                    {
+                                        (d[offset], d[offset+2]) = (d[offset+2], d[offset]); // swap R and B
+                                        (d[offset], d[offset+1]) = (d[offset+1], d[offset]); // swap B and G
+                                        offset += 4;
+                                    }
+                            }
                             parameters.RoughnessValue = 1;
                             parameters.MetallicValue = 1;
-                            goto case FGame.Gameface;
+                            break;
                         }
                         case FGame.Gameface:
                         {
@@ -378,26 +381,25 @@ namespace FModel.ViewModels
             return (m, isRendering, parameters.IsTransparent);
         }
 
-        private CamAxisHolder SetupCameraAndAxis(FBox box)
+        private void SetupCameraAndAxis(FBox box, ref ModelAndCam cam)
         {
-            var ret = new CamAxisHolder();
+            if (AppendMode && CanAppend) return;
             var meanX = (box.Max.X + box.Min.X) / 2;
             var meanY = (box.Max.Y + box.Min.Y) / 2;
             var meanZ = (box.Max.Z + box.Min.Z) / 2;
 
             var lineBuilder = new LineBuilder();
             lineBuilder.AddLine(new Vector3(box.Min.X, meanZ, meanY), new Vector3(box.Max.X, meanZ, meanY));
-            ret.XAxis = lineBuilder.ToLineGeometry3D();
+            cam.XAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
             lineBuilder.AddLine(new Vector3(meanX, box.Min.Z, meanY), new Vector3(meanX, box.Max.Z, meanY));
-            ret.YAxis = lineBuilder.ToLineGeometry3D();
+            cam.YAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
             lineBuilder.AddLine(new Vector3(meanX, meanZ, box.Min.Y), new Vector3(meanX, meanZ, box.Max.Y));
-            ret.ZAxis = lineBuilder.ToLineGeometry3D();
+            cam.ZAxis = lineBuilder.ToLineGeometry3D();
 
-            ret.Position = new Point3D(box.Max.X + meanX * 2, meanZ, box.Min.Y + meanY * 2);
-            ret.LookDirection = new Vector3D(-ret.Position.X + meanX, 0, -ret.Position.Z + meanY);
-            return ret;
+            cam.Position = new Point3D(box.Max.X + meanX * 2, meanZ, box.Min.Y + meanY * 2);
+            cam.LookDirection = new Vector3D(-cam.Position.X + meanX, 0, -cam.Position.Z + meanY);
         }
 
         private string FixName(string input)
@@ -411,24 +413,56 @@ namespace FModel.ViewModels
             return input.Replace('-', '_');
         }
 
-        private void Clear()
+        public void Clear()
         {
-            _meshes.Clear();
-            _geometries.Clear();
+            foreach (var g in _loadedModels.ToList())
+            {
+                g.Dispose();
+                _loadedModels.Remove(g);
+            }
+        }
+    }
+
+    public class ModelAndCam : ViewModel
+    {
+        public UObject Export { get; }
+        public Point3D Position { get; set; }
+        public Vector3D LookDirection { get; set; }
+        public Geometry3D XAxis { get; set; }
+        public Geometry3D YAxis { get; set; }
+        public Geometry3D ZAxis { get; set; }
+        public int TriangleCount { get; set; }
+
+        private MeshGeometryModel3D _selectedGeometry; // selected material
+        public MeshGeometryModel3D SelectedGeometry
+        {
+            get => _selectedGeometry;
+            set => SetProperty(ref _selectedGeometry, value);
+        }
+
+        private ObservableElement3DCollection _group3d; // material list
+        public ObservableElement3DCollection Group3d
+        {
+            get => _group3d;
+            set => SetProperty(ref _group3d, value);
+        }
+
+        public ModelAndCam(UObject export)
+        {
+            Export = export;
+            TriangleCount = 0;
+            Group3d = new ObservableElement3DCollection();
+        }
+
+        public void Dispose()
+        {
+            TriangleCount = 0;
+            SelectedGeometry = null;
             foreach (var g in Group3d.ToList())
             {
                 g.Dispose();
                 Group3d.Remove(g);
             }
         }
-    }
-
-    public class CamAxisHolder
-    {
-        public Point3D Position;
-        public Vector3D LookDirection;
-        public Geometry3D XAxis;
-        public Geometry3D YAxis;
-        public Geometry3D ZAxis;
     }
 }

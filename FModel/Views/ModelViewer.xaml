@@ -23,21 +23,89 @@
     </adonisControls:AdonisWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" MinWidth="250" />
+            <ColumnDefinition Width="Auto" MinWidth="350" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="4*" />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <GroupBox Grid.Column="0" Padding="{adonisUi:Space 0}" Background="Transparent">
+            <DockPanel Margin="10">
+                <Grid DockPanel.Dock="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-            <ListBox Grid.Row="0" Style="{StaticResource MaterialsListBox}" MouseDoubleClick="OnMouseDoubleClick" />
-            <CheckBox Content="Append Mode" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="0 0 0 5"
-                      Grid.Row="1" IsChecked="{Binding ModelViewer.AppendModeEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-        </Grid>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Models" VerticalAlignment="Center" Margin="0 0 0 10" />
+                    <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding ModelViewer.LoadedModelsView, IsAsync=True}"
+                              SelectedItem="{Binding ModelViewer.SelectedModel, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Export.Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Triangles" VerticalAlignment="Center" Margin="0 0 0 10" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding ModelViewer.SelectedModel.TriangleCount, FallbackValue=0, StringFormat={}{0:### ### ### ###}}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Materials" VerticalAlignment="Center" Margin="0 0 0 10" />
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding ModelViewer.SelectedModel.Group3d.Count, FallbackValue=0, StringFormat={}{0:### ###}}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+
+                    <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Row="0" Grid.Column="0" Content="Focus" />
+                        <ToggleButton Grid.Row="0" Grid.Column="2" IsChecked="{Binding ModelViewer.AppendMode}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}"
+                                      Content="{Binding ModelViewer.AppendMode, Converter={x:Static converters:BoolToToggleConverter.Instance}, StringFormat='{}Append {0}'}" />
+
+                        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                                ContentStringFormat="{}Save All Loaded Models ({0})" Content="{Binding ModelViewer.LoadedModelsView.Count}" />
+                    </Grid>
+                </Grid>
+                <Separator DockPanel.Dock="Top" Tag="MATERIALS" Style="{StaticResource CustomSeparator}" />
+                <ListBox DockPanel.Dock="Top" Style="{StaticResource MaterialsListBox}">
+                    <ListBox.ContextMenu>
+                        <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                            <MenuItem Header="Copy Name">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource CopyIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Change Material">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SwapIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
+            </DockPanel>
+        </GroupBox>
 
         <GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="4" VerticalAlignment="Stretch" ResizeBehavior="PreviousAndNext"
                       Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
@@ -53,13 +121,14 @@
             </helix:Viewport3DX.InputBindings>
 
             <helix:EnvironmentMap3D Texture="{Binding ModelViewer.HDRi}" />
-            <helix:DirectionalLight3D Direction="{Binding ModelViewer.Cam.LookDirection}" Color="White" />
+            <helix:DirectionalLight3D Color="White" Direction="{Binding Camera.LookDirection,
+                RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type helix:Viewport3DX}}}" />
 
-            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.XAxis}" Color="#FC3854" />
-            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.YAxis}" Color="#85CB22" />
-            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.ZAxis}" Color="#388EED" />
+            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.SelectedModel.XAxis}" Color="#FC3854" />
+            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.SelectedModel.YAxis}" Color="#85CB22" />
+            <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.SelectedModel.ZAxis}" Color="#388EED" />
 
-            <helix:GroupModel3D x:Name="MyAntiCrashGroup" ItemsSource="{Binding ModelViewer.Group3d}" Mouse3DDown="OnMouse3DDown" />
+            <helix:GroupModel3D x:Name="MyAntiCrashGroup" ItemsSource="{Binding ModelViewer.SelectedModel.Group3d}" />
         </helix:Viewport3DX>
     </Grid>
 </adonisControls:AdonisWindow>
