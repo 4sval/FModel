@@ -689,7 +689,10 @@ namespace FModel.ViewModels
                     SaveExport(export);
                     return true;
                 }
-                case UMaterialInstance when UserSettings.Default.IsAutoOpenMeshes:
+                case UMaterialInstance when UserSettings.Default.IsAutoOpenMeshes &&
+                                            !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                                                                                     export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                                                                                     export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
