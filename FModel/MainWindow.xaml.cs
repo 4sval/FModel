@@ -33,10 +33,6 @@ namespace FModel
                 {new KeyGesture(UserSettings.Default.AutoSaveProps.Key, UserSettings.Default.AutoSaveProps.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveTextures", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoSaveTextures.Key, UserSettings.Default.AutoSaveTextures.Modifiers)}), OnAutoTriggerExecuted));
-            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveMaterials", typeof(MainWindow), new InputGestureCollection
-                {new KeyGesture(UserSettings.Default.AutoSaveMaterials.Key, UserSettings.Default.AutoSaveMaterials.Modifiers)}), OnAutoTriggerExecuted));
-            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveMeshes", typeof(MainWindow), new InputGestureCollection
-                {new KeyGesture(UserSettings.Default.AutoSaveMeshes.Key, UserSettings.Default.AutoSaveMeshes.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveAnimations", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoSaveAnimations.Key, UserSettings.Default.AutoSaveAnimations.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoOpenSounds", typeof(MainWindow), new InputGestureCollection
@@ -149,12 +145,6 @@ namespace FModel
                     break;
                 case "AutoSaveTextures":
                     UserSettings.Default.IsAutoSaveTextures = !UserSettings.Default.IsAutoSaveTextures;
-                    break;
-                case "AutoSaveMaterials":
-                    UserSettings.Default.IsAutoSaveMaterials = !UserSettings.Default.IsAutoSaveMaterials;
-                    break;
-                case "AutoSaveMeshes":
-                    UserSettings.Default.IsAutoSaveMeshes = !UserSettings.Default.IsAutoSaveMeshes;
                     break;
                 case "AutoSaveAnimations":
                     UserSettings.Default.IsAutoSaveAnimations = !UserSettings.Default.IsAutoSaveAnimations;

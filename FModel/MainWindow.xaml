@@ -156,19 +156,13 @@
                     <MenuItem Header="Save Textures" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}" />
-                    <MenuItem Header="Save Materials" IsCheckable="True" StaysOpenOnClick="True"
-                              InputGestureText="{Binding AutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding IsAutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}}" />
-                    <MenuItem Header="Save Meshes" IsCheckable="True" StaysOpenOnClick="True"
-                              InputGestureText="{Binding AutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding IsAutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />
                     <MenuItem Header="Save Animations" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}" />
                     <MenuItem Header="Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
-                    <MenuItem Header="Open Model Viewer" IsCheckable="True" StaysOpenOnClick="True"
+                    <MenuItem Header="Open Meshes &amp; Materials" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />
                 </MenuItem>
@@ -847,32 +841,6 @@
                         <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="TEX" />
                     </StatusBarItem>
 
-                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Materials Enabled">
-                        <StatusBarItem.Style>
-                            <Style TargetType="StatusBarItem">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAutoSaveMaterials, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StatusBarItem.Style>
-                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="MAT" />
-                    </StatusBarItem>
-
-                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Meshes Enabled">
-                        <StatusBarItem.Style>
-                            <Style TargetType="StatusBarItem">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAutoSaveMeshes, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StatusBarItem.Style>
-                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="MSH" />
-                    </StatusBarItem>
-
                     <StatusBarItem Width="35" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Animations Enabled">
                         <StatusBarItem.Style>
                             <Style TargetType="StatusBarItem">
@@ -899,7 +867,7 @@
                         <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="SND" />
                     </StatusBarItem>
 
-                    <StatusBarItem Width="33" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Meshes Enabled">
+                    <StatusBarItem Width="35" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Meshes &amp; Materials Enabled">
                         <StatusBarItem.Style>
                             <Style TargetType="StatusBarItem">
                                 <Style.Triggers>
@@ -909,7 +877,7 @@
                                 </Style.Triggers>
                             </Style>
                         </StatusBarItem.Style>
-                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="OMV" />
+                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="MSH" />
                     </StatusBarItem>
                 </StackPanel>
             </StatusBarItem>

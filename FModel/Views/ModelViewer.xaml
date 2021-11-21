@@ -71,19 +71,23 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Row="0" Grid.Column="0" Content="Focus" />
-                        <ToggleButton Grid.Row="0" Grid.Column="2" IsChecked="{Binding ModelViewer.AppendMode}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}"
-                                      Content="{Binding ModelViewer.AppendMode, Converter={x:Static converters:BoolToToggleConverter.Instance}, StringFormat='{}Append {0}'}" />
+                        <Button Grid.Row="0" Grid.Column="0" Content="Focus" Click="OnFocusClick" />
+                        <ToggleButton Grid.Row="0" Grid.Column="2" IsChecked="{Binding ModelViewer.AppendMode}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                            <TextBlock Text="{Binding IsChecked, Converter={x:Static converters:BoolToToggleConverter.Instance},
+                                    StringFormat={}Append {0}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ToggleButton}}}" />
+                        </ToggleButton>
 
-                        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
-                                ContentStringFormat="{}Save All Loaded Models ({0})" Content="{Binding ModelViewer.LoadedModelsView.Count}" />
+                        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="Save"
+                                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}">
+                            <TextBlock Text="{Binding ModelViewer.LoadedModelsView.Count, StringFormat={}Save All Loaded Models ({0})}" />
+                        </Button>
                     </Grid>
                 </Grid>
                 <Separator DockPanel.Dock="Top" Tag="MATERIALS" Style="{StaticResource CustomSeparator}" />
                 <ListBox DockPanel.Dock="Top" Style="{StaticResource MaterialsListBox}">
                     <ListBox.ContextMenu>
                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                            <MenuItem Header="Copy Name">
+                            <MenuItem Header="Copy Name" Click="OnCopyClick">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -92,7 +96,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Change Material">
+                            <MenuItem Header="Change Material" Click="OnChangeMaterialClick">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">

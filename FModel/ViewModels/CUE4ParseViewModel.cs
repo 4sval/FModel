@@ -59,6 +59,13 @@ namespace FModel.ViewModels
             set => SetProperty(ref _game, value);
         }
 
+        private bool _modelIsSwappingMaterial;
+        public bool ModelIsSwappingMaterial
+        {
+            get => _modelIsSwappingMaterial;
+            set => SetProperty(ref _modelIsSwappingMaterial, value);
+        }
+
         public AbstractVfsFileProvider Provider { get; }
         public GameDirectoryViewModel GameDirectory { get; }
         public AssetsFolderViewModel AssetsFolder { get; }
@@ -665,40 +672,33 @@ namespace FModel.ViewModels
                     SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                     return false;
                 }
-                case UStaticMesh:
-                case USkeletalMesh:
-                {
-                    if (UserSettings.Default.IsAutoOpenMeshes)
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                            modelViewer.Load(export);
-                        });
-                    }
-                    if (UserSettings.Default.IsAutoSaveMeshes)
-                    {
-                        SaveExport(export);
-                    }
-                    return true;
-                }
-                case USkeleton when UserSettings.Default.IsAutoSaveMeshes && UserSettings.Default.SaveSkeletonAsMesh:
-                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials:
-                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations:
-                {
-                    SaveExport(export);
-                    return true;
-                }
-                case UMaterialInstance when UserSettings.Default.IsAutoOpenMeshes &&
+                case UStaticMesh when UserSettings.Default.IsAutoOpenMeshes:
+                case USkeletalMesh when UserSettings.Default.IsAutoOpenMeshes:
+                case UMaterialInstance when UserSettings.Default.IsAutoOpenMeshes && !ModelIsSwappingMaterial &&
                                             !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
-                                                                                                     export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
-                                                                                                     export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
+                                                export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                                export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
+                    Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
                         modelViewer.Load(export);
                     });
+                    return true;
+                }
+                case UMaterialInstance m when ModelIsSwappingMaterial:
+                {
+                    Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
+                        modelViewer.Swap(m);
+                    });
+                    return true;
+                }
+                case USkeleton when UserSettings.Default.SaveSkeletonAsMesh:
+                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations:
+                {
+                    SaveExport(export);
                     return true;
                 }
                 default:

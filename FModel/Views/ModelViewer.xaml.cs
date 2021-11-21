@@ -1,13 +1,20 @@
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
+using AdonisUI.Controls;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Services;
+using FModel.Settings;
 using FModel.ViewModels;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace FModel.Views
 {
     public partial class ModelViewer
     {
+        private bool _messageShown;
         private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
         public ModelViewer()
@@ -16,7 +23,27 @@ namespace FModel.Views
             InitializeComponent();
         }
 
-        public void Load(UObject export) => _applicationView.ModelViewer.LoadExport(export);
+        public async void Load(UObject export) => await _applicationView.ModelViewer.LoadExport(export);
+        public async void Swap(UMaterialInstance materialInstance)
+        {
+            var sucess = await _applicationView.ModelViewer.TryChangeSelectedMaterial(materialInstance);
+            if (sucess)
+            {
+                _applicationView.CUE4Parse.ModelIsSwappingMaterial = false;
+            }
+            else
+            {
+                MessageBox.Show(new MessageBoxModel
+                {
+                    Text = "An attempt to load a material failed.",
+                    Caption = "Error",
+                    Icon = MessageBoxImage.Error,
+                    Buttons = MessageBoxButtons.OkCancel(),
+                    IsSoundEnabled = false
+                });
+            }
+        }
+
         private void OnClosing(object sender, CancelEventArgs e)
         {
             _applicationView.ModelViewer.Clear();
@@ -38,6 +65,34 @@ namespace FModel.Views
                     _applicationView.ModelViewer.DiffuseOnlyToggle();
                     break;
             }
+        }
+
+        private void OnFocusClick(object sender, RoutedEventArgs e)
+            => _applicationView.ModelViewer.FocusOnSelectedMesh();
+
+        private void OnCopyClick(object sender, RoutedEventArgs e)
+            => _applicationView.ModelViewer.CopySelectedMaterialName();
+
+        private void Save(object sender, RoutedEventArgs e)
+            => _applicationView.ModelViewer.SaveLoadedModels();
+
+        private void OnChangeMaterialClick(object sender, RoutedEventArgs e)
+        {
+            _applicationView.CUE4Parse.ModelIsSwappingMaterial = true;
+
+            if (!_messageShown)
+            {
+                MessageBox.Show(new MessageBoxModel
+                {
+                    Text = "Simply extract a material once FModel will be brought to the foreground. This message will be shown once per Model Viewer's lifetime, close it to begin.",
+                    Caption = "How To Change Material?",
+                    Icon = MessageBoxImage.Information,
+                    IsSoundEnabled = false
+                });
+                _messageShown = true;
+            }
+
+            MainWindow.YesWeCats.Activate();
         }
     }
 }

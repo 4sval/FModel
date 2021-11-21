@@ -86,20 +86,6 @@ namespace FModel.Settings
             set => SetProperty(ref _isAutoSaveTextures, value);
         }
 
-        private bool _isAutoSaveMaterials;
-        public bool IsAutoSaveMaterials
-        {
-            get => _isAutoSaveMaterials;
-            set => SetProperty(ref _isAutoSaveMaterials, value);
-        }
-
-        private bool _isAutoSaveMeshes;
-        public bool IsAutoSaveMeshes
-        {
-            get => _isAutoSaveMeshes;
-            set => SetProperty(ref _isAutoSaveMeshes, value);
-        }
-
         private bool _isAutoSaveAnimations;
         public bool IsAutoSaveAnimations
         {
@@ -497,35 +483,21 @@ namespace FModel.Settings
             set => SetProperty(ref _autoSaveTextures, value);
         }
 
-        private Hotkey _autoSaveMaterials = new(Key.F4);
-        public Hotkey AutoSaveMaterials
-        {
-            get => _autoSaveMaterials;
-            set => SetProperty(ref _autoSaveMaterials, value);
-        }
-
-        private Hotkey _autoSaveMeshes = new(Key.F5);
-        public Hotkey AutoSaveMeshes
-        {
-            get => _autoSaveMeshes;
-            set => SetProperty(ref _autoSaveMeshes, value);
-        }
-
-        private Hotkey _autoSaveAnimations = new(Key.F6);
+        private Hotkey _autoSaveAnimations = new(Key.F4);
         public Hotkey AutoSaveAnimations
         {
             get => _autoSaveAnimations;
             set => SetProperty(ref _autoSaveAnimations, value);
         }
 
-        private Hotkey _autoOpenSounds = new(Key.F7);
+        private Hotkey _autoOpenSounds = new(Key.F5);
         public Hotkey AutoOpenSounds
         {
             get => _autoOpenSounds;
             set => SetProperty(ref _autoOpenSounds, value);
         }
 
-        private Hotkey _autoOpenMeshes = new(Key.F8);
+        private Hotkey _autoOpenMeshes = new(Key.F6);
         public Hotkey AutoOpenMeshes
         {
             get => _autoOpenMeshes;

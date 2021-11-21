@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Media3D;
@@ -15,8 +17,13 @@ using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
+using FModel.Services;
+using FModel.Settings;
+using FModel.Views.Resources.Controls;
 using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
+using Ookii.Dialogs.Wpf;
+using Serilog;
 using SharpDX;
 using SkiaSharp;
 using Camera = HelixToolkit.Wpf.SharpDX.Camera;
@@ -27,6 +34,9 @@ namespace FModel.ViewModels
 {
     public class ModelViewerViewModel : ViewModel
     {
+        private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
+
+        #region BINDINGS
         private EffectsManager _effectManager;
         public EffectsManager EffectManager
         {
@@ -93,6 +103,7 @@ namespace FModel.ViewModels
         public bool CanAppend => SelectedModel != null;
 
         public TextureModel HDRi { get; private set; }
+        #endregion
 
         private readonly FGame _game;
         private readonly int[] _facesIndex = { 1, 0, 2 };
@@ -114,11 +125,12 @@ namespace FModel.ViewModels
             HDRi = TextureModel.Create(cubeMap?.Stream);
         }
 
-        public void LoadExport(UObject export)
+        public async Task LoadExport(UObject export)
         {
 #if DEBUG
             LoadHDRi();
 #endif
+
             ModelAndCam p;
             if (AppendMode && CanAppend)
                 p = SelectedModel;
@@ -127,20 +139,23 @@ namespace FModel.ViewModels
                 p = new ModelAndCam(export);
                 _loadedModels.Add(p);
             }
-            bool valid = export switch
+
+            bool valid = false;
+            await _threadWorkerView.Begin(_ =>
             {
-                UStaticMesh st => TryLoadStaticMesh(st, ref p),
-                USkeletalMesh sk => TryLoadSkeletalMesh(sk, ref p),
-                UMaterialInstance mi => TryLoadMaterialInstance(mi, ref p),
-                _ => throw new ArgumentOutOfRangeException(nameof(export))
-            };
-
-            if (!valid)
-                return;
-
+                valid = export switch
+                {
+                    UStaticMesh st => TryLoadStaticMesh(st, p),
+                    USkeletalMesh sk => TryLoadSkeletalMesh(sk, p),
+                    UMaterialInstance mi => TryLoadMaterialInstance(mi, p),
+                    _ => throw new ArgumentOutOfRangeException(nameof(export))
+                };
+            });
+            if (!valid) return;
             SelectedModel = p;
         }
 
+        #region PUBLIC METHODS
         public void RenderingToggle()
         {
             if (SelectedModel == null) return;
@@ -152,6 +167,7 @@ namespace FModel.ViewModels
                 geometryModel.IsRendering = !geometryModel.IsRendering;
             }
         }
+
         public void WirefreameToggle()
         {
             if (SelectedModel == null) return;
@@ -163,6 +179,7 @@ namespace FModel.ViewModels
                 geometryModel.RenderWireframe = !geometryModel.RenderWireframe;
             }
         }
+
         public void DiffuseOnlyToggle()
         {
             if (SelectedModel == null) return;
@@ -181,67 +198,121 @@ namespace FModel.ViewModels
                 mat.RenderNormalMap = !mat.RenderNormalMap;
             }
         }
+
         public void FocusOnSelectedMesh()
         {
             Cam.AnimateTo(SelectedModel.Position, SelectedModel.LookDirection, new Vector3D(0, 1, 0), 500);
         }
 
-        private bool TryLoadMaterialInstance(UMaterialInstance materialInstance, ref ModelAndCam cam)
+        public void SaveLoadedModels()
+        {
+            if (_loadedModels.Count < 1) return;
+
+            var folderBrowser = new VistaFolderBrowserDialog {ShowNewFolderButton = true};
+            if (folderBrowser.ShowDialog() == false) return;
+
+            foreach (var model in _loadedModels)
+            {
+                var toSave = new CUE4Parse_Conversion.Exporter(model.Export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
+                if (toSave.TryWriteToDir(new DirectoryInfo(folderBrowser.SelectedPath), out var savedFileName))
+                {
+                    Log.Information("Successfully saved {FileName}", savedFileName);
+                    FLogger.AppendInformation();
+                    FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+                }
+                else
+                {
+                    Log.Error("{FileName} could not be saved", savedFileName);
+                    FLogger.AppendError();
+                    FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
+                }
+            }
+        }
+
+        public void CopySelectedMaterialName()
+        {
+            if (SelectedModel is not { } m || m.SelectedGeometry is null)
+                return;
+
+            Clipboard.SetText(m.SelectedGeometry.Name.TrimEnd());
+        }
+
+        public async Task<bool> TryChangeSelectedMaterial(UMaterialInstance materialInstance)
+        {
+            if (SelectedModel is not { } model || model.SelectedGeometry is null)
+                return false;
+
+            PBRMaterial m = null;
+            await _threadWorkerView.Begin(_ =>
+            {
+                var (material, _, _) = LoadMaterial(materialInstance);
+                m = material;
+            });
+
+            if (m == null) return false;
+            model.SelectedGeometry.Material = m;
+            return true;
+        }
+        #endregion
+
+        private bool TryLoadMaterialInstance(UMaterialInstance materialInstance, ModelAndCam cam)
         {
             var builder = new MeshBuilder();
             builder.AddSphere(Vector3.Zero, 10);
+            cam.TriangleCount = 1984; // no need to count
 
-            SetupCameraAndAxis(new FBox(new FVector(-15), new FVector(15)), ref cam);
+            SetupCameraAndAxis(new FBox(new FVector(-11), new FVector(11)), cam);
             var (m, isRendering, isTransparent) = LoadMaterial(materialInstance);
 
-            cam.Group3d.Add(new MeshGeometryModel3D
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
-                Name = FixName(materialInstance.Name), Geometry = builder.ToMeshGeometry3D(),
-                Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+                cam.Group3d.Add(new MeshGeometryModel3D
+                {
+                    Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
+                    Name = FixName(materialInstance.Name), Geometry = builder.ToMeshGeometry3D(),
+                    Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+                });
             });
             return true;
         }
 
-        private bool TryLoadStaticMesh(UStaticMesh mesh, ref ModelAndCam cam)
+        private bool TryLoadStaticMesh(UStaticMesh mesh, ModelAndCam cam)
         {
             if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
             {
-                cam = null;
                 return false;
             }
 
-            SetupCameraAndAxis(convertedMesh.BoundingBox, ref cam);
+            SetupCameraAndAxis(convertedMesh.BoundingBox, cam);
             foreach (var lod in convertedMesh.LODs)
             {
                 if (lod.SkipLod) continue;
-                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, ref cam);
+                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, cam);
                 break;
             }
 
             return true;
         }
 
-        private bool TryLoadSkeletalMesh(USkeletalMesh mesh, ref ModelAndCam cam)
+        private bool TryLoadSkeletalMesh(USkeletalMesh mesh, ModelAndCam cam)
         {
             if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
             {
-                cam = null;
                 return false;
             }
 
-            SetupCameraAndAxis(convertedMesh.BoundingBox, ref cam);
+            SetupCameraAndAxis(convertedMesh.BoundingBox, cam);
             foreach (var lod in convertedMesh.LODs)
             {
                 if (lod.SkipLod) continue;
-                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, ref cam);
+                PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, cam);
                 break;
             }
 
             return true;
         }
 
-        private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices, ref ModelAndCam cam)
+        private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices, ModelAndCam cam)
         {
             foreach (var section in sections) // each section is a mesh part with its own material
             {
@@ -266,10 +337,13 @@ namespace FModel.ViewModels
                     continue;
 
                 var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial);
-                cam.Group3d.Add(new MeshGeometryModel3D
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Name = FixName(unrealMaterial.Name), Geometry = builder.ToMeshGeometry3D(),
-                    Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+                    cam.Group3d.Add(new MeshGeometryModel3D
+                    {
+                        Name = FixName(unrealMaterial.Name), Geometry = builder.ToMeshGeometry3D(),
+                        Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+                    });
                 });
             }
         }
@@ -381,7 +455,7 @@ namespace FModel.ViewModels
             return (m, isRendering, parameters.IsTransparent);
         }
 
-        private void SetupCameraAndAxis(FBox box, ref ModelAndCam cam)
+        private void SetupCameraAndAxis(FBox box, ModelAndCam cam)
         {
             if (AppendMode && CanAppend) return;
             var meanX = (box.Max.X + box.Min.X) / 2;
