@@ -48,6 +48,7 @@ namespace FModel.Views
         {
             _applicationView.ModelViewer.Clear();
             _applicationView.ModelViewer.AppendMode = false;
+            _applicationView.CUE4Parse.ModelIsSwappingMaterial = false;
             MyAntiCrashGroup.ItemsSource = null; // <3
         }
 
