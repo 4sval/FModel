@@ -65,6 +65,9 @@ namespace FModel.Views
                 case Key.D:
                     _applicationView.ModelViewer.DiffuseOnlyToggle();
                     break;
+                case Key.Decimal:
+                    _applicationView.ModelViewer.FocusOnSelectedMesh();
+                    break;
             }
         }
 

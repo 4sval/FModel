@@ -458,22 +458,20 @@ namespace FModel.ViewModels
         private void SetupCameraAndAxis(FBox box, ModelAndCam cam)
         {
             if (AppendMode && CanAppend) return;
-            var meanX = (box.Max.X + box.Min.X) / 2;
-            var meanY = (box.Max.Y + box.Min.Y) / 2;
-            var meanZ = (box.Max.Z + box.Min.Z) / 2;
+            var center = box.GetCenter();
 
             var lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(box.Min.X, meanZ, meanY), new Vector3(box.Max.X, meanZ, meanY));
+            lineBuilder.AddLine(new Vector3(box.Min.X, center.Z, center.Y), new Vector3(box.Max.X, center.Z, center.Y));
             cam.XAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(meanX, box.Min.Z, meanY), new Vector3(meanX, box.Max.Z, meanY));
+            lineBuilder.AddLine(new Vector3(center.X, box.Min.Z, center.Y), new Vector3(center.X, box.Max.Z, center.Y));
             cam.YAxis = lineBuilder.ToLineGeometry3D();
             lineBuilder = new LineBuilder();
-            lineBuilder.AddLine(new Vector3(meanX, meanZ, box.Min.Y), new Vector3(meanX, meanZ, box.Max.Y));
+            lineBuilder.AddLine(new Vector3(center.X, center.Z, box.Min.Y), new Vector3(center.X, center.Z, box.Max.Y));
             cam.ZAxis = lineBuilder.ToLineGeometry3D();
 
-            cam.Position = new Point3D(box.Max.X + meanX * 2, meanZ, box.Min.Y + meanY * 2);
-            cam.LookDirection = new Vector3D(-cam.Position.X + meanX, 0, -cam.Position.Z + meanY);
+            cam.Position = new Point3D(box.Max.X + center.X * 2, center.Z, box.Min.Y + center.Y * 2);
+            cam.LookDirection = new Vector3D(-cam.Position.X + center.X, 0, -cam.Position.Z + center.Y);
         }
 
         private string FixName(string input)

@@ -122,6 +122,7 @@
                 <MouseBinding Command="helix:ViewportCommands.Rotate" Gesture="LeftClick" />
                 <MouseBinding Command="helix:ViewportCommands.Zoom" Gesture="RightClick" />
                 <MouseBinding Command="helix:ViewportCommands.Pan" Gesture="MiddleClick" />
+                <KeyBinding Command="helix:ViewportCommands.ZoomExtents" Modifiers="Shift" Key="C"/>
             </helix:Viewport3DX.InputBindings>
 
             <helix:EnvironmentMap3D Texture="{Binding ModelViewer.HDRi}" />
