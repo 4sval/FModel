@@ -3,29 +3,40 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Media3D;
+
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Textures;
+
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
+
 using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
+
 using Ookii.Dialogs.Wpf;
+
 using Serilog;
+
 using SharpDX;
+
 using SkiaSharp;
+
 using Camera = HelixToolkit.Wpf.SharpDX.Camera;
 using Geometry3D = HelixToolkit.SharpDX.Core.Geometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
@@ -141,8 +152,8 @@ namespace FModel.ViewModels
             }
 
             bool valid = false;
-            await _threadWorkerView.Begin(_ =>
-            {
+            //await _threadWorkerView.Begin(_ =>
+            //{
                 valid = export switch
                 {
                     UStaticMesh st => TryLoadStaticMesh(st, p),
@@ -150,7 +161,7 @@ namespace FModel.ViewModels
                     UMaterialInstance mi => TryLoadMaterialInstance(mi, p),
                     _ => throw new ArgumentOutOfRangeException(nameof(export))
                 };
-            });
+            //}).ConfigureAwait(true);
             if (!valid) return;
             SelectedModel = p;
         }
@@ -247,7 +258,7 @@ namespace FModel.ViewModels
             {
                 var (material, _, _) = LoadMaterial(materialInstance);
                 m = material;
-            });
+            }).ConfigureAwait(true);
 
             if (m == null) return false;
             model.SelectedGeometry.Material = m;

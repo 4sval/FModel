@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,7 +6,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+
 using AdonisUI.Controls;
+
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
@@ -26,10 +28,13 @@ using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
+
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse_Conversion.Textures;
+
 using EpicManifestParser.Objects;
+
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -37,8 +42,11 @@ using FModel.Services;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
+
 using Newtonsoft.Json;
+
 using Serilog;
+
 using SkiaSharp;
 
 namespace FModel.ViewModels
@@ -147,7 +155,7 @@ namespace FModel.ViewModels
 
                                 byte[] manifestData;
                                 var chunksDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
-                                var manifestPath = Path.Combine(chunksDir.FullName, manifestInfo.Filename);
+                                var manifestPath = Path.Combine(chunksDir.FullName, manifestInfo.FileName);
                                 if (File.Exists(manifestPath))
                                 {
                                     manifestData = File.ReadAllBytes(manifestPath);
@@ -679,19 +687,21 @@ namespace FModel.ViewModels
                                                 export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
                 {
-                    Application.Current.Dispatcher.InvokeAsync(() =>
+                    Application.Current.Dispatcher.Invoke(async () =>
                     {
                         var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                        modelViewer.Load(export);
+                        await Task.Delay(100).ConfigureAwait(true);
+                        await modelViewer.Load(export).ConfigureAwait(true);
                     });
                     return true;
                 }
                 case UMaterialInstance m when ModelIsSwappingMaterial:
                 {
-                    Application.Current.Dispatcher.InvokeAsync(() =>
+                    Application.Current.Dispatcher.Invoke(async () =>
                     {
                         var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                        modelViewer.Swap(m);
+                        await Task.Delay(100).ConfigureAwait(true);
+                        await modelViewer.Swap(m).ConfigureAwait(true);
                     });
                     return true;
                 }

@@ -1,12 +1,16 @@
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+
 using AdonisUI.Controls;
+
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
+
 using FModel.Services;
-using FModel.Settings;
 using FModel.ViewModels;
+
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
@@ -23,10 +27,10 @@ namespace FModel.Views
             InitializeComponent();
         }
 
-        public async void Load(UObject export) => await _applicationView.ModelViewer.LoadExport(export);
-        public async void Swap(UMaterialInstance materialInstance)
+        public async Task Load(UObject export) => await _applicationView.ModelViewer.LoadExport(export).ConfigureAwait(true);
+        public async Task Swap(UMaterialInstance materialInstance)
         {
-            var sucess = await _applicationView.ModelViewer.TryChangeSelectedMaterial(materialInstance);
+            var sucess = await _applicationView.ModelViewer.TryChangeSelectedMaterial(materialInstance).ConfigureAwait(true);
             if (sucess)
             {
                 _applicationView.CUE4Parse.ModelIsSwappingMaterial = false;
