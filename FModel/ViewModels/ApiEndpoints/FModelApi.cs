@@ -27,7 +27,7 @@ namespace FModel.ViewModels.ApiEndpoints
         private Game _game;
         private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
         private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
-        
+
         public FModelApi(IRestClient client) : base(client)
         {
         }
@@ -70,7 +70,7 @@ namespace FModel.ViewModels.ApiEndpoints
         {
             return _backups ??= GetBackupsAsync(token, gameName).GetAwaiter().GetResult();
         }
-        
+
         public async Task<Game> GetGamesAsync(CancellationToken token, string gameName)
         {
             var request = new RestRequest($"https://api.fmodel.app/v1/games/{gameName}", Method.GET);
@@ -78,7 +78,7 @@ namespace FModel.ViewModels.ApiEndpoints
             Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
             return response.Data;
         }
-        
+
         public Game GetGames(CancellationToken token, string gameName)
         {
             return _game ??= GetGamesAsync(token, gameName).GetAwaiter().GetResult();
@@ -101,14 +101,14 @@ namespace FModel.ViewModels.ApiEndpoints
             _communityDesigns[designName] = communityDesign;
             return communityDesign;
         }
-        
+
         public void CheckForUpdates(EUpdateMode updateMode)
         {
             AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
             AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
             AutoUpdater.Start($"https://api.fmodel.app/v1/infos/{updateMode}");
         }
-        
+
         private void ParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
         {
             _infos = JsonConvert.DeserializeObject<Info>(args.RemoteData);
@@ -122,7 +122,7 @@ namespace FModel.ViewModels.ApiEndpoints
                 };
             }
         }
-        
+
         private void CheckForUpdateEvent(UpdateInfoEventArgs args)
         {
             if (args is {CurrentVersion: { }})
@@ -144,7 +144,7 @@ namespace FModel.ViewModels.ApiEndpoints
                     Buttons = MessageBoxButtons.YesNo(),
                     IsSoundEnabled = false
                 };
-                
+
                 MessageBox.Show(messageBox);
                 if (messageBox.Result != MessageBoxResult.Yes) return;
 
@@ -175,7 +175,7 @@ namespace FModel.ViewModels.ApiEndpoints
             var request = new RestRequest(args.ChangelogURL, Method.GET);
             var response = _client.Execute(request);
             if (string.IsNullOrEmpty(response.Content)) return;
-            
+
             _applicationView.CUE4Parse.TabControl.AddTab($"Release Notes: {args.CurrentVersion}");
             _applicationView.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("changelog");
             _applicationView.CUE4Parse.TabControl.SelectedTab.SetDocumentText(response.Content, false);
