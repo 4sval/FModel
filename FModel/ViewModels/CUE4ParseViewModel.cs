@@ -6,9 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-
 using AdonisUI.Controls;
-
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Vfs;
@@ -28,13 +26,10 @@ using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
-
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse_Conversion.Textures;
-
 using EpicManifestParser.Objects;
-
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -42,11 +37,8 @@ using FModel.Services;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-
 using Newtonsoft.Json;
-
 using Serilog;
-
 using SkiaSharp;
 
 namespace FModel.ViewModels
@@ -687,21 +679,19 @@ namespace FModel.ViewModels
                                                 export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
                 {
-                    Application.Current.Dispatcher.Invoke(async () =>
+                    Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                        await Task.Delay(100).ConfigureAwait(true);
-                        await modelViewer.Load(export).ConfigureAwait(true);
+                        modelViewer.Load(export);
                     });
                     return true;
                 }
                 case UMaterialInstance m when ModelIsSwappingMaterial:
                 {
-                    Application.Current.Dispatcher.Invoke(async () =>
+                    Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                        await Task.Delay(100).ConfigureAwait(true);
-                        await modelViewer.Swap(m).ConfigureAwait(true);
+                        modelViewer.Swap(m);
                     });
                     return true;
                 }

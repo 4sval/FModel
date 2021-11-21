@@ -1,12 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Views.Resources.Controls;
-
 using Serilog;
 
 namespace FModel.ViewModels
@@ -59,7 +57,7 @@ namespace FModel.ViewModels
 
             CurrentCancellationTokenSource ??= new CancellationTokenSource();
             _jobs.Enqueue(action);
-            await ProcessQueues().ConfigureAwait(true);
+            await ProcessQueues();
         }
 
         public void Cancel()
@@ -78,12 +76,12 @@ namespace FModel.ViewModels
             if (_jobs.Count > 0)
             {
                 _applicationView.Status = EStatusKind.Loading;
-                await foreach (var job in _jobs.ConfigureAwait(true))
+                await foreach (var job in _jobs)
                 {
                     try
                     {
                         // will end in "catch" if canceled
-                        await Task.Run(() => job(CurrentCancellationTokenSource.Token)).ConfigureAwait(true);
+                        await Task.Run(() => job(CurrentCancellationTokenSource.Token));
                     }
                     catch (OperationCanceledException)
                     {

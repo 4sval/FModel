@@ -1,16 +1,11 @@
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-
 using AdonisUI.Controls;
-
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
-
 using FModel.Services;
 using FModel.ViewModels;
-
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
@@ -27,10 +22,10 @@ namespace FModel.Views
             InitializeComponent();
         }
 
-        public async Task Load(UObject export) => await _applicationView.ModelViewer.LoadExport(export).ConfigureAwait(true);
-        public async Task Swap(UMaterialInstance materialInstance)
+        public async void Load(UObject export) => await _applicationView.ModelViewer.LoadExport(export);
+        public async void Swap(UMaterialInstance materialInstance)
         {
-            var sucess = await _applicationView.ModelViewer.TryChangeSelectedMaterial(materialInstance).ConfigureAwait(true);
+            var sucess = await _applicationView.ModelViewer.TryChangeSelectedMaterial(materialInstance);
             if (sucess)
             {
                 _applicationView.CUE4Parse.ModelIsSwappingMaterial = false;
@@ -66,9 +61,9 @@ namespace FModel.Views
                 case Key.H:
                     _applicationView.ModelViewer.RenderingToggle();
                     break;
-                case Key.D:
-                    _applicationView.ModelViewer.DiffuseOnlyToggle();
-                    break;
+                // case Key.D:
+                //     _applicationView.ModelViewer.DiffuseOnlyToggle();
+                //     break;
                 case Key.Decimal:
                     _applicationView.ModelViewer.FocusOnSelectedMesh();
                     break;
