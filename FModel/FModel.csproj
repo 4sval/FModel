@@ -108,7 +108,7 @@
     <PackageReference Include="AvalonEdit" Version="6.1.2.30" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
-    <PackageReference Include="EpicManifestParser" Version="1.2.69-temp" />
+    <PackageReference Include="EpicManifestParser" Version="1.2.70-temp" />
     <PackageReference Include="HelixToolkit.SharpDX.Core.Wpf" Version="2.20.0" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.15" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
