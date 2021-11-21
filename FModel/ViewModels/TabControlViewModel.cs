@@ -1,4 +1,5 @@
-﻿using FModel.Extensions;
+﻿using System;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Settings;
 using FModel.ViewModels.Commands;
@@ -119,7 +120,7 @@ namespace FModel.ViewModels
                 SetProperty(ref _highlighter, value);
             }
         }
-        
+
         public byte[] ImageBuffer { get; private set; }
 
         private BitmapImage _image;
@@ -133,7 +134,7 @@ namespace FModel.ViewModels
                 RaisePropertyChanged("HasImage");
             }
         }
-        
+
         private bool _noAlpha;
         public bool NoAlpha
         {
@@ -193,7 +194,7 @@ namespace FModel.ViewModels
         {
             var fileName = Path.ChangeExtension(Header, ".json");
             var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Saves",
-                UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled ? Directory : "", fileName).Replace('\\', '/');
+                UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName).Replace('\\', '/');
 
             if (!autoSave)
             {
@@ -222,7 +223,7 @@ namespace FModel.ViewModels
         public void SetImage(SKImage img)
         {
             _img = img;
-            
+
             using var data = _img.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
             using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
             var image = new BitmapImage();
@@ -242,7 +243,7 @@ namespace FModel.ViewModels
             if (!HasImage) return;
             var fileName = Path.ChangeExtension(Header, ".png");
             var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Textures",
-                UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled ? Directory : "", fileName!).Replace('\\', '/');
+                UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
 
             if (!autoSave)
             {
@@ -315,9 +316,19 @@ namespace FModel.ViewModels
         public void AddTab(string header = null, string directory = null)
         {
             if (!CanAddTabs) return;
+
+            var h = header ?? "New Tab";
+            var d = directory ?? string.Empty;
+            if (SelectedTab is { Header : "New Tab" })
+            {
+                SelectedTab.Header = h;
+                SelectedTab.Directory = d;
+                return;
+            }
+
             Application.Current.Dispatcher.Invoke(() =>
             {
-                _tabItems.Add(new TabItem(header ?? "New Tab", directory ?? string.Empty));
+                _tabItems.Add(new TabItem(h, d));
                 SelectedTab = _tabItems.Last();
             });
         }
@@ -339,9 +350,16 @@ namespace FModel.ViewModels
                 }
 
                 _tabItems.Remove(tabToDelete);
+                OnTabRemove?.Invoke(this, new TabEventArgs(tabToDelete));
             });
         }
 
+        public class TabEventArgs : EventArgs
+        {
+            public TabItem TabToRemove { get; set; }
+            public TabEventArgs(TabItem tab) { TabToRemove = tab; }
+        }
+        public event EventHandler OnTabRemove;
         public void GoLeftTab() => SelectedTab = _tabItems.Previous(SelectedTab);
         public void GoRightTab() => SelectedTab = _tabItems.Next(SelectedTab);
 

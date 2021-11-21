@@ -36,7 +36,7 @@ namespace FModel.Settings
         {
             if (File.Exists(FilePath)) File.Delete(FilePath);
         }
-        
+
         private bool _showChangelog = true;
         public bool ShowChangelog
         {
@@ -86,20 +86,6 @@ namespace FModel.Settings
             set => SetProperty(ref _isAutoSaveTextures, value);
         }
 
-        private bool _isAutoSaveMaterials;
-        public bool IsAutoSaveMaterials
-        {
-            get => _isAutoSaveMaterials;
-            set => SetProperty(ref _isAutoSaveMaterials, value);
-        }
-
-        private bool _isAutoSaveMeshes;
-        public bool IsAutoSaveMeshes
-        {
-            get => _isAutoSaveMeshes;
-            set => SetProperty(ref _isAutoSaveMeshes, value);
-        }
-
         private bool _isAutoSaveAnimations;
         public bool IsAutoSaveAnimations
         {
@@ -112,6 +98,13 @@ namespace FModel.Settings
         {
             get => _isAutoOpenSounds;
             set => SetProperty(ref _isAutoOpenSounds, value);
+        }
+
+        private bool _isAutoOpenMeshes = true;
+        public bool IsAutoOpenMeshes
+        {
+            get => _isAutoOpenMeshes;
+            set => SetProperty(ref _isAutoOpenMeshes, value);
         }
 
         private bool _isLoggerExpanded = true;
@@ -156,8 +149,8 @@ namespace FModel.Settings
             set => SetProperty(ref _updateMode, value);
         }
 
-        private EEnabledDisabled _keepDirectoryStructure = EEnabledDisabled.Enabled;
-        public EEnabledDisabled KeepDirectoryStructure
+        private bool _keepDirectoryStructure = true;
+        public bool KeepDirectoryStructure
         {
             get => _keepDirectoryStructure;
             set => SetProperty(ref _keepDirectoryStructure, value);
@@ -198,8 +191,8 @@ namespace FModel.Settings
             set => SetProperty(ref _cosmeticStyle, value);
         }
 
-        private EEnabledDisabled _cosmeticDisplayAsset = EEnabledDisabled.Disabled;
-        public EEnabledDisabled CosmeticDisplayAsset
+        private bool _cosmeticDisplayAsset;
+        public bool CosmeticDisplayAsset
         {
             get => _cosmeticDisplayAsset;
             set => SetProperty(ref _cosmeticDisplayAsset, value);
@@ -228,7 +221,10 @@ namespace FModel.Settings
             {FGame.RogueCompany, Constants._NO_PRESET_TRIGGER},
             {FGame.SwGame, Constants._NO_PRESET_TRIGGER},
             {FGame.Platform, Constants._NO_PRESET_TRIGGER},
-            {FGame.BendGame, Constants._NO_PRESET_TRIGGER}
+            {FGame.BendGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.TslGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.PortalWars, Constants._NO_PRESET_TRIGGER},
+            {FGame.Gameface, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -252,7 +248,10 @@ namespace FModel.Settings
             {FGame.RogueCompany, EGame.GAME_RogueCompany},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
             {FGame.Platform, EGame.GAME_UE4_25},
-            {FGame.BendGame, EGame.GAME_UE4_11}
+            {FGame.BendGame, EGame.GAME_UE4_11},
+            {FGame.TslGame, EGame.GAME_PlayerUnknownsBattlegrounds},
+            {FGame.PortalWars, EGame.GAME_UE4_LATEST},
+            {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -276,14 +275,17 @@ namespace FModel.Settings
             {FGame.RogueCompany, UE4Version.VER_UE4_DETERMINE_BY_GAME},
             {FGame.SwGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
             {FGame.Platform, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.BendGame, UE4Version.VER_UE4_DETERMINE_BY_GAME}
+            {FGame.BendGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
+            {FGame.TslGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
+            {FGame.PortalWars, UE4Version.VER_UE4_DETERMINE_BY_GAME},
+            {FGame.Gameface, UE4Version.VER_UE4_DETERMINE_BY_GAME}
         };
         public IDictionary<FGame, UE4Version> OverridedUEVersion
         {
             get => _overridedUEVersion;
             set => SetProperty(ref _overridedUEVersion, value);
         }
-        
+
         private IDictionary<FGame, List<FCustomVersion>> _overridedCustomVersions = new Dictionary<FGame, List<FCustomVersion>>
         {
             {FGame.Unknown, null},
@@ -300,14 +302,17 @@ namespace FModel.Settings
             {FGame.RogueCompany, null},
             {FGame.SwGame, null},
             {FGame.Platform, null},
-            {FGame.BendGame, null}
+            {FGame.BendGame, null},
+            {FGame.TslGame, null},
+            {FGame.PortalWars, null},
+            {FGame.Gameface, null}
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
             get => _overridedCustomVersions;
             set => SetProperty(ref _overridedCustomVersions, value);
         }
-        
+
         private IDictionary<FGame, Dictionary<string, bool>> _overridedOptions = new Dictionary<FGame, Dictionary<string, bool>>
         {
             {FGame.Unknown, null},
@@ -324,7 +329,10 @@ namespace FModel.Settings
             {FGame.RogueCompany, null},
             {FGame.SwGame, null},
             {FGame.Platform, null},
-            {FGame.BendGame, null}
+            {FGame.BendGame, null},
+            {FGame.TslGame, null},
+            {FGame.PortalWars, null},
+            {FGame.Gameface, null}
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
@@ -387,7 +395,10 @@ namespace FModel.Settings
             {FGame.RogueCompany, new List<CustomDirectory>()},
             {FGame.SwGame, new List<CustomDirectory>()},
             {FGame.Platform, new List<CustomDirectory>()},
-            {FGame.BendGame, new List<CustomDirectory>()}
+            {FGame.BendGame, new List<CustomDirectory>()},
+            {FGame.TslGame, new List<CustomDirectory>()},
+            {FGame.PortalWars, new List<CustomDirectory>()},
+            {FGame.Gameface, new List<CustomDirectory>()}
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {
@@ -472,32 +483,25 @@ namespace FModel.Settings
             set => SetProperty(ref _autoSaveTextures, value);
         }
 
-        private Hotkey _autoSaveMaterials = new(Key.F4);
-        public Hotkey AutoSaveMaterials
-        {
-            get => _autoSaveMaterials;
-            set => SetProperty(ref _autoSaveMaterials, value);
-        }
-
-        private Hotkey _autoSaveMeshes = new(Key.F5);
-        public Hotkey AutoSaveMeshes
-        {
-            get => _autoSaveMeshes;
-            set => SetProperty(ref _autoSaveMeshes, value);
-        }
-
-        private Hotkey _autoSaveAnimations = new(Key.F6);
+        private Hotkey _autoSaveAnimations = new(Key.F4);
         public Hotkey AutoSaveAnimations
         {
             get => _autoSaveAnimations;
             set => SetProperty(ref _autoSaveAnimations, value);
         }
 
-        private Hotkey _autoOpenSounds = new(Key.F7);
+        private Hotkey _autoOpenSounds = new(Key.F5);
         public Hotkey AutoOpenSounds
         {
             get => _autoOpenSounds;
             set => SetProperty(ref _autoOpenSounds, value);
+        }
+
+        private Hotkey _autoOpenMeshes = new(Key.F6);
+        public Hotkey AutoOpenMeshes
+        {
+            get => _autoOpenMeshes;
+            set => SetProperty(ref _autoOpenMeshes, value);
         }
 
         private Hotkey _addAudio = new(Key.N, ModifierKeys.Control);
@@ -534,14 +538,21 @@ namespace FModel.Settings
             get => _meshExportFormat;
             set => SetProperty(ref _meshExportFormat, value);
         }
-        
+
         private ELodFormat _lodExportFormat = ELodFormat.FirstLod;
         public ELodFormat LodExportFormat
         {
             get => _lodExportFormat;
             set => SetProperty(ref _lodExportFormat, value);
         }
-        
+
+        private bool _saveSkeletonAsMesh;
+        public bool SaveSkeletonAsMesh
+        {
+            get => _saveSkeletonAsMesh;
+            set => SetProperty(ref _saveSkeletonAsMesh, value);
+        }
+
         private ETextureFormat _textureExportFormat = ETextureFormat.Png;
         public ETextureFormat TextureExportFormat
         {

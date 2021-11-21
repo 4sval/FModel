@@ -51,14 +51,6 @@ namespace FModel
         Never
     }
 
-    public enum EEnabledDisabled
-    {
-        [Description("Disabled")]
-        Disabled,
-        [Description("Enabled")]
-        Enabled
-    }
-
     public enum FGame
     {
         [Description("Unknown")]
@@ -90,7 +82,13 @@ namespace FModel
         [Description("Core")]
         Platform,
         [Description("Days Gone")]
-        BendGame
+        BendGame,
+        [Description("PLAYERUNKNOWN'S BATTLEGROUNDS")]
+        TslGame,
+        [Description("Splitgate")]
+        PortalWars,
+        [Description("GTA: The Trilogy - Definitive Edition")]
+        Gameface
     }
 
     public enum ELoadingMode

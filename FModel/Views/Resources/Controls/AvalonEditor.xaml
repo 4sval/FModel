@@ -17,7 +17,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
+
         <Grid Grid.Row="0" Margin="3 0" HorizontalAlignment="Right" Width="500">
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
@@ -34,7 +34,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            
+
             <Grid Grid.Column="0" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
                 <Viewbox Width="16" Height="16">
                     <Canvas Width="24" Height="24">
@@ -113,6 +113,6 @@
         <avalonEdit:TextEditor x:Name="MyAvalonEditor" Grid.Row="0" Grid.RowSpan="2" SyntaxHighlighting="{Binding Highlighter}" Document="{Binding Document}"
                                FontFamily="Consolas" FontSize="{Binding FontSize}" IsReadOnly="True" ShowLineNumbers="True" Foreground="#DAE5F2"
                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" PreviewMouseWheel="OnPreviewMouseWheel"
-                               TextChanged="OnTextChanged" MouseHover="OnMouseHover" MouseHoverStopped="OnMouseHoverStopped" />
+                               TextChanged="OnTextChanged" MouseHover="OnMouseHover" MouseHoverStopped="OnMouseHoverStopped" PreviewMouseUp="OnMouseRelease" />
     </Grid>
 </UserControl>

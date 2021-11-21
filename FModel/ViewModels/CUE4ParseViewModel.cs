@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,6 +20,7 @@ using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
+using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
@@ -58,12 +59,20 @@ namespace FModel.ViewModels
             set => SetProperty(ref _game, value);
         }
 
+        private bool _modelIsSwappingMaterial;
+        public bool ModelIsSwappingMaterial
+        {
+            get => _modelIsSwappingMaterial;
+            set => SetProperty(ref _modelIsSwappingMaterial, value);
+        }
+
         public AbstractVfsFileProvider Provider { get; }
         public GameDirectoryViewModel GameDirectory { get; }
         public AssetsFolderViewModel AssetsFolder { get; }
         public SearchViewModel SearchVm { get; }
         public TabControlViewModel TabControl { get; }
         public int LocalizedResourcesCount { get; set; }
+        public bool HotfixedResourcesDone { get; set; } = false;
         public int VirtualPathCount { get; set; }
 
         public CUE4ParseViewModel(string gameDirectory)
@@ -138,7 +147,7 @@ namespace FModel.ViewModels
 
                                 byte[] manifestData;
                                 var chunksDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
-                                var manifestPath = Path.Combine(chunksDir.FullName, manifestInfo.Filename);
+                                var manifestPath = Path.Combine(chunksDir.FullName, manifestInfo.FileName);
                                 if (File.Exists(manifestPath))
                                 {
                                     manifestData = File.ReadAllBytes(manifestPath);
@@ -229,7 +238,12 @@ namespace FModel.ViewModels
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     if (Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is not { } vfs)
+                    {
+                        if (Provider.UnloadedVfs.FirstOrDefault(x => x.Name == file.Name) is IoStoreReader store)
+                            file.FileCount = (int)store.Info.TocEntryCount - 1;
+
                         continue;
+                    }
 
                     file.IsEnabled = true;
                     file.MountPoint = vfs.MountPoint;
@@ -321,22 +335,58 @@ namespace FModel.ViewModels
 
         public async Task LoadLocalizedResources()
         {
+            await LoadGameLocalizedResources();
+            await LoadHotfixedLocalizedResources();
+            if (LocalizedResourcesCount > 0)
+            {
+                FLogger.AppendInformation();
+                FLogger.AppendText($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true);
+            }
+            else
+            {
+                FLogger.AppendWarning();
+                FLogger.AppendText($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true);
+            }
+        }
+
+        private async Task LoadGameLocalizedResources()
+        {
             if (LocalizedResourcesCount > 0) return;
             await _threadWorkerView.Begin(cancellationToken =>
             {
                 LocalizedResourcesCount = Provider.LoadLocalization(UserSettings.Default.AssetLanguage, cancellationToken);
-                if (LocalizedResourcesCount > 0)
-                {
-                    FLogger.AppendInformation();
-                    FLogger.AppendText($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true);
-                }
-                else
-                {
-                    FLogger.AppendWarning();
-                    FLogger.AppendText($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true);
-                }
-
                 Utils.Typefaces = new Typefaces(this);
+            });
+        }
+
+        /// <summary>
+        /// Load hotfixed localized resources
+        /// </summary>
+        /// <remarks>Functions only when LoadLocalizedResources is used prior to this (Asval: Why?).</remarks>
+        private async Task LoadHotfixedLocalizedResources()
+        {
+            if (Game != FGame.FortniteGame) return;
+
+            if (HotfixedResourcesDone) return;
+            await _threadWorkerView.Begin(cancellationToken =>
+            {
+                var hotfixes = ApplicationService.ApiEndpointView.BenbotApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
+                if (hotfixes == null) return;
+
+                HotfixedResourcesDone = true;
+                foreach (var entries in hotfixes)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (!Provider.LocalizedResources.ContainsKey(entries.Key))
+                        Provider.LocalizedResources[entries.Key] = new Dictionary<string, string>();
+
+                    foreach (var keyValue in entries.Value)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        Provider.LocalizedResources[entries.Key][keyValue.Key] = keyValue.Value;
+                        LocalizedResourcesCount++;
+                    }
+                }
             });
         }
 
@@ -345,7 +395,7 @@ namespace FModel.ViewModels
             if (VirtualPathCount > 0) return;
             await _threadWorkerView.Begin(cancellationToken =>
             {
-                VirtualPathCount = Provider.LoadVirtualPaths(cancellationToken);
+                VirtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedUEVersion[Game], cancellationToken);
                 if (VirtualPathCount > 0)
                 {
                     FLogger.AppendInformation();
@@ -365,7 +415,7 @@ namespace FModel.ViewModels
             {
                 Thread.Sleep(10);
                 cancellationToken.ThrowIfCancellationRequested();
-                Extract(asset.FullPath, TabControl.HasNoTabs);
+                try {Extract(asset.FullPath, TabControl.HasNoTabs);} catch {/**/}
             }
 
             foreach (var f in folder.Folders) ExtractFolder(cancellationToken, f);
@@ -389,7 +439,7 @@ namespace FModel.ViewModels
             {
                 Thread.Sleep(10);
                 cancellationToken.ThrowIfCancellationRequested();
-                Extract(asset.FullPath, TabControl.HasNoTabs, true);
+                try {Extract(asset.FullPath, TabControl.HasNoTabs, true);} catch {/**/}
             }
 
             foreach (var f in folder.Folders) SaveFolder(cancellationToken, f);
@@ -443,6 +493,11 @@ namespace FModel.ViewModels
                 case "log":
                 case "po":
                 case "bat":
+                case "dat":
+                case "cfg":
+                case "ide":
+                case "ipl":
+                case "zon":
                 case "xml":
                 case "h":
                 case "uproject":
@@ -570,7 +625,7 @@ namespace FModel.ViewModels
                 default:
                 {
                     FLogger.AppendWarning();
-                    FLogger.AppendText($"The file '{fileName}' is of an unknown type. If this is a mistake, we are already working to fix it!", Constants.WHITE, true);
+                    FLogger.AppendText($"The file '{fileName}' is of an unknown type.", Constants.WHITE, true);
                     break;
                 }
             }
@@ -617,36 +672,33 @@ namespace FModel.ViewModels
                     SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                     return false;
                 }
-                case UStaticMesh:
-                case USkeletalMesh:
-                case UMaterialInterface when UserSettings.Default.IsAutoSaveMaterials: // don't trigger model viewer if false
-                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations: // don't trigger model viewer if false
+                case UStaticMesh when UserSettings.Default.IsAutoOpenMeshes:
+                case USkeletalMesh when UserSettings.Default.IsAutoOpenMeshes:
+                case UMaterialInstance when UserSettings.Default.IsAutoOpenMeshes && !ModelIsSwappingMaterial &&
+                                            !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                                export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                                export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
                 {
-                    if (UserSettings.Default.IsAutoSaveMaterials || UserSettings.Default.IsAutoSaveMeshes || UserSettings.Default.IsAutoSaveAnimations)
+                    Application.Current.Dispatcher.InvokeAsync(() =>
                     {
-                        var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat);
-                        var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
-                        if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
-                        {
-                            Log.Information("Successfully saved {FileName}", savedFileName);
-                            FLogger.AppendInformation();
-                            FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
-                        }
-                        else
-                        {
-                            Log.Error("{FileName} could not be saved", savedFileName);
-                            FLogger.AppendError();
-                            FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
-                        }
-                    }
-                    else
+                        var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
+                        modelViewer.Load(export);
+                    });
+                    return true;
+                }
+                case UMaterialInstance m when ModelIsSwappingMaterial:
+                {
+                    Application.Current.Dispatcher.InvokeAsync(() =>
                     {
-                        Application.Current.Dispatcher.Invoke(delegate
-                        {
-                            var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                            modelViewer.Load(export);
-                        });
-                    }
+                        var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
+                        modelViewer.Swap(m);
+                    });
+                    return true;
+                }
+                case USkeleton when UserSettings.Default.SaveSkeletonAsMesh:
+                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations:
+                {
+                    SaveExport(export);
                     return true;
                 }
                 default:
@@ -666,8 +718,7 @@ namespace FModel.ViewModels
             var userDir = Path.Combine(UserSettings.Default.OutputDirectory, "Sounds");
             if (fullPath.StartsWith("/")) fullPath = fullPath[1..];
             var savedAudioPath = Path.Combine(userDir,
-                UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled
-                    ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLower()}";
+                UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLower()}";
 
             if (!UserSettings.Default.IsAutoOpenSounds)
             {
@@ -690,6 +741,24 @@ namespace FModel.ViewModels
             });
         }
 
+        private void SaveExport(UObject export)
+        {
+            var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
+            var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
+            if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
+            {
+                Log.Information("Successfully saved {FileName}", savedFileName);
+                FLogger.AppendInformation();
+                FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+            }
+            else
+            {
+                Log.Error("{FileName} could not be saved", savedFileName);
+                FLogger.AppendError();
+                FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
+            }
+        }
+
         public void ExportData(string fullPath)
         {
             var fileName = fullPath.SubstringAfterLast('/');
@@ -699,8 +768,7 @@ namespace FModel.ViewModels
             {
                 foreach (var kvp in assets)
                 {
-                    var path = Path.Combine(directory, UserSettings.Default.KeepDirectoryStructure == EEnabledDisabled.Enabled
-                        ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
+                    var path = Path.Combine(directory, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
                     Directory.CreateDirectory(path.SubstringBeforeLast('/'));
                     File.WriteAllBytes(path, kvp.Value);
                 }

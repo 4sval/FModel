@@ -33,14 +33,12 @@ namespace FModel
                 {new KeyGesture(UserSettings.Default.AutoSaveProps.Key, UserSettings.Default.AutoSaveProps.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveTextures", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoSaveTextures.Key, UserSettings.Default.AutoSaveTextures.Modifiers)}), OnAutoTriggerExecuted));
-            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveMaterials", typeof(MainWindow), new InputGestureCollection
-                {new KeyGesture(UserSettings.Default.AutoSaveMaterials.Key, UserSettings.Default.AutoSaveMaterials.Modifiers)}), OnAutoTriggerExecuted));
-            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveMeshes", typeof(MainWindow), new InputGestureCollection
-                {new KeyGesture(UserSettings.Default.AutoSaveMeshes.Key, UserSettings.Default.AutoSaveMeshes.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveAnimations", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoSaveAnimations.Key, UserSettings.Default.AutoSaveAnimations.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoOpenSounds", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoOpenSounds.Key, UserSettings.Default.AutoOpenSounds.Modifiers)}), OnAutoTriggerExecuted));
+            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoOpenMeshes", typeof(MainWindow), new InputGestureCollection
+                {new KeyGesture(UserSettings.Default.AutoOpenMeshes.Key, UserSettings.Default.AutoOpenMeshes.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection {new KeyGesture(Key.F12)}), OnMappingsReload));
             CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (s, e) => OnOpenAvalonFinder()));
 
@@ -148,17 +146,14 @@ namespace FModel
                 case "AutoSaveTextures":
                     UserSettings.Default.IsAutoSaveTextures = !UserSettings.Default.IsAutoSaveTextures;
                     break;
-                case "AutoSaveMaterials":
-                    UserSettings.Default.IsAutoSaveMaterials = !UserSettings.Default.IsAutoSaveMaterials;
-                    break;
-                case "AutoSaveMeshes":
-                    UserSettings.Default.IsAutoSaveMeshes = !UserSettings.Default.IsAutoSaveMeshes;
-                    break;
                 case "AutoSaveAnimations":
                     UserSettings.Default.IsAutoSaveAnimations = !UserSettings.Default.IsAutoSaveAnimations;
                     break;
                 case "AutoOpenSounds":
                     UserSettings.Default.IsAutoOpenSounds = !UserSettings.Default.IsAutoOpenSounds;
+                    break;
+                case "AutoOpenMeshes":
+                    UserSettings.Default.IsAutoOpenMeshes = !UserSettings.Default.IsAutoOpenMeshes;
                     break;
             }
         }
@@ -247,6 +242,19 @@ namespace FModel
             if (!_applicationView.IsReady || sender is not ListBox listBox) return;
             UserSettings.Default.LoadingMode = ELoadingMode.Multiple;
             _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
+        }
+
+        private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (!_applicationView.IsReady || sender is not ListBox listBox) return;
+
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    var selectedItems = listBox.SelectedItems.Cast<AssetItem>().ToList();
+                    await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
+                    break;
+            }
         }
     }
 }

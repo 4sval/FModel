@@ -30,12 +30,12 @@ namespace FModel.Creator.Bases.FN
 
         public override void ParseForInfo()
         {
-            ParseForReward(UserSettings.Default.CosmeticDisplayAsset == EEnabledDisabled.Enabled);
+            ParseForReward(UserSettings.Default.CosmeticDisplayAsset);
 
             if (Object.TryGetValue(out FPackageIndex series, "Series") && Utils.TryGetPackageIndexExport(series, out UObject export))
                 _rarityName = export.Name;
             else
-                _rarityName = GetRarityName(Object.GetOrDefault<FName>("Rarity"));
+                _rarityName = Object.GetOrDefault("Rarity", EFortRarity.Uncommon).GetDescription();
 
             if (Object.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags"))
                 CheckGameplayTags(gameplayTags);
@@ -106,44 +106,6 @@ namespace FModel.Creator.Bases.FN
                 s = "X";
 
             return number > 10 ? $"C{number / 10 + 1} S{s[^1..]}" : $"C1 S{s}";
-        }
-
-        private string GetRarityName(FName r)
-        {
-            var rarity = EFortRarity.Uncommon;
-            switch (r.Text)
-            {
-                case "EFortRarity::Common":
-                case "EFortRarity::Handmade":
-                    rarity = EFortRarity.Common;
-                    break;
-                case "EFortRarity::Rare":
-                case "EFortRarity::Sturdy":
-                    rarity = EFortRarity.Rare;
-                    break;
-                case "EFortRarity::Epic":
-                case "EFortRarity::Quality":
-                    rarity = EFortRarity.Epic;
-                    break;
-                case "EFortRarity::Legendary":
-                case "EFortRarity::Fine":
-                    rarity = EFortRarity.Legendary;
-                    break;
-                case "EFortRarity::Mythic":
-                case "EFortRarity::Elegant":
-                    rarity = EFortRarity.Mythic;
-                    break;
-                case "EFortRarity::Transcendent":
-                case "EFortRarity::Masterwork":
-                    rarity = EFortRarity.Transcendent;
-                    break;
-                case "EFortRarity::Unattainable":
-                case "EFortRarity::Badass":
-                    rarity = EFortRarity.Unattainable;
-                    break;
-            }
-
-            return rarity.GetDescription();
         }
 
         private new void DrawBackground(SKCanvas c)
