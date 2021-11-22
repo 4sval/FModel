@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -24,14 +26,14 @@ namespace FModel.ViewModels
         private HashSet<FGuid> _uniqueGuids;
         private readonly CUE4ParseViewModel _cue4Parse;
         private readonly FileItem _mainKey = new("Main Static Key", 0) {Guid = Constants.ZERO_GUID}; // just so main key gets refreshed in the ui
-
+        
         public AesManagerViewModel(CUE4ParseViewModel cue4Parse)
         {
             _cue4Parse = cue4Parse;
             HasChange = false;
         }
 
-        public async Task InitAes()
+        public async Task InitAes(bool grabFromShipping = false)
         {
             await _threadWorkerView.Begin(_ =>
             {
@@ -44,11 +46,46 @@ namespace FModel.ViewModels
                     };
                 }
 
-                _mainKey.Key = FixKey(_keysFromSettings.MainKey);
+                if (grabFromShipping) //sorry lol cba to mess with user settings stuff
+                {
+                    string key = GetKeyFromLauncher();
+
+                    if (key != null)
+                    {
+                        _mainKey.Key = FixKey(key);
+                    }
+                    else _mainKey.Key = FixKey(_keysFromSettings.MainKey);
+                }
+                else _mainKey.Key = FixKey(_keysFromSettings.MainKey);
+
                 AesKeys = new FullyObservableCollection<FileItem>(EnumerateAesKeys());
                 AesKeys.ItemPropertyChanged += AesKeysOnItemPropertyChanged;
                 AesKeysView = new ListCollectionView(AesKeys) {SortDescriptions = {new SortDescription("Name", ListSortDirection.Ascending)}};
             });
+        }
+
+        private string GetKeyFromLauncher()
+        {
+            string launcherPath = Path.Join(UserSettings.Default.OutputDirectory, ".data\\IgnoreThis.exe");
+
+            var launcherProc = new Process();
+            launcherProc.StartInfo.FileName = launcherPath;
+            launcherProc.StartInfo.WorkingDirectory = Path.GetDirectoryName(launcherPath);
+            launcherProc.StartInfo.UseShellExecute = false;
+            launcherProc.StartInfo.CreateNoWindow = true;
+            launcherProc.Start();
+            System.Threading.Thread.Sleep(1000); //wait a second incase slow pc makes launching take long
+
+            try
+            {
+                var module = launcherProc.MainModule;
+                string key = PatternScanner.GetAesFromPattern(module, launcherProc);
+
+                if (string.IsNullOrEmpty(key))
+                    return null;
+                else return key;
+            }
+            catch { return null; } //if its still not launched just return null
         }
 
         private void AesKeysOnItemPropertyChanged(object sender, ItemPropertyChangedEventArgs e)

@@ -128,8 +128,10 @@ namespace FModel.ViewModels
             TabControl = new TabControlViewModel();
         }
 
-        public async Task Initialize()
+        public async Task<bool> Initialize()
         {
+            bool grabAesFromShipping = false; //i wasnt sure how to navigate this code so ill just do this way
+
             await _threadWorkerView.Begin(cancellationToken =>
             {
                 switch (Provider)
@@ -172,10 +174,20 @@ namespace FModel.ViewModels
                                     p.Initialize(fileManifest.Name, new[] {fileManifest.GetStream(), casStream.GetStream()});
                                 }
 
+                                string launcherPath = $"{chunksDir}\\IgnoreThis.exe";
+                                if (!File.Exists(launcherPath))
+                                {
+                                    var launcher = manifest.FileManifests.Find(x => x.Name == "FortniteGame/Binaries/Win64/FortniteClient-Win64-Shipping.exe");
+                                    using (var fs = File.OpenWrite(launcherPath))
+                                        launcher.GetStream().CopyTo(fs);
+                                } //TODO: implement something to check if the launcher is up to date
+                                grabAesFromShipping = true;
+
                                 FLogger.AppendInformation();
                                 FLogger.AppendText($"Fortnite has been loaded successfully in {manifest.ParseTime.TotalMilliseconds}ms", Constants.WHITE, true);
                                 FLogger.AppendWarning();
                                 FLogger.AppendText($"Mappings must match '{manifest.BuildVersion}' in order to avoid errors", Constants.WHITE, true);
+                                
                                 break;
                             }
                             case "ValorantLive":
@@ -211,6 +223,8 @@ namespace FModel.ViewModels
                     GameDirectory.Add(vfs);
                 }
             });
+
+            return grabAesFromShipping;
         }
 
         /// <summary>

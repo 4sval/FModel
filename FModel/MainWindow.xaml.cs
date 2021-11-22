@@ -73,8 +73,8 @@ namespace FModel
             }
 
             await _applicationView.CUE4Parse.InitInformation();
-            await _applicationView.CUE4Parse.Initialize();
-            await _applicationView.AesManager.InitAes();
+            bool grabShippingAes = await _applicationView.CUE4Parse.Initialize();
+            await _applicationView.AesManager.InitAes(grabShippingAes);
             await _applicationView.AesManager.UpdateProvider(true);
             await _applicationView.CUE4Parse.InitBenMappings();
             await _applicationView.InitVgmStream();
