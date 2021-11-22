@@ -44,14 +44,7 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Models" VerticalAlignment="Center" Margin="0 0 0 10" />
-                    <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding ModelViewer.LoadedModelsView, IsAsync=True}"
-                              SelectedItem="{Binding ModelViewer.SelectedModel, Mode=TwoWay}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Export.Name}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    <ComboBox Grid.Row="0" Grid.Column="2" Style="{StaticResource ModelsComboBox}" />
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Triangles" VerticalAlignment="Center" Margin="0 0 0 10" />
                     <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding ModelViewer.SelectedModel.TriangleCount, FallbackValue=0, StringFormat={}{0:### ### ### ###}}" VerticalAlignment="Center" HorizontalAlignment="Right" />

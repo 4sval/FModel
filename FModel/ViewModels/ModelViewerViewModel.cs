@@ -133,7 +133,10 @@ namespace FModel.ViewModels
 
             ModelAndCam p;
             if (AppendMode && CanAppend)
+            {
                 p = SelectedModel;
+                _loadedModels.Add(new ModelAndCam(export) {IsVisible = false});
+            }
             else
             {
                 p = new ModelAndCam(export);
@@ -504,6 +507,13 @@ namespace FModel.ViewModels
         public Geometry3D YAxis { get; set; }
         public Geometry3D ZAxis { get; set; }
         public int TriangleCount { get; set; }
+
+        private bool _isVisible = true;
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set => SetProperty(ref _isVisible, value);
+        }
 
         private MeshGeometryModel3D _selectedGeometry; // selected material
         public MeshGeometryModel3D SelectedGeometry

@@ -618,6 +618,25 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="ModelsComboBox" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+        <Setter Property="ItemsSource" Value="{Binding ModelViewer.LoadedModelsView, IsAsync=True}" />
+        <Setter Property="SelectedItem" Value="{Binding ModelViewer.SelectedModel, Mode=TwoWay}" />
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Export.Name}" />
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                    <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="MaterialsListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="ItemsSource" Value="{Binding ModelViewer.SelectedModel.Group3d, IsAsync=True}" />
         <Setter Property="SelectedItem" Value="{Binding ModelViewer.SelectedModel.SelectedGeometry}" />
