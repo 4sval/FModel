@@ -674,7 +674,7 @@ namespace FModel.ViewModels
                 }
                 case UStaticMesh when UserSettings.Default.IsAutoOpenMeshes:
                 case USkeletalMesh when UserSettings.Default.IsAutoOpenMeshes:
-                case UMaterialInstance when UserSettings.Default.IsAutoOpenMeshes && !ModelIsSwappingMaterial &&
+                case UMaterialInstance when UserSettings.Default.OpenMaterialsInModelViewer && !ModelIsSwappingMaterial &&
                                             !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):

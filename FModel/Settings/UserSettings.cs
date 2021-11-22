@@ -546,6 +546,13 @@ namespace FModel.Settings
             set => SetProperty(ref _lodExportFormat, value);
         }
 
+        private bool _openMaterialsInModelViewer = true;
+        public bool OpenMaterialsInModelViewer
+        {
+            get => _openMaterialsInModelViewer;
+            set => SetProperty(ref _openMaterialsInModelViewer, value);
+        }
+
         private bool _saveSkeletonAsMesh;
         public bool SaveSkeletonAsMesh
         {

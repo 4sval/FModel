@@ -162,7 +162,7 @@
                     <MenuItem Header="Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
-                    <MenuItem Header="Open Meshes &amp; Materials" IsCheckable="True" StaysOpenOnClick="True"
+                    <MenuItem Header="Open Meshes" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}}" />
                 </MenuItem>
@@ -867,7 +867,7 @@
                         <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="SND" />
                     </StatusBarItem>
 
-                    <StatusBarItem Width="35" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Meshes &amp; Materials Enabled">
+                    <StatusBarItem Width="35" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Meshes Enabled">
                         <StatusBarItem.Style>
                             <Style TargetType="StatusBarItem">
                                 <Style.Triggers>
