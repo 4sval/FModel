@@ -287,6 +287,7 @@ namespace FModel.ViewModels
                 var libraries = new List<string> { steamPath };
 
                 var listFile = Path.Combine(steamPath, @"steamapps\libraryfolders.vdf");
+                if (!File.Exists(listFile)) return new List<string>();
                 var lines = File.ReadAllLines(listFile);
                 foreach (var line in lines)
                 {
