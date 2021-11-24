@@ -66,6 +66,7 @@ namespace FModel.ViewModels
             yield return GetRiotGame("VALORANT", "ShooterGame\\Content\\Paks");
             yield return new DetectedGame { GameName = "Valorant [LIVE]", GameDirectory = Constants._VAL_LIVE_TRIGGER };
             yield return GetMojangGame("MinecraftDungeons", "\\dungeons\\dungeons\\Dungeons\\Content\\Paks");
+            yield return GetSteamGame(381210, "\\DeadByDaylight\\Content\\Paks"); // Dead By Daylight
             yield return GetSteamGame(578080, "\\TslGame\\Content\\Paks"); // PUBG
             yield return GetSteamGame(677620, "\\PortalWars\\Content\\Paks"); // Splitgate
             yield return GetRockstarGamesGame("GTA III - Definitive Edition", "\\Gameface\\Content\\Paks");

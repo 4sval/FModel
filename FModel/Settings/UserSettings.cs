@@ -364,7 +364,15 @@ namespace FModel.Settings
                     new("Weapon Renders", "ShooterGame/Content/UI/Screens/OutOfGame/MainMenu/Collection/Assets/Large/")
                 }
             },
-            {FGame.DeadByDaylight, new List<CustomDirectory>()},
+            {
+                FGame.DeadByDaylight, new List<CustomDirectory>
+                {
+                    new("Audio", "DeadByDaylight/Content/WwiseAudio/Windows/"),
+                    new("Characters", "DeadByDaylight/Content/Characters/"),
+                    new("Icons", "DeadByDaylight/Content/UI/UMGAssets/Icons/"),
+                    new("Strings", "DeadByDaylight/Content/Localization/")
+                }
+            },
             {FGame.OakGame, new List<CustomDirectory>()},
             {
                 FGame.Dungeons, new List<CustomDirectory>
