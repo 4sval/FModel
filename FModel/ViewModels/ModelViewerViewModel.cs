@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -382,12 +382,14 @@ namespace FModel.ViewModels
                             {
                                 var offset = 0;
                                 fixed (byte* d = data)
+                                {
                                     for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
                                     {
                                         d[offset] = 0;
-                                        (d[offset+1], d[offset+2]) = (d[offset+2], d[offset+1]); // swap G and B
+                                        (d[offset + 1], d[offset + 2]) = (d[offset + 2], d[offset + 1]); // swap G and B
                                         offset += 4;
                                     }
+                                }
                             }
                             parameters.RoughnessValue = 1;
                             parameters.MetallicValue = 1;
@@ -395,20 +397,40 @@ namespace FModel.ViewModels
                         }
                         case FGame.ShooterGame:
                         {
-                            // Valorant's Specular Texture Channels
-                            // R Metallic
-                            // G Specular
-                            // B Roughness
-                            unsafe
+                            var packedPBRType = specular.Name[(specular.Name.LastIndexOf('_') + 1)..];
+                            switch (packedPBRType)
                             {
-                                var offset = 0;
-                                fixed (byte* d = data)
-                                    for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                case "MRAE": // R: Metallic, G: AO (0-127) & Emissive (128-255), B: Roughness   (Character PBR)
+                                    unsafe
                                     {
-                                        (d[offset], d[offset+2]) = (d[offset+2], d[offset]); // swap R and B
-                                        (d[offset], d[offset+1]) = (d[offset+1], d[offset]); // swap B and G
-                                        offset += 4;
+                                        var offset = 0;
+                                        fixed (byte* d = data)
+                                        {
+                                            for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                            {
+                                                (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // swap R and B
+                                                (d[offset], d[offset + 1]) = (d[offset + 1], d[offset]); // swap R and G
+                                                offset += 4;
+                                            }
+                                        }
                                     }
+                                    break;
+                                case "MRAS": // R: Metallic, B: Roughness, B: AO, A: Specular   (Legacy PBR)
+                                case "MRA":  // R: Metallic, B: Roughness, B: AO                (Environment PBR)
+                                case "MRS":  // R: Metallic, G: Roughness, B: Specular          (Weapon PBR)
+                                    unsafe
+                                    {
+                                        var offset = 0;
+                                        fixed (byte* d = data)
+                                        {
+                                            for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                            {
+                                                (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // swap R and B
+                                                offset += 4;
+                                            }
+                                        }
+                                    }
+                                    break;
                             }
                             parameters.RoughnessValue = 1;
                             parameters.MetallicValue = 1;
@@ -424,11 +446,13 @@ namespace FModel.ViewModels
                             {
                                 var offset = 0;
                                 fixed (byte* d = data)
+                                {
                                     for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
                                     {
-                                        (d[offset], d[offset+2]) = (d[offset+2], d[offset]); // swap R and B
+                                        (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // swap R and B
                                         offset += 4;
                                     }
+                                }
                             }
                             break;
                         }
