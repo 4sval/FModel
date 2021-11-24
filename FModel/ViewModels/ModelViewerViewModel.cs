@@ -382,12 +382,14 @@ namespace FModel.ViewModels
                             {
                                 var offset = 0;
                                 fixed (byte* d = data)
+                                {
                                     for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
                                     {
                                         d[offset] = 0;
-                                        (d[offset+1], d[offset+2]) = (d[offset+2], d[offset+1]); // swap G and B
+                                        (d[offset + 1], d[offset + 2]) = (d[offset + 2], d[offset + 1]); // swap G and B
                                         offset += 4;
                                     }
+                                }
                             }
                             parameters.RoughnessValue = 1;
                             parameters.MetallicValue = 1;
@@ -403,12 +405,14 @@ namespace FModel.ViewModels
                                     {
                                         var offset = 0;
                                         fixed (byte* d = data)
+                                        {
                                             for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
                                             {
-                                                (d[offset], d[offset+2]) = (d[offset+2], d[offset]); // swap R and B
-                                                (d[offset], d[offset+1]) = (d[offset+1], d[offset]); // swap R and G
+                                                (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // swap R and B
+                                                (d[offset], d[offset + 1]) = (d[offset + 1], d[offset]); // swap R and G
                                                 offset += 4;
                                             }
+                                        }
                                     }
                                     break;
                                 case "MRAS": // R: Metallic, B: Roughness, B: AO, A: Specular   (Legacy PBR)
@@ -418,11 +422,13 @@ namespace FModel.ViewModels
                                     {
                                         var offset = 0;
                                         fixed (byte* d = data)
+                                        {
                                             for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
                                             {
-                                                (d[offset], d[offset+2]) = (d[offset+2], d[offset]); // swap R and B
+                                                (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // swap R and B
                                                 offset += 4;
                                             }
+                                        }
                                     }
                                     break;
                             }
@@ -440,11 +446,13 @@ namespace FModel.ViewModels
                             {
                                 var offset = 0;
                                 fixed (byte* d = data)
+                                {
                                     for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
                                     {
-                                        (d[offset], d[offset+2]) = (d[offset+2], d[offset]); // swap R and B
+                                        (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // swap R and B
                                         offset += 4;
                                     }
+                                }
                             }
                             break;
                         }
