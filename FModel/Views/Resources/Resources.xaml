@@ -653,6 +653,7 @@
                             <ColumnDefinition Width="25" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <Image Grid.Column="0" Source="/FModel;component/Resources/materialicon.png" Width="16" Height="16" Margin="5 0" HorizontalAlignment="Center" />
@@ -671,6 +672,10 @@
                                 </Canvas>
                             </Viewbox>
                         </ToggleButton>
+                        <Rectangle Grid.Column="5" Width="19" Height="22" Fill="{Binding Tag, Mode=OneTime, Converter={x:Static converters:TagToColorConverter.Instance}}"
+                                   Visibility="{Binding DataContext.ModelViewer.SelectedModel.ShowMaterialColor,
+                                   RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:Views.ModelViewer}},
+                                   Converter={StaticResource BoolToVisibilityConverter}}" />
                     </Grid>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsRendering}" Value="True">

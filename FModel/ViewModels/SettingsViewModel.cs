@@ -47,13 +47,6 @@ namespace FModel.ViewModels
             set => SetProperty(ref _selectedUeGame, value);
         }
 
-        private UE4Version _selectedUeVersion;
-        public UE4Version SelectedUeVersion
-        {
-            get => _selectedUeVersion;
-            set => SetProperty(ref _selectedUeVersion, value);
-        }
-
         private List<FCustomVersion> _selectedCustomVersions;
         public List<FCustomVersion> SelectedCustomVersions
         {
@@ -127,7 +120,6 @@ namespace FModel.ViewModels
         public ReadOnlyObservableCollection<EUpdateMode> UpdateModes { get; private set; }
         public ObservableCollection<string> Presets { get; private set; }
         public ReadOnlyObservableCollection<EGame> UeGames { get; private set; }
-        public ReadOnlyObservableCollection<UE4Version> UeVersions { get; private set; }
         public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
         public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
         public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
@@ -146,7 +138,6 @@ namespace FModel.ViewModels
         private EUpdateMode _updateModeSnapshot;
         private string _presetSnapshot;
         private EGame _ueGameSnapshot;
-        private UE4Version _ueVersionSnapshot;
         private List<FCustomVersion> _customVersionsSnapshot;
         private Dictionary<string, bool> _optionsSnapshot;
         private ELanguage _assetLanguageSnapshot;
@@ -168,7 +159,6 @@ namespace FModel.ViewModels
             _updateModeSnapshot = UserSettings.Default.UpdateMode;
             _presetSnapshot = UserSettings.Default.Presets[_game];
             _ueGameSnapshot = UserSettings.Default.OverridedGame[_game];
-            _ueVersionSnapshot = UserSettings.Default.OverridedUEVersion[_game];
             _customVersionsSnapshot = UserSettings.Default.OverridedCustomVersions[_game];
             _optionsSnapshot = UserSettings.Default.OverridedOptions[_game];
             _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
@@ -181,7 +171,6 @@ namespace FModel.ViewModels
             SelectedUpdateMode = _updateModeSnapshot;
             SelectedPreset = _presetSnapshot;
             SelectedUeGame = _ueGameSnapshot;
-            SelectedUeVersion = _ueVersionSnapshot;
             SelectedCustomVersions = _customVersionsSnapshot;
             SelectedOptions = _optionsSnapshot;
             SelectedAssetLanguage = _assetLanguageSnapshot;
@@ -196,7 +185,6 @@ namespace FModel.ViewModels
             UpdateModes = new ReadOnlyObservableCollection<EUpdateMode>(new ObservableCollection<EUpdateMode>(EnumerateUpdateModes()));
             Presets = new ObservableCollection<string>(EnumeratePresets());
             UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
-            UeVersions = new ReadOnlyObservableCollection<UE4Version>(new ObservableCollection<UE4Version>(EnumerateUeVersions()));
             AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
             AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
             DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
@@ -226,7 +214,6 @@ namespace FModel.ViewModels
         {
             if (_gamePreset?.Versions == null || !_gamePreset.Versions.TryGetValue(key, out var version)) return;
             SelectedUeGame = version.GameEnum.ToEnum(EGame.GAME_UE4_LATEST);
-            SelectedUeVersion = (UE4Version)version.UeVer;
 
             SelectedCustomVersions = new List<FCustomVersion>();
             foreach (var (guid, v) in version.CustomVersions)
@@ -244,7 +231,6 @@ namespace FModel.ViewModels
         public void ResetPreset()
         {
             SelectedUeGame = _ueGameSnapshot;
-            SelectedUeVersion = _ueVersionSnapshot;
             SelectedCustomVersions = _customVersionsSnapshot;
             SelectedOptions = _optionsSnapshot;
         }
@@ -253,7 +239,7 @@ namespace FModel.ViewModels
         {
             var ret = SettingsOut.Nothing;
 
-            if (_ueGameSnapshot != SelectedUeGame || _ueVersionSnapshot != SelectedUeVersion || // comboboxes
+            if (_ueGameSnapshot != SelectedUeGame || // combobox
                 _customVersionsSnapshot != SelectedCustomVersions || _optionsSnapshot != SelectedOptions ||
                 _outputSnapshot != UserSettings.Default.OutputDirectory || // textbox
                 _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
@@ -265,7 +251,6 @@ namespace FModel.ViewModels
             UserSettings.Default.UpdateMode = SelectedUpdateMode;
             UserSettings.Default.Presets[_game] = SelectedPreset;
             UserSettings.Default.OverridedGame[_game] = SelectedUeGame;
-            UserSettings.Default.OverridedUEVersion[_game] = SelectedUeVersion;
             UserSettings.Default.OverridedCustomVersions[_game] = SelectedCustomVersions;
             UserSettings.Default.OverridedOptions[_game] = SelectedOptions;
             UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
@@ -289,7 +274,6 @@ namespace FModel.ViewModels
             yield return Constants._NO_PRESET_TRIGGER;
         }
         private IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues(SelectedUeGame.GetType()).Cast<EGame>();
-        private IEnumerable<UE4Version> EnumerateUeVersions() => Enum.GetValues(SelectedUeVersion.GetType()).Cast<UE4Version>();
         private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues(SelectedAssetLanguage.GetType()).Cast<ELanguage>();
         private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues(SelectedAesReload.GetType()).Cast<EAesReload>();
         private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues(SelectedDiscordRpc.GetType()).Cast<EDiscordRpc>();

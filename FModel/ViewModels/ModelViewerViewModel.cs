@@ -51,43 +51,11 @@ namespace FModel.ViewModels
             set => SetProperty(ref _cam, value);
         }
 
-        private Geometry3D _xAxis;
-        public Geometry3D XAxis
-        {
-            get => _xAxis;
-            set => SetProperty(ref _xAxis, value);
-        }
-
-        private Geometry3D _yAxis;
-        public Geometry3D YAxis
-        {
-            get => _yAxis;
-            set => SetProperty(ref _yAxis, value);
-        }
-
-        private Geometry3D _zAxis;
-        public Geometry3D ZAxis
-        {
-            get => _zAxis;
-            set => SetProperty(ref _zAxis, value);
-        }
-
         private ModelAndCam _selectedModel; // selected mesh
         public ModelAndCam SelectedModel
         {
             get => _selectedModel;
-            set
-            {
-                SetProperty(ref _selectedModel, value);
-                if (_selectedModel == null) return;
-
-                XAxis = _selectedModel.XAxis;
-                YAxis = _selectedModel.YAxis;
-                ZAxis = _selectedModel.ZAxis;
-                Cam.UpDirection = new Vector3D(0, 1, 0);
-                Cam.Position = _selectedModel.Position;
-                Cam.LookDirection = _selectedModel.LookDirection;
-            }
+            set => SetProperty(ref _selectedModel, value);
         }
 
         private readonly ObservableCollection<ModelAndCam> _loadedModels; // mesh list
@@ -107,6 +75,8 @@ namespace FModel.ViewModels
 
         private readonly FGame _game;
         private readonly int[] _facesIndex = { 1, 0, 2 };
+        private readonly float[] _table  = { 255 * 0.9f, 25 * 3.0f, 255 * 0.6f, 255 * 0.0f };
+        private readonly int[] _table2 = { 0, 1, 2, 4, 7, 3, 5, 6 };
 
         public ModelViewerViewModel(FGame game)
         {
@@ -155,7 +125,11 @@ namespace FModel.ViewModels
                 };
             });
             if (!valid) return;
+
             SelectedModel = p;
+            Cam.UpDirection = new Vector3D(0, 1, 0);
+            Cam.Position = p.Position;
+            Cam.LookDirection = p.LookDirection;
         }
 
         #region PUBLIC METHODS
@@ -181,6 +155,12 @@ namespace FModel.ViewModels
 
                 geometryModel.RenderWireframe = !geometryModel.RenderWireframe;
             }
+        }
+
+        public void MaterialColorToggle()
+        {
+            if (SelectedModel == null) return;
+            SelectedModel.ShowMaterialColor = !SelectedModel.ShowMaterialColor;
         }
 
         public void DiffuseOnlyToggle()
@@ -317,10 +297,12 @@ namespace FModel.ViewModels
 
         private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices, ModelAndCam cam)
         {
-            foreach (var section in sections) // each section is a mesh part with its own material
+            for (int i = 0; i < sections.Length; i++) // each section is a mesh part with its own material
             {
+                var section = sections[i];
                 var builder = new MeshBuilder();
                 cam.TriangleCount += section.NumFaces; // NumFaces * 3 (triangle) = next section FirstIndex
+
                 for (var j = 0; j < section.NumFaces; j++) // draw a triangle for each face
                 {
                     foreach (var t in _facesIndex) // triangle face 1 then 0 then 2
@@ -339,17 +321,25 @@ namespace FModel.ViewModels
                 if (section.Material == null || !section.Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
                     continue;
 
+                var index = (i & 0xFFF8) | _table2[i & 7] ^ 7;
                 var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial);
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     cam.Group3d.Add(new MeshGeometryModel3D
                     {
                         Name = FixName(unrealMaterial.Name), Geometry = builder.ToMeshGeometry3D(),
-                        Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+                        Material = m, IsTransparent = isTransparent, IsRendering = isRendering,
+                        Tag = new PBRMaterial
+                        {
+                            AlbedoColor = new Color4(_table[C(index)] / 255, _table[C(index >> 1)] / 255, _table[C(index >> 2)] / 255, 1)
+                        }
                     });
                 });
             }
         }
+
+        private int C(int x) => (x & 1) | ((x >> 2) & 2);
 
         private (PBRMaterial material, bool isRendering, bool isTransparent) LoadMaterial(UMaterialInterface unrealMaterial)
         {
@@ -537,6 +527,23 @@ namespace FModel.ViewModels
         {
             get => _isVisible;
             set => SetProperty(ref _isVisible, value);
+        }
+
+        private bool _showMaterialColor;
+        public bool ShowMaterialColor
+        {
+            get => _showMaterialColor;
+            set
+            {
+                SetProperty(ref _showMaterialColor, value);
+                foreach (var g in Group3d)
+                {
+                    if (g is not MeshGeometryModel3D geometryModel)
+                        continue;
+
+                    (geometryModel.Material, geometryModel.Tag) = ((PBRMaterial)geometryModel.Tag, geometryModel.Material);
+                }
+            }
         }
 
         private MeshGeometryModel3D _selectedGeometry; // selected material

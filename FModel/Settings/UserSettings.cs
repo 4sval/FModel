@@ -259,33 +259,6 @@ namespace FModel.Settings
             set => SetProperty(ref _overridedGame, value);
         }
 
-        private IDictionary<FGame, UE4Version> _overridedUEVersion = new Dictionary<FGame, UE4Version>
-        {
-            {FGame.Unknown, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.FortniteGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.ShooterGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.DeadByDaylight, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.OakGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Dungeons, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.WorldExplorers, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.g3, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.StateOfDecay2, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Prospect, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Indiana, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.RogueCompany, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.SwGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Platform, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.BendGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.TslGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.PortalWars, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Gameface, UE4Version.VER_UE4_DETERMINE_BY_GAME}
-        };
-        public IDictionary<FGame, UE4Version> OverridedUEVersion
-        {
-            get => _overridedUEVersion;
-            set => SetProperty(ref _overridedUEVersion, value);
-        }
-
         private IDictionary<FGame, List<FCustomVersion>> _overridedCustomVersions = new Dictionary<FGame, List<FCustomVersion>>
         {
             {FGame.Unknown, null},

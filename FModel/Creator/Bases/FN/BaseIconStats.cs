@@ -142,10 +142,10 @@ namespace FModel.Creator.Bases.FN
             if (property.TryGetValue(out FStructFallback curve, "Curve") &&
                 curve.TryGetValue(out FName rowName, "RowName") &&
                 curve.TryGetValue(out UCurveTable curveTable, "CurveTable") &&
-                curveTable.TryGetCurveTableRow(rowName.Text, StringComparison.OrdinalIgnoreCase, out var rowValue) &&
-                rowValue.TryGetValue(out FSimpleCurveKey[] keys, "Keys") && keys.Length > 0)
+                curveTable.TryFindCurve(rowName, out var rowValue) &&
+                rowValue is FSimpleCurve s && s.Keys.Length > 0)
             {
-                statValue = keys[0].Value;
+                statValue = s.Keys[0].Value;
                 return true;
             }
 

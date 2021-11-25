@@ -85,9 +85,8 @@ namespace FModel.ViewModels
                     Provider = new StreamedFileProvider("FortniteLive", true,
                         new VersionContainer(
                             UserSettings.Default.OverridedGame[Game],
-                            UserSettings.Default.OverridedUEVersion[Game],
-                            UserSettings.Default.OverridedCustomVersions[Game],
-                            UserSettings.Default.OverridedOptions[Game]));
+                            customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                            optionOverrides: UserSettings.Default.OverridedOptions[Game]));
                     break;
                 }
                 case Constants._VAL_LIVE_TRIGGER:
@@ -96,17 +95,16 @@ namespace FModel.ViewModels
                     Provider = new StreamedFileProvider("ValorantLive", true,
                         new VersionContainer(
                             UserSettings.Default.OverridedGame[Game],
-                            UserSettings.Default.OverridedUEVersion[Game],
-                            UserSettings.Default.OverridedCustomVersions[Game],
-                            UserSettings.Default.OverridedOptions[Game]));
+                            customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                            optionOverrides: UserSettings.Default.OverridedOptions[Game]));
                     break;
                 }
                 default:
                 {
                     Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
-                    var versions = new VersionContainer(
-                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game],
-                        UserSettings.Default.OverridedCustomVersions[Game], UserSettings.Default.OverridedOptions[Game]);
+                    var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game],
+                        customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                        optionOverrides: UserSettings.Default.OverridedOptions[Game]);
 
                     if (Game == FGame.StateOfDecay2)
                         Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
@@ -395,7 +393,7 @@ namespace FModel.ViewModels
             if (VirtualPathCount > 0) return;
             await _threadWorkerView.Begin(cancellationToken =>
             {
-                VirtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedUEVersion[Game], cancellationToken);
+                VirtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedGame[Game].GetVersion(), cancellationToken);
                 if (VirtualPathCount > 0)
                 {
                     FLogger.AppendInformation();

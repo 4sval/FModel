@@ -37,7 +37,6 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -92,7 +91,7 @@
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" SelectionChanged="OnSelectionChanged" Margin="0 0 0 5">
                     </ComboBox>
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="UE4 Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE4 version to use when parsing assets" />
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="UE Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE version to use when parsing assets" />
                     <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeGames}" SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" IsEnabled="{Binding SettingsView.EnableElements}"
                               Margin="0 0 0 5">
@@ -103,19 +102,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="UE4 Object Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE4 object version to use when parsing assets" />
-                    <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeVersions}" SelectedItem="{Binding SettingsView.SelectedUeVersion, Mode=TwoWay}"
-                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" IsEnabled="{Binding SettingsView.EnableElements}"
-                              Margin="0 0 0 5">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Versioning Configuration *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Versioning Configuration *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Grid Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
@@ -126,13 +114,13 @@
                         <Button Grid.Column="2" Content="Options" Click="OpenOptions" />
                     </Grid>
 
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Keep Directory Structure" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Auto Export &#38; Save assets inside their game directory" />
-                    <CheckBox Grid.Row="10" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Keep Directory Structure" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Auto Export &#38; Save assets inside their game directory" />
+                    <CheckBox Grid.Row="9" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 10"/>
 
-                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Compressed Audio" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="What to do when encountering a compressed audio file" />
-                    <ComboBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.CompressedAudios}" SelectedItem="{Binding SettingsView.SelectedCompressedAudio, Mode=TwoWay}"
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Compressed Audio" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="What to do when encountering a compressed audio file" />
+                    <ComboBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.CompressedAudios}" SelectedItem="{Binding SettingsView.SelectedCompressedAudio, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -141,7 +129,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -154,7 +142,7 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                    <ComboBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
+                    <ComboBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.Style>
                             <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">

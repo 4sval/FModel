@@ -126,7 +126,7 @@
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.SelectedModel.YAxis}" Color="#85CB22" />
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.SelectedModel.ZAxis}" Color="#388EED" />
 
-            <helix:GroupModel3D x:Name="MyAntiCrashGroup" ItemsSource="{Binding ModelViewer.SelectedModel.Group3d}" />
+            <helix:GroupModel3D x:Name="MyAntiCrashGroup" ItemsSource="{Binding ModelViewer.SelectedModel.Group3d}" Mouse3DDown="OnMouse3DDown" />
         </helix:Viewport3DX>
     </Grid>
 </adonisControls:AdonisWindow>

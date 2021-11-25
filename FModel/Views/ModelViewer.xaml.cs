@@ -6,6 +6,7 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Services;
 using FModel.ViewModels;
+using HelixToolkit.Wpf.SharpDX;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
@@ -64,10 +65,19 @@ namespace FModel.Views
                 // case Key.D:
                 //     _applicationView.ModelViewer.DiffuseOnlyToggle();
                 //     break;
+                case Key.M:
+                    _applicationView.ModelViewer.MaterialColorToggle();
+                    break;
                 case Key.Decimal:
                     _applicationView.ModelViewer.FocusOnSelectedMesh();
                     break;
             }
+        }
+
+        private void OnMouse3DDown(object sender, MouseDown3DEventArgs e)
+        {
+            if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) || e.HitTestResult.ModelHit is not MeshGeometryModel3D m) return;
+            _applicationView.ModelViewer.SelectedModel.SelectedGeometry = m;
         }
 
         private void OnFocusClick(object sender, RoutedEventArgs e)
