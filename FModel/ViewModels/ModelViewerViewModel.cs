@@ -278,6 +278,8 @@ namespace FModel.ViewModels
                 PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, cam);
                 break;
             }
+
+            // bones here
         }
 
         private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices, ModelAndCam cam)
@@ -325,9 +327,7 @@ namespace FModel.ViewModels
             {
                 m = new CustomPBRMaterial // recreate on ui thread
                 {
-                    RenderShadowMap = true,
-                    EnableAutoTangent = true,
-                    RenderEnvironmentMap = true,
+                    RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true,
                     MaterialColor = new Color4(_table[C(index)] / 255, _table[C(index >> 1)] / 255, _table[C(index >> 2)] / 255, 1)
                 };
             });
@@ -563,7 +563,7 @@ namespace FModel.ViewModels
                     material.RenderAmbientOcclusionMap = !material.RenderAmbientOcclusionMap;
                     material.RenderDisplacementMap = !material.RenderDisplacementMap;
                     material.RenderEmissiveMap = !material.RenderEmissiveMap;
-                    material.RenderEnvironmentMap = !material.RenderEnvironmentMap;
+                    // material.RenderEnvironmentMap = !material.RenderEnvironmentMap;
                     material.RenderIrradianceMap = !material.RenderIrradianceMap;
                     material.RenderRoughnessMetallicMap = !material.RenderRoughnessMetallicMap;
                     material.RenderShadowMap = !material.RenderShadowMap;
