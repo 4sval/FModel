@@ -36,7 +36,6 @@ namespace FModel.ViewModels
     {
         private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
 
-        #region BINDINGS
         private EffectsManager _effectManager;
         public EffectsManager EffectManager
         {
@@ -71,7 +70,6 @@ namespace FModel.ViewModels
         public bool CanAppend => SelectedModel != null;
 
         public TextureModel HDRi { get; private set; }
-        #endregion
 
         private readonly FGame _game;
         private readonly int[] _facesIndex = { 1, 0, 2 };
@@ -113,18 +111,23 @@ namespace FModel.ViewModels
                 _loadedModels.Add(p);
             }
 
-            bool valid = false;
             await _threadWorkerView.Begin(_ =>
             {
-                valid = export switch
+                switch (export)
                 {
-                    UStaticMesh st => TryLoadStaticMesh(st, p),
-                    USkeletalMesh sk => TryLoadSkeletalMesh(sk, p),
-                    UMaterialInstance mi => TryLoadMaterialInstance(mi, p),
-                    _ => throw new ArgumentOutOfRangeException(nameof(export))
-                };
+                    case UStaticMesh st:
+                        LoadStaticMesh(st, p);
+                        break;
+                    case USkeletalMesh sk:
+                        LoadSkeletalMesh(sk, p);
+                        break;
+                    case UMaterialInstance mi:
+                        LoadMaterialInstance(mi, p);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(export));
+                }
             });
-            if (!valid) return;
 
             SelectedModel = p;
             Cam.UpDirection = new Vector3D(0, 1, 0);
@@ -166,20 +169,7 @@ namespace FModel.ViewModels
         public void DiffuseOnlyToggle()
         {
             if (SelectedModel == null) return;
-            foreach (var g in SelectedModel.Group3d)
-            {
-                if (g is not MeshGeometryModel3D { Material: PBRMaterial mat })
-                    continue;
-
-                //mat.RenderAmbientOcclusionMap = !mat.RenderAmbientOcclusionMap;
-                mat.RenderDisplacementMap = !mat.RenderDisplacementMap;
-                //mat.RenderEmissiveMap = !mat.RenderEmissiveMap;
-                mat.RenderEnvironmentMap = !mat.RenderEnvironmentMap;
-                mat.RenderIrradianceMap = !mat.RenderIrradianceMap;
-                mat.RenderRoughnessMetallicMap = !mat.RenderRoughnessMetallicMap;
-                mat.RenderShadowMap = !mat.RenderShadowMap;
-                mat.RenderNormalMap = !mat.RenderNormalMap;
-            }
+            SelectedModel.ShowDiffuseOnly = !SelectedModel.ShowDiffuseOnly;
         }
 
         public void FocusOnSelectedMesh()
@@ -225,10 +215,10 @@ namespace FModel.ViewModels
             if (SelectedModel is not { } model || model.SelectedGeometry is null)
                 return false;
 
-            PBRMaterial m = null;
+            CustomPBRMaterial m = null;
             await _threadWorkerView.Begin(_ =>
             {
-                var (material, _, _) = LoadMaterial(materialInstance);
+                var (material, _, _) = LoadMaterial(materialInstance, B(0));
                 m = material;
             });
 
@@ -238,14 +228,14 @@ namespace FModel.ViewModels
         }
         #endregion
 
-        private bool TryLoadMaterialInstance(UMaterialInstance materialInstance, ModelAndCam cam)
+        private void LoadMaterialInstance(UMaterialInstance materialInstance, ModelAndCam cam)
         {
             var builder = new MeshBuilder();
             builder.AddSphere(Vector3.Zero, 10);
             cam.TriangleCount = 1984; // no need to count
 
             SetupCameraAndAxis(new FBox(new FVector(-11), new FVector(11)), cam);
-            var (m, isRendering, isTransparent) = LoadMaterial(materialInstance);
+            var (m, isRendering, isTransparent) = LoadMaterial(materialInstance, B(0));
 
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -256,14 +246,13 @@ namespace FModel.ViewModels
                     Material = m, IsTransparent = isTransparent, IsRendering = isRendering
                 });
             });
-            return true;
         }
 
-        private bool TryLoadStaticMesh(UStaticMesh mesh, ModelAndCam cam)
+        private void LoadStaticMesh(UStaticMesh mesh, ModelAndCam cam)
         {
             if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
             {
-                return false;
+                return;
             }
 
             SetupCameraAndAxis(convertedMesh.BoundingBox, cam);
@@ -273,15 +262,13 @@ namespace FModel.ViewModels
                 PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, cam);
                 break;
             }
-
-            return true;
         }
 
-        private bool TryLoadSkeletalMesh(USkeletalMesh mesh, ModelAndCam cam)
+        private void LoadSkeletalMesh(USkeletalMesh mesh, ModelAndCam cam)
         {
             if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
             {
-                return false;
+                return;
             }
 
             SetupCameraAndAxis(convertedMesh.BoundingBox, cam);
@@ -291,8 +278,6 @@ namespace FModel.ViewModels
                 PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, cam);
                 break;
             }
-
-            return true;
         }
 
         private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices, ModelAndCam cam)
@@ -312,8 +297,8 @@ namespace FModel.ViewModels
                         var p = new Vector3(vert.Position.X, vert.Position.Z, vert.Position.Y); // up direction is Y
                         var n = new Vector3(vert.Normal.X, vert.Normal.Z, vert.Normal.Y);
                         n.Normalize();
-                        var uv = new Vector2(vert.UV.U, vert.UV.V);
-                        builder.AddNode(p, n, uv);
+
+                        builder.AddNode(p, n, new Vector2(vert.UV.U, vert.UV.V));
                         builder.TriangleIndices.Add(j * 3 + t); // one mesh part is "j * 3 + t" use "id" if you're building the full mesh
                     }
                 }
@@ -321,29 +306,32 @@ namespace FModel.ViewModels
                 if (section.Material == null || !section.Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
                     continue;
 
-                var index = (i & 0xFFF8) | _table2[i & 7] ^ 7;
-                var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial);
-
+                var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial, B(i));
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     cam.Group3d.Add(new MeshGeometryModel3D
                     {
                         Name = FixName(unrealMaterial.Name), Geometry = builder.ToMeshGeometry3D(),
-                        Material = m, IsTransparent = isTransparent, IsRendering = isRendering,
-                        Tag = new PBRMaterial
-                        {
-                            AlbedoColor = new Color4(_table[C(index)] / 255, _table[C(index >> 1)] / 255, _table[C(index >> 2)] / 255, 1)
-                        }
+                        Material = m, IsTransparent = isTransparent, IsRendering = isRendering
                     });
                 });
             }
         }
 
-        private int C(int x) => (x & 1) | ((x >> 2) & 2);
-
-        private (PBRMaterial material, bool isRendering, bool isTransparent) LoadMaterial(UMaterialInterface unrealMaterial)
+        private (CustomPBRMaterial material, bool isRendering, bool isTransparent) LoadMaterial(UMaterialInterface unrealMaterial, int index)
         {
-            var m = new PBRMaterial { RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true };
+            var m = new CustomPBRMaterial {RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true}; // default
+            Application.Current.Dispatcher.Invoke(() => // tweak this later
+            {
+                m = new CustomPBRMaterial // recreate on ui thread
+                {
+                    RenderShadowMap = true,
+                    EnableAutoTangent = true,
+                    RenderEnvironmentMap = true,
+                    MaterialColor = new Color4(_table[C(index)] / 255, _table[C(index >> 1)] / 255, _table[C(index >> 2)] / 255, 1)
+                };
+            });
+
             var parameters = new CMaterialParams();
             unrealMaterial.GetParams(parameters);
 
@@ -351,9 +339,15 @@ namespace FModel.ViewModels
             if (isRendering)
             {
                 if (parameters.Diffuse is UTexture2D diffuse)
-                    m.AlbedoMap = new TextureModel(diffuse.Decode()?.Encode().AsStream());
+                {
+                    var s = diffuse.Decode()?.Encode().AsStream();
+                    Application.Current.Dispatcher.Invoke(() => m.AlbedoMap = new TextureModel(s));
+                }
                 if (parameters.Normal is UTexture2D normal)
-                    m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
+                {
+                    var s = normal.Decode()?.Encode().AsStream();
+                    Application.Current.Dispatcher.Invoke(() => m.NormalMap = new TextureModel(s));
+                }
                 if (parameters.Specular is UTexture2D specular)
                 {
                     var mip = specular.GetFirstMip();
@@ -458,15 +452,19 @@ namespace FModel.ViewModels
                     }
 
                     // R -> AO G -> Roughness B -> Metallic
-                    m.RoughnessMetallicMap = new TextureModel(bitmap.Encode(SKEncodedImageFormat.Png, 100).AsStream());
-                    m.RoughnessFactor = parameters.RoughnessValue;
-                    m.MetallicFactor = parameters.MetallicValue;
-                    m.RenderAmbientOcclusionMap = parameters.SpecularValue > 0;
+                    var s = bitmap.Encode(SKEncodedImageFormat.Png, 100).AsStream();
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        m.RoughnessMetallicMap = new TextureModel(s);
+                        m.RoughnessFactor = parameters.RoughnessValue;
+                        m.MetallicFactor = parameters.MetallicValue;
+                        m.RenderAmbientOcclusionMap = parameters.SpecularValue > 0;
+                    });
                 }
             }
             else
             {
-                m.AlbedoColor = new Color4(1, 0, 0, 1);
+                Application.Current.Dispatcher.Invoke(() => m.AlbedoColor = new Color4(1, 0, 0, 1));
             }
 
             return (m, isRendering, parameters.IsTransparent);
@@ -501,6 +499,9 @@ namespace FModel.ViewModels
 
             return input.Replace('-', '_');
         }
+
+        private int B(int x) => (x & 0xFFF8) | _table2[x & 7] ^ 7;
+        private int C(int x) => (x & 1) | ((x >> 2) & 2);
 
         public void Clear()
         {
@@ -538,10 +539,35 @@ namespace FModel.ViewModels
                 SetProperty(ref _showMaterialColor, value);
                 foreach (var g in Group3d)
                 {
-                    if (g is not MeshGeometryModel3D geometryModel)
+                    if (g is not MeshGeometryModel3D { Material: CustomPBRMaterial material })
                         continue;
 
-                    (geometryModel.Material, geometryModel.Tag) = ((PBRMaterial)geometryModel.Tag, geometryModel.Material);
+                    material.RenderAlbedoMap = !_showMaterialColor;
+                    material.AlbedoColor = _showMaterialColor ? material.MaterialColor : Color4.White;
+                }
+            }
+        }
+
+        private bool _showDiffuseOnly;
+        public bool ShowDiffuseOnly
+        {
+            get => _showDiffuseOnly;
+            set
+            {
+                SetProperty(ref _showDiffuseOnly, value);
+                foreach (var g in Group3d)
+                {
+                    if (g is not MeshGeometryModel3D { Material: CustomPBRMaterial material })
+                        continue;
+
+                    material.RenderAmbientOcclusionMap = !material.RenderAmbientOcclusionMap;
+                    material.RenderDisplacementMap = !material.RenderDisplacementMap;
+                    material.RenderEmissiveMap = !material.RenderEmissiveMap;
+                    material.RenderEnvironmentMap = !material.RenderEnvironmentMap;
+                    material.RenderIrradianceMap = !material.RenderIrradianceMap;
+                    material.RenderRoughnessMetallicMap = !material.RenderRoughnessMetallicMap;
+                    material.RenderShadowMap = !material.RenderShadowMap;
+                    material.RenderNormalMap = !material.RenderNormalMap;
                 }
             }
         }
@@ -577,5 +603,10 @@ namespace FModel.ViewModels
                 Group3d.Remove(g);
             }
         }
+    }
+
+    public class CustomPBRMaterial : PBRMaterial
+    {
+        public Color4 MaterialColor { get; set; }
     }
 }

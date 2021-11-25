@@ -107,8 +107,10 @@
         <GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="4" VerticalAlignment="Stretch" ResizeBehavior="PreviousAndNext"
                       Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
 
+        <TextBlock Grid.Column="2" Text="Model is loading, please wait..." HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <helix:Viewport3DX Grid.Column="2" EffectsManager="{Binding ModelViewer.EffectManager}" Camera="{Binding ModelViewer.Cam}"
-                           IsChangeFieldOfViewEnabled="False" IsMoveEnabled="False" UseDefaultGestures="False" ShowViewCube="False"
+                           Visibility="{Binding IsReady, Converter={StaticResource BoolToVisibilityConverter}}" ShowViewCube="False"
+                           IsChangeFieldOfViewEnabled="False" IsMoveEnabled="False" UseDefaultGestures="False"
                            ShowCameraTarget="False" FXAALevel="Ultra" MSAA="Maximum" BackgroundColor="#2A2B34"
                            EnableSSAO="True" SSAOIntensity="1" EnableSwapChainRendering="True">
             <helix:Viewport3DX.InputBindings>

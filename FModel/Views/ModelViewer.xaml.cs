@@ -62,9 +62,9 @@ namespace FModel.Views
                 case Key.H:
                     _applicationView.ModelViewer.RenderingToggle();
                     break;
-                // case Key.D:
-                //     _applicationView.ModelViewer.DiffuseOnlyToggle();
-                //     break;
+                case Key.D:
+                    _applicationView.ModelViewer.DiffuseOnlyToggle();
+                    break;
                 case Key.M:
                     _applicationView.ModelViewer.MaterialColorToggle();
                     break;

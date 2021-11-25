@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
-using HelixToolkit.Wpf.SharpDX;
+using FModel.ViewModels;
 
 namespace FModel.Views.Resources.Converters
 {
@@ -12,12 +12,12 @@ namespace FModel.Views.Resources.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is not PBRMaterial material)
+            if (value is not CustomPBRMaterial material)
                 return new SolidColorBrush(Colors.Red);
 
             return new SolidColorBrush(Color.FromScRgb(
-                material.AlbedoColor.Alpha, material.AlbedoColor.Red,
-                material.AlbedoColor.Green, material.AlbedoColor.Blue));
+                material.MaterialColor.Alpha, material.MaterialColor.Red,
+                material.MaterialColor.Green, material.MaterialColor.Blue));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
