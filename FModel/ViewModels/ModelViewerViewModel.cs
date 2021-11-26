@@ -73,8 +73,6 @@ namespace FModel.ViewModels
 
         private readonly FGame _game;
         private readonly int[] _facesIndex = { 1, 0, 2 };
-        private readonly float[] _table  = { 255 * 0.9f, 25 * 3.0f, 255 * 0.6f, 255 * 0.0f };
-        private readonly int[] _table2 = { 0, 1, 2, 4, 7, 3, 5, 6 };
 
         public ModelViewerViewModel(FGame game)
         {
@@ -215,10 +213,10 @@ namespace FModel.ViewModels
             if (SelectedModel is not { } model || model.SelectedGeometry is null)
                 return false;
 
-            CustomPBRMaterial m = null;
+            PBRMaterial m = null;
             await _threadWorkerView.Begin(_ =>
             {
-                var (material, _, _) = LoadMaterial(materialInstance, B(0));
+                var (material, _, _) = LoadMaterial(materialInstance);
                 m = material;
             });
 
@@ -235,7 +233,7 @@ namespace FModel.ViewModels
             cam.TriangleCount = 1984; // no need to count
 
             SetupCameraAndAxis(new FBox(new FVector(-11), new FVector(11)), cam);
-            var (m, isRendering, isTransparent) = LoadMaterial(materialInstance, B(0));
+            var (m, isRendering, isTransparent) = LoadMaterial(materialInstance);
 
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -278,8 +276,6 @@ namespace FModel.ViewModels
                 PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, cam);
                 break;
             }
-
-            // bones here
         }
 
         private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices, ModelAndCam cam)
@@ -308,7 +304,7 @@ namespace FModel.ViewModels
                 if (section.Material == null || !section.Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
                     continue;
 
-                var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial, B(i));
+                var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     cam.Group3d.Add(new MeshGeometryModel3D
@@ -320,15 +316,14 @@ namespace FModel.ViewModels
             }
         }
 
-        private (CustomPBRMaterial material, bool isRendering, bool isTransparent) LoadMaterial(UMaterialInterface unrealMaterial, int index)
+        private (PBRMaterial material, bool isRendering, bool isTransparent) LoadMaterial(UMaterialInterface unrealMaterial)
         {
-            var m = new CustomPBRMaterial {RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true}; // default
+            var m = new PBRMaterial {RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true}; // default
             Application.Current.Dispatcher.Invoke(() => // tweak this later
             {
-                m = new CustomPBRMaterial // recreate on ui thread
+                m = new PBRMaterial // recreate on ui thread
                 {
-                    RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true,
-                    MaterialColor = new Color4(_table[C(index)] / 255, _table[C(index >> 1)] / 255, _table[C(index >> 2)] / 255, 1)
+                    RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true
                 };
             });
 
@@ -500,9 +495,6 @@ namespace FModel.ViewModels
             return input.Replace('-', '_');
         }
 
-        private int B(int x) => (x & 0xFFF8) | _table2[x & 7] ^ 7;
-        private int C(int x) => (x & 1) | ((x >> 2) & 2);
-
         public void Clear()
         {
             foreach (var g in _loadedModels.ToList())
@@ -537,13 +529,15 @@ namespace FModel.ViewModels
             set
             {
                 SetProperty(ref _showMaterialColor, value);
-                foreach (var g in Group3d)
+                for (int i = 0; i < Group3d.Count; i++)
                 {
-                    if (g is not MeshGeometryModel3D { Material: CustomPBRMaterial material })
+                    if (Group3d[i] is not MeshGeometryModel3D { Material: PBRMaterial material })
                         continue;
 
+                    var index = B(i);
                     material.RenderAlbedoMap = !_showMaterialColor;
-                    material.AlbedoColor = _showMaterialColor ? material.MaterialColor : Color4.White;
+                    material.AlbedoColor = !_showMaterialColor ? Color4.White :
+                        new Color4(_table[C(index)] / 255, _table[C(index >> 1)] / 255, _table[C(index >> 2)] / 255, 1);
                 }
             }
         }
@@ -557,7 +551,7 @@ namespace FModel.ViewModels
                 SetProperty(ref _showDiffuseOnly, value);
                 foreach (var g in Group3d)
                 {
-                    if (g is not MeshGeometryModel3D { Material: CustomPBRMaterial material })
+                    if (g is not MeshGeometryModel3D { Material: PBRMaterial material })
                         continue;
 
                     material.RenderAmbientOcclusionMap = !material.RenderAmbientOcclusionMap;
@@ -586,12 +580,18 @@ namespace FModel.ViewModels
             set => SetProperty(ref _group3d, value);
         }
 
+        private readonly float[] _table  = { 255 * 0.9f, 25 * 3.0f, 255 * 0.6f, 255 * 0.0f };
+        private readonly int[] _table2 = { 0, 1, 2, 4, 7, 3, 5, 6 };
+
         public ModelAndCam(UObject export)
         {
             Export = export;
             TriangleCount = 0;
             Group3d = new ObservableElement3DCollection();
         }
+
+        private int B(int x) => (x & 0xFFF8) | _table2[x & 7] ^ 7;
+        private int C(int x) => (x & 1) | ((x >> 2) & 2);
 
         public void Dispose()
         {
@@ -603,10 +603,5 @@ namespace FModel.ViewModels
                 Group3d.Remove(g);
             }
         }
-    }
-
-    public class CustomPBRMaterial : PBRMaterial
-    {
-        public Color4 MaterialColor { get; set; }
     }
 }

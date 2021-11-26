@@ -77,7 +77,7 @@
                     </Grid>
                 </Grid>
                 <Separator DockPanel.Dock="Top" Tag="MATERIALS" Style="{StaticResource CustomSeparator}" />
-                <ListBox DockPanel.Dock="Top" Style="{StaticResource MaterialsListBox}">
+                <ListBox x:Name="MaterialsListName" DockPanel.Dock="Top" Style="{StaticResource MaterialsListBox}">
                     <ListBox.ContextMenu>
                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <MenuItem Header="Copy Name" Click="OnCopyClick">

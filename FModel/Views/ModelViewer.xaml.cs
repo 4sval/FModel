@@ -78,6 +78,7 @@ namespace FModel.Views
         {
             if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) || e.HitTestResult.ModelHit is not MeshGeometryModel3D m) return;
             _applicationView.ModelViewer.SelectedModel.SelectedGeometry = m;
+            MaterialsListName.ScrollIntoView(m);
         }
 
         private void OnFocusClick(object sender, RoutedEventArgs e)

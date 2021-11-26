@@ -672,7 +672,7 @@
                                 </Canvas>
                             </Viewbox>
                         </ToggleButton>
-                        <Rectangle Grid.Column="5" Width="19" Height="22" Fill="{Binding Material, Mode=OneTime, Converter={x:Static converters:TagToColorConverter.Instance}}"
+                        <Rectangle Grid.Column="5" Width="19" Height="22" Fill="{Binding Material, Converter={x:Static converters:TagToColorConverter.Instance}}"
                                    Visibility="{Binding DataContext.ModelViewer.SelectedModel.ShowMaterialColor,
                                    RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:Views.ModelViewer}},
                                    Converter={StaticResource BoolToVisibilityConverter}}" />
