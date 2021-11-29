@@ -333,16 +333,22 @@ namespace FModel.ViewModels
             var isRendering = !parameters.IsNull;
             if (isRendering)
             {
-                if (parameters.Diffuse is UTexture2D diffuse)
+                if (parameters.HasNoTopDiffuseTexture && parameters.DiffuseColor is { A: > 0 } diffuseColor)
+                {
+                    Application.Current.Dispatcher.Invoke(() => m.AlbedoColor = new Color4(diffuseColor.R, diffuseColor.G, diffuseColor.B, diffuseColor.A));
+                }
+                else if (parameters.Diffuse is UTexture2D diffuse)
                 {
                     var s = diffuse.Decode()?.Encode().AsStream();
                     Application.Current.Dispatcher.Invoke(() => m.AlbedoMap = new TextureModel(s));
                 }
+
                 if (parameters.Normal is UTexture2D normal)
                 {
                     var s = normal.Decode()?.Encode().AsStream();
                     Application.Current.Dispatcher.Invoke(() => m.NormalMap = new TextureModel(s));
                 }
+
                 if (parameters.Specular is UTexture2D specular)
                 {
                     var mip = specular.GetFirstMip();
@@ -531,13 +537,18 @@ namespace FModel.ViewModels
                 SetProperty(ref _showMaterialColor, value);
                 for (int i = 0; i < Group3d.Count; i++)
                 {
-                    if (Group3d[i] is not MeshGeometryModel3D { Material: PBRMaterial material })
+                    if (Group3d[i] is not MeshGeometryModel3D { Material: PBRMaterial material } m)
                         continue;
 
                     var index = B(i);
                     material.RenderAlbedoMap = !_showMaterialColor;
-                    material.AlbedoColor = !_showMaterialColor ? Color4.White :
-                        new Color4(_table[C(index)] / 255, _table[C(index >> 1)] / 255, _table[C(index >> 2)] / 255, 1);
+
+                    if (_showMaterialColor)
+                    {
+                        m.Tag = material.AlbedoColor;
+                        material.AlbedoColor = new Color4(_table[C(index)] / 255, _table[C(index >> 1)] / 255, _table[C(index >> 2)] / 255, 1);
+                    }
+                    else material.AlbedoColor = (Color4) m.Tag;
                 }
             }
         }
