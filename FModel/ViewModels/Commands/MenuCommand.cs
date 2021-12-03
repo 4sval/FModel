@@ -47,6 +47,10 @@ namespace FModel.ViewModels.Commands
                 case "Settings":
                     Helper.OpenWindow<AdonisWindow>("Settings", () => new SettingsView().Show());
                     break;
+                case "ModelSettings":
+                    UserSettings.Default.LastOpenedSettingTab = contextViewModel.CUE4Parse.Game == FGame.FortniteGame ? 2 : 1;
+                    Helper.OpenWindow<AdonisWindow>("Settings", () => new SettingsView().Show());
+                    break;
                 case "Help_About":
                     Helper.OpenWindow<AdonisWindow>("About", () => new About().Show());
                     break;
@@ -101,7 +105,7 @@ namespace FModel.ViewModels.Commands
                 parent.IsExpanded = isExpanded;
                 Thread.Sleep(10);
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
             foreach (var f in parent.Folders) LoopFolders(cancellationToken, f, isExpanded);
         }

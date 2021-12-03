@@ -321,7 +321,7 @@ namespace FModel.ViewModels
             var isRendering = !parameters.IsNull;
             if (isRendering)
             {
-                if (parameters.HasNoTopDiffuseTexture && parameters.DiffuseColor is { A: > 0 } diffuseColor)
+                if (!parameters.HasTopDiffuseTexture && parameters.DiffuseColor is { A: > 0 } diffuseColor)
                 {
                     Application.Current.Dispatcher.Invoke(() => m.AlbedoColor = new Color4(diffuseColor.R, diffuseColor.G, diffuseColor.B, diffuseColor.A));
                 }
@@ -451,7 +451,7 @@ namespace FModel.ViewModels
                     });
                 }
 
-                if (parameters.Emissive is UTexture2D emissive && parameters.EmissiveColor is { A: > 0 } emissiveColor)
+                if (parameters.HasTopEmissiveTexture && parameters.Emissive is UTexture2D emissive && parameters.EmissiveColor is { A: > 0 } emissiveColor)
                 {
                     var s = emissive.Decode()?.Encode().AsStream();
                     var c = new Color4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
