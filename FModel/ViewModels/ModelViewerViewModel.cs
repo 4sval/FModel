@@ -137,25 +137,13 @@ namespace FModel.ViewModels
         public void RenderingToggle()
         {
             if (SelectedModel == null) return;
-            foreach (var g in SelectedModel.Group3d)
-            {
-                if (g is not MeshGeometryModel3D geometryModel)
-                    continue;
-
-                geometryModel.IsRendering = !geometryModel.IsRendering;
-            }
+            SelectedModel.RenderingToggle = !SelectedModel.RenderingToggle;
         }
 
         public void WirefreameToggle()
         {
             if (SelectedModel == null) return;
-            foreach (var g in SelectedModel.Group3d)
-            {
-                if (g is not MeshGeometryModel3D geometryModel)
-                    continue;
-
-                geometryModel.RenderWireframe = !geometryModel.RenderWireframe;
-            }
+            SelectedModel.WireframeToggle = !SelectedModel.WireframeToggle;
         }
 
         public void MaterialColorToggle()
@@ -167,7 +155,7 @@ namespace FModel.ViewModels
         public void DiffuseOnlyToggle()
         {
             if (SelectedModel == null) return;
-            SelectedModel.ShowDiffuseOnly = !SelectedModel.ShowDiffuseOnly;
+            SelectedModel.DiffuseOnlyToggle = !SelectedModel.DiffuseOnlyToggle;
         }
 
         public void FocusOnSelectedMesh()
@@ -462,6 +450,17 @@ namespace FModel.ViewModels
                         m.RenderAmbientOcclusionMap = parameters.SpecularValue > 0;
                     });
                 }
+
+                if (parameters.Emissive is UTexture2D emissive && parameters.EmissiveColor is { A: > 0 } emissiveColor)
+                {
+                    var s = emissive.Decode()?.Encode().AsStream();
+                    var c = new Color4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        m.EmissiveColor = c;
+                        m.EmissiveMap = new TextureModel(s);
+                    });
+                }
             }
             else
             {
@@ -528,6 +527,40 @@ namespace FModel.ViewModels
             set => SetProperty(ref _isVisible, value);
         }
 
+        private bool _renderingToggle;
+        public bool RenderingToggle
+        {
+            get => _renderingToggle;
+            set
+            {
+                SetProperty(ref _renderingToggle, value);
+                foreach (var g in Group3d)
+                {
+                    if (g is not MeshGeometryModel3D geometryModel)
+                        continue;
+
+                    geometryModel.IsRendering = !geometryModel.IsRendering;
+                }
+            }
+        }
+
+        private bool _wireframeToggle;
+        public bool WireframeToggle
+        {
+            get => _wireframeToggle;
+            set
+            {
+                SetProperty(ref _wireframeToggle, value);
+                foreach (var g in Group3d)
+                {
+                    if (g is not MeshGeometryModel3D geometryModel)
+                        continue;
+
+                    geometryModel.RenderWireframe = !geometryModel.RenderWireframe;
+                }
+            }
+        }
+
         private bool _showMaterialColor;
         public bool ShowMaterialColor
         {
@@ -553,13 +586,13 @@ namespace FModel.ViewModels
             }
         }
 
-        private bool _showDiffuseOnly;
-        public bool ShowDiffuseOnly
+        private bool _diffuseOnlyToggle;
+        public bool DiffuseOnlyToggle
         {
-            get => _showDiffuseOnly;
+            get => _diffuseOnlyToggle;
             set
             {
-                SetProperty(ref _showDiffuseOnly, value);
+                SetProperty(ref _diffuseOnlyToggle, value);
                 foreach (var g in Group3d)
                 {
                     if (g is not MeshGeometryModel3D { Material: PBRMaterial material })
@@ -567,7 +600,7 @@ namespace FModel.ViewModels
 
                     material.RenderAmbientOcclusionMap = !material.RenderAmbientOcclusionMap;
                     material.RenderDisplacementMap = !material.RenderDisplacementMap;
-                    material.RenderEmissiveMap = !material.RenderEmissiveMap;
+                    // material.RenderEmissiveMap = !material.RenderEmissiveMap;
                     // material.RenderEnvironmentMap = !material.RenderEnvironmentMap;
                     material.RenderIrradianceMap = !material.RenderIrradianceMap;
                     material.RenderRoughnessMetallicMap = !material.RenderRoughnessMetallicMap;
