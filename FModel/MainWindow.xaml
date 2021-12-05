@@ -177,25 +177,25 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Map Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_MapViewer" IsEnabled="{Binding IsReady}">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource MapIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                    <MenuItem.Style>
-                        <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding CUE4Parse.Game}" Value="{x:Static local:FGame.FortniteGame}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </MenuItem.Style>
-                </MenuItem>
+                <!-- <MenuItem Header="Map Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_MapViewer" IsEnabled="{Binding IsReady}"> -->
+                <!--     <MenuItem.Icon> -->
+                <!--         <Viewbox Width="16" Height="16"> -->
+                <!--             <Canvas Width="24" Height="24"> -->
+                <!--                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource MapIcon}" /> -->
+                <!--             </Canvas> -->
+                <!--         </Viewbox> -->
+                <!--     </MenuItem.Icon> -->
+                <!--     <MenuItem.Style> -->
+                <!--         <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}"> -->
+                <!--             <Setter Property="Visibility" Value="Collapsed"/> -->
+                <!--             <Style.Triggers> -->
+                <!--                 <DataTrigger Binding="{Binding CUE4Parse.Game}" Value="{x:Static local:FGame.FortniteGame}"> -->
+                <!--                     <Setter Property="Visibility" Value="Visible" /> -->
+                <!--                 </DataTrigger> -->
+                <!--             </Style.Triggers> -->
+                <!--         </Style> -->
+                <!--     </MenuItem.Style> -->
+                <!-- </MenuItem> -->
                 <MenuItem Header="Image Merger" Command="{Binding MenuCommand}" CommandParameter="Views_ImageMerger">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
