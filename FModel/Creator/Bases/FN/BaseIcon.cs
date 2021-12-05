@@ -199,8 +199,17 @@ namespace FModel.Creator.Bases.FN
         {
             var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
             var number = int.Parse(s);
-            if (number == 10)
-                s = "X";
+
+            switch (number)
+            {
+                case 10:
+                    s = "X";
+                    break;
+                case > 18:
+                    number += 2;
+                    s = number.ToString();
+                    break;
+            }
 
             var season = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "SeasonTextFormat", "Season {0}");
             var introduced = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_Season", "\nIntroduced in <SeasonText>{0}</>.");
