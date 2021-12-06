@@ -100,13 +100,6 @@ namespace FModel.Settings
             set => SetProperty(ref _isAutoOpenSounds, value);
         }
 
-        private bool _isAutoOpenMeshes = true;
-        public bool IsAutoOpenMeshes
-        {
-            get => _isAutoOpenMeshes;
-            set => SetProperty(ref _isAutoOpenMeshes, value);
-        }
-
         private bool _isLoggerExpanded = true;
         public bool IsLoggerExpanded
         {
@@ -478,13 +471,6 @@ namespace FModel.Settings
             set => SetProperty(ref _autoOpenSounds, value);
         }
 
-        private Hotkey _autoOpenMeshes = new(Key.F6);
-        public Hotkey AutoOpenMeshes
-        {
-            get => _autoOpenMeshes;
-            set => SetProperty(ref _autoOpenMeshes, value);
-        }
-
         private Hotkey _addAudio = new(Key.N, ModifierKeys.Control);
         public Hotkey AddAudio
         {
@@ -527,11 +513,76 @@ namespace FModel.Settings
             set => SetProperty(ref _lodExportFormat, value);
         }
 
-        private bool _openMaterialsInModelViewer = true;
-        public bool OpenMaterialsInModelViewer
+        private bool _previewStaticMeshes = true;
+        public bool PreviewStaticMeshes
         {
-            get => _openMaterialsInModelViewer;
-            set => SetProperty(ref _openMaterialsInModelViewer, value);
+            get => _previewStaticMeshes;
+            set
+            {
+                SetProperty(ref _previewStaticMeshes, value);
+                if (_previewStaticMeshes && SaveStaticMeshes)
+                    SaveStaticMeshes = false;
+            }
+        }
+
+        private bool _previewSkeletalMeshes = true;
+        public bool PreviewSkeletalMeshes
+        {
+            get => _previewSkeletalMeshes;
+            set
+            {
+                SetProperty(ref _previewSkeletalMeshes, value);
+                if (_previewSkeletalMeshes && SaveSkeletalMeshes)
+                    SaveSkeletalMeshes = false;
+            }
+        }
+
+        private bool _previewMaterials = true;
+        public bool PreviewMaterials
+        {
+            get => _previewMaterials;
+            set
+            {
+                SetProperty(ref _previewMaterials, value);
+                if (_previewMaterials && SaveMaterials)
+                    SaveMaterials = false;
+            }
+        }
+
+        private bool _saveStaticMeshes;
+        public bool SaveStaticMeshes
+        {
+            get => _saveStaticMeshes;
+            set
+            {
+                SetProperty(ref _saveStaticMeshes, value);
+                if (_saveStaticMeshes && PreviewStaticMeshes)
+                    PreviewStaticMeshes = false;
+            }
+        }
+
+        private bool _saveSkeletalMeshes;
+        public bool SaveSkeletalMeshes
+        {
+            get => _saveSkeletalMeshes;
+            set
+            {
+                SetProperty(ref _saveSkeletalMeshes, value);
+                if (_saveSkeletalMeshes && PreviewSkeletalMeshes)
+                    PreviewSkeletalMeshes = false;
+            }
+        }
+
+        private bool _saveMaterials;
+        public bool SaveMaterials
+        {
+            get => _saveMaterials;
+            set
+            {
+                SetProperty(ref _saveMaterials, value);
+                if (_saveMaterials && PreviewMaterials)
+                    PreviewMaterials = false;
+            }
         }
 
         private bool _saveSkeletonAsMesh;

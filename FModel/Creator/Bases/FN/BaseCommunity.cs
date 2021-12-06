@@ -102,10 +102,19 @@ namespace FModel.Creator.Bases.FN
             if (!bShort) return base.GetCosmeticSeason(seasonNumber);
             var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
             var number = int.Parse(s);
-            if (number == 10)
-                s = "X";
 
-            return number > 10 ? $"C{number / 10 + 1} S{s[^1..]}" : $"C1 S{s}";
+            switch (number)
+            {
+                case 10:
+                    s = "X";
+                    break;
+                case > 18:
+                    number += 2;
+                    s = number.ToString();
+                    break;
+            }
+
+            return $"C{number / 10 + 1} S{s[^1..]}";
         }
 
         private new void DrawBackground(SKCanvas c)

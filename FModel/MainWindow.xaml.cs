@@ -37,8 +37,6 @@ namespace FModel
                 {new KeyGesture(UserSettings.Default.AutoSaveAnimations.Key, UserSettings.Default.AutoSaveAnimations.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoOpenSounds", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoOpenSounds.Key, UserSettings.Default.AutoOpenSounds.Modifiers)}), OnAutoTriggerExecuted));
-            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoOpenMeshes", typeof(MainWindow), new InputGestureCollection
-                {new KeyGesture(UserSettings.Default.AutoOpenMeshes.Key, UserSettings.Default.AutoOpenMeshes.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection {new KeyGesture(Key.F12)}), OnMappingsReload));
             CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (s, e) => OnOpenAvalonFinder()));
 
@@ -151,9 +149,6 @@ namespace FModel
                     break;
                 case "AutoOpenSounds":
                     UserSettings.Default.IsAutoOpenSounds = !UserSettings.Default.IsAutoOpenSounds;
-                    break;
-                case "AutoOpenMeshes":
-                    UserSettings.Default.IsAutoOpenMeshes = !UserSettings.Default.IsAutoOpenMeshes;
                     break;
             }
         }

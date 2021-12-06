@@ -236,6 +236,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -263,20 +264,35 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Open Materials in Model Viewer" VerticalAlignment="Center" Margin="0 2.5 0 5" />
-                    <CheckBox Grid.Row="2" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding OpenMaterialsInModelViewer, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Preview in Model Viewer" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <UniformGrid Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 5">
+                        <CheckBox Content="Static Meshes" HorizontalAlignment="Left"
+                                  IsChecked="{Binding PreviewStaticMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+                        <CheckBox Content="Skeletal Meshes" HorizontalAlignment="Center"
+                                  IsChecked="{Binding PreviewSkeletalMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+                        <CheckBox Content="Materials" HorizontalAlignment="Right"
+                                  IsChecked="{Binding PreviewMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+                    </UniformGrid>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Save Skeletons as Empty Meshes" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="3" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Auto-Save without Previewing" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <UniformGrid Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 5">
+                        <CheckBox Content="Static Meshes" HorizontalAlignment="Left"
+                                  IsChecked="{Binding SaveStaticMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                        <CheckBox Content="Skeletal Meshes" HorizontalAlignment="Center"
+                                  IsChecked="{Binding SaveSkeletalMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+                        <CheckBox Content="Materials" HorizontalAlignment="Right"
+                                  IsChecked="{Binding SaveMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+                    </UniformGrid>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Save Skeletons as Empty Meshes" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="4" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveSkeletonAsMesh, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 10"/>
 
-                    <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="5" Grid.Column="2" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="6" Grid.Column="2" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -289,7 +305,6 @@
             <DataTemplate x:Key="KeybindingsTemplate">
                 <Grid adonisExtensions:LayerExtension.Layer="2">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -354,23 +369,20 @@
                     <TextBlock Grid.Row="12" Grid.Column="0" Text="Auto Open Sounds *" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="12" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="13" Grid.Column="0" Text="Auto Open Meshes *" VerticalAlignment="Center" />
-                    <controls:HotkeyTextBox Grid.Row="13" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
-                                            HotKey="{Binding AutoOpenMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
 
-                    <Separator Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="15" Grid.Column="0" Text="Add Audio File" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="15" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="14" Grid.Column="0" Text="Add Audio File" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="14" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding AddAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="16" Grid.Column="0" Text="Play / Pause Current Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="16" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="15" Grid.Column="0" Text="Play / Pause Current Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="15" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding PlayPauseAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="17" Grid.Column="0" Text="Previous Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="17" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="16" Grid.Column="0" Text="Previous Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="16" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding PreviousAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="18" Grid.Column="0" Text="Next Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="18" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="17" Grid.Column="0" Text="Next Audio" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="17" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding NextAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                 </Grid>
             </DataTemplate>

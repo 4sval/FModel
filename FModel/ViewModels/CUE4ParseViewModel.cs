@@ -670,9 +670,9 @@ namespace FModel.ViewModels
                     SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                     return false;
                 }
-                case UStaticMesh when UserSettings.Default.IsAutoOpenMeshes:
-                case USkeletalMesh when UserSettings.Default.IsAutoOpenMeshes:
-                case UMaterialInstance when UserSettings.Default.OpenMaterialsInModelViewer && !ModelIsSwappingMaterial &&
+                case UStaticMesh when UserSettings.Default.PreviewStaticMeshes:
+                case USkeletalMesh when UserSettings.Default.PreviewSkeletalMeshes:
+                case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsSwappingMaterial &&
                                             !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
@@ -693,6 +693,9 @@ namespace FModel.ViewModels
                     });
                     return true;
                 }
+                case UStaticMesh when UserSettings.Default.SaveStaticMeshes:
+                case USkeletalMesh when UserSettings.Default.SaveSkeletalMeshes:
+                case UMaterialInstance when UserSettings.Default.SaveMaterials:
                 case USkeleton when UserSettings.Default.SaveSkeletonAsMesh:
                 case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations:
                 {
