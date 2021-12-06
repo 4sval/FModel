@@ -33,8 +33,6 @@ namespace FModel
                 {new KeyGesture(UserSettings.Default.AutoSaveProps.Key, UserSettings.Default.AutoSaveProps.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveTextures", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoSaveTextures.Key, UserSettings.Default.AutoSaveTextures.Modifiers)}), OnAutoTriggerExecuted));
-            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveAnimations", typeof(MainWindow), new InputGestureCollection
-                {new KeyGesture(UserSettings.Default.AutoSaveAnimations.Key, UserSettings.Default.AutoSaveAnimations.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoOpenSounds", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoOpenSounds.Key, UserSettings.Default.AutoOpenSounds.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection {new KeyGesture(Key.F12)}), OnMappingsReload));
@@ -143,9 +141,6 @@ namespace FModel
                     break;
                 case "AutoSaveTextures":
                     UserSettings.Default.IsAutoSaveTextures = !UserSettings.Default.IsAutoSaveTextures;
-                    break;
-                case "AutoSaveAnimations":
-                    UserSettings.Default.IsAutoSaveAnimations = !UserSettings.Default.IsAutoSaveAnimations;
                     break;
                 case "AutoOpenSounds":
                     UserSettings.Default.IsAutoOpenSounds = !UserSettings.Default.IsAutoOpenSounds;

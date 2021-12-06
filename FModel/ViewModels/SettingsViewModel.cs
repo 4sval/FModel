@@ -134,6 +134,7 @@ namespace FModel.ViewModels
         private readonly FGame _game;
         private Game _gamePreset;
         private string _outputSnapshot;
+        private string _modelSnapshot;
         private string _gameSnapshot;
         private EUpdateMode _updateModeSnapshot;
         private string _presetSnapshot;
@@ -155,6 +156,7 @@ namespace FModel.ViewModels
         public void Initialize()
         {
             _outputSnapshot = UserSettings.Default.OutputDirectory;
+            _modelSnapshot = UserSettings.Default.ModelDirectory;
             _gameSnapshot = UserSettings.Default.GameDirectory;
             _updateModeSnapshot = UserSettings.Default.UpdateMode;
             _presetSnapshot = UserSettings.Default.Presets[_game];
@@ -242,6 +244,7 @@ namespace FModel.ViewModels
             if (_ueGameSnapshot != SelectedUeGame || // combobox
                 _customVersionsSnapshot != SelectedCustomVersions || _optionsSnapshot != SelectedOptions ||
                 _outputSnapshot != UserSettings.Default.OutputDirectory || // textbox
+                _modelSnapshot != UserSettings.Default.ModelDirectory || // textbox
                 _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
                 ret = SettingsOut.Restart;
 

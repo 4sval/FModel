@@ -52,10 +52,13 @@ namespace FModel.Views
         {
             if (TryBrowse(out var path)) UserSettings.Default.GameDirectory = path;
         }
-
         private void OnBrowseOutput(object sender, RoutedEventArgs e)
         {
             if (TryBrowse(out var path)) UserSettings.Default.OutputDirectory = path;
+        }
+        private void OnBrowseModels(object sender, RoutedEventArgs e)
+        {
+            if (TryBrowse(out var path)) UserSettings.Default.ModelDirectory = path;
         }
 
         private bool TryBrowse(out string path)

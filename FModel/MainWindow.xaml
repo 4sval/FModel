@@ -156,9 +156,6 @@
                     <MenuItem Header="Save Textures" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}" />
-                    <MenuItem Header="Save Animations" IsCheckable="True" StaysOpenOnClick="True"
-                              InputGestureText="{Binding AutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding IsAutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}" />
                     <MenuItem Header="Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
@@ -836,19 +833,6 @@
                             </Style>
                         </StatusBarItem.Style>
                         <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="TEX" />
-                    </StatusBarItem>
-
-                    <StatusBarItem Width="35" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Animations Enabled">
-                        <StatusBarItem.Style>
-                            <Style TargetType="StatusBarItem">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StatusBarItem.Style>
-                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="ANM" />
                     </StatusBarItem>
 
                     <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Sounds Enabled">

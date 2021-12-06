@@ -51,6 +51,13 @@ namespace FModel.Settings
             set => SetProperty(ref _outputDirectory, value);
         }
 
+        private string _modelDirectory;
+        public string ModelDirectory
+        {
+            get => _modelDirectory;
+            set => SetProperty(ref _modelDirectory, value);
+        }
+
         private string _gameDirectory;
         public string GameDirectory
         {
@@ -84,13 +91,6 @@ namespace FModel.Settings
         {
             get => _isAutoSaveTextures;
             set => SetProperty(ref _isAutoSaveTextures, value);
-        }
-
-        private bool _isAutoSaveAnimations;
-        public bool IsAutoSaveAnimations
-        {
-            get => _isAutoSaveAnimations;
-            set => SetProperty(ref _isAutoSaveAnimations, value);
         }
 
         private bool _isAutoOpenSounds = true;
@@ -457,14 +457,7 @@ namespace FModel.Settings
             set => SetProperty(ref _autoSaveTextures, value);
         }
 
-        private Hotkey _autoSaveAnimations = new(Key.F4);
-        public Hotkey AutoSaveAnimations
-        {
-            get => _autoSaveAnimations;
-            set => SetProperty(ref _autoSaveAnimations, value);
-        }
-
-        private Hotkey _autoOpenSounds = new(Key.F5);
+        private Hotkey _autoOpenSounds = new(Key.F4);
         public Hotkey AutoOpenSounds
         {
             get => _autoOpenSounds;
@@ -583,6 +576,13 @@ namespace FModel.Settings
                 if (_saveMaterials && PreviewMaterials)
                     PreviewMaterials = false;
             }
+        }
+
+        private bool _saveAnimations;
+        public bool SaveAnimations
+        {
+            get => _saveAnimations;
+            set => SetProperty(ref _saveAnimations, value);
         }
 
         private bool _saveSkeletonAsMesh;

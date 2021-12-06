@@ -697,7 +697,7 @@ namespace FModel.ViewModels
                 case USkeletalMesh when UserSettings.Default.SaveSkeletalMeshes:
                 case UMaterialInstance when UserSettings.Default.SaveMaterials:
                 case USkeleton when UserSettings.Default.SaveSkeletonAsMesh:
-                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations:
+                case UAnimSequence when UserSettings.Default.SaveAnimations:
                 {
                     SaveExport(export);
                     return true;
@@ -745,7 +745,7 @@ namespace FModel.ViewModels
         private void SaveExport(UObject export)
         {
             var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
-            var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
+            var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
             if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
             {
                 Log.Information("Successfully saved {FileName}", savedFileName);

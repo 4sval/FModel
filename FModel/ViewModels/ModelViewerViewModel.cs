@@ -201,36 +201,18 @@ namespace FModel.ViewModels
             }
         }
 
-        public bool CheckIfSaved(string path)
-        {
-            if (File.Exists(path))
-            {
-                Log.Information("Successfully saved {FileName}", path);
-                FLogger.AppendInformation();
-                FLogger.AppendText($"Successfully saved {path}", Constants.WHITE, true);
-                return true;
-            }
-            else
-            {
-                Log.Error("{FileName} could not be saved", path);
-                FLogger.AppendError();
-                FLogger.AppendText($"Could not save '{path}'", Constants.WHITE, true);
-                return false;
-            }
-        }
-
         public void SaveAsScene()
         {
             if (_loadedModels.Count < 1) return;
 
-            var fileBrowser = new VistaSaveFileDialog()
+            var fileBrowser = new VistaSaveFileDialog
             {
                 Title = "Save Loaded Models As...",
                 DefaultExt = ".glb",
                 Filter = "glTF Binary File (*.glb)|*.glb|glTF ASCII File (*.gltf)|*.gltf|All Files(*.*)|*.*",
                 AddExtension = true,
                 OverwritePrompt = true,
-                CheckPathExists = true,
+                CheckPathExists = true
             };
 
             if (fileBrowser.ShowDialog() == false || string.IsNullOrEmpty(fileBrowser.FileName)) return;
@@ -289,8 +271,7 @@ namespace FModel.ViewModels
             if (!CheckIfSaved(fileName)) return;
             foreach (var materialExport in materialExports)
             {
-                materialExport.TryWriteToDir(new DirectoryInfo(StringUtils.SubstringBeforeWithLast(fileName, '\\')),
-                    out var _);
+                materialExport.TryWriteToDir(new DirectoryInfo(StringUtils.SubstringBeforeWithLast(fileName, '\\')), out _);
             }
         }
 
@@ -604,6 +585,22 @@ namespace FModel.ViewModels
                 input = input[1..];
 
             return input.Replace('-', '_');
+        }
+
+        private bool CheckIfSaved(string path)
+        {
+            if (File.Exists(path))
+            {
+                Log.Information("Successfully saved {FileName}", path);
+                FLogger.AppendInformation();
+                FLogger.AppendText($"Successfully saved {path}", Constants.WHITE, true);
+                return true;
+            }
+
+            Log.Error("{FileName} could not be saved", path);
+            FLogger.AppendError();
+            FLogger.AppendText($"Could not save '{path}'", Constants.WHITE, true);
+            return false;
         }
 
         public void Clear()
