@@ -71,6 +71,12 @@ namespace FModel.Views
                 case Key.Decimal:
                     _applicationView.ModelViewer.FocusOnSelectedMesh();
                     break;
+                case Key.S when Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift):
+                    _applicationView.ModelViewer.SaveAsScene();
+                    break;
+                case Key.S when Keyboard.Modifiers.HasFlag(ModifierKeys.Control):
+                    _applicationView.ModelViewer.SaveLoadedModels();
+                    break;
             }
         }
 

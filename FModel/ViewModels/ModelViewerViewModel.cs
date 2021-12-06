@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -13,7 +15,10 @@ using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.Utils;
+using CUE4Parse_Conversion.Materials;
 using CUE4Parse_Conversion.Meshes;
+using CUE4Parse_Conversion.Meshes.glTF;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
@@ -25,10 +30,18 @@ using HelixToolkit.Wpf.SharpDX;
 using Ookii.Dialogs.Wpf;
 using Serilog;
 using SharpDX;
+using SharpGLTF.Geometry;
+using SharpGLTF.Geometry.VertexTypes;
+using SharpGLTF.Scenes;
+using SharpGLTF.Schema2;
+using SharpGLTF.Transforms;
 using SkiaSharp;
 using Camera = HelixToolkit.Wpf.SharpDX.Camera;
 using Geometry3D = HelixToolkit.SharpDX.Core.Geometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
+using Vector2 = SharpDX.Vector2;
+using Vector3 = SharpDX.Vector3;
+using VERTEX = SharpGLTF.Geometry.VertexTypes.VertexPositionNormalTangent;
 
 namespace FModel.ViewModels
 {
@@ -185,6 +198,99 @@ namespace FModel.ViewModels
                     FLogger.AppendError();
                     FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
                 }
+            }
+        }
+
+        public bool CheckIfSaved(string path)
+        {
+            if (File.Exists(path))
+            {
+                Log.Information("Successfully saved {FileName}", path);
+                FLogger.AppendInformation();
+                FLogger.AppendText($"Successfully saved {path}", Constants.WHITE, true);
+                return true;
+            }
+            else
+            {
+                Log.Error("{FileName} could not be saved", path);
+                FLogger.AppendError();
+                FLogger.AppendText($"Could not save '{path}'", Constants.WHITE, true);
+                return false;
+            }
+        }
+
+        public void SaveAsScene()
+        {
+            if (_loadedModels.Count < 1) return;
+
+            var fileBrowser = new VistaSaveFileDialog()
+            {
+                Title = "Save Loaded Models As...",
+                DefaultExt = ".glb",
+                Filter = "glTF Binary File (*.glb)|*.glb|glTF ASCII File (*.gltf)|*.gltf|All Files(*.*)|*.*",
+                AddExtension = true,
+                OverwritePrompt = true,
+                CheckPathExists = true,
+            };
+
+            if (fileBrowser.ShowDialog() == false || string.IsNullOrEmpty(fileBrowser.FileName)) return;
+
+            var sceneBuilder = new SceneBuilder();
+            var materialExports = new List<MaterialExporter>();
+            foreach (var model in _loadedModels)
+            {
+                switch (model.Export)
+                {
+                    case UStaticMesh sm:
+                    {
+                        var mesh = new MeshBuilder<VERTEX, VertexColorXTextureX, VertexEmpty>(sm.Name);
+                        if (sm.TryConvert(out var convertedMesh) && convertedMesh.LODs.Count > 0)
+                        {
+                            var lod = convertedMesh.LODs.First();
+                            for (var i = 0; i < lod.Sections.Value.Length; i++)
+                            {
+                                Gltf.ExportStaticMeshSections(i, lod, lod.Sections.Value[i], materialExports, mesh);
+                            }
+                            sceneBuilder.AddRigidMesh(mesh, AffineTransform.Identity);
+                        }
+                        break;
+                    }
+                    case USkeletalMesh sk:
+                    {
+                        var mesh = new MeshBuilder<VERTEX, VertexColorXTextureX, VertexJoints4>(sk.Name);
+
+                        if (sk.TryConvert(out var convertedMesh) && convertedMesh.LODs.Count > 0)
+                        {
+                            var lod = convertedMesh.LODs.First();
+                            for (var i = 0; i < lod.Sections.Value.Length; i++)
+                            {
+                                Gltf.ExportSkelMeshSections(i, lod, lod.Sections.Value[i], materialExports, mesh);
+                            }
+                            var armatureNodeBuilder = new NodeBuilder(sk.Name+".ao");
+                            var armature = Gltf.CreateGltfSkeleton(convertedMesh.RefSkeleton, armatureNodeBuilder);
+                            sceneBuilder.AddSkinnedMesh(mesh, Matrix4x4.Identity, armature);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            var scene = sceneBuilder.ToGltf2();
+            var fileName = fileBrowser.FileName;
+            if (fileName.EndsWith(".glb", StringComparison.OrdinalIgnoreCase))
+                scene.SaveGLB(fileName);
+            else if (fileName.EndsWith(".gltf", StringComparison.OrdinalIgnoreCase))
+                scene.SaveGLTF(fileName);
+            else if (fileName.EndsWith(".obj", StringComparison.OrdinalIgnoreCase))
+                scene.SaveAsWavefront(fileName);
+            else
+                throw new ArgumentOutOfRangeException(nameof(fileName),$@"Unknown file format {fileName. SubstringAfterWithLast('.')}");
+
+            if (!CheckIfSaved(fileName)) return;
+            foreach (var materialExport in materialExports)
+            {
+                materialExport.TryWriteToDir(new DirectoryInfo(StringUtils.SubstringBeforeWithLast(fileName, '\\')),
+                    out var _);
             }
         }
 
