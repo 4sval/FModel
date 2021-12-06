@@ -265,7 +265,7 @@
                     </ComboBox>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Preview in Model Viewer" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <UniformGrid Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 5">
+                    <UniformGrid Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 10">
                         <CheckBox Content="Static Meshes" HorizontalAlignment="Left"
                                   IsChecked="{Binding PreviewStaticMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
                         <CheckBox Content="Skeletal Meshes" HorizontalAlignment="Center"
@@ -275,7 +275,7 @@
                     </UniformGrid>
 
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Auto-Save without Previewing" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <UniformGrid Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 5">
+                    <UniformGrid Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 10">
                         <CheckBox Content="Static Meshes" HorizontalAlignment="Left"
                                   IsChecked="{Binding SaveStaticMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                         <CheckBox Content="Skeletal Meshes" HorizontalAlignment="Center"
@@ -366,8 +366,8 @@
                     <TextBlock Grid.Row="11" Grid.Column="0" Text="Auto Save Animations *" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="11" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding AutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Auto Open Sounds *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="12" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Auto Open Sounds *" VerticalAlignment="Center" />
+                    <controls:HotkeyTextBox Grid.Row="12" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
                                             HotKey="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
 
                     <Separator Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
