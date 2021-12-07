@@ -65,6 +65,20 @@ namespace FModel.Settings
             set => SetProperty(ref _gameDirectory, value);
         }
 
+        private bool _overwriteMapping;
+        public bool OverwriteMapping
+        {
+            get => _overwriteMapping;
+            set => SetProperty(ref _overwriteMapping, value);
+        }
+
+        private string _mappingFilePath;
+        public string MappingFilePath
+        {
+            get => _mappingFilePath;
+            set => SetProperty(ref _mappingFilePath, value);
+        }
+
         private int _lastOpenedSettingTab;
         public int LastOpenedSettingTab
         {

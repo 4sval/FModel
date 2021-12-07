@@ -1,9 +1,11 @@
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views.Resources.Controls;
+using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 
 namespace FModel.Views
@@ -48,17 +50,31 @@ namespace FModel.Views
             }
         }
 
-        private void OnBrowseDirectories(object sender, RoutedEventArgs e)
-        {
-            if (TryBrowse(out var path)) UserSettings.Default.GameDirectory = path;
-        }
         private void OnBrowseOutput(object sender, RoutedEventArgs e)
         {
             if (TryBrowse(out var path)) UserSettings.Default.OutputDirectory = path;
         }
+        private void OnBrowseDirectories(object sender, RoutedEventArgs e)
+        {
+            if (TryBrowse(out var path)) UserSettings.Default.GameDirectory = path;
+        }
         private void OnBrowseModels(object sender, RoutedEventArgs e)
         {
             if (TryBrowse(out var path)) UserSettings.Default.ModelDirectory = path;
+        }
+        private async void OnBrowseMappings(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Title = "Select a mapping file",
+                InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, ".data"),
+                Filter = "USMAP Files (*.usmap)|*.usmap|All Files (*.*)|*.*"
+            };
+
+            if (!(bool) openFileDialog.ShowDialog()) return;
+
+            UserSettings.Default.MappingFilePath = openFileDialog.FileName;
+            await _applicationView.CUE4Parse.InitBenMappings();
         }
 
         private bool TryBrowse(out string path)

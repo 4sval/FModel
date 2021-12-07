@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel;
 using System.Resources;
 using System.Runtime.CompilerServices;
-
 using FModel.Properties;
 
 namespace FModel.Extensions

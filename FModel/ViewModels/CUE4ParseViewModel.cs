@@ -297,35 +297,44 @@ namespace FModel.ViewModels
             {
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
-                    var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                    var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
-                    if (mappings is {Length: > 0})
+                    if (UserSettings.Default.OverwriteMapping && File.Exists(UserSettings.Default.MappingFilePath))
                     {
-                        foreach (var mapping in mappings)
-                        {
-                            if (mapping.Meta.CompressionMethod != "Oodle") continue;
-
-                            var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
-                            if (!File.Exists(mappingPath))
-                            {
-                                _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
-                            }
-
-                            Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
-                            FLogger.AppendInformation();
-                            FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
-                            break;
-                        }
+                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(UserSettings.Default.MappingFilePath);
+                        FLogger.AppendInformation();
+                        FLogger.AppendText($"Mappings pulled from '{UserSettings.Default.MappingFilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
                     }
                     else
                     {
-                        var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
-                        if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
+                        var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                        var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
+                        if (mappings is {Length: > 0})
+                        {
+                            foreach (var mapping in mappings)
+                            {
+                                if (mapping.Meta.CompressionMethod != "Oodle") continue;
 
-                        var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
-                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
-                        FLogger.AppendWarning();
-                        FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
+                                var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
+                                if (!File.Exists(mappingPath))
+                                {
+                                    _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
+                                }
+
+                                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
+                                FLogger.AppendInformation();
+                                FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
+                            if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
+
+                            var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
+                            Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
+                            FLogger.AppendWarning();
+                            FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
+                        }
                     }
                 });
             }

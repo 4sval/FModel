@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
 using FModel.Framework;
 using FModel.ViewModels.Commands;
 
@@ -19,6 +18,6 @@ namespace FModel.ViewModels
             Modes = new ReadOnlyObservableCollection<ELoadingMode>(new ObservableCollection<ELoadingMode>(EnumerateLoadingModes()));
         }
 
-        private static IEnumerable<ELoadingMode> EnumerateLoadingModes() => Enum.GetValues<ELoadingMode>();
+        private IEnumerable<ELoadingMode> EnumerateLoadingModes() => Enum.GetValues<ELoadingMode>();
     }
 }
