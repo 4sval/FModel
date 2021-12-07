@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -18,8 +18,8 @@ namespace FModel.ViewModels
 {
     public class SettingsViewModel : ViewModel
     {
-        private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
-        private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
+        private static ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
+        private static ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
         private readonly DiscordHandler _discordHandler = DiscordService.DiscordHandler;
 
         private EUpdateMode _selectedUpdateMode;
@@ -271,19 +271,19 @@ namespace FModel.ViewModels
             return ret;
         }
 
-        private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues(SelectedUpdateMode.GetType()).Cast<EUpdateMode>();
-        private IEnumerable<string> EnumeratePresets()
+        private static IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues<EUpdateMode>();
+        private static IEnumerable<string> EnumeratePresets()
         {
             yield return Constants._NO_PRESET_TRIGGER;
         }
-        private IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues(SelectedUeGame.GetType()).Cast<EGame>();
-        private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues(SelectedAssetLanguage.GetType()).Cast<ELanguage>();
-        private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues(SelectedAesReload.GetType()).Cast<EAesReload>();
-        private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues(SelectedDiscordRpc.GetType()).Cast<EDiscordRpc>();
-        private IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues(SelectedCompressedAudio.GetType()).Cast<ECompressedAudio>();
-        private IEnumerable<EIconStyle> EnumerateCosmeticStyles() => Enum.GetValues(SelectedCosmeticStyle.GetType()).Cast<EIconStyle>();
-        private IEnumerable<EMeshFormat> EnumerateMeshExportFormat() => Enum.GetValues(SelectedMeshExportFormat.GetType()).Cast<EMeshFormat>();
-        private IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues(SelectedLodExportFormat.GetType()).Cast<ELodFormat>();
-        private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues(SelectedTextureExportFormat.GetType()).Cast<ETextureFormat>();
+        private static IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues<EGame>().SkipLast(1);
+        private static IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
+        private static IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();
+        private static IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();
+        private static IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues<ECompressedAudio>();
+        private static IEnumerable<EIconStyle> EnumerateCosmeticStyles() => Enum.GetValues<EIconStyle>();
+        private static IEnumerable<EMeshFormat> EnumerateMeshExportFormat() => Enum.GetValues<EMeshFormat>();
+        private static IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues<ELodFormat>();
+        private static IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
     }
 }
