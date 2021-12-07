@@ -87,7 +87,7 @@ namespace FModel
 
         private void OnWindowKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.OriginalSource is TextArea or TextBox)
+            if (e.OriginalSource is TextBox)
                 return;
 
             if (_threadWorkerView.CanBeCanceled && e.Key == Key.Escape)

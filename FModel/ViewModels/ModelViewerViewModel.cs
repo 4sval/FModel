@@ -140,6 +140,7 @@ namespace FModel.ViewModels
                 }
             });
 
+            if (AppendMode && CanAppend) return;
             SelectedModel = p;
             Cam.UpDirection = new Vector3D(0, 1, 0);
             Cam.Position = p.Position;

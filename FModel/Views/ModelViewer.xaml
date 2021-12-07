@@ -44,7 +44,7 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Models" VerticalAlignment="Center" Margin="0 0 0 10" />
-                    <ComboBox Grid.Row="0" Grid.Column="2" Style="{StaticResource ModelsComboBox}" />
+                    <ComboBox Grid.Row="0" Grid.Column="2" Style="{StaticResource ModelsComboBox}" IsEnabled="{Binding IsReady}" />
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Triangles" VerticalAlignment="Center" Margin="0 0 0 10" />
                     <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding ModelViewer.SelectedModel.TriangleCount, FallbackValue=0, StringFormat={}{0:### ### ### ###}}" VerticalAlignment="Center" HorizontalAlignment="Right" />
@@ -64,20 +64,21 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Row="0" Grid.Column="0" Content="Focus" Click="OnFocusClick" />
-                        <ToggleButton Grid.Row="0" Grid.Column="2" IsChecked="{Binding ModelViewer.AppendMode}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                        <Button Grid.Row="0" Grid.Column="0" Content="Focus" Click="OnFocusClick" IsEnabled="{Binding IsReady}" />
+                        <ToggleButton Grid.Row="0" Grid.Column="2" IsChecked="{Binding ModelViewer.AppendMode}" IsEnabled="{Binding IsReady}"
+                                      Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                             <TextBlock Text="{Binding IsChecked, Converter={x:Static converters:BoolToToggleConverter.Instance},
                                     StringFormat={}Append {0}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ToggleButton}}}" />
                         </ToggleButton>
 
-                        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="Save"
+                        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="Save" IsEnabled="{Binding IsReady}"
                                 Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}">
                             <TextBlock Text="{Binding ModelViewer.LoadedModelsView.Count, StringFormat={}Save All Loaded Models ({0})}" />
                         </Button>
                     </Grid>
                 </Grid>
                 <Separator DockPanel.Dock="Top" Tag="MATERIALS" Style="{StaticResource CustomSeparator}" />
-                <ListBox x:Name="MaterialsListName" DockPanel.Dock="Top" Style="{StaticResource MaterialsListBox}">
+                <ListBox x:Name="MaterialsListName" DockPanel.Dock="Top" Style="{StaticResource MaterialsListBox}" IsEnabled="{Binding IsReady}">
                     <ListBox.ContextMenu>
                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <MenuItem Header="Copy Name" Click="OnCopyClick">
