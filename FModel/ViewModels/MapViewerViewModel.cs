@@ -374,13 +374,10 @@ namespace FModel.ViewModels
 
             await _threadWorkerView.Begin(_ =>
             {
-                // if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerBR.Default__UIMapManagerBR_C", out UObject mapManager) ||
-                //     !mapManager.TryGetValue(out UObject mapMaterial, "MapMaterial") ||
-                //     !mapMaterial.TryGetValue(out FStructFallback cachedExpressionData, "CachedExpressionData") ||
-                //     !cachedExpressionData.TryGetValue(out FStructFallback parameters, "Parameters") ||
-                //     !parameters.TryGetValue(out UTexture2D[] textureValues, "TextureValues")) return;
+                if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerBR.Default__UIMapManagerBR_C", out UObject mapManager) ||
+                    !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") || mapMaterial.ReferencedTextures.Count < 1) return;
 
-                _bitmaps[0][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap("FortniteGame/Content/Athena/Apollo/Maps/UI/Apollo_Terrain_Minimap.Apollo_Terrain_Minimap"), IsEnabled = true};
+                _bitmaps[0][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(mapMaterial.ReferencedTextures[0] as UTexture2D), IsEnabled = true};
                 _brMiniMapImage = GetImageSource(_bitmaps[0][_FIRST_BITMAP].Layer);
             });
         }
@@ -392,11 +389,10 @@ namespace FModel.ViewModels
 
             await _threadWorkerView.Begin(_ =>
             {
-                // if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerPapaya.Default__UIMapManagerPapaya_C", out UObject mapManager) ||
-                //     !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") ||
-                //     mapMaterial.ReferencedTextures.Count < 1) return;
+                if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerPapaya.Default__UIMapManagerPapaya_C", out UObject mapManager) ||
+                    !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") || mapMaterial.ReferencedTextures.Count < 1) return;
 
-                _bitmaps[1][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap("FortniteGame/Content/Athena/Apollo/Maps/Special/Papaya/UI/MiniMapPapaya.MiniMapPapaya"), IsEnabled = true};
+                _bitmaps[1][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(mapMaterial.ReferencedTextures[0] as UTexture2D), IsEnabled = true};
                 _prMiniMapImage = GetImageSource(_bitmaps[1][_FIRST_BITMAP].Layer);
             });
         }

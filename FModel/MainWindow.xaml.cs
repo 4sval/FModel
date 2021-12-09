@@ -11,7 +11,6 @@ using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-using ICSharpCode.AvalonEdit.Editing;
 
 namespace FModel
 {
@@ -27,8 +26,6 @@ namespace FModel
 
         public MainWindow()
         {
-            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoExportData", typeof(MainWindow), new InputGestureCollection
-                {new KeyGesture(UserSettings.Default.AutoExportData.Key, UserSettings.Default.AutoExportData.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveProps", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoSaveProps.Key, UserSettings.Default.AutoSaveProps.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveTextures", typeof(MainWindow), new InputGestureCollection
@@ -133,9 +130,6 @@ namespace FModel
         {
             switch ((e.Command as RoutedCommand)?.Name)
             {
-                case "AutoExportData":
-                    UserSettings.Default.IsAutoExportData = !UserSettings.Default.IsAutoExportData;
-                    break;
                 case "AutoSaveProps":
                     UserSettings.Default.IsAutoSaveProps = !UserSettings.Default.IsAutoSaveProps;
                     break;

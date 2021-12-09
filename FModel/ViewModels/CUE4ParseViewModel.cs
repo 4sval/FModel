@@ -636,9 +636,6 @@ namespace FModel.ViewModels
                     break;
                 }
             }
-
-            if (UserSettings.Default.IsAutoExportData)
-                ExportData(fullPath);
         }
 
         public void ExtractAndScroll(string fullPath, string objectName)
@@ -653,9 +650,6 @@ namespace FModel.ViewModels
 
             if (!exports.Any(CheckExport))
                 TabControl.SelectedTab.Image = null;
-
-            if (UserSettings.Default.IsAutoExportData)
-                ExportData(fullPath);
         }
 
         private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
