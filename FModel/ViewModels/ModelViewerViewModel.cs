@@ -278,10 +278,10 @@ namespace FModel.ViewModels
 
         public void CopySelectedMaterialName()
         {
-            if (SelectedModel is not { } m || m.SelectedGeometry is null)
+            if (SelectedModel is not { } m || m.SelectedGeometry?.Tag is null)
                 return;
 
-            Clipboard.SetText(m.SelectedGeometry.Name.TrimEnd());
+            Clipboard.SetText(m.SelectedGeometry.DisplayName.TrimEnd());
         }
 
         public async Task<bool> TryChangeSelectedMaterial(UMaterialInstance materialInstance)
@@ -314,10 +314,10 @@ namespace FModel.ViewModels
             Application.Current.Dispatcher.Invoke(() =>
             {
                 var s = FixName(materialInstance.Name);
-                cam.Group3d.Add(new MeshGeometryModel3D
+                cam.Group3d.Add(new CustomMeshGeometryModel3D
                 {
                     Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
-                    Tag = s, Name = s, Geometry = builder.ToMeshGeometry3D(),
+                    DisplayName = s, Geometry = builder.ToMeshGeometry3D(),
                     Material = m, IsTransparent = isTransparent, IsRendering = isRendering
                 });
             });
@@ -384,9 +384,9 @@ namespace FModel.ViewModels
                 var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    cam.Group3d.Add(new MeshGeometryModel3D
+                    cam.Group3d.Add(new CustomMeshGeometryModel3D
                     {
-                        Name = unrealMaterial.Name, Tag = FixName(section.MaterialName ?? unrealMaterial.Name),
+                        DisplayName = FixName(section.MaterialName ?? unrealMaterial.Name),
                         Geometry = builder.ToMeshGeometry3D(), Material = m, IsTransparent = isTransparent,
                         IsRendering = isRendering
                     });
@@ -642,7 +642,7 @@ namespace FModel.ViewModels
                 SetProperty(ref _renderingToggle, value);
                 foreach (var g in Group3d)
                 {
-                    if (g is not MeshGeometryModel3D geometryModel)
+                    if (g is not CustomMeshGeometryModel3D geometryModel)
                         continue;
 
                     geometryModel.IsRendering = !geometryModel.IsRendering;
@@ -659,7 +659,7 @@ namespace FModel.ViewModels
                 SetProperty(ref _wireframeToggle, value);
                 foreach (var g in Group3d)
                 {
-                    if (g is not MeshGeometryModel3D geometryModel)
+                    if (g is not CustomMeshGeometryModel3D geometryModel)
                         continue;
 
                     geometryModel.RenderWireframe = !geometryModel.RenderWireframe;
@@ -676,7 +676,7 @@ namespace FModel.ViewModels
                 SetProperty(ref _showMaterialColor, value);
                 for (int i = 0; i < Group3d.Count; i++)
                 {
-                    if (Group3d[i] is not MeshGeometryModel3D { Material: PBRMaterial material } m)
+                    if (Group3d[i] is not CustomMeshGeometryModel3D { Material: PBRMaterial material } m)
                         continue;
 
                     var index = B(i);
@@ -701,7 +701,7 @@ namespace FModel.ViewModels
                 SetProperty(ref _diffuseOnlyToggle, value);
                 foreach (var g in Group3d)
                 {
-                    if (g is not MeshGeometryModel3D { Material: PBRMaterial material })
+                    if (g is not CustomMeshGeometryModel3D { Material: PBRMaterial material })
                         continue;
 
                     material.RenderAmbientOcclusionMap = !material.RenderAmbientOcclusionMap;
@@ -716,8 +716,8 @@ namespace FModel.ViewModels
             }
         }
 
-        private MeshGeometryModel3D _selectedGeometry; // selected material
-        public MeshGeometryModel3D SelectedGeometry
+        private CustomMeshGeometryModel3D _selectedGeometry; // selected material
+        public CustomMeshGeometryModel3D SelectedGeometry
         {
             get => _selectedGeometry;
             set => SetProperty(ref _selectedGeometry, value);
@@ -753,5 +753,10 @@ namespace FModel.ViewModels
                 Group3d.Remove(g);
             }
         }
+    }
+
+    public class CustomMeshGeometryModel3D : MeshGeometryModel3D
+    {
+        public string DisplayName { get; set; }
     }
 }

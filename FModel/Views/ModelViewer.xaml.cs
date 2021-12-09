@@ -82,7 +82,7 @@ namespace FModel.Views
 
         private void OnMouse3DDown(object sender, MouseDown3DEventArgs e)
         {
-            if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) || e.HitTestResult.ModelHit is not MeshGeometryModel3D m) return;
+            if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) || e.HitTestResult.ModelHit is not CustomMeshGeometryModel3D m) return;
             _applicationView.ModelViewer.SelectedModel.SelectedGeometry = m;
             MaterialsListName.ScrollIntoView(m);
         }
