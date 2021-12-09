@@ -23,7 +23,7 @@
     </adonisControls:AdonisWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" MinWidth="350" />
+            <ColumnDefinition Width="350" MinWidth="250" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="4*" />
         </Grid.ColumnDefinitions>

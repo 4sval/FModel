@@ -313,10 +313,11 @@ namespace FModel.ViewModels
 
             Application.Current.Dispatcher.Invoke(() =>
             {
+                var s = FixName(materialInstance.Name);
                 cam.Group3d.Add(new MeshGeometryModel3D
                 {
                     Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
-                    Name = FixName(materialInstance.Name), Geometry = builder.ToMeshGeometry3D(),
+                    Tag = s, Name = s, Geometry = builder.ToMeshGeometry3D(),
                     Material = m, IsTransparent = isTransparent, IsRendering = isRendering
                 });
             });
@@ -385,8 +386,9 @@ namespace FModel.ViewModels
                 {
                     cam.Group3d.Add(new MeshGeometryModel3D
                     {
-                        Name = FixName(unrealMaterial.Name), Geometry = builder.ToMeshGeometry3D(),
-                        Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+                        Name = unrealMaterial.Name, Tag = FixName(section.MaterialName ?? unrealMaterial.Name),
+                        Geometry = builder.ToMeshGeometry3D(), Material = m, IsTransparent = isTransparent,
+                        IsRendering = isRendering
                     });
                 });
             }
@@ -585,7 +587,7 @@ namespace FModel.ViewModels
             if (int.TryParse(input[0].ToString(), out _))
                 input = input[1..];
 
-            return input.Replace('-', '_');
+            return input;
         }
 
         private bool CheckIfSaved(string path)

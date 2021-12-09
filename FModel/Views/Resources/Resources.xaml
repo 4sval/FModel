@@ -657,7 +657,7 @@
                         </Grid.ColumnDefinitions>
 
                         <Image Grid.Column="0" Source="/FModel;component/Resources/materialicon.png" Width="16" Height="16" Margin="5 0" HorizontalAlignment="Center" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Tag}" TextTrimming="CharacterEllipsis" />
                         <ToggleButton Grid.Column="3" IsChecked="{Binding IsRendering}" Padding="3" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                             <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                 <Canvas Width="24" Height="24">
