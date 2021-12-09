@@ -297,35 +297,44 @@ namespace FModel.ViewModels
             {
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
-                    var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                    var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
-                    if (mappings is {Length: > 0})
+                    if (UserSettings.Default.OverwriteMapping && File.Exists(UserSettings.Default.MappingFilePath))
                     {
-                        foreach (var mapping in mappings)
-                        {
-                            if (mapping.Meta.CompressionMethod != "Oodle") continue;
-
-                            var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
-                            if (!File.Exists(mappingPath))
-                            {
-                                _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
-                            }
-
-                            Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
-                            FLogger.AppendInformation();
-                            FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
-                            break;
-                        }
+                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(UserSettings.Default.MappingFilePath);
+                        FLogger.AppendInformation();
+                        FLogger.AppendText($"Mappings pulled from '{UserSettings.Default.MappingFilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
                     }
                     else
                     {
-                        var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
-                        if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
+                        var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                        var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
+                        if (mappings is {Length: > 0})
+                        {
+                            foreach (var mapping in mappings)
+                            {
+                                if (mapping.Meta.CompressionMethod != "Oodle") continue;
 
-                        var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
-                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
-                        FLogger.AppendWarning();
-                        FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
+                                var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
+                                if (!File.Exists(mappingPath))
+                                {
+                                    _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
+                                }
+
+                                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
+                                FLogger.AppendInformation();
+                                FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
+                            if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
+
+                            var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
+                            Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
+                            FLogger.AppendWarning();
+                            FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
+                        }
                     }
                 });
             }
@@ -627,9 +636,6 @@ namespace FModel.ViewModels
                     break;
                 }
             }
-
-            if (UserSettings.Default.IsAutoExportData)
-                ExportData(fullPath);
         }
 
         public void ExtractAndScroll(string fullPath, string objectName)
@@ -644,9 +650,6 @@ namespace FModel.ViewModels
 
             if (!exports.Any(CheckExport))
                 TabControl.SelectedTab.Image = null;
-
-            if (UserSettings.Default.IsAutoExportData)
-                ExportData(fullPath);
         }
 
         private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
@@ -697,7 +700,7 @@ namespace FModel.ViewModels
                 case USkeletalMesh when UserSettings.Default.SaveSkeletalMeshes:
                 case UMaterialInstance when UserSettings.Default.SaveMaterials:
                 case USkeleton when UserSettings.Default.SaveSkeletonAsMesh:
-                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations:
+                case UAnimSequence when UserSettings.Default.SaveAnimations:
                 {
                     SaveExport(export);
                     return true;
@@ -745,7 +748,7 @@ namespace FModel.ViewModels
         private void SaveExport(UObject export)
         {
             var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
-            var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
+            var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
             if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
             {
                 Log.Information("Successfully saved {FileName}", savedFileName);

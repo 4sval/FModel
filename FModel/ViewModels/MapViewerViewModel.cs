@@ -89,11 +89,11 @@ namespace FModel.ViewModels
             set => SetProperty(ref _brVendingMachines, value, "ApolloGameplay_VendingMachines");
         }
 
-        private bool _brFireflies;
-        public bool BrFireflies
+        private bool _brBountyBoards;
+        public bool BrBountyBoards
         {
-            get => _brFireflies;
-            set => SetProperty(ref _brFireflies, value, "ApolloGameplay_Fireflies");
+            get => _brBountyBoards;
+            set => SetProperty(ref _brBountyBoards, value, "ApolloGameplay_BountyBoards");
         }
 
         private bool _prLandmarks;
@@ -267,8 +267,8 @@ namespace FModel.ViewModels
                     case "ApolloGameplay_VendingMachines":
                         await LoadBrVendingMachines();
                         break;
-                    case "ApolloGameplay_Fireflies":
-                        await LoadFireflies();
+                    case "ApolloGameplay_BountyBoards":
+                        await LoadBountyBoards();
                         break;
                     case "PapayaGameplay_CannonballGame":
                         await LoadCannonballGame();
@@ -374,13 +374,10 @@ namespace FModel.ViewModels
 
             await _threadWorkerView.Begin(_ =>
             {
-                // if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerBR.Default__UIMapManagerBR_C", out UObject mapManager) ||
-                //     !mapManager.TryGetValue(out UObject mapMaterial, "MapMaterial") ||
-                //     !mapMaterial.TryGetValue(out FStructFallback cachedExpressionData, "CachedExpressionData") ||
-                //     !cachedExpressionData.TryGetValue(out FStructFallback parameters, "Parameters") ||
-                //     !parameters.TryGetValue(out UTexture2D[] textureValues, "TextureValues")) return;
+                if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerBR.Default__UIMapManagerBR_C", out UObject mapManager) ||
+                    !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") || mapMaterial.ReferencedTextures.Count < 1) return;
 
-                _bitmaps[0][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap("FortniteGame/Content/Athena/Apollo/Maps/UI/Apollo_Terrain_Minimap.Apollo_Terrain_Minimap"), IsEnabled = true};
+                _bitmaps[0][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(mapMaterial.ReferencedTextures[0] as UTexture2D), IsEnabled = true};
                 _brMiniMapImage = GetImageSource(_bitmaps[0][_FIRST_BITMAP].Layer);
             });
         }
@@ -392,11 +389,10 @@ namespace FModel.ViewModels
 
             await _threadWorkerView.Begin(_ =>
             {
-                // if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerPapaya.Default__UIMapManagerPapaya_C", out UObject mapManager) ||
-                //     !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") ||
-                //     mapMaterial.ReferencedTextures.Count < 1) return;
+                if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerPapaya.Default__UIMapManagerPapaya_C", out UObject mapManager) ||
+                    !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") || mapMaterial.ReferencedTextures.Count < 1) return;
 
-                _bitmaps[1][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap("FortniteGame/Content/Athena/Apollo/Maps/Special/Papaya/UI/MiniMapPapaya.MiniMapPapaya"), IsEnabled = true};
+                _bitmaps[1][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(mapMaterial.ReferencedTextures[0] as UTexture2D), IsEnabled = true};
                 _prMiniMapImage = GetImageSource(_bitmaps[1][_FIRST_BITMAP].Layer);
             });
         }
@@ -808,19 +804,19 @@ namespace FModel.ViewModels
             });
         }
 
-        private async Task LoadFireflies()
+        private async Task LoadBountyBoards()
         {
             await _threadWorkerView.Begin(_ =>
             {
                 _fillPaint.StrokeWidth = 5;
-                var firefliesBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using var c = new SKCanvas(firefliesBitmap);
+                var bountyBoardsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(bountyBoardsBitmap);
 
-                var exports = Utils.LoadExports("FortniteGame/Content/Athena/Apollo/Maps/Special/ItemCollections/Apollo_Item_Fireflies");
+                var exports = Utils.LoadExports("Bounties/Maps/BB_Overlay_S19_ServiceStations.umap");
                 foreach (var export in exports)
                 {
-                    if (!export.ExportType.Equals("BP_BGACSpawner_Fireflies_C", StringComparison.OrdinalIgnoreCase)) continue;
-                    var displayName = $"FF_{export.Name["BP_BGACSpawnerFireFlies".Length..]}";
+                    if (!export.ExportType.Equals("B_Bounties_Spawner_BountyBoard_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    var displayName = $"BountyBoard_{export.Name["BP_BountyBoard_C_".Length..]}";
 
                     if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
                         !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
@@ -832,7 +828,7 @@ namespace FModel.ViewModels
                     c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
                 }
 
-                _bitmaps[0]["ApolloGameplay_Fireflies"] = new MapLayer {Layer = firefliesBitmap, IsEnabled = false};
+                _bitmaps[0]["ApolloGameplay_BountyBoards"] = new MapLayer {Layer = bountyBoardsBitmap, IsEnabled = false};
             });
         }
 

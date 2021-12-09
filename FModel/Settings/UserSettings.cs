@@ -51,6 +51,13 @@ namespace FModel.Settings
             set => SetProperty(ref _outputDirectory, value);
         }
 
+        private string _modelDirectory;
+        public string ModelDirectory
+        {
+            get => _modelDirectory;
+            set => SetProperty(ref _modelDirectory, value);
+        }
+
         private string _gameDirectory;
         public string GameDirectory
         {
@@ -58,18 +65,25 @@ namespace FModel.Settings
             set => SetProperty(ref _gameDirectory, value);
         }
 
+        private bool _overwriteMapping;
+        public bool OverwriteMapping
+        {
+            get => _overwriteMapping;
+            set => SetProperty(ref _overwriteMapping, value);
+        }
+
+        private string _mappingFilePath;
+        public string MappingFilePath
+        {
+            get => _mappingFilePath;
+            set => SetProperty(ref _mappingFilePath, value);
+        }
+
         private int _lastOpenedSettingTab;
         public int LastOpenedSettingTab
         {
             get => _lastOpenedSettingTab;
             set => SetProperty(ref _lastOpenedSettingTab, value);
-        }
-
-        private bool _isAutoExportData;
-        public bool IsAutoExportData
-        {
-            get => _isAutoExportData;
-            set => SetProperty(ref _isAutoExportData, value);
         }
 
         private bool _isAutoSaveProps;
@@ -84,13 +98,6 @@ namespace FModel.Settings
         {
             get => _isAutoSaveTextures;
             set => SetProperty(ref _isAutoSaveTextures, value);
-        }
-
-        private bool _isAutoSaveAnimations;
-        public bool IsAutoSaveAnimations
-        {
-            get => _isAutoSaveAnimations;
-            set => SetProperty(ref _isAutoSaveAnimations, value);
         }
 
         private bool _isAutoOpenSounds = true;
@@ -436,35 +443,21 @@ namespace FModel.Settings
             set => SetProperty(ref _assetRemoveTab, value);
         }
 
-        private Hotkey _autoExportData = new(Key.F1);
-        public Hotkey AutoExportData
-        {
-            get => _autoExportData;
-            set => SetProperty(ref _autoExportData, value);
-        }
-
-        private Hotkey _autoSaveProps = new(Key.F2);
+        private Hotkey _autoSaveProps = new(Key.F1);
         public Hotkey AutoSaveProps
         {
             get => _autoSaveProps;
             set => SetProperty(ref _autoSaveProps, value);
         }
 
-        private Hotkey _autoSaveTextures = new(Key.F3);
+        private Hotkey _autoSaveTextures = new(Key.F2);
         public Hotkey AutoSaveTextures
         {
             get => _autoSaveTextures;
             set => SetProperty(ref _autoSaveTextures, value);
         }
 
-        private Hotkey _autoSaveAnimations = new(Key.F4);
-        public Hotkey AutoSaveAnimations
-        {
-            get => _autoSaveAnimations;
-            set => SetProperty(ref _autoSaveAnimations, value);
-        }
-
-        private Hotkey _autoOpenSounds = new(Key.F5);
+        private Hotkey _autoOpenSounds = new(Key.F3);
         public Hotkey AutoOpenSounds
         {
             get => _autoOpenSounds;
@@ -583,6 +576,13 @@ namespace FModel.Settings
                 if (_saveMaterials && PreviewMaterials)
                     PreviewMaterials = false;
             }
+        }
+
+        private bool _saveAnimations;
+        public bool SaveAnimations
+        {
+            get => _saveAnimations;
+            set => SetProperty(ref _saveAnimations, value);
         }
 
         private bool _saveSkeletonAsMesh;

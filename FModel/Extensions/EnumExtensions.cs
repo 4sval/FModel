@@ -1,8 +1,8 @@
-﻿using FModel.Properties;
 using System;
 using System.ComponentModel;
 using System.Resources;
 using System.Runtime.CompilerServices;
+using FModel.Properties;
 
 namespace FModel.Extensions
 {
@@ -47,12 +47,12 @@ namespace FModel.Extensions
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T ToEnum<T>(this string value, T defaultValue)
+        public static T ToEnum<T>(this string value, T defaultValue) where T : struct
         {
-            if (!Enum.TryParse(typeof(T), value, true, out var ret))
+            if (!Enum.TryParse(value, true, out T ret))
                 return defaultValue;
 
-            return (T) ret;
+            return ret;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

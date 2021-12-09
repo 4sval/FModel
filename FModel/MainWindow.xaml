@@ -94,7 +94,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="Export Data" Command="{Binding RightClickMenuCommand}">
+                <MenuItem Header="Export Raw Data" Command="{Binding RightClickMenuCommand}">
                     <MenuItem.CommandParameter>
                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                             <Binding Source="Assets_Export_Data" />
@@ -147,18 +147,12 @@
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
-                    <MenuItem Header="Export Data" IsCheckable="True" StaysOpenOnClick="True"
-                              InputGestureText="{Binding AutoExportData, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding IsAutoExportData, Source={x:Static local:Settings.UserSettings.Default}}" />
                     <MenuItem Header="Save Properties" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoSaveProps, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoSaveProps, Source={x:Static local:Settings.UserSettings.Default}}" />
                     <MenuItem Header="Save Textures" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoSaveTextures, Source={x:Static local:Settings.UserSettings.Default}}" />
-                    <MenuItem Header="Save Animations" IsCheckable="True" StaysOpenOnClick="True"
-                              InputGestureText="{Binding AutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}"
-                              IsChecked="{Binding IsAutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}" />
                     <MenuItem Header="Open Sounds" IsCheckable="True" StaysOpenOnClick="True"
                               InputGestureText="{Binding AutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}"
                               IsChecked="{Binding IsAutoOpenSounds, Source={x:Static local:Settings.UserSettings.Default}}" />
@@ -397,7 +391,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Export Folder's Assets Data" Click="OnFolderExportClick">
+                                        <MenuItem Header="Export Folder's Assets Raw Data" Click="OnFolderExportClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -525,7 +519,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Export Data" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="Export Raw Data" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Export_Data" />
@@ -799,19 +793,6 @@
                         </Viewbox>
                     </StatusBarItem>
 
-                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Export Data Enabled">
-                        <StatusBarItem.Style>
-                            <Style TargetType="StatusBarItem">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAutoExportData, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StatusBarItem.Style>
-                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="DTA" />
-                    </StatusBarItem>
-
                     <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Properties Enabled">
                         <StatusBarItem.Style>
                             <Style TargetType="StatusBarItem">
@@ -836,19 +817,6 @@
                             </Style>
                         </StatusBarItem.Style>
                         <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="TEX" />
-                    </StatusBarItem>
-
-                    <StatusBarItem Width="35" HorizontalContentAlignment="Stretch" ToolTip="Auto Save Animations Enabled">
-                        <StatusBarItem.Style>
-                            <Style TargetType="StatusBarItem">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAutoSaveAnimations, Source={x:Static local:Settings.UserSettings.Default}}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StatusBarItem.Style>
-                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="ANM" />
                     </StatusBarItem>
 
                     <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Sounds Enabled">

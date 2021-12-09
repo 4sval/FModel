@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Core.Serialization;
@@ -134,6 +133,7 @@ namespace FModel.ViewModels
         private readonly FGame _game;
         private Game _gamePreset;
         private string _outputSnapshot;
+        private string _modelSnapshot;
         private string _gameSnapshot;
         private EUpdateMode _updateModeSnapshot;
         private string _presetSnapshot;
@@ -155,6 +155,7 @@ namespace FModel.ViewModels
         public void Initialize()
         {
             _outputSnapshot = UserSettings.Default.OutputDirectory;
+            _modelSnapshot = UserSettings.Default.ModelDirectory;
             _gameSnapshot = UserSettings.Default.GameDirectory;
             _updateModeSnapshot = UserSettings.Default.UpdateMode;
             _presetSnapshot = UserSettings.Default.Presets[_game];
@@ -242,6 +243,7 @@ namespace FModel.ViewModels
             if (_ueGameSnapshot != SelectedUeGame || // combobox
                 _customVersionsSnapshot != SelectedCustomVersions || _optionsSnapshot != SelectedOptions ||
                 _outputSnapshot != UserSettings.Default.OutputDirectory || // textbox
+                _modelSnapshot != UserSettings.Default.ModelDirectory || // textbox
                 _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
                 ret = SettingsOut.Restart;
 
@@ -268,19 +270,19 @@ namespace FModel.ViewModels
             return ret;
         }
 
-        private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues(SelectedUpdateMode.GetType()).Cast<EUpdateMode>();
+        private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues<EUpdateMode>();
         private IEnumerable<string> EnumeratePresets()
         {
             yield return Constants._NO_PRESET_TRIGGER;
         }
-        private IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues(SelectedUeGame.GetType()).Cast<EGame>();
-        private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues(SelectedAssetLanguage.GetType()).Cast<ELanguage>();
-        private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues(SelectedAesReload.GetType()).Cast<EAesReload>();
-        private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues(SelectedDiscordRpc.GetType()).Cast<EDiscordRpc>();
-        private IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues(SelectedCompressedAudio.GetType()).Cast<ECompressedAudio>();
-        private IEnumerable<EIconStyle> EnumerateCosmeticStyles() => Enum.GetValues(SelectedCosmeticStyle.GetType()).Cast<EIconStyle>();
-        private IEnumerable<EMeshFormat> EnumerateMeshExportFormat() => Enum.GetValues(SelectedMeshExportFormat.GetType()).Cast<EMeshFormat>();
-        private IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues(SelectedLodExportFormat.GetType()).Cast<ELodFormat>();
-        private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues(SelectedTextureExportFormat.GetType()).Cast<ETextureFormat>();
+        private IEnumerable<EGame> EnumerateUeGames() => Enum.GetValues<EGame>();
+        private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
+        private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();
+        private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();
+        private IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues<ECompressedAudio>();
+        private IEnumerable<EIconStyle> EnumerateCosmeticStyles() => Enum.GetValues<EIconStyle>();
+        private IEnumerable<EMeshFormat> EnumerateMeshExportFormat() => Enum.GetValues<EMeshFormat>();
+        private IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues<ELodFormat>();
+        private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
     }
 }
