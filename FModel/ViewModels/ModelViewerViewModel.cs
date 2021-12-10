@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Media3D;
+using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Materials;
 using CUE4Parse_Conversion.Meshes;
@@ -284,9 +286,9 @@ namespace FModel.ViewModels
             Clipboard.SetText(m.SelectedGeometry.DisplayName.TrimEnd());
         }
 
-        public async Task<bool> TryChangeSelectedMaterial(UMaterialInstance materialInstance)
+        public async Task<bool> TryOverwriteMaterial(UMaterialInstance materialInstance)
         {
-            if (SelectedModel is not { } model || model.SelectedGeometry is null)
+            if (SelectedModel is not { SelectedGeometry: {} geometry } model)
                 return false;
 
             PBRMaterial m = null;
@@ -297,7 +299,22 @@ namespace FModel.ViewModels
             });
 
             if (m == null) return false;
-            model.SelectedGeometry.Material = m;
+
+            var index = geometry.MaterialIndex;
+            var obj = new ResolvedLoadedObject(materialInstance);
+            switch (model.Export)
+            {
+                case UStaticMesh { Materials: { } } st:
+                    st.Materials[index] = obj;
+                    break;
+                case USkeletalMesh sk:
+                    sk.Materials[index].Material = obj;
+                    break;
+                case UMaterialInstance:
+                    model.SwapExport(materialInstance);
+                    break;
+            }
+            geometry.Material = m;
             return true;
         }
         #endregion
@@ -317,7 +334,7 @@ namespace FModel.ViewModels
                 cam.Group3d.Add(new CustomMeshGeometryModel3D
                 {
                     Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
-                    DisplayName = s, Geometry = builder.ToMeshGeometry3D(),
+                    DisplayName = s, Geometry = builder.ToMeshGeometry3D(), MaterialIndex = 0,
                     Material = m, IsTransparent = isTransparent, IsRendering = isRendering
                 });
             });
@@ -378,15 +395,15 @@ namespace FModel.ViewModels
                     }
                 }
 
-                if (section.Material == null || !section.Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
+                if (section.Material == null || !section.Material.TryLoad(out var o) || o is not UMaterialInterface material)
                     continue;
 
-                var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial);
+                var (m, isRendering, isTransparent) = LoadMaterial(material);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     cam.Group3d.Add(new CustomMeshGeometryModel3D
                     {
-                        DisplayName = FixName(section.MaterialName ?? unrealMaterial.Name),
+                        DisplayName = FixName(section.MaterialName ?? material.Name), MaterialIndex = i,
                         Geometry = builder.ToMeshGeometry3D(), Material = m, IsTransparent = isTransparent,
                         IsRendering = isRendering
                     });
@@ -618,7 +635,7 @@ namespace FModel.ViewModels
 
     public class ModelAndCam : ViewModel
     {
-        public UObject Export { get; }
+        public UObject Export { get; private set; }
         public Point3D Position { get; set; }
         public Vector3D LookDirection { get; set; }
         public Geometry3D XAxis { get; set; }
@@ -743,6 +760,11 @@ namespace FModel.ViewModels
         private int B(int x) => (x & 0xFFF8) | _table2[x & 7] ^ 7;
         private int C(int x) => (x & 1) | ((x >> 2) & 2);
 
+        public void SwapExport(UObject e)
+        {
+            Export = e;
+        }
+
         public void Dispose()
         {
             TriangleCount = 0;
@@ -758,5 +780,6 @@ namespace FModel.ViewModels
     public class CustomMeshGeometryModel3D : MeshGeometryModel3D
     {
         public string DisplayName { get; set; }
+        public int MaterialIndex { get; set; }
     }
 }

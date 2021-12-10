@@ -59,11 +59,11 @@ namespace FModel.ViewModels
             set => SetProperty(ref _game, value);
         }
 
-        private bool _modelIsSwappingMaterial;
-        public bool ModelIsSwappingMaterial
+        private bool _modelIsOverwritingMaterial;
+        public bool ModelIsOverwritingMaterial
         {
-            get => _modelIsSwappingMaterial;
-            set => SetProperty(ref _modelIsSwappingMaterial, value);
+            get => _modelIsOverwritingMaterial;
+            set => SetProperty(ref _modelIsOverwritingMaterial, value);
         }
 
         public AbstractVfsFileProvider Provider { get; }
@@ -675,7 +675,7 @@ namespace FModel.ViewModels
                 }
                 case UStaticMesh when UserSettings.Default.PreviewStaticMeshes:
                 case USkeletalMesh when UserSettings.Default.PreviewSkeletalMeshes:
-                case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsSwappingMaterial &&
+                case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
                                             !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
@@ -687,12 +687,12 @@ namespace FModel.ViewModels
                     });
                     return true;
                 }
-                case UMaterialInstance m when ModelIsSwappingMaterial:
+                case UMaterialInstance m when ModelIsOverwritingMaterial:
                 {
                     Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                        modelViewer.Swap(m);
+                        modelViewer.Overwrite(m);
                     });
                     return true;
                 }

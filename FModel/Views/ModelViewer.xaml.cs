@@ -24,12 +24,12 @@ namespace FModel.Views
         }
 
         public async void Load(UObject export) => await _applicationView.ModelViewer.LoadExport(export);
-        public async void Swap(UMaterialInstance materialInstance)
+        public async void Overwrite(UMaterialInstance materialInstance)
         {
-            var sucess = await _applicationView.ModelViewer.TryChangeSelectedMaterial(materialInstance);
+            var sucess = await _applicationView.ModelViewer.TryOverwriteMaterial(materialInstance);
             if (sucess)
             {
-                _applicationView.CUE4Parse.ModelIsSwappingMaterial = false;
+                _applicationView.CUE4Parse.ModelIsOverwritingMaterial = false;
             }
             else
             {
@@ -48,7 +48,7 @@ namespace FModel.Views
         {
             _applicationView.ModelViewer.Clear();
             _applicationView.ModelViewer.AppendMode = false;
-            _applicationView.CUE4Parse.ModelIsSwappingMaterial = false;
+            _applicationView.CUE4Parse.ModelIsOverwritingMaterial = false;
             MyAntiCrashGroup.ItemsSource = null; // <3
         }
 
@@ -96,16 +96,15 @@ namespace FModel.Views
         private void Save(object sender, RoutedEventArgs e)
             => _applicationView.ModelViewer.SaveLoadedModels();
 
-        private void OnChangeMaterialClick(object sender, RoutedEventArgs e)
+        private void OnOverwriteMaterialClick(object sender, RoutedEventArgs e)
         {
-            _applicationView.CUE4Parse.ModelIsSwappingMaterial = true;
-
+            _applicationView.CUE4Parse.ModelIsOverwritingMaterial = true;
             if (!_messageShown)
             {
                 MessageBox.Show(new MessageBoxModel
                 {
                     Text = "Simply extract a material once FModel will be brought to the foreground. This message will be shown once per Model Viewer's lifetime, close it to begin.",
-                    Caption = "How To Change Material?",
+                    Caption = "How To Overwrite Material?",
                     Icon = MessageBoxImage.Information,
                     IsSoundEnabled = false
                 });
