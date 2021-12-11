@@ -52,7 +52,7 @@ namespace FModel.Views
             MyAntiCrashGroup.ItemsSource = null; // <3
         }
 
-        private void OnWindowKeyDown(object sender, KeyEventArgs e)
+        private async void OnWindowKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -75,7 +75,7 @@ namespace FModel.Views
                     _applicationView.ModelViewer.SaveAsScene();
                     break;
                 case Key.S when Keyboard.Modifiers.HasFlag(ModifierKeys.Control):
-                    _applicationView.ModelViewer.SaveLoadedModels();
+                    await _applicationView.ModelViewer.SaveLoadedModels();
                     break;
             }
         }
@@ -93,8 +93,8 @@ namespace FModel.Views
         private void OnCopyClick(object sender, RoutedEventArgs e)
             => _applicationView.ModelViewer.CopySelectedMaterialName();
 
-        private void Save(object sender, RoutedEventArgs e)
-            => _applicationView.ModelViewer.SaveLoadedModels();
+        private async void Save(object sender, RoutedEventArgs e)
+            => await _applicationView.ModelViewer.SaveLoadedModels();
 
         private void OnOverwriteMaterialClick(object sender, RoutedEventArgs e)
         {

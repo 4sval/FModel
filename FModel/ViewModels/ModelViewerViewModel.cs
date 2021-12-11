@@ -179,29 +179,32 @@ namespace FModel.ViewModels
             Cam.AnimateTo(SelectedModel.Position, SelectedModel.LookDirection, new Vector3D(0, 1, 0), 500);
         }
 
-        public void SaveLoadedModels()
+        public async Task SaveLoadedModels()
         {
             if (_loadedModels.Count < 1) return;
 
             var folderBrowser = new VistaFolderBrowserDialog {ShowNewFolderButton = true};
             if (folderBrowser.ShowDialog() == false) return;
 
-            foreach (var model in _loadedModels)
+            await _threadWorkerView.Begin(_ =>
             {
-                var toSave = new CUE4Parse_Conversion.Exporter(model.Export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
-                if (toSave.TryWriteToDir(new DirectoryInfo(folderBrowser.SelectedPath), out var savedFileName))
+                foreach (var model in _loadedModels)
                 {
-                    Log.Information("Successfully saved {FileName}", savedFileName);
-                    FLogger.AppendInformation();
-                    FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+                    var toSave = new CUE4Parse_Conversion.Exporter(model.Export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
+                    if (toSave.TryWriteToDir(new DirectoryInfo(folderBrowser.SelectedPath), out var savedFileName))
+                    {
+                        Log.Information("Successfully saved {FileName}", savedFileName);
+                        FLogger.AppendInformation();
+                        FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+                    }
+                    else
+                    {
+                        Log.Error("{FileName} could not be saved", savedFileName);
+                        FLogger.AppendError();
+                        FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
+                    }
                 }
-                else
-                {
-                    Log.Error("{FileName} could not be saved", savedFileName);
-                    FLogger.AppendError();
-                    FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
-                }
-            }
+            });
         }
 
         public void SaveAsScene()
@@ -288,7 +291,7 @@ namespace FModel.ViewModels
 
         public async Task<bool> TryOverwriteMaterial(UMaterialInstance materialInstance)
         {
-            if (SelectedModel?.SelectedGeometry == null) return false;
+            if (SelectedModel?.SelectedGeometry == null || _loadedModels.Count < 1) return false;
 
             PBRMaterial m = null;
             await _threadWorkerView.Begin(_ =>
@@ -296,7 +299,7 @@ namespace FModel.ViewModels
                 (m, var _, var _) = LoadMaterial(materialInstance);
 
                 var obj = new ResolvedLoadedObject(materialInstance);
-                switch (SelectedModel.Export)
+                switch (_loadedModels[SelectedModel.SelectedGeometry.ExportIndex].Export)
                 {
                     case UStaticMesh { Materials: { } } st:
                         st.Materials[SelectedModel.SelectedGeometry.MaterialIndex] = obj;
@@ -330,7 +333,7 @@ namespace FModel.ViewModels
                 {
                     Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
                     DisplayName = materialInstance.Name, Geometry = builder.ToMeshGeometry3D(), MaterialIndex = 0,
-                    Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+                    Material = m, IsTransparent = isTransparent, IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
                 });
             });
         }
@@ -400,7 +403,7 @@ namespace FModel.ViewModels
                     {
                         DisplayName = section.MaterialName ?? material.Name, MaterialIndex = section.MaterialIndex,
                         Geometry = builder.ToMeshGeometry3D(), Material = m, IsTransparent = isTransparent,
-                        IsRendering = isRendering
+                        IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
                     });
                 });
             }
@@ -765,5 +768,6 @@ namespace FModel.ViewModels
     {
         public string DisplayName { get; set; }
         public int MaterialIndex { get; set; }
+        public int ExportIndex { get; set; }
     }
 }
