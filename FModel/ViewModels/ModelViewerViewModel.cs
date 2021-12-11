@@ -288,34 +288,30 @@ namespace FModel.ViewModels
 
         public async Task<bool> TryOverwriteMaterial(UMaterialInstance materialInstance)
         {
-            if (SelectedModel is not { SelectedGeometry: {} geometry } model)
-                return false;
+            if (SelectedModel?.SelectedGeometry == null) return false;
 
             PBRMaterial m = null;
             await _threadWorkerView.Begin(_ =>
             {
-                var (material, _, _) = LoadMaterial(materialInstance);
-                m = material;
+                (m, var _, var _) = LoadMaterial(materialInstance);
+
+                var obj = new ResolvedLoadedObject(materialInstance);
+                switch (SelectedModel.Export)
+                {
+                    case UStaticMesh { Materials: { } } st:
+                        st.Materials[SelectedModel.SelectedGeometry.MaterialIndex] = obj;
+                        break;
+                    case USkeletalMesh sk:
+                        sk.Materials[SelectedModel.SelectedGeometry.MaterialIndex].Material = obj;
+                        break;
+                    case UMaterialInstance:
+                        SelectedModel.SwapExport(materialInstance);
+                        break;
+                }
             });
 
-            if (m == null) return false;
-
-            var index = geometry.MaterialIndex;
-            var obj = new ResolvedLoadedObject(materialInstance);
-            switch (model.Export)
-            {
-                case UStaticMesh { Materials: { } } st:
-                    st.Materials[index] = obj;
-                    break;
-                case USkeletalMesh sk:
-                    sk.Materials[index].Material = obj;
-                    break;
-                case UMaterialInstance:
-                    model.SwapExport(materialInstance);
-                    break;
-            }
-            geometry.Material = m;
-            return true;
+            SelectedModel.SelectedGeometry.Material = m;
+            return m != null;
         }
         #endregion
 
@@ -330,11 +326,10 @@ namespace FModel.ViewModels
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                var s = FixName(materialInstance.Name);
                 cam.Group3d.Add(new CustomMeshGeometryModel3D
                 {
                     Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
-                    DisplayName = s, Geometry = builder.ToMeshGeometry3D(), MaterialIndex = 0,
+                    DisplayName = materialInstance.Name, Geometry = builder.ToMeshGeometry3D(), MaterialIndex = 0,
                     Material = m, IsTransparent = isTransparent, IsRendering = isRendering
                 });
             });
@@ -403,7 +398,7 @@ namespace FModel.ViewModels
                 {
                     cam.Group3d.Add(new CustomMeshGeometryModel3D
                     {
-                        DisplayName = FixName(section.MaterialName ?? material.Name), MaterialIndex = i,
+                        DisplayName = section.MaterialName ?? material.Name, MaterialIndex = section.MaterialIndex,
                         Geometry = builder.ToMeshGeometry3D(), Material = m, IsTransparent = isTransparent,
                         IsRendering = isRendering
                     });
@@ -413,7 +408,7 @@ namespace FModel.ViewModels
 
         private (PBRMaterial material, bool isRendering, bool isTransparent) LoadMaterial(UMaterialInterface unrealMaterial)
         {
-            var m = new PBRMaterial {RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true}; // default
+            PBRMaterial m = null; // default
             Application.Current.Dispatcher.Invoke(() => // tweak this later
             {
                 m = new PBRMaterial // recreate on ui thread
@@ -594,17 +589,6 @@ namespace FModel.ViewModels
 
             cam.Position = new Point3D(box.Max.X + center.X * 2, center.Z, box.Min.Y + center.Y * 2);
             cam.LookDirection = new Vector3D(-cam.Position.X + center.X, 0, -cam.Position.Z + center.Y);
-        }
-
-        private string FixName(string input)
-        {
-            if (input.Length < 1)
-                return "Material_Has_No_Name";
-
-            if (int.TryParse(input[0].ToString(), out _))
-                input = input[1..];
-
-            return input;
         }
 
         private bool CheckIfSaved(string path)

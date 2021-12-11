@@ -43,10 +43,15 @@ namespace FModel.Views
 
             Close();
 
-            if (whatShouldIDo == SettingsOut.ReloadLocres)
+            switch (whatShouldIDo)
             {
-                _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
-                await _applicationView.CUE4Parse.LoadLocalizedResources();
+                case SettingsOut.ReloadLocres:
+                    _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
+                    await _applicationView.CUE4Parse.LoadLocalizedResources();
+                    break;
+                case SettingsOut.CheckForUpdates:
+                    ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
+                    break;
             }
         }
 

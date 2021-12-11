@@ -250,6 +250,9 @@ namespace FModel.ViewModels
             if (_assetLanguageSnapshot != SelectedAssetLanguage)
                 ret = SettingsOut.ReloadLocres;
 
+            if (_updateModeSnapshot != SelectedUpdateMode)
+                ret = SettingsOut.CheckForUpdates;
+
             UserSettings.Default.UpdateMode = SelectedUpdateMode;
             UserSettings.Default.Presets[_game] = SelectedPreset;
             UserSettings.Default.OverridedGame[_game] = SelectedUeGame;
