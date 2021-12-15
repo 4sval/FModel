@@ -66,7 +66,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Assets Language" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Language used and shown when parsing assets" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Packages Language" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Language used and shown when parsing packages" />
                     <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.AssetLanguages}" SelectedItem="{Binding SettingsView.SelectedAssetLanguage, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -93,7 +93,7 @@
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" SelectionChanged="OnSelectionChanged" Margin="0 0 0 5">
                     </ComboBox>
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="UE Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE version to use when parsing assets" />
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="UE Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE version to use when parsing packages" />
                     <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.UeGames}" SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" IsEnabled="{Binding SettingsView.EnableElements}"
                               Margin="0 0 0 5">
@@ -158,7 +158,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Keep Directory Structure" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Auto Export &#38; Save assets inside their game directory" />
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Keep Directory Structure" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Auto-save packages following their game directory" />
                     <CheckBox Grid.Row="11" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
@@ -284,8 +284,8 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Model Saving Directory *" VerticalAlignment="Center" Margin="0 0 0 5"
-                               ToolTip="This will be the directory where Meshes, Materials and Animations will be saved" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Model Export Directory *" VerticalAlignment="Center" Margin="0 0 0 5"
+                               ToolTip="This will be the directory where Meshes, Materials and Animations will be exported" />
                     <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding ModelDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseModels" Margin="0 0 0 5" />
 
@@ -319,7 +319,7 @@
                                   IsChecked="{Binding PreviewMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
                     </UniformGrid>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Auto-Save without Previewing" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Auto-Export without Previewing" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <UniformGrid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 10">
                         <CheckBox Content="Static Meshes" HorizontalAlignment="Left"
                                   IsChecked="{Binding SaveStaticMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
@@ -329,12 +329,12 @@
                                   IsChecked="{Binding SaveMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
                     </UniformGrid>
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Auto-Save Animations" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Auto-Export Animations" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveAnimations, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Save Skeletons as Empty Meshes" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Export Skeletons as Empty Meshes" VerticalAlignment="Center" />
                     <CheckBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveSkeletonAsMesh, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 0"/>

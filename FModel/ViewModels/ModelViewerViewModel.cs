@@ -16,7 +16,6 @@ using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
-using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Materials;
 using CUE4Parse_Conversion.Meshes;

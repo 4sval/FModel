@@ -74,7 +74,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="Assets">
+            <MenuItem Header="Packages">
                 <MenuItem Header="Search" IsEnabled="{Binding IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
@@ -257,7 +257,7 @@
             <GroupBox Grid.Column="0" adonisExtensions:LayerExtension.Layer="2"
                       Padding="{adonisUi:Space 0}" Background="Transparent">
                 <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange">
-                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="Directory">
+                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="Archives">
                         <DockPanel>
                             <Grid DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
@@ -292,7 +292,7 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="GAME DIRECTORY" />
+                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="GAME ARCHIVES" />
                                 <ListBox Grid.Row="1" x:Name="DirectoryFilesListBox" Style="{StaticResource DirectoryFilesListBox}" MouseDoubleClick="OnMouseDoubleClick" />
                                 <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
                                 <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
@@ -343,7 +343,7 @@
                                            Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
                                     <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
                                         <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}'{0}' has {1} folders and {2} files">
+                                            <MultiBinding StringFormat="{}'{0}' has {1} folders and {2} packages">
                                                 <Binding Path="SelectedItem.Header" ElementName="AssetsFolderName" FallbackValue="None" />
                                                 <Binding Path="SelectedItem.FoldersView.Count" ElementName="AssetsFolderName" FallbackValue="0" />
                                                 <Binding Path="SelectedItem.AssetsList.Assets.Count" ElementName="AssetsFolderName" FallbackValue="0" />
@@ -382,7 +382,7 @@
                             <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
                                 <TreeView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Extract Folder's Assets" Click="OnFolderExtractClick">
+                                        <MenuItem Header="Extract Folder's Packages" Click="OnFolderExtractClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -391,7 +391,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Export Folder's Assets Raw Data" Click="OnFolderExportClick">
+                                        <MenuItem Header="Export Folder's Packages Raw Data" Click="OnFolderExportClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -400,7 +400,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Save Folder's Assets Properties" Click="OnFolderSaveClick">
+                                        <MenuItem Header="Save Folder's Packages Properties" Click="OnFolderSaveClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -447,22 +447,22 @@
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Assets Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Packages Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock Grid.Row="1" Grid.Column="1" Text="Folders Count" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Package, ElementName=AssetsFolderName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Included In Package" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=AssetsFolderName, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Package Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Archive Mount Point" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Version, ElementName=AssetsFolderName, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Package Version" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Archive Version" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                 </Grid>
                             </StackPanel>
                         </Grid>
                     </TabItem>
                     <TabItem Style="{StaticResource TabItemFillSpace}"
                              Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
-                             HeaderStringFormat="{}{0} Assets">
+                             HeaderStringFormat="{}{0} Packages">
                         <DockPanel>
                             <Grid DockPanel.Dock="Top" ZIndex="0">
                                 <Grid.ColumnDefinitions>
@@ -573,7 +573,7 @@
                                                         </Canvas>
                                                     </Viewbox>
                                                 </MenuItem.Icon>
-                                                <MenuItem Header="File Path" Command="{Binding DataContext.CopyCommand}">
+                                                <MenuItem Header="Package Path" Command="{Binding DataContext.CopyCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                             <Binding Source="File_Path" />
@@ -581,7 +581,7 @@
                                                         </MultiBinding>
                                                     </MenuItem.CommandParameter>
                                                 </MenuItem>
-                                                <MenuItem Header="File Name" Command="{Binding DataContext.CopyCommand}">
+                                                <MenuItem Header="Package Name" Command="{Binding DataContext.CopyCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                             <Binding Source="File_Name" />
@@ -597,7 +597,7 @@
                                                         </MultiBinding>
                                                     </MenuItem.CommandParameter>
                                                 </MenuItem>
-                                                <MenuItem Header="File Path w/o Extension" Command="{Binding DataContext.CopyCommand}">
+                                                <MenuItem Header="Package Path w/o Extension" Command="{Binding DataContext.CopyCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                             <Binding Source="File_Path_No_Extension" />
@@ -605,7 +605,7 @@
                                                         </MultiBinding>
                                                     </MenuItem.CommandParameter>
                                                 </MenuItem>
-                                                <MenuItem Header="File Name w/o Extension" Command="{Binding DataContext.CopyCommand}">
+                                                <MenuItem Header="Package Name w/o Extension" Command="{Binding DataContext.CopyCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                             <Binding Source="File_Name_No_Extension" />
@@ -641,7 +641,7 @@
                                         <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.IsEncrypted, ElementName=AssetsListName, FallbackValue='False'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="3" Grid.Column="1" Text="Is Encrypted" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Package, ElementName=AssetsListName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Included In Package" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Included In Archive" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>

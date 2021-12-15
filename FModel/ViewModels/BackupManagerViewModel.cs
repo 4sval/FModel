@@ -62,7 +62,7 @@ namespace FModel.ViewModels
             await _threadWorkerView.Begin(_ =>
             {
                 var backupFolder = Path.Combine(UserSettings.Default.OutputDirectory, "Backups");
-                var fileName = $"{_gameName}_{DateTime.Now.ToString("MM'-'dd'-'yyyy")}.fbkp";
+                var fileName = $"{_gameName}_{DateTime.Now:MM'_'dd'_'yyyy}.fbkp";
                 var fullPath = Path.Combine(backupFolder, fileName);
 
                 using var fileStream = new FileStream(fullPath, FileMode.Create);

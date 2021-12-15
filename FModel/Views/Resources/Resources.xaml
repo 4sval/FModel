@@ -179,7 +179,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No files found in given directory yet" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No archives found in given directory yet" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -240,7 +240,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No audio to play yet" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No audio to play at the moment" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -273,7 +273,7 @@
                                 <ToolTip>
                                     <TextBlock>
                                         <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}{0} has {1} folders and {2} files">
+                                            <MultiBinding StringFormat="{}{0} has {1} folders and {2} packages">
                                                 <Binding Path="Header" />
                                                 <Binding Path="FoldersView.Count" />
                                                 <Binding Path="AssetsList.Assets.Count" />
@@ -547,7 +547,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No folder found in packages, make sure you loaded one" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No folder found in archives, make sure you loaded at least one" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -608,7 +608,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No asset found in folder" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No package found in folder" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>

@@ -10,7 +10,7 @@ namespace FModel.Views.Resources.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != null ? $"{value.ToString()?.ToUpper()} ASSETS" : null;
+            return value != null ? $"{value.ToString()?.ToUpper()} PACKAGES" : null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

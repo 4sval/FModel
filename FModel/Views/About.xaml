@@ -28,7 +28,7 @@
             <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="700" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
         </StackPanel>
         <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30"
-                   Text="Since the release in March 2019, we've continuously added new features and improved old ones. It started as a simple UE4 file explorer to parse assets and, as things progressed, became really popular to datamine games and create items icons. FModel 4 is now the most complete and well-made version so far. It features dozens of settings for you to use to make FModel your own." />
+                   Text="Since the release in March 2019, we've continuously added new features and improved old ones. It started as a simple UE4 file explorer to parse packages and, as things progressed, became really popular to data-mine games and create items icons. FModel 4 is now the most complete and well-made version so far. It features dozens of settings for you to use to make FModel your own." />
 
         <StackPanel HorizontalAlignment="Center">
             <TextBlock Text="Contributors" FontSize="15" FontWeight="700" Foreground="#9DA3DD" FontStretch="Expanded" />

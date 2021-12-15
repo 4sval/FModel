@@ -42,7 +42,7 @@ namespace FModel.ViewModels.Commands
             if (_applicationView.CUE4Parse.Provider.Files.Count <= 0)
             {
                 FLogger.AppendError();
-                FLogger.AppendText("An encrypted file has been found. In order to decrypt it, please specify a working AES encryption key", Constants.WHITE, true);
+                FLogger.AppendText("An encrypted archive has been found. In order to decrypt it, please specify a working AES encryption key", Constants.WHITE, true);
                 return;
             }
 
@@ -50,7 +50,7 @@ namespace FModel.ViewModels.Commands
                 _applicationView.CUE4Parse.Provider.MappingsContainer == null)
             {
                 FLogger.AppendError();
-                FLogger.AppendText("Mappings could not get pulled, extracting assets might not work properly. If so, press F12 or please restart.", Constants.WHITE, true);
+                FLogger.AppendText("Mappings could not get pulled, extracting packages might not work properly. If so, press F12 or please restart.", Constants.WHITE, true);
             }
 
 #if DEBUG
@@ -154,7 +154,7 @@ namespace FModel.ViewModels.Commands
             if (!(bool) openFileDialog.ShowDialog()) return;
 
             FLogger.AppendInformation();
-            FLogger.AppendText($"Backup file older than current game version is '{openFileDialog.FileName.SubstringAfterLast("\\")}'", Constants.WHITE, true);
+            FLogger.AppendText($"Backup file older than current game is '{openFileDialog.FileName.SubstringAfterLast("\\")}'", Constants.WHITE, true);
 
             await using var fileStream = new FileStream(openFileDialog.FileName, FileMode.Open);
             await using var memoryStream = new MemoryStream();

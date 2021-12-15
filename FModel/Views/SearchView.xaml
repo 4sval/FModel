@@ -28,14 +28,14 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                
+
                 <Grid Grid.Row="0" Margin="0 0 0 5" ZIndex="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    
+
                     <Grid Grid.Column="0" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -80,10 +80,10 @@
                             </Viewbox>
                         </Button>
                     </StackPanel>
-                    <TextBlock Grid.Column="2" Text="{Binding CUE4Parse.SearchVm.ResultsCount, FallbackValue=0, StringFormat={}{0:### ### ###} Loaded Assets}"
+                    <TextBlock Grid.Column="2" Text="{Binding CUE4Parse.SearchVm.ResultsCount, FallbackValue=0, StringFormat={}{0:### ### ###} Loaded Packages}"
                                VerticalAlignment="Center" HorizontalAlignment="Right" FontStyle="Italic"/>
                 </Grid>
-                
+
                 <ListView Grid.Row="1" x:Name="SearchListView" VirtualizingPanel.IsVirtualizing="True" ItemsSource="{Binding CUE4Parse.SearchVm.SearchResultsView, IsAsync=True}">
                     <ListView.Resources>
                         <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
@@ -124,7 +124,7 @@
                                         <Setter.Value>
                                             <ControlTemplate>
                                                 <Grid>
-                                                    <TextBlock Text="No folder found in packages, make sure you loaded one" FontWeight="SemiBold" TextAlignment="Center"
+                                                    <TextBlock Text="No folder found in archives, make sure you loaded at least one" FontWeight="SemiBold" TextAlignment="Center"
                                                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" Margin="0 10 0 0" />
                                                 </Grid>
                                             </ControlTemplate>
@@ -154,7 +154,7 @@
                                         </Canvas>
                                     </Viewbox>
                                 </MenuItem.Icon>
-                                <MenuItem Header="File Path" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="Package Path" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Path" />
@@ -162,7 +162,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="File Name" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="Package Name" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Name" />
@@ -178,7 +178,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="File Path w/o Extension" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="Package Path w/o Extension" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Path_No_Extension" />
@@ -186,7 +186,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="File Name w/o Extension" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="Package Name w/o Extension" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Name_No_Extension" />

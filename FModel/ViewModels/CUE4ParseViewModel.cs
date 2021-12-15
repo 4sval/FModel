@@ -372,9 +372,7 @@ namespace FModel.ViewModels
         /// <remarks>Functions only when LoadLocalizedResources is used prior to this (Asval: Why?).</remarks>
         private async Task LoadHotfixedLocalizedResources()
         {
-            if (Game != FGame.FortniteGame) return;
-
-            if (HotfixedResourcesDone) return;
+            if (Game != FGame.FortniteGame || HotfixedResourcesDone) return;
             await _threadWorkerView.Begin(cancellationToken =>
             {
                 var hotfixes = ApplicationService.ApiEndpointView.BenbotApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
@@ -610,13 +608,10 @@ namespace FModel.ViewModels
                     break;
                 }
                 case "ufont":
-                    FLogger.AppendWarning();
-                    FLogger.AppendText($"Export '{fileName}' and change its extension if you want it to be an installable font file", Constants.WHITE, true);
-                    break;
                 case "otf":
                 case "ttf":
                     FLogger.AppendWarning();
-                    FLogger.AppendText($"Export '{fileName}' if you want it to be an installable font file", Constants.WHITE, true);
+                    FLogger.AppendText($"Export '{fileName}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true);
                     break;
                 case "ushaderbytecode":
                 case "ushadercode":
@@ -632,7 +627,7 @@ namespace FModel.ViewModels
                 default:
                 {
                     FLogger.AppendWarning();
-                    FLogger.AppendText($"The file '{fileName}' is of an unknown type.", Constants.WHITE, true);
+                    FLogger.AppendText($"The package '{fileName}' is of an unknown type.", Constants.WHITE, true);
                     break;
                 }
             }
