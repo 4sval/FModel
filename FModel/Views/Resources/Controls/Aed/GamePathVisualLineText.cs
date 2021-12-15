@@ -32,13 +32,7 @@ namespace FModel.Views.Resources.Controls
             return base.CreateTextRun(startVisualColumn, context);
         }
 
-        private bool GamePathIsClickable()
-        {
-            if (string.IsNullOrEmpty(_gamePath))
-                return false;
-
-            return (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
-        }
+        private bool GamePathIsClickable() => !string.IsNullOrEmpty(_gamePath) && Keyboard.Modifiers == ModifierKeys.None;
 
         protected override void OnQueryCursor(QueryCursorEventArgs e)
         {
@@ -49,7 +43,7 @@ namespace FModel.Views.Resources.Controls
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if (e.ChangedButton != MouseButton.Right && (e.ChangedButton != MouseButton.Left || !GamePathIsClickable()))
+            if (e.ChangedButton != MouseButton.Left || !GamePathIsClickable())
                 return;
             if (e.Handled || OnGamePathClicked == null)
                 return;
