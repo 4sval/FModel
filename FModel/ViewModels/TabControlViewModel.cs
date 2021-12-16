@@ -4,22 +4,16 @@ using FModel.Framework;
 using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Controls;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
-
 using Microsoft.Win32;
-
 using Serilog;
-
 using SkiaSharp;
-
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace FModel.ViewModels

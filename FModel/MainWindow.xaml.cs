@@ -11,7 +11,6 @@ using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-using ICSharpCode.AvalonEdit.Editing;
 
 namespace FModel
 {
@@ -27,18 +26,12 @@ namespace FModel
 
         public MainWindow()
         {
-            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoExportData", typeof(MainWindow), new InputGestureCollection
-                {new KeyGesture(UserSettings.Default.AutoExportData.Key, UserSettings.Default.AutoExportData.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveProps", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoSaveProps.Key, UserSettings.Default.AutoSaveProps.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveTextures", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoSaveTextures.Key, UserSettings.Default.AutoSaveTextures.Modifiers)}), OnAutoTriggerExecuted));
-            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveAnimations", typeof(MainWindow), new InputGestureCollection
-                {new KeyGesture(UserSettings.Default.AutoSaveAnimations.Key, UserSettings.Default.AutoSaveAnimations.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoOpenSounds", typeof(MainWindow), new InputGestureCollection
                 {new KeyGesture(UserSettings.Default.AutoOpenSounds.Key, UserSettings.Default.AutoOpenSounds.Modifiers)}), OnAutoTriggerExecuted));
-            CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoOpenMeshes", typeof(MainWindow), new InputGestureCollection
-                {new KeyGesture(UserSettings.Default.AutoOpenMeshes.Key, UserSettings.Default.AutoOpenMeshes.Modifiers)}), OnAutoTriggerExecuted));
             CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection {new KeyGesture(Key.F12)}), OnMappingsReload));
             CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (s, e) => OnOpenAvalonFinder()));
 
@@ -91,7 +84,7 @@ namespace FModel
 
         private void OnWindowKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.OriginalSource is TextArea or TextBox)
+            if (e.OriginalSource is TextBox)
                 return;
 
             if (_threadWorkerView.CanBeCanceled && e.Key == Key.Escape)
@@ -137,23 +130,14 @@ namespace FModel
         {
             switch ((e.Command as RoutedCommand)?.Name)
             {
-                case "AutoExportData":
-                    UserSettings.Default.IsAutoExportData = !UserSettings.Default.IsAutoExportData;
-                    break;
                 case "AutoSaveProps":
                     UserSettings.Default.IsAutoSaveProps = !UserSettings.Default.IsAutoSaveProps;
                     break;
                 case "AutoSaveTextures":
                     UserSettings.Default.IsAutoSaveTextures = !UserSettings.Default.IsAutoSaveTextures;
                     break;
-                case "AutoSaveAnimations":
-                    UserSettings.Default.IsAutoSaveAnimations = !UserSettings.Default.IsAutoSaveAnimations;
-                    break;
                 case "AutoOpenSounds":
                     UserSettings.Default.IsAutoOpenSounds = !UserSettings.Default.IsAutoOpenSounds;
-                    break;
-                case "AutoOpenMeshes":
-                    UserSettings.Default.IsAutoOpenMeshes = !UserSettings.Default.IsAutoOpenMeshes;
                     break;
             }
         }

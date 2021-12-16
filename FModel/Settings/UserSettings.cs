@@ -51,6 +51,13 @@ namespace FModel.Settings
             set => SetProperty(ref _outputDirectory, value);
         }
 
+        private string _modelDirectory;
+        public string ModelDirectory
+        {
+            get => _modelDirectory;
+            set => SetProperty(ref _modelDirectory, value);
+        }
+
         private string _gameDirectory;
         public string GameDirectory
         {
@@ -58,18 +65,25 @@ namespace FModel.Settings
             set => SetProperty(ref _gameDirectory, value);
         }
 
+        private bool _overwriteMapping;
+        public bool OverwriteMapping
+        {
+            get => _overwriteMapping;
+            set => SetProperty(ref _overwriteMapping, value);
+        }
+
+        private string _mappingFilePath;
+        public string MappingFilePath
+        {
+            get => _mappingFilePath;
+            set => SetProperty(ref _mappingFilePath, value);
+        }
+
         private int _lastOpenedSettingTab;
         public int LastOpenedSettingTab
         {
             get => _lastOpenedSettingTab;
             set => SetProperty(ref _lastOpenedSettingTab, value);
-        }
-
-        private bool _isAutoExportData;
-        public bool IsAutoExportData
-        {
-            get => _isAutoExportData;
-            set => SetProperty(ref _isAutoExportData, value);
         }
 
         private bool _isAutoSaveProps;
@@ -86,25 +100,11 @@ namespace FModel.Settings
             set => SetProperty(ref _isAutoSaveTextures, value);
         }
 
-        private bool _isAutoSaveAnimations;
-        public bool IsAutoSaveAnimations
-        {
-            get => _isAutoSaveAnimations;
-            set => SetProperty(ref _isAutoSaveAnimations, value);
-        }
-
         private bool _isAutoOpenSounds = true;
         public bool IsAutoOpenSounds
         {
             get => _isAutoOpenSounds;
             set => SetProperty(ref _isAutoOpenSounds, value);
-        }
-
-        private bool _isAutoOpenMeshes = true;
-        public bool IsAutoOpenMeshes
-        {
-            get => _isAutoOpenMeshes;
-            set => SetProperty(ref _isAutoOpenMeshes, value);
         }
 
         private bool _isLoggerExpanded = true;
@@ -235,7 +235,7 @@ namespace FModel.Settings
         private IDictionary<FGame, EGame> _overridedGame = new Dictionary<FGame, EGame>
         {
             {FGame.Unknown, EGame.GAME_UE4_LATEST},
-            {FGame.FortniteGame, EGame.GAME_UE4_LATEST},
+            {FGame.FortniteGame, EGame.GAME_UE5_LATEST},
             {FGame.ShooterGame, EGame.GAME_Valorant},
             {FGame.DeadByDaylight, EGame.GAME_UE4_LATEST},
             {FGame.OakGame, EGame.GAME_Borderlands3},
@@ -257,33 +257,6 @@ namespace FModel.Settings
         {
             get => _overridedGame;
             set => SetProperty(ref _overridedGame, value);
-        }
-
-        private IDictionary<FGame, UE4Version> _overridedUEVersion = new Dictionary<FGame, UE4Version>
-        {
-            {FGame.Unknown, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.FortniteGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.ShooterGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.DeadByDaylight, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.OakGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Dungeons, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.WorldExplorers, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.g3, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.StateOfDecay2, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Prospect, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Indiana, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.RogueCompany, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.SwGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Platform, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.BendGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.TslGame, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.PortalWars, UE4Version.VER_UE4_DETERMINE_BY_GAME},
-            {FGame.Gameface, UE4Version.VER_UE4_DETERMINE_BY_GAME}
-        };
-        public IDictionary<FGame, UE4Version> OverridedUEVersion
-        {
-            get => _overridedUEVersion;
-            set => SetProperty(ref _overridedUEVersion, value);
         }
 
         private IDictionary<FGame, List<FCustomVersion>> _overridedCustomVersions = new Dictionary<FGame, List<FCustomVersion>>
@@ -364,7 +337,15 @@ namespace FModel.Settings
                     new("Weapon Renders", "ShooterGame/Content/UI/Screens/OutOfGame/MainMenu/Collection/Assets/Large/")
                 }
             },
-            {FGame.DeadByDaylight, new List<CustomDirectory>()},
+            {
+                FGame.DeadByDaylight, new List<CustomDirectory>
+                {
+                    new("Audio", "DeadByDaylight/Content/WwiseAudio/Windows/"),
+                    new("Characters", "DeadByDaylight/Content/Characters/"),
+                    new("Icons", "DeadByDaylight/Content/UI/UMGAssets/Icons/"),
+                    new("Strings", "DeadByDaylight/Content/Localization/")
+                }
+            },
             {FGame.OakGame, new List<CustomDirectory>()},
             {
                 FGame.Dungeons, new List<CustomDirectory>
@@ -462,46 +443,25 @@ namespace FModel.Settings
             set => SetProperty(ref _assetRemoveTab, value);
         }
 
-        private Hotkey _autoExportData = new(Key.F1);
-        public Hotkey AutoExportData
-        {
-            get => _autoExportData;
-            set => SetProperty(ref _autoExportData, value);
-        }
-
-        private Hotkey _autoSaveProps = new(Key.F2);
+        private Hotkey _autoSaveProps = new(Key.F1);
         public Hotkey AutoSaveProps
         {
             get => _autoSaveProps;
             set => SetProperty(ref _autoSaveProps, value);
         }
 
-        private Hotkey _autoSaveTextures = new(Key.F3);
+        private Hotkey _autoSaveTextures = new(Key.F2);
         public Hotkey AutoSaveTextures
         {
             get => _autoSaveTextures;
             set => SetProperty(ref _autoSaveTextures, value);
         }
 
-        private Hotkey _autoSaveAnimations = new(Key.F4);
-        public Hotkey AutoSaveAnimations
-        {
-            get => _autoSaveAnimations;
-            set => SetProperty(ref _autoSaveAnimations, value);
-        }
-
-        private Hotkey _autoOpenSounds = new(Key.F5);
+        private Hotkey _autoOpenSounds = new(Key.F3);
         public Hotkey AutoOpenSounds
         {
             get => _autoOpenSounds;
             set => SetProperty(ref _autoOpenSounds, value);
-        }
-
-        private Hotkey _autoOpenMeshes = new(Key.F6);
-        public Hotkey AutoOpenMeshes
-        {
-            get => _autoOpenMeshes;
-            set => SetProperty(ref _autoOpenMeshes, value);
         }
 
         private Hotkey _addAudio = new(Key.N, ModifierKeys.Control);
@@ -544,6 +504,85 @@ namespace FModel.Settings
         {
             get => _lodExportFormat;
             set => SetProperty(ref _lodExportFormat, value);
+        }
+
+        private bool _previewStaticMeshes = true;
+        public bool PreviewStaticMeshes
+        {
+            get => _previewStaticMeshes;
+            set
+            {
+                SetProperty(ref _previewStaticMeshes, value);
+                if (_previewStaticMeshes && SaveStaticMeshes)
+                    SaveStaticMeshes = false;
+            }
+        }
+
+        private bool _previewSkeletalMeshes = true;
+        public bool PreviewSkeletalMeshes
+        {
+            get => _previewSkeletalMeshes;
+            set
+            {
+                SetProperty(ref _previewSkeletalMeshes, value);
+                if (_previewSkeletalMeshes && SaveSkeletalMeshes)
+                    SaveSkeletalMeshes = false;
+            }
+        }
+
+        private bool _previewMaterials = true;
+        public bool PreviewMaterials
+        {
+            get => _previewMaterials;
+            set
+            {
+                SetProperty(ref _previewMaterials, value);
+                if (_previewMaterials && SaveMaterials)
+                    SaveMaterials = false;
+            }
+        }
+
+        private bool _saveStaticMeshes;
+        public bool SaveStaticMeshes
+        {
+            get => _saveStaticMeshes;
+            set
+            {
+                SetProperty(ref _saveStaticMeshes, value);
+                if (_saveStaticMeshes && PreviewStaticMeshes)
+                    PreviewStaticMeshes = false;
+            }
+        }
+
+        private bool _saveSkeletalMeshes;
+        public bool SaveSkeletalMeshes
+        {
+            get => _saveSkeletalMeshes;
+            set
+            {
+                SetProperty(ref _saveSkeletalMeshes, value);
+                if (_saveSkeletalMeshes && PreviewSkeletalMeshes)
+                    PreviewSkeletalMeshes = false;
+            }
+        }
+
+        private bool _saveMaterials;
+        public bool SaveMaterials
+        {
+            get => _saveMaterials;
+            set
+            {
+                SetProperty(ref _saveMaterials, value);
+                if (_saveMaterials && PreviewMaterials)
+                    PreviewMaterials = false;
+            }
+        }
+
+        private bool _saveAnimations;
+        public bool SaveAnimations
+        {
+            get => _saveAnimations;
+            set => SetProperty(ref _saveAnimations, value);
         }
 
         private bool _saveSkeletonAsMesh;

@@ -142,10 +142,10 @@ namespace FModel.Creator.Bases.FN
             if (property.TryGetValue(out FStructFallback curve, "Curve") &&
                 curve.TryGetValue(out FName rowName, "RowName") &&
                 curve.TryGetValue(out UCurveTable curveTable, "CurveTable") &&
-                curveTable.TryGetCurveTableRow(rowName.Text, StringComparison.OrdinalIgnoreCase, out var rowValue) &&
-                rowValue.TryGetValue(out FSimpleCurveKey[] keys, "Keys") && keys.Length > 0)
+                curveTable.TryFindCurve(rowName, out var rowValue) &&
+                rowValue is FSimpleCurve s && s.Keys.Length > 0)
             {
-                statValue = keys[0].Value;
+                statValue = s.Keys[0].Value;
                 return true;
             }
 
@@ -274,6 +274,8 @@ namespace FModel.Creator.Bases.FN
             c.DrawText(_value.ToString(), new SKPoint(width - 50, y + 10), _statPaint);
 
             if (_maxValue < 1 || !float.TryParse(_value.ToString(), out var floatValue)) return;
+            if (floatValue < 0)
+                floatValue = 0;
             var sliderWidth = (sliderRight - height * 2) * (floatValue / _maxValue);
             c.DrawRect(new SKRect(height * 2, y, Math.Min(height * 2 + sliderWidth, sliderRight), y + 5), _statPaint);
         }

@@ -49,8 +49,8 @@ namespace FModel.ViewModels
             private set => SetProperty(ref _mountPoint, value);
         }
 
-        private UE4Version _version;
-        public UE4Version Version
+        private int _version;
+        public int Version
         {
             get => _version;
             private set => SetProperty(ref _version, value);
@@ -61,7 +61,7 @@ namespace FModel.ViewModels
         public RangeObservableCollection<TreeItem> Folders { get; }
         public ICollectionView FoldersView { get; }
 
-        public TreeItem(string header, string package, string mountPoint, UE4Version version, string pathHere)
+        public TreeItem(string header, string package, string mountPoint, int version, string pathHere)
         {
             Header = header;
             Package = package;
@@ -129,7 +129,7 @@ namespace FModel.ViewModels
                             if (lastNode == null)
                             {
                                 var nodePath = builder.ToString();
-                                lastNode = new TreeItem(folder, item.Package, entry.Vfs.MountPoint, entry.Vfs.Ver, nodePath[..^1]);
+                                lastNode = new TreeItem(folder, item.Package, entry.Vfs.MountPoint, entry.Vfs.Ver.Value, nodePath[..^1]);
                                 lastNode.Folders.SetSuppressionState(true);
                                 lastNode.AssetsList.Assets.SetSuppressionState(true);
                                 parentNode.Add(lastNode);

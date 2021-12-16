@@ -34,15 +34,15 @@
             <ColumnDefinition Width="10" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        
+
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Text="Because it looks like it's pretty hard to understand, you don't load backups, you load your files and compare them with the backup. Also, by clicking the download button you don't create your own backup you download a pre-made one. Kinda crazy we have to explain this, who will even read anyway..." />
-        
+                   Text="You can only use backup files when loading new &amp; modified archives. FModel will compare your local archives with the backup file you selected to filter packages and only show what you asked. We provide pre-created backups for some popular games but you can still create your own that will store information about all the game's packages at time T, for later use." />
+
         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="OnCreateBackupClick"
                 Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Content="Create" />
-        
+
         <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" Tag="PRE-CREATED BACKUP FILES" />
-        
+
         <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center"
                    Text="{Binding SelectedBackup.FileSize, Converter={x:Static converters:SizeToStringConverter.Instance}, FallbackValue='Backup', StringFormat={}Backup ({0})}" />
         <ComboBox Grid.Row="4" Grid.Column="2" ItemsSource="{Binding BackupsView}" SelectedItem="{Binding SelectedBackup, Mode=TwoWay}">

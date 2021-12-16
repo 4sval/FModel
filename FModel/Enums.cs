@@ -20,6 +20,7 @@ namespace FModel
     {
         Restart,
         ReloadLocres,
+        CheckForUpdates,
         Nothing
     }
 

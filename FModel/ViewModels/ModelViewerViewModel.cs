@@ -1,19 +1,25 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Media3D;
+using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.Utils;
+using CUE4Parse_Conversion.Materials;
 using CUE4Parse_Conversion.Meshes;
+using CUE4Parse_Conversion.Meshes.glTF;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
@@ -25,10 +31,18 @@ using HelixToolkit.Wpf.SharpDX;
 using Ookii.Dialogs.Wpf;
 using Serilog;
 using SharpDX;
+using SharpGLTF.Geometry;
+using SharpGLTF.Geometry.VertexTypes;
+using SharpGLTF.Scenes;
+using SharpGLTF.Schema2;
+using SharpGLTF.Transforms;
 using SkiaSharp;
 using Camera = HelixToolkit.Wpf.SharpDX.Camera;
 using Geometry3D = HelixToolkit.SharpDX.Core.Geometry3D;
 using PerspectiveCamera = HelixToolkit.Wpf.SharpDX.PerspectiveCamera;
+using Vector2 = SharpDX.Vector2;
+using Vector3 = SharpDX.Vector3;
+using VERTEX = SharpGLTF.Geometry.VertexTypes.VertexPositionNormalTangent;
 
 namespace FModel.ViewModels
 {
@@ -36,7 +50,6 @@ namespace FModel.ViewModels
     {
         private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
 
-        #region BINDINGS
         private EffectsManager _effectManager;
         public EffectsManager EffectManager
         {
@@ -51,43 +64,11 @@ namespace FModel.ViewModels
             set => SetProperty(ref _cam, value);
         }
 
-        private Geometry3D _xAxis;
-        public Geometry3D XAxis
-        {
-            get => _xAxis;
-            set => SetProperty(ref _xAxis, value);
-        }
-
-        private Geometry3D _yAxis;
-        public Geometry3D YAxis
-        {
-            get => _yAxis;
-            set => SetProperty(ref _yAxis, value);
-        }
-
-        private Geometry3D _zAxis;
-        public Geometry3D ZAxis
-        {
-            get => _zAxis;
-            set => SetProperty(ref _zAxis, value);
-        }
-
         private ModelAndCam _selectedModel; // selected mesh
         public ModelAndCam SelectedModel
         {
             get => _selectedModel;
-            set
-            {
-                SetProperty(ref _selectedModel, value);
-                if (_selectedModel == null) return;
-
-                XAxis = _selectedModel.XAxis;
-                YAxis = _selectedModel.YAxis;
-                ZAxis = _selectedModel.ZAxis;
-                Cam.UpDirection = new Vector3D(0, 1, 0);
-                Cam.Position = _selectedModel.Position;
-                Cam.LookDirection = _selectedModel.LookDirection;
-            }
+            set => SetProperty(ref _selectedModel, value);
         }
 
         private readonly ObservableCollection<ModelAndCam> _loadedModels; // mesh list
@@ -103,7 +84,6 @@ namespace FModel.ViewModels
         public bool CanAppend => SelectedModel != null;
 
         public TextureModel HDRi { get; private set; }
-        #endregion
 
         private readonly FGame _game;
         private readonly int[] _facesIndex = { 1, 0, 2 };
@@ -133,70 +113,64 @@ namespace FModel.ViewModels
 
             ModelAndCam p;
             if (AppendMode && CanAppend)
+            {
                 p = SelectedModel;
+                _loadedModels.Add(new ModelAndCam(export) {IsVisible = false});
+            }
             else
             {
                 p = new ModelAndCam(export);
                 _loadedModels.Add(p);
             }
 
-            bool valid = false;
             await _threadWorkerView.Begin(_ =>
             {
-                valid = export switch
+                switch (export)
                 {
-                    UStaticMesh st => TryLoadStaticMesh(st, p),
-                    USkeletalMesh sk => TryLoadSkeletalMesh(sk, p),
-                    UMaterialInstance mi => TryLoadMaterialInstance(mi, p),
-                    _ => throw new ArgumentOutOfRangeException(nameof(export))
-                };
+                    case UStaticMesh st:
+                        LoadStaticMesh(st, p);
+                        break;
+                    case USkeletalMesh sk:
+                        LoadSkeletalMesh(sk, p);
+                        break;
+                    case UMaterialInstance mi:
+                        LoadMaterialInstance(mi, p);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(export));
+                }
             });
-            if (!valid) return;
+
+            if (AppendMode && CanAppend) return;
             SelectedModel = p;
+            Cam.UpDirection = new Vector3D(0, 1, 0);
+            Cam.Position = p.Position;
+            Cam.LookDirection = p.LookDirection;
         }
 
         #region PUBLIC METHODS
         public void RenderingToggle()
         {
             if (SelectedModel == null) return;
-            foreach (var g in SelectedModel.Group3d)
-            {
-                if (g is not MeshGeometryModel3D geometryModel)
-                    continue;
-
-                geometryModel.IsRendering = !geometryModel.IsRendering;
-            }
+            SelectedModel.RenderingToggle = !SelectedModel.RenderingToggle;
         }
 
         public void WirefreameToggle()
         {
             if (SelectedModel == null) return;
-            foreach (var g in SelectedModel.Group3d)
-            {
-                if (g is not MeshGeometryModel3D geometryModel)
-                    continue;
+            SelectedModel.WireframeToggle = !SelectedModel.WireframeToggle;
+        }
 
-                geometryModel.RenderWireframe = !geometryModel.RenderWireframe;
-            }
+        public void MaterialColorToggle()
+        {
+            if (SelectedModel == null) return;
+            SelectedModel.ShowMaterialColor = !SelectedModel.ShowMaterialColor;
         }
 
         public void DiffuseOnlyToggle()
         {
             if (SelectedModel == null) return;
-            foreach (var g in SelectedModel.Group3d)
-            {
-                if (g is not MeshGeometryModel3D { Material: PBRMaterial mat })
-                    continue;
-
-                //mat.RenderAmbientOcclusionMap = !mat.RenderAmbientOcclusionMap;
-                mat.RenderDisplacementMap = !mat.RenderDisplacementMap;
-                //mat.RenderEmissiveMap = !mat.RenderEmissiveMap;
-                mat.RenderEnvironmentMap = !mat.RenderEnvironmentMap;
-                mat.RenderIrradianceMap = !mat.RenderIrradianceMap;
-                mat.RenderRoughnessMetallicMap = !mat.RenderRoughnessMetallicMap;
-                mat.RenderShadowMap = !mat.RenderShadowMap;
-                mat.RenderNormalMap = !mat.RenderNormalMap;
-            }
+            SelectedModel.DiffuseOnlyToggle = !SelectedModel.DiffuseOnlyToggle;
         }
 
         public void FocusOnSelectedMesh()
@@ -204,83 +178,170 @@ namespace FModel.ViewModels
             Cam.AnimateTo(SelectedModel.Position, SelectedModel.LookDirection, new Vector3D(0, 1, 0), 500);
         }
 
-        public void SaveLoadedModels()
+        public async Task SaveLoadedModels()
         {
             if (_loadedModels.Count < 1) return;
 
             var folderBrowser = new VistaFolderBrowserDialog {ShowNewFolderButton = true};
             if (folderBrowser.ShowDialog() == false) return;
 
+            await _threadWorkerView.Begin(_ =>
+            {
+                foreach (var model in _loadedModels)
+                {
+                    var toSave = new CUE4Parse_Conversion.Exporter(model.Export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
+                    if (toSave.TryWriteToDir(new DirectoryInfo(folderBrowser.SelectedPath), out var savedFileName))
+                    {
+                        Log.Information("Successfully saved {FileName}", savedFileName);
+                        FLogger.AppendInformation();
+                        FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+                    }
+                    else
+                    {
+                        Log.Error("{FileName} could not be saved", savedFileName);
+                        FLogger.AppendError();
+                        FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
+                    }
+                }
+            });
+        }
+
+        public void SaveAsScene()
+        {
+            if (_loadedModels.Count < 1) return;
+
+            var fileBrowser = new VistaSaveFileDialog
+            {
+                Title = "Save Loaded Models As...",
+                DefaultExt = ".glb",
+                Filter = "glTF Binary File (*.glb)|*.glb|glTF ASCII File (*.gltf)|*.gltf|All Files(*.*)|*.*",
+                AddExtension = true,
+                OverwritePrompt = true,
+                CheckPathExists = true
+            };
+
+            if (fileBrowser.ShowDialog() == false || string.IsNullOrEmpty(fileBrowser.FileName)) return;
+
+            var sceneBuilder = new SceneBuilder();
+            var materialExports = new List<MaterialExporter>();
             foreach (var model in _loadedModels)
             {
-                var toSave = new CUE4Parse_Conversion.Exporter(model.Export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
-                if (toSave.TryWriteToDir(new DirectoryInfo(folderBrowser.SelectedPath), out var savedFileName))
+                switch (model.Export)
                 {
-                    Log.Information("Successfully saved {FileName}", savedFileName);
-                    FLogger.AppendInformation();
-                    FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+                    case UStaticMesh sm:
+                    {
+                        var mesh = new MeshBuilder<VERTEX, VertexColorXTextureX, VertexEmpty>(sm.Name);
+                        if (sm.TryConvert(out var convertedMesh) && convertedMesh.LODs.Count > 0)
+                        {
+                            var lod = convertedMesh.LODs.First();
+                            for (var i = 0; i < lod.Sections.Value.Length; i++)
+                            {
+                                Gltf.ExportStaticMeshSections(i, lod, lod.Sections.Value[i], materialExports, mesh);
+                            }
+                            sceneBuilder.AddRigidMesh(mesh, AffineTransform.Identity);
+                        }
+                        break;
+                    }
+                    case USkeletalMesh sk:
+                    {
+                        var mesh = new MeshBuilder<VERTEX, VertexColorXTextureX, VertexJoints4>(sk.Name);
+
+                        if (sk.TryConvert(out var convertedMesh) && convertedMesh.LODs.Count > 0)
+                        {
+                            var lod = convertedMesh.LODs.First();
+                            for (var i = 0; i < lod.Sections.Value.Length; i++)
+                            {
+                                Gltf.ExportSkelMeshSections(i, lod, lod.Sections.Value[i], materialExports, mesh);
+                            }
+                            var armatureNodeBuilder = new NodeBuilder(sk.Name+".ao");
+                            var armature = Gltf.CreateGltfSkeleton(convertedMesh.RefSkeleton, armatureNodeBuilder);
+                            sceneBuilder.AddSkinnedMesh(mesh, Matrix4x4.Identity, armature);
+                        }
+                        break;
+                    }
                 }
-                else
-                {
-                    Log.Error("{FileName} could not be saved", savedFileName);
-                    FLogger.AppendError();
-                    FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
-                }
+            }
+
+            var scene = sceneBuilder.ToGltf2();
+            var fileName = fileBrowser.FileName;
+            if (fileName.EndsWith(".glb", StringComparison.OrdinalIgnoreCase))
+                scene.SaveGLB(fileName);
+            else if (fileName.EndsWith(".gltf", StringComparison.OrdinalIgnoreCase))
+                scene.SaveGLTF(fileName);
+            else if (fileName.EndsWith(".obj", StringComparison.OrdinalIgnoreCase))
+                scene.SaveAsWavefront(fileName);
+            else
+                throw new ArgumentOutOfRangeException(nameof(fileName),$@"Unknown file format {fileName. SubstringAfterWithLast('.')}");
+
+            if (!CheckIfSaved(fileName)) return;
+            foreach (var materialExport in materialExports)
+            {
+                materialExport.TryWriteToDir(new DirectoryInfo(StringUtils.SubstringBeforeWithLast(fileName, '\\')), out _);
             }
         }
 
         public void CopySelectedMaterialName()
         {
-            if (SelectedModel is not { } m || m.SelectedGeometry is null)
+            if (SelectedModel is not { } m || m.SelectedGeometry?.Tag is null)
                 return;
 
-            Clipboard.SetText(m.SelectedGeometry.Name.TrimEnd());
+            Clipboard.SetText(m.SelectedGeometry.DisplayName.TrimEnd());
         }
 
-        public async Task<bool> TryChangeSelectedMaterial(UMaterialInstance materialInstance)
+        public async Task<bool> TryOverwriteMaterial(UMaterialInstance materialInstance)
         {
-            if (SelectedModel is not { } model || model.SelectedGeometry is null)
-                return false;
+            if (SelectedModel?.SelectedGeometry == null || _loadedModels.Count < 1) return false;
 
             PBRMaterial m = null;
             await _threadWorkerView.Begin(_ =>
             {
-                var (material, _, _) = LoadMaterial(materialInstance);
-                m = material;
+                (m, var _, var _) = LoadMaterial(materialInstance);
+
+                var obj = new ResolvedLoadedObject(materialInstance);
+                switch (_loadedModels[SelectedModel.SelectedGeometry.ExportIndex].Export)
+                {
+                    case UStaticMesh { Materials: { } } st:
+                        st.Materials[SelectedModel.SelectedGeometry.MaterialIndex] = obj;
+                        break;
+                    case USkeletalMesh sk:
+                        sk.Materials[SelectedModel.SelectedGeometry.MaterialIndex].Material = obj;
+                        break;
+                    case UMaterialInstance:
+                        SelectedModel.SwapExport(materialInstance);
+                        break;
+                }
             });
 
-            if (m == null) return false;
-            model.SelectedGeometry.Material = m;
-            return true;
+            SelectedModel.SelectedGeometry.Material = m;
+            return m != null;
         }
         #endregion
 
-        private bool TryLoadMaterialInstance(UMaterialInstance materialInstance, ModelAndCam cam)
+        private void LoadMaterialInstance(UMaterialInstance materialInstance, ModelAndCam cam)
         {
             var builder = new MeshBuilder();
-            builder.AddSphere(Vector3.Zero, 10);
-            cam.TriangleCount = 1984; // no need to count
+            builder.AddBox(Vector3.Zero, 10, 10, 10);
+            cam.TriangleCount = 12; // no need to count
 
-            SetupCameraAndAxis(new FBox(new FVector(-11), new FVector(11)), cam);
+            SetupCameraAndAxis(new FBox(new FVector(-8), new FVector(8)), cam);
             var (m, isRendering, isTransparent) = LoadMaterial(materialInstance);
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                cam.Group3d.Add(new MeshGeometryModel3D
+                cam.Group3d.Add(new CustomMeshGeometryModel3D
                 {
-                    Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
-                    Name = FixName(materialInstance.Name), Geometry = builder.ToMeshGeometry3D(),
-                    Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+                    Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0,1,0), -45)),
+                    DisplayName = materialInstance.Name, Geometry = builder.ToMeshGeometry3D(), MaterialIndex = 0,
+                    Material = m, IsTransparent = isTransparent, IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
                 });
             });
-            return true;
         }
 
-        private bool TryLoadStaticMesh(UStaticMesh mesh, ModelAndCam cam)
+        private void LoadStaticMesh(UStaticMesh mesh, ModelAndCam cam)
         {
             if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
             {
-                return false;
+                return;
             }
 
             SetupCameraAndAxis(convertedMesh.BoundingBox, cam);
@@ -290,15 +351,13 @@ namespace FModel.ViewModels
                 PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, cam);
                 break;
             }
-
-            return true;
         }
 
-        private bool TryLoadSkeletalMesh(USkeletalMesh mesh, ModelAndCam cam)
+        private void LoadSkeletalMesh(USkeletalMesh mesh, ModelAndCam cam)
         {
             if (!mesh.TryConvert(out var convertedMesh) || convertedMesh.LODs.Count <= 0)
             {
-                return false;
+                return;
             }
 
             SetupCameraAndAxis(convertedMesh.BoundingBox, cam);
@@ -308,16 +367,16 @@ namespace FModel.ViewModels
                 PushLod(lod.Sections.Value, lod.Verts, lod.Indices.Value, cam);
                 break;
             }
-
-            return true;
         }
 
         private void PushLod(CMeshSection[] sections, CMeshVertex[] verts, FRawStaticIndexBuffer indices, ModelAndCam cam)
         {
-            foreach (var section in sections) // each section is a mesh part with its own material
+            for (int i = 0; i < sections.Length; i++) // each section is a mesh part with its own material
             {
+                var section = sections[i];
                 var builder = new MeshBuilder();
                 cam.TriangleCount += section.NumFaces; // NumFaces * 3 (triangle) = next section FirstIndex
+
                 for (var j = 0; j < section.NumFaces; j++) // draw a triangle for each face
                 {
                     foreach (var t in _facesIndex) // triangle face 1 then 0 then 2
@@ -327,22 +386,23 @@ namespace FModel.ViewModels
                         var p = new Vector3(vert.Position.X, vert.Position.Z, vert.Position.Y); // up direction is Y
                         var n = new Vector3(vert.Normal.X, vert.Normal.Z, vert.Normal.Y);
                         n.Normalize();
-                        var uv = new Vector2(vert.UV.U, vert.UV.V);
-                        builder.AddNode(p, n, uv);
+
+                        builder.AddNode(p, n, new Vector2(vert.UV.U, vert.UV.V));
                         builder.TriangleIndices.Add(j * 3 + t); // one mesh part is "j * 3 + t" use "id" if you're building the full mesh
                     }
                 }
 
-                if (section.Material == null || !section.Material.TryLoad<UMaterialInterface>(out var unrealMaterial))
+                if (section.Material == null || !section.Material.TryLoad(out var o) || o is not UMaterialInterface material)
                     continue;
 
-                var (m, isRendering, isTransparent) = LoadMaterial(unrealMaterial);
+                var (m, isRendering, isTransparent) = LoadMaterial(material);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    cam.Group3d.Add(new MeshGeometryModel3D
+                    cam.Group3d.Add(new CustomMeshGeometryModel3D
                     {
-                        Name = FixName(unrealMaterial.Name), Geometry = builder.ToMeshGeometry3D(),
-                        Material = m, IsTransparent = isTransparent, IsRendering = isRendering
+                        DisplayName = section.MaterialName ?? material.Name, MaterialIndex = section.MaterialIndex,
+                        Geometry = builder.ToMeshGeometry3D(), Material = m, IsTransparent = isTransparent,
+                        IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
                     });
                 });
             }
@@ -350,17 +410,37 @@ namespace FModel.ViewModels
 
         private (PBRMaterial material, bool isRendering, bool isTransparent) LoadMaterial(UMaterialInterface unrealMaterial)
         {
-            var m = new PBRMaterial { RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true };
+            PBRMaterial m = null; // default
+            Application.Current.Dispatcher.Invoke(() => // tweak this later
+            {
+                m = new PBRMaterial // recreate on ui thread
+                {
+                    RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true
+                };
+            });
+
             var parameters = new CMaterialParams();
             unrealMaterial.GetParams(parameters);
 
             var isRendering = !parameters.IsNull;
             if (isRendering)
             {
-                if (parameters.Diffuse is UTexture2D diffuse)
-                    m.AlbedoMap = new TextureModel(diffuse.Decode()?.Encode().AsStream());
+                if (!parameters.HasTopDiffuseTexture && parameters.DiffuseColor is { A: > 0 } diffuseColor)
+                {
+                    Application.Current.Dispatcher.Invoke(() => m.AlbedoColor = new Color4(diffuseColor.R, diffuseColor.G, diffuseColor.B, diffuseColor.A));
+                }
+                else if (parameters.Diffuse is UTexture2D diffuse)
+                {
+                    var s = diffuse.Decode()?.Encode().AsStream();
+                    Application.Current.Dispatcher.Invoke(() => m.AlbedoMap = new TextureModel(s));
+                }
+
                 if (parameters.Normal is UTexture2D normal)
-                    m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
+                {
+                    var s = normal.Decode()?.Encode().AsStream();
+                    Application.Current.Dispatcher.Invoke(() => m.NormalMap = new TextureModel(s));
+                }
+
                 if (parameters.Specular is UTexture2D specular)
                 {
                     var mip = specular.GetFirstMip();
@@ -379,12 +459,14 @@ namespace FModel.ViewModels
                             {
                                 var offset = 0;
                                 fixed (byte* d = data)
+                                {
                                     for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
                                     {
                                         d[offset] = 0;
-                                        (d[offset+1], d[offset+2]) = (d[offset+2], d[offset+1]); // swap G and B
+                                        (d[offset + 1], d[offset + 2]) = (d[offset + 2], d[offset + 1]); // swap G and B
                                         offset += 4;
                                     }
+                                }
                             }
                             parameters.RoughnessValue = 1;
                             parameters.MetallicValue = 1;
@@ -392,20 +474,40 @@ namespace FModel.ViewModels
                         }
                         case FGame.ShooterGame:
                         {
-                            // Valorant's Specular Texture Channels
-                            // R Metallic
-                            // G Specular
-                            // B Roughness
-                            unsafe
+                            var packedPBRType = specular.Name[(specular.Name.LastIndexOf('_') + 1)..];
+                            switch (packedPBRType)
                             {
-                                var offset = 0;
-                                fixed (byte* d = data)
-                                    for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                case "MRAE": // R: Metallic, G: AO (0-127) & Emissive (128-255), B: Roughness   (Character PBR)
+                                    unsafe
                                     {
-                                        (d[offset], d[offset+2]) = (d[offset+2], d[offset]); // swap R and B
-                                        (d[offset], d[offset+1]) = (d[offset+1], d[offset]); // swap B and G
-                                        offset += 4;
+                                        var offset = 0;
+                                        fixed (byte* d = data)
+                                        {
+                                            for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                            {
+                                                (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // swap R and B
+                                                (d[offset], d[offset + 1]) = (d[offset + 1], d[offset]); // swap R and G
+                                                offset += 4;
+                                            }
+                                        }
                                     }
+                                    break;
+                                case "MRAS": // R: Metallic, B: Roughness, B: AO, A: Specular   (Legacy PBR)
+                                case "MRA":  // R: Metallic, B: Roughness, B: AO                (Environment PBR)
+                                case "MRS":  // R: Metallic, G: Roughness, B: Specular          (Weapon PBR)
+                                    unsafe
+                                    {
+                                        var offset = 0;
+                                        fixed (byte* d = data)
+                                        {
+                                            for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                            {
+                                                (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // swap R and B
+                                                offset += 4;
+                                            }
+                                        }
+                                    }
+                                    break;
                             }
                             parameters.RoughnessValue = 1;
                             parameters.MetallicValue = 1;
@@ -421,11 +523,13 @@ namespace FModel.ViewModels
                             {
                                 var offset = 0;
                                 fixed (byte* d = data)
+                                {
                                     for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
                                     {
-                                        (d[offset], d[offset+2]) = (d[offset+2], d[offset]); // swap R and B
+                                        (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // swap R and B
                                         offset += 4;
                                     }
+                                }
                             }
                             break;
                         }
@@ -441,15 +545,30 @@ namespace FModel.ViewModels
                     }
 
                     // R -> AO G -> Roughness B -> Metallic
-                    m.RoughnessMetallicMap = new TextureModel(bitmap.Encode(SKEncodedImageFormat.Png, 100).AsStream());
-                    m.RoughnessFactor = parameters.RoughnessValue;
-                    m.MetallicFactor = parameters.MetallicValue;
-                    m.RenderAmbientOcclusionMap = parameters.SpecularValue > 0;
+                    var s = bitmap.Encode(SKEncodedImageFormat.Png, 100).AsStream();
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        m.RoughnessMetallicMap = new TextureModel(s);
+                        m.RoughnessFactor = parameters.RoughnessValue;
+                        m.MetallicFactor = parameters.MetallicValue;
+                        m.RenderAmbientOcclusionMap = parameters.SpecularValue > 0;
+                    });
+                }
+
+                if (parameters.HasTopEmissiveTexture && parameters.Emissive is UTexture2D emissive && parameters.EmissiveColor is { A: > 0 } emissiveColor)
+                {
+                    var s = emissive.Decode()?.Encode().AsStream();
+                    var c = new Color4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        m.EmissiveColor = c;
+                        m.EmissiveMap = new TextureModel(s);
+                    });
                 }
             }
             else
             {
-                m.AlbedoColor = new Color4(1, 0, 0, 1);
+                Application.Current.Dispatcher.Invoke(() => m.AlbedoColor = new Color4(1, 0, 0, 1));
             }
 
             return (m, isRendering, parameters.IsTransparent);
@@ -474,15 +593,20 @@ namespace FModel.ViewModels
             cam.LookDirection = new Vector3D(-cam.Position.X + center.X, 0, -cam.Position.Z + center.Y);
         }
 
-        private string FixName(string input)
+        private bool CheckIfSaved(string path)
         {
-            if (input.Length < 1)
-                return "Material_Has_No_Name";
+            if (File.Exists(path))
+            {
+                Log.Information("Successfully saved {FileName}", path);
+                FLogger.AppendInformation();
+                FLogger.AppendText($"Successfully saved {path}", Constants.WHITE, true);
+                return true;
+            }
 
-            if (int.TryParse(input[0].ToString(), out _))
-                input = input[1..];
-
-            return input.Replace('-', '_');
+            Log.Error("{FileName} could not be saved", path);
+            FLogger.AppendError();
+            FLogger.AppendText($"Could not save '{path}'", Constants.WHITE, true);
+            return false;
         }
 
         public void Clear()
@@ -497,7 +621,7 @@ namespace FModel.ViewModels
 
     public class ModelAndCam : ViewModel
     {
-        public UObject Export { get; }
+        public UObject Export { get; private set; }
         public Point3D Position { get; set; }
         public Vector3D LookDirection { get; set; }
         public Geometry3D XAxis { get; set; }
@@ -505,8 +629,98 @@ namespace FModel.ViewModels
         public Geometry3D ZAxis { get; set; }
         public int TriangleCount { get; set; }
 
-        private MeshGeometryModel3D _selectedGeometry; // selected material
-        public MeshGeometryModel3D SelectedGeometry
+        private bool _isVisible = true;
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set => SetProperty(ref _isVisible, value);
+        }
+
+        private bool _renderingToggle;
+        public bool RenderingToggle
+        {
+            get => _renderingToggle;
+            set
+            {
+                SetProperty(ref _renderingToggle, value);
+                foreach (var g in Group3d)
+                {
+                    if (g is not CustomMeshGeometryModel3D geometryModel)
+                        continue;
+
+                    geometryModel.IsRendering = !geometryModel.IsRendering;
+                }
+            }
+        }
+
+        private bool _wireframeToggle;
+        public bool WireframeToggle
+        {
+            get => _wireframeToggle;
+            set
+            {
+                SetProperty(ref _wireframeToggle, value);
+                foreach (var g in Group3d)
+                {
+                    if (g is not CustomMeshGeometryModel3D geometryModel)
+                        continue;
+
+                    geometryModel.RenderWireframe = !geometryModel.RenderWireframe;
+                }
+            }
+        }
+
+        private bool _showMaterialColor;
+        public bool ShowMaterialColor
+        {
+            get => _showMaterialColor;
+            set
+            {
+                SetProperty(ref _showMaterialColor, value);
+                for (int i = 0; i < Group3d.Count; i++)
+                {
+                    if (Group3d[i] is not CustomMeshGeometryModel3D { Material: PBRMaterial material } m)
+                        continue;
+
+                    var index = B(i);
+                    material.RenderAlbedoMap = !_showMaterialColor;
+
+                    if (_showMaterialColor)
+                    {
+                        m.Tag = material.AlbedoColor;
+                        material.AlbedoColor = new Color4(_table[C(index)] / 255, _table[C(index >> 1)] / 255, _table[C(index >> 2)] / 255, 1);
+                    }
+                    else material.AlbedoColor = (Color4) m.Tag;
+                }
+            }
+        }
+
+        private bool _diffuseOnlyToggle;
+        public bool DiffuseOnlyToggle
+        {
+            get => _diffuseOnlyToggle;
+            set
+            {
+                SetProperty(ref _diffuseOnlyToggle, value);
+                foreach (var g in Group3d)
+                {
+                    if (g is not CustomMeshGeometryModel3D { Material: PBRMaterial material })
+                        continue;
+
+                    material.RenderAmbientOcclusionMap = !material.RenderAmbientOcclusionMap;
+                    material.RenderDisplacementMap = !material.RenderDisplacementMap;
+                    // material.RenderEmissiveMap = !material.RenderEmissiveMap;
+                    // material.RenderEnvironmentMap = !material.RenderEnvironmentMap;
+                    material.RenderIrradianceMap = !material.RenderIrradianceMap;
+                    material.RenderRoughnessMetallicMap = !material.RenderRoughnessMetallicMap;
+                    material.RenderShadowMap = !material.RenderShadowMap;
+                    material.RenderNormalMap = !material.RenderNormalMap;
+                }
+            }
+        }
+
+        private CustomMeshGeometryModel3D _selectedGeometry; // selected material
+        public CustomMeshGeometryModel3D SelectedGeometry
         {
             get => _selectedGeometry;
             set => SetProperty(ref _selectedGeometry, value);
@@ -519,11 +733,22 @@ namespace FModel.ViewModels
             set => SetProperty(ref _group3d, value);
         }
 
+        private readonly float[] _table  = { 255 * 0.9f, 25 * 3.0f, 255 * 0.6f, 255 * 0.0f };
+        private readonly int[] _table2 = { 0, 1, 2, 4, 7, 3, 5, 6 };
+
         public ModelAndCam(UObject export)
         {
             Export = export;
             TriangleCount = 0;
             Group3d = new ObservableElement3DCollection();
+        }
+
+        private int B(int x) => (x & 0xFFF8) | _table2[x & 7] ^ 7;
+        private int C(int x) => (x & 1) | ((x >> 2) & 2);
+
+        public void SwapExport(UObject e)
+        {
+            Export = e;
         }
 
         public void Dispose()
@@ -536,5 +761,12 @@ namespace FModel.ViewModels
                 Group3d.Remove(g);
             }
         }
+    }
+
+    public class CustomMeshGeometryModel3D : MeshGeometryModel3D
+    {
+        public string DisplayName { get; set; }
+        public int MaterialIndex { get; set; }
+        public int ExportIndex { get; set; }
     }
 }

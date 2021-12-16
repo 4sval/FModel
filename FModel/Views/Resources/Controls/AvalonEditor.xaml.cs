@@ -27,13 +27,9 @@ namespace FModel.Views.Resources.Controls
         private readonly Dictionary<string, NavigationList<int>> _savedCarets = new();
         private NavigationList<int> _caretsOffsets
         {
-            get
-            {
-                if (MyAvalonEditor.Document != null)
-                    return _savedCarets.GetOrAdd(MyAvalonEditor.Document.FileName, () => new NavigationList<int>());
-                else
-                    return new NavigationList<int>();
-            }
+            get => MyAvalonEditor.Document != null
+                ? _savedCarets.GetOrAdd(MyAvalonEditor.Document.FileName, () => new NavigationList<int>())
+                : new NavigationList<int>();
         }
         private bool _ignoreCaret = true;
 
@@ -223,8 +219,9 @@ namespace FModel.Views.Resources.Controls
 
         private void OnTabClose(object sender, EventArgs eventArgs)
         {
-            if (sender is not TabControlViewModel tab|| eventArgs is not TabControlViewModel.TabEventArgs e)
+            if (eventArgs is not TabControlViewModel.TabEventArgs e || e.TabToRemove.Document == null)
                 return;
+
             var fileName = e.TabToRemove.Document.FileName;
             if (_savedCarets.ContainsKey(fileName))
                 _savedCarets.Remove(fileName);

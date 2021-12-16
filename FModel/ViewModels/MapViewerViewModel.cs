@@ -10,6 +10,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.i18N;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Creator;
 using FModel.Extensions;
@@ -88,18 +89,11 @@ namespace FModel.ViewModels
             set => SetProperty(ref _brVendingMachines, value, "ApolloGameplay_VendingMachines");
         }
 
-        private bool _brFireflies;
-        public bool BrFireflies
+        private bool _brBountyBoards;
+        public bool BrBountyBoards
         {
-            get => _brFireflies;
-            set => SetProperty(ref _brFireflies, value, "ApolloGameplay_Fireflies");
-        }
-
-        private bool _brCubeMovements;
-        public bool BrCubeMovements
-        {
-            get => _brCubeMovements;
-            set => SetProperty(ref _brCubeMovements, value, "ApolloGameplay_CubeMovements");
+            get => _brBountyBoards;
+            set => SetProperty(ref _brBountyBoards, value, "ApolloGameplay_BountyBoards");
         }
 
         private bool _prLandmarks;
@@ -273,11 +267,8 @@ namespace FModel.ViewModels
                     case "ApolloGameplay_VendingMachines":
                         await LoadBrVendingMachines();
                         break;
-                    case "ApolloGameplay_Fireflies":
-                        await LoadFireflies();
-                        break;
-                    case "ApolloGameplay_CubeMovements":
-                        await LoadCubeMovements();
+                    case "ApolloGameplay_BountyBoards":
+                        await LoadBountyBoards();
                         break;
                     case "PapayaGameplay_CannonballGame":
                         await LoadCannonballGame();
@@ -384,12 +375,9 @@ namespace FModel.ViewModels
             await _threadWorkerView.Begin(_ =>
             {
                 if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerBR.Default__UIMapManagerBR_C", out UObject mapManager) ||
-                    !mapManager.TryGetValue(out UObject mapMaterial, "MapMaterial") ||
-                    !mapMaterial.TryGetValue(out FStructFallback cachedExpressionData, "CachedExpressionData") ||
-                    !cachedExpressionData.TryGetValue(out FStructFallback parameters, "Parameters") ||
-                    !parameters.TryGetValue(out UTexture2D[] textureValues, "TextureValues")) return;
+                    !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") || mapMaterial.ReferencedTextures.Count < 1) return;
 
-                _bitmaps[0][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(textureValues[0]), IsEnabled = true};
+                _bitmaps[0][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(mapMaterial.ReferencedTextures[0] as UTexture2D), IsEnabled = true};
                 _brMiniMapImage = GetImageSource(_bitmaps[0][_FIRST_BITMAP].Layer);
             });
         }
@@ -402,8 +390,7 @@ namespace FModel.ViewModels
             await _threadWorkerView.Begin(_ =>
             {
                 if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerPapaya.Default__UIMapManagerPapaya_C", out UObject mapManager) ||
-                    !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") ||
-                    mapMaterial.ReferencedTextures.Count < 1) return;
+                    !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") || mapMaterial.ReferencedTextures.Count < 1) return;
 
                 _bitmaps[1][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(mapMaterial.ReferencedTextures[0] as UTexture2D), IsEnabled = true};
                 _prMiniMapImage = GetImageSource(_bitmaps[1][_FIRST_BITMAP].Layer);
@@ -474,11 +461,15 @@ namespace FModel.ViewModels
                 var patrolsPathBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(patrolsPathBitmap);
 
-                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Apollo_Terrain_NPCLibrary_Overlay_S18");
+                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Artemis_Overlay_S19_NPCLibrary");
                 foreach (var export in exports)
                 {
                     if (!export.ExportType.Equals("FortAthenaPatrolPath", StringComparison.OrdinalIgnoreCase) ||
                         !export.TryGetValue(out FPackageIndex[] patrolPoints, "PatrolPoints")) continue;
+
+                    var displayName = export.Name["FortAthenaPatrolPath_".Length..];
+                    if (export.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags") && gameplayTags.GameplayTags.Length > 0)
+                        displayName = gameplayTags.GameplayTags[0].Text["Athena.AI.SpawnLocation.Tandem.".Length..];
 
                     if (!Utils.TryGetPackageIndexExport(patrolPoints[0], out UObject uObject) ||
                         !uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
@@ -487,7 +478,6 @@ namespace FModel.ViewModels
 
                     var path = new SKPath();
                     var vector = GetMapPosition(relativeLocation, _brRadius);
-                    var displayName = export.Name["FortAthenaPatrolPath_Tandem_S18_".Length..];
                     path.MoveTo(vector.X, vector.Y);
 
                     for (var i = 1; i < patrolPoints.Length; i++)
@@ -737,7 +727,7 @@ namespace FModel.ViewModels
                 var upgradeBenchesBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(upgradeBenchesBitmap);
 
-                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Apollo_Terrain_NPCLibrary_Stations_UpgradeBenches");
+                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Artemis_Overlay_S19_UpgradeBenches");
                 foreach (var export in exports)
                 {
                     if (!export.ExportType.Equals("B_Athena_Spawner_UpgradeStation_C", StringComparison.OrdinalIgnoreCase)) continue;
@@ -793,7 +783,7 @@ namespace FModel.ViewModels
                 var vendingMachinesBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(vendingMachinesBitmap);
 
-                var exports = Utils.LoadExports("FortniteGame/Content/Athena/Apollo/Maps/Special/ItemCollections/Apollo_Item_VendingMachines");
+                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Artemis_Overlay_S19_ServiceStations");
                 foreach (var export in exports)
                 {
                     if (!export.ExportType.Equals("B_Athena_Spawner_VendingMachine_MendingOnly_C", StringComparison.OrdinalIgnoreCase) &&
@@ -814,19 +804,19 @@ namespace FModel.ViewModels
             });
         }
 
-        private async Task LoadFireflies()
+        private async Task LoadBountyBoards()
         {
             await _threadWorkerView.Begin(_ =>
             {
                 _fillPaint.StrokeWidth = 5;
-                var firefliesBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using var c = new SKCanvas(firefliesBitmap);
+                var bountyBoardsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var c = new SKCanvas(bountyBoardsBitmap);
 
-                var exports = Utils.LoadExports("FortniteGame/Content/Athena/Apollo/Maps/Special/ItemCollections/Apollo_Item_Fireflies");
+                var exports = Utils.LoadExports("Bounties/Maps/BB_Overlay_S19_ServiceStations.umap");
                 foreach (var export in exports)
                 {
-                    if (!export.ExportType.Equals("BP_BGACSpawner_Fireflies_C", StringComparison.OrdinalIgnoreCase)) continue;
-                    var displayName = $"FF_{export.Name["BP_BGACSpawnerFireFlies".Length..]}";
+                    if (!export.ExportType.Equals("B_Bounties_Spawner_BountyBoard_C", StringComparison.OrdinalIgnoreCase)) continue;
+                    var displayName = $"BountyBoard_{export.Name["BP_BountyBoard_C_".Length..]}";
 
                     if (!export.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
                         !Utils.TryGetPackageIndexExport(rootComponent, out UObject uObject) ||
@@ -838,7 +828,7 @@ namespace FModel.ViewModels
                     c.DrawText(displayName, vector.X, vector.Y - 12.5F, _textPaint);
                 }
 
-                _bitmaps[0]["ApolloGameplay_Fireflies"] = new MapLayer {Layer = firefliesBitmap, IsEnabled = false};
+                _bitmaps[0]["ApolloGameplay_BountyBoards"] = new MapLayer {Layer = bountyBoardsBitmap, IsEnabled = false};
             });
         }
 
@@ -873,94 +863,6 @@ namespace FModel.ViewModels
 
                 _bitmaps[0]["ApolloGameplay_TagsLocation"] = new MapLayer {Layer = tagsLocationBitmap, IsEnabled = false};
             });
-        }
-
-        /// <summary>
-        /// FortniteGame/Plugins/GameFeatures/CorruptionGameplay/Content/CorruptionGameplay_LevelOverlay.uasset
-        /// too lazy to filters
-        /// </summary>
-        private async Task LoadCubeMovements()
-        {
-            await _threadWorkerView.Begin(_ =>
-            {
-                _fillPaint.StrokeWidth = 5;
-                var cubeMovementsBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using var c = new SKCanvas(cubeMovementsBitmap);
-
-                if (!Utils.TryLoadObject("/CorruptionGameplay/Levels/CorruptionGameplay_ApolloTerrain_Overlay.BP_CubeMovementGradient_2", out UObject overlay) ||
-                    !overlay.TryGetValue(out FSoftObjectPath[] cubeMovementStaticPaths, "cubeMovementStaticPaths") || cubeMovementStaticPaths.Length < 1)
-                    return;
-
-                var oldColor = _pathPaint.Color;
-                _pathPaint.Color = SKColors.Purple;
-                foreach (var cubeMovementStaticPath in cubeMovementStaticPaths)
-                {
-                    var objectPath = cubeMovementStaticPath.AssetPathName.Text.SubstringBeforeLast(".");
-                    var objectName = cubeMovementStaticPath.SubPathString.SubstringAfterLast(".");
-                    if (!Utils.TryLoadObject($"{objectPath}.{objectName}", out UObject staticPath))
-                        return;
-
-                    DrawCubeMovements(c, staticPath, true);
-                }
-
-                if (Utils.TryLoadObject("/CorruptionGameplay/Levels/CubeMovement/Apollo_CM_Gold_Overlay.CM_Spline_Gold", out UObject goldPath))
-                {
-                    _pathPaint.Color = SKColors.Gold;
-                    DrawCubeMovements(c, goldPath, false);
-                }
-
-                _pathPaint.Color = oldColor;
-                _bitmaps[0]["ApolloGameplay_CubeMovements"] = new MapLayer {Layer = cubeMovementsBitmap, IsEnabled = false};
-            });
-        }
-
-        private void DrawCubeMovements(SKCanvas c, UObject staticPath, bool fixLocation)
-        {
-            if (!staticPath.TryGetValue(out FStructFallback[] pathTravelers, "PathTravelers") || pathTravelers.Length < 1 ||
-                !pathTravelers[0].TryGetValue(out FPackageIndex[] generatedSplinesArray, "GeneratedSplinesArray") || generatedSplinesArray.Length < 1)
-                return;
-
-            UObject uObject;
-            var parentRelativeLocation = new FVector();
-            if (fixLocation)
-            {
-                if (!pathTravelers[0].TryGetValue(out FPackageIndex pathTraveler, "PathTraveler") ||
-                    !Utils.TryGetPackageIndexExport(pathTraveler, out uObject) ||
-                    !uObject.TryGetValue(out FPackageIndex rootComponent, "RootComponent") ||
-                    !Utils.TryGetPackageIndexExport(rootComponent, out uObject) ||
-                    !uObject.TryGetValue(out parentRelativeLocation, "RelativeLocation"))
-                    return;
-            }
-
-            var bDone = false;
-            var path = new SKPath();
-            foreach (var generatedSpline in generatedSplinesArray)
-            {
-                if (!Utils.TryGetPackageIndexExport(generatedSpline, out uObject) ||
-                    !uObject.TryGetValue(out FVector relativeLocation, "RelativeLocation")) continue;
-
-                if (!uObject.TryGetValue(out FStructFallback splineCurves, "SplineCurves") ||
-                    !splineCurves.TryGetValue(out FStructFallback positions, "Position") ||
-                    !positions.TryGetValue(out FStructFallback[] positionPoints, "Points")) continue;
-
-                foreach (var positionPoint in positionPoints)
-                {
-                    if (!positionPoint.TryGetValue(out FVector point, "OutVal")) continue;
-
-                    var vector = GetMapPosition(parentRelativeLocation + relativeLocation + point, _brRadius);
-                    if (!bDone)
-                    {
-                        path.MoveTo(vector.X, vector.Y);
-                        bDone = true;
-                    }
-                    else
-                    {
-                        path.LineTo(vector.X, vector.Y);
-                    }
-                }
-            }
-
-            c.DrawPath(path, _pathPaint);
         }
     }
 }

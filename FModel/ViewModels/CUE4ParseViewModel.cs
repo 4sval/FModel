@@ -59,11 +59,11 @@ namespace FModel.ViewModels
             set => SetProperty(ref _game, value);
         }
 
-        private bool _modelIsSwappingMaterial;
-        public bool ModelIsSwappingMaterial
+        private bool _modelIsOverwritingMaterial;
+        public bool ModelIsOverwritingMaterial
         {
-            get => _modelIsSwappingMaterial;
-            set => SetProperty(ref _modelIsSwappingMaterial, value);
+            get => _modelIsOverwritingMaterial;
+            set => SetProperty(ref _modelIsOverwritingMaterial, value);
         }
 
         public AbstractVfsFileProvider Provider { get; }
@@ -85,9 +85,8 @@ namespace FModel.ViewModels
                     Provider = new StreamedFileProvider("FortniteLive", true,
                         new VersionContainer(
                             UserSettings.Default.OverridedGame[Game],
-                            UserSettings.Default.OverridedUEVersion[Game],
-                            UserSettings.Default.OverridedCustomVersions[Game],
-                            UserSettings.Default.OverridedOptions[Game]));
+                            customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                            optionOverrides: UserSettings.Default.OverridedOptions[Game]));
                     break;
                 }
                 case Constants._VAL_LIVE_TRIGGER:
@@ -96,17 +95,16 @@ namespace FModel.ViewModels
                     Provider = new StreamedFileProvider("ValorantLive", true,
                         new VersionContainer(
                             UserSettings.Default.OverridedGame[Game],
-                            UserSettings.Default.OverridedUEVersion[Game],
-                            UserSettings.Default.OverridedCustomVersions[Game],
-                            UserSettings.Default.OverridedOptions[Game]));
+                            customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                            optionOverrides: UserSettings.Default.OverridedOptions[Game]));
                     break;
                 }
                 default:
                 {
                     Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
-                    var versions = new VersionContainer(
-                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedUEVersion[Game],
-                        UserSettings.Default.OverridedCustomVersions[Game], UserSettings.Default.OverridedOptions[Game]);
+                    var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game],
+                        customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                        optionOverrides: UserSettings.Default.OverridedOptions[Game]);
 
                     if (Game == FGame.StateOfDecay2)
                         Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
@@ -299,35 +297,44 @@ namespace FModel.ViewModels
             {
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
-                    var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                    var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
-                    if (mappings is {Length: > 0})
+                    if (UserSettings.Default.OverwriteMapping && File.Exists(UserSettings.Default.MappingFilePath))
                     {
-                        foreach (var mapping in mappings)
-                        {
-                            if (mapping.Meta.CompressionMethod != "Oodle") continue;
-
-                            var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
-                            if (!File.Exists(mappingPath))
-                            {
-                                _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
-                            }
-
-                            Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
-                            FLogger.AppendInformation();
-                            FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
-                            break;
-                        }
+                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(UserSettings.Default.MappingFilePath);
+                        FLogger.AppendInformation();
+                        FLogger.AppendText($"Mappings pulled from '{UserSettings.Default.MappingFilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
                     }
                     else
                     {
-                        var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
-                        if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
+                        var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                        var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
+                        if (mappings is {Length: > 0})
+                        {
+                            foreach (var mapping in mappings)
+                            {
+                                if (mapping.Meta.CompressionMethod != "Oodle") continue;
 
-                        var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
-                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
-                        FLogger.AppendWarning();
-                        FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
+                                var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
+                                if (!File.Exists(mappingPath))
+                                {
+                                    _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
+                                }
+
+                                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
+                                FLogger.AppendInformation();
+                                FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
+                            if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
+
+                            var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
+                            Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
+                            FLogger.AppendWarning();
+                            FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
+                        }
                     }
                 });
             }
@@ -365,9 +372,7 @@ namespace FModel.ViewModels
         /// <remarks>Functions only when LoadLocalizedResources is used prior to this (Asval: Why?).</remarks>
         private async Task LoadHotfixedLocalizedResources()
         {
-            if (Game != FGame.FortniteGame) return;
-
-            if (HotfixedResourcesDone) return;
+            if (Game != FGame.FortniteGame || HotfixedResourcesDone) return;
             await _threadWorkerView.Begin(cancellationToken =>
             {
                 var hotfixes = ApplicationService.ApiEndpointView.BenbotApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
@@ -395,7 +400,7 @@ namespace FModel.ViewModels
             if (VirtualPathCount > 0) return;
             await _threadWorkerView.Begin(cancellationToken =>
             {
-                VirtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedUEVersion[Game], cancellationToken);
+                VirtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedGame[Game].GetVersion(), cancellationToken);
                 if (VirtualPathCount > 0)
                 {
                     FLogger.AppendInformation();
@@ -603,13 +608,10 @@ namespace FModel.ViewModels
                     break;
                 }
                 case "ufont":
-                    FLogger.AppendWarning();
-                    FLogger.AppendText($"Export '{fileName}' and change its extension if you want it to be an installable font file", Constants.WHITE, true);
-                    break;
                 case "otf":
                 case "ttf":
                     FLogger.AppendWarning();
-                    FLogger.AppendText($"Export '{fileName}' if you want it to be an installable font file", Constants.WHITE, true);
+                    FLogger.AppendText($"Export '{fileName}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true);
                     break;
                 case "ushaderbytecode":
                 case "ushadercode":
@@ -625,13 +627,10 @@ namespace FModel.ViewModels
                 default:
                 {
                     FLogger.AppendWarning();
-                    FLogger.AppendText($"The file '{fileName}' is of an unknown type.", Constants.WHITE, true);
+                    FLogger.AppendText($"The package '{fileName}' is of an unknown type.", Constants.WHITE, true);
                     break;
                 }
             }
-
-            if (UserSettings.Default.IsAutoExportData)
-                ExportData(fullPath);
         }
 
         public void ExtractAndScroll(string fullPath, string objectName)
@@ -646,9 +645,6 @@ namespace FModel.ViewModels
 
             if (!exports.Any(CheckExport))
                 TabControl.SelectedTab.Image = null;
-
-            if (UserSettings.Default.IsAutoExportData)
-                ExportData(fullPath);
         }
 
         private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
@@ -672,9 +668,9 @@ namespace FModel.ViewModels
                     SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                     return false;
                 }
-                case UStaticMesh when UserSettings.Default.IsAutoOpenMeshes:
-                case USkeletalMesh when UserSettings.Default.IsAutoOpenMeshes:
-                case UMaterialInstance when UserSettings.Default.IsAutoOpenMeshes && !ModelIsSwappingMaterial &&
+                case UStaticMesh when UserSettings.Default.PreviewStaticMeshes:
+                case USkeletalMesh when UserSettings.Default.PreviewSkeletalMeshes:
+                case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
                                             !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
@@ -686,17 +682,20 @@ namespace FModel.ViewModels
                     });
                     return true;
                 }
-                case UMaterialInstance m when ModelIsSwappingMaterial:
+                case UMaterialInstance m when ModelIsOverwritingMaterial:
                 {
                     Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                        modelViewer.Swap(m);
+                        modelViewer.Overwrite(m);
                     });
                     return true;
                 }
+                case UStaticMesh when UserSettings.Default.SaveStaticMeshes:
+                case USkeletalMesh when UserSettings.Default.SaveSkeletalMeshes:
+                case UMaterialInstance when UserSettings.Default.SaveMaterials:
                 case USkeleton when UserSettings.Default.SaveSkeletonAsMesh:
-                case UAnimSequence when UserSettings.Default.IsAutoSaveAnimations:
+                case UAnimSequence when UserSettings.Default.SaveAnimations:
                 {
                     SaveExport(export);
                     return true;
@@ -744,7 +743,7 @@ namespace FModel.ViewModels
         private void SaveExport(UObject export)
         {
             var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
-            var toSaveDirectory = new DirectoryInfo(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
+            var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
             if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
             {
                 Log.Information("Successfully saved {FileName}", savedFileName);
