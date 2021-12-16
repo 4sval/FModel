@@ -320,17 +320,17 @@ namespace FModel.ViewModels
         private void LoadMaterialInstance(UMaterialInstance materialInstance, ModelAndCam cam)
         {
             var builder = new MeshBuilder();
-            builder.AddSphere(Vector3.Zero, 10);
-            cam.TriangleCount = 1984; // no need to count
+            builder.AddBox(Vector3.Zero, 10, 10, 10);
+            cam.TriangleCount = 12; // no need to count
 
-            SetupCameraAndAxis(new FBox(new FVector(-11), new FVector(11)), cam);
+            SetupCameraAndAxis(new FBox(new FVector(-8), new FVector(8)), cam);
             var (m, isRendering, isTransparent) = LoadMaterial(materialInstance);
 
             Application.Current.Dispatcher.Invoke(() =>
             {
                 cam.Group3d.Add(new CustomMeshGeometryModel3D
                 {
-                    Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(1,0,0), -90)),
+                    Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0,1,0), -45)),
                     DisplayName = materialInstance.Name, Geometry = builder.ToMeshGeometry3D(), MaterialIndex = 0,
                     Material = m, IsTransparent = isTransparent, IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
                 });
