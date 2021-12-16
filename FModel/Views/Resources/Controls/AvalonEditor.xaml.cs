@@ -27,13 +27,9 @@ namespace FModel.Views.Resources.Controls
         private readonly Dictionary<string, NavigationList<int>> _savedCarets = new();
         private NavigationList<int> _caretsOffsets
         {
-            get
-            {
-                if (MyAvalonEditor.Document != null)
-                    return _savedCarets.GetOrAdd(MyAvalonEditor.Document.FileName, () => new NavigationList<int>());
-                else
-                    return new NavigationList<int>();
-            }
+            get => MyAvalonEditor.Document != null
+                ? _savedCarets.GetOrAdd(MyAvalonEditor.Document.FileName, () => new NavigationList<int>())
+                : new NavigationList<int>();
         }
         private bool _ignoreCaret = true;
 
