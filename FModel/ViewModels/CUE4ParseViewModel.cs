@@ -752,9 +752,9 @@ namespace FModel.ViewModels
             }
             else
             {
-                Log.Error("{FileName} could not be saved", savedFileName);
-                FLogger.AppendError();
-                FLogger.AppendText($"Could not save '{savedFileName}'", Constants.WHITE, true);
+                Log.Warning("{FileName} could not be saved", export.Name);
+                FLogger.AppendWarning();
+                FLogger.AppendText($"Could not save '{export.Name}'", Constants.WHITE, true);
             }
         }
 
