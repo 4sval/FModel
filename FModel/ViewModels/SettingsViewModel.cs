@@ -159,9 +159,18 @@ namespace FModel.ViewModels
             _gameSnapshot = UserSettings.Default.GameDirectory;
             _updateModeSnapshot = UserSettings.Default.UpdateMode;
             _presetSnapshot = UserSettings.Default.Presets[_game];
-            _ueGameSnapshot = UserSettings.Default.OverridedGame[_game];
-            _customVersionsSnapshot = UserSettings.Default.OverridedCustomVersions[_game];
-            _optionsSnapshot = UserSettings.Default.OverridedOptions[_game];
+            if (_game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(_gameSnapshot, out var settings))
+            {
+                _ueGameSnapshot = settings.OverridedGame;
+                _customVersionsSnapshot = settings.OverridedCustomVersions;
+                _optionsSnapshot = settings.OverridedOptions;
+            }
+            else
+            {
+                _ueGameSnapshot = UserSettings.Default.OverridedGame[_game];
+                _customVersionsSnapshot = UserSettings.Default.OverridedCustomVersions[_game];
+                _optionsSnapshot = UserSettings.Default.OverridedOptions[_game];
+            }
             _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
             _compressedAudioSnapshot = UserSettings.Default.CompressedAudioMode;
             _cosmeticStyleSnapshot = UserSettings.Default.CosmeticStyle;
@@ -255,9 +264,18 @@ namespace FModel.ViewModels
 
             UserSettings.Default.UpdateMode = SelectedUpdateMode;
             UserSettings.Default.Presets[_game] = SelectedPreset;
-            UserSettings.Default.OverridedGame[_game] = SelectedUeGame;
-            UserSettings.Default.OverridedCustomVersions[_game] = SelectedCustomVersions;
-            UserSettings.Default.OverridedOptions[_game] = SelectedOptions;
+            if (_game == FGame.Unknown)
+            {
+                UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedGame = SelectedUeGame;
+                UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedCustomVersions = SelectedCustomVersions;
+                UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedOptions = SelectedOptions;
+            }
+            else
+            {
+                UserSettings.Default.OverridedGame[_game] = SelectedUeGame;
+                UserSettings.Default.OverridedCustomVersions[_game] = SelectedCustomVersions;
+                UserSettings.Default.OverridedOptions[_game] = SelectedOptions;
+            }
             UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
             UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
             UserSettings.Default.CosmeticStyle = SelectedCosmeticStyle;

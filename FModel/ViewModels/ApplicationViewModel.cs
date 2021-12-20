@@ -61,7 +61,10 @@ namespace FModel.ViewModels
         public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
         private CopyCommand _copyCommand;
 
-        public string TitleExtra => $"{UserSettings.Default.UpdateMode} - {CUE4Parse.Game.GetDescription()} ({UserSettings.Default.OverridedGame[CUE4Parse.Game]}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
+        public string TitleExtra =>
+            $"{UserSettings.Default.UpdateMode} - {CUE4Parse.Game.GetDescription()} (" + // FModel {UpdateMode} - {FGame} ({UE}) ({Build})
+            $"{(CUE4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(UserSettings.Default.GameDirectory, out var settings) ? settings.OverridedGame : UserSettings.Default.OverridedGame[CUE4Parse.Game])})" +
+            $"{(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
         public LoadingModesViewModel LoadingModes { get; }
         public CustomDirectoriesViewModel CustomDirectories { get; }
@@ -87,7 +90,7 @@ namespace FModel.ViewModels
 
             AvoidEmptyGameDirectoryAndSetEGame(false);
             CUE4Parse = new CUE4ParseViewModel(UserSettings.Default.GameDirectory);
-            CustomDirectories = new CustomDirectoriesViewModel(CUE4Parse.Game);
+            CustomDirectories = new CustomDirectoriesViewModel(CUE4Parse.Game, UserSettings.Default.GameDirectory);
             SettingsView = new SettingsViewModel(CUE4Parse.Game);
             AesManager = new AesManagerViewModel(CUE4Parse);
             MapViewer = new MapViewerViewModel(CUE4Parse);

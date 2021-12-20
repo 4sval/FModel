@@ -106,15 +106,31 @@ namespace FModel.ViewModels
                         customVersions: UserSettings.Default.OverridedCustomVersions[Game],
                         optionOverrides: UserSettings.Default.OverridedOptions[Game]);
 
-                    if (Game == FGame.StateOfDecay2)
-                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
-                            {
-                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
-                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                            },
-                            SearchOption.AllDirectories, true, versions);
-                    else
-                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versions);
+                    switch (Game)
+                    {
+                        case FGame.StateOfDecay2:
+                        {
+                            Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
+                                {
+                                    new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
+                                    new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
+                                },
+                                SearchOption.AllDirectories, true, versions);
+                            break;
+                        }
+                        case FGame.Unknown when UserSettings.Default.ManualGames.TryGetValue(gameDirectory, out var settings):
+                        {
+                            versions = new VersionContainer(settings.OverridedGame,
+                                customVersions: settings.OverridedCustomVersions,
+                                optionOverrides: settings.OverridedOptions);
+                            goto default;
+                        }
+                        default:
+                        {
+                            Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versions);
+                            break;
+                        }
+                    }
 
                     break;
                 }
@@ -248,7 +264,7 @@ namespace FModel.ViewModels
                     file.FileCount = vfs.FileCount;
                 }
 
-                Game = Provider.GameName.ToEnum(Game);
+                // Game = Provider.GameName.ToEnum(Game);
             });
         }
 

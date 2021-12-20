@@ -8,6 +8,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using CUE4Parse.UE4.Objects.Core.Serialization;
+using CUE4Parse.UE4.Versions;
+using FModel.Settings;
+using FModel.ViewModels.ApiEndpoints.Models;
 using Microsoft.Win32;
 
 namespace FModel.ViewModels
@@ -18,6 +22,14 @@ namespace FModel.ViewModels
         {
             public string GameName { get; set; }
             public string GameDirectory { get; set; }
+            public bool IsManual { get; set; }
+
+            // the followings are only used when game is manually added
+            public AesResponse AesKeys { get; set; }
+            public EGame OverridedGame { get; set; }
+            public List<FCustomVersion> OverridedCustomVersions { get; set; }
+            public Dictionary<string, bool> OverridedOptions { get; set; }
+            public IList<CustomDirectory> CustomDirectories { get; set; }
         }
 
         private DetectedGame _selectedDetectedGame;
@@ -33,6 +45,11 @@ namespace FModel.ViewModels
         public GameSelectorViewModel(string gameDirectory)
         {
             _autoDetectedGames = new ObservableCollection<DetectedGame>(EnumerateDetectedGames().Where(x => x != null));
+            foreach (var game in UserSettings.Default.ManualGames.Values)
+            {
+                _autoDetectedGames.Add(game);
+            }
+
             AutoDetectedGames = new ReadOnlyObservableCollection<DetectedGame>(_autoDetectedGames);
 
             if (AutoDetectedGames.FirstOrDefault(x => x.GameDirectory == gameDirectory) is { } detectedGame)
@@ -43,9 +60,38 @@ namespace FModel.ViewModels
                 SelectedDetectedGame = AutoDetectedGames.FirstOrDefault();
         }
 
+        /// <summary>
+        /// dedicated to manual games
+        /// </summary>
+        public void AddUnknownGame(string gameName, string gameDirectory)
+        {
+            var game = new DetectedGame
+            {
+                GameName = gameName,
+                GameDirectory = gameDirectory,
+                IsManual = true,
+                AesKeys = null,
+                OverridedGame = EGame.GAME_UE4_LATEST,
+                OverridedCustomVersions = null,
+                OverridedOptions = null,
+                CustomDirectories = new List<CustomDirectory>()
+            };
+
+            UserSettings.Default.ManualGames[gameDirectory] = game;
+            _autoDetectedGames.Add(game);
+            SelectedDetectedGame = AutoDetectedGames.Last();
+        }
+
         public void AddUnknownGame(string gameDirectory)
         {
             _autoDetectedGames.Add(new DetectedGame { GameName = gameDirectory.SubstringAfterLast('\\'), GameDirectory = gameDirectory });
+            SelectedDetectedGame = AutoDetectedGames.Last();
+        }
+
+        public void DeleteSelectedGame()
+        {
+            UserSettings.Default.ManualGames.Remove(SelectedDetectedGame.GameDirectory); // should not be a problem
+            _autoDetectedGames.Remove(SelectedDetectedGame);
             SelectedDetectedGame = AutoDetectedGames.Last();
         }
 

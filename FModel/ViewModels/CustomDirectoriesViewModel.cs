@@ -55,10 +55,12 @@ namespace FModel.ViewModels
         public ReadOnlyObservableCollection<Control> Directories { get; }
 
         private readonly FGame _game;
+        private readonly string _gameDirectoryAtLaunch;
 
-        public CustomDirectoriesViewModel(FGame game)
+        public CustomDirectoriesViewModel(FGame game, string directory)
         {
             _game = game;
+            _gameDirectoryAtLaunch = directory;
             _directories = new ObservableCollection<Control>(EnumerateDirectories());
             Directories = new ReadOnlyObservableCollection<Control>(_directories);
         }
@@ -89,12 +91,15 @@ namespace FModel.ViewModels
 
         public void Save()
         {
-            UserSettings.Default.CustomDirectories[_game] = new List<CustomDirectory>();
+            var cd = new List<CustomDirectory>();
             for (var i = 2; i < _directories.Count; i++)
             {
                 if (_directories[i] is not MenuItem m) continue;
-                UserSettings.Default.CustomDirectories[_game].Add(new CustomDirectory(m.Header.ToString(), m.Tag.ToString()));
+                cd.Add(new CustomDirectory(m.Header.ToString(), m.Tag.ToString()));
             }
+
+            if (_game == FGame.Unknown) UserSettings.Default.ManualGames[_gameDirectoryAtLaunch].CustomDirectories = cd;
+            else UserSettings.Default.CustomDirectories[_game] = cd;
         }
 
         private IEnumerable<Control> EnumerateDirectories()
@@ -109,7 +114,12 @@ namespace FModel.ViewModels
             };
             yield return new Separator();
 
-            foreach (var setting in UserSettings.Default.CustomDirectories[_game])
+            IList<CustomDirectory> cd;
+            if (_game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(_gameDirectoryAtLaunch, out var settings))
+                cd = settings.CustomDirectories;
+            else cd = UserSettings.Default.CustomDirectories[_game];
+
+            foreach (var setting in cd)
             {
                 if (setting.DirectoryPath.EndsWith('/'))
                     setting.DirectoryPath = setting.DirectoryPath[..^1];

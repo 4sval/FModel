@@ -205,6 +205,16 @@ namespace FModel.Settings
             set => SetProperty(ref _imageMergerMargin, value);
         }
 
+        // <gameDirectory as string, settings>
+        // can't refactor to use this data layout for everything
+        // because it will wipe old user settings that relies on FGame
+        private IDictionary<string, GameSelectorViewModel.DetectedGame> _manualGames = new Dictionary<string, GameSelectorViewModel.DetectedGame>();
+        public IDictionary<string, GameSelectorViewModel.DetectedGame> ManualGames
+        {
+            get => _manualGames;
+            set => SetProperty(ref _manualGames, value);
+        }
+
         private IDictionary<FGame, string> _presets = new Dictionary<FGame, string>
         {
             {FGame.Unknown, Constants._NO_PRESET_TRIGGER},

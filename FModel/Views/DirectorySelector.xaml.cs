@@ -32,5 +32,34 @@ namespace FModel.Views
                 gameLauncherViewModel.AddUnknownGame(folderBrowser.SelectedPath);
             }
         }
+
+        private void OnBrowseManualDirectories(object sender, RoutedEventArgs e)
+        {
+            var folderBrowser = new VistaFolderBrowserDialog {ShowNewFolderButton = false};
+            if (folderBrowser.ShowDialog() == true)
+            {
+                HelloGameMyNameIsDirectory.Text = folderBrowser.SelectedPath;
+            }
+        }
+
+        private void OnAddDirectory(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not GameSelectorViewModel gameLauncherViewModel||
+                string.IsNullOrEmpty(HelloMyNameIsGame.Text) ||
+                string.IsNullOrEmpty(HelloGameMyNameIsDirectory.Text))
+                return;
+
+            gameLauncherViewModel.AddUnknownGame(HelloMyNameIsGame.Text, HelloGameMyNameIsDirectory.Text);
+            HelloMyNameIsGame.Clear();
+            HelloGameMyNameIsDirectory.Clear();
+        }
+
+        private void OnDeleteDirectory(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not GameSelectorViewModel gameLauncherViewModel)
+                return;
+
+            gameLauncherViewModel.DeleteSelectedGame();
+        }
     }
 }
