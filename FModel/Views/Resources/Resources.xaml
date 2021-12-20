@@ -1286,7 +1286,6 @@
     </Style>
 
     <Style x:Key="{x:Type Expander}" TargetType="Expander" BasedOn="{StaticResource {x:Type Expander}}">
-        <Setter Property="IsExpanded" Value="{Binding IsLoggerExpanded, Source={x:Static local:Settings.UserSettings.Default}}"></Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Expander}">
@@ -1380,7 +1379,7 @@
                         </Trigger>
 
                         <Trigger Property="IsMouseOver" SourceName="HeaderSite" Value="True">
-                            <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                            <Setter Property="Foreground" TargetName="HeaderSite" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
                         </Trigger>
 
                     </ControlTemplate.Triggers>

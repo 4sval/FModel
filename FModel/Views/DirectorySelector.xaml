@@ -58,21 +58,15 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="5" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <TextBox Grid.Column="0" Text="{Binding SelectedDetectedGame.GameDirectory, Mode=TwoWay}" />
                     <Button Grid.Column="2" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" />
-                    <Button Grid.Column="2" Click="OnDeleteDirectory" ToolTip="Delete Game">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SelectedDetectedGame.IsManual}" Value="True">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
+                    <Button Grid.Column="3" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Padding="0"
+                            Click="OnDeleteDirectory" Width="{Binding ActualWidth, ElementName=OkGuysButWhoFuckingAsked}"
+                            Visibility="{Binding SelectedDetectedGame.IsManual, Converter={StaticResource BoolToVisibilityConverter}}"
+                            ToolTip="Delete Game" Margin="5 0 0 0">
                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                             <Canvas Width="24" Height="24">
                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource RemoveIcon}" />
@@ -81,37 +75,39 @@
                     </Button>
                 </Grid>
                 <Separator Style="{StaticResource CustomSeparator}" Tag="ADD UNDETECTED GAME" />
-                <Grid Margin="0 5 0 0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="5" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="5" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="5" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <Expander ExpandDirection="Down" IsExpanded="False">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="5" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" VerticalAlignment="Center" />
-                    <TextBox x:Name="HelloMyNameIsGame" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="5" />
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" VerticalAlignment="Center" />
+                        <TextBox x:Name="HelloMyNameIsGame" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="5" />
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
-                    <TextBox x:Name="HelloGameMyNameIsDirectory" Grid.Row="2" Grid.Column="2" />
-                    <Button x:Name="OkGuysButWhoFuckingAsked" Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseManualDirectories" />
-                    <Button Grid.Row="2" Grid.Column="6" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Padding="0"
-                            Click="OnAddDirectory" ToolTip="Add Game" Width="{Binding ActualWidth, ElementName=OkGuysButWhoFuckingAsked}">
-                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AddIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </Button>
-                </Grid>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
+                        <TextBox x:Name="HelloGameMyNameIsDirectory" Grid.Row="2" Grid.Column="2" />
+                        <Button x:Name="OkGuysButWhoFuckingAsked" Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseManualDirectories" />
+                        <Button Grid.Row="2" Grid.Column="6" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Padding="0"
+                                Click="OnAddDirectory" ToolTip="Add Game" Width="{Binding ActualWidth, ElementName=OkGuysButWhoFuckingAsked}">
+                            <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AddIcon}" />
+                                </Canvas>
+                            </Viewbox>
+                        </Button>
+                    </Grid>
+                </Expander>
             </StackPanel>
         </GroupBox>
 
