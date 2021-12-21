@@ -98,7 +98,8 @@ namespace FModel.ViewModels
                 cd.Add(new CustomDirectory(m.Header.ToString(), m.Tag.ToString()));
             }
 
-            if (_game == FGame.Unknown) UserSettings.Default.ManualGames[_gameDirectoryAtLaunch].CustomDirectories = cd;
+            if (_game == FGame.Unknown && UserSettings.Default.ManualGames.ContainsKey(_gameDirectoryAtLaunch))
+                UserSettings.Default.ManualGames[_gameDirectoryAtLaunch].CustomDirectories = cd;
             else UserSettings.Default.CustomDirectories[_game] = cd;
         }
 

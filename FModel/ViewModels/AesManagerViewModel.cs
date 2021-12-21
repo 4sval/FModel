@@ -110,7 +110,7 @@ namespace FModel.ViewModels
             _cue4Parse.ClearProvider();
             await _cue4Parse.LoadVfs(AesKeys);
 
-            if (_cue4Parse.Game == FGame.Unknown)
+            if (_cue4Parse.Game == FGame.Unknown && UserSettings.Default.ManualGames.ContainsKey(UserSettings.Default.GameDirectory))
                 UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].AesKeys = _keysFromSettings;
             else UserSettings.Default.AesKeys[_cue4Parse.Game] = _keysFromSettings;
 
