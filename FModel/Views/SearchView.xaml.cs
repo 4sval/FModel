@@ -38,7 +38,7 @@ namespace FModel.Views
             MainWindow.YesWeCats.AssetsListName.ItemsSource = null;
             var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(assetItem.FullPath.SubstringBeforeLast('/'));
             if (folder == null) return;
-            
+
             MainWindow.YesWeCats.Activate();
 
             do { await Task.Delay(100); } while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Assets.Count);
@@ -49,6 +49,18 @@ namespace FModel.Views
                 MainWindow.YesWeCats.AssetsListName.SelectedItem = assetItem;
                 MainWindow.YesWeCats.AssetsListName.ScrollIntoView(assetItem);
             } while (MainWindow.YesWeCats.AssetsListName.SelectedItem == null);
+        }
+
+        private async void OnAssetExtract(object sender, RoutedEventArgs e)
+        {
+            if (SearchListView.SelectedItem is not AssetItem assetItem)
+                return;
+
+            WindowState = WindowState.Minimized;
+            await ApplicationService.ThreadWorkerView.Begin(_ =>
+                _applicationView.CUE4Parse.Extract(assetItem.FullPath, true));
+
+            MainWindow.YesWeCats.Activate();
         }
 
         private void OnWindowKeyDown(object sender, KeyEventArgs e)
