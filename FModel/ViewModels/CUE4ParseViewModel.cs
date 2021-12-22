@@ -730,7 +730,7 @@ namespace FModel.ViewModels
 
         private void SaveAndPlaySound(string fullPath, string ext, byte[] data)
         {
-            var userDir = Path.Combine(UserSettings.Default.OutputDirectory, "Sounds");
+            var userDir = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
             if (fullPath.StartsWith("/")) fullPath = fullPath[1..];
             var savedAudioPath = Path.Combine(userDir,
                 UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLower()}";

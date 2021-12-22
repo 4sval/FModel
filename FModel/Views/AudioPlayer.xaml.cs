@@ -53,13 +53,13 @@ namespace FModel.Views
         {
             if (e.OriginalSource is TextBox)
                 return;
-            
+
             if (UserSettings.Default.AddAudio.IsTriggered(e.Key))
             {
                 var openFileDialog = new OpenFileDialog
                 {
                     Title = "Select an audio file",
-                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Sounds"),
+                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
                     Filter = "OGG Files (*.ogg)|*.ogg|WAV Files (*.wav)|*.wav|WEM Files (*.wem)|*.wem|ADPCM Files (*.adpcm)|*.adpcm|All Files (*.*)|*.*",
                     Multiselect = true
                 };
@@ -82,7 +82,7 @@ namespace FModel.Views
         {
             _applicationView.AudioPlayer.PlayPauseOnForce();
         }
-        
+
         private void OnFilterTextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is not TextBox textBox)

@@ -46,14 +46,11 @@ namespace FModel
             if (!Directory.Exists(UserSettings.Default.OutputDirectory))
                 UserSettings.Default.OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Output");
             if (!Directory.Exists(UserSettings.Default.ModelDirectory))
-                UserSettings.Default.ModelDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Saves");
+                UserSettings.Default.ModelDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
 
             Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel"));
             Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"));
             Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
-            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Saves"));
-            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Textures"));
-            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Sounds"));
             Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
             Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
 

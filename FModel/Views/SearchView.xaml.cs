@@ -11,6 +11,7 @@ namespace FModel.Views
 {
     public partial class SearchView
     {
+        private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
         private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
         public SearchView()
@@ -57,8 +58,7 @@ namespace FModel.Views
                 return;
 
             WindowState = WindowState.Minimized;
-            await ApplicationService.ThreadWorkerView.Begin(_ =>
-                _applicationView.CUE4Parse.Extract(assetItem.FullPath, true));
+            await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.Extract(assetItem.FullPath, true));
 
             MainWindow.YesWeCats.Activate();
         }

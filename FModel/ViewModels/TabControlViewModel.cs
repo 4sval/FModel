@@ -187,7 +187,7 @@ namespace FModel.ViewModels
         public void SaveProperty(bool autoSave)
         {
             var fileName = Path.ChangeExtension(Header, ".json");
-            var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Saves",
+            var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports",
                 UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName).Replace('\\', '/');
 
             if (!autoSave)
@@ -196,7 +196,7 @@ namespace FModel.ViewModels
                 {
                     Title = "Save Property",
                     FileName = fileName,
-                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Saves"),
+                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
                     Filter = "JSON Files (*.json)|*.json|INI Files (*.ini)|*.ini|XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
                 };
                 var result = saveFileDialog.ShowDialog();
@@ -236,7 +236,7 @@ namespace FModel.ViewModels
         {
             if (!HasImage) return;
             var fileName = Path.ChangeExtension(Header, ".png");
-            var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Textures",
+            var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports",
                 UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
 
             if (!autoSave)
@@ -245,7 +245,7 @@ namespace FModel.ViewModels
                 {
                     Title = "Save Texture",
                     FileName = fileName,
-                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Textures"),
+                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
                     Filter = "PNG Files (*.png)|*.png|All Files (*.*)|*.*"
                 };
                 var result = saveFileDialog.ShowDialog();

@@ -30,7 +30,7 @@ namespace FModel.Views
         private void OnClick(object sender, RoutedEventArgs e)
         {
             if (_applicationView.MapViewer.MapImage == null) return;
-            var path = Path.Combine(UserSettings.Default.OutputDirectory, "Textures", "MiniMap.png");
+            var path = Path.Combine(UserSettings.Default.OutputDirectory, "Exports", "MiniMap.png");
 
             var saveFileDialog = new SaveFileDialog
             {
@@ -61,7 +61,7 @@ namespace FModel.Views
                 FLogger.AppendText("Could not save 'MiniMap.png'", Constants.WHITE, true);
             }
         }
-        
+
         private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             var i = 0;
@@ -72,7 +72,7 @@ namespace FModel.Views
                     i++;
                     continue;
                 }
-                
+
                 _applicationView.MapViewer.MapIndex = i;
                 break;
             }
