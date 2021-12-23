@@ -94,6 +94,10 @@ namespace FModel
             }
             else if (_applicationView.IsReady && e.Key == Key.F && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
                 OnSearchViewClick(null, null);
+            else if (e.Key == Key.Left)
+                _applicationView.CUE4Parse.TabControl.SelectedTab.GoPreviousImage();
+            else if (e.Key == Key.Right)
+                _applicationView.CUE4Parse.TabControl.SelectedTab.GoNextImage();
             else if (UserSettings.Default.AssetAddTab.IsTriggered(e.Key))
                 _applicationView.CUE4Parse.TabControl.AddTab();
             else if (UserSettings.Default.AssetRemoveTab.IsTriggered(e.Key))

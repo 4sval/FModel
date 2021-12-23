@@ -764,13 +764,13 @@
                         <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" Grid.ColumnSpan="3" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
                         <Image Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform"
                                Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
-                               Source="{Binding SelectedItem.Image, ElementName=TabControlName}" RenderOptions.BitmapScalingMode="{Binding SelectedItem.RenderNearestNeighbor, ElementName=TabControlName, Converter={x:Static converters:BoolToRenderModeConverter.Instance}}">
+                               Source="{Binding SelectedItem.SelectedImage.Image, ElementName=TabControlName}" RenderOptions.BitmapScalingMode="{Binding SelectedItem.SelectedImage.RenderNearestNeighbor, ElementName=TabControlName, Converter={x:Static converters:BoolToRenderModeConverter.Instance}}">
                             <Image.InputBindings>
                                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding SelectedItem.ImageCommand, ElementName=TabControlName}" CommandParameter="Open"/>
                             </Image.InputBindings>
                             <Image.ContextMenu>
                                 <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                    <MenuItem Header="Disable Alpha Channel" IsCheckable="True" IsChecked="{Binding DataContext.NoAlpha}" />
+                                    <MenuItem Header="Disable Alpha Channel" IsCheckable="True" IsChecked="{Binding DataContext.SelectedImage.NoAlpha}" />
                                     <MenuItem Header="Open Image" Command="{Binding DataContext.ImageCommand}" CommandParameter="Open">
                                         <MenuItem.Icon>
                                             <Viewbox Width="16" Height="16">
@@ -803,6 +803,9 @@
                                 </ContextMenu>
                             </Image.ContextMenu>
                         </Image>
+                        <TextBlock Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                                   Visibility="{Binding SelectedItem.HasMultipleImages, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
+                                   Text="{Binding SelectedItem.Page, ElementName=TabControlName}" />
                     </Grid>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding SelectedItem.HasImage, ElementName=TabControlName}" Value="False">

@@ -23,23 +23,23 @@ namespace FModel.ViewModels.Commands
             {
                 case "Open":
                 {
-                    Helper.OpenWindow<AdonisWindow>(contextViewModel.Header + " (Image)", () =>
+                    Helper.OpenWindow<AdonisWindow>(contextViewModel.SelectedImage.ExportName + " (Image)", () =>
                     {
                         var popout = new ImagePopout
                         {
-                            Title = contextViewModel.Header + " (Image)",
-                            Width = contextViewModel.Image.Width,
-                            Height = contextViewModel.Image.Height,
-                            WindowState = contextViewModel.Image.Height > 1000 ? WindowState.Maximized : WindowState.Normal,
-                            ImageCtrl = {Source = contextViewModel.Image}
+                            Title = contextViewModel.SelectedImage.ExportName + " (Image)",
+                            Width = contextViewModel.SelectedImage.Image.Width,
+                            Height = contextViewModel.SelectedImage.Image.Height,
+                            WindowState = contextViewModel.SelectedImage.Image.Height > 1000 ? WindowState.Maximized : WindowState.Normal,
+                            ImageCtrl = {Source = contextViewModel.SelectedImage.Image}
                         };
-                        RenderOptions.SetBitmapScalingMode(popout.ImageCtrl, BoolToRenderModeConverter.Instance.Convert(contextViewModel.RenderNearestNeighbor));
+                        RenderOptions.SetBitmapScalingMode(popout.ImageCtrl, BoolToRenderModeConverter.Instance.Convert(contextViewModel.SelectedImage.RenderNearestNeighbor));
                         popout.Show();
                     });
                     break;
                 }
                 case "Copy":
-                    ClipboardExtensions.SetImage(contextViewModel.ImageBuffer, Path.ChangeExtension(contextViewModel.Header, ".png"));
+                    ClipboardExtensions.SetImage(contextViewModel.SelectedImage.ImageBuffer, $"{contextViewModel.SelectedImage.ExportName}.png");
                     break;
                 case "Save":
                     contextViewModel.SaveImage(false);

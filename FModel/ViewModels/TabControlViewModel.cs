@@ -15,9 +15,71 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse_Conversion.Textures;
 
 namespace FModel.ViewModels
 {
+    public class TabImage : ViewModel
+    {
+        public string ExportName { get; }
+        public byte[] ImageBuffer { get; set; }
+
+        public TabImage(string name, bool rnn, SKImage img)
+        {
+            ExportName = name;
+            RenderNearestNeighbor = rnn;
+            SetImage(img);
+        }
+
+        private BitmapImage _image;
+        public BitmapImage Image
+        {
+            get => _image;
+            set
+            {
+                if (_image == value) return;
+                SetProperty(ref _image, value);
+            }
+        }
+
+        private bool _renderNearestNeighbor;
+        public bool RenderNearestNeighbor
+        {
+            get => _renderNearestNeighbor;
+            set => SetProperty(ref _renderNearestNeighbor, value);
+        }
+
+        private bool _noAlpha;
+        public bool NoAlpha
+        {
+            get => _noAlpha;
+            set
+            {
+                SetProperty(ref _noAlpha, value);
+                ResetImage();
+            }
+        }
+
+        private void SetImage(SKImage img)
+        {
+            _img = img;
+
+            using var data = _img.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
+            using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.StreamSource = stream;
+            image.EndInit();
+            image.Freeze();
+            Image = image;
+        }
+
+        private SKImage _img;
+        private void ResetImage() => SetImage(_img);
+    }
+
     public class TabItem : ViewModel
     {
         private string _header;
@@ -115,39 +177,25 @@ namespace FModel.ViewModels
             }
         }
 
-        public byte[] ImageBuffer { get; private set; }
-
-        private BitmapImage _image;
-        public BitmapImage Image
+        private TabImage _selectedImage;
+        public TabImage SelectedImage
         {
-            get => _image;
+            get => _selectedImage;
             set
             {
-                if (_image == value) return;
-                SetProperty(ref _image, value);
+                if (_selectedImage == value) return;
+                SetProperty(ref _selectedImage, value);
                 RaisePropertyChanged("HasImage");
+                RaisePropertyChanged("Page");
             }
         }
 
-        private bool _noAlpha;
-        public bool NoAlpha
-        {
-            get => _noAlpha;
-            set
-            {
-                SetProperty(ref _noAlpha, value);
-                ResetImage();
-            }
-        }
+        public bool HasImage => SelectedImage != null;
+        public bool HasMultipleImages => _images.Count > 1;
+        public string Page => $"{_images.IndexOf(_selectedImage) + 1} / {_images.Count}";
 
-        private bool _renderNearestNeighbor;
-        public bool RenderNearestNeighbor
-        {
-            get => _renderNearestNeighbor;
-            set => SetProperty(ref _renderNearestNeighbor, value);
-        }
+        private readonly ObservableCollection<TabImage> _images;
 
-        public bool HasImage => Image != null;
         public bool ShouldScroll => !string.IsNullOrEmpty(ScrollTrigger);
 
         private TabCommand _tabCommand;
@@ -161,7 +209,36 @@ namespace FModel.ViewModels
         {
             Header = header;
             Directory = directory;
+            _images = new ObservableCollection<TabImage>();
         }
+
+        public void ClearImages()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                _images.Clear();
+                SelectedImage = null;
+            });
+        }
+
+        public void AddImage(UTexture2D texture) => AddImage(texture.Name, texture.bRenderNearestNeighbor, texture.Decode());
+        public void AddImage(string name, bool rnn, SKImage img)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var t = new TabImage(name, rnn, img);
+                if (UserSettings.Default.IsAutoSaveTextures)
+                    SaveImage(t, true);
+
+                _images.Add(t);
+                SelectedImage ??= t;
+                RaisePropertyChanged("Page");
+                RaisePropertyChanged("HasMultipleImages");
+            });
+        }
+
+        public void GoPreviousImage() => SelectedImage = _images.Previous(SelectedImage);
+        public void GoNextImage() => SelectedImage = _images.Next(SelectedImage);
 
         public void SetDocumentText(string text, bool bulkSave)
         {
@@ -174,7 +251,6 @@ namespace FModel.ViewModels
                     SaveProperty(true);
             });
         }
-
         public void ResetDocumentText()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -182,6 +258,40 @@ namespace FModel.ViewModels
                 Document ??= new TextDocument();
                 Document.Text = string.Empty;
             });
+        }
+
+        public void SaveImage(bool autoSave) => SaveImage(SelectedImage, autoSave);
+        private void SaveImage(TabImage image, bool autoSave)
+        {
+            if (image == null) return;
+            var fileName = $"{image.ExportName}.png";
+            var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports",
+                UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
+
+            if (!autoSave)
+            {
+                var saveFileDialog = new SaveFileDialog
+                {
+                    Title = "Save Texture",
+                    FileName = fileName,
+                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
+                    Filter = "PNG Files (*.png)|*.png|All Files (*.*)|*.*"
+                };
+                var result = saveFileDialog.ShowDialog();
+                if (!result.HasValue || !result.Value) return;
+                directory = saveFileDialog.FileName;
+            }
+            else
+            {
+                System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
+            }
+
+            using (var fs = new FileStream(directory, FileMode.Create, FileAccess.Write, FileShare.Read))
+            {
+                fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
+            }
+
+            SaveCheck(directory, fileName);
         }
 
         public void SaveProperty(bool autoSave)
@@ -212,60 +322,7 @@ namespace FModel.ViewModels
             SaveCheck(directory, fileName);
         }
 
-        private SKImage _img;
-        public void ResetImage() => SetImage(_img);
-        public void SetImage(SKImage img)
-        {
-            _img = img;
-
-            using var data = _img.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
-            using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.StreamSource = stream;
-            image.EndInit();
-            image.Freeze();
-
-            Image = image;
-            if (UserSettings.Default.IsAutoSaveTextures)
-                SaveImage(true);
-        }
-
-        public void SaveImage(bool autoSave)
-        {
-            if (!HasImage) return;
-            var fileName = Path.ChangeExtension(Header, ".png");
-            var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports",
-                UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
-
-            if (!autoSave)
-            {
-                var saveFileDialog = new SaveFileDialog
-                {
-                    Title = "Save Texture",
-                    FileName = fileName,
-                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
-                    Filter = "PNG Files (*.png)|*.png|All Files (*.*)|*.*"
-                };
-                var result = saveFileDialog.ShowDialog();
-                if (!result.HasValue || !result.Value) return;
-                directory = saveFileDialog.FileName;
-            }
-            else
-            {
-                System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
-            }
-
-            using (var fs = new FileStream(directory, FileMode.Create, FileAccess.Write, FileShare.Read))
-            {
-                fs.Write(ImageBuffer, 0, ImageBuffer.Length);
-            }
-
-            SaveCheck(directory, fileName);
-        }
-
-        private static void SaveCheck(string path, string fileName)
+        private void SaveCheck(string path, string fileName)
         {
             if (File.Exists(path))
             {

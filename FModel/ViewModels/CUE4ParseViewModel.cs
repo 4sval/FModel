@@ -494,6 +494,7 @@ namespace FModel.ViewModels
                 TabControl.SelectedTab.Directory = directory;
             }
 
+            TabControl.SelectedTab.ClearImages();
             TabControl.SelectedTab.ResetDocumentText();
             TabControl.SelectedTab.ScrollTrigger = null;
             TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(ext);
@@ -504,9 +505,13 @@ namespace FModel.ViewModels
                 {
                     var exports = Provider.LoadObjectExports(fullPath);
                     TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), bulkSave);
+                    if (bulkSave) break;
 
-                    if (bulkSave || !exports.Any(CheckExport))
-                        TabControl.SelectedTab.Image = null;
+                    foreach (var e in exports)
+                    {
+                        if (CheckExport(e))
+                            break;
+                    }
                     break;
                 }
                 case "ini":
@@ -529,7 +534,6 @@ namespace FModel.ViewModels
                 case "archive":
                 case "manifest":
                 {
-                    TabControl.SelectedTab.Image = null;
                     if (Provider.TrySaveAsset(fullPath, out var data))
                     {
                         using var stream = new MemoryStream(data) {Position = 0};
@@ -541,7 +545,6 @@ namespace FModel.ViewModels
                 }
                 case "locmeta":
                 {
-                    TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))
                     {
                         var metadata = new FTextLocalizationMetaDataResource(archive);
@@ -551,7 +554,6 @@ namespace FModel.ViewModels
                 }
                 case "locres":
                 {
-                    TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))
                     {
                         var locres = new FTextLocalizationResource(archive);
@@ -561,7 +563,6 @@ namespace FModel.ViewModels
                 }
                 case "bin" when fileName.Contains("AssetRegistry"):
                 {
-                    TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))
                     {
                         var registry = new FAssetRegistryState(archive);
@@ -572,7 +573,6 @@ namespace FModel.ViewModels
                 case "bnk":
                 case "pck":
                 {
-                    TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))
                     {
                         var wwise = new WwiseReader(archive);
@@ -586,7 +586,6 @@ namespace FModel.ViewModels
                 }
                 case "wem":
                 {
-                    TabControl.SelectedTab.Image = null;
                     if (Provider.TrySaveAsset(fullPath, out var input))
                         SaveAndPlaySound(fullPath, "WEM", input);
 
@@ -594,7 +593,6 @@ namespace FModel.ViewModels
                 }
                 case "udic":
                 {
-                    TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))
                     {
                         var header = new FOodleDictionaryArchive(archive).Header;
@@ -609,7 +607,7 @@ namespace FModel.ViewModels
                     if (Provider.TrySaveAsset(fullPath, out var data))
                     {
                         using var stream = new MemoryStream(data) {Position = 0};
-                        TabControl.SelectedTab.SetImage(SKImage.FromBitmap(SKBitmap.Decode(stream)));
+                        TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKImage.FromBitmap(SKBitmap.Decode(stream)));
                     }
                     break;
                 }
@@ -619,7 +617,7 @@ namespace FModel.ViewModels
                     {
                         using var stream = new MemoryStream(data) { Position = 0 };
                         var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
-                        TabControl.SelectedTab.SetImage(SKImage.FromPicture(svg.Load(stream), new SKSizeI(512, 512)));
+                        TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKImage.FromPicture(svg.Load(stream), new SKSizeI(512, 512)));
                     }
                     break;
                 }
@@ -632,7 +630,6 @@ namespace FModel.ViewModels
                 case "ushaderbytecode":
                 case "ushadercode":
                 {
-                    TabControl.SelectedTab.Image = null;
                     if (Provider.TryCreateReader(fullPath, out var archive))
                     {
                         var ar = new FShaderCodeArchive(archive);
@@ -659,8 +656,11 @@ namespace FModel.ViewModels
             TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
             TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), false);
 
-            if (!exports.Any(CheckExport))
-                TabControl.SelectedTab.Image = null;
+            foreach (var e in exports)
+            {
+                if (CheckExport(e))
+                    break;
+            }
         }
 
         private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
@@ -669,9 +669,8 @@ namespace FModel.ViewModels
             {
                 case UTexture2D texture:
                 {
-                    TabControl.SelectedTab.RenderNearestNeighbor = texture.bRenderNearestNeighbor;
-                    TabControl.SelectedTab.SetImage(texture.Decode());
-                    return true;
+                    TabControl.SelectedTab.AddImage(texture);
+                    return false;
                 }
                 case UAkMediaAssetData:
                 case USoundWave:
@@ -722,7 +721,7 @@ namespace FModel.ViewModels
                     if (!package.TryConstructCreator(out var creator)) return false;
 
                     creator.ParseForInfo();
-                    TabControl.SelectedTab.SetImage(creator.Draw());
+                    TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw());
                     return true;
                 }
             }
