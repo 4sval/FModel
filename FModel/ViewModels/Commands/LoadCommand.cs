@@ -64,7 +64,7 @@ namespace FModel.ViewModels.Commands
             await _applicationView.CUE4Parse.LoadVirtualPaths(); // load virtual paths if not already loaded
             Helper.CloseWindow<AdonisWindow>("Search View"); // close search window if opened
 
-            await _threadWorkerView.Begin(async cancellationToken =>
+            await _threadWorkerView.Begin(cancellationToken =>
             {
                 // filter what to show
                 switch (UserSettings.Default.LoadingMode)
@@ -87,7 +87,7 @@ namespace FModel.ViewModels.Commands
                     case ELoadingMode.AllButNew:
                     case ELoadingMode.AllButModified:
                     {
-                        await FilterNewOrModifiedFilesToDisplay(cancellationToken).ConfigureAwait(false);
+                        FilterNewOrModifiedFilesToDisplay(cancellationToken);
                         break;
                     }
                     default: throw new ArgumentOutOfRangeException();
@@ -141,7 +141,7 @@ namespace FModel.ViewModels.Commands
             _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(entries);
         }
 
-        private async Task FilterNewOrModifiedFilesToDisplay(CancellationToken cancellationToken)
+        private void FilterNewOrModifiedFilesToDisplay(CancellationToken cancellationToken)
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -156,20 +156,19 @@ namespace FModel.ViewModels.Commands
             FLogger.AppendInformation();
             FLogger.AppendText($"Backup file older than current game is '{openFileDialog.FileName.SubstringAfterLast("\\")}'", Constants.WHITE, true);
 
-            await using var fileStream = new FileStream(openFileDialog.FileName, FileMode.Open);
-            await using var memoryStream = new MemoryStream();
+            using var fileStream = new FileStream(openFileDialog.FileName, FileMode.Open);
+            using var memoryStream = new MemoryStream();
 
             if (fileStream.ReadUInt32() == _IS_LZ4)
             {
                 fileStream.Position -= 4;
-                await using var compressionStream = LZ4Stream.Decode(fileStream);
-                await compressionStream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
+                using var compressionStream = LZ4Stream.Decode(fileStream);
+                compressionStream.CopyTo(memoryStream);
             }
-            else
-                await fileStream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
+            else fileStream.CopyTo(memoryStream);
 
             memoryStream.Position = 0;
-            await using var archive = new FStreamArchive(fileStream.Name, memoryStream);
+            using var archive = new FStreamArchive(fileStream.Name, memoryStream);
             var entries = new List<VfsEntry>();
 
             switch (UserSettings.Default.LoadingMode)

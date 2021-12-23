@@ -218,6 +218,7 @@ namespace FModel.ViewModels
             {
                 _images.Clear();
                 SelectedImage = null;
+                RaisePropertyChanged("HasMultipleImages");
             });
         }
 
