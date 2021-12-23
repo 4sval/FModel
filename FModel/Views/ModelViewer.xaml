@@ -110,8 +110,7 @@
 
         <TextBlock Grid.Column="2" Text="Model is loading, please wait..." HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <helix:Viewport3DX Grid.Column="2" EffectsManager="{Binding ModelViewer.EffectManager}" Camera="{Binding ModelViewer.Cam}"
-                           Visibility="{Binding IsReady, Converter={StaticResource BoolToVisibilityConverter}}" ShowViewCube="False"
-                           IsChangeFieldOfViewEnabled="False" IsMoveEnabled="False" UseDefaultGestures="False"
+                           ShowViewCube="False" IsChangeFieldOfViewEnabled="False" IsMoveEnabled="False" UseDefaultGestures="False"
                            ShowCameraTarget="False" FXAALevel="Ultra" MSAA="Maximum" BackgroundColor="#2A2B34"
                            EnableSSAO="True" SSAOIntensity="1" EnableSwapChainRendering="True">
             <helix:Viewport3DX.InputBindings>
@@ -129,7 +128,8 @@
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.SelectedModel.YAxis}" Color="#85CB22" />
             <helix:LineGeometryModel3D Geometry="{Binding ModelViewer.SelectedModel.ZAxis}" Color="#388EED" />
 
-            <helix:GroupModel3D x:Name="MyAntiCrashGroup" ItemsSource="{Binding ModelViewer.SelectedModel.Group3d}" Mouse3DDown="OnMouse3DDown" />
+            <helix:GroupModel3D x:Name="MyAntiCrashGroup" Mouse3DDown="OnMouse3DDown"
+                                ItemsSource="{Binding ModelViewer.SelectedModel.Group3d, IsAsync=True}"/>
         </helix:Viewport3DX>
     </Grid>
 </adonisControls:AdonisWindow>

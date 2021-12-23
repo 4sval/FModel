@@ -23,11 +23,10 @@ namespace FModel.Views
             InitializeComponent();
         }
 
-        public async void Load(UObject export) => await _applicationView.ModelViewer.LoadExport(export);
-        public async void Overwrite(UMaterialInstance materialInstance)
+        public void Load(UObject export) => _applicationView.ModelViewer.LoadExport(export);
+        public void Overwrite(UMaterialInstance materialInstance)
         {
-            var sucess = await _applicationView.ModelViewer.TryOverwriteMaterial(materialInstance);
-            if (sucess)
+            if (_applicationView.ModelViewer.TryOverwriteMaterial(materialInstance))
             {
                 _applicationView.CUE4Parse.ModelIsOverwritingMaterial = false;
             }

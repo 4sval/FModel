@@ -691,7 +691,7 @@ namespace FModel.ViewModels
                                                 export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                 export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
                 {
-                    Application.Current.Dispatcher.InvokeAsync(() =>
+                    Application.Current.Dispatcher.Invoke(delegate
                     {
                         var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
                         modelViewer.Load(export);
@@ -700,7 +700,7 @@ namespace FModel.ViewModels
                 }
                 case UMaterialInstance m when ModelIsOverwritingMaterial:
                 {
-                    Application.Current.Dispatcher.InvokeAsync(() =>
+                    Application.Current.Dispatcher.Invoke(delegate
                     {
                         var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
                         modelViewer.Overwrite(m);

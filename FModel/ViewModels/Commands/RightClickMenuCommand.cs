@@ -55,10 +55,6 @@ namespace FModel.ViewModels.Commands
                             contextViewModel.CUE4Parse.TabControl.SelectedTab.SaveImage(false);
                         }
                         break;
-                    // case "Assets_Save_Material":
-                    //     break;
-                    // case "Assets_Save_Mesh":
-                    //     break;
                 }
             });
         }

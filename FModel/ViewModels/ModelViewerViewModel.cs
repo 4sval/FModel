@@ -105,7 +105,7 @@ namespace FModel.ViewModels
             HDRi = TextureModel.Create(cubeMap?.Stream);
         }
 
-        public async Task LoadExport(UObject export)
+        public void LoadExport(UObject export)
         {
 #if DEBUG
             LoadHDRi();
@@ -123,23 +123,20 @@ namespace FModel.ViewModels
                 _loadedModels.Add(p);
             }
 
-            await _threadWorkerView.Begin(_ =>
+            switch (export)
             {
-                switch (export)
-                {
-                    case UStaticMesh st:
-                        LoadStaticMesh(st, p);
-                        break;
-                    case USkeletalMesh sk:
-                        LoadSkeletalMesh(sk, p);
-                        break;
-                    case UMaterialInstance mi:
-                        LoadMaterialInstance(mi, p);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(export));
-                }
-            });
+                case UStaticMesh st:
+                    LoadStaticMesh(st, p);
+                    break;
+                case USkeletalMesh sk:
+                    LoadSkeletalMesh(sk, p);
+                    break;
+                case UMaterialInstance mi:
+                    LoadMaterialInstance(mi, p);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(export));
+            }
 
             if (AppendMode && CanAppend) return;
             SelectedModel = p;
@@ -287,35 +284,31 @@ namespace FModel.ViewModels
 
             Clipboard.SetText(m.SelectedGeometry.DisplayName.TrimEnd());
         }
+        #endregion
 
-        public async Task<bool> TryOverwriteMaterial(UMaterialInstance materialInstance)
+        public bool TryOverwriteMaterial(UMaterialInstance materialInstance)
         {
             if (SelectedModel?.SelectedGeometry == null || _loadedModels.Count < 1) return false;
 
-            PBRMaterial m = null;
-            await _threadWorkerView.Begin(_ =>
-            {
-                (m, var _, var _) = LoadMaterial(materialInstance);
+            (PBRMaterial m, _, _) = LoadMaterial(materialInstance);
 
-                var obj = new ResolvedLoadedObject(materialInstance);
-                switch (_loadedModels[SelectedModel.SelectedGeometry.ExportIndex].Export)
-                {
-                    case UStaticMesh { Materials: { } } st:
-                        st.Materials[SelectedModel.SelectedGeometry.MaterialIndex] = obj;
-                        break;
-                    case USkeletalMesh sk:
-                        sk.Materials[SelectedModel.SelectedGeometry.MaterialIndex].Material = obj;
-                        break;
-                    case UMaterialInstance:
-                        SelectedModel.SwapExport(materialInstance);
-                        break;
-                }
-            });
+            var obj = new ResolvedLoadedObject(materialInstance);
+            switch (_loadedModels[SelectedModel.SelectedGeometry.ExportIndex].Export)
+            {
+                case UStaticMesh { Materials: { } } st:
+                    st.Materials[SelectedModel.SelectedGeometry.MaterialIndex] = obj;
+                    break;
+                case USkeletalMesh sk:
+                    sk.Materials[SelectedModel.SelectedGeometry.MaterialIndex].Material = obj;
+                    break;
+                case UMaterialInstance:
+                    SelectedModel.SwapExport(materialInstance);
+                    break;
+            }
 
             SelectedModel.SelectedGeometry.Material = m;
             return m != null;
         }
-        #endregion
 
         private void LoadMaterialInstance(UMaterialInstance materialInstance, ModelAndCam cam)
         {
@@ -326,14 +319,11 @@ namespace FModel.ViewModels
             SetupCameraAndAxis(new FBox(new FVector(-8), new FVector(8)), cam);
             var (m, isRendering, isTransparent) = LoadMaterial(materialInstance);
 
-            Application.Current.Dispatcher.Invoke(() =>
+            cam.Group3d.Add(new CustomMeshGeometryModel3D
             {
-                cam.Group3d.Add(new CustomMeshGeometryModel3D
-                {
-                    Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0,1,0), -45)),
-                    DisplayName = materialInstance.Name, Geometry = builder.ToMeshGeometry3D(), MaterialIndex = 0,
-                    Material = m, IsTransparent = isTransparent, IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
-                });
+                Transform = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0,1,0), -45)),
+                DisplayName = materialInstance.Name, Geometry = builder.ToMeshGeometry3D(), MaterialIndex = 0,
+                Material = m, IsTransparent = isTransparent, IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
             });
         }
 
@@ -396,29 +386,18 @@ namespace FModel.ViewModels
                     continue;
 
                 var (m, isRendering, isTransparent) = LoadMaterial(material);
-                Application.Current.Dispatcher.Invoke(() =>
+                cam.Group3d.Add(new CustomMeshGeometryModel3D
                 {
-                    cam.Group3d.Add(new CustomMeshGeometryModel3D
-                    {
-                        DisplayName = section.MaterialName ?? material.Name, MaterialIndex = section.MaterialIndex,
-                        Geometry = builder.ToMeshGeometry3D(), Material = m, IsTransparent = isTransparent,
-                        IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
-                    });
+                    DisplayName = section.MaterialName ?? material.Name, MaterialIndex = section.MaterialIndex,
+                    Geometry = builder.ToMeshGeometry3D(), Material = m, IsTransparent = isTransparent,
+                    IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
                 });
             }
         }
 
         private (PBRMaterial material, bool isRendering, bool isTransparent) LoadMaterial(UMaterialInterface unrealMaterial)
         {
-            PBRMaterial m = null; // default
-            Application.Current.Dispatcher.Invoke(() => // tweak this later
-            {
-                m = new PBRMaterial // recreate on ui thread
-                {
-                    RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true
-                };
-            });
-
+            var m = new PBRMaterial {RenderShadowMap = true, EnableAutoTangent = true, RenderEnvironmentMap = true};
             var parameters = new CMaterialParams();
             unrealMaterial.GetParams(parameters);
 
@@ -427,18 +406,16 @@ namespace FModel.ViewModels
             {
                 if (!parameters.HasTopDiffuseTexture && parameters.DiffuseColor is { A: > 0 } diffuseColor)
                 {
-                    Application.Current.Dispatcher.Invoke(() => m.AlbedoColor = new Color4(diffuseColor.R, diffuseColor.G, diffuseColor.B, diffuseColor.A));
+                    m.AlbedoColor = new Color4(diffuseColor.R, diffuseColor.G, diffuseColor.B, diffuseColor.A);
                 }
                 else if (parameters.Diffuse is UTexture2D diffuse)
                 {
-                    var s = diffuse.Decode()?.Encode().AsStream();
-                    Application.Current.Dispatcher.Invoke(() => m.AlbedoMap = new TextureModel(s));
+                    m.AlbedoMap = new TextureModel(diffuse.Decode()?.Encode().AsStream());
                 }
 
                 if (parameters.Normal is UTexture2D normal)
                 {
-                    var s = normal.Decode()?.Encode().AsStream();
-                    Application.Current.Dispatcher.Invoke(() => m.NormalMap = new TextureModel(s));
+                    m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
                 }
 
                 if (parameters.Specular is UTexture2D specular)
@@ -545,30 +522,21 @@ namespace FModel.ViewModels
                     }
 
                     // R -> AO G -> Roughness B -> Metallic
-                    var s = bitmap.Encode(SKEncodedImageFormat.Png, 100).AsStream();
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        m.RoughnessMetallicMap = new TextureModel(s);
-                        m.RoughnessFactor = parameters.RoughnessValue;
-                        m.MetallicFactor = parameters.MetallicValue;
-                        m.RenderAmbientOcclusionMap = parameters.SpecularValue > 0;
-                    });
+                    m.RoughnessMetallicMap = new TextureModel(bitmap.Encode(SKEncodedImageFormat.Png, 100).AsStream());
+                    m.RoughnessFactor = parameters.RoughnessValue;
+                    m.MetallicFactor = parameters.MetallicValue;
+                    m.RenderAmbientOcclusionMap = parameters.SpecularValue > 0;
                 }
 
                 if (parameters.HasTopEmissiveTexture && parameters.Emissive is UTexture2D emissive && parameters.EmissiveColor is { A: > 0 } emissiveColor)
                 {
-                    var s = emissive.Decode()?.Encode().AsStream();
-                    var c = new Color4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        m.EmissiveColor = c;
-                        m.EmissiveMap = new TextureModel(s);
-                    });
+                    m.EmissiveColor = new Color4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
+                    m.EmissiveMap = new TextureModel(emissive.Decode()?.Encode().AsStream());
                 }
             }
             else
             {
-                Application.Current.Dispatcher.Invoke(() => m.AlbedoColor = new Color4(1, 0, 0, 1));
+                m.AlbedoColor = new Color4(1, 0, 0, 1);
             }
 
             return (m, isRendering, parameters.IsTransparent);
