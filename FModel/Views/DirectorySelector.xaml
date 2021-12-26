@@ -53,7 +53,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </Grid>
-                <Grid Margin="0 0 0 5">
+                <Grid x:Name="Hello" Margin="0 0 0 5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="5" />
@@ -76,7 +76,7 @@
                 </Grid>
                 <Separator Style="{StaticResource CustomSeparator}" Tag="ADD UNDETECTED GAME" />
                 <Expander ExpandDirection="Down" IsExpanded="False">
-                    <Grid>
+                    <Grid MaxWidth="{Binding ActualWidth, ElementName=Hello}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="5" />

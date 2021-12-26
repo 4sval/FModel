@@ -144,7 +144,7 @@ namespace FModel.Views
             var fileBrowser = new OpenFileDialog
             {
                 Title = "Add image(s)",
-                InitialDirectory = $"{UserSettings.Default.OutputDirectory}\\Textures",
+                InitialDirectory = $"{UserSettings.Default.OutputDirectory}\\Exports",
                 Multiselect = true,
                 Filter = "Image Files (*.png,*.bmp,*.jpg,*.jpeg,*.jfif,*.jpe,*.tiff,*.tif)|*.png;*.bmp;*.jpg;*.jpeg;*.jfif;*.jpe;*.tiff;*.tif|All Files (*.*)|*.*"
             };
