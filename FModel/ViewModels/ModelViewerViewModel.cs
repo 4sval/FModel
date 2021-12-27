@@ -279,7 +279,7 @@ namespace FModel.ViewModels
 
         public void CopySelectedMaterialName()
         {
-            if (SelectedModel is not { } m || m.SelectedGeometry?.Tag is null)
+            if (SelectedModel is not { } m || m.SelectedGeometry is null)
                 return;
 
             Clipboard.SetText(m.SelectedGeometry.DisplayName.TrimEnd());
@@ -383,15 +383,24 @@ namespace FModel.ViewModels
                 }
 
                 if (section.Material == null || !section.Material.TryLoad(out var o) || o is not UMaterialInterface material)
-                    continue;
-
-                var (m, isRendering, isTransparent) = LoadMaterial(material);
-                cam.Group3d.Add(new CustomMeshGeometryModel3D
                 {
-                    DisplayName = section.MaterialName ?? material.Name, MaterialIndex = section.MaterialIndex,
-                    Geometry = builder.ToMeshGeometry3D(), Material = m, IsTransparent = isTransparent,
-                    IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
-                });
+                    cam.Group3d.Add(new CustomMeshGeometryModel3D
+                    {
+                        DisplayName = section.Material?.Name.ToString() ?? $"material_{section.MaterialIndex}", MaterialIndex = section.MaterialIndex,
+                        Geometry = builder.ToMeshGeometry3D(), Material = new PBRMaterial(), IsTransparent = false,
+                        IsRendering = true, ExportIndex = _loadedModels.Count - 1
+                    });
+                }
+                else
+                {
+                    var (m, isRendering, isTransparent) = LoadMaterial(material);
+                    cam.Group3d.Add(new CustomMeshGeometryModel3D
+                    {
+                        DisplayName = material.Name, MaterialIndex = section.MaterialIndex,
+                        Geometry = builder.ToMeshGeometry3D(), Material = m, IsTransparent = isTransparent,
+                        IsRendering = isRendering, ExportIndex = _loadedModels.Count - 1
+                    });
+                }
             }
         }
 
