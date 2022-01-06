@@ -112,8 +112,10 @@ namespace FModel.Creator
                         _ => new BaseIcon(_object, _style)
                     };
                     return true;
-                case "FortTrapItemDefinition":
                 case "FortTandemCharacterData":
+                    creator = new BaseTandem(_object, _style);
+                    return true;
+                case "FortTrapItemDefinition":
                 case "FortSpyTechItemDefinition":
                 case "FortAccoladeItemDefinition":
                 case "FortContextTrapItemDefinition":

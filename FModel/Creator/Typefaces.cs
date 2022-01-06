@@ -10,7 +10,7 @@ namespace FModel.Creator
 {
     public class Typefaces
     {
-        private readonly Uri _BURBANK_BIG_CONDENSED_BOLD = new Uri("pack://application:,,,/Resources/BurbankBigCondensed-Bold.ttf");
+        private readonly Uri _BURBANK_BIG_CONDENSED_BOLD = new("pack://application:,,,/Resources/BurbankBigCondensed-Bold.ttf");
         private const string _EXT = ".ufont";
 
         // FortniteGame
@@ -48,7 +48,7 @@ namespace FModel.Creator
         private const string _NANUM_GOTHIC = "NanumGothic";
         private const string _QUADRAT_BOLD = "Quadrat_Bold";
         private const string _SEGOE_BOLD_ITALIC = "Segoe_Bold_Italic";
-        
+
         // WorldExplorers
         private const string _BATTLE_BREAKERS_BASE_PATH = "/Game/UMG/Fonts/Faces/";
         private const string _HEMIHEAD426 = "HemiHead426";
@@ -66,6 +66,9 @@ namespace FModel.Creator
         public readonly SKTypeface Bottom; // must be null for non-latin base languages
         public readonly SKTypeface Bundle;
         public readonly SKTypeface BundleNumber;
+        public readonly SKTypeface TandemDisplayName;
+        public readonly SKTypeface TandemGenDescription;
+        public readonly SKTypeface TandemAddDescription;
 
         public Typefaces(CUE4ParseViewModel viewModel)
         {
@@ -91,11 +94,10 @@ namespace FModel.Creator
                                    };
                     if (viewModel.Provider.TrySaveAsset(namePath + _EXT, out data))
                     {
-                        var m = new MemoryStream(data) {Position = 0};
+                        var m = new MemoryStream(data) { Position = 0 };
                         DisplayName = SKTypeface.FromStream(m);
                     }
                     else DisplayName = Default;
-
 
                     var descriptionPath = _FORTNITE_BASE_PATH +
                                           language switch
@@ -109,11 +111,10 @@ namespace FModel.Creator
                                           };
                     if (viewModel.Provider.TrySaveAsset(descriptionPath + _EXT, out data))
                     {
-                        var m = new MemoryStream(data) {Position = 0};
+                        var m = new MemoryStream(data) { Position = 0 };
                         Description = SKTypeface.FromStream(m);
                     }
                     else Description = Default;
-
 
                     var bottomPath = _FORTNITE_BASE_PATH +
                                      language switch
@@ -127,19 +128,17 @@ namespace FModel.Creator
                                      };
                     if (viewModel.Provider.TrySaveAsset(bottomPath + _EXT, out data))
                     {
-                        var m = new MemoryStream(data) {Position = 0};
+                        var m = new MemoryStream(data) { Position = 0 };
                         Bottom = SKTypeface.FromStream(m);
                     }
                     // else keep it null
 
-
                     if (viewModel.Provider.TrySaveAsset(_FORTNITE_BASE_PATH + _BURBANK_BIG_CONDENSED_BLACK + _EXT, out data))
                     {
-                        var m = new MemoryStream(data) {Position = 0};
+                        var m = new MemoryStream(data) { Position = 0 };
                         BundleNumber = SKTypeface.FromStream(m);
                     }
                     else BundleNumber = Default;
-
 
                     var bundleNamePath = _FORTNITE_BASE_PATH +
                                          language switch
@@ -154,10 +153,62 @@ namespace FModel.Creator
                                          };
                     if (viewModel.Provider.TrySaveAsset(bundleNamePath + _EXT, out data))
                     {
-                        var m = new MemoryStream(data) {Position = 0};
+                        var m = new MemoryStream(data) { Position = 0 };
                         Bundle = SKTypeface.FromStream(m);
                     }
                     else Bundle = BundleNumber;
+
+                    var tandemDisplayNamePath = _FORTNITE_BASE_PATH +
+                                                language switch
+                                                {
+                                                    ELanguage.Korean => _ASIA_ERINM,
+                                                    ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
+                                                    ELanguage.Japanese => _NIS_JYAU,
+                                                    ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                                    ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                                    ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                                    _ => _BURBANK_BIG_REGULAR_BLACK
+                                                };
+                    if (viewModel.Provider.TrySaveAsset(tandemDisplayNamePath + _EXT, out data))
+                    {
+                        var m = new MemoryStream(data) { Position = 0 };
+                        TandemDisplayName = SKTypeface.FromStream(m);
+                    }
+                    else TandemDisplayName = Default;
+
+                    var tandemGeneralDescPath = _FORTNITE_BASE_PATH +
+                                                language switch
+                                                {
+                                                    ELanguage.Korean => _ASIA_ERINM,
+                                                    ELanguage.Japanese => _NIS_JYAU,
+                                                    ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                                    ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                                    ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                                    _ => _BURBANK_SMALL_BLACK
+                                                };
+                    if (viewModel.Provider.TrySaveAsset(tandemGeneralDescPath + _EXT, out data))
+                    {
+                        var m = new MemoryStream(data) { Position = 0 };
+                        TandemGenDescription = SKTypeface.FromStream(m);
+                    }
+                    else TandemGenDescription = Default;
+
+                    var tandemAdditionalDescPath = _FORTNITE_BASE_PATH +
+                                                   language switch
+                                                   {
+                                                       ELanguage.Korean => _ASIA_ERINM,
+                                                       ELanguage.Japanese => _NIS_JYAU,
+                                                       ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                                       ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                                       ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                                       _ => _BURBANK_SMALL_BOLD
+                                                   };
+                    if (viewModel.Provider.TrySaveAsset(tandemAdditionalDescPath + _EXT, out data))
+                    {
+                        var m = new MemoryStream(data) { Position = 0 };
+                        TandemAddDescription = SKTypeface.FromStream(m);
+                    }
+                    else TandemAddDescription = Default;
 
                     break;
                 }
@@ -174,7 +225,7 @@ namespace FModel.Creator
                                    };
                     if (viewModel.Provider.TrySaveAsset(namePath + _EXT, out data))
                     {
-                        var m = new MemoryStream(data) {Position = 0};
+                        var m = new MemoryStream(data) { Position = 0 };
                         DisplayName = SKTypeface.FromStream(m);
                     }
                     else DisplayName = Default;
@@ -190,7 +241,7 @@ namespace FModel.Creator
                                           };
                     if (viewModel.Provider.TrySaveAsset(descriptionPath + _EXT, out data))
                     {
-                        var m = new MemoryStream(data) {Position = 0};
+                        var m = new MemoryStream(data) { Position = 0 };
                         Description = SKTypeface.FromStream(m);
                     }
                     else Description = Default;
@@ -209,14 +260,14 @@ namespace FModel.Creator
                 {
                     if (viewModel.Provider.TrySaveAsset(_SPELLBREAK_BASE_PATH + _QUADRAT_BOLD + _EXT, out data))
                     {
-                        var m = new MemoryStream(data) {Position = 0};
+                        var m = new MemoryStream(data) { Position = 0 };
                         DisplayName = SKTypeface.FromStream(m);
                     }
                     else DisplayName = Default;
 
                     if (viewModel.Provider.TrySaveAsset(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD + _EXT, out data))
                     {
-                        var m = new MemoryStream(data) {Position = 0};
+                        var m = new MemoryStream(data) { Position = 0 };
                         Description = SKTypeface.FromStream(m);
                     }
                     else Description = Default;
@@ -241,7 +292,7 @@ namespace FModel.Creator
         public SKTypeface OnTheFly(string path)
         {
             if (!_viewModel.Provider.TrySaveAsset(path, out var data)) return Default;
-            var m = new MemoryStream(data) {Position = 0};
+            var m = new MemoryStream(data) { Position = 0 };
             return SKTypeface.FromStream(m);
         }
     }

@@ -91,6 +91,7 @@
     <None Remove="Resources\delete.png" />
     <None Remove="Resources\edit.png" />
     <None Remove="Resources\go_to_directory.png" />
+    <None Remove="Resources\npcleftside.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -187,6 +188,7 @@
     <Resource Include="Resources\edit.png" />
     <Resource Include="Resources\go_to_directory.png" />
     <Resource Include="Resources\approaching_storm_cubemap.dds" />
+    <Resource Include="Resources\npcleftside.png" />
   </ItemGroup>
 
   <ItemGroup>
