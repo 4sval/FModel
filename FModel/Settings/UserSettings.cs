@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using System.Windows.Input;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
@@ -112,6 +113,13 @@ namespace FModel.Settings
         {
             get => _isLoggerExpanded;
             set => SetProperty(ref _isLoggerExpanded, value);
+        }
+
+        private GridLength _avalonImageSize = GridLength.Auto;
+        public GridLength AvalonImageSize
+        {
+            get => _avalonImageSize;
+            set => SetProperty(ref _avalonImageSize, value);
         }
 
         private IDictionary<FGame, AesResponse> _aesKeys = new Dictionary<FGame, AesResponse>();

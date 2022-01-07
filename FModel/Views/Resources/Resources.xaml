@@ -755,14 +755,15 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                         </Grid.ColumnDefinitions>
 
-                        <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" Grid.ColumnSpan="3" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
-                        <Image Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform"
+                        <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
+                        <GridSplitter Grid.Column="1" Width="4" VerticalAlignment="Stretch" ResizeDirection="Columns" KeyboardIncrement="0"
+                                      Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
+                                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+                        <Image Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform"
                                Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
                                Source="{Binding SelectedItem.SelectedImage.Image, ElementName=TabControlName}" RenderOptions.BitmapScalingMode="{Binding SelectedItem.SelectedImage.RenderNearestNeighbor, ElementName=TabControlName, Converter={x:Static converters:BoolToRenderModeConverter.Instance}}">
                             <Image.InputBindings>
@@ -803,13 +804,13 @@
                                 </ContextMenu>
                             </Image.ContextMenu>
                         </Image>
-                        <TextBlock Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                        <TextBlock Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Center"
                                    Visibility="{Binding SelectedItem.HasMultipleImages, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
                                    Text="{Binding SelectedItem.Page, ElementName=TabControlName}" />
                     </Grid>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding SelectedItem.HasImage, ElementName=TabControlName}" Value="False">
-                            <Setter TargetName="DynamicArea" Property="Grid.ColumnSpan" Value="5" />
+                            <Setter TargetName="DynamicArea" Property="Grid.ColumnSpan" Value="3" />
                         </DataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>
