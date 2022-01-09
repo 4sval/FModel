@@ -131,6 +131,9 @@ namespace FModel.Creator
                           _object.Owner.Name.EndsWith($"/MI_BPTile/{_object.Name}", StringComparison.OrdinalIgnoreCase)):
                     creator = new BaseMaterialInstance(_object, _style);
                     return true;
+                case "AthenaItemShopOfferDisplayData":
+                    creator = new BaseOfferDisplayData(_object, _style);
+                    return true;
                 case "FortMtxOfferData":
                     creator = new BaseMtxOffer(_object, _style);
                     return true;
