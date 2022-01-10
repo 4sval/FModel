@@ -307,7 +307,7 @@ namespace FModel.ViewModels
                 {
                     Title = "Save Audio",
                     FileName = fileToSave.FileName,
-                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports")
+                    InitialDirectory = UserSettings.Default.AudioDirectory
                 };
                 if (!(bool) saveFileDialog.ShowDialog()) return;
                 path = saveFileDialog.FileName;

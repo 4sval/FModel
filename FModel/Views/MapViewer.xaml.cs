@@ -30,7 +30,7 @@ namespace FModel.Views
         private void OnClick(object sender, RoutedEventArgs e)
         {
             if (_applicationView.MapViewer.MapImage == null) return;
-            var path = Path.Combine(UserSettings.Default.OutputDirectory, "Exports", "MiniMap.png");
+            var path = Path.Combine(UserSettings.Default.TextureDirectory, "MiniMap.png");
 
             var saveFileDialog = new SaveFileDialog
             {

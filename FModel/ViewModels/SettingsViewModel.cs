@@ -133,6 +133,10 @@ namespace FModel.ViewModels
         private readonly FGame _game;
         private Game _gamePreset;
         private string _outputSnapshot;
+        private string _rawDataSnapshot;
+        private string _propertiesSnapshot;
+        private string _textureSnapshot;
+        private string _audioSnapshot;
         private string _modelSnapshot;
         private string _gameSnapshot;
         private EUpdateMode _updateModeSnapshot;
@@ -155,6 +159,10 @@ namespace FModel.ViewModels
         public void Initialize()
         {
             _outputSnapshot = UserSettings.Default.OutputDirectory;
+            _rawDataSnapshot = UserSettings.Default.RawDataDirectory;
+            _propertiesSnapshot = UserSettings.Default.PropertiesDirectory;
+            _textureSnapshot = UserSettings.Default.TextureDirectory;
+            _audioSnapshot = UserSettings.Default.AudioDirectory;
             _modelSnapshot = UserSettings.Default.ModelDirectory;
             _gameSnapshot = UserSettings.Default.GameDirectory;
             _updateModeSnapshot = UserSettings.Default.UpdateMode;
@@ -252,6 +260,10 @@ namespace FModel.ViewModels
             if (_ueGameSnapshot != SelectedUeGame || // combobox
                 _customVersionsSnapshot != SelectedCustomVersions || _optionsSnapshot != SelectedOptions ||
                 _outputSnapshot != UserSettings.Default.OutputDirectory || // textbox
+                _rawDataSnapshot != UserSettings.Default.RawDataDirectory || // textbox
+                _propertiesSnapshot != UserSettings.Default.PropertiesDirectory || // textbox
+                _textureSnapshot != UserSettings.Default.TextureDirectory || // textbox
+                _audioSnapshot != UserSettings.Default.AudioDirectory || // textbox
                 _modelSnapshot != UserSettings.Default.ModelDirectory || // textbox
                 _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
                 ret = SettingsOut.Restart;

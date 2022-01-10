@@ -59,7 +59,7 @@ namespace FModel.Views
                 var openFileDialog = new OpenFileDialog
                 {
                     Title = "Select an audio file",
-                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
+                    InitialDirectory = UserSettings.Default.AudioDirectory,
                     Filter = "OGG Files (*.ogg)|*.ogg|WAV Files (*.wav)|*.wav|WEM Files (*.wem)|*.wem|ADPCM Files (*.adpcm)|*.adpcm|All Files (*.*)|*.*",
                     Multiselect = true
                 };

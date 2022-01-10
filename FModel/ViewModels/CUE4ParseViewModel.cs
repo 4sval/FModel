@@ -729,9 +729,8 @@ namespace FModel.ViewModels
 
         private void SaveAndPlaySound(string fullPath, string ext, byte[] data)
         {
-            var userDir = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
             if (fullPath.StartsWith("/")) fullPath = fullPath[1..];
-            var savedAudioPath = Path.Combine(userDir,
+            var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
                 UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLower()}";
 
             if (!UserSettings.Default.IsAutoOpenSounds)
@@ -776,13 +775,11 @@ namespace FModel.ViewModels
         public void ExportData(string fullPath)
         {
             var fileName = fullPath.SubstringAfterLast('/');
-            var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
-
             if (Provider.TrySavePackage(fullPath, out var assets))
             {
                 foreach (var kvp in assets)
                 {
-                    var path = Path.Combine(directory, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
+                    var path = Path.Combine(UserSettings.Default.RawDataDirectory, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
                     Directory.CreateDirectory(path.SubstringBeforeLast('/'));
                     File.WriteAllBytes(path, kvp.Value);
                 }

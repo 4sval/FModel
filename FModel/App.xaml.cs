@@ -43,14 +43,40 @@ namespace FModel
                 UserSettings.Default = new UserSettings();
             }
 
+            var createMe = false;
             if (!Directory.Exists(UserSettings.Default.OutputDirectory))
+            {
                 UserSettings.Default.OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Output");
+            }
+            if (!Directory.Exists(UserSettings.Default.RawDataDirectory))
+            {
+                createMe = true;
+                UserSettings.Default.RawDataDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            }
+            if (!Directory.Exists(UserSettings.Default.PropertiesDirectory))
+            {
+                createMe = true;
+                UserSettings.Default.PropertiesDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            }
+            if (!Directory.Exists(UserSettings.Default.TextureDirectory))
+            {
+                createMe = true;
+                UserSettings.Default.TextureDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            }
+            if (!Directory.Exists(UserSettings.Default.AudioDirectory))
+            {
+                createMe = true;
+                UserSettings.Default.AudioDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            }
             if (!Directory.Exists(UserSettings.Default.ModelDirectory))
+            {
+                createMe = true;
                 UserSettings.Default.ModelDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports");
+            }
 
             Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel"));
             Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"));
-            Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
+            if (createMe) Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
             Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
             Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
 

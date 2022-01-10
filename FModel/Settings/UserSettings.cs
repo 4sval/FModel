@@ -52,6 +52,34 @@ namespace FModel.Settings
             set => SetProperty(ref _outputDirectory, value);
         }
 
+        private string _rawDataDirectory;
+        public string RawDataDirectory
+        {
+            get => _rawDataDirectory;
+            set => SetProperty(ref _rawDataDirectory, value);
+        }
+
+        private string _propertiesDirectory;
+        public string PropertiesDirectory
+        {
+            get => _propertiesDirectory;
+            set => SetProperty(ref _propertiesDirectory, value);
+        }
+
+        private string _textureDirectory;
+        public string TextureDirectory
+        {
+            get => _textureDirectory;
+            set => SetProperty(ref _textureDirectory, value);
+        }
+
+        private string _audioDirectory;
+        public string AudioDirectory
+        {
+            get => _audioDirectory;
+            set => SetProperty(ref _audioDirectory, value);
+        }
+
         private string _modelDirectory;
         public string ModelDirectory
         {

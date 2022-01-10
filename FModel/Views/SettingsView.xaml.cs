@@ -63,6 +63,22 @@ namespace FModel.Views
         {
             if (TryBrowse(out var path)) UserSettings.Default.GameDirectory = path;
         }
+        private void OnBrowseRawData(object sender, RoutedEventArgs e)
+        {
+            if (TryBrowse(out var path)) UserSettings.Default.RawDataDirectory = path;
+        }
+        private void OnBrowseProperties(object sender, RoutedEventArgs e)
+        {
+            if (TryBrowse(out var path)) UserSettings.Default.PropertiesDirectory = path;
+        }
+        private void OnBrowseTexture(object sender, RoutedEventArgs e)
+        {
+            if (TryBrowse(out var path)) UserSettings.Default.TextureDirectory = path;
+        }
+        private void OnBrowseAudio(object sender, RoutedEventArgs e)
+        {
+            if (TryBrowse(out var path)) UserSettings.Default.AudioDirectory = path;
+        }
         private void OnBrowseModels(object sender, RoutedEventArgs e)
         {
             if (TryBrowse(out var path)) UserSettings.Default.ModelDirectory = path;

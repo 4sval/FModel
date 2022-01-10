@@ -266,7 +266,7 @@ namespace FModel.ViewModels
         {
             if (image == null) return;
             var fileName = $"{image.ExportName}.png";
-            var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports",
+            var directory = Path.Combine(UserSettings.Default.TextureDirectory,
                 UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
 
             if (!autoSave)
@@ -275,7 +275,7 @@ namespace FModel.ViewModels
                 {
                     Title = "Save Texture",
                     FileName = fileName,
-                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
+                    InitialDirectory = UserSettings.Default.TextureDirectory,
                     Filter = "PNG Files (*.png)|*.png|All Files (*.*)|*.*"
                 };
                 var result = saveFileDialog.ShowDialog();
@@ -298,7 +298,7 @@ namespace FModel.ViewModels
         public void SaveProperty(bool autoSave)
         {
             var fileName = Path.ChangeExtension(Header, ".json");
-            var directory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports",
+            var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
                 UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName).Replace('\\', '/');
 
             if (!autoSave)
@@ -307,7 +307,7 @@ namespace FModel.ViewModels
                 {
                     Title = "Save Property",
                     FileName = fileName,
-                    InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
+                    InitialDirectory = UserSettings.Default.PropertiesDirectory,
                     Filter = "JSON Files (*.json)|*.json|INI Files (*.ini)|*.ini|XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
                 };
                 var result = saveFileDialog.ShowDialog();
