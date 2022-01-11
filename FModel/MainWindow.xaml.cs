@@ -106,9 +106,9 @@ namespace FModel
                 _applicationView.CUE4Parse.TabControl.GoLeftTab();
             else if (UserSettings.Default.AssetRightTab.IsTriggered(e.Key))
                 _applicationView.CUE4Parse.TabControl.GoRightTab();
-            else if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key) && LeftTabControl.SelectedIndex > 0)
+            else if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key) && !Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && LeftTabControl.SelectedIndex > 0)
                 LeftTabControl.SelectedIndex--;
-            else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && LeftTabControl.SelectedIndex < LeftTabControl.Items.Count - 1)
+            else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && !Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && LeftTabControl.SelectedIndex < LeftTabControl.Items.Count - 1)
                 LeftTabControl.SelectedIndex++;
         }
 
