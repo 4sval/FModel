@@ -36,9 +36,9 @@ namespace FModel.Creator.Bases.SB
                 DisplayName = displayName.Text;
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
             DrawBackground(c);
@@ -49,7 +49,7 @@ namespace FModel.Creator.Bases.SB
             DrawToBottom(c, SKTextAlign.Left, $"PromotionXP: {_promotionXp}");
             DrawToBottom(c, SKTextAlign.Right, $"XPLostPerMatch: {_xpLostPerMatch}");
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
     }
 }

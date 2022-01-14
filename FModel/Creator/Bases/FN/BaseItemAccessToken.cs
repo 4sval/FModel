@@ -38,9 +38,9 @@ namespace FModel.Creator.Bases.FN
             if (Object.TryGetValue(out FText unlockDescription, "UnlockDescription")) _unlockedDescription = unlockDescription.Text;
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
             switch (Style)
@@ -61,7 +61,7 @@ namespace FModel.Creator.Bases.FN
                     break;
             }
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private void DrawInformation(SKCanvas c)

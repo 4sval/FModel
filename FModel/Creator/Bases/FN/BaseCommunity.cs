@@ -1,4 +1,4 @@
-﻿using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
@@ -46,9 +46,9 @@ namespace FModel.Creator.Bases.FN
             Description = Description.ToUpper();
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
             if (_design == null)
@@ -69,7 +69,7 @@ namespace FModel.Creator.Bases.FN
                 DrawUserFacingFlags(c, _design.GameplayTags.DrawCustomOnly);
             }
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private void CheckGameplayTags(FGameplayTagContainer gameplayTags)

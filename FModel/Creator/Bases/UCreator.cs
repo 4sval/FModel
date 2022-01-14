@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Creator.Bases.FN;
@@ -23,7 +23,7 @@ namespace FModel.Creator.Bases
         public int Height { get; protected set; }
 
         public abstract void ParseForInfo();
-        public abstract SKImage Draw();
+        public abstract SKBitmap Draw();
 
         protected UCreator(UObject uObject, EIconStyle style)
         {

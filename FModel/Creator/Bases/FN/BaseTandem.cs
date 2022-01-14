@@ -50,9 +50,9 @@ namespace FModel.Creator.Bases.FN
                 _additionalDescription = addDesc.Text;
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
             using var c = new SKCanvas(ret);
 
             DrawBackground(c);
@@ -64,7 +64,7 @@ namespace FModel.Creator.Bases.FN
             DrawGeneralDescription(c);
             DrawAdditionalDescription(c);
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private readonly SKPaint _panelPaint = new() { IsAntialias = true, FilterQuality = SKFilterQuality.High, Color = SKColor.Parse("#0045C7") };

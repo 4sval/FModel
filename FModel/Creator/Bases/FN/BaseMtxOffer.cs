@@ -1,4 +1,4 @@
-﻿using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.i18N;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -56,7 +56,7 @@ namespace FModel.Creator.Bases.FN
             Description = Utils.RemoveHtmlTags(Description);
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
             using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
@@ -79,7 +79,7 @@ namespace FModel.Creator.Bases.FN
                     break;
             }
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
     }
 }

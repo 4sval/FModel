@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -112,14 +112,14 @@ namespace FModel.Creator.Bases.FN
             }
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
             Draw(c);
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private void GetSeries(FPackageIndex s)
@@ -133,7 +133,7 @@ namespace FModel.Creator.Bases.FN
         {
             if (uObject is UTexture2D texture2D)
             {
-                SeriesBackground = SKBitmap.Decode(texture2D.Decode()?.Encode());
+                SeriesBackground = texture2D.Decode();
                 return;
             }
 

@@ -419,12 +419,12 @@ namespace FModel.ViewModels
                 }
                 else if (parameters.Diffuse is UTexture2D diffuse)
                 {
-                    m.AlbedoMap = new TextureModel(diffuse.Decode()?.Encode().AsStream());
+                    m.AlbedoMap = new TextureModel(diffuse.Decode()?.Encode(SKEncodedImageFormat.Png, 100).AsStream());
                 }
 
                 if (parameters.Normal is UTexture2D normal)
                 {
-                    m.NormalMap = new TextureModel(normal.Decode()?.Encode().AsStream());
+                    m.NormalMap = new TextureModel(normal.Decode()?.Encode(SKEncodedImageFormat.Png, 100).AsStream());
                 }
 
                 if (parameters.Specular is UTexture2D specular)
@@ -540,7 +540,7 @@ namespace FModel.ViewModels
                 if (parameters.HasTopEmissiveTexture && parameters.Emissive is UTexture2D emissive && parameters.EmissiveColor is { A: > 0 } emissiveColor)
                 {
                     m.EmissiveColor = new Color4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
-                    m.EmissiveMap = new TextureModel(emissive.Decode()?.Encode().AsStream());
+                    m.EmissiveMap = new TextureModel(emissive.Decode()?.Encode(SKEncodedImageFormat.Png, 100).AsStream());
                 }
             }
             else

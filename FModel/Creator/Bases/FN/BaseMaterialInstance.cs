@@ -65,9 +65,9 @@ namespace FModel.Creator.Bases.FN
             }
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
             switch (Style)
@@ -81,7 +81,7 @@ namespace FModel.Creator.Bases.FN
                     break;
             }
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
     }
 }

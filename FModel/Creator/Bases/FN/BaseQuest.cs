@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Engine;
@@ -161,14 +161,14 @@ namespace FModel.Creator.Bases.FN
             DrawTexts(c, y);
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
             using var c = new SKCanvas(ret);
 
             DrawQuest(c, 0);
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private string ReformatString(string s, string completionCount, bool isAll)

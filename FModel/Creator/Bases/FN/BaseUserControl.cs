@@ -111,15 +111,15 @@ namespace FModel.Creator.Bases.FN
             Height += 35 * _optionValues.Count;
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
             using var c = new SKCanvas(ret);
 
             DrawBackground(c);
             DrawInformation(c);
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private new void DrawBackground(SKCanvas c)

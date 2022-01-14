@@ -607,7 +607,7 @@ namespace FModel.ViewModels
                     if (Provider.TrySaveAsset(fullPath, out var data))
                     {
                         using var stream = new MemoryStream(data) {Position = 0};
-                        TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKImage.FromBitmap(SKBitmap.Decode(stream)));
+                        TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream));
                     }
                     break;
                 }
@@ -617,7 +617,15 @@ namespace FModel.ViewModels
                     {
                         using var stream = new MemoryStream(data) { Position = 0 };
                         var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
-                        TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKImage.FromPicture(svg.Load(stream), new SKSizeI(512, 512)));
+                        svg.Load(stream);
+
+                        var bitmap = new SKBitmap(512, 512);
+                        using (var canvas = new SKCanvas(bitmap))
+                        using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
+                        {
+                            canvas.DrawPicture(svg.Picture, paint);
+                        }
+                        TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap);
                     }
                     break;
                 }

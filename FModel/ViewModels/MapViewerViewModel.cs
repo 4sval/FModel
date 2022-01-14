@@ -310,7 +310,8 @@ namespace FModel.ViewModels
         private BitmapImage GetImageSource(SKBitmap bitmap)
         {
             if (bitmap == null) return null;
-            using var stream = SKImage.FromBitmap(bitmap).Encode().AsStream();
+            using var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+            using var stream = data.AsStream();
             var image = new BitmapImage();
             image.BeginInit();
             image.CacheOption = BitmapCacheOption.OnLoad;

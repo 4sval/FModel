@@ -125,16 +125,16 @@ namespace FModel.Creator.Bases.FN
             Height += 50 * _statistics.Count;
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
             using var c = new SKCanvas(ret);
 
             DrawHeader(c);
             DrawDisplayName(c);
             DrawStatistics(c);
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private bool TryGetCurveTableStat(FStructFallback property, out float statValue)

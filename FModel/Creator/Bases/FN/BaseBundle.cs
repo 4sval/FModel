@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.i18N;
@@ -79,16 +79,16 @@ namespace FModel.Creator.Bases.FN
             Height += 256 * _quests.Count;
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
             using var c = new SKCanvas(ret);
 
             DrawHeader(c);
             DrawDisplayName(c);
             DrawQuests(c);
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private readonly SKPaint _headerPaint = new()

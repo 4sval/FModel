@@ -1,4 +1,4 @@
-﻿using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.i18N;
 using CUE4Parse.UE4.Objects.UObject;
@@ -43,9 +43,9 @@ namespace FModel.Creator.Bases.FN
             Height = Preview.Height;
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
             switch (Style)
@@ -66,7 +66,7 @@ namespace FModel.Creator.Bases.FN
                     break;
             }
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private void DrawMissionIcon(SKCanvas c)

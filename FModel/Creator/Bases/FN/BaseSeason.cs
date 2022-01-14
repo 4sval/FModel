@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Objects;
@@ -96,16 +96,16 @@ namespace FModel.Creator.Bases.FN
             Height += 100 * _bookXpSchedule.Sum(x => x.RewardEntryList.Length) / _bookXpSchedule.Length;
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
             using var c = new SKCanvas(ret);
 
             DrawHeader(c);
             _firstWinReward?.DrawSeasonWin(c, _headerHeight);
             DrawBookSchedule(c);
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private const int _DEFAULT_AREA_SIZE = 80;

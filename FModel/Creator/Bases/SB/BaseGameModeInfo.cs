@@ -28,9 +28,9 @@ namespace FModel.Creator.Bases.SB
                 _icon = Utils.GetBitmap(icon).Resize(25);
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
             DrawPreview(c);
@@ -38,7 +38,7 @@ namespace FModel.Creator.Bases.SB
             DrawDisplayName(c);
             DrawIcon(c);
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
         
         private void DrawIcon(SKCanvas c)

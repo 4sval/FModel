@@ -47,9 +47,9 @@ namespace FModel.Creator.Bases.SB
             _seriesBackground2 = Utils.GetBitmap("g3/Content/UI/Textures/assets/store/ItemBGStatic_UIT.ItemBGStatic_UIT");
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
             DrawBackgrounds(c);
@@ -59,7 +59,7 @@ namespace FModel.Creator.Bases.SB
             DrawDisplayName(c);
             DrawDescription(c);
 
-            return SKImage.FromBitmap(ret);
+            return ret;
         }
 
         private void DrawBackgrounds(SKCanvas c)

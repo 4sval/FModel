@@ -7,7 +7,7 @@ namespace FModel.Creator.Bases.FN
 {
     public class BaseOfferDisplayData : UCreator
     {
-        private List<SKImage> _offerImages;
+        private List<SKBitmap> _offerImages;
 
         public BaseOfferDisplayData(UObject uObject, EIconStyle style) : base(uObject, style)
         {
@@ -21,7 +21,7 @@ namespace FModel.Creator.Bases.FN
             if (!Object.TryGetValue(out UMaterialInterface[] presentations, "Presentations"))
                     return;
 
-            _offerImages = new List<SKImage>();
+            _offerImages = new List<SKBitmap>();
             foreach (var p in presentations)
             {
                 var offerImage = new BaseMaterialInstance(p, Style);
@@ -30,7 +30,7 @@ namespace FModel.Creator.Bases.FN
             }
         }
 
-        public override SKImage Draw()
+        public override SKBitmap Draw()
         {
             int imageOrder;
 
@@ -50,8 +50,8 @@ namespace FModel.Creator.Bases.FN
 
             Height *= 512;
 
-            using var bitmap = new SKBitmap(Width, Height);
-            using var canvas = new SKCanvas(bitmap);
+            var ret = new SKBitmap(Width, Height);
+            using var canvas = new SKCanvas(ret);
             var point = new SKPoint(0, 0);
 
             for (int i = 0, placement = 0; i < _offerImages.Count; i++)
@@ -63,11 +63,11 @@ namespace FModel.Creator.Bases.FN
                 }
                 point.X = 512 * placement;
 
-                canvas.DrawImage(_offerImages[i], point);
+                canvas.DrawBitmap(_offerImages[i], point);
                 placement++;
             }
 
-            return SKImage.FromBitmap(bitmap);
+            return ret;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Settings;
@@ -25,7 +25,7 @@ namespace FModel.ViewModels
         public string ExportName { get; }
         public byte[] ImageBuffer { get; set; }
 
-        public TabImage(string name, bool rnn, SKImage img)
+        public TabImage(string name, bool rnn, SKBitmap img)
         {
             ExportName = name;
             RenderNearestNeighbor = rnn;
@@ -61,11 +61,11 @@ namespace FModel.ViewModels
             }
         }
 
-        private void SetImage(SKImage img)
+        private void SetImage(SKBitmap bitmap)
         {
-            _img = img;
+            _bmp = bitmap;
 
-            using var data = _img.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
+            using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
             using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
             var image = new BitmapImage();
             image.BeginInit();
@@ -76,8 +76,8 @@ namespace FModel.ViewModels
             Image = image;
         }
 
-        private SKImage _img;
-        private void ResetImage() => SetImage(_img);
+        private SKBitmap _bmp;
+        private void ResetImage() => SetImage(_bmp);
     }
 
     public class TabItem : ViewModel
@@ -223,7 +223,7 @@ namespace FModel.ViewModels
         }
 
         public void AddImage(UTexture2D texture) => AddImage(texture.Name, texture.bRenderNearestNeighbor, texture.Decode());
-        public void AddImage(string name, bool rnn, SKImage img)
+        public void AddImage(string name, bool rnn, SKBitmap img)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
