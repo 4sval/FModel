@@ -23,7 +23,7 @@ namespace FModel.Creator.Bases
         public int Height { get; protected set; }
 
         public abstract void ParseForInfo();
-        public abstract SKBitmap Draw();
+        public abstract SKBitmap[] Draw();
 
         protected UCreator(UObject uObject, EIconStyle style)
         {

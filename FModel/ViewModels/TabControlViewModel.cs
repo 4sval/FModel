@@ -223,6 +223,10 @@ namespace FModel.ViewModels
         }
 
         public void AddImage(UTexture2D texture) => AddImage(texture.Name, texture.bRenderNearestNeighbor, texture.Decode());
+        public void AddImage(string name, bool rnn, SKBitmap[] img)
+        {
+            foreach (var i in img) AddImage(name, rnn, i);
+        }
         public void AddImage(string name, bool rnn, SKBitmap img)
         {
             Application.Current.Dispatcher.Invoke(() =>

@@ -14,14 +14,14 @@ namespace FModel.Creator.Bases.FN
             GetSeries(Object);
         }
 
-        public override SKBitmap Draw()
+        public override SKBitmap[] Draw()
         {
             var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
             DrawBackground(c);
 
-            return ret;
+            return new []{ret};
         }
     }
 }

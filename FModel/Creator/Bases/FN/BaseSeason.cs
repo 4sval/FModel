@@ -16,7 +16,7 @@ namespace FModel.Creator.Bases.FN
         public int RewardsNeededForUnlock;
         public Reward[] RewardEntryList;
     }
-    
+
     public class BaseSeason : UCreator
     {
         private Reward _firstWinReward;
@@ -35,7 +35,7 @@ namespace FModel.Creator.Bases.FN
         public override void ParseForInfo()
         {
             _bookXpSchedule = Array.Empty<Page>();
-            
+
             if (Object.TryGetValue(out FText displayName, "DisplayName"))
                 DisplayName = displayName.Text.ToUpperInvariant();
 
@@ -67,7 +67,7 @@ namespace FModel.Creator.Bases.FN
                             !page.TryGetValue(out int rewardsNeededForUnlock, "RewardsNeededForUnlock") ||
                             !page.TryGetValue(out FPackageIndex[] rewardEntryList, "RewardEntryList"))
                             continue;
-                        
+
                         var p = new Page
                         {
                             LevelsNeededForUnlock = levelsNeededForUnlock,
@@ -96,7 +96,7 @@ namespace FModel.Creator.Bases.FN
             Height += 100 * _bookXpSchedule.Sum(x => x.RewardEntryList.Length) / _bookXpSchedule.Length;
         }
 
-        public override SKBitmap Draw()
+        public override SKBitmap[] Draw()
         {
             var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
             using var c = new SKCanvas(ret);
@@ -105,7 +105,7 @@ namespace FModel.Creator.Bases.FN
             _firstWinReward?.DrawSeasonWin(c, _headerHeight);
             DrawBookSchedule(c);
 
-            return ret;
+            return new []{ret};
         }
 
         private const int _DEFAULT_AREA_SIZE = 80;

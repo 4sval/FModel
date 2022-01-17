@@ -56,7 +56,7 @@ namespace FModel.Creator.Bases.FN
             Description = Utils.RemoveHtmlTags(Description);
         }
 
-        public override SKBitmap Draw()
+        public override SKBitmap[] Draw()
         {
             using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
@@ -79,7 +79,7 @@ namespace FModel.Creator.Bases.FN
                     break;
             }
 
-            return ret;
+            return new []{ret};
         }
     }
 }

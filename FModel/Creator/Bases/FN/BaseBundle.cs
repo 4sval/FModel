@@ -79,7 +79,7 @@ namespace FModel.Creator.Bases.FN
             Height += 256 * _quests.Count;
         }
 
-        public override SKBitmap Draw()
+        public override SKBitmap[] Draw()
         {
             var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
             using var c = new SKCanvas(ret);
@@ -88,7 +88,7 @@ namespace FModel.Creator.Bases.FN
             DrawDisplayName(c);
             DrawQuests(c);
 
-            return ret;
+            return new []{ret};
         }
 
         private readonly SKPaint _headerPaint = new()

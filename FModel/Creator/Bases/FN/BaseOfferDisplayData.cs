@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using SkiaSharp;
@@ -7,7 +6,7 @@ namespace FModel.Creator.Bases.FN
 {
     public class BaseOfferDisplayData : UCreator
     {
-        private List<SKBitmap> _offerImages;
+        private BaseMaterialInstance[] _offerImages;
 
         public BaseOfferDisplayData(UObject uObject, EIconStyle style) : base(uObject, style)
         {
@@ -15,56 +14,24 @@ namespace FModel.Creator.Bases.FN
 
         public override void ParseForInfo()
         {
-            if (Object.ExportType != "AthenaItemShopOfferDisplayData")
+            if (!Object.TryGetValue(out UMaterialInterface[] presentations, "Presentations"))
                 return;
 
-            if (!Object.TryGetValue(out UMaterialInterface[] presentations, "Presentations"))
-                    return;
-
-            _offerImages = new List<SKBitmap>();
-            foreach (var p in presentations)
+            _offerImages = new BaseMaterialInstance[presentations.Length];
+            for (int i = 0; i < _offerImages.Length; i++)
             {
-                var offerImage = new BaseMaterialInstance(p, Style);
+                var offerImage = new BaseMaterialInstance(presentations[i], Style);
                 offerImage.ParseForInfo();
-                _offerImages.Add(offerImage.Draw());
+                _offerImages[i] = offerImage;
             }
         }
 
-        public override SKBitmap Draw()
+        public override SKBitmap[] Draw()
         {
-            int imageOrder;
-
-            if (_offerImages.Count < 4)
-                imageOrder = _offerImages.Count;
-            else if (_offerImages.Count == 4)
-                imageOrder = 2;
-            else if (_offerImages.Count <= 9)
-                imageOrder = 3;
-            else imageOrder = 5;
-
-            Width = 512 * imageOrder;
-            Height = _offerImages.Count / imageOrder;
-
-            if (_offerImages.Count % imageOrder != 0)
-                Height++;
-
-            Height *= 512;
-
-            var ret = new SKBitmap(Width, Height);
-            using var canvas = new SKCanvas(ret);
-            var point = new SKPoint(0, 0);
-
-            for (int i = 0, placement = 0; i < _offerImages.Count; i++)
+            var ret = new SKBitmap[_offerImages.Length];
+            for (int i = 0; i < ret.Length; i++)
             {
-                if (placement >= imageOrder)
-                {
-                    placement = 0;
-                    point.Y += 512;
-                }
-                point.X = 512 * placement;
-
-                canvas.DrawBitmap(_offerImages[i], point);
-                placement++;
+                ret[i] = _offerImages[i].Draw()[0];
             }
 
             return ret;

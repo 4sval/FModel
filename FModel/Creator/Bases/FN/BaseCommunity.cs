@@ -46,7 +46,7 @@ namespace FModel.Creator.Bases.FN
             Description = Description.ToUpper();
         }
 
-        public override SKBitmap Draw()
+        public override SKBitmap[] Draw()
         {
             var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
@@ -69,7 +69,7 @@ namespace FModel.Creator.Bases.FN
                 DrawUserFacingFlags(c, _design.GameplayTags.DrawCustomOnly);
             }
 
-            return ret;
+            return new []{ret};
         }
 
         private void CheckGameplayTags(FGameplayTagContainer gameplayTags)

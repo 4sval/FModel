@@ -9,7 +9,7 @@ namespace FModel.Creator.Bases.SB
     public class BaseGameModeInfo : UCreator
     {
         private SKBitmap _icon;
-        
+
         public BaseGameModeInfo(UObject uObject, EIconStyle style) : base(uObject, style)
         {
             Width = 738;
@@ -28,7 +28,7 @@ namespace FModel.Creator.Bases.SB
                 _icon = Utils.GetBitmap(icon).Resize(25);
         }
 
-        public override SKBitmap Draw()
+        public override SKBitmap[] Draw()
         {
             var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
@@ -38,9 +38,9 @@ namespace FModel.Creator.Bases.SB
             DrawDisplayName(c);
             DrawIcon(c);
 
-            return ret;
+            return new []{ret};
         }
-        
+
         private void DrawIcon(SKCanvas c)
         {
             if (_icon == null) return;

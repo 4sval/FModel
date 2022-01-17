@@ -161,14 +161,14 @@ namespace FModel.Creator.Bases.FN
             DrawTexts(c, y);
         }
 
-        public override SKBitmap Draw()
+        public override SKBitmap[] Draw()
         {
             var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
             using var c = new SKCanvas(ret);
 
             DrawQuest(c, 0);
 
-            return ret;
+            return new []{ret};
         }
 
         private string ReformatString(string s, string completionCount, bool isAll)
