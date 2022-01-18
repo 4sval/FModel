@@ -125,6 +125,7 @@ namespace FModel.Creator.Bases.FN
                     x = 100;
                     break;
                 case 512 when previewToUse.Height == 512:
+                case 128 when previewToUse.Height == 128:
                     previewToUse = previewToUse.Resize(512);
                     x = 125;
                     break;
