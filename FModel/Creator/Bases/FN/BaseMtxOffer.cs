@@ -58,7 +58,7 @@ namespace FModel.Creator.Bases.FN
 
         public override SKBitmap[] Draw()
         {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(ret);
 
             switch (Style)
