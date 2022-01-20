@@ -11,6 +11,7 @@ using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Settings;
 using FModel.ViewModels;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
@@ -105,7 +106,7 @@ namespace FModel.Creator
         public static SKBitmap GetB64Bitmap(string b64) => SKBitmap.Decode(new MemoryStream(Convert.FromBase64String(b64)) {Position = 0});
         public static SKBitmap GetBitmap(FSoftObjectPath softObjectPath) => GetBitmap(softObjectPath.AssetPathName.Text);
         public static SKBitmap GetBitmap(string fullPath) => TryLoadObject(fullPath, out UTexture2D texture) ? GetBitmap(texture) : null;
-        public static SKBitmap GetBitmap(UTexture2D texture) => texture.IsVirtual ? null : texture.Decode();
+        public static SKBitmap GetBitmap(UTexture2D texture) => texture.IsVirtual ? null : texture.Decode(UserSettings.Default.OverridedPlatform);
         public static SKBitmap GetBitmap(byte[] data) => SKBitmap.Decode(data);
 
         public static SKBitmap ResizeWithRatio(this SKBitmap me, double width, double height)

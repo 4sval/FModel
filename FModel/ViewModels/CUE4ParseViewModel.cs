@@ -28,7 +28,6 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
-using CUE4Parse_Conversion.Textures;
 using EpicManifestParser.Objects;
 using FModel.Creator;
 using FModel.Extensions;
@@ -72,7 +71,7 @@ namespace FModel.ViewModels
         public SearchViewModel SearchVm { get; }
         public TabControlViewModel TabControl { get; }
         public int LocalizedResourcesCount { get; set; }
-        public bool HotfixedResourcesDone { get; set; } = false;
+        public bool HotfixedResourcesDone { get; set; }
         public int VirtualPathCount { get; set; }
 
         public CUE4ParseViewModel(string gameDirectory)
@@ -84,7 +83,7 @@ namespace FModel.ViewModels
                     Game = FGame.FortniteGame;
                     Provider = new StreamedFileProvider("FortniteLive", true,
                         new VersionContainer(
-                            UserSettings.Default.OverridedGame[Game],
+                            UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                             customVersions: UserSettings.Default.OverridedCustomVersions[Game],
                             optionOverrides: UserSettings.Default.OverridedOptions[Game]));
                     break;
@@ -94,7 +93,7 @@ namespace FModel.ViewModels
                     Game = FGame.ShooterGame;
                     Provider = new StreamedFileProvider("ValorantLive", true,
                         new VersionContainer(
-                            UserSettings.Default.OverridedGame[Game],
+                            UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                             customVersions: UserSettings.Default.OverridedCustomVersions[Game],
                             optionOverrides: UserSettings.Default.OverridedOptions[Game]));
                     break;
@@ -102,7 +101,7 @@ namespace FModel.ViewModels
                 default:
                 {
                     Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
-                    var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game],
+                    var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                         customVersions: UserSettings.Default.OverridedCustomVersions[Game],
                         optionOverrides: UserSettings.Default.OverridedOptions[Game]);
 
@@ -120,7 +119,7 @@ namespace FModel.ViewModels
                         }
                         case FGame.Unknown when UserSettings.Default.ManualGames.TryGetValue(gameDirectory, out var settings):
                         {
-                            versions = new VersionContainer(settings.OverridedGame,
+                            versions = new VersionContainer(settings.OverridedGame, UserSettings.Default.OverridedPlatform,
                                 customVersions: settings.OverridedCustomVersions,
                                 optionOverrides: settings.OverridedOptions);
                             goto default;
@@ -764,7 +763,7 @@ namespace FModel.ViewModels
 
         private void SaveExport(UObject export)
         {
-            var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
+            var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat, UserSettings.Default.OverridedPlatform);
             var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
             if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
             {

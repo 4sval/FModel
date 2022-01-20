@@ -186,7 +186,7 @@ namespace FModel.ViewModels
             {
                 foreach (var model in _loadedModels)
                 {
-                    var toSave = new CUE4Parse_Conversion.Exporter(model.Export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat);
+                    var toSave = new CUE4Parse_Conversion.Exporter(model.Export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat, UserSettings.Default.OverridedPlatform);
                     if (toSave.TryWriteToDir(new DirectoryInfo(folderBrowser.SelectedPath), out var savedFileName))
                     {
                         Log.Information("Successfully saved {FileName}", savedFileName);
@@ -419,19 +419,35 @@ namespace FModel.ViewModels
                 }
                 else if (parameters.Diffuse is UTexture2D diffuse)
                 {
-                    m.AlbedoMap = new TextureModel(diffuse.Decode()?.Encode(SKEncodedImageFormat.Png, 100).AsStream());
+                    m.AlbedoMap = new TextureModel(diffuse.Decode(UserSettings.Default.OverridedPlatform)?.Encode(SKEncodedImageFormat.Png, 100).AsStream());
                 }
 
                 if (parameters.Normal is UTexture2D normal)
                 {
-                    m.NormalMap = new TextureModel(normal.Decode()?.Encode(SKEncodedImageFormat.Png, 100).AsStream());
+                    m.NormalMap = new TextureModel(normal.Decode(UserSettings.Default.OverridedPlatform)?.Encode(SKEncodedImageFormat.Png, 100).AsStream());
                 }
 
                 if (parameters.Specular is UTexture2D specular)
                 {
                     var mip = specular.GetFirstMip();
-                    TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap,
-                        out var data, out var colorType);
+                    byte[] data;
+                    SKColorType colorType;
+                    switch (UserSettings.Default.OverridedPlatform)
+                    {
+                        case ETexturePlatform.Playstation:
+                            PlaystationDecoder.DecodeTexturePlaystation(mip, specular.Format, specular.isNormalMap,
+                                out data, out colorType);
+                            break;
+                        case ETexturePlatform.NintendoSwitch:
+                            NintendoSwitchDecoder.DecodeTextureNSW(mip, specular.Format, specular.isNormalMap,
+                                out data, out colorType);
+                            break;
+                        default:
+                            TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap,
+                                out data, out colorType);
+                            break;
+                    }
+
 
                     switch (_game)
                     {
@@ -540,7 +556,7 @@ namespace FModel.ViewModels
                 if (parameters.HasTopEmissiveTexture && parameters.Emissive is UTexture2D emissive && parameters.EmissiveColor is { A: > 0 } emissiveColor)
                 {
                     m.EmissiveColor = new Color4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
-                    m.EmissiveMap = new TextureModel(emissive.Decode()?.Encode(SKEncodedImageFormat.Png, 100).AsStream());
+                    m.EmissiveMap = new TextureModel(emissive.Decode(UserSettings.Default.OverridedPlatform)?.Encode(SKEncodedImageFormat.Png, 100).AsStream());
                 }
             }
             else

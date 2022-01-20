@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
@@ -37,6 +38,13 @@ namespace FModel.ViewModels
                 SetProperty(ref _selectedPreset, value);
                 RaisePropertyChanged("EnableElements");
             }
+        }
+
+        private ETexturePlatform _selectedUePlatform;
+        public ETexturePlatform SelectedUePlatform
+        {
+            get => _selectedUePlatform;
+            set => SetProperty(ref _selectedUePlatform, value);
         }
 
         private EGame _selectedUeGame;
@@ -127,6 +135,7 @@ namespace FModel.ViewModels
         public ReadOnlyObservableCollection<EMeshFormat> MeshExportFormats { get; private set; }
         public ReadOnlyObservableCollection<ELodFormat> LodExportFormats { get; private set; }
         public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
+        public ReadOnlyObservableCollection<ETexturePlatform> Platforms { get; private set; }
 
         public bool EnableElements => SelectedPreset == Constants._NO_PRESET_TRIGGER;
 
@@ -141,6 +150,7 @@ namespace FModel.ViewModels
         private string _gameSnapshot;
         private EUpdateMode _updateModeSnapshot;
         private string _presetSnapshot;
+        private ETexturePlatform _uePlatformSnapshot;
         private EGame _ueGameSnapshot;
         private List<FCustomVersion> _customVersionsSnapshot;
         private Dictionary<string, bool> _optionsSnapshot;
@@ -167,6 +177,7 @@ namespace FModel.ViewModels
             _gameSnapshot = UserSettings.Default.GameDirectory;
             _updateModeSnapshot = UserSettings.Default.UpdateMode;
             _presetSnapshot = UserSettings.Default.Presets[_game];
+            _uePlatformSnapshot = UserSettings.Default.OverridedPlatform;
             if (_game == FGame.Unknown && UserSettings.Default.ManualGames.TryGetValue(_gameSnapshot, out var settings))
             {
                 _ueGameSnapshot = settings.OverridedGame;
@@ -188,6 +199,7 @@ namespace FModel.ViewModels
 
             SelectedUpdateMode = _updateModeSnapshot;
             SelectedPreset = _presetSnapshot;
+            SelectedUePlatform = _uePlatformSnapshot;
             SelectedUeGame = _ueGameSnapshot;
             SelectedCustomVersions = _customVersionsSnapshot;
             SelectedOptions = _optionsSnapshot;
@@ -211,6 +223,7 @@ namespace FModel.ViewModels
             MeshExportFormats = new ReadOnlyObservableCollection<EMeshFormat>(new ObservableCollection<EMeshFormat>(EnumerateMeshExportFormat()));
             LodExportFormats = new ReadOnlyObservableCollection<ELodFormat>(new ObservableCollection<ELodFormat>(EnumerateLodExportFormat()));
             TextureExportFormats = new ReadOnlyObservableCollection<ETextureFormat>(new ObservableCollection<ETextureFormat>(EnumerateTextureExportFormat()));
+            Platforms = new ReadOnlyObservableCollection<ETexturePlatform>(new ObservableCollection<ETexturePlatform>(EnumerateUePlatforms()));
         }
 
         public async Task InitPresets(string gameName)
@@ -257,8 +270,8 @@ namespace FModel.ViewModels
         {
             var ret = SettingsOut.Nothing;
 
-            if (_ueGameSnapshot != SelectedUeGame || // combobox
-                _customVersionsSnapshot != SelectedCustomVersions || _optionsSnapshot != SelectedOptions ||
+            if (_ueGameSnapshot != SelectedUeGame || _customVersionsSnapshot != SelectedCustomVersions ||
+                _uePlatformSnapshot != SelectedUePlatform || _optionsSnapshot != SelectedOptions || // combobox
                 _outputSnapshot != UserSettings.Default.OutputDirectory || // textbox
                 _rawDataSnapshot != UserSettings.Default.RawDataDirectory || // textbox
                 _propertiesSnapshot != UserSettings.Default.PropertiesDirectory || // textbox
@@ -276,6 +289,7 @@ namespace FModel.ViewModels
 
             UserSettings.Default.UpdateMode = SelectedUpdateMode;
             UserSettings.Default.Presets[_game] = SelectedPreset;
+            UserSettings.Default.OverridedPlatform = SelectedUePlatform;
             if (_game == FGame.Unknown && UserSettings.Default.ManualGames.ContainsKey(UserSettings.Default.GameDirectory))
             {
                 UserSettings.Default.ManualGames[UserSettings.Default.GameDirectory].OverridedGame = SelectedUeGame;
@@ -317,5 +331,6 @@ namespace FModel.ViewModels
         private IEnumerable<EMeshFormat> EnumerateMeshExportFormat() => Enum.GetValues<EMeshFormat>();
         private IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues<ELodFormat>();
         private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
+        private IEnumerable<ETexturePlatform> EnumerateUePlatforms() => Enum.GetValues<ETexturePlatform>();
     }
 }

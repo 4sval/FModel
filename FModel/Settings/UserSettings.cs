@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
@@ -249,6 +250,13 @@ namespace FModel.Settings
         {
             get => _manualGames;
             set => SetProperty(ref _manualGames, value);
+        }
+
+        private ETexturePlatform _overridedPlatform = ETexturePlatform.DesktopMobile;
+        public ETexturePlatform OverridedPlatform
+        {
+            get => _overridedPlatform;
+            set => SetProperty(ref _overridedPlatform, value);
         }
 
         private IDictionary<FGame, string> _presets = new Dictionary<FGame, string>
