@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AdonisUI.Controls;
 using System.Collections.Generic;
 using System.Threading;
@@ -104,9 +104,12 @@ namespace FModel.ViewModels.ApiEndpoints
 
         public void CheckForUpdates(EUpdateMode updateMode)
         {
-            AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
-            AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
-            AutoUpdater.Start($"https://api.fmodel.app/v1/infos/{updateMode}");
+            if (updateMode != EUpdateMode.None)
+            {
+                AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
+                AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
+                AutoUpdater.Start($"https://api.fmodel.app/v1/infos/{updateMode}");
+            }
         }
 
         private void ParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 namespace FModel
 {
@@ -111,7 +111,9 @@ namespace FModel
         [Description("Stable")]
         Stable,
         [Description("Beta")]
-        Beta
+        Beta,
+        [Description("None")]
+        None
     }
 
     public enum ECompressedAudio

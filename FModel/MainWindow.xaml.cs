@@ -51,7 +51,8 @@ namespace FModel
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
 #if !DEBUG
-            ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
+            if (UserSettings.Default.UpdateMode != EUpdateMode.None)
+                ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
 #endif
 
             switch (UserSettings.Default.AesReload)
