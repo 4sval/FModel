@@ -394,6 +394,13 @@ namespace FModel.Settings
             set => SetProperty(ref _customDirectories, value);
         }
 
+        private IDictionary<string, Bookmark> _bookmarks = new Dictionary<string, Bookmark>() { }; 
+        public IDictionary<string, Bookmark> Bookmarks
+        {
+            get => _bookmarks;
+            set => SetProperty(ref _bookmarks, value);
+        }
+
         private DateTime _lastAesReload = DateTime.Today.AddDays(-1);
         public DateTime LastAesReload
         {

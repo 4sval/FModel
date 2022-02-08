@@ -65,6 +65,7 @@ namespace FModel.ViewModels
 
         public LoadingModesViewModel LoadingModes { get; }
         public CustomDirectoriesViewModel CustomDirectories { get; }
+        public BookmarksViewModel Bookmarks { get; }
         public CUE4ParseViewModel CUE4Parse { get; }
         public SettingsViewModel SettingsView { get; }
         public AesManagerViewModel AesManager { get; }
@@ -88,6 +89,7 @@ namespace FModel.ViewModels
             AvoidEmptyGameDirectoryAndSetEGame(false);
             CUE4Parse = new CUE4ParseViewModel(UserSettings.Default.GameDirectory);
             CustomDirectories = new CustomDirectoriesViewModel(CUE4Parse.Game);
+            Bookmarks = new BookmarksViewModel(CUE4Parse.Game);
             SettingsView = new SettingsViewModel(CUE4Parse.Game);
             AesManager = new AesManagerViewModel(CUE4Parse);
             MapViewer = new MapViewerViewModel(CUE4Parse);

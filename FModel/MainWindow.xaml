@@ -64,6 +64,15 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Header="Bookmarks" ItemsSource="{Binding Bookmarks.Directories}" IsEnabled="{Binding IsReady}">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DirectoriesIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Archives Info" Command="{Binding MenuCommand}" CommandParameter="Directory_ArchivesInfo" IsEnabled="{Binding IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
