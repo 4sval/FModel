@@ -156,6 +156,13 @@ namespace FModel.Settings
             set => SetProperty(ref _keepDirectoryStructure, value);
         }
 
+        private bool _updateAtStartup = true;
+        public bool UpdateAtStartup
+        {
+            get => _updateAtStartup;
+            set => SetProperty(ref _updateAtStartup, value);
+        }
+
         private ECompressedAudio _compressedAudioMode = ECompressedAudio.PlayDecompressed;
         public ECompressedAudio CompressedAudioMode
         {

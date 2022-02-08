@@ -51,7 +51,7 @@ namespace FModel
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
 #if !DEBUG
-            if (UserSettings.Default.UpdateMode != EUpdateMode.None)
+            if (UserSettings.Default.UpdateAtStartup)
                 ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
 #endif
 
