@@ -39,6 +39,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -196,6 +197,11 @@
                              Visibility="{Binding OverwriteMapping, Source={x:Static local:Settings.UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     <Button Grid.Row="13" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
                             Visibility="{Binding OverwriteMapping, Source={x:Static local:Settings.UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                    <TextBlock Grid.Row="14" Grid.Column="0" Text="Update at startup" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Auto-save packages following their game directory" />
+                    <CheckBox Grid.Row="14" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding UpdateAtStartup, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
+
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">
