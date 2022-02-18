@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
@@ -150,6 +153,35 @@ namespace FModel.Creator
             return _applicationView.CUE4Parse.Provider.LoadObjectExports(fullPath);
         }
 
+        public static float GetMaxFontSize(double sectorSize, SKTypeface typeface, string text, float degreeOfCertainty = 1f, float maxFont = 100f)
+        {
+            var max = maxFont;
+            var min = 0f;
+            var last = -1f;
+            float value;
+            while (true)
+            {
+                value = min + ((max - min) / 2);
+                using (SKFont ft = new SKFont(typeface, value))
+                using (SKPaint paint = new SKPaint(ft))
+                {
+                    if (paint.MeasureText(text) > sectorSize)
+                    {
+                        last = value;
+                        max = value;
+                    }
+                    else
+                    {
+                        min = value;
+                        if (Math.Abs(last - value) <= degreeOfCertainty)
+                            return last;
+
+                        last = value;
+                    }
+                }
+            }
+        }
+
         public static string GetLocalizedResource(string @namespace, string key, string defaultValue)
         {
             return _applicationView.CUE4Parse.Provider.GetLocalizedString(@namespace, key, defaultValue);
@@ -214,6 +246,13 @@ namespace FModel.Creator
 
             foreach (var line in lines)
             {
+                var fontSize = GetMaxFontSize(area.Width, paint.Typeface, line);
+                if (paint.TextSize > fontSize) // if the text is not fitting in the line decrease the font size (CKJ languages)
+                {
+                    paint.TextSize = fontSize;
+                    lineHeight = paint.TextSize * 1.2f;
+                }
+
                 if (line == null) continue;
                 var lineText = line.Trim();
                 var shaper = new CustomSKShaper(paint.Typeface);
@@ -236,6 +275,80 @@ namespace FModel.Creator
 #endif
         }
 
+        #region Chinese, Korean and Japanese text split
+        // https://github.com/YoungjaeKim/mikan.sharp/blob/master/MikanSharp/Mikan/Mikan.cs
+
+        static string joshi = @"(でなければ|について|かしら|くらい|けれど|なのか|ばかり|ながら|ことよ|こそ|こと|さえ|しか|した|たり|だけ|だに|だの|つつ|ても|てよ|でも|とも|から|など|なり|ので|のに|ほど|まで|もの|やら|より|って|で|と|な|に|ね|の|も|は|ば|へ|や|わ|を|か|が|さ|し|ぞ|て)";
+        static string keywords = @"(\&nbsp;|[a-zA-Z0-9]+\.[a-z]{2,}|[一-龠々〆ヵヶゝ]+|[ぁ-んゝ]+|[ァ-ヴー]+|[a-zA-Z0-9]+|[ａ-ｚＡ-Ｚ０-９]+)";
+        static string periods = @"([\.\,。、！\!？\?]+)$";
+        static string bracketsBegin = @"([〈《「『｢（(\[【〔〚〖〘❮❬❪❨(<{❲❰｛❴])";
+        static string bracketsEnd = @"([〉》」』｣)）\]】〕〗〙〛}>\)❩❫❭❯❱❳❵｝])";
+
+        public static string[] SplitCKJText(string str)
+        {
+
+            var line1 = Regex.Split(str, keywords).ToList();
+            var line2 = line1.SelectMany((o, _) => Regex.Split(o, joshi)).ToList();
+            var line3 = line2.SelectMany((o, _) => Regex.Split(o, bracketsBegin)).ToList();
+            var line4 = line3.SelectMany((o, _) => Regex.Split(o, bracketsEnd)).ToList();
+            var words = line4.Where(o => !string.IsNullOrEmpty(o)).ToList();
+
+            var prevType = string.Empty;
+            var prevWord = string.Empty;
+            List<string> result = new List<string>();
+
+            words.ForEach(word =>
+            {
+                var token = Regex.IsMatch(word, periods) || Regex.IsMatch(word, joshi);
+
+                if (Regex.IsMatch(word, bracketsBegin))
+                {
+                    prevType = "braketBegin";
+                    prevWord = word;
+                    return;
+                }
+
+                if (Regex.IsMatch(word, bracketsEnd))
+                {
+                    result[result.Count - 1] += word;
+                    prevType = "braketEnd";
+                    prevWord = word;
+                    return;
+                }
+
+                if (prevType == "braketBegin")
+                {
+                    word = prevWord + word;
+                    prevWord = string.Empty;
+                    prevType = string.Empty;
+                }
+
+                // すでに文字が入っている上で助詞が続く場合は結合する
+                if (result.Count > 0 && token && prevType == string.Empty)
+                {
+                    result[result.Count - 1] += word;
+                    prevType = "keyword";
+                    prevWord = word;
+                    return;
+                }
+
+                // 単語のあとの文字がひらがななら結合する
+                if (result.Count > 1 && token || (prevType == "keyword" && Regex.IsMatch(word, @"[ぁ-んゝ]+")))
+                {
+                    result[result.Count - 1] += word;
+                    prevType = string.Empty;
+                    prevWord = word;
+                    return;
+                }
+
+                result.Add(word);
+                prevType = "keyword";
+                prevWord = word;
+            });
+            return result.ToArray();
+        }
+        #endregion
+
         public static List<string> SplitLines(string text, SKPaint paint, float maxWidth)
         {
             if (string.IsNullOrEmpty(text)) return null;
@@ -249,13 +362,21 @@ namespace FModel.Creator
                 if (string.IsNullOrWhiteSpace(line)) continue;
 
                 float width = 0;
+                bool isCJK = false;
                 var words = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                if (words.Length <= 1 && UserSettings.Default.AssetLanguage is ELanguage.Japanese or ELanguage.Korean or ELanguage.Chinese or ELanguage.TraditionalChinese)
+                {
+                    words = SplitCKJText(line);
+                    isCJK = true;
+                }
+
                 var lineResult = new StringBuilder();
                 foreach (var word in words)
                 {
                     var wordWidth = paint.MeasureText(word);
                     var wordWithSpaceWidth = wordWidth + spaceWidth;
-                    var wordWithSpace = word + " ";
+                    var wordWithSpace = isCJK ? word : word + " ";
 
                     if (width + wordWidth > maxWidth)
                     {
