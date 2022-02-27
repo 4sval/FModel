@@ -525,6 +525,9 @@ namespace FModel.ViewModels
                 case "zon":
                 case "xml":
                 case "h":
+                case "html":
+                case "css":
+                case "js":
                 case "uproject":
                 case "uplugin":
                 case "upluginmanifest":
