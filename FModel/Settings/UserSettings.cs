@@ -278,7 +278,8 @@ namespace FModel.Settings
             {FGame.BendGame, Constants._NO_PRESET_TRIGGER},
             {FGame.TslGame, Constants._NO_PRESET_TRIGGER},
             {FGame.PortalWars, Constants._NO_PRESET_TRIGGER},
-            {FGame.Gameface, Constants._NO_PRESET_TRIGGER}
+            {FGame.Gameface, Constants._NO_PRESET_TRIGGER},
+            {FGame.Athena, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -305,7 +306,8 @@ namespace FModel.Settings
             {FGame.BendGame, EGame.GAME_UE4_11},
             {FGame.TslGame, EGame.GAME_PlayerUnknownsBattlegrounds},
             {FGame.PortalWars, EGame.GAME_UE4_LATEST},
-            {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition}
+            {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition},
+            {FGame.Athena, EGame.GAME_SeaOfThieves}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -332,7 +334,8 @@ namespace FModel.Settings
             {FGame.BendGame, null},
             {FGame.TslGame, null},
             {FGame.PortalWars, null},
-            {FGame.Gameface, null}
+            {FGame.Gameface, null},
+            {FGame.Athena, null}
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
@@ -359,7 +362,8 @@ namespace FModel.Settings
             {FGame.BendGame, null},
             {FGame.TslGame, null},
             {FGame.PortalWars, null},
-            {FGame.Gameface, null}
+            {FGame.Gameface, null},
+            {FGame.Athena, null}
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
@@ -433,7 +437,8 @@ namespace FModel.Settings
             {FGame.BendGame, new List<CustomDirectory>()},
             {FGame.TslGame, new List<CustomDirectory>()},
             {FGame.PortalWars, new List<CustomDirectory>()},
-            {FGame.Gameface, new List<CustomDirectory>()}
+            {FGame.Gameface, new List<CustomDirectory>()},
+            {FGame.Athena, new List<CustomDirectory>()}
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {

@@ -28,6 +28,7 @@ namespace FModel.Views.Resources.Converters
                 381210 => "Dead By Daylight",
                 578080 => "PLAYERUNKNOWN'S BATTLEGROUNDS",
                 677620 => "Splitgate",
+                1172620 => "Sea of Thieves",
                 _ => value,
             };
         }

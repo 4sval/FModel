@@ -89,7 +89,9 @@ namespace FModel
         [Description("Splitgate")]
         PortalWars,
         [Description("GTA: The Trilogy - Definitive Edition")]
-        Gameface
+        Gameface,
+        [Description("Sea of Thieves")]
+        Athena
     }
 
     public enum ELoadingMode

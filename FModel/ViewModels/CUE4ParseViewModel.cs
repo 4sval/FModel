@@ -513,10 +513,16 @@ namespace FModel.ViewModels
                     }
                     break;
                 }
+                case "upluginmanifest":
+                case "uproject":
+                case "manifest":
+                case "uplugin":
+                case "archive":
+                case "html":
+                case "json":
                 case "ini":
                 case "txt":
                 case "log":
-                case "po":
                 case "bat":
                 case "dat":
                 case "cfg":
@@ -524,14 +530,11 @@ namespace FModel.ViewModels
                 case "ipl":
                 case "zon":
                 case "xml":
-                case "h":
-                case "uproject":
-                case "uplugin":
-                case "upluginmanifest":
+                case "css":
                 case "csv":
-                case "json":
-                case "archive":
-                case "manifest":
+                case "js":
+                case "po":
+                case "h":
                 {
                     if (Provider.TrySaveAsset(fullPath, out var data))
                     {

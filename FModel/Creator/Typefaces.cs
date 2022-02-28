@@ -248,14 +248,6 @@ namespace FModel.Creator
 
                     break;
                 }
-                case FGame.ShooterGame:
-                    break;
-                case FGame.DeadByDaylight:
-                    break;
-                case FGame.OakGame:
-                    break;
-                case FGame.Dungeons:
-                    break;
                 case FGame.g3:
                 {
                     if (viewModel.Provider.TrySaveAsset(_SPELLBREAK_BASE_PATH + _QUADRAT_BOLD + _EXT, out data))
@@ -274,18 +266,6 @@ namespace FModel.Creator
 
                     break;
                 }
-                case FGame.StateOfDecay2:
-                    break;
-                case FGame.Prospect:
-                    break;
-                case FGame.Indiana:
-                    break;
-                case FGame.RogueCompany:
-                    break;
-                case FGame.SwGame:
-                    break;
-                case FGame.Platform:
-                    break;
             }
         }
 
