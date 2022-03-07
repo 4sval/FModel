@@ -32,6 +32,7 @@ namespace FModel.Creator
             switch (_object.ExportType)
             {
                 // Fortnite
+                case "FortCreativeWeaponMeleeItemDefinition":
                 case "AthenaConsumableEmoteItemDefinition":
                 case "AthenaSkyDiveContrailItemDefinition":
                 case "AthenaLoadingScreenItemDefinition":
