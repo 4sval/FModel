@@ -23,6 +23,7 @@ using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Oodle.Objects;
+using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
@@ -181,8 +182,10 @@ namespace FModel.ViewModels
                                 {
                                     if (!_fnLive.IsMatch(fileManifest.Name)) continue;
 
-                                    var casStream = manifest.FileManifests.FirstOrDefault(x => x.Name.Equals(fileManifest.Name.Replace(".utoc", ".ucas")));
-                                    p.Initialize(fileManifest.Name, new[] {fileManifest.GetStream(), casStream.GetStream()});
+                                    //var casStream = manifest.FileManifests.FirstOrDefault(x => x.Name.Equals(fileManifest.Name.Replace(".utoc", ".ucas")));
+                                    //p.Initialize(fileManifest.Name, new[] {fileManifest.GetStream(), casStream.GetStream()});
+                                    p.Initialize(fileManifest.Name, new[] {fileManifest.GetStream()}
+                                        , it => new FStreamArchive(it, manifest.FileManifests.First(x => x.Name.Equals(it)).GetStream(), p.Versions));
                                 }
 
                                 FLogger.AppendInformation();
