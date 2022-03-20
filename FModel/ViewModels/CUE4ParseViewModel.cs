@@ -184,7 +184,7 @@ namespace FModel.ViewModels
 
                                     //var casStream = manifest.FileManifests.FirstOrDefault(x => x.Name.Equals(fileManifest.Name.Replace(".utoc", ".ucas")));
                                     //p.Initialize(fileManifest.Name, new[] {fileManifest.GetStream(), casStream.GetStream()});
-                                    p.Initialize(fileManifest.Name, new[] {fileManifest.GetStream()}
+                                    p.Initialize(fileManifest.Name, new Stream[] { fileManifest.GetStream() }
                                         , it => new FStreamArchive(it, manifest.FileManifests.First(x => x.Name.Equals(it)).GetStream(), p.Versions));
                                 }
 

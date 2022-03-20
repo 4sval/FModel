@@ -130,8 +130,8 @@
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" SelectionChanged="OnSelectionChanged" Margin="0 0 0 5">
                     </ComboBox>
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Texture Platform *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the game's platform to ensure texture compatibility" />
-                    <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.Platforms}" SelectedItem="{Binding SettingsView.SelectedUePlatform, Mode=TwoWay}"
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Texture Platform *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the game's platform to ensure texture compatibility" />
+                    <ComboBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.Platforms}" SelectedItem="{Binding SettingsView.SelectedUePlatform, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" IsEnabled="{Binding SettingsView.EnableElements}"
                               Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -141,8 +141,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="UE Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE version to use when parsing packages" />
-                    <ComboBox Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.UeGames}" SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="UE Versions *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the UE version to use when parsing packages" />
+                    <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.UeGames}" SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" IsEnabled="{Binding SettingsView.EnableElements}"
                               Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -152,8 +152,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Versioning Configuration *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Versioning Configuration *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Grid Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
