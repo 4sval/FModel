@@ -145,6 +145,7 @@ namespace FModel.Creator
                     return true;
                 case "FortFeatItemDefinition":
                 case "FortQuestItemDefinition":
+                case "FortQuestItemDefinition_Athena":
                 case "AthenaDailyQuestDefinition":
                 case "FortUrgentQuestItemDefinition":
                     creator = new BaseQuest(_object, _style);
