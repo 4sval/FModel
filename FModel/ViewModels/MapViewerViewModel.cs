@@ -376,8 +376,12 @@ namespace FModel.ViewModels
             await _threadWorkerView.Begin(_ =>
             {
                 if (!Utils.TryLoadObject("FortniteGame/Content/UI/IngameMap/UIMapManagerBR.Default__UIMapManagerBR_C", out UObject mapManager) ||
-                    !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial") || mapMaterial.GetFirstTexture() is not UTexture2D tex) return;
+                    !mapManager.TryGetValue(out UMaterial mapMaterial, "MapMaterial")) return;
+                var midTex = mapMaterial.GetFirstTexture();
+                if ((midTex?.Name ?? string.Empty).Contains("Mask"))
+                    midTex = mapMaterial.GetTextureAtIndex(1);
 
+                if (midTex is not UTexture2D tex) return;
                 _bitmaps[0][_FIRST_BITMAP] = new MapLayer{Layer = Utils.GetBitmap(tex), IsEnabled = true};
                 _brMiniMapImage = GetImageSource(_bitmaps[0][_FIRST_BITMAP].Layer);
             });
