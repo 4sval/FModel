@@ -86,7 +86,12 @@ namespace FModel.Creator.Bases.FN
             {
                 if (weaponRowValue.TryGetValue(out float dmgPb, "DmgPB") && dmgPb != 0f && weaponRowValue.TryGetValue(out int bpc , "BulletsPerCartridge"))
                 {
-                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "BF7E3CF34A9ACFF52E95EAAD4F09F133", "Damage to Player"), dmgPb * (bpc != 0f ? bpc : 1), 200));
+                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "35D04D1B45737BEA25B69686D9E085B9", "Damage"), dmgPb * (bpc != 0f ? bpc : 1), 200));
+                }
+
+                if (weaponRowValue.TryGetValue(out int bpc2, "BulletsPerCartridge") && weaponRowValue.TryGetValue(out float DamageZone_Critical, "DamageZone_Critical"))
+                {
+                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), dmgPb * DamageZone_Critical * (bpc2 != 0f ? bpc2 : 1), 200));
                 }
 
                 if (weaponRowValue.TryGetValue(out int clipSize, "ClipSize") && clipSize != 0)
