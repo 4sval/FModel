@@ -466,7 +466,7 @@ namespace FModel.ViewModels
                 var patrolsPathBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
                 using var c = new SKCanvas(patrolsPathBitmap);
 
-                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Artemis_Overlay_S19_NPCLibrary");
+                var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Artemis_Overlay_S20_NPCLibrary");
                 foreach (var export in exports)
                 {
                     if (!export.ExportType.Equals("FortAthenaPatrolPath", StringComparison.OrdinalIgnoreCase) ||
