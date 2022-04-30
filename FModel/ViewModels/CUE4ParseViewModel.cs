@@ -118,6 +118,13 @@ namespace FModel.ViewModels
                                 SearchOption.AllDirectories, true, versions);
                             break;
                         }
+                        case FGame.FortniteGame:
+                            Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
+                                {
+                                    new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FortniteGame\\Saved\\PersistentDownloadDir\\InstalledBundles"),
+                                },
+                                SearchOption.AllDirectories, true, versions);
+                            break;
                         case FGame.Unknown when UserSettings.Default.ManualGames.TryGetValue(gameDirectory, out var settings):
                         {
                             versions = new VersionContainer(settings.OverridedGame, UserSettings.Default.OverridedPlatform,
@@ -769,7 +776,14 @@ namespace FModel.ViewModels
 
         private void SaveExport(UObject export)
         {
-            var toSave = new Exporter(export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat, UserSettings.Default.OverridedPlatform);
+            var exportOptions = new ExporterOptions()
+            {
+                TextureFormat = UserSettings.Default.TextureExportFormat,
+                LodFormat = UserSettings.Default.LodExportFormat,
+                MeshFormat = UserSettings.Default.MeshExportFormat,
+                Platform = UserSettings.Default.OverridedPlatform
+            };
+            var toSave = new Exporter(export, exportOptions);
             var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
             if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
             {

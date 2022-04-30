@@ -184,9 +184,16 @@ namespace FModel.ViewModels
 
             await _threadWorkerView.Begin(_ =>
             {
+                var exportOptions = new CUE4Parse_Conversion.ExporterOptions()
+                {
+                    TextureFormat = UserSettings.Default.TextureExportFormat,
+                    LodFormat = UserSettings.Default.LodExportFormat,
+                    MeshFormat = UserSettings.Default.MeshExportFormat,
+                    Platform = UserSettings.Default.OverridedPlatform
+                };
                 foreach (var model in _loadedModels)
                 {
-                    var toSave = new CUE4Parse_Conversion.Exporter(model.Export, UserSettings.Default.TextureExportFormat, UserSettings.Default.LodExportFormat, UserSettings.Default.MeshExportFormat, UserSettings.Default.OverridedPlatform);
+                    var toSave = new CUE4Parse_Conversion.Exporter(model.Export, exportOptions);
                     if (toSave.TryWriteToDir(new DirectoryInfo(folderBrowser.SelectedPath), out var savedFileName))
                     {
                         Log.Information("Successfully saved {FileName}", savedFileName);
