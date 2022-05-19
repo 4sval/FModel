@@ -119,11 +119,10 @@ namespace FModel.ViewModels
                             break;
                         }
                         case FGame.FortniteGame:
-                            Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
-                                {
-                                    new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FortniteGame\\Saved\\PersistentDownloadDir\\InstalledBundles"),
-                                },
-                                SearchOption.AllDirectories, true, versions);
+                            var extraDirs = new List<DirectoryInfo>();
+                            var bundlesDir =  new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FortniteGame\\Saved\\PersistentDownloadDir\\InstalledBundles");
+                            if (bundlesDir.Exists) extraDirs.Add(bundlesDir);
+                            Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), extraDirs, SearchOption.AllDirectories, true, versions);
                             break;
                         case FGame.Unknown when UserSettings.Default.ManualGames.TryGetValue(gameDirectory, out var settings):
                         {
