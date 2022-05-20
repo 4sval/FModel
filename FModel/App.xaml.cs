@@ -26,6 +26,10 @@ namespace FModel
         [DllImport("kernel32.dll")]
         private static extern bool AttachConsole(int dwProcessId);
 
+        [DllImport("winbrand.dll", CharSet = CharSet.Unicode)]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        static extern string BrandingFormatString(string format);
+
         protected override void OnStartup(StartupEventArgs e)
         {
 #if DEBUG
@@ -133,7 +137,7 @@ namespace FModel
             var productName = string.Empty;
             try
             {
-                productName = GetRegistryValue(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName", RegistryHive.LocalMachine);
+                productName = BrandingFormatString("%WINDOWS_LONG%");
             }
             catch
             {
