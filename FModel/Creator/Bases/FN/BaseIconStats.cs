@@ -84,25 +84,14 @@ namespace FModel.Creator.Bases.FN
                 weaponStatHandle.TryGetValue(out UDataTable dataTable, "DataTable") &&
                 dataTable.TryGetDataTableRow(weaponRowName.Text, StringComparison.OrdinalIgnoreCase, out var weaponRowValue))
             {
-                if (weaponRowValue.TryGetValue(out int bpc, "BulletsPerCartridge"))
+                if (weaponRowValue.TryGetValue(out float dmgPb, "DmgPB") && dmgPb != 0f && weaponRowValue.TryGetValue(out int bpc , "BulletsPerCartridge"))
                 {
-                    var multiplier = bpc != 0f ? bpc : 1;
-                    if (weaponRowValue.TryGetValue(out float dmgPb, "DmgPB") && dmgPb != 0f)
-                    {
-                        _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "35D04D1B45737BEA25B69686D9E085B9", "Damage"), dmgPb * multiplier, 200));
-                    }
+                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "35D04D1B45737BEA25B69686D9E085B9", "Damage"), dmgPb * (bpc != 0f ? bpc : 1), 200));
+                }
 
-                    if (weaponRowValue.TryGetValue(out float mdpc, "MaxDamagePerCartridge") && weaponRowValue.TryGetValue(out int bpc2, "BulletsPerCartridge") && weaponRowValue.TryGetValue(out float DamageZone_Critical, "DamageZone_Critical"))
-                    {
-                        if (mdpc == -1)
-                        {
-                            _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), dmgPb * DamageZone_Critical * (bpc2 != 0f ? bpc2 : 1), 200));
-                        }
-                        else
-                        {
-                            _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), mdpc, 200));
-                        }
-                    }
+                if (weaponRowValue.TryGetValue(out int bpc2, "BulletsPerCartridge") && weaponRowValue.TryGetValue(out float DamageZone_Critical, "DamageZone_Critical"))
+                {
+                    _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), dmgPb * DamageZone_Critical * (bpc2 != 0f ? bpc2 : 1), 200));
                 }
 
                 if (weaponRowValue.TryGetValue(out int clipSize, "ClipSize") && clipSize != 0)
