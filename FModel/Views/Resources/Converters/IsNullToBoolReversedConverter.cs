@@ -2,20 +2,19 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace FModel.Views.Resources.Converters
+namespace FModel.Views.Resources.Converters;
+
+public class IsNullToBoolReversedConverter : IValueConverter
 {
-    public class IsNullToBoolReversedConverter : IValueConverter
+    public static readonly IsNullToBoolReversedConverter Instance = new();
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        public static readonly IsNullToBoolReversedConverter Instance = new();
+        return value != null;
+    }
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value != null;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
     }
 }

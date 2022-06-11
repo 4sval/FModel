@@ -1,19 +1,18 @@
 ﻿using System;
 
-namespace FModel.Views.Resources.Controls.Aup
+namespace FModel.Views.Resources.Controls.Aup;
+
+public enum ESourceEventType
 {
-    public enum ESourceEventType
-    {
-        Loading
-    }
+    Loading
+}
 
-    public class SourceEventArgs : EventArgs
-    {
-        public ESourceEventType Event { get; }
+public class SourceEventArgs : EventArgs
+{
+    public ESourceEventType Event { get; }
 
-        public SourceEventArgs(ESourceEventType e)
-        {
-            Event = e;
-        }
+    public SourceEventArgs(ESourceEventType e)
+    {
+        Event = e;
     }
 }

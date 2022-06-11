@@ -2,34 +2,33 @@
 using FModel.Framework;
 using FModel.Views;
 
-namespace FModel.ViewModels.Commands
+namespace FModel.ViewModels.Commands;
+
+public class AddEditDirectoryCommand : ViewModelCommand<CustomDirectoriesViewModel>
 {
-    public class AddEditDirectoryCommand : ViewModelCommand<CustomDirectoriesViewModel>
+    public AddEditDirectoryCommand(CustomDirectoriesViewModel contextViewModel) : base(contextViewModel)
     {
-        public AddEditDirectoryCommand(CustomDirectoriesViewModel contextViewModel) : base(contextViewModel)
-        {
-        }
+    }
 
-        public override void Execute(CustomDirectoriesViewModel contextViewModel, object parameter)
-        {
-            if (parameter is not CustomDirectory customDir)
-                customDir = new CustomDirectory();
+    public override void Execute(CustomDirectoriesViewModel contextViewModel, object parameter)
+    {
+        if (parameter is not CustomDirectory customDir)
+            customDir = new CustomDirectory();
 
-            Helper.OpenWindow<AdonisWindow>("Custom Directory", () =>
+        Helper.OpenWindow<AdonisWindow>("Custom Directory", () =>
+        {
+            var index = contextViewModel.GetIndex(customDir);
+            var input = new CustomDir(customDir);
+            var result = input.ShowDialog();
+            if (!result.HasValue || !result.Value || string.IsNullOrEmpty(customDir.Header) && string.IsNullOrEmpty(customDir.DirectoryPath))
+                return;
+
+            if (index > 1)
             {
-                var index = contextViewModel.GetIndex(customDir);
-                var input = new CustomDir(customDir);
-                var result = input.ShowDialog();
-                if (!result.HasValue || !result.Value || string.IsNullOrEmpty(customDir.Header) && string.IsNullOrEmpty(customDir.DirectoryPath))
-                    return;
-
-                if (index > 1)
-                {
-                    contextViewModel.Edit(index, customDir);
-                }
-                else
-                    contextViewModel.Add(customDir);
-            });
-        }
+                contextViewModel.Edit(index, customDir);
+            }
+            else
+                contextViewModel.Add(customDir);
+        });
     }
 }
