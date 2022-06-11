@@ -101,7 +101,16 @@ namespace FModel.ViewModels
                 }
                 default:
                 {
-                    Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
+                    if (UserSettings.Default.ForceGame == true)
+                    {
+                        Game = UserSettings.Default.GameToForce;
+                    }
+                    else
+                    {
+                        Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\")
+                            .ToEnum(FGame.Unknown);
+                    }
+
                     var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                         customVersions: UserSettings.Default.OverridedCustomVersions[Game],
                         optionOverrides: UserSettings.Default.OverridedOptions[Game]);

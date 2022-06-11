@@ -102,6 +102,22 @@ namespace FModel.Settings
             set => SetProperty(ref _overwriteMapping, value);
         }
 
+        private bool _forceGame;
+
+        public bool ForceGame
+        {
+            get => _forceGame;
+            set => SetProperty(ref _forceGame, value);
+        }
+
+        private FGame _gameToForce;
+
+        public FGame GameToForce
+        {
+            get => _gameToForce;
+            set => SetProperty(ref _gameToForce, value);
+        }
+
         private string _mappingFilePath;
         public string MappingFilePath
         {
