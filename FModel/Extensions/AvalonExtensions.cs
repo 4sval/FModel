@@ -13,6 +13,7 @@ public static class AvalonExtensions
     private static readonly IHighlightingDefinition _xmlHighlighter = LoadHighlighter("Xml.xshd");
     private static readonly IHighlightingDefinition _cppHighlighter = LoadHighlighter("Cpp.xshd");
     private static readonly IHighlightingDefinition _changelogHighlighter = LoadHighlighter("Changelog.xshd");
+    private static readonly IHighlightingDefinition _ulangHighlighter = LoadHighlighter("ULang.xshd");
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IHighlightingDefinition LoadHighlighter(string resourceName)
@@ -38,6 +39,8 @@ public static class AvalonExtensions
                 return _cppHighlighter;
             case "changelog":
                 return _changelogHighlighter;
+            case "ulang":
+                return _ulangHighlighter;
             case "bat":
             case "txt":
             case "po":
