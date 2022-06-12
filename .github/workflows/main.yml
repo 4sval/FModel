@@ -21,11 +21,10 @@ jobs:
       - name: Fetch Submodules Recursively
         run: git submodule update --init --recursive
 
-      - name: .NET 7 Setup
+      - name: .NET 6 Setup
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '7.0.x'
-          include-prerelease: true
+          dotnet-version: '6.0.x'
 
       - name: .NET Restore
         run: dotnet restore FModel
