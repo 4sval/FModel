@@ -83,17 +83,11 @@ public class SettingsViewModel : ViewModel
     }
 
     private EDiscordRpc _selectedDiscordRpc;
+
     public EDiscordRpc SelectedDiscordRpc
     {
         get => _selectedDiscordRpc;
         set => SetProperty(ref _selectedDiscordRpc, value);
-    }
-
-    private ECompressedAudio _selectedCompressedAudio;
-    public ECompressedAudio SelectedCompressedAudio
-    {
-        get => _selectedCompressedAudio;
-        set => SetProperty(ref _selectedCompressedAudio, value);
     }
 
     private FGame _selectedForceGame;
@@ -227,6 +221,7 @@ public class SettingsViewModel : ViewModel
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
+        SelectedForceGame = UserSettings.Default.GameToForce;
 
         UpdateModes = new ReadOnlyObservableCollection<EUpdateMode>(new ObservableCollection<EUpdateMode>(EnumerateUpdateModes()));
         Presets = new ObservableCollection<string>(EnumeratePresets());
