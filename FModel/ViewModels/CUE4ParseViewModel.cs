@@ -41,786 +41,811 @@ using Newtonsoft.Json;
 using Serilog;
 using SkiaSharp;
 
-namespace FModel.ViewModels
+namespace FModel.ViewModels;
+
+public class CUE4ParseViewModel : ViewModel
 {
-    public class CUE4ParseViewModel : ViewModel
+    private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
+    private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
+    private readonly Regex _package = new(@"^(?!global|pakchunk.+optional\-).+(pak|utoc)$", // should be universal
+        RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    private readonly Regex _fnLive = new(@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\)(pakchunk(?:0|10.*|20.*|\w+)-WindowsClient|global)\.(pak|utoc)$",
+        RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    private FGame _game;
+
+    public FGame Game
     {
-        private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
-        private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
-        private readonly Regex _package = new(@"^(?!global|pakchunk.+optional\-).+(pak|utoc)$", // should be universal
-            RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        private readonly Regex _fnLive = new(@"^FortniteGame(/|\\)Content(/|\\)Paks(/|\\)(pakchunk(?:0|10.*|\w+)-WindowsClient|global)\.(pak|utoc)$",
-            RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        get => _game;
+        set => SetProperty(ref _game, value);
+    }
 
-        private FGame _game;
-        public FGame Game
+    private bool _modelIsOverwritingMaterial;
+    public bool ModelIsOverwritingMaterial
+    {
+        get => _modelIsOverwritingMaterial;
+        set => SetProperty(ref _modelIsOverwritingMaterial, value);
+    }
+
+    public AbstractVfsFileProvider Provider { get; }
+    public GameDirectoryViewModel GameDirectory { get; }
+    public AssetsFolderViewModel AssetsFolder { get; }
+    public SearchViewModel SearchVm { get; }
+    public TabControlViewModel TabControl { get; }
+    public int LocalizedResourcesCount { get; set; }
+    public bool HotfixedResourcesDone { get; set; }
+    public int VirtualPathCount { get; set; }
+
+    public CUE4ParseViewModel(string gameDirectory)
+    {
+        switch (gameDirectory)
         {
-            get => _game;
-            set => SetProperty(ref _game, value);
-        }
-
-        private bool _modelIsOverwritingMaterial;
-        public bool ModelIsOverwritingMaterial
-        {
-            get => _modelIsOverwritingMaterial;
-            set => SetProperty(ref _modelIsOverwritingMaterial, value);
-        }
-
-        public AbstractVfsFileProvider Provider { get; }
-        public GameDirectoryViewModel GameDirectory { get; }
-        public AssetsFolderViewModel AssetsFolder { get; }
-        public SearchViewModel SearchVm { get; }
-        public TabControlViewModel TabControl { get; }
-        public int LocalizedResourcesCount { get; set; }
-        public bool HotfixedResourcesDone { get; set; }
-        public int VirtualPathCount { get; set; }
-
-        public CUE4ParseViewModel(string gameDirectory)
-        {
-            switch (gameDirectory)
+            case Constants._FN_LIVE_TRIGGER:
             {
-                case Constants._FN_LIVE_TRIGGER:
-                {
-                    Game = FGame.FortniteGame;
-                    Provider = new StreamedFileProvider("FortniteLive", true,
-                        new VersionContainer(
-                            UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                            customVersions: UserSettings.Default.OverridedCustomVersions[Game],
-                            optionOverrides: UserSettings.Default.OverridedOptions[Game]));
-                    break;
-                }
-                case Constants._VAL_LIVE_TRIGGER:
-                {
-                    Game = FGame.ShooterGame;
-                    Provider = new StreamedFileProvider("ValorantLive", true,
-                        new VersionContainer(
-                            UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
-                            customVersions: UserSettings.Default.OverridedCustomVersions[Game],
-                            optionOverrides: UserSettings.Default.OverridedOptions[Game]));
-                    break;
-                }
-                default:
-                {
-                    Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
-                    var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
+                Game = FGame.FortniteGame;
+                Provider = new StreamedFileProvider("FortniteLive", true,
+                    new VersionContainer(
+                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                         customVersions: UserSettings.Default.OverridedCustomVersions[Game],
-                        optionOverrides: UserSettings.Default.OverridedOptions[Game]);
+                        optionOverrides: UserSettings.Default.OverridedOptions[Game]));
+                break;
+            }
+            case Constants._VAL_LIVE_TRIGGER:
+            {
+                Game = FGame.ShooterGame;
+                Provider = new StreamedFileProvider("ValorantLive", true,
+                    new VersionContainer(
+                        UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
+                        customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                        optionOverrides: UserSettings.Default.OverridedOptions[Game]));
+                break;
+            }
+            default:
+            {
+                Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
+                var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
+                    customVersions: UserSettings.Default.OverridedCustomVersions[Game],
+                    optionOverrides: UserSettings.Default.OverridedOptions[Game]);
 
-                    switch (Game)
+                switch (Game)
+                {
+                    case FGame.StateOfDecay2:
                     {
-                        case FGame.StateOfDecay2:
+                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
+                            {
+                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
+                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
+                            },
+                            SearchOption.AllDirectories, true, versions);
+                        break;
+                    }
+                    case FGame.FortniteGame:
+                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
+                            {
+                                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FortniteGame\\Saved\\PersistentDownloadDir\\InstalledBundles"),
+                            },
+                            SearchOption.AllDirectories, true, versions);
+                        break;
+                    case FGame.Unknown when UserSettings.Default.ManualGames.TryGetValue(gameDirectory, out var settings):
+                    {
+                        versions = new VersionContainer(settings.OverridedGame, UserSettings.Default.OverridedPlatform,
+                            customVersions: settings.OverridedCustomVersions,
+                            optionOverrides: settings.OverridedOptions);
+                        goto default;
+                    }
+                    default:
+                    {
+                        Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versions);
+                        break;
+                    }
+                }
+
+                break;
+            }
+        }
+
+        GameDirectory = new GameDirectoryViewModel();
+        AssetsFolder = new AssetsFolderViewModel();
+        SearchVm = new SearchViewModel();
+        TabControl = new TabControlViewModel();
+    }
+
+    public async Task Initialize()
+    {
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            switch (Provider)
+            {
+                case StreamedFileProvider p:
+                    switch (p.LiveGame)
+                    {
+                        case "FortniteLive":
                         {
-                            Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
-                                {
-                                    new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
-                                    new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                                },
-                                SearchOption.AllDirectories, true, versions);
+                            var manifestInfo = _apiEndpointView.EpicApi.GetManifest(cancellationToken);
+                            if (manifestInfo == null)
+                            {
+                                throw new Exception("Could not load latest Fortnite manifest, you may have to switch to your local installation.");
+                            }
+
+                            byte[] manifestData;
+                            var chunksDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
+                            var manifestPath = Path.Combine(chunksDir.FullName, manifestInfo.FileName);
+                            if (File.Exists(manifestPath))
+                            {
+                                manifestData = File.ReadAllBytes(manifestPath);
+                            }
+                            else
+                            {
+                                manifestData = manifestInfo.DownloadManifestData();
+                                File.WriteAllBytes(manifestPath, manifestData);
+                            }
+
+                            var manifest = new Manifest(manifestData, new ManifestOptions
+                            {
+                                ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/ChunksV4/", UriKind.Absolute),
+                                ChunkCacheDirectory = chunksDir
+                            });
+
+                            foreach (var fileManifest in manifest.FileManifests)
+                            {
+                                if (!_fnLive.IsMatch(fileManifest.Name)) continue;
+
+                                //var casStream = manifest.FileManifests.FirstOrDefault(x => x.Name.Equals(fileManifest.Name.Replace(".utoc", ".ucas")));
+                                //p.Initialize(fileManifest.Name, new[] {fileManifest.GetStream(), casStream.GetStream()});
+                                p.Initialize(fileManifest.Name, new Stream[] { fileManifest.GetStream() }
+                                    , it => new FStreamArchive(it, manifest.FileManifests.First(x => x.Name.Equals(it)).GetStream(), p.Versions));
+                            }
+
+                            FLogger.AppendInformation();
+                            FLogger.AppendText($"Fortnite has been loaded successfully in {manifest.ParseTime.TotalMilliseconds}ms", Constants.WHITE, true);
+                            FLogger.AppendWarning();
+                            FLogger.AppendText($"Mappings must match '{manifest.BuildVersion}' in order to avoid errors", Constants.WHITE, true);
                             break;
                         }
-                        case FGame.FortniteGame:
-                            Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
-                                {
-                                    new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FortniteGame\\Saved\\PersistentDownloadDir\\InstalledBundles"),
-                                },
-                                SearchOption.AllDirectories, true, versions);
-                            break;
-                        case FGame.Unknown when UserSettings.Default.ManualGames.TryGetValue(gameDirectory, out var settings):
+                        case "ValorantLive":
                         {
-                            versions = new VersionContainer(settings.OverridedGame, UserSettings.Default.OverridedPlatform,
-                                customVersions: settings.OverridedCustomVersions,
-                                optionOverrides: settings.OverridedOptions);
-                            goto default;
-                        }
-                        default:
-                        {
-                            Provider = new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, true, versions);
+                            var manifestInfo = _apiEndpointView.ValorantApi.GetManifest(cancellationToken);
+                            if (manifestInfo == null)
+                            {
+                                throw new Exception("Could not load latest Valorant manifest, you may have to switch to your local installation.");
+                            }
+
+                            for (var i = 0; i < manifestInfo.Paks.Length; i++)
+                            {
+                                p.Initialize(manifestInfo.Paks[i].GetFullName(), new[] { manifestInfo.GetPakStream(i) });
+                            }
+
+                            FLogger.AppendInformation();
+                            FLogger.AppendText($"Valorant '{manifestInfo.Header.GameVersion}' has been loaded successfully", Constants.WHITE, true);
                             break;
                         }
                     }
 
                     break;
-                }
+                case DefaultFileProvider d:
+                    d.Initialize();
+                    break;
             }
 
-            GameDirectory = new GameDirectoryViewModel();
-            AssetsFolder = new AssetsFolderViewModel();
-            SearchVm = new SearchViewModel();
-            TabControl = new TabControlViewModel();
-        }
-
-        public async Task Initialize()
-        {
-            await _threadWorkerView.Begin(cancellationToken =>
+            foreach (var vfs in Provider.UnloadedVfs) // push files from the provider to the ui
             {
-                switch (Provider)
-                {
-                    case StreamedFileProvider p:
-                        switch (p.LiveGame)
-                        {
-                            case "FortniteLive":
-                            {
-                                var manifestInfo = _apiEndpointView.EpicApi.GetManifest(cancellationToken);
-                                if (manifestInfo == null)
-                                {
-                                    throw new Exception("Could not load latest Fortnite manifest, you may have to switch to your local installation.");
-                                }
+                cancellationToken.ThrowIfCancellationRequested();
+                if (vfs.Length <= 365 || !_package.IsMatch(vfs.Name)) continue;
 
-                                byte[] manifestData;
-                                var chunksDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
-                                var manifestPath = Path.Combine(chunksDir.FullName, manifestInfo.FileName);
-                                if (File.Exists(manifestPath))
-                                {
-                                    manifestData = File.ReadAllBytes(manifestPath);
-                                }
-                                else
-                                {
-                                    manifestData = manifestInfo.DownloadManifestData();
-                                    File.WriteAllBytes(manifestPath, manifestData);
-                                }
-
-                                var manifest = new Manifest(manifestData, new ManifestOptions
-                                {
-                                    ChunkBaseUri = new Uri("http://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/ChunksV4/", UriKind.Absolute),
-                                    ChunkCacheDirectory = chunksDir
-                                });
-
-                                foreach (var fileManifest in manifest.FileManifests)
-                                {
-                                    if (!_fnLive.IsMatch(fileManifest.Name)) continue;
-
-                                    //var casStream = manifest.FileManifests.FirstOrDefault(x => x.Name.Equals(fileManifest.Name.Replace(".utoc", ".ucas")));
-                                    //p.Initialize(fileManifest.Name, new[] {fileManifest.GetStream(), casStream.GetStream()});
-                                    p.Initialize(fileManifest.Name, new Stream[] { fileManifest.GetStream() }
-                                        , it => new FStreamArchive(it, manifest.FileManifests.First(x => x.Name.Equals(it)).GetStream(), p.Versions));
-                                }
-
-                                FLogger.AppendInformation();
-                                FLogger.AppendText($"Fortnite has been loaded successfully in {manifest.ParseTime.TotalMilliseconds}ms", Constants.WHITE, true);
-                                FLogger.AppendWarning();
-                                FLogger.AppendText($"Mappings must match '{manifest.BuildVersion}' in order to avoid errors", Constants.WHITE, true);
-                                break;
-                            }
-                            case "ValorantLive":
-                            {
-                                var manifestInfo = _apiEndpointView.ValorantApi.GetManifest(cancellationToken);
-                                if (manifestInfo == null)
-                                {
-                                    throw new Exception("Could not load latest Valorant manifest, you may have to switch to your local installation.");
-                                }
-
-                                for (var i = 0; i < manifestInfo.Paks.Length; i++)
-                                {
-                                    p.Initialize(manifestInfo.Paks[i].GetFullName(), new[] {manifestInfo.GetPakStream(i)});
-                                }
-
-                                FLogger.AppendInformation();
-                                FLogger.AppendText($"Valorant '{manifestInfo.Header.GameVersion}' has been loaded successfully", Constants.WHITE, true);
-                                break;
-                            }
-                        }
-
-                        break;
-                    case DefaultFileProvider d:
-                        d.Initialize();
-                        break;
-                }
-
-                foreach (var vfs in Provider.UnloadedVfs) // push files from the provider to the ui
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    if (vfs.Length <= 365 || !_package.IsMatch(vfs.Name)) continue;
-
-                    GameDirectory.Add(vfs);
-                }
-            });
-        }
-
-        /// <summary>
-        /// load virtual files system from GameDirectory
-        /// </summary>
-        /// <returns></returns>
-        public async Task LoadVfs(IEnumerable<FileItem> aesKeys)
-        {
-            await _threadWorkerView.Begin(cancellationToken =>
-            {
-                GameDirectory.DeactivateAll();
-
-                // load files using UnloadedVfs to include non-encrypted vfs
-                foreach (var key in aesKeys)
-                {
-                    cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
-
-                    var k = key.Key.Trim();
-                    if (k.Length != 66) k = Constants.ZERO_64_CHAR;
-                    Provider.SubmitKey(key.Guid, new FAesKey(k));
-                }
-
-                // files in MountedVfs will be enabled
-                foreach (var file in GameDirectory.DirectoryFiles)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    if (Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is not { } vfs)
-                    {
-                        if (Provider.UnloadedVfs.FirstOrDefault(x => x.Name == file.Name) is IoStoreReader store)
-                            file.FileCount = (int)store.Info.TocEntryCount - 1;
-
-                        continue;
-                    }
-
-                    file.IsEnabled = true;
-                    file.MountPoint = vfs.MountPoint;
-                    file.FileCount = vfs.FileCount;
-                }
-
-                // Game = Provider.GameName.ToEnum(Game);
-            });
-        }
-
-        public void ClearProvider()
-        {
-            if (Provider == null) return;
-
-            AssetsFolder.Folders.Clear();
-            SearchVm.SearchResults.Clear();
-            Helper.CloseWindow<AdonisWindow>("Search View");
-            Provider.UnloadAllVfs();
-            GC.Collect();
-        }
-
-        public async Task RefreshAes()
-        {
-            if (Game == FGame.FortniteGame) // game directory dependent, we don't have the provider game name yet since we don't have aes keys
-            {
-                await _threadWorkerView.Begin(cancellationToken =>
-                {
-                    var aes = _apiEndpointView.BenbotApi.GetAesKeys(cancellationToken);
-                    if (aes?.MainKey == null && aes?.DynamicKeys == null && aes?.Version == null) return;
-
-                    UserSettings.Default.AesKeys[Game] = aes;
-                });
+                GameDirectory.Add(vfs);
             }
-        }
+        });
+    }
 
-        public async Task InitInformation()
+    /// <summary>
+    /// load virtual files system from GameDirectory
+    /// </summary>
+    /// <returns></returns>
+    public async Task LoadVfs(IEnumerable<FileItem> aesKeys)
+    {
+        await _threadWorkerView.Begin(cancellationToken =>
         {
-            await _threadWorkerView.Begin(cancellationToken =>
-            {
-                var info = _apiEndpointView.FModelApi.GetNews(cancellationToken);
-                if (info == null) return;
+            GameDirectory.DeactivateAll();
 
-                for (var i = 0; i < info.Messages.Length; i++)
+            // load files using UnloadedVfs to include non-encrypted vfs
+            foreach (var key in aesKeys)
+            {
+                cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
+
+                var k = key.Key.Trim();
+                if (k.Length != 66) k = Constants.ZERO_64_CHAR;
+                Provider.SubmitKey(key.Guid, new FAesKey(k));
+            }
+
+            // files in MountedVfs will be enabled
+            foreach (var file in GameDirectory.DirectoryFiles)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (Provider.MountedVfs.FirstOrDefault(x => x.Name == file.Name) is not { } vfs)
                 {
-                    FLogger.AppendText(info.Messages[i], info.Colors[i], bool.Parse(info.NewLines[i]));
+                    if (Provider.UnloadedVfs.FirstOrDefault(x => x.Name == file.Name) is IoStoreReader store)
+                        file.FileCount = (int) store.Info.TocEntryCount - 1;
+
+                    continue;
                 }
-            });
-        }
 
-        public async Task InitBenMappings()
-        {
-            if (Game == FGame.FortniteGame)
-            {
-                await _threadWorkerView.Begin(cancellationToken =>
-                {
-                    if (UserSettings.Default.OverwriteMapping && File.Exists(UserSettings.Default.MappingFilePath))
-                    {
-                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(UserSettings.Default.MappingFilePath);
-                        FLogger.AppendInformation();
-                        FLogger.AppendText($"Mappings pulled from '{UserSettings.Default.MappingFilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
-                    }
-                    else
-                    {
-                        var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                        var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
-                        if (mappings is {Length: > 0})
-                        {
-                            foreach (var mapping in mappings)
-                            {
-                                if (mapping.Meta.CompressionMethod != "Oodle") continue;
-
-                                var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
-                                if (!File.Exists(mappingPath))
-                                {
-                                    _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
-                                }
-
-                                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
-                                FLogger.AppendInformation();
-                                FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
-                            if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
-
-                            var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
-                            Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
-                            FLogger.AppendWarning();
-                            FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
-                        }
-                    }
-                });
+                file.IsEnabled = true;
+                file.MountPoint = vfs.MountPoint;
+                file.FileCount = vfs.FileCount;
             }
-        }
 
-        public async Task LoadLocalizedResources()
-        {
-            await LoadGameLocalizedResources();
-            await LoadHotfixedLocalizedResources();
-            if (LocalizedResourcesCount > 0)
-            {
-                FLogger.AppendInformation();
-                FLogger.AppendText($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true);
-            }
-            else
-            {
-                FLogger.AppendWarning();
-                FLogger.AppendText($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true);
-            }
-        }
+            // Game = Provider.GameName.ToEnum(Game);
+        });
+    }
 
-        private async Task LoadGameLocalizedResources()
+    public void ClearProvider()
+    {
+        if (Provider == null) return;
+
+        AssetsFolder.Folders.Clear();
+        SearchVm.SearchResults.Clear();
+        Helper.CloseWindow<AdonisWindow>("Search View");
+        Provider.UnloadAllVfs();
+        GC.Collect();
+    }
+
+    public async Task RefreshAes()
+    {
+        if (Game == FGame.FortniteGame) // game directory dependent, we don't have the provider game name yet since we don't have aes keys
         {
-            if (LocalizedResourcesCount > 0) return;
             await _threadWorkerView.Begin(cancellationToken =>
             {
-                LocalizedResourcesCount = Provider.LoadLocalization(UserSettings.Default.AssetLanguage, cancellationToken);
-                Utils.Typefaces = new Typefaces(this);
+                var aes = _apiEndpointView.BenbotApi.GetAesKeys(cancellationToken);
+                if (aes?.MainKey == null && aes?.DynamicKeys == null && aes?.Version == null) return;
+
+                UserSettings.Default.AesKeys[Game] = aes;
             });
         }
+    }
 
-        /// <summary>
-        /// Load hotfixed localized resources
-        /// </summary>
-        /// <remarks>Functions only when LoadLocalizedResources is used prior to this (Asval: Why?).</remarks>
-        private async Task LoadHotfixedLocalizedResources()
+    public async Task InitInformation()
+    {
+        await _threadWorkerView.Begin(cancellationToken =>
         {
-            if (Game != FGame.FortniteGame || HotfixedResourcesDone) return;
+            var info = _apiEndpointView.FModelApi.GetNews(cancellationToken);
+            if (info == null) return;
+
+            for (var i = 0; i < info.Messages.Length; i++)
+            {
+                FLogger.AppendText(info.Messages[i], info.Colors[i], bool.Parse(info.NewLines[i]));
+            }
+        });
+    }
+
+    public async Task InitBenMappings()
+    {
+        if (Game == FGame.FortniteGame)
+        {
             await _threadWorkerView.Begin(cancellationToken =>
             {
-                var hotfixes = ApplicationService.ApiEndpointView.BenbotApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
-                if (hotfixes == null) return;
-
-                HotfixedResourcesDone = true;
-                foreach (var entries in hotfixes)
+                if (UserSettings.Default.OverwriteMapping && File.Exists(UserSettings.Default.MappingFilePath))
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    if (!Provider.LocalizedResources.ContainsKey(entries.Key))
-                        Provider.LocalizedResources[entries.Key] = new Dictionary<string, string>();
-
-                    foreach (var keyValue in entries.Value)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        Provider.LocalizedResources[entries.Key][keyValue.Key] = keyValue.Value;
-                        LocalizedResourcesCount++;
-                    }
-                }
-            });
-        }
-
-        public async Task LoadVirtualPaths()
-        {
-            if (VirtualPathCount > 0) return;
-            await _threadWorkerView.Begin(cancellationToken =>
-            {
-                VirtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedGame[Game].GetVersion(), cancellationToken);
-                if (VirtualPathCount > 0)
-                {
+                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(UserSettings.Default.MappingFilePath);
                     FLogger.AppendInformation();
-                    FLogger.AppendText($"{VirtualPathCount} virtual paths loaded", Constants.WHITE, true);
+                    FLogger.AppendText($"Mappings pulled from '{UserSettings.Default.MappingFilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
                 }
                 else
                 {
-                    FLogger.AppendWarning();
-                    FLogger.AppendText("Could not load virtual paths, plugin manifest may not exist", Constants.WHITE, true);
+                    var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                    var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
+                    if (mappings is { Length: > 0 })
+                    {
+                        foreach (var mapping in mappings)
+                        {
+                            if (mapping.Meta.CompressionMethod != "Oodle") continue;
+
+                            var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
+                            if (!File.Exists(mappingPath))
+                            {
+                                _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
+                            }
+
+                            Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
+                            FLogger.AppendInformation();
+                            FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
+                        if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
+
+                        var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
+                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
+                        FLogger.AppendWarning();
+                        FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
+                    }
                 }
             });
         }
+    }
 
-        public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
+    public async Task LoadLocalizedResources()
+    {
+        await LoadGameLocalizedResources();
+        await LoadHotfixedLocalizedResources();
+        if (LocalizedResourcesCount > 0)
         {
-            foreach (var asset in folder.AssetsList.Assets)
-            {
-                Thread.Sleep(10);
-                cancellationToken.ThrowIfCancellationRequested();
-                try {Extract(asset.FullPath, TabControl.HasNoTabs);} catch {/**/}
-            }
-
-            foreach (var f in folder.Folders) ExtractFolder(cancellationToken, f);
+            FLogger.AppendInformation();
+            FLogger.AppendText($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true);
         }
-
-        public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
+        else
         {
-            foreach (var asset in folder.AssetsList.Assets)
-            {
-                Thread.Sleep(10);
-                cancellationToken.ThrowIfCancellationRequested();
-                ExportData(asset.FullPath);
-            }
-
-            foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
+            FLogger.AppendWarning();
+            FLogger.AppendText($"Could not load localized resources in '{UserSettings.Default.AssetLanguage.GetDescription()}', language may not exist", Constants.WHITE, true);
         }
+    }
 
-        public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
+    private async Task LoadGameLocalizedResources()
+    {
+        if (LocalizedResourcesCount > 0) return;
+        await _threadWorkerView.Begin(cancellationToken =>
         {
-            foreach (var asset in folder.AssetsList.Assets)
+            LocalizedResourcesCount = Provider.LoadLocalization(UserSettings.Default.AssetLanguage, cancellationToken);
+            Utils.Typefaces = new Typefaces(this);
+        });
+    }
+
+    /// <summary>
+    /// Load hotfixed localized resources
+    /// </summary>
+    /// <remarks>Functions only when LoadLocalizedResources is used prior to this.</remarks>
+    private async Task LoadHotfixedLocalizedResources()
+    {
+        if (Game != FGame.FortniteGame || HotfixedResourcesDone) return;
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            var hotfixes = ApplicationService.ApiEndpointView.BenbotApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
+            if (hotfixes == null) return;
+
+            HotfixedResourcesDone = true;
+            foreach (var entries in hotfixes)
             {
-                Thread.Sleep(10);
                 cancellationToken.ThrowIfCancellationRequested();
-                try {Extract(asset.FullPath, TabControl.HasNoTabs, true);} catch {/**/}
+                if (!Provider.LocalizedResources.ContainsKey(entries.Key))
+                    Provider.LocalizedResources[entries.Key] = new Dictionary<string, string>();
+
+                foreach (var keyValue in entries.Value)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    Provider.LocalizedResources[entries.Key][keyValue.Key] = keyValue.Value;
+                    LocalizedResourcesCount++;
+                }
             }
+        });
+    }
 
-            foreach (var f in folder.Folders) SaveFolder(cancellationToken, f);
-        }
-
-        public void ExtractSelected(CancellationToken cancellationToken, IEnumerable<AssetItem> assetItems)
+    public async Task LoadVirtualPaths()
+    {
+        if (VirtualPathCount > 0) return;
+        await _threadWorkerView.Begin(cancellationToken =>
         {
-            foreach (var asset in assetItems)
+            VirtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.OverridedGame[Game].GetVersion(), cancellationToken);
+            if (VirtualPathCount > 0)
             {
-                Thread.Sleep(10);
-                cancellationToken.ThrowIfCancellationRequested();
+                FLogger.AppendInformation();
+                FLogger.AppendText($"{VirtualPathCount} virtual paths loaded", Constants.WHITE, true);
+            }
+            else
+            {
+                FLogger.AppendWarning();
+                FLogger.AppendText("Could not load virtual paths, plugin manifest may not exist", Constants.WHITE, true);
+            }
+        });
+    }
+
+    public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
+    {
+        foreach (var asset in folder.AssetsList.Assets)
+        {
+            Thread.Sleep(10);
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
                 Extract(asset.FullPath, TabControl.HasNoTabs);
             }
-        }
-
-        public void Extract(string fullPath, bool addNewTab = false, bool bulkSave = false)
-        {
-            Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", fullPath);
-
-            var directory = fullPath.SubstringBeforeLast('/');
-            var fileName = fullPath.SubstringAfterLast('/');
-            var ext = fullPath.SubstringAfterLast('.').ToLower();
-
-            if (addNewTab && TabControl.CanAddTabs)
+            catch
             {
-                TabControl.AddTab(fileName, directory);
-            }
-            else
-            {
-                TabControl.SelectedTab.Header = fileName;
-                TabControl.SelectedTab.Directory = directory;
-            }
-
-            TabControl.SelectedTab.ClearImages();
-            TabControl.SelectedTab.ResetDocumentText();
-            TabControl.SelectedTab.ScrollTrigger = null;
-            TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(ext);
-            switch (ext)
-            {
-                case "uasset":
-                case "umap":
-                {
-                    var exports = Provider.LoadObjectExports(fullPath);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), bulkSave);
-                    if (bulkSave) break;
-
-                    foreach (var e in exports)
-                    {
-                        if (CheckExport(e))
-                            break;
-                    }
-                    break;
-                }
-                case "upluginmanifest":
-                case "uproject":
-                case "manifest":
-                case "uplugin":
-                case "archive":
-                case "html":
-                case "json":
-                case "ini":
-                case "txt":
-                case "log":
-                case "bat":
-                case "dat":
-                case "cfg":
-                case "ide":
-                case "ipl":
-                case "zon":
-                case "xml":
-                case "css":
-                case "csv":
-                case "js":
-                case "po":
-                case "h":
-                {
-                    if (Provider.TrySaveAsset(fullPath, out var data))
-                    {
-                        using var stream = new MemoryStream(data) {Position = 0};
-                        using var reader = new StreamReader(stream);
-
-                        TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), bulkSave);
-                    }
-                    break;
-                }
-                case "locmeta":
-                {
-                    if (Provider.TryCreateReader(fullPath, out var archive))
-                    {
-                        var metadata = new FTextLocalizationMetaDataResource(archive);
-                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), bulkSave);
-                    }
-                    break;
-                }
-                case "locres":
-                {
-                    if (Provider.TryCreateReader(fullPath, out var archive))
-                    {
-                        var locres = new FTextLocalizationResource(archive);
-                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), bulkSave);
-                    }
-                    break;
-                }
-                case "bin" when fileName.Contains("AssetRegistry"):
-                {
-                    if (Provider.TryCreateReader(fullPath, out var archive))
-                    {
-                        var registry = new FAssetRegistryState(archive);
-                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), bulkSave);
-                    }
-                    break;
-                }
-                case "bnk":
-                case "pck":
-                {
-                    if (Provider.TryCreateReader(fullPath, out var archive))
-                    {
-                        var wwise = new WwiseReader(archive);
-                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), bulkSave);
-                        foreach (var (name, data) in wwise.WwiseEncodedMedias)
-                        {
-                            SaveAndPlaySound(fullPath.SubstringBeforeWithLast("/") + name, "WEM", data);
-                        }
-                    }
-                    break;
-                }
-                case "wem":
-                {
-                    if (Provider.TrySaveAsset(fullPath, out var input))
-                        SaveAndPlaySound(fullPath, "WEM", input);
-
-                    break;
-                }
-                case "udic":
-                {
-                    if (Provider.TryCreateReader(fullPath, out var archive))
-                    {
-                        var header = new FOodleDictionaryArchive(archive).Header;
-                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), bulkSave);
-                    }
-                    break;
-                }
-                case "png":
-                case "jpg":
-                case "bmp":
-                {
-                    if (Provider.TrySaveAsset(fullPath, out var data))
-                    {
-                        using var stream = new MemoryStream(data) {Position = 0};
-                        TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream));
-                    }
-                    break;
-                }
-                case "svg":
-                {
-                    if (Provider.TrySaveAsset(fullPath, out var data))
-                    {
-                        using var stream = new MemoryStream(data) { Position = 0 };
-                        var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
-                        svg.Load(stream);
-
-                        var bitmap = new SKBitmap(512, 512);
-                        using (var canvas = new SKCanvas(bitmap))
-                        using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
-                        {
-                            canvas.DrawPicture(svg.Picture, paint);
-                        }
-                        TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap);
-                    }
-                    break;
-                }
-                case "ufont":
-                case "otf":
-                case "ttf":
-                    FLogger.AppendWarning();
-                    FLogger.AppendText($"Export '{fileName}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true);
-                    break;
-                case "ushaderbytecode":
-                case "ushadercode":
-                {
-                    if (Provider.TryCreateReader(fullPath, out var archive))
-                    {
-                        var ar = new FShaderCodeArchive(archive);
-                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), bulkSave);
-                    }
-                    break;
-                }
-                default:
-                {
-                    FLogger.AppendWarning();
-                    FLogger.AppendText($"The package '{fileName}' is of an unknown type.", Constants.WHITE, true);
-                    break;
-                }
+                // ignore
             }
         }
 
-        public void ExtractAndScroll(string fullPath, string objectName)
+        foreach (var f in folder.Folders) ExtractFolder(cancellationToken, f);
+    }
+
+    public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
+    {
+        foreach (var asset in folder.AssetsList.Assets)
         {
-            Log.Information("User CTRL-CLICKED to extract '{FullPath}'", fullPath);
-            TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'));
-            TabControl.SelectedTab.ScrollTrigger = objectName;
+            Thread.Sleep(10);
+            cancellationToken.ThrowIfCancellationRequested();
+            ExportData(asset.FullPath);
+        }
 
-            var exports = Provider.LoadObjectExports(fullPath);
-            TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
-            TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), false);
+        foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
+    }
 
-            foreach (var e in exports)
+    public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
+    {
+        foreach (var asset in folder.AssetsList.Assets)
+        {
+            Thread.Sleep(10);
+            cancellationToken.ThrowIfCancellationRequested();
+            try
             {
-                if (CheckExport(e))
-                    break;
+                Extract(asset.FullPath, TabControl.HasNoTabs, true);
+            }
+            catch
+            {
+                // ignore
             }
         }
 
-        private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
-        {
-            switch (export)
-            {
-                case UTexture2D texture:
-                {
-                    TabControl.SelectedTab.AddImage(texture);
-                    return false;
-                }
-                case UAkMediaAssetData:
-                case USoundWave:
-                {
-                    var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
-                    export.Decode(shouldDecompress, out var audioFormat, out var data);
-                    if (data == null || string.IsNullOrEmpty(audioFormat) || export.Owner == null)
-                        return false;
+        foreach (var f in folder.Folders) SaveFolder(cancellationToken, f);
+    }
 
-                    SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
-                    return false;
-                }
-                case UStaticMesh when UserSettings.Default.PreviewStaticMeshes:
-                case USkeletalMesh when UserSettings.Default.PreviewSkeletalMeshes:
-                case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
-                                            !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
-                                                export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
-                                                export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
+    public void ExtractSelected(CancellationToken cancellationToken, IEnumerable<AssetItem> assetItems)
+    {
+        foreach (var asset in assetItems)
+        {
+            Thread.Sleep(10);
+            cancellationToken.ThrowIfCancellationRequested();
+            Extract(asset.FullPath, TabControl.HasNoTabs);
+        }
+    }
+
+    public void Extract(string fullPath, bool addNewTab = false, bool bulkSave = false)
+    {
+        Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", fullPath);
+
+        var directory = fullPath.SubstringBeforeLast('/');
+        var fileName = fullPath.SubstringAfterLast('/');
+        var ext = fullPath.SubstringAfterLast('.').ToLower();
+
+        if (addNewTab && TabControl.CanAddTabs)
+        {
+            TabControl.AddTab(fileName, directory);
+        }
+        else
+        {
+            TabControl.SelectedTab.Header = fileName;
+            TabControl.SelectedTab.Directory = directory;
+        }
+
+        TabControl.SelectedTab.ClearImages();
+        TabControl.SelectedTab.ResetDocumentText();
+        TabControl.SelectedTab.ScrollTrigger = null;
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(ext);
+        switch (ext)
+        {
+            case "uasset":
+            case "umap":
+            {
+                var exports = Provider.LoadObjectExports(fullPath);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), bulkSave);
+                if (bulkSave) break;
+
+                foreach (var e in exports)
                 {
-                    Application.Current.Dispatcher.Invoke(delegate
+                    if (CheckExport(e))
+                        break;
+                }
+
+                break;
+            }
+            case "upluginmanifest":
+            case "uproject":
+            case "manifest":
+            case "uplugin":
+            case "archive":
+            case "html":
+            case "json":
+            case "ini":
+            case "txt":
+            case "log":
+            case "bat":
+            case "dat":
+            case "cfg":
+            case "ide":
+            case "ipl":
+            case "zon":
+            case "xml":
+            case "css":
+            case "csv":
+            case "js":
+            case "po":
+            case "h":
+            {
+                if (Provider.TrySaveAsset(fullPath, out var data))
+                {
+                    using var stream = new MemoryStream(data) { Position = 0 };
+                    using var reader = new StreamReader(stream);
+
+                    TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), bulkSave);
+                }
+
+                break;
+            }
+            case "locmeta":
+            {
+                if (Provider.TryCreateReader(fullPath, out var archive))
+                {
+                    var metadata = new FTextLocalizationMetaDataResource(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), bulkSave);
+                }
+
+                break;
+            }
+            case "locres":
+            {
+                if (Provider.TryCreateReader(fullPath, out var archive))
+                {
+                    var locres = new FTextLocalizationResource(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), bulkSave);
+                }
+
+                break;
+            }
+            case "bin" when fileName.Contains("AssetRegistry"):
+            {
+                if (Provider.TryCreateReader(fullPath, out var archive))
+                {
+                    var registry = new FAssetRegistryState(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), bulkSave);
+                }
+
+                break;
+            }
+            case "bnk":
+            case "pck":
+            {
+                if (Provider.TryCreateReader(fullPath, out var archive))
+                {
+                    var wwise = new WwiseReader(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), bulkSave);
+                    foreach (var (name, data) in wwise.WwiseEncodedMedias)
                     {
-                        var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                        modelViewer.Load(export);
-                    });
-                    return true;
+                        SaveAndPlaySound(fullPath.SubstringBeforeWithLast("/") + name, "WEM", data);
+                    }
                 }
-                case UMaterialInstance m when ModelIsOverwritingMaterial:
+
+                break;
+            }
+            case "wem":
+            {
+                if (Provider.TrySaveAsset(fullPath, out var input))
+                    SaveAndPlaySound(fullPath, "WEM", input);
+
+                break;
+            }
+            case "udic":
+            {
+                if (Provider.TryCreateReader(fullPath, out var archive))
                 {
-                    Application.Current.Dispatcher.Invoke(delegate
+                    var header = new FOodleDictionaryArchive(archive).Header;
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), bulkSave);
+                }
+
+                break;
+            }
+            case "png":
+            case "jpg":
+            case "bmp":
+            {
+                if (Provider.TrySaveAsset(fullPath, out var data))
+                {
+                    using var stream = new MemoryStream(data) { Position = 0 };
+                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream));
+                }
+
+                break;
+            }
+            case "svg":
+            {
+                if (Provider.TrySaveAsset(fullPath, out var data))
+                {
+                    using var stream = new MemoryStream(data) { Position = 0 };
+                    var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                    svg.Load(stream);
+
+                    var bitmap = new SKBitmap(512, 512);
+                    using (var canvas = new SKCanvas(bitmap))
+                    using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
                     {
-                        var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                        modelViewer.Overwrite(m);
-                    });
-                    return true;
+                        canvas.DrawPicture(svg.Picture, paint);
+                    }
+
+                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap);
                 }
-                case UStaticMesh when UserSettings.Default.SaveStaticMeshes:
-                case USkeletalMesh when UserSettings.Default.SaveSkeletalMeshes:
-                case UMaterialInstance when UserSettings.Default.SaveMaterials:
-                case USkeleton when UserSettings.Default.SaveSkeletonAsMesh:
-                case UAnimSequence when UserSettings.Default.SaveAnimations:
-                {
-                    SaveExport(export);
-                    return true;
-                }
-                default:
-                {
-                    using var package = new CreatorPackage(export, UserSettings.Default.CosmeticStyle);
-                    if (!package.TryConstructCreator(out var creator)) return false;
 
-                    creator.ParseForInfo();
-                    TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw());
-                    return true;
-                }
+                break;
             }
-        }
-
-        private void SaveAndPlaySound(string fullPath, string ext, byte[] data)
-        {
-            if (fullPath.StartsWith("/")) fullPath = fullPath[1..];
-            var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
-                UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLower()}";
-
-            if (!UserSettings.Default.IsAutoOpenSounds)
-            {
-                Directory.CreateDirectory(savedAudioPath.SubstringBeforeLast('/'));
-                using var stream = new FileStream(savedAudioPath, FileMode.Create, FileAccess.Write);
-                using var writer = new BinaryWriter(stream);
-                writer.Write(data);
-                writer.Flush();
-                return;
-            }
-
-            // TODO
-            // since we are currently in a thread, the audio player's lifetime (memory-wise) will keep the current thread up and running until fmodel itself closes
-            // the solution would be to kill the current thread at this line and then open the audio player without "Application.Current.Dispatcher.Invoke"
-            // but the ThreadWorkerViewModel is an idiot and doesn't understand we want to kill the current thread inside the current thread and continue the code
-            Application.Current.Dispatcher.Invoke(delegate
-            {
-                var audioPlayer = Helper.GetWindow<AudioPlayer>("Audio Player", () => new AudioPlayer().Show());
-                audioPlayer.Load(data, savedAudioPath);
-            });
-        }
-
-        private void SaveExport(UObject export)
-        {
-            var exportOptions = new ExporterOptions()
-            {
-                TextureFormat = UserSettings.Default.TextureExportFormat,
-                LodFormat = UserSettings.Default.LodExportFormat,
-                MeshFormat = UserSettings.Default.MeshExportFormat,
-                Platform = UserSettings.Default.OverridedPlatform
-            };
-            var toSave = new Exporter(export, exportOptions);
-            var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
-            if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
-            {
-                Log.Information("Successfully saved {FileName}", savedFileName);
-                FLogger.AppendInformation();
-                FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
-            }
-            else
-            {
-                Log.Warning("{FileName} could not be saved", export.Name);
+            case "ufont":
+            case "otf":
+            case "ttf":
                 FLogger.AppendWarning();
-                FLogger.AppendText($"Could not save '{export.Name}'", Constants.WHITE, true);
-            }
-        }
-
-        public void ExportData(string fullPath)
-        {
-            var fileName = fullPath.SubstringAfterLast('/');
-            if (Provider.TrySavePackage(fullPath, out var assets))
+                FLogger.AppendText($"Export '{fileName}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true);
+                break;
+            case "ushaderbytecode":
+            case "ushadercode":
             {
-                foreach (var kvp in assets)
+                if (Provider.TryCreateReader(fullPath, out var archive))
                 {
-                    var path = Path.Combine(UserSettings.Default.RawDataDirectory, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
-                    Directory.CreateDirectory(path.SubstringBeforeLast('/'));
-                    File.WriteAllBytes(path, kvp.Value);
+                    var ar = new FShaderCodeArchive(archive);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), bulkSave);
                 }
 
-                Log.Information("{FileName} successfully exported", fileName);
-                FLogger.AppendInformation();
-                FLogger.AppendText($"Successfully exported '{fileName}'", Constants.WHITE, true);
+                break;
             }
-            else
+            default:
             {
-                Log.Error("{FileName} could not be exported", fileName);
-                FLogger.AppendError();
-                FLogger.AppendText($"Could not export '{fileName}'", Constants.WHITE, true);
+                FLogger.AppendWarning();
+                FLogger.AppendText($"The package '{fileName}' is of an unknown type.", Constants.WHITE, true);
+                break;
             }
+        }
+    }
+
+    public void ExtractAndScroll(string fullPath, string objectName)
+    {
+        Log.Information("User CTRL-CLICKED to extract '{FullPath}'", fullPath);
+        TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'));
+        TabControl.SelectedTab.ScrollTrigger = objectName;
+
+        var exports = Provider.LoadObjectExports(fullPath);
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
+        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), false);
+
+        foreach (var e in exports)
+        {
+            if (CheckExport(e))
+                break;
+        }
+    }
+
+    private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
+    {
+        switch (export)
+        {
+            case UTexture2D texture:
+            {
+                TabControl.SelectedTab.AddImage(texture);
+                return false;
+            }
+            case UAkMediaAssetData:
+            case USoundWave:
+            {
+                var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
+                export.Decode(shouldDecompress, out var audioFormat, out var data);
+                if (data == null || string.IsNullOrEmpty(audioFormat) || export.Owner == null)
+                    return false;
+
+                SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
+                return false;
+            }
+            case UStaticMesh when UserSettings.Default.PreviewStaticMeshes:
+            case USkeletalMesh when UserSettings.Default.PreviewSkeletalMeshes:
+            case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
+                                        !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                                                                                 export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                                                                                 export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
+            {
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
+                    modelViewer.Load(export);
+                });
+                return true;
+            }
+            case UMaterialInstance m when ModelIsOverwritingMaterial:
+            {
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
+                    modelViewer.Overwrite(m);
+                });
+                return true;
+            }
+            case UStaticMesh when UserSettings.Default.SaveStaticMeshes:
+            case USkeletalMesh when UserSettings.Default.SaveSkeletalMeshes:
+            case UMaterialInstance when UserSettings.Default.SaveMaterials:
+            case USkeleton when UserSettings.Default.SaveSkeletonAsMesh:
+            case UAnimSequence when UserSettings.Default.SaveAnimations:
+            {
+                SaveExport(export);
+                return true;
+            }
+            default:
+            {
+                using var package = new CreatorPackage(export, UserSettings.Default.CosmeticStyle);
+                if (!package.TryConstructCreator(out var creator)) return false;
+
+                creator.ParseForInfo();
+                TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw());
+                return true;
+            }
+        }
+    }
+
+    private void SaveAndPlaySound(string fullPath, string ext, byte[] data)
+    {
+        if (fullPath.StartsWith("/")) fullPath = fullPath[1..];
+        var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
+            UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLower()}";
+
+        if (!UserSettings.Default.IsAutoOpenSounds)
+        {
+            Directory.CreateDirectory(savedAudioPath.SubstringBeforeLast('/'));
+            using var stream = new FileStream(savedAudioPath, FileMode.Create, FileAccess.Write);
+            using var writer = new BinaryWriter(stream);
+            writer.Write(data);
+            writer.Flush();
+            return;
+        }
+
+        // TODO
+        // since we are currently in a thread, the audio player's lifetime (memory-wise) will keep the current thread up and running until fmodel itself closes
+        // the solution would be to kill the current thread at this line and then open the audio player without "Application.Current.Dispatcher.Invoke"
+        // but the ThreadWorkerViewModel is an idiot and doesn't understand we want to kill the current thread inside the current thread and continue the code
+        Application.Current.Dispatcher.Invoke(delegate
+        {
+            var audioPlayer = Helper.GetWindow<AudioPlayer>("Audio Player", () => new AudioPlayer().Show());
+            audioPlayer.Load(data, savedAudioPath);
+        });
+    }
+
+    private void SaveExport(UObject export)
+    {
+        var exportOptions = new ExporterOptions()
+        {
+            TextureFormat = UserSettings.Default.TextureExportFormat,
+            LodFormat = UserSettings.Default.LodExportFormat,
+            MeshFormat = UserSettings.Default.MeshExportFormat,
+            Platform = UserSettings.Default.OverridedPlatform
+        };
+        var toSave = new Exporter(export, exportOptions);
+        var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
+        if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
+        {
+            Log.Information("Successfully saved {FileName}", savedFileName);
+            FLogger.AppendInformation();
+            FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+        }
+        else
+        {
+            Log.Warning("{FileName} could not be saved", export.Name);
+            FLogger.AppendWarning();
+            FLogger.AppendText($"Could not save '{export.Name}'", Constants.WHITE, true);
+        }
+    }
+
+    public void ExportData(string fullPath)
+    {
+        var fileName = fullPath.SubstringAfterLast('/');
+        if (Provider.TrySavePackage(fullPath, out var assets))
+        {
+            foreach (var kvp in assets)
+            {
+                var path = Path.Combine(UserSettings.Default.RawDataDirectory, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
+                Directory.CreateDirectory(path.SubstringBeforeLast('/'));
+                File.WriteAllBytes(path, kvp.Value);
+            }
+
+            Log.Information("{FileName} successfully exported", fileName);
+            FLogger.AppendInformation();
+            FLogger.AppendText($"Successfully exported '{fileName}'", Constants.WHITE, true);
+        }
+        else
+        {
+            Log.Error("{FileName} could not be exported", fileName);
+            FLogger.AppendError();
+            FLogger.AppendText($"Could not export '{fileName}'", Constants.WHITE, true);
         }
     }
 }

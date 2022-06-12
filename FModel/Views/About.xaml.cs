@@ -1,10 +1,9 @@
-﻿namespace FModel.Views
+﻿namespace FModel.Views;
+
+public partial class About
 {
-    public partial class About
+    public About()
     {
-        public About()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

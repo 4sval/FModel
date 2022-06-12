@@ -1,8 +1,7 @@
-﻿namespace FModel.Views.Resources.Controls
+﻿namespace FModel.Views.Resources.Controls;
+
+public enum EFrameType
 {
-    public enum EFrameType
-    {
-        Circle,
-        Rectangle
-    }
+    Circle,
+    Rectangle
 }
