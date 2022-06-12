@@ -4,45 +4,44 @@ using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.UObject;
 using SkiaSharp;
 
-namespace FModel.Creator.Bases.SB
+namespace FModel.Creator.Bases.SB;
+
+public class BaseDivision : UCreator
 {
-    public class BaseDivision : UCreator
+    public BaseDivision(UObject uObject, EIconStyle style) : base(uObject, style)
     {
-        public BaseDivision(UObject uObject, EIconStyle style) : base(uObject, style)
+    }
+
+    public override void ParseForInfo()
+    {
+        if (Object.TryGetValue(out FPackageIndex icon, "Icon", "IconNoTier"))
         {
+            Preview = Utils.GetBitmap(icon);
         }
 
-        public override void ParseForInfo()
+        if (Object.TryGetValue(out FLinearColor lightColor, "UILightColor") &&
+            Object.TryGetValue(out FLinearColor mediumColor, "UIMediumColor") &&
+            Object.TryGetValue(out FLinearColor darkColor, "UIDarkColor") &&
+            Object.TryGetValue(out FLinearColor cardColor, "UICardColor"))
         {
-            if (Object.TryGetValue(out FPackageIndex icon, "Icon", "IconNoTier"))
-            {
-                Preview = Utils.GetBitmap(icon);
-            }
-
-            if (Object.TryGetValue(out FLinearColor lightColor, "UILightColor") &&
-                Object.TryGetValue(out FLinearColor mediumColor, "UIMediumColor") &&
-                Object.TryGetValue(out FLinearColor darkColor, "UIDarkColor") &&
-                Object.TryGetValue(out FLinearColor cardColor, "UICardColor"))
-            {
-                Background = new[] {SKColor.Parse(lightColor.Hex), SKColor.Parse(cardColor.Hex)};
-                Border = new[] {SKColor.Parse(mediumColor.Hex), SKColor.Parse(darkColor.Hex)};
-            }
-
-            if (Object.TryGetValue(out FText displayName, "DisplayName"))
-                DisplayName = displayName.Text;
+            Background = new[] { SKColor.Parse(lightColor.Hex), SKColor.Parse(cardColor.Hex) };
+            Border = new[] { SKColor.Parse(mediumColor.Hex), SKColor.Parse(darkColor.Hex) };
         }
 
-        public override SKBitmap[] Draw()
-        {
-            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
-            using var c = new SKCanvas(ret);
+        if (Object.TryGetValue(out FText displayName, "DisplayName"))
+            DisplayName = displayName.Text;
+    }
 
-            DrawBackground(c);
-            DrawPreview(c);
-            DrawTextBackground(c);
-            DrawDisplayName(c);
+    public override SKBitmap[] Draw()
+    {
+        var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+        using var c = new SKCanvas(ret);
 
-            return new []{ret};
-        }
+        DrawBackground(c);
+        DrawPreview(c);
+        DrawTextBackground(c);
+        DrawDisplayName(c);
+
+        return new[] { ret };
     }
 }

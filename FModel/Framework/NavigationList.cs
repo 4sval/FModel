@@ -1,34 +1,46 @@
 ﻿using System.Collections.Generic;
 
-namespace FModel.Framework
+namespace FModel.Framework;
+
+public class NavigationList<T> : List<T>
 {
-    public class NavigationList<T> : List<T>
+    private int _currentIndex;
+    public int CurrentIndex
     {
-        private int _currentIndex = 0;
-        public int CurrentIndex
+        get
         {
-            get
+            if (_currentIndex > Count - 1)
             {
-                if (_currentIndex > Count - 1) { _currentIndex = Count - 1; }
-                if (_currentIndex < 0) { _currentIndex = 0; }
-                return _currentIndex;
+                _currentIndex = Count - 1;
             }
-            set { _currentIndex = value; }
-        }
 
-        public T MoveNext
-        {
-            get { _currentIndex++; return this[CurrentIndex]; }
-        }
+            if (_currentIndex < 0)
+            {
+                _currentIndex = 0;
+            }
 
-        public T MovePrevious
-        {
-            get { _currentIndex--; return this[CurrentIndex]; }
+            return _currentIndex;
         }
+        set => _currentIndex = value;
+    }
 
-        public T Current
+    public T MoveNext
+    {
+        get
         {
-            get { return this[CurrentIndex]; }
+            _currentIndex++;
+            return this[CurrentIndex];
         }
     }
+
+    public T MovePrevious
+    {
+        get
+        {
+            _currentIndex--;
+            return this[CurrentIndex];
+        }
+    }
+
+    public T Current => this[CurrentIndex];
 }

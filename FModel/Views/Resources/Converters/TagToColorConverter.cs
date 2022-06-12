@@ -4,25 +4,24 @@ using System.Windows.Data;
 using System.Windows.Media;
 using HelixToolkit.Wpf.SharpDX;
 
-namespace FModel.Views.Resources.Converters
+namespace FModel.Views.Resources.Converters;
+
+public class TagToColorConverter : IValueConverter
 {
-    public class TagToColorConverter : IValueConverter
+    public static readonly TagToColorConverter Instance = new();
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        public static readonly TagToColorConverter Instance = new();
+        if (value is not PBRMaterial material)
+            return new SolidColorBrush(Colors.Red);
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is not PBRMaterial material)
-                return new SolidColorBrush(Colors.Red);
+        return new SolidColorBrush(Color.FromScRgb(
+            material.AlbedoColor.Alpha, material.AlbedoColor.Red,
+            material.AlbedoColor.Green, material.AlbedoColor.Blue));
+    }
 
-            return new SolidColorBrush(Color.FromScRgb(
-                material.AlbedoColor.Alpha, material.AlbedoColor.Red,
-                material.AlbedoColor.Green, material.AlbedoColor.Blue));
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -3,30 +3,28 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace FModel.Views.Resources.Converters
+namespace FModel.Views.Resources.Converters;
+
+public class EnumToStringConverter : IValueConverter
 {
-    public class EnumToStringConverter : IValueConverter
+    public static readonly EnumToStringConverter Instance = new();
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        public static readonly EnumToStringConverter Instance = new();
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        switch (value)
         {
-            switch (value)
-            {
-                case null:
-                    return null;
-                case Enum e:
-                    return e.GetDescription();
-                default:
-                    Type t;
-                    t = value.GetType();
-                    return t.IsValueType ? ((Enum) Activator.CreateInstance(t)).GetDescription() : value;
-            }
+            case null:
+                return null;
+            case Enum e:
+                return e.GetDescription();
+            default:
+                var t = value.GetType();
+                return t.IsValueType ? ((Enum) Activator.CreateInstance(t)).GetDescription() : value;
         }
+    }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
     }
 }

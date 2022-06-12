@@ -5,81 +5,80 @@ using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.UObject;
 using SkiaSharp;
 
-namespace FModel.Creator.Bases.FN
+namespace FModel.Creator.Bases.FN;
+
+public class BaseMtxOffer : UCreator
 {
-    public class BaseMtxOffer : UCreator
+    public BaseMtxOffer(UObject uObject, EIconStyle style) : base(uObject, style)
     {
-        public BaseMtxOffer(UObject uObject, EIconStyle style) : base(uObject, style)
+        Background = new[] { SKColor.Parse("4F4F69"), SKColor.Parse("4F4F69") };
+        Border = new[] { SKColor.Parse("9092AB") };
+    }
+
+    public override void ParseForInfo()
+    {
+        if (Object.TryGetValue(out FStructFallback typeImage, "DetailsImage", "TileImage") &&
+            typeImage.TryGetValue(out FPackageIndex resource, "ResourceObject"))
         {
-            Background = new[] {SKColor.Parse("4F4F69"), SKColor.Parse("4F4F69")};
-            Border = new[] {SKColor.Parse("9092AB")};
+            Preview = Utils.GetBitmap(resource);
         }
 
-        public override void ParseForInfo()
+        if (Object.TryGetValue(out FStructFallback gradient, "Gradient") &&
+            gradient.TryGetValue(out FLinearColor start, "Start") &&
+            gradient.TryGetValue(out FLinearColor stop, "Stop"))
         {
-            if (Object.TryGetValue(out FStructFallback typeImage, "DetailsImage", "TileImage") &&
-                typeImage.TryGetValue(out FPackageIndex resource, "ResourceObject"))
-            {
-                Preview = Utils.GetBitmap(resource);
-            }
+            Background = new[] { SKColor.Parse(start.Hex), SKColor.Parse(stop.Hex) };
+        }
 
-            if (Object.TryGetValue(out FStructFallback gradient, "Gradient") &&
-                gradient.TryGetValue(out FLinearColor start, "Start") &&
-                gradient.TryGetValue(out FLinearColor stop, "Stop"))
-            {
-                Background = new[] {SKColor.Parse(start.Hex), SKColor.Parse(stop.Hex)};
-            }
+        if (Object.TryGetValue(out FLinearColor background, "Background"))
+            Border = new[] { SKColor.Parse(background.Hex) };
+        if (Object.TryGetValue(out FText displayName, "DisplayName"))
+            DisplayName = displayName.Text;
+        if (Object.TryGetValue(out FText shortDescription, "ShortDescription"))
+            Description = shortDescription.Text;
 
-            if (Object.TryGetValue(out FLinearColor background, "Background"))
-                Border = new[] {SKColor.Parse(background.Hex)};
-            if (Object.TryGetValue(out FText displayName, "DisplayName"))
-                DisplayName = displayName.Text;
-            if (Object.TryGetValue(out FText shortDescription, "ShortDescription"))
-                Description = shortDescription.Text;
-
-            if (Object.TryGetValue(out FStructFallback[] details, "DetailsAttributes"))
+        if (Object.TryGetValue(out FStructFallback[] details, "DetailsAttributes"))
+        {
+            foreach (var detail in details)
             {
-                foreach (var detail in details)
+                if (detail.TryGetValue(out FText detailName, "Name"))
                 {
-                    if (detail.TryGetValue(out FText detailName, "Name"))
-                    {
-                        Description += $"\n- {detailName.Text.TrimEnd()}";
-                    }
+                    Description += $"\n- {detailName.Text.TrimEnd()}";
+                }
 
-                    if (detail.TryGetValue(out FText detailValue, "Value") && !string.IsNullOrEmpty(detailValue.Text))
-                    {
-                        Description += $" ({detailValue.Text})";
-                    }
+                if (detail.TryGetValue(out FText detailValue, "Value") && !string.IsNullOrEmpty(detailValue.Text))
+                {
+                    Description += $" ({detailValue.Text})";
                 }
             }
-
-            Description = Utils.RemoveHtmlTags(Description);
         }
 
-        public override SKBitmap[] Draw()
+        Description = Utils.RemoveHtmlTags(Description);
+    }
+
+    public override SKBitmap[] Draw()
+    {
+        var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+        using var c = new SKCanvas(ret);
+
+        switch (Style)
         {
-            var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
-            using var c = new SKCanvas(ret);
-
-            switch (Style)
-            {
-                case EIconStyle.NoBackground:
-                    DrawPreview(c);
-                    break;
-                case EIconStyle.NoText:
-                    DrawBackground(c);
-                    DrawPreview(c);
-                    break;
-                default:
-                    DrawBackground(c);
-                    DrawPreview(c);
-                    DrawTextBackground(c);
-                    DrawDisplayName(c);
-                    DrawDescription(c);
-                    break;
-            }
-
-            return new []{ret};
+            case EIconStyle.NoBackground:
+                DrawPreview(c);
+                break;
+            case EIconStyle.NoText:
+                DrawBackground(c);
+                DrawPreview(c);
+                break;
+            default:
+                DrawBackground(c);
+                DrawPreview(c);
+                DrawTextBackground(c);
+                DrawDisplayName(c);
+                DrawDescription(c);
+                break;
         }
+
+        return new[] { ret };
     }
 }

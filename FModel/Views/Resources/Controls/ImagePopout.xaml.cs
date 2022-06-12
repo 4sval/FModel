@@ -1,10 +1,9 @@
-﻿namespace FModel.Views.Resources.Controls
+﻿namespace FModel.Views.Resources.Controls;
+
+public partial class ImagePopout
 {
-    public partial class ImagePopout
+    public ImagePopout()
     {
-        public ImagePopout()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
