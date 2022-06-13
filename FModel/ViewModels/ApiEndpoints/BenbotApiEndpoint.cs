@@ -10,13 +10,13 @@ namespace FModel.ViewModels.ApiEndpoints;
 
 public class BenbotApiEndpoint : AbstractApiProvider
 {
-    public BenbotApiEndpoint(IRestClient client) : base(client)
+    public BenbotApiEndpoint(RestClient client) : base(client)
     {
     }
 
     public async Task<AesResponse> GetAesKeysAsync(CancellationToken token)
     {
-        var request = new RestRequest("https://benbot.app/api/v2/aes", Method.GET)
+        var request = new RestRequest("https://benbot.app/api/v2/aes")
         {
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
@@ -32,7 +32,7 @@ public class BenbotApiEndpoint : AbstractApiProvider
 
     public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token)
     {
-        var request = new RestRequest("https://benbot.app/api/v1/mappings", Method.GET)
+        var request = new RestRequest("https://benbot.app/api/v1/mappings")
         {
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
@@ -48,7 +48,7 @@ public class BenbotApiEndpoint : AbstractApiProvider
 
     public async Task<Dictionary<string, Dictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en-US")
     {
-        var request = new RestRequest("https://benbot.app/api/v1/hotfixes", Method.GET)
+        var request = new RestRequest("https://benbot.app/api/v1/hotfixes")
         {
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
@@ -65,7 +65,7 @@ public class BenbotApiEndpoint : AbstractApiProvider
 
     public async Task DownloadFileAsync(string fileLink, string installationPath)
     {
-        var request = new RestRequest(fileLink, Method.GET);
+        var request = new RestRequest(fileLink);
         var data = _client.DownloadData(request);
         await File.WriteAllBytesAsync(installationPath, data);
     }

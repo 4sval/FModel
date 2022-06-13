@@ -6,10 +6,13 @@ namespace FModel.ViewModels;
 
 public class ApiEndpointViewModel
 {
-    private readonly IRestClient _client = new RestClient
+    private readonly RestClient _client = new RestClient
     {
-        UserAgent = $"FModel/{Constants.APP_VERSION}",
-        Timeout = 3 * 1000
+        Options =
+        {
+            UserAgent = $"FModel/{Constants.APP_VERSION}",
+            MaxTimeout = 3 * 1000
+        }
     }.UseSerializer<JsonNetSerializer>();
 
     public FortniteApiEndpoint FortniteApi { get; }

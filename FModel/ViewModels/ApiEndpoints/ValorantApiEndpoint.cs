@@ -20,13 +20,13 @@ public class ValorantApiEndpoint : AbstractApiProvider
 {
     private const string _URL = "https://fmodel.fortnite-api.com/valorant/v2/manifest";
 
-    public ValorantApiEndpoint(IRestClient client) : base(client)
+    public ValorantApiEndpoint(RestClient client) : base(client)
     {
     }
 
     public async Task<VManifest> GetManifestAsync(CancellationToken token)
     {
-        var request = new RestRequest(_URL, Method.GET);
+        var request = new RestRequest(_URL);
         var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
         return new VManifest(response.RawBytes);
     }

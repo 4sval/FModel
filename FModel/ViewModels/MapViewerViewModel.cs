@@ -214,7 +214,7 @@ public class MapViewerViewModel : ViewModel
     }
 
     public BitmapImage GetImageToSave() => GetImageSource(GetLayerBitmap(true));
-    
+
     private SKBitmap GetLayerBitmap(bool withMap)
     {
         var ret = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
@@ -471,7 +471,7 @@ public class MapViewerViewModel : ViewModel
             var patrolsPathBitmap = new SKBitmap(_widthHeight, _widthHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var c = new SKCanvas(patrolsPathBitmap);
 
-            var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Artemis_Overlay_S20_NPCLibrary");
+            var exports = Utils.LoadExports("/NPCLibrary/LevelOverlays/Artemis_Overlay_S21_NPCLibrary");
             foreach (var export in exports)
             {
                 if (!export.ExportType.Equals("FortAthenaPatrolPath", StringComparison.OrdinalIgnoreCase) ||

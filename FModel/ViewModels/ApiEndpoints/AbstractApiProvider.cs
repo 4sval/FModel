@@ -4,9 +4,9 @@ namespace FModel.ViewModels.ApiEndpoints;
 
 public abstract class AbstractApiProvider
 {
-    protected readonly IRestClient _client;
+    protected readonly RestClient _client;
 
-    protected AbstractApiProvider(IRestClient client)
+    protected AbstractApiProvider(RestClient client)
     {
         _client = client;
     }
