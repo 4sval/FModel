@@ -16,6 +16,7 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
+using CUE4Parse.UE4.Assets.Exports.Solaris;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -721,6 +722,15 @@ public class CUE4ParseViewModel : ViewModel
     {
         switch (export)
         {
+            case USolarisDigest solarisDigest:
+            {
+                if (!TabControl.CanAddTabs) return false;
+
+                TabControl.AddTab($"{solarisDigest.ProjectName}.ulang");
+                TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("ulang");
+                TabControl.SelectedTab.SetDocumentText(solarisDigest.ReadableCode, false);
+                return true;
+            }
             case UTexture2D texture:
             {
                 TabControl.SelectedTab.AddImage(texture);

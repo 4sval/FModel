@@ -1,0 +1,19 @@
+<SyntaxDefinition name="Ulang Visual Process Language" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"
+    extensions=".ulang">
+
+    <Color name="Constant" foreground="#C792DD" />
+    <Color name="Field" foreground="#FFCB6B" />
+    <Color name="Tag1" foreground="#F07178" />
+    <Color name="Tag2" foreground="#7F848E" />
+    <Color name="Type" foreground="#C3E88D" />
+	<Color name="Punctuation" foreground="#89DDFF" />
+
+	<RuleSet>
+	    <Rule color="Constant">\b(?:module|class|attribute)</Rule>
+        <Rule color="Field">\w+(?=(?:&lt;\w+&gt;)+\()</Rule>
+        <Rule color="Tag1">&lt;\w+&gt;</Rule>
+        <Rule color="Tag2">&lt;@\w+&gt;</Rule>
+        <Rule color="Type">(?!\()\w+(?=:)|\w+$|\w+(?=(?:&lt;\w+&gt;)+\s:=)</Rule>
+        <Rule color="Punctuation">[()*+,\-.\/:;&lt;=&gt;?[\]^`{|}~]</Rule>
+    </RuleSet>
+</SyntaxDefinition>

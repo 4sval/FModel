@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
     <Version>4.2.2</Version>
-    <AssemblyVersion>4.2.2.1</AssemblyVersion>
-    <FileVersion>4.2.2.1</FileVersion>
+    <AssemblyVersion>4.2.2.2</AssemblyVersion>
+    <FileVersion>4.2.2.2</FileVersion>
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -69,6 +69,7 @@
     <None Remove="Resources\athena.png" />
     <None Remove="Resources\Json.xshd" />
     <None Remove="Resources\Ini.xshd" />
+    <None Remove="Resources\Ulang.xshd" />
     <None Remove="Resources\Xml.xshd" />
     <None Remove="Resources\Cpp.xshd" />
     <None Remove="Resources\Changelog.xshd" />
@@ -97,6 +98,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Json.xshd" />
     <EmbeddedResource Include="Resources\Ini.xshd" />
+    <EmbeddedResource Include="Resources\ULang.xshd" />
     <EmbeddedResource Include="Resources\Xml.xshd" />
     <EmbeddedResource Include="Resources\Cpp.xshd" />
     <EmbeddedResource Include="Resources\Changelog.xshd" />
