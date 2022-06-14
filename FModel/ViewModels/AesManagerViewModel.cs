@@ -42,7 +42,7 @@ public class AesManagerViewModel : ViewModel
             }
             else
             {
-                _keysFromSettings = UserSettings.Default.AesKeys[_cue4Parse.Game];
+                UserSettings.Default.AesKeys.TryGetValue(_cue4Parse.Game, out _keysFromSettings);
             }
 
             _keysFromSettings ??= new AesResponse
