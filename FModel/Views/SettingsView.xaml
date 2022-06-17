@@ -41,6 +41,8 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -244,6 +246,44 @@
                              Visibility="{Binding OverwriteMapping, Source={x:Static local:Settings.UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     <Button Grid.Row="15" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
                             Visibility="{Binding OverwriteMapping, Source={x:Static local:Settings.UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+
+                    <TextBlock Grid.Row="16" Grid.Column="0" Text="Force Game Type" VerticalAlignment="Center" Margin="0 0 0 5"
+                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <CheckBox Grid.Row="16" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding ForceGame, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
+                        <CheckBox.Style>
+                            <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </Style>
+                        </CheckBox.Style>
+                    </CheckBox>
+
+                    <TextBlock Grid.Row="17" Grid.Column="0" Text="Game Type" VerticalAlignment="Center" Margin="0 0 0 5"
+                               Visibility="{Binding ForceGame, Source={x:Static local:Settings.UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                    <ComboBox Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.GameTypes}" SelectedItem="{Binding SettingsView.SelectedForceGame, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              SelectedValue="{Binding GameToForce, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                <Setter Property="Visibility" Value="{Binding ForceGame, Source={x:Static local:Settings.UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">
