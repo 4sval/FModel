@@ -83,7 +83,6 @@ public class SettingsViewModel : ViewModel
     }
 
     private EDiscordRpc _selectedDiscordRpc;
-
     public EDiscordRpc SelectedDiscordRpc
     {
         get => _selectedDiscordRpc;

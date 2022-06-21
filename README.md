@@ -10,7 +10,7 @@ Follow [our documentation](https://fmodel.app/docs#installation)
 
 ## Authors
 
-- [@Asval](https://github.com/iAmAsval)
+- [@Asval](https://github.com/4sval)
 - [@Fabian](https://github.com/FabianFG)
 - [@amr](https://github.com/Amrsatrio)
 - [@GMatrix](https://github.com/GMatrixGames)
