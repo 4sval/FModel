@@ -103,10 +103,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             default:
             {
-                Game = UserSettings.Default.ForceGame ?
-                    UserSettings.Default.GameToForce :
-                    gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
-
+                Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
                 var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                     customVersions: UserSettings.Default.OverridedCustomVersions[Game],
                     optionOverrides: UserSettings.Default.OverridedOptions[Game]);
@@ -278,7 +275,7 @@ public class CUE4ParseViewModel : ViewModel
                 file.FileCount = vfs.FileCount;
             }
 
-            // Game = Provider.GameName.ToEnum(Game);
+            Game = Provider.GameName.ToEnum(Game);
         });
     }
 

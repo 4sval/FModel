@@ -109,20 +109,6 @@ namespace FModel.Settings
             set => SetProperty(ref _mappingFilePath, value);
         }
 
-        private bool _forceGame;
-        public bool ForceGame
-        {
-            get => _forceGame;
-            set => SetProperty(ref _forceGame, value);
-        }
-
-        private FGame _gameToForce;
-        public FGame GameToForce
-        {
-            get => _gameToForce;
-            set => SetProperty(ref _gameToForce, value);
-        }
-
         private int _lastOpenedSettingTab;
         public int LastOpenedSettingTab
         {

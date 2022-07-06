@@ -12,11 +12,11 @@
 	<Color name="Punctuation" foreground="#E5C07B" />
 
 	<RuleSet>
-	    <Rule color="Constant">\b(?:module|class|attribute|interface|struct|external|enum|where|comparable|component|void|type|subtype)</Rule>
+	    <Rule color="Constant">\b(?:module|class|attribute|interface|struct|external|enum|where|comparable|component|void|type|subtype)|\@\w+</Rule>
         <Rule color="Method">\w+(?:\'.*\')?(?=(?:&lt;\w+&gt;)+\()</Rule>
         <Rule color="Variable">\w+(?:\'.*\')?(?=(?:&lt;\w+&gt;)+\^?:)</Rule>
         <Rule color="Tag1">&lt;\w+&gt;</Rule>
-        <Rule color="Tag2">&lt;@.*&gt;|^using.*</Rule>
+        <Rule color="Tag2">(?:^using|\# ).*</Rule>
         <Rule color="Parameter">(?!\()\w+(?=:)</Rule>
         <Rule color="Class">\w+(?=(?:&lt;\w+&gt;)+\s:=)</Rule>
         <Rule color="Type">(?&lt;=:)[\w\[\]\?]+</Rule>

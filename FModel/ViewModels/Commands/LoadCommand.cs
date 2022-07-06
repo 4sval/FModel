@@ -50,7 +50,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             _applicationView.CUE4Parse.Provider.MappingsContainer == null)
         {
             FLogger.AppendError();
-            FLogger.AppendText("Mappings could not get pulled, extracting packages might not work properly. If so, press F12 or please restart.", Constants.WHITE, true);
+            FLogger.AppendText("Mappings could not get pulled, extracting packages might not work properly. If so, either press F12, restart, or come back later.", Constants.WHITE, true);
         }
 
 #if DEBUG
