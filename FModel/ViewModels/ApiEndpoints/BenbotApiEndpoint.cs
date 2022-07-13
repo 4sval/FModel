@@ -21,7 +21,7 @@ public class BenbotApiEndpoint : AbstractApiProvider
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
         var response = await _client.ExecuteAsync<AesResponse>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
     }
 
@@ -37,7 +37,7 @@ public class BenbotApiEndpoint : AbstractApiProvider
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
         var response = await _client.ExecuteAsync<MappingsResponse[]>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
     }
 
@@ -54,7 +54,7 @@ public class BenbotApiEndpoint : AbstractApiProvider
         };
         request.AddParameter("lang", language);
         var response = await _client.ExecuteAsync<Dictionary<string, Dictionary<string, string>>>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
     }
 

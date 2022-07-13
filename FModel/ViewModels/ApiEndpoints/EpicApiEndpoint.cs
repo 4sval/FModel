@@ -33,7 +33,7 @@ public class EpicApiEndpoint : AbstractApiProvider
         var request = new RestRequest(_LAUNCHER_ASSETS);
         request.AddHeader("Authorization", $"bearer {UserSettings.Default.LastAuthResponse.AccessToken}");
         var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return new ManifestInfo(response.Content);
     }
 
@@ -48,7 +48,7 @@ public class EpicApiEndpoint : AbstractApiProvider
         request.AddHeader("Authorization", _BASIC_TOKEN);
         request.AddParameter("grant_type", "client_credentials");
         var response = await _client.ExecuteAsync<AuthResponse>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
     }
 

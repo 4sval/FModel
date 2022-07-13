@@ -308,7 +308,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         await _threadWorkerView.Begin(cancellationToken =>
         {
-            var info = _apiEndpointView.FModelApi.GetNews(cancellationToken);
+            var info = _apiEndpointView.FModelApi.GetNews(cancellationToken, Provider.GameName);
             if (info == null) return;
 
             for (var i = 0; i < info.Messages.Length; i++)
@@ -320,51 +320,50 @@ public class CUE4ParseViewModel : ViewModel
 
     public async Task InitBenMappings()
     {
-        if (Game == FGame.FortniteGame)
+        if (Game != FGame.FortniteGame) return;
+
+        await _threadWorkerView.Begin(cancellationToken =>
         {
-            await _threadWorkerView.Begin(cancellationToken =>
+            if (UserSettings.Default.OverwriteMapping && File.Exists(UserSettings.Default.MappingFilePath))
             {
-                if (UserSettings.Default.OverwriteMapping && File.Exists(UserSettings.Default.MappingFilePath))
+                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(UserSettings.Default.MappingFilePath);
+                FLogger.AppendInformation();
+                FLogger.AppendText($"Mappings pulled from '{UserSettings.Default.MappingFilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
+            }
+            else
+            {
+                var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
+                if (mappings is { Length: > 0 })
                 {
-                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(UserSettings.Default.MappingFilePath);
-                    FLogger.AppendInformation();
-                    FLogger.AppendText($"Mappings pulled from '{UserSettings.Default.MappingFilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
+                    foreach (var mapping in mappings)
+                    {
+                        if (mapping.Meta.CompressionMethod != "Oodle") continue;
+
+                        var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
+                        if (!File.Exists(mappingPath))
+                        {
+                            _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
+                        }
+
+                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
+                        FLogger.AppendInformation();
+                        FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
+                        break;
+                    }
                 }
                 else
                 {
-                    var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                    var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
-                    if (mappings is { Length: > 0 })
-                    {
-                        foreach (var mapping in mappings)
-                        {
-                            if (mapping.Meta.CompressionMethod != "Oodle") continue;
+                    var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
+                    if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
 
-                            var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
-                            if (!File.Exists(mappingPath))
-                            {
-                                _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
-                            }
-
-                            Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
-                            FLogger.AppendInformation();
-                            FLogger.AppendText($"Mappings pulled from '{mapping.FileName}'", Constants.WHITE, true);
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
-                        if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
-
-                        var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
-                        Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
-                        FLogger.AppendWarning();
-                        FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
-                    }
+                    var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
+                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
+                    FLogger.AppendWarning();
+                    FLogger.AppendText($"Mappings pulled from '{latestUsmapInfo.Name}'", Constants.WHITE, true);
                 }
-            });
-        }
+            }
+        });
     }
 
     public async Task LoadLocalizedResources()

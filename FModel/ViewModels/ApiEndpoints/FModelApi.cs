@@ -32,24 +32,25 @@ public class FModelApi : AbstractApiProvider
     {
     }
 
-    public async Task<News> GetNewsAsync(CancellationToken token)
+    public async Task<News> GetNewsAsync(CancellationToken token, string game)
     {
         var request = new RestRequest($"https://api.fmodel.app/v1/news/{Constants.APP_VERSION}");
+        request.AddParameter("game", game);
         var response = await _client.ExecuteAsync<News>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
     }
 
-    public News GetNews(CancellationToken token)
+    public News GetNews(CancellationToken token, string game)
     {
-        return _news ??= GetNewsAsync(token).GetAwaiter().GetResult();
+        return _news ??= GetNewsAsync(token, game).GetAwaiter().GetResult();
     }
 
     public async Task<Info> GetInfosAsync(CancellationToken token, EUpdateMode updateMode)
     {
         var request = new RestRequest($"https://api.fmodel.app/v1/infos/{updateMode}");
         var response = await _client.ExecuteAsync<Info>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
     }
 
@@ -62,7 +63,7 @@ public class FModelApi : AbstractApiProvider
     {
         var request = new RestRequest($"https://api.fmodel.app/v1/backups/{gameName}");
         var response = await _client.ExecuteAsync<Backup[]>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
     }
 
@@ -75,7 +76,7 @@ public class FModelApi : AbstractApiProvider
     {
         var request = new RestRequest($"https://api.fmodel.app/v1/games/{gameName}");
         var response = await _client.ExecuteAsync<Game>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
     }
 
@@ -88,7 +89,7 @@ public class FModelApi : AbstractApiProvider
     {
         var request = new RestRequest($"https://api.fmodel.app/v1/designs/{designName}");
         var response = await _client.ExecuteAsync<Community>(request).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, request.Resource);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data != null ? new CommunityDesign(response.Data) : null;
     }
 
