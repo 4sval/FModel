@@ -1,6 +1,6 @@
 # FModel [![Discord](https://discordapp.com/api/guilds/637265123144237061/widget.png?style=shield)](https://discord.gg/fdkNYYQ)
 
-Beginner-friendly and open-source software for data-mining games made with Unreal Engine.
+Beginner-friendly and open-source software for data-mining games made with Unreal Engine 4 & 5.
 
 <img src="https://user-images.githubusercontent.com/26126862/119065662-52534800-b9de-11eb-85fd-a47797daa062.png" align="center" alt="FModel">
 
