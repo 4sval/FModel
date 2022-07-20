@@ -239,11 +239,57 @@
                     </CheckBox>
 
                     <TextBlock Grid.Row="15" Grid.Column="0" Text="Mapping File Path" VerticalAlignment="Center" Margin="0 0 0 5"
-                               Visibility="{Binding OverwriteMapping, Source={x:Static local:Settings.UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <TextBox Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="3" Text="{Binding MappingFilePath, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5"
-                             Visibility="{Binding OverwriteMapping, Source={x:Static local:Settings.UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding CUE4Parse.Game}" Value="{x:Static local:FGame.FortniteGame}" />
+                                            <Condition Binding="{Binding OverwriteMapping, Source={x:Static local:Settings.UserSettings.Default}}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBox Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
+                             Text="{Binding MappingFilePath, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding CUE4Parse.Game}" Value="{x:Static local:FGame.FortniteGame}" />
+                                            <Condition Binding="{Binding OverwriteMapping, Source={x:Static local:Settings.UserSettings.Default}}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
                     <Button Grid.Row="15" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
-                            Visibility="{Binding OverwriteMapping, Source={x:Static local:Settings.UserSettings.Default}, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding CUE4Parse.Game}" Value="{x:Static local:FGame.FortniteGame}" />
+                                            <Condition Binding="{Binding OverwriteMapping, Source={x:Static local:Settings.UserSettings.Default}}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">
