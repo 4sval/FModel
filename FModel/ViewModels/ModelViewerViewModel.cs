@@ -192,7 +192,8 @@ public class ModelViewerViewModel : ViewModel
                 TextureFormat = UserSettings.Default.TextureExportFormat,
                 LodFormat = UserSettings.Default.LodExportFormat,
                 MeshFormat = UserSettings.Default.MeshExportFormat,
-                Platform = UserSettings.Default.OverridedPlatform
+                Platform = UserSettings.Default.OverridedPlatform,
+                ExportMorphTargets = UserSettings.Default.SaveMorphTargets
             };
             foreach (var model in _loadedModels)
             {

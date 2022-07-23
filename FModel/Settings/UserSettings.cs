@@ -259,6 +259,13 @@ namespace FModel.Settings
             set => SetProperty(ref _overridedPlatform, value);
         }
 
+        private bool _saveMorphTargets = true;
+        public bool SaveMorphTargets
+        {
+            get => _saveMorphTargets;
+            set => SetProperty(ref _saveMorphTargets, value);
+        }
+
         private IDictionary<FGame, string> _presets = new Dictionary<FGame, string>
         {
             {FGame.Unknown, Constants._NO_PRESET_TRIGGER},

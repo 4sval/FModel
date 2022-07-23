@@ -811,12 +811,13 @@ public class CUE4ParseViewModel : ViewModel
 
     private void SaveExport(UObject export)
     {
-        var exportOptions = new ExporterOptions()
+        var exportOptions = new ExporterOptions
         {
             TextureFormat = UserSettings.Default.TextureExportFormat,
             LodFormat = UserSettings.Default.LodExportFormat,
             MeshFormat = UserSettings.Default.MeshExportFormat,
-            Platform = UserSettings.Default.OverridedPlatform
+            Platform = UserSettings.Default.OverridedPlatform,
+            ExportMorphTargets = UserSettings.Default.SaveMorphTargets
         };
         var toSave = new Exporter(export, exportOptions);
         var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
