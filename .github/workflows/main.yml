@@ -30,7 +30,7 @@ jobs:
         run: dotnet restore FModel
 
       - name: .NET Publish
-        run: dotnet publish FModel -c Release --no-self-contained -r win-x64 -f net7.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false -p:AssemblyVersion=${{ github.event.inputs.appVersion }} -p:FileVersion=${{ github.event.inputs.appVersion }}
+        run: dotnet publish FModel -c Release --no-self-contained -r win-x64 -f net6.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false -p:AssemblyVersion=${{ github.event.inputs.appVersion }} -p:FileVersion=${{ github.event.inputs.appVersion }}
 
       - name: ZIP File
         uses: papeloto/action-zip@v1
