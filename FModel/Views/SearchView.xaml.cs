@@ -5,68 +5,79 @@ using System.Windows.Input;
 using FModel.Extensions;
 using FModel.Services;
 using FModel.ViewModels;
-using FModel.ViewModels.Commands;
 
-namespace FModel.Views
+namespace FModel.Views;
+
+public partial class SearchView
 {
-    public partial class SearchView
+    private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
+    private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+
+    public SearchView()
     {
-        private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+        DataContext = _applicationView;
+        InitializeComponent();
 
-        public SearchView()
+        Activate();
+        WpfSuckMyDick.Focus();
+        WpfSuckMyDick.SelectAll();
+    }
+
+    private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
+    {
+        _applicationView.CUE4Parse.SearchVm.FilterText = string.Empty;
+        _applicationView.CUE4Parse.SearchVm.RefreshFilter();
+    }
+
+    private async void OnAssetDoubleClick(object sender, RoutedEventArgs e)
+    {
+        if (SearchListView.SelectedItem is not AssetItem assetItem)
+            return;
+
+        WindowState = WindowState.Minimized;
+        MainWindow.YesWeCats.AssetsListName.ItemsSource = null;
+        var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(assetItem.FullPath.SubstringBeforeLast('/'));
+        if (folder == null) return;
+
+        MainWindow.YesWeCats.Activate();
+
+        do { await Task.Delay(100); } while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Assets.Count);
+
+        MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 2; // assets tab
+        do
         {
-            DataContext = _applicationView;
-            InitializeComponent();
+            await Task.Delay(100);
+            MainWindow.YesWeCats.AssetsListName.SelectedItem = assetItem;
+            MainWindow.YesWeCats.AssetsListName.ScrollIntoView(assetItem);
+        } while (MainWindow.YesWeCats.AssetsListName.SelectedItem == null);
+    }
 
-            Activate();
-            WpfSuckMyDick.Focus();
-            WpfSuckMyDick.SelectAll();
-        }
+    private async void OnAssetExtract(object sender, RoutedEventArgs e)
+    {
+        if (SearchListView.SelectedItem is not AssetItem assetItem)
+            return;
 
-        private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
+        WindowState = WindowState.Minimized;
+        await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.Extract(assetItem.FullPath, true));
+
+        MainWindow.YesWeCats.Activate();
+    }
+
+    private void OnWindowKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter) return;
+        _applicationView.CUE4Parse.SearchVm.RefreshFilter();
+    }
+
+    private void OnStateChanged(object sender, EventArgs e)
+    {
+        switch (WindowState)
         {
-            _applicationView.CUE4Parse.SearchVm.FilterText = string.Empty;
-            _applicationView.CUE4Parse.SearchVm.RefreshFilter();
-        }
-
-        private async void OnAssetDoubleClick(object sender, RoutedEventArgs e)
-        {
-            if (SearchListView.SelectedItem is not AssetItem assetItem)
+            case WindowState.Normal:
+                Activate();
+                WpfSuckMyDick.Focus();
+                WpfSuckMyDick.SelectAll();
                 return;
-
-            WindowState = WindowState.Minimized;
-            MainWindow.YesWeCats.AssetsListName.ItemsSource = null;
-            var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(assetItem.FullPath.SubstringBeforeLast('/'));
-            if (folder == null) return;
-            
-            MainWindow.YesWeCats.Activate();
-
-            do { await Task.Delay(100); } while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Assets.Count);
-            MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 2; // assets tab
-            do
-            {
-                await Task.Delay(100);
-                MainWindow.YesWeCats.AssetsListName.SelectedItem = assetItem;
-                MainWindow.YesWeCats.AssetsListName.ScrollIntoView(assetItem);
-            } while (MainWindow.YesWeCats.AssetsListName.SelectedItem == null);
-        }
-
-        private void OnWindowKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key != Key.Enter) return;
-            _applicationView.CUE4Parse.SearchVm.RefreshFilter();
-        }
-
-        private void OnStateChanged(object sender, EventArgs e)
-        {
-            switch (WindowState)
-            {
-                case WindowState.Normal:
-                    Activate();
-                    WpfSuckMyDick.Focus();
-                    WpfSuckMyDick.SelectAll();
-                    return;
-            }
         }
     }
 }

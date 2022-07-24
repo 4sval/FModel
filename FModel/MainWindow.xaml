@@ -663,7 +663,8 @@
                     </Grid.RowDefinitions>
 
                     <TabControl Grid.Row="0" x:Name="TabControlName" Style="{StaticResource GameFilesTabControl}" />
-                    <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down">
+                    <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down"
+                              IsExpanded="{Binding IsLoggerExpanded, Source={x:Static local:Settings.UserSettings.Default}}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />

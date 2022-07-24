@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using System.Windows.Input;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
@@ -49,6 +51,34 @@ namespace FModel.Settings
         {
             get => _outputDirectory;
             set => SetProperty(ref _outputDirectory, value);
+        }
+
+        private string _rawDataDirectory;
+        public string RawDataDirectory
+        {
+            get => _rawDataDirectory;
+            set => SetProperty(ref _rawDataDirectory, value);
+        }
+
+        private string _propertiesDirectory;
+        public string PropertiesDirectory
+        {
+            get => _propertiesDirectory;
+            set => SetProperty(ref _propertiesDirectory, value);
+        }
+
+        private string _textureDirectory;
+        public string TextureDirectory
+        {
+            get => _textureDirectory;
+            set => SetProperty(ref _textureDirectory, value);
+        }
+
+        private string _audioDirectory;
+        public string AudioDirectory
+        {
+            get => _audioDirectory;
+            set => SetProperty(ref _audioDirectory, value);
         }
 
         private string _modelDirectory;
@@ -112,6 +142,13 @@ namespace FModel.Settings
         {
             get => _isLoggerExpanded;
             set => SetProperty(ref _isLoggerExpanded, value);
+        }
+
+        private GridLength _avalonImageSize = GridLength.Auto;
+        public GridLength AvalonImageSize
+        {
+            get => _avalonImageSize;
+            set => SetProperty(ref _avalonImageSize, value);
         }
 
         private IDictionary<FGame, AesResponse> _aesKeys = new Dictionary<FGame, AesResponse>();
@@ -205,6 +242,30 @@ namespace FModel.Settings
             set => SetProperty(ref _imageMergerMargin, value);
         }
 
+        // <gameDirectory as string, settings>
+        // can't refactor to use this data layout for everything
+        // because it will wipe old user settings that relies on FGame
+        private IDictionary<string, GameSelectorViewModel.DetectedGame> _manualGames = new Dictionary<string, GameSelectorViewModel.DetectedGame>();
+        public IDictionary<string, GameSelectorViewModel.DetectedGame> ManualGames
+        {
+            get => _manualGames;
+            set => SetProperty(ref _manualGames, value);
+        }
+
+        private ETexturePlatform _overridedPlatform = ETexturePlatform.DesktopMobile;
+        public ETexturePlatform OverridedPlatform
+        {
+            get => _overridedPlatform;
+            set => SetProperty(ref _overridedPlatform, value);
+        }
+
+        private bool _saveMorphTargets = true;
+        public bool SaveMorphTargets
+        {
+            get => _saveMorphTargets;
+            set => SetProperty(ref _saveMorphTargets, value);
+        }
+
         private IDictionary<FGame, string> _presets = new Dictionary<FGame, string>
         {
             {FGame.Unknown, Constants._NO_PRESET_TRIGGER},
@@ -224,7 +285,8 @@ namespace FModel.Settings
             {FGame.BendGame, Constants._NO_PRESET_TRIGGER},
             {FGame.TslGame, Constants._NO_PRESET_TRIGGER},
             {FGame.PortalWars, Constants._NO_PRESET_TRIGGER},
-            {FGame.Gameface, Constants._NO_PRESET_TRIGGER}
+            {FGame.Gameface, Constants._NO_PRESET_TRIGGER},
+            {FGame.Athena, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -251,7 +313,8 @@ namespace FModel.Settings
             {FGame.BendGame, EGame.GAME_UE4_11},
             {FGame.TslGame, EGame.GAME_PlayerUnknownsBattlegrounds},
             {FGame.PortalWars, EGame.GAME_UE4_LATEST},
-            {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition}
+            {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition},
+            {FGame.Athena, EGame.GAME_SeaOfThieves}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -278,7 +341,8 @@ namespace FModel.Settings
             {FGame.BendGame, null},
             {FGame.TslGame, null},
             {FGame.PortalWars, null},
-            {FGame.Gameface, null}
+            {FGame.Gameface, null},
+            {FGame.Athena, null}
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
@@ -305,7 +369,8 @@ namespace FModel.Settings
             {FGame.BendGame, null},
             {FGame.TslGame, null},
             {FGame.PortalWars, null},
-            {FGame.Gameface, null}
+            {FGame.Gameface, null},
+            {FGame.Athena, null}
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
@@ -379,7 +444,8 @@ namespace FModel.Settings
             {FGame.BendGame, new List<CustomDirectory>()},
             {FGame.TslGame, new List<CustomDirectory>()},
             {FGame.PortalWars, new List<CustomDirectory>()},
-            {FGame.Gameface, new List<CustomDirectory>()}
+            {FGame.Gameface, new List<CustomDirectory>()},
+            {FGame.Athena, new List<CustomDirectory>()}
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {

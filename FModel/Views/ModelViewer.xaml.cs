@@ -10,108 +10,106 @@ using HelixToolkit.Wpf.SharpDX;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
-namespace FModel.Views
+namespace FModel.Views;
+
+public partial class ModelViewer
 {
-    public partial class ModelViewer
+    private bool _messageShown;
+    private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+
+    public ModelViewer()
     {
-        private bool _messageShown;
-        private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+        DataContext = _applicationView;
+        InitializeComponent();
+    }
 
-        public ModelViewer()
+    public void Load(UObject export) => _applicationView.ModelViewer.LoadExport(export);
+    public void Overwrite(UMaterialInstance materialInstance)
+    {
+        if (_applicationView.ModelViewer.TryOverwriteMaterial(materialInstance))
         {
-            DataContext = _applicationView;
-            InitializeComponent();
-        }
-
-        public async void Load(UObject export) => await _applicationView.ModelViewer.LoadExport(export);
-        public async void Overwrite(UMaterialInstance materialInstance)
-        {
-            var sucess = await _applicationView.ModelViewer.TryOverwriteMaterial(materialInstance);
-            if (sucess)
-            {
-                _applicationView.CUE4Parse.ModelIsOverwritingMaterial = false;
-            }
-            else
-            {
-                MessageBox.Show(new MessageBoxModel
-                {
-                    Text = "An attempt to load a material failed.",
-                    Caption = "Error",
-                    Icon = MessageBoxImage.Error,
-                    Buttons = MessageBoxButtons.OkCancel(),
-                    IsSoundEnabled = false
-                });
-            }
-        }
-
-        private void OnClosing(object sender, CancelEventArgs e)
-        {
-            _applicationView.ModelViewer.Clear();
-            _applicationView.ModelViewer.AppendMode = false;
             _applicationView.CUE4Parse.ModelIsOverwritingMaterial = false;
-            MyAntiCrashGroup.ItemsSource = null; // <3
         }
-
-        private async void OnWindowKeyDown(object sender, KeyEventArgs e)
+        else
         {
-            switch (e.Key)
+            MessageBox.Show(new MessageBoxModel
             {
-                case Key.W:
-                    _applicationView.ModelViewer.WirefreameToggle();
-                    break;
-                case Key.H:
-                    _applicationView.ModelViewer.RenderingToggle();
-                    break;
-                case Key.D:
-                    _applicationView.ModelViewer.DiffuseOnlyToggle();
-                    break;
-                case Key.M:
-                    _applicationView.ModelViewer.MaterialColorToggle();
-                    break;
-                case Key.Decimal:
-                    _applicationView.ModelViewer.FocusOnSelectedMesh();
-                    break;
-                case Key.S when Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift):
-                    _applicationView.ModelViewer.SaveAsScene();
-                    break;
-                case Key.S when Keyboard.Modifiers.HasFlag(ModifierKeys.Control):
-                    await _applicationView.ModelViewer.SaveLoadedModels();
-                    break;
-            }
+                Text = "An attempt to load a material failed.",
+                Caption = "Error",
+                Icon = MessageBoxImage.Error,
+                Buttons = MessageBoxButtons.OkCancel(),
+                IsSoundEnabled = false
+            });
         }
+    }
 
-        private void OnMouse3DDown(object sender, MouseDown3DEventArgs e)
+    private void OnClosing(object sender, CancelEventArgs e)
+    {
+        _applicationView.ModelViewer.Clear();
+        _applicationView.ModelViewer.AppendMode = false;
+        _applicationView.CUE4Parse.ModelIsOverwritingMaterial = false;
+        MyAntiCrashGroup.ItemsSource = null; // <3
+    }
+
+    private async void OnWindowKeyDown(object sender, KeyEventArgs e)
+    {
+        switch (e.Key)
         {
-            if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) || e.HitTestResult.ModelHit is not CustomMeshGeometryModel3D m) return;
-            _applicationView.ModelViewer.SelectedModel.SelectedGeometry = m;
-            MaterialsListName.ScrollIntoView(m);
+            case Key.W:
+                _applicationView.ModelViewer.WirefreameToggle();
+                break;
+            case Key.H:
+                _applicationView.ModelViewer.RenderingToggle();
+                break;
+            case Key.D:
+                _applicationView.ModelViewer.DiffuseOnlyToggle();
+                break;
+            case Key.M:
+                _applicationView.ModelViewer.MaterialColorToggle();
+                break;
+            case Key.Decimal:
+                _applicationView.ModelViewer.FocusOnSelectedMesh();
+                break;
+            case Key.S when Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift):
+                _applicationView.ModelViewer.SaveAsScene();
+                break;
+            case Key.S when Keyboard.Modifiers.HasFlag(ModifierKeys.Control):
+                await _applicationView.ModelViewer.SaveLoadedModels();
+                break;
         }
+    }
 
-        private void OnFocusClick(object sender, RoutedEventArgs e)
-            => _applicationView.ModelViewer.FocusOnSelectedMesh();
+    private void OnMouse3DDown(object sender, MouseDown3DEventArgs e)
+    {
+        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) || e.HitTestResult.ModelHit is not CustomMeshGeometryModel3D m) return;
+        _applicationView.ModelViewer.SelectedModel.SelectedGeometry = m;
+        MaterialsListName.ScrollIntoView(m);
+    }
 
-        private void OnCopyClick(object sender, RoutedEventArgs e)
-            => _applicationView.ModelViewer.CopySelectedMaterialName();
+    private void OnFocusClick(object sender, RoutedEventArgs e)
+        => _applicationView.ModelViewer.FocusOnSelectedMesh();
 
-        private async void Save(object sender, RoutedEventArgs e)
-            => await _applicationView.ModelViewer.SaveLoadedModels();
+    private void OnCopyClick(object sender, RoutedEventArgs e)
+        => _applicationView.ModelViewer.CopySelectedMaterialName();
 
-        private void OnOverwriteMaterialClick(object sender, RoutedEventArgs e)
+    private async void Save(object sender, RoutedEventArgs e)
+        => await _applicationView.ModelViewer.SaveLoadedModels();
+
+    private void OnOverwriteMaterialClick(object sender, RoutedEventArgs e)
+    {
+        _applicationView.CUE4Parse.ModelIsOverwritingMaterial = true;
+        if (!_messageShown)
         {
-            _applicationView.CUE4Parse.ModelIsOverwritingMaterial = true;
-            if (!_messageShown)
+            MessageBox.Show(new MessageBoxModel
             {
-                MessageBox.Show(new MessageBoxModel
-                {
-                    Text = "Simply extract a material once FModel will be brought to the foreground. This message will be shown once per Model Viewer's lifetime, close it to begin.",
-                    Caption = "How To Overwrite Material?",
-                    Icon = MessageBoxImage.Information,
-                    IsSoundEnabled = false
-                });
-                _messageShown = true;
-            }
-
-            MainWindow.YesWeCats.Activate();
+                Text = "Simply extract a material once FModel will be brought to the foreground. This message will be shown once per Model Viewer's lifetime, close it to begin.",
+                Caption = "How To Overwrite Material?",
+                Icon = MessageBoxImage.Information,
+                IsSoundEnabled = false
+            });
+            _messageShown = true;
         }
+
+        MainWindow.YesWeCats.Activate();
     }
 }

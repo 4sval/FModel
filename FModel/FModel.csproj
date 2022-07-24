@@ -5,9 +5,9 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
-    <Version>4.2.0</Version>
-    <AssemblyVersion>4.2.0.0</AssemblyVersion>
-    <FileVersion>4.2.0.0</FileVersion>
+    <Version>4.3.0</Version>
+    <AssemblyVersion>4.3.0.0</AssemblyVersion>
+    <FileVersion>4.3.0.0</FileVersion>
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -69,6 +69,7 @@
     <None Remove="Resources\athena.png" />
     <None Remove="Resources\Json.xshd" />
     <None Remove="Resources\Ini.xshd" />
+    <None Remove="Resources\Ulang.xshd" />
     <None Remove="Resources\Xml.xshd" />
     <None Remove="Resources\Cpp.xshd" />
     <None Remove="Resources\Changelog.xshd" />
@@ -91,11 +92,13 @@
     <None Remove="Resources\delete.png" />
     <None Remove="Resources\edit.png" />
     <None Remove="Resources\go_to_directory.png" />
+    <None Remove="Resources\npcleftside.png" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Json.xshd" />
     <EmbeddedResource Include="Resources\Ini.xshd" />
+    <EmbeddedResource Include="Resources\ULang.xshd" />
     <EmbeddedResource Include="Resources\Xml.xshd" />
     <EmbeddedResource Include="Resources\Cpp.xshd" />
     <EmbeddedResource Include="Resources\Changelog.xshd" />
@@ -104,21 +107,21 @@
   <ItemGroup>
     <PackageReference Include="AdonisUI" Version="1.17.1" />
     <PackageReference Include="AdonisUI.ClassicTheme" Version="1.17.1" />
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
-    <PackageReference Include="AvalonEdit" Version="6.1.2.30" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.3" />
+    <PackageReference Include="AvalonEdit" Version="6.1.3.50" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
     <PackageReference Include="EpicManifestParser" Version="1.2.70-temp" />
-    <PackageReference Include="HelixToolkit.SharpDX.Core.Wpf" Version="2.20.0" />
+    <PackageReference Include="HelixToolkit.SharpDX.Core.Wpf" Version="2.21.0" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.16" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NVorbis" Version="0.10.4" />
     <PackageReference Include="Oodle.NET" Version="1.0.1" />
-    <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.0" />
-    <PackageReference Include="RestSharp" Version="106.15.0" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
+    <PackageReference Include="RestSharp" Version="108.0.1" />
+    <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.80.3" />
+    <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.88.0" />
     <PackageReference Include="SkiaSharp.Svg" Version="1.60.0" />
   </ItemGroup>
 
@@ -187,6 +190,7 @@
     <Resource Include="Resources\edit.png" />
     <Resource Include="Resources\go_to_directory.png" />
     <Resource Include="Resources\approaching_storm_cubemap.dds" />
+    <Resource Include="Resources\npcleftside.png" />
   </ItemGroup>
 
   <ItemGroup>

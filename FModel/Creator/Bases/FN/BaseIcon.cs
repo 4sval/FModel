@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -16,272 +16,269 @@ using CUE4Parse_Fortnite.Enums;
 using FModel.Settings;
 using SkiaSharp;
 
-namespace FModel.Creator.Bases.FN
+namespace FModel.Creator.Bases.FN;
+
+public class BaseIcon : UCreator
 {
-    public class BaseIcon : UCreator
+    public SKBitmap SeriesBackground { get; protected set; }
+    protected string ShortDescription { get; set; }
+    protected string CosmeticSource { get; set; }
+    protected Dictionary<string, SKBitmap> UserFacingFlags { get; set; }
+
+    public BaseIcon(UObject uObject, EIconStyle style) : base(uObject, style)
     {
-        public SKBitmap SeriesBackground { get; protected set; }
-        protected string ShortDescription { get; set; }
-        protected string CosmeticSource { get; set; }
-        protected Dictionary<string, SKBitmap> UserFacingFlags { get; set; }
+    }
 
-        public BaseIcon(UObject uObject, EIconStyle style) : base(uObject, style)
+    public void ParseForReward(bool isUsingDisplayAsset)
+    {
+        // rarity
+        if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
+        else GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
+
+        // preview
+        if (isUsingDisplayAsset && Utils.TryGetDisplayAsset(Object, out var preview))
+            Preview = preview;
+        else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
+            Preview = Utils.GetBitmap(itemDefinition);
+        else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
+            Preview = Utils.GetBitmap(largePreview);
+        else if (Object.TryGetValue(out string s, "LargePreviewImage") && !string.IsNullOrEmpty(s))
+            Preview = Utils.GetBitmap(s);
+        else if (Object.TryGetValue(out FPackageIndex otherPreview, "SmallPreviewImage", "ToastIcon", "access_item"))
+            Preview = Utils.GetBitmap(otherPreview);
+        else if (Object.TryGetValue(out UMaterialInstanceConstant materialInstancePreview, "EventCalloutImage"))
+            Preview = Utils.GetBitmap(materialInstancePreview);
+        else if (Object.TryGetValue(out FStructFallback brush, "IconBrush") && brush.TryGetValue(out UTexture2D res, "ResourceObject"))
+            Preview = Utils.GetBitmap(res);
+
+        // text
+        if (Object.TryGetValue(out FText displayName, "DisplayName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
+            DisplayName = displayName.Text;
+        if (Object.TryGetValue(out FText description, "Description", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription"))
+            Description = description.Text;
+        else if (Object.TryGetValue(out FText[] descriptions, "Description"))
+            Description = string.Join('\n', descriptions.Select(x => x.Text));
+        if (Object.TryGetValue(out FText shortDescription, "ShortDescription", "UIDisplaySubName"))
+            ShortDescription = shortDescription.Text;
+        else if (Object.ExportType.Equals("AthenaItemWrapDefinition", StringComparison.OrdinalIgnoreCase))
+            ShortDescription = Utils.GetLocalizedResource("Fort.Cosmetics", "ItemWrapShortDescription", "Wrap");
+
+        // Only works on non-cataba designs
+        if (Object.TryGetValue(out FStructFallback eventArrowColor, "EventArrowColor") &&
+            eventArrowColor.TryGetValue(out FLinearColor specifiedArrowColor, "SpecifiedColor") &&
+            Object.TryGetValue(out FStructFallback eventArrowShadowColor, "EventArrowShadowColor") &&
+            eventArrowShadowColor.TryGetValue(out FLinearColor specifiedShadowColor, "SpecifiedColor"))
         {
+            Background = new[] { SKColor.Parse(specifiedArrowColor.Hex), SKColor.Parse(specifiedShadowColor.Hex) };
+            Border = new[] { SKColor.Parse(specifiedShadowColor.Hex), SKColor.Parse(specifiedArrowColor.Hex) };
         }
 
-        public void ParseForReward(bool isUsingDisplayAsset)
+        Description = Utils.RemoveHtmlTags(Description);
+    }
+
+    public override void ParseForInfo()
+    {
+        ParseForReward(UserSettings.Default.CosmeticDisplayAsset);
+
+        if (Object.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags"))
+            CheckGameplayTags(gameplayTags);
+        if (Object.TryGetValue(out FPackageIndex cosmeticItem, "cosmetic_item"))
+            CosmeticSource = cosmeticItem.Name;
+    }
+
+    protected void Draw(SKCanvas c)
+    {
+        switch (Style)
         {
-            // rarity
-            if (Object.TryGetValue(out FPackageIndex series, "Series")) GetSeries(series);
-            else GetRarity(Object.GetOrDefault("Rarity", EFortRarity.Uncommon)); // default is uncommon
+            case EIconStyle.NoBackground:
+                DrawPreview(c);
+                break;
+            case EIconStyle.NoText:
+                DrawBackground(c);
+                DrawPreview(c);
+                DrawUserFacingFlags(c);
+                break;
+            default:
+                DrawBackground(c);
+                DrawPreview(c);
+                DrawTextBackground(c);
+                DrawDisplayName(c);
+                DrawDescription(c);
+                DrawToBottom(c, SKTextAlign.Right, CosmeticSource);
+                if (Description != ShortDescription)
+                    DrawToBottom(c, SKTextAlign.Left, ShortDescription);
+                DrawUserFacingFlags(c);
+                break;
+        }
+    }
 
-            // preview
-            if (isUsingDisplayAsset && Utils.TryGetDisplayAsset(Object, out var preview))
-                Preview = preview;
-            else if (Object.TryGetValue(out FPackageIndex itemDefinition, "HeroDefinition", "WeaponDefinition"))
-                Preview = Utils.GetBitmap(itemDefinition);
-            else if (Object.TryGetValue(out FSoftObjectPath largePreview, "LargePreviewImage", "EntryListIcon", "SmallPreviewImage", "ItemDisplayAsset", "LargeIcon", "ToastIcon", "SmallIcon"))
-                Preview = Utils.GetBitmap(largePreview);
-            else if (Object.TryGetValue(out string s, "LargePreviewImage") && !string.IsNullOrEmpty(s))
-                Preview = Utils.GetBitmap(s);
-            else if (Object.TryGetValue(out FPackageIndex otherPreview, "SmallPreviewImage", "ToastIcon", "access_item"))
-                Preview = Utils.GetBitmap(otherPreview);
-            else if (Object.TryGetValue(out UMaterialInstanceConstant materialInstancePreview, "EventCalloutImage"))
-                Preview = Utils.GetBitmap(materialInstancePreview);
-            else if (Object.TryGetValue(out FStructFallback brush, "IconBrush") && brush.TryGetValue(out UTexture2D res, "ResourceObject"))
-                Preview = Utils.GetBitmap(res);
+    public override SKBitmap[] Draw()
+    {
+        var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+        using var c = new SKCanvas(ret);
 
-            // text
-            if (Object.TryGetValue(out FText displayName, "DisplayName", "DefaultHeaderText", "UIDisplayName", "EntryName", "EventCalloutTitle"))
-                DisplayName = displayName.Text;
-            if (Object.TryGetValue(out FText description, "Description", "GeneralDescription", "DefaultBodyText", "UIDescription", "UIDisplayDescription", "EntryDescription", "EventCalloutDescription"))
-                Description = description.Text;
-            else if (Object.TryGetValue(out FText[] descriptions, "Description"))
-                Description = string.Join('\n', descriptions.Select(x => x.Text));
-            if (Object.TryGetValue(out FText shortDescription, "ShortDescription", "UIDisplaySubName"))
-                ShortDescription = shortDescription.Text;
-            else if (Object.ExportType.Equals("AthenaItemWrapDefinition", StringComparison.OrdinalIgnoreCase))
-                ShortDescription = Utils.GetLocalizedResource("Fort.Cosmetics", "ItemWrapShortDescription", "Wrap");
+        Draw(c);
 
-            // Only works on non-cataba designs
-            if (Object.TryGetValue(out FStructFallback eventArrowColor, "EventArrowColor") &&
-                eventArrowColor.TryGetValue(out FLinearColor specifiedArrowColor, "SpecifiedColor") &&
-                Object.TryGetValue(out FStructFallback eventArrowShadowColor, "EventArrowShadowColor") &&
-                eventArrowShadowColor.TryGetValue(out FLinearColor specifiedShadowColor, "SpecifiedColor"))
+        return new[] { ret };
+    }
+
+    private void GetSeries(FPackageIndex s)
+    {
+        if (!Utils.TryGetPackageIndexExport(s, out UObject export)) return;
+
+        GetSeries(export);
+    }
+
+    protected void GetSeries(UObject uObject)
+    {
+        if (uObject is UTexture2D texture2D)
+        {
+            SeriesBackground = texture2D.Decode();
+            return;
+        }
+
+        if (uObject.TryGetValue(out FSoftObjectPath backgroundTexture, "BackgroundTexture"))
+        {
+            SeriesBackground = Utils.GetBitmap(backgroundTexture);
+        }
+
+        if (uObject.TryGetValue(out FStructFallback colors, "Colors") &&
+            colors.TryGetValue(out FLinearColor color1, "Color1") &&
+            colors.TryGetValue(out FLinearColor color2, "Color2") &&
+            colors.TryGetValue(out FLinearColor color3, "Color3"))
+        {
+            Background = new[] { SKColor.Parse(color1.Hex), SKColor.Parse(color3.Hex) };
+            Border = new[] { SKColor.Parse(color2.Hex), SKColor.Parse(color1.Hex) };
+        }
+
+        if (uObject.Name.Equals("PlatformSeries") &&
+            uObject.TryGetValue(out FSoftObjectPath itemCardMaterial, "ItemCardMaterial") &&
+            Utils.TryLoadObject(itemCardMaterial.AssetPathName.Text, out UMaterialInstanceConstant material))
+        {
+            foreach (var vectorParameter in material.VectorParameterValues)
             {
-                Background = new[] {SKColor.Parse(specifiedArrowColor.Hex), SKColor.Parse(specifiedShadowColor.Hex)};
-                Border = new[] {SKColor.Parse(specifiedShadowColor.Hex), SKColor.Parse(specifiedArrowColor.Hex)};
+                if (vectorParameter.ParameterValue == null || !vectorParameter.ParameterInfo.Name.Text.Equals("ColorCircuitBackground"))
+                    continue;
+
+                Background[0] = SKColor.Parse(vectorParameter.ParameterValue.Value.Hex);
             }
+        }
+    }
 
-            Description = Utils.RemoveHtmlTags(Description);
+    private void GetRarity(EFortRarity r)
+    {
+        if (!Utils.TryLoadObject("FortniteGame/Content/Balance/RarityData.RarityData", out UObject export)) return;
+
+        if (export.GetByIndex<FStructFallback>((int) r) is { } data &&
+            data.TryGetValue(out FLinearColor color1, "Color1") &&
+            data.TryGetValue(out FLinearColor color2, "Color2") &&
+            data.TryGetValue(out FLinearColor color3, "Color3"))
+        {
+            Background = new[] { SKColor.Parse(color1.Hex), SKColor.Parse(color3.Hex) };
+            Border = new[] { SKColor.Parse(color2.Hex), SKColor.Parse(color1.Hex) };
+        }
+    }
+
+    protected string GetCosmeticSet(string setName)
+    {
+        if (!Utils.TryLoadObject("FortniteGame/Content/Athena/Items/Cosmetics/Metadata/CosmeticSets.CosmeticSets", out UDataTable cosmeticSets))
+            return string.Empty;
+
+        if (!cosmeticSets.TryGetDataTableRow(setName, StringComparison.OrdinalIgnoreCase, out var uObject))
+            return string.Empty;
+
+        var name = string.Empty;
+        if (uObject.TryGetValue(out FText displayName, "DisplayName"))
+            name = displayName.Text;
+
+        var format = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_SetMembership_NotRich", "\nPart of the {0} set.");
+        return string.Format(format, name);
+    }
+
+    protected string GetCosmeticSeason(string seasonNumber)
+    {
+        var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
+        var number = int.Parse(s);
+
+        switch (number)
+        {
+            case 10:
+                s = "X";
+                break;
+            case > 18:
+                number += 2;
+                s = number.ToString();
+                break;
         }
 
-        public override void ParseForInfo()
-        {
-            ParseForReward(UserSettings.Default.CosmeticDisplayAsset);
+        var season = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "SeasonTextFormat", "Season {0}");
+        var introduced = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_Season", "\nIntroduced in <SeasonText>{0}</>.");
+        if (number <= 10) return Utils.RemoveHtmlTags(string.Format(introduced, string.Format(season, s)));
 
-            if (Object.TryGetValue(out FGameplayTagContainer gameplayTags, "GameplayTags"))
-                CheckGameplayTags(gameplayTags);
-            if (Object.TryGetValue(out FPackageIndex cosmeticItem, "cosmetic_item"))
-                CosmeticSource = cosmeticItem.Name;
-        }
+        var chapter = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "ChapterTextFormat", "Chapter {0}");
+        var chapterFormat = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "ChapterSeasonTextFormat", "{0}, {1}");
+        var d = string.Format(chapterFormat, string.Format(chapter, number / 10 + 1), string.Format(season, s[^1..]));
+        return Utils.RemoveHtmlTags(string.Format(introduced, d));
+    }
 
-        protected void Draw(SKCanvas c)
+    private void CheckGameplayTags(FGameplayTagContainer gameplayTags)
+    {
+        if (gameplayTags.TryGetGameplayTag("Cosmetics.Source.", out var source))
+            CosmeticSource = source.Text["Cosmetics.Source.".Length..];
+        else if (gameplayTags.TryGetGameplayTag("Athena.ItemAction.", out var action))
+            CosmeticSource = action.Text["Athena.ItemAction.".Length..];
+
+        if (gameplayTags.TryGetGameplayTag("Cosmetics.Set.", out var set))
+            Description += GetCosmeticSet(set.Text);
+        if (gameplayTags.TryGetGameplayTag("Cosmetics.Filter.Season.", out var season))
+            Description += GetCosmeticSeason(season.Text);
+
+        GetUserFacingFlags(gameplayTags.GetAllGameplayTags(
+            "Cosmetics.UserFacingFlags.", "Homebase.Class.", "NPC.CharacterType.Survivor.Defender."));
+    }
+
+    protected void GetUserFacingFlags(IList<string> userFacingFlags)
+    {
+        if (userFacingFlags.Count < 1 || !Utils.TryLoadObject("FortniteGame/Content/Items/ItemCategories.ItemCategories", out UObject itemCategories))
+            return;
+
+        if (!itemCategories.TryGetValue(out FStructFallback[] tertiaryCategories, "TertiaryCategories"))
+            return;
+
+        UserFacingFlags = new Dictionary<string, SKBitmap>(userFacingFlags.Count);
+        foreach (var flag in userFacingFlags)
         {
-            switch (Style)
+            if (flag.Equals("Cosmetics.UserFacingFlags.HasUpgradeQuests", StringComparison.OrdinalIgnoreCase))
             {
-                case EIconStyle.NoBackground:
-                    DrawPreview(c);
-                    break;
-                case EIconStyle.NoText:
-                    DrawBackground(c);
-                    DrawPreview(c);
-                    DrawUserFacingFlags(c);
-                    break;
-                default:
-                    DrawBackground(c);
-                    DrawPreview(c);
-                    DrawTextBackground(c);
-                    DrawDisplayName(c);
-                    DrawDescription(c);
-                    DrawToBottom(c, SKTextAlign.Right, CosmeticSource);
-                    if (Description != ShortDescription)
-                        DrawToBottom(c, SKTextAlign.Left, ShortDescription);
-                    DrawUserFacingFlags(c);
-                    break;
+                if (Object.ExportType.Equals("AthenaPetCarrierItemDefinition", StringComparison.OrdinalIgnoreCase))
+                    UserFacingFlags[flag] = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T-Icon-Pets-64.png"))?.Stream);
+                else UserFacingFlags[flag] = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T-Icon-Quests-64.png"))?.Stream);
             }
-        }
-
-        public override SKImage Draw()
-        {
-            using var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Premul);
-            using var c = new SKCanvas(ret);
-
-            Draw(c);
-
-            return SKImage.FromBitmap(ret);
-        }
-
-        private void GetSeries(FPackageIndex s)
-        {
-            if (!Utils.TryGetPackageIndexExport(s, out UObject export)) return;
-
-            GetSeries(export);
-        }
-
-        protected void GetSeries(UObject uObject)
-        {
-            if (uObject is UTexture2D texture2D)
+            else
             {
-                SeriesBackground = SKBitmap.Decode(texture2D.Decode()?.Encode());
-                return;
-            }
-
-            if (uObject.TryGetValue(out FSoftObjectPath backgroundTexture, "BackgroundTexture"))
-            {
-                SeriesBackground = Utils.GetBitmap(backgroundTexture);
-            }
-
-            if (uObject.TryGetValue(out FStructFallback colors, "Colors") &&
-                colors.TryGetValue(out FLinearColor color1, "Color1") &&
-                colors.TryGetValue(out FLinearColor color2, "Color2") &&
-                colors.TryGetValue(out FLinearColor color3, "Color3"))
-            {
-                Background = new[] {SKColor.Parse(color1.Hex), SKColor.Parse(color3.Hex)};
-                Border = new[] {SKColor.Parse(color2.Hex), SKColor.Parse(color1.Hex)};
-            }
-
-            if (uObject.Name.Equals("PlatformSeries") &&
-                uObject.TryGetValue(out FSoftObjectPath itemCardMaterial, "ItemCardMaterial") &&
-                Utils.TryLoadObject(itemCardMaterial.AssetPathName.Text, out UMaterialInstanceConstant material))
-            {
-                foreach (var vectorParameter in material.VectorParameterValues)
+                foreach (var category in tertiaryCategories)
                 {
-                    if (vectorParameter.ParameterValue == null || !vectorParameter.ParameterInfo.Name.Text.Equals("ColorCircuitBackground"))
-                        continue;
-
-                    Background[0] = SKColor.Parse(vectorParameter.ParameterValue.Value.Hex);
-                }
-            }
-        }
-
-        private void GetRarity(EFortRarity r)
-        {
-            if (!Utils.TryLoadObject("FortniteGame/Content/Balance/RarityData.RarityData", out UObject export)) return;
-
-            if (export.GetByIndex<FStructFallback>((int) r) is { } data &&
-                data.TryGetValue(out FLinearColor color1, "Color1") &&
-                data.TryGetValue(out FLinearColor color2, "Color2") &&
-                data.TryGetValue(out FLinearColor color3, "Color3"))
-            {
-                Background = new[] {SKColor.Parse(color1.Hex), SKColor.Parse(color3.Hex)};
-                Border = new[] {SKColor.Parse(color2.Hex), SKColor.Parse(color1.Hex)};
-            }
-        }
-
-        protected string GetCosmeticSet(string setName)
-        {
-            if (!Utils.TryLoadObject("FortniteGame/Content/Athena/Items/Cosmetics/Metadata/CosmeticSets.CosmeticSets", out UDataTable cosmeticSets))
-                return string.Empty;
-
-            if (!cosmeticSets.TryGetDataTableRow(setName, StringComparison.OrdinalIgnoreCase, out var uObject))
-                return string.Empty;
-
-            var name = string.Empty;
-            if (uObject.TryGetValue(out FText displayName, "DisplayName"))
-                name = displayName.Text;
-
-            var format = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_SetMembership_NotRich", "\nPart of the {0} set.");
-            return string.Format(format, name);
-        }
-
-        protected string GetCosmeticSeason(string seasonNumber)
-        {
-            var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
-            var number = int.Parse(s);
-
-            switch (number)
-            {
-                case 10:
-                    s = "X";
-                    break;
-                case > 18:
-                    number += 2;
-                    s = number.ToString();
-                    break;
-            }
-
-            var season = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "SeasonTextFormat", "Season {0}");
-            var introduced = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_Season", "\nIntroduced in <SeasonText>{0}</>.");
-            if (number <= 10) return Utils.RemoveHtmlTags(string.Format(introduced, string.Format(season, s)));
-
-            var chapter = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "ChapterTextFormat", "Chapter {0}");
-            var chapterFormat = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "ChapterSeasonTextFormat", "{0}, {1}");
-            var d = string.Format(chapterFormat, string.Format(chapter, number / 10 + 1), string.Format(season, s[^1..]));
-            return Utils.RemoveHtmlTags(string.Format(introduced, d));
-        }
-
-        private void CheckGameplayTags(FGameplayTagContainer gameplayTags)
-        {
-            if (gameplayTags.TryGetGameplayTag("Cosmetics.Source.", out var source))
-                CosmeticSource = source.Text["Cosmetics.Source.".Length..];
-            else if (gameplayTags.TryGetGameplayTag("Athena.ItemAction.", out var action))
-                CosmeticSource = action.Text["Athena.ItemAction.".Length..];
-
-            if (gameplayTags.TryGetGameplayTag("Cosmetics.Set.", out var set))
-                Description += GetCosmeticSet(set.Text);
-            if (gameplayTags.TryGetGameplayTag("Cosmetics.Filter.Season.", out var season))
-                Description += GetCosmeticSeason(season.Text);
-
-            GetUserFacingFlags(gameplayTags.GetAllGameplayTags(
-                "Cosmetics.UserFacingFlags.", "Homebase.Class.", "NPC.CharacterType.Survivor.Defender."));
-        }
-
-        protected void GetUserFacingFlags(IList<string> userFacingFlags)
-        {
-            if (userFacingFlags.Count < 1 || !Utils.TryLoadObject("FortniteGame/Content/Items/ItemCategories.ItemCategories", out UObject itemCategories))
-                return;
-
-            if (!itemCategories.TryGetValue(out FStructFallback[] tertiaryCategories, "TertiaryCategories"))
-                return;
-
-            UserFacingFlags = new Dictionary<string, SKBitmap>(userFacingFlags.Count);
-            foreach (var flag in userFacingFlags)
-            {
-                if (flag.Equals("Cosmetics.UserFacingFlags.HasUpgradeQuests", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (Object.ExportType.Equals("AthenaPetCarrierItemDefinition", StringComparison.OrdinalIgnoreCase))
-                        UserFacingFlags[flag] = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T-Icon-Pets-64.png"))?.Stream);
-                    else UserFacingFlags[flag] = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/Resources/T-Icon-Quests-64.png"))?.Stream);
-                }
-                else
-                {
-                    foreach (var category in tertiaryCategories)
+                    if (category.TryGetValue(out FGameplayTagContainer tagContainer, "TagContainer") && tagContainer.TryGetGameplayTag(flag, out _) &&
+                        category.TryGetValue(out FStructFallback categoryBrush, "CategoryBrush") && categoryBrush.TryGetValue(out FStructFallback brushXxs, "Brush_XXS") &&
+                        brushXxs.TryGetValue(out FPackageIndex resourceObject, "ResourceObject") && Utils.TryGetPackageIndexExport(resourceObject, out UTexture2D texture))
                     {
-                        if (category.TryGetValue(out FGameplayTagContainer tagContainer, "TagContainer") && tagContainer.TryGetGameplayTag(flag, out _) &&
-                            category.TryGetValue(out FStructFallback categoryBrush, "CategoryBrush") && categoryBrush.TryGetValue(out FStructFallback brushXxs, "Brush_XXS") &&
-                            brushXxs.TryGetValue(out FPackageIndex resourceObject, "ResourceObject") && Utils.TryGetPackageIndexExport(resourceObject, out UTexture2D texture))
-                        {
-                            UserFacingFlags[flag] = Utils.GetBitmap(texture);
-                        }
+                        UserFacingFlags[flag] = Utils.GetBitmap(texture);
                     }
                 }
             }
         }
+    }
 
-        private void DrawUserFacingFlags(SKCanvas c)
+    private void DrawUserFacingFlags(SKCanvas c)
+    {
+        if (UserFacingFlags == null) return;
+
+        const int size = 25;
+        var x = Margin * (int) 2.5;
+        foreach (var flag in UserFacingFlags.Values.Where(flag => flag != null))
         {
-            if (UserFacingFlags == null) return;
-
-            const int size = 25;
-            var x = Margin * (int) 2.5;
-            foreach (var flag in UserFacingFlags.Values)
-            {
-                if (flag == null) continue;
-
-                c.DrawBitmap(flag.Resize(size), new SKPoint(x, Margin * (int) 2.5), ImagePaint);
-                x += size;
-            }
+            c.DrawBitmap(flag.Resize(size), new SKPoint(x, Margin * (int) 2.5), ImagePaint);
+            x += size;
         }
     }
 }

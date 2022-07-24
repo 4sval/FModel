@@ -1,22 +1,21 @@
 ﻿using System;
 using FModel.ViewModels;
 
-namespace FModel.Views.Resources.Controls.Aup
+namespace FModel.Views.Resources.Controls.Aup;
+
+public interface ISource
 {
-    public interface ISource
-    {
-        AudioFile PlayedFile { get; }
-        float[] FftData { get; }
-        SpectrumProvider Spectrum { get; }
+    AudioFile PlayedFile { get; }
+    float[] FftData { get; }
+    SpectrumProvider Spectrum { get; }
 
-        void Play();
-        void Pause();
-        void Resume();
-        void Stop();
-        void SkipTo(double percentage);
-        void Dispose();
+    void Play();
+    void Pause();
+    void Resume();
+    void Stop();
+    void SkipTo(double percentage);
+    void Dispose();
 
-        event EventHandler<SourceEventArgs> SourceEvent;
-        event EventHandler<SourcePropertyChangedEventArgs> SourcePropertyChangedEvent;
-    }
+    event EventHandler<SourceEventArgs> SourceEvent;
+    event EventHandler<SourcePropertyChangedEventArgs> SourcePropertyChangedEvent;
 }

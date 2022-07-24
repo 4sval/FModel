@@ -2,42 +2,29 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
-using RestSharp.Serialization;
+using RestSharp.Serializers;
 
-namespace FModel.Framework
+namespace FModel.Framework;
+
+public class JsonNetSerializer : IRestSerializer, ISerializer, IDeserializer
 {
-    public class JsonNetSerializer : IRestSerializer
+    public static readonly JsonSerializerSettings SerializerSettings = new()
     {
-        public static readonly JsonSerializerSettings SerializerSettings = new()
-        {
-            NullValueHandling = NullValueHandling.Ignore,
-            MissingMemberHandling = MissingMemberHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
+        NullValueHandling = NullValueHandling.Ignore,
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        ContractResolver = new CamelCasePropertyNamesContractResolver()
+    };
 
-        public string Serialize(object obj)
-        {
-            return JsonConvert.SerializeObject(obj);
-        }
+    public string Serialize(Parameter parameter) => JsonConvert.SerializeObject(parameter.Value);
+    public string Serialize(object obj) => JsonConvert.SerializeObject(obj);
+    public T Deserialize<T>(RestResponse response) => JsonConvert.DeserializeObject<T>(response.Content!, SerializerSettings);
 
-        [Obsolete]
-        public string Serialize(Parameter parameter)
-        {
-            return JsonConvert.SerializeObject(parameter.Value);
-        }
+    public ISerializer Serializer => this;
+    public IDeserializer Deserializer => this;
 
-        public T Deserialize<T>(IRestResponse response)
-        {
-            return JsonConvert.DeserializeObject<T>(response.Content, SerializerSettings);
-        }
+    public string ContentType { get; set; } = "application/json";
+    public string[] AcceptedContentTypes => RestSharp.Serializers.ContentType.JsonAccept;
+    public SupportsContentType SupportsContentType => contentType => contentType.EndsWith("json", StringComparison.InvariantCultureIgnoreCase);
 
-        public string[] SupportedContentTypes { get; } =
-        {
-            "application/json", "application/json; charset=UTF-8"
-        };
-
-        public string ContentType { get; set; } = "application/json; charset=UTF-8";
-
-        public DataFormat DataFormat => DataFormat.Json;
-    }
+    public DataFormat DataFormat => DataFormat.Json;
 }

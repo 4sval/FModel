@@ -1,0 +1,25 @@
+<SyntaxDefinition name="Ulang Visual Process Language" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"
+    extensions=".ulang">
+
+    <Color name="Constant" foreground="#C792DD" />
+    <Color name="Method" foreground="#FFCB6B" />
+    <Color name="Variable" foreground="#529EFF" />
+    <Color name="Tag1" foreground="#F07178" />
+    <Color name="Tag2" foreground="#7F848E" />
+    <Color name="Parameter" foreground="#89DDFF" />
+    <Color name="Class" foreground="#FF9D5E" />
+    <Color name="Type" foreground="#C3E88D" />
+	<Color name="Punctuation" foreground="#E5C07B" />
+
+	<RuleSet>
+	    <Rule color="Constant">\b(?:module|class|attribute|interface|struct|external|enum|where|comparable|component|void|type|subtype)|\@\w+</Rule>
+        <Rule color="Method">\w+(?:\'.*\')?(?=(?:&lt;\w+&gt;)+\()</Rule>
+        <Rule color="Variable">\w+(?:\'.*\')?(?=(?:&lt;\w+&gt;)+\^?:)</Rule>
+        <Rule color="Tag1">&lt;\w+&gt;</Rule>
+        <Rule color="Tag2">(?:^using|\# ).*</Rule>
+        <Rule color="Parameter">(?!\()\w+(?=:)</Rule>
+        <Rule color="Class">\w+(?=(?:&lt;\w+&gt;)+\s:=)</Rule>
+        <Rule color="Type">(?&lt;=:)[\w\[\]\?]+</Rule>
+        <Rule color="Punctuation">[()*+,\-.\/:;&lt;=&gt;?[\]^`{|}~]</Rule>
+    </RuleSet>
+</SyntaxDefinition>
