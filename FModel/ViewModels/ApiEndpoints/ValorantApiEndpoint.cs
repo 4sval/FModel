@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FModel.Framework;
 
 namespace FModel.ViewModels.ApiEndpoints;
 
@@ -26,7 +27,7 @@ public class ValorantApiEndpoint : AbstractApiProvider
 
     public async Task<VManifest> GetManifestAsync(CancellationToken token)
     {
-        var request = new RestRequest(_URL);
+        var request = new FRestRequest(_URL);
         var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
         return new VManifest(response.RawBytes);
     }

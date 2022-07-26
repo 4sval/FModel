@@ -1,0 +1,16 @@
+name: Issue Auto Closing
+
+on:
+  issues:
+    types:
+      - opened
+
+jobs:
+  autoclose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close Condition
+        if: contains(toJson(github.event.issue.body), '### Game\r\n\r\nFortnite')
+        uses: peter-evans/close-issue@v2
+        with:
+          comment: Fortnite related issues are not allowed here. Join the [discord server](https://fmodel.app/discord) and read the common errors channel instead.

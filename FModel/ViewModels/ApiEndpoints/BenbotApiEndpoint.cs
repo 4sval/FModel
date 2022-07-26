@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
 using RestSharp;
 using Serilog;
@@ -16,7 +17,7 @@ public class BenbotApiEndpoint : AbstractApiProvider
 
     public async Task<AesResponse> GetAesKeysAsync(CancellationToken token)
     {
-        var request = new RestRequest("https://benbot.app/api/v2/aes")
+        var request = new FRestRequest("https://benbot.app/api/v2/aes")
         {
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
@@ -32,7 +33,7 @@ public class BenbotApiEndpoint : AbstractApiProvider
 
     public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token)
     {
-        var request = new RestRequest("https://benbot.app/api/v1/mappings")
+        var request = new FRestRequest("https://benbot.app/api/v1/mappings")
         {
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
@@ -48,7 +49,7 @@ public class BenbotApiEndpoint : AbstractApiProvider
 
     public async Task<Dictionary<string, Dictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en-US")
     {
-        var request = new RestRequest("https://benbot.app/api/v1/hotfixes")
+        var request = new FRestRequest("https://benbot.app/api/v1/hotfixes")
         {
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
@@ -65,7 +66,7 @@ public class BenbotApiEndpoint : AbstractApiProvider
 
     public async Task DownloadFileAsync(string fileLink, string installationPath)
     {
-        var request = new RestRequest(fileLink);
+        var request = new FRestRequest(fileLink);
         var data = _client.DownloadData(request);
         await File.WriteAllBytesAsync(installationPath, data);
     }

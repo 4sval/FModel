@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using EpicManifestParser.Objects;
+using FModel.Framework;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using RestSharp;
@@ -30,7 +31,7 @@ public class EpicApiEndpoint : AbstractApiProvider
             }
         }
 
-        var request = new RestRequest(_LAUNCHER_ASSETS);
+        var request = new FRestRequest(_LAUNCHER_ASSETS);
         request.AddHeader("Authorization", $"bearer {UserSettings.Default.LastAuthResponse.AccessToken}");
         var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
@@ -44,7 +45,7 @@ public class EpicApiEndpoint : AbstractApiProvider
 
     private async Task<AuthResponse> GetAuthAsync(CancellationToken token)
     {
-        var request = new RestRequest(_OAUTH_URL, Method.Post);
+        var request = new FRestRequest(_OAUTH_URL, Method.Post);
         request.AddHeader("Authorization", _BASIC_TOKEN);
         request.AddParameter("grant_type", "client_credentials");
         var response = await _client.ExecuteAsync<AuthResponse>(request, token).ConfigureAwait(false);

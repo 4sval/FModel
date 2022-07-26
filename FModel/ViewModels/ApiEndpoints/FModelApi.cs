@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using AutoUpdaterDotNET;
 using FModel.Extensions;
+using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -34,7 +35,7 @@ public class FModelApi : AbstractApiProvider
 
     public async Task<News> GetNewsAsync(CancellationToken token, string game)
     {
-        var request = new RestRequest($"https://api.fmodel.app/v1/news/{Constants.APP_VERSION}");
+        var request = new FRestRequest($"https://api.fmodel.app/v1/news/{Constants.APP_VERSION}");
         request.AddParameter("game", game);
         var response = await _client.ExecuteAsync<News>(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
@@ -48,7 +49,7 @@ public class FModelApi : AbstractApiProvider
 
     public async Task<Info> GetInfosAsync(CancellationToken token, EUpdateMode updateMode)
     {
-        var request = new RestRequest($"https://api.fmodel.app/v1/infos/{updateMode}");
+        var request = new FRestRequest($"https://api.fmodel.app/v1/infos/{updateMode}");
         var response = await _client.ExecuteAsync<Info>(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
@@ -61,7 +62,7 @@ public class FModelApi : AbstractApiProvider
 
     public async Task<Backup[]> GetBackupsAsync(CancellationToken token, string gameName)
     {
-        var request = new RestRequest($"https://api.fmodel.app/v1/backups/{gameName}");
+        var request = new FRestRequest($"https://api.fmodel.app/v1/backups/{gameName}");
         var response = await _client.ExecuteAsync<Backup[]>(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
@@ -74,7 +75,7 @@ public class FModelApi : AbstractApiProvider
 
     public async Task<Game> GetGamesAsync(CancellationToken token, string gameName)
     {
-        var request = new RestRequest($"https://api.fmodel.app/v1/games/{gameName}");
+        var request = new FRestRequest($"https://api.fmodel.app/v1/games/{gameName}");
         var response = await _client.ExecuteAsync<Game>(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
@@ -87,7 +88,7 @@ public class FModelApi : AbstractApiProvider
 
     public async Task<CommunityDesign> GetDesignAsync(string designName)
     {
-        var request = new RestRequest($"https://api.fmodel.app/v1/designs/{designName}");
+        var request = new FRestRequest($"https://api.fmodel.app/v1/designs/{designName}");
         var response = await _client.ExecuteAsync<Community>(request).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data != null ? new CommunityDesign(response.Data) : null;
@@ -173,7 +174,7 @@ public class FModelApi : AbstractApiProvider
 
     private void ShowChangelog(UpdateInfoEventArgs args)
     {
-        var request = new RestRequest(args.ChangelogURL);
+        var request = new FRestRequest(args.ChangelogURL);
         var response = _client.Execute(request);
         if (string.IsNullOrEmpty(response.Content)) return;
 
