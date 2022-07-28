@@ -79,7 +79,7 @@ public class AesManagerViewModel : ViewModel
                 new()
                 {
                     Key = key,
-                    FileName = collection[e.CollectionIndex].Name,
+                    Name = collection[e.CollectionIndex].Name,
                     Guid = collection[e.CollectionIndex].Guid.ToString()
                 }
             };
@@ -97,7 +97,7 @@ public class AesManagerViewModel : ViewModel
             _keysFromSettings.DynamicKeys.Add(new DynamicKey
             {
                 Key = key,
-                FileName = collection[e.CollectionIndex].Name,
+                Name = collection[e.CollectionIndex].Name,
                 Guid = collection[e.CollectionIndex].Guid.ToString()
             });
         }

@@ -17,6 +17,7 @@ public class ApiEndpointViewModel
 
     public FortniteApiEndpoint FortniteApi { get; }
     public ValorantApiEndpoint ValorantApi { get; }
+    public FortniteCentralApiEndpoint CentralApi { get; }
     public BenbotApiEndpoint BenbotApi { get; }
     public EpicApiEndpoint EpicApi { get; }
     public FModelApi FModelApi { get; }
@@ -25,6 +26,7 @@ public class ApiEndpointViewModel
     {
         FortniteApi = new FortniteApiEndpoint(_client);
         ValorantApi = new ValorantApiEndpoint(_client);
+        CentralApi = new FortniteCentralApiEndpoint(_client);
         BenbotApi = new BenbotApiEndpoint(_client);
         EpicApi = new EpicApiEndpoint(_client);
         FModelApi = new FModelApi(_client);

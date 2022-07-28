@@ -17,7 +17,7 @@ public class AesResponse
 [DebuggerDisplay("{" + nameof(Key) + "}")]
 public class DynamicKey
 {
-    [J("fileName")] public string FileName { get; set; }
+    [J("name")] public string Name { get; set; }
     [J("guid")] public string Guid { get; set; }
     [J("key")] public string Key { get; set; }
 }

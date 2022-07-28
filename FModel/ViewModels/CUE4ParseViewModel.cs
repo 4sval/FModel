@@ -296,7 +296,7 @@ public class CUE4ParseViewModel : ViewModel
         {
             await _threadWorkerView.Begin(cancellationToken =>
             {
-                var aes = _apiEndpointView.BenbotApi.GetAesKeys(cancellationToken);
+                var aes = _apiEndpointView.CentralApi.GetAesKeys(cancellationToken);
                 if (aes?.MainKey == null && aes?.DynamicKeys == null && aes?.Version == null) return;
 
                 UserSettings.Default.AesKeys[Game] = aes;
@@ -333,7 +333,7 @@ public class CUE4ParseViewModel : ViewModel
             else
             {
                 var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
+                var mappings = _apiEndpointView.CentralApi.GetMappings(cancellationToken);
                 if (mappings is { Length: > 0 })
                 {
                     foreach (var mapping in mappings)

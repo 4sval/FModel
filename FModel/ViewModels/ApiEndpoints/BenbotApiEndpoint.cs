@@ -15,38 +15,6 @@ public class BenbotApiEndpoint : AbstractApiProvider
     {
     }
 
-    public async Task<AesResponse> GetAesKeysAsync(CancellationToken token)
-    {
-        var request = new FRestRequest("https://benbot.app/api/v2/aes")
-        {
-            OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
-        };
-        var response = await _client.ExecuteAsync<AesResponse>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-        return response.Data;
-    }
-
-    public AesResponse GetAesKeys(CancellationToken token)
-    {
-        return GetAesKeysAsync(token).GetAwaiter().GetResult();
-    }
-
-    public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token)
-    {
-        var request = new FRestRequest("https://benbot.app/api/v1/mappings")
-        {
-            OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
-        };
-        var response = await _client.ExecuteAsync<MappingsResponse[]>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-        return response.Data;
-    }
-
-    public MappingsResponse[] GetMappings(CancellationToken token)
-    {
-        return GetMappingsAsync(token).GetAwaiter().GetResult();
-    }
-
     public async Task<Dictionary<string, Dictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en-US")
     {
         var request = new FRestRequest("https://benbot.app/api/v1/hotfixes")
