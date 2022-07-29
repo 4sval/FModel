@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 using CUE4Parse.UE4.Versions;
@@ -40,6 +40,11 @@ public class Typefaces
     private const string _NOTO_SANS_TC_REGULAR = "NotoSansTC-Regular";
     private const string _BURBANK_SMALL_BLACK = "burbanksmall-black";
     private const string _BURBANK_SMALL_BOLD = "burbanksmall-bold";
+
+    // Multiversus
+    private const string _MULTIVERSUS_BASE_PATH = "/Game/Panda_Main/UI/Fonts/";
+    private const string _MONTSERRAT_BOLD = "Montserrat/Montserrat-Bold";
+    private const string _VCCARDINAL_CONDENSED_BOLDITALIC_ITALIC = "VCCardinal/VCCardinalCondensed-BoldItalic";
 
     // Spellbreak
     private const string _SPELLBREAK_BASE_PATH = "/Game/UI/Fonts/";
@@ -258,6 +263,24 @@ public class Typefaces
                 else DisplayName = Default;
 
                 if (viewModel.Provider.TrySaveAsset(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD + _EXT, out data))
+                {
+                    var m = new MemoryStream(data) { Position = 0 };
+                    Description = SKTypeface.FromStream(m);
+                }
+                else Description = Default;
+
+                break;
+            }
+            case FGame.Multiversus:
+            {
+                if (viewModel.Provider.TrySaveAsset(_MULTIVERSUS_BASE_PATH + _VCCARDINAL_CONDENSED_BOLDITALIC_ITALIC + _EXT, out data))
+                {
+                    var m = new MemoryStream(data) { Position = 0 };
+                    DisplayName = SKTypeface.FromStream(m);
+                }
+                else DisplayName = Default;
+
+                if (viewModel.Provider.TrySaveAsset(_MULTIVERSUS_BASE_PATH + _MONTSERRAT_BOLD + _EXT, out data))
                 {
                     var m = new MemoryStream(data) { Position = 0 };
                     Description = SKTypeface.FromStream(m);

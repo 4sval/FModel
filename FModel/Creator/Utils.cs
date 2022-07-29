@@ -93,6 +93,7 @@ public static class Utils
             switch (textureParameter.ParameterInfo.Name.Text)
             {
                 case "MainTex":
+                case "Texture":
                 case "TextureA":
                 case "TextureB":
                 case "OfferImage":
