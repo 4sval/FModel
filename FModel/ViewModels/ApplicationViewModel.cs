@@ -160,7 +160,7 @@ public class ApplicationViewModel : ViewModel
         var vgmZipFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-win.zip");
         if (File.Exists(vgmZipFilePath)) return;
 
-        await ApplicationService.ApiEndpointView.BenbotApi.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
+        await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
         if (new FileInfo(vgmZipFilePath).Length > 0)
         {
             var zip = ZipFile.Read(vgmZipFilePath);

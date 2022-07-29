@@ -343,7 +343,7 @@ public class CUE4ParseViewModel : ViewModel
                         var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
                         if (!File.Exists(mappingPath))
                         {
-                            _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
+                            _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
                         }
 
                         Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
@@ -401,7 +401,7 @@ public class CUE4ParseViewModel : ViewModel
         if (Game != FGame.FortniteGame || HotfixedResourcesDone) return;
         await _threadWorkerView.Begin(cancellationToken =>
         {
-            var hotfixes = ApplicationService.ApiEndpointView.BenbotApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
+            var hotfixes = ApplicationService.ApiEndpointView.CentralApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
             if (hotfixes == null) return;
 
             HotfixedResourcesDone = true;

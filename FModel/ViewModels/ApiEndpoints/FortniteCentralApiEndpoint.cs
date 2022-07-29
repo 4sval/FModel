@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -43,5 +44,22 @@ public class FortniteCentralApiEndpoint : AbstractApiProvider
     public MappingsResponse[] GetMappings(CancellationToken token)
     {
         return GetMappingsAsync(token).GetAwaiter().GetResult();
+    }
+
+    public async Task<Dictionary<string, Dictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en")
+    {
+        var request = new FRestRequest("https://fortnitecentral.gmatrixgames.ga/api/v1/hotfixes")
+        {
+            OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
+        };
+        request.AddParameter("lang", language);
+        var response = await _client.ExecuteAsync<Dictionary<string, Dictionary<string, string>>>(request, token).ConfigureAwait(false);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
+        return response.Data;
+    }
+
+    public Dictionary<string, Dictionary<string, string>> GetHotfixes(CancellationToken token, string language = "en")
+    {
+        return GetHotfixesAsync(token, language).GetAwaiter().GetResult();
     }
 }
