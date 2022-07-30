@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 namespace FModel;
 
@@ -91,7 +91,9 @@ public enum FGame
     [Description("GTA: The Trilogy - Definitive Edition")]
     Gameface,
     [Description("Sea of Thieves")]
-    Athena
+    Athena,
+    [Description("Multiversus")]
+    Multiversus
 }
 
 public enum ELoadingMode

@@ -286,7 +286,8 @@ namespace FModel.Settings
             {FGame.TslGame, Constants._NO_PRESET_TRIGGER},
             {FGame.PortalWars, Constants._NO_PRESET_TRIGGER},
             {FGame.Gameface, Constants._NO_PRESET_TRIGGER},
-            {FGame.Athena, Constants._NO_PRESET_TRIGGER}
+            {FGame.Athena, Constants._NO_PRESET_TRIGGER},
+            {FGame.Multiversus, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -314,7 +315,8 @@ namespace FModel.Settings
             {FGame.TslGame, EGame.GAME_PlayerUnknownsBattlegrounds},
             {FGame.PortalWars, EGame.GAME_UE4_LATEST},
             {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition},
-            {FGame.Athena, EGame.GAME_SeaOfThieves}
+            {FGame.Athena, EGame.GAME_SeaOfThieves},
+            {FGame.Multiversus, EGame.GAME_UE4_LATEST}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -342,7 +344,8 @@ namespace FModel.Settings
             {FGame.TslGame, null},
             {FGame.PortalWars, null},
             {FGame.Gameface, null},
-            {FGame.Athena, null}
+            {FGame.Athena, null},
+            {FGame.Multiversus, null}
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
@@ -370,7 +373,8 @@ namespace FModel.Settings
             {FGame.TslGame, null},
             {FGame.PortalWars, null},
             {FGame.Gameface, null},
-            {FGame.Athena, null}
+            {FGame.Athena, null},
+            {FGame.Multiversus, null}
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
@@ -433,6 +437,12 @@ namespace FModel.Settings
                 {
                     new("Cosmetics", "g3/Content/Blueprints/Cosmetics/"),
                     new("Strings", "g3/Content/Localization/")
+                }
+            },
+            {
+                FGame.Multiversus, new List<CustomDirectory>()
+                {
+                    new("Characters", "MultiVersus/Content/Panda_Main/Characters/")
                 }
             },
             {FGame.StateOfDecay2, new List<CustomDirectory>()},

@@ -4,6 +4,7 @@ using CUE4Parse.UE4.Assets.Exports;
 using FModel.Creator.Bases;
 using FModel.Creator.Bases.BB;
 using FModel.Creator.Bases.FN;
+using FModel.Creator.Bases.MV;
 using FModel.Creator.Bases.SB;
 
 namespace FModel.Creator;
@@ -172,6 +173,11 @@ public class CreatorPackage : IDisposable
             case "PlaylistUserOptionPrimaryAsset":
             case "PlaylistUserOptionCollisionProfileEnum":
                 creator = new BaseUserControl(_object, _style);
+                return true;
+            // Multiversus
+            case "CharacterData":
+            case "SkinData":
+                creator = new BaseMultiversusIcon(_object, _style);
                 return true;
             // Battle Breakers
             case "WExpGenericAccountItemDefinition":
