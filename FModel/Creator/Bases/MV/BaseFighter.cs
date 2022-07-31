@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Objects.Core.i18N;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -14,7 +16,10 @@ public class BaseFighter : UCreator
     private float _xOffset;
     private float _yOffset;
     private float _zoom;
-    private SKBitmap _pattern;
+
+    private readonly SKBitmap _pattern;
+
+    private (SKBitmap, List<string>) _fighterType;
 
     public BaseFighter(UObject uObject, EIconStyle style) : base(uObject, style)
     {
@@ -22,8 +27,11 @@ public class BaseFighter : UCreator
         Width = 1024;
         DisplayNamePaint.TextAlign = SKTextAlign.Left;
         DisplayNamePaint.TextSize = 100;
+        DescriptionPaint.TextSize = 25;
         DefaultPreview = Utils.GetBitmap("MultiVersus/Content/Panda_Main/UI/PreMatch/Images/DiamondPortraits/0010_Random.0010_Random");
+
         _pattern = Utils.GetBitmap("MultiVersus/Content/Panda_Main/UI/Assets/UI_Textures/halftone_jagged.halftone_jagged");
+        _fighterType.Item2 = new List<string>();
     }
 
     public override void ParseForInfo()
@@ -42,6 +50,10 @@ public class BaseFighter : UCreator
 
         if (Object.TryGetValue(out FText displayName, "DisplayName"))
             DisplayName = displayName.Text;
+
+        GetFighterClassInfo(Object.GetOrDefault("Class", EFighterClass.Support));
+        if (Object.TryGetValue(out FText property, "Property"))
+            _fighterType.Item2.Add(property.Text);
     }
 
     public override SKBitmap[] Draw()
@@ -52,8 +64,23 @@ public class BaseFighter : UCreator
         DrawBackground(c);
         DrawPreview(c);
         DrawDisplayName(c);
+        DrawFighterInfo(c);
 
         return new[] { ret };
+    }
+
+    private void GetFighterClassInfo(EFighterClass clas)
+    {
+        if (!Utils.TryLoadObject("MultiVersus/Content/Panda_Main/UI/In-Game/Data/UICharacterClassInfo_Datatable.UICharacterClassInfo_Datatable", out UDataTable dataTable))
+            return;
+
+        var row = dataTable.RowMap.ElementAt((int) clas).Value;
+        if (!row.TryGetValue(out FText displayName, "DisplayName_5_9DB5DDFF490E1F4AD72329866F96B81D") ||
+            !row.TryGetValue(out FPackageIndex icon, "Icon_8_711534AD4F240D4B001AA6A471EA1895"))
+            return;
+
+        _fighterType.Item1 = Utils.GetBitmap(icon);
+        _fighterType.Item2.Add(displayName.Text);
     }
 
     private new void DrawBackground(SKCanvas c)
@@ -106,4 +133,20 @@ public class BaseFighter : UCreator
         if (string.IsNullOrWhiteSpace(DisplayName)) return;
         c.DrawText(DisplayName.ToUpper(), 50, 100, DisplayNamePaint);
     }
+
+    private void DrawFighterInfo(SKCanvas c)
+    {
+        c.DrawBitmap(_fighterType.Item1, new SKRect(50, 112.5f, 98, 160.5f), ImagePaint);
+        c.DrawText(string.Join(" | ", _fighterType.Item2), 98, 145, DescriptionPaint);
+    }
+}
+
+public enum EFighterClass : byte
+{
+    Mage = 4,
+    Tank = 3,
+    Fighter = 2,
+    Bruiser = 2,
+    Assassin = 1,
+    Support = 0 // Default
 }

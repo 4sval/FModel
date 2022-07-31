@@ -43,8 +43,8 @@ public class Typefaces
 
     // Multiversus
     private const string _MULTIVERSUS_BASE_PATH = "/Game/Panda_Main/UI/Fonts/";
-    private const string _MONTSERRAT_BOLD = "Montserrat/Montserrat-Bold";
     private const string _NORMS_STD_CONDENSED_BLACK = "Norms/TT_Norms_Std_Condensed_Black";
+    private const string _NORMS_STD_CONDENSED_BOLD = "Norms/TT_Norms_Std_Condensed_Bold";
 
     // Spellbreak
     private const string _SPELLBREAK_BASE_PATH = "/Game/UI/Fonts/";
@@ -201,7 +201,7 @@ public class Typefaces
             case FGame.Multiversus:
             {
                 DisplayName = OnTheFly(_MULTIVERSUS_BASE_PATH + _NORMS_STD_CONDENSED_BLACK + _EXT);
-                Description = OnTheFly(_MULTIVERSUS_BASE_PATH + _MONTSERRAT_BOLD + _EXT);
+                Description = OnTheFly(_MULTIVERSUS_BASE_PATH + _NORMS_STD_CONDENSED_BOLD + _EXT);
                 break;
             }
             default:
