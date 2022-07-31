@@ -25,6 +25,7 @@ public class StringToGameConverter : IValueConverter
             "MinecraftDungeons" => "Minecraft Dungeons",
             "shoebill" => "Star Wars: Jedi Fallen Order",
             "a99769d95d8f400baad1f67ab5dfe508" => "Core",
+            "711c5e95dc094ca58e5f16bd48e751d6" => "MultiVersus",
             381210 => "Dead By Daylight",
             578080 => "PLAYERUNKNOWN'S BATTLEGROUNDS",
             677620 => "Splitgate",

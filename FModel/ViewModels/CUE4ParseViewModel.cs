@@ -370,6 +370,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         await LoadGameLocalizedResources();
         await LoadHotfixedLocalizedResources();
+        await _threadWorkerView.Begin(_ => Utils.Typefaces = new Typefaces(this));
         if (LocalizedResourcesCount > 0)
         {
             FLogger.AppendInformation();
@@ -388,7 +389,6 @@ public class CUE4ParseViewModel : ViewModel
         await _threadWorkerView.Begin(cancellationToken =>
         {
             LocalizedResourcesCount = Provider.LoadLocalization(UserSettings.Default.AssetLanguage, cancellationToken);
-            Utils.Typefaces = new Typefaces(this);
         });
     }
 

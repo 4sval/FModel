@@ -176,6 +176,8 @@ public class CreatorPackage : IDisposable
                 return true;
             // Multiversus
             case "CharacterData":
+                creator = new BaseFighter(_object, _style);
+                return true;
             case "SkinData":
                 creator = new BaseMultiversusIcon(_object, _style);
                 return true;

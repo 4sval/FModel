@@ -118,12 +118,14 @@ public static class Utils
     {
         var ratioX = width / me.Width;
         var ratioY = height / me.Height;
-        var ratio = ratioX < ratioY ? ratioX : ratioY;
+        return ResizeWithRatio(me, ratioX < ratioY ? ratioX : ratioY);
+    }
+    public static SKBitmap ResizeWithRatio(this SKBitmap me, double ratio)
+    {
         return me.Resize(Convert.ToInt32(me.Width * ratio), Convert.ToInt32(me.Height * ratio));
     }
 
     public static SKBitmap Resize(this SKBitmap me, int size) => me.Resize(size, size);
-
     public static SKBitmap Resize(this SKBitmap me, int width, int height)
     {
         var bmp = new SKBitmap(new SKImageInfo(width, height), SKBitmapAllocFlags.ZeroPixels);

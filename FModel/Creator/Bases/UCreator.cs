@@ -43,13 +43,13 @@ public abstract class UCreator
     protected readonly SKPaint DisplayNamePaint = new()
     {
         IsAntialias = true, FilterQuality = SKFilterQuality.High,
-        Typeface = Utils.Typefaces.DisplayName ?? Utils.Typefaces.Default, TextSize = _NAME_TEXT_SIZE,
+        Typeface = Utils.Typefaces.DisplayName, TextSize = _NAME_TEXT_SIZE,
         Color = SKColors.White, TextAlign = SKTextAlign.Center
     };
     protected readonly SKPaint DescriptionPaint = new()
     {
         IsAntialias = true, FilterQuality = SKFilterQuality.High,
-        Typeface = Utils.Typefaces.Description ?? Utils.Typefaces.Default, TextSize = 13,
+        Typeface = Utils.Typefaces.Description, TextSize = 13,
         Color = SKColors.White
     };
     protected readonly SKPaint ImagePaint = new()
@@ -214,7 +214,7 @@ public abstract class UCreator
         switch (side)
         {
             case SKTextAlign.Left:
-                _shortDescriptionPaint.Typeface = Utils.Typefaces.Bottom ?? Utils.Typefaces.DisplayName ?? Utils.Typefaces.Default;
+                _shortDescriptionPaint.Typeface = Utils.Typefaces.Bottom ?? Utils.Typefaces.DisplayName;
                 var shaper = new CustomSKShaper(_shortDescriptionPaint.Typeface);
                 shaper.Shape(text, _shortDescriptionPaint);
 

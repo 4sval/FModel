@@ -316,7 +316,7 @@ namespace FModel.Settings
             {FGame.PortalWars, EGame.GAME_UE4_LATEST},
             {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition},
             {FGame.Athena, EGame.GAME_SeaOfThieves},
-            {FGame.Multiversus, EGame.GAME_UE4_LATEST}
+            {FGame.Multiversus, EGame.GAME_UE4_26}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -654,7 +654,7 @@ namespace FModel.Settings
             }
         }
 
-        private bool _saveAnimations;
+        private bool _saveAnimations = true;
         public bool SaveAnimations
         {
             get => _saveAnimations;

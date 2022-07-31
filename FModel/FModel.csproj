@@ -11,7 +11,7 @@
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishSingleFile Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">false</PublishSingleFile>
+    <PublishSingleFile Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <StartupObject>FModel.App</StartupObject>
   </PropertyGroup>
