@@ -66,7 +66,9 @@ public partial class MainWindow
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
         await _applicationView.AesManager.UpdateProvider(true);
+#if !DEBUG
         await _applicationView.CUE4Parse.InitInformation();
+#endif
         await _applicationView.CUE4Parse.InitBenMappings();
         await _applicationView.InitVgmStream();
         await _applicationView.InitOodle();

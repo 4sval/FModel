@@ -44,7 +44,9 @@ public class Typefaces
     // Multiversus
     private const string _MULTIVERSUS_BASE_PATH = "/Game/Panda_Main/UI/Fonts/";
     private const string _NORMS_STD_CONDENSED_BLACK = "Norms/TT_Norms_Std_Condensed_Black";
+    private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
     private const string _NORMS_STD_CONDENSED_BOLD = "Norms/TT_Norms_Std_Condensed_Bold";
+    private const string _XIANGHEHEI_SC_PRO_HEAVY = "XiangHeHei_SC/MXiangHeHeiSCPro-Heavy";
 
     // Spellbreak
     private const string _SPELLBREAK_BASE_PATH = "/Game/UI/Fonts/";
@@ -200,8 +202,16 @@ public class Typefaces
             }
             case FGame.Multiversus:
             {
-                DisplayName = OnTheFly(_MULTIVERSUS_BASE_PATH + _NORMS_STD_CONDENSED_BLACK + _EXT);
-                Description = OnTheFly(_MULTIVERSUS_BASE_PATH + _NORMS_STD_CONDENSED_BOLD + _EXT);
+                DisplayName = OnTheFly(_MULTIVERSUS_BASE_PATH + language switch
+                {
+                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_BLACK,
+                    _ => _NORMS_STD_CONDENSED_BLACK
+                } + _EXT);
+                Description = OnTheFly(_MULTIVERSUS_BASE_PATH + language switch
+                {
+                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
+                    _ => _NORMS_STD_CONDENSED_BOLD
+                } + _EXT);
                 break;
             }
             default:

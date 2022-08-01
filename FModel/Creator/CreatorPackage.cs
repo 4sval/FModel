@@ -178,8 +178,20 @@ public class CreatorPackage : IDisposable
             case "CharacterData":
                 creator = new BaseFighter(_object, _style);
                 return true;
+            case "PerkGroup":
+                creator = null;
+                return true;
+            case "StatTrackingBundleData":
+            case "HydraSyncedDataAsset":
+            case "CharacterGiftData":
+            case "ProfileIconData":
+            case "RingOutVfxData":
+            case "BannerData":
+            case "EmoteData":
+            case "TauntData":
             case "SkinData":
-                creator = new BaseMultiversusIcon(_object, _style);
+            case "PerkData":
+                creator = new BaseMultiVersusIcon(_object, _style);
                 return true;
             // Battle Breakers
             case "WExpGenericAccountItemDefinition":

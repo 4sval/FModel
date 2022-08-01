@@ -14,9 +14,9 @@ namespace FModel.Creator.Bases.MV;
 
 public class BaseFighter : UCreator
 {
-    private float _xOffset;
-    private float _yOffset;
-    private float _zoom;
+    private float _xOffset = 1f;
+    private float _yOffset = 1f;
+    private float _zoom = 1f;
 
     private readonly SKBitmap _pattern;
     private readonly SKBitmap _perk;
@@ -30,7 +30,6 @@ public class BaseFighter : UCreator
 
     public BaseFighter(UObject uObject, EIconStyle style) : base(uObject, style)
     {
-        // https://cdn.discordapp.com/attachments/715640455068385422/1003052259917168700/unknown.png
         Width = 1024;
         DisplayNamePaint.TextAlign = SKTextAlign.Left;
         DisplayNamePaint.TextSize = 100;
@@ -60,11 +59,14 @@ public class BaseFighter : UCreator
             _zoom = Math.Clamp(portrait.ScalarParameterValues.FirstOrDefault(x => x.ParameterInfo.Name.Text == "Zoom")?.ParameterValue ?? 1f, 0, 1);
             Preview = Utils.GetBitmap(portrait);
         }
+        else if (Object.TryGetValue(out FSoftObjectPath portraitTexture, "NewCharacterSelectPortraitTexture", "HUDPortraitTexture"))
+            Preview = Utils.GetBitmap(portraitTexture);
 
         if (Object.TryGetValue(out FText displayName, "DisplayName"))
             DisplayName = displayName.Text;
 
         GetFighterClassInfo(Object.GetOrDefault("Class", EFighterClass.Support));
+        _fighterType.Item2.Add(GetFighterType(Object.GetOrDefault("Type", EFighterType.Horizontal)));
         if (Object.TryGetValue(out FText property, "Property"))
             _fighterType.Item2.Add(property.Text);
 
@@ -136,6 +138,17 @@ public class BaseFighter : UCreator
         _fighterType.Item2.Add(displayName.Text);
     }
 
+    private string GetFighterType(EFighterType typ)
+    {
+        return typ switch
+        {
+            EFighterType.Horizontal => Utils.GetLocalizedResource("", "97A60DD54AA23D4B93D5B891F729BF5C", "Horizontal"),
+            EFighterType.Vertical => Utils.GetLocalizedResource("", "2C55443D47164019BE73A5ABDC670F36", "Vertical"),
+            EFighterType.Hybrid => Utils.GetLocalizedResource("", "B980C82D40FF37FD359C74A339CE1B3A", "Hybrid"),
+            _ => typ.ToString()
+        };
+    }
+
     private new void DrawBackground(SKCanvas c)
     {
         c.DrawRect(new SKRect(0, 0, Width, Height),
@@ -189,7 +202,9 @@ public class BaseFighter : UCreator
 
     private void DrawFighterInfo(SKCanvas c)
     {
-        c.DrawBitmap(_fighterType.Item1, new SKRect(50, 112.5f, 98, 160.5f), ImagePaint);
+        if (_fighterType.Item1 != null)
+            c.DrawBitmap(_fighterType.Item1, new SKRect(50, 112.5f, 98, 160.5f), ImagePaint);
+
         c.DrawText(string.Join(" | ", _fighterType.Item2), 98, 145, DescriptionPaint);
     }
 
@@ -202,6 +217,7 @@ public class BaseFighter : UCreator
         ImagePaint.ImageFilter = null;
         ImagePaint.BlendMode = SKBlendMode.SoftLight;
         c.DrawBitmap(_perk, new SKRect(x, y, x + size / 2, y + size / 2), ImagePaint);
+        if (_recommendedPerks.Count < 1) return;
 
         ImagePaint.BlendMode = SKBlendMode.SrcOver;
         ImagePaint.ImageFilter = SKImageFilter.CreateDropShadow(0, 0, 2.5f, 2.5f, SKColors.Black);
@@ -222,6 +238,7 @@ public class BaseFighter : UCreator
         ImagePaint.ImageFilter = null;
         ImagePaint.BlendMode = SKBlendMode.SoftLight;
         c.DrawBitmap(_emote, new SKRect(x, y - size / 2, x + size / 2, y), ImagePaint);
+        if (_availableTaunts.Count < 1) return;
 
         ImagePaint.BlendMode = SKBlendMode.SrcOver;
         ImagePaint.ImageFilter = SKImageFilter.CreateDropShadow(0, 0, 1.5f, 1.5f, SKColors.Black);
@@ -242,6 +259,7 @@ public class BaseFighter : UCreator
         ImagePaint.ImageFilter = null;
         ImagePaint.BlendMode = SKBlendMode.SoftLight;
         c.DrawBitmap(_skin, new SKRect(x, y, x + size / 4, y + size / 4), ImagePaint);
+        if (_skins.Count < 1) return;
 
         ImagePaint.BlendMode = SKBlendMode.SrcOver;
         ImagePaint.ImageFilter = SKImageFilter.CreateDropShadow(0, 0, 1.5f, 1.5f, SKColors.Black);
@@ -261,4 +279,11 @@ public enum EFighterClass : byte
     Bruiser = 2,
     Assassin = 1,
     Support = 0 // Default
+}
+
+public enum EFighterType : byte
+{
+    Hybrid = 2,
+    Vertical = 1,
+    Horizontal = 0 // Default
 }
