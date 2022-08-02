@@ -97,18 +97,19 @@ public class GameSelectorViewModel : ViewModel
 
     private IEnumerable<DetectedGame> EnumerateDetectedGames()
     {
-        yield return GetUnrealEngineGame("Fortnite", "\\FortniteGame\\Content\\Paks");
+        yield return GetUnrealEngineGame("Fortnite");
         yield return new DetectedGame { GameName = "Fortnite [LIVE]", GameDirectory = Constants._FN_LIVE_TRIGGER };
-        yield return GetUnrealEngineGame("Pewee", "\\RogueCompany\\Content\\Paks");
-        yield return GetUnrealEngineGame("Rosemallow", "\\Indiana\\Content\\Paks");
-        yield return GetUnrealEngineGame("Catnip", "\\OakGame\\Content\\Paks");
-        yield return GetUnrealEngineGame("AzaleaAlpha", "\\Prospect\\Content\\Paks");
-        yield return GetUnrealEngineGame("WorldExplorersLive", "\\WorldExplorers\\Content");
-        yield return GetUnrealEngineGame("Newt", "\\g3\\Content\\Paks");
-        yield return GetUnrealEngineGame("shoebill", "\\SwGame\\Content\\Paks");
-        yield return GetUnrealEngineGame("Snoek", "\\StateOfDecay2\\Content\\Paks");
-        yield return GetUnrealEngineGame("a99769d95d8f400baad1f67ab5dfe508", "\\Core\\Platform\\Content\\Paks");
-        yield return GetUnrealEngineGame("Nebula", "\\BendGame\\Content");
+        yield return GetUnrealEngineGame("Pewee");
+        yield return GetUnrealEngineGame("Rosemallow");
+        yield return GetUnrealEngineGame("Catnip");
+        yield return GetUnrealEngineGame("AzaleaAlpha");
+        yield return GetUnrealEngineGame("WorldExplorersLive");
+        yield return GetUnrealEngineGame("Newt");
+        yield return GetUnrealEngineGame("shoebill");
+        yield return GetUnrealEngineGame("Snoek");
+        yield return GetUnrealEngineGame("a99769d95d8f400baad1f67ab5dfe508");
+        yield return GetUnrealEngineGame("Nebula");
+        yield return GetUnrealEngineGame("711c5e95dc094ca58e5f16bd48e751d6");
         yield return GetRiotGame("VALORANT", "ShooterGame\\Content\\Paks");
         yield return new DetectedGame { GameName = "Valorant [LIVE]", GameDirectory = Constants._VAL_LIVE_TRIGGER };
         yield return GetMojangGame("MinecraftDungeons", "\\dungeons\\dungeons\\Dungeons\\Content\\Paks");
@@ -122,7 +123,7 @@ public class GameSelectorViewModel : ViewModel
     }
 
     private LauncherInstalled _launcherInstalled;
-    private DetectedGame GetUnrealEngineGame(string gameName, string pakDirectory)
+    private DetectedGame GetUnrealEngineGame(string gameName)
     {
         _launcherInstalled ??= GetDriveLauncherInstalls<LauncherInstalled>("ProgramData\\Epic\\UnrealEngineLauncher\\LauncherInstalled.dat");
         if (_launcherInstalled?.InstallationList != null)
@@ -130,7 +131,10 @@ public class GameSelectorViewModel : ViewModel
             foreach (var installationList in _launcherInstalled.InstallationList)
             {
                 if (installationList.AppName.Equals(gameName, StringComparison.OrdinalIgnoreCase))
-                    return new DetectedGame { GameName = installationList.AppName, GameDirectory = $"{installationList.InstallLocation}{pakDirectory}" };
+                {
+                    var pak = Directory.GetDirectories(installationList.InstallLocation, "Paks*", SearchOption.AllDirectories);
+                    return new DetectedGame { GameName = installationList.AppName, GameDirectory = pak[0] };
+                }
             }
         }
 

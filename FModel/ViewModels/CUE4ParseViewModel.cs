@@ -275,7 +275,11 @@ public class CUE4ParseViewModel : ViewModel
                 file.FileCount = vfs.FileCount;
             }
 
-            Game = Provider.GameName.ToEnum(Game);
+            if (Provider.GameName.Length == 11 &&
+                Provider.GameName.StartsWith("mu") &&
+                Provider.GameName.EndsWith("sus"))
+                Game = FGame.PandaGame;
+            else Game = Provider.GameName.ToEnum(Game);
         });
     }
 
