@@ -16,6 +16,11 @@ public static class Helper
         internal readonly ulong UlongValue;
     }
 
+    public static bool IAmThePanda(string key)
+        => key.Length == 11 &&
+           key.StartsWith("mu", StringComparison.OrdinalIgnoreCase) &&
+           key.EndsWith("sus", StringComparison.OrdinalIgnoreCase);
+
     public static void OpenWindow<T>(string windowName, Action action) where T : Window
     {
         if (!IsWindowOpen<T>(windowName))

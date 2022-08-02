@@ -103,7 +103,8 @@ public class CUE4ParseViewModel : ViewModel
             }
             default:
             {
-                Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
+                var parent = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\");
+                Game = Helper.IAmThePanda(parent) ? FGame.PandaGame : parent.ToEnum(FGame.Unknown);
                 var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                     customVersions: UserSettings.Default.OverridedCustomVersions[Game],
                     optionOverrides: UserSettings.Default.OverridedOptions[Game]);
@@ -275,11 +276,7 @@ public class CUE4ParseViewModel : ViewModel
                 file.FileCount = vfs.FileCount;
             }
 
-            if (Provider.GameName.Length == 11 &&
-                Provider.GameName.StartsWith("mu") &&
-                Provider.GameName.EndsWith("sus"))
-                Game = FGame.PandaGame;
-            else Game = Provider.GameName.ToEnum(Game);
+            Game = Helper.IAmThePanda(Provider.GameName) ? FGame.PandaGame : Provider.GameName.ToEnum(Game);
         });
     }
 
