@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -8,6 +9,7 @@ using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.i18N;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.UObject;
+using FModel.Extensions;
 using SkiaSharp;
 
 namespace FModel.Creator.Bases.MV;
@@ -31,15 +33,17 @@ public class BaseFighter : UCreator
     public BaseFighter(UObject uObject, EIconStyle style) : base(uObject, style)
     {
         Width = 1024;
-        DisplayNamePaint.TextAlign = SKTextAlign.Left;
         DisplayNamePaint.TextSize = 100;
+        DisplayNamePaint.TextAlign = SKTextAlign.Left;
+        DisplayNamePaint.Typeface = Utils.Typefaces.TandemDisplayName;
         DescriptionPaint.TextSize = 25;
-        DefaultPreview = Utils.GetBitmap("MultiVersus/Content/Panda_Main/UI/PreMatch/Images/DiamondPortraits/0010_Random.0010_Random");
+        DescriptionPaint.Typeface = Utils.Typefaces.TandemGenDescription;
+        DefaultPreview = Utils.GetBitmap("/Game/Panda_Main/UI/PreMatch/Images/DiamondPortraits/0010_Random.0010_Random");
 
-        _pattern = Utils.GetBitmap("MultiVersus/Content/Panda_Main/UI/Assets/UI_Textures/halftone_jagged.halftone_jagged");
-        _perk = Utils.GetBitmap("MultiVersus/Content/Panda_Main/UI/Assets/Icons/ui_icons_perks.ui_icons_perks");
-        _emote = Utils.GetBitmap("MultiVersus/Content/Panda_Main/UI/Assets/Icons/ui_icons_emote.ui_icons_emote");
-        _skin = Utils.GetBitmap("MultiVersus/Content/Panda_Main/UI/Assets/Icons/ui_icons_skins.ui_icons_skins");
+        _pattern = Utils.GetBitmap("/Game/Panda_Main/UI/Assets/UI_Textures/halftone_jagged.halftone_jagged");
+        _perk = Utils.GetBitmap("/Game/Panda_Main/UI/Assets/Icons/ui_icons_perks.ui_icons_perks");
+        _emote = Utils.GetBitmap("/Game/Panda_Main/UI/Assets/Icons/ui_icons_emote.ui_icons_emote");
+        _skin = Utils.GetBitmap("/Game/Panda_Main/UI/Assets/Icons/ui_icons_skins.ui_icons_skins");
         _fighterType.Item2 = new List<string>();
         _recommendedPerks = new List<SKBitmap>();
         _availableTaunts = new List<SKBitmap>();
@@ -66,7 +70,7 @@ public class BaseFighter : UCreator
             DisplayName = displayName.Text;
 
         GetFighterClassInfo(Object.GetOrDefault("Class", EFighterClass.Support));
-        _fighterType.Item2.Add(GetFighterType(Object.GetOrDefault("Type", EFighterType.Horizontal)));
+        _fighterType.Item2.Add(Utils.GetLocalizedResource(Object.GetOrDefault("Type", EFighterType.Horizontal)));
         if (Object.TryGetValue(out FText property, "Property"))
             _fighterType.Item2.Add(property.Text);
 
@@ -126,7 +130,7 @@ public class BaseFighter : UCreator
 
     private void GetFighterClassInfo(EFighterClass clas)
     {
-        if (!Utils.TryLoadObject("MultiVersus/Content/Panda_Main/UI/In-Game/Data/UICharacterClassInfo_Datatable.UICharacterClassInfo_Datatable", out UDataTable dataTable))
+        if (!Utils.TryLoadObject("/Game/Panda_Main/UI/In-Game/Data/UICharacterClassInfo_Datatable.UICharacterClassInfo_Datatable", out UDataTable dataTable))
             return;
 
         var row = dataTable.RowMap.ElementAt((int) clas).Value;
@@ -136,17 +140,6 @@ public class BaseFighter : UCreator
 
         _fighterType.Item1 = Utils.GetBitmap(icon);
         _fighterType.Item2.Add(displayName.Text);
-    }
-
-    private string GetFighterType(EFighterType typ)
-    {
-        return typ switch
-        {
-            EFighterType.Horizontal => Utils.GetLocalizedResource("", "97A60DD54AA23D4B93D5B891F729BF5C", "Horizontal"),
-            EFighterType.Vertical => Utils.GetLocalizedResource("", "2C55443D47164019BE73A5ABDC670F36", "Vertical"),
-            EFighterType.Hybrid => Utils.GetLocalizedResource("", "B980C82D40FF37FD359C74A339CE1B3A", "Hybrid"),
-            _ => typ.ToString()
-        };
     }
 
     private new void DrawBackground(SKCanvas c)
@@ -167,16 +160,16 @@ public class BaseFighter : UCreator
             });
         }
 
-        c.DrawBitmap(_pattern, new SKRect(0, 256, Width, 512), new SKPaint
+        c.DrawBitmap(_pattern, new SKRect(0, Height / 2, Width, Height), new SKPaint
         {
             IsAntialias = true, FilterQuality = SKFilterQuality.High, BlendMode = SKBlendMode.SoftLight
         });
 
         var path = new SKPath { FillType = SKPathFillType.EvenOdd };
-        path.MoveTo(0, 512);
-        path.LineTo(0, 492);
-        path.LineTo(Width, 452);
-        path.LineTo(Width, 512);
+        path.MoveTo(0, Height);
+        path.LineTo(0, Height - 20);
+        path.LineTo(Width, Height - 60);
+        path.LineTo(Width, Height);
         path.Close();
         c.DrawPath(path, new SKPaint
         {
@@ -283,7 +276,12 @@ public enum EFighterClass : byte
 
 public enum EFighterType : byte
 {
+    [Description("B980C82D40FF37FD359C74A339CE1B3A")]
     Hybrid = 2,
+
+    [Description("2C55443D47164019BE73A5ABDC670F36")]
     Vertical = 1,
+
+    [Description("97A60DD54AA23D4B93D5B891F729BF5C")]
     Horizontal = 0 // Default
 }

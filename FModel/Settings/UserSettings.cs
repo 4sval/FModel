@@ -287,7 +287,7 @@ namespace FModel.Settings
             {FGame.PortalWars, Constants._NO_PRESET_TRIGGER},
             {FGame.Gameface, Constants._NO_PRESET_TRIGGER},
             {FGame.Athena, Constants._NO_PRESET_TRIGGER},
-            {FGame.Multiversus, Constants._NO_PRESET_TRIGGER}
+            {FGame.PandaGame, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -316,7 +316,7 @@ namespace FModel.Settings
             {FGame.PortalWars, EGame.GAME_UE4_LATEST},
             {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition},
             {FGame.Athena, EGame.GAME_SeaOfThieves},
-            {FGame.Multiversus, EGame.GAME_UE4_26}
+            {FGame.PandaGame, EGame.GAME_UE4_26}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -345,7 +345,7 @@ namespace FModel.Settings
             {FGame.PortalWars, null},
             {FGame.Gameface, null},
             {FGame.Athena, null},
-            {FGame.Multiversus, null}
+            {FGame.PandaGame, null}
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
@@ -374,7 +374,7 @@ namespace FModel.Settings
             {FGame.PortalWars, null},
             {FGame.Gameface, null},
             {FGame.Athena, null},
-            {FGame.Multiversus, null}
+            {FGame.PandaGame, null}
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
@@ -439,12 +439,7 @@ namespace FModel.Settings
                     new("Strings", "g3/Content/Localization/")
                 }
             },
-            {
-                FGame.Multiversus, new List<CustomDirectory>()
-                {
-                    new("Characters", "MultiVersus/Content/Panda_Main/Characters/")
-                }
-            },
+            {FGame.PandaGame, new List<CustomDirectory>()},
             {FGame.StateOfDecay2, new List<CustomDirectory>()},
             {FGame.Prospect, new List<CustomDirectory>()},
             {FGame.Indiana, new List<CustomDirectory>()},

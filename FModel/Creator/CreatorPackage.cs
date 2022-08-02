@@ -174,15 +174,16 @@ public class CreatorPackage : IDisposable
             case "PlaylistUserOptionCollisionProfileEnum":
                 creator = new BaseUserControl(_object, _style);
                 return true;
-            // Multiversus
+            // PandaGame
             case "CharacterData":
                 creator = new BaseFighter(_object, _style);
                 return true;
             case "PerkGroup":
-                creator = null;
+                creator = new BasePerkGroup(_object, _style);
                 return true;
             case "StatTrackingBundleData":
             case "HydraSyncedDataAsset":
+            case "AnnouncerPackData":
             case "CharacterGiftData":
             case "ProfileIconData":
             case "RingOutVfxData":
@@ -191,7 +192,7 @@ public class CreatorPackage : IDisposable
             case "TauntData":
             case "SkinData":
             case "PerkData":
-                creator = new BaseMultiVersusIcon(_object, _style);
+                creator = new BasePandaIcon(_object, _style);
                 return true;
             // Battle Breakers
             case "WExpGenericAccountItemDefinition":

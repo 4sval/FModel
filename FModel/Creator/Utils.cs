@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,9 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
-using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
 using FModel.Framework;
+using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -182,6 +183,11 @@ public static class Utils
     public static string GetLocalizedResource(string @namespace, string key, string defaultValue)
     {
         return _applicationView.CUE4Parse.Provider.GetLocalizedString(@namespace, key, defaultValue);
+    }
+    public static string GetLocalizedResource<T>(T @enum) where T : Enum
+    {
+        var resource = _applicationView.CUE4Parse.Provider.GetLocalizedString("", @enum.GetDescription(), @enum.ToString());
+        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(resource.ToLower());
     }
 
     public static string GetFullPath(string partialPath)

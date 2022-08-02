@@ -2,9 +2,9 @@
 using Microsoft.Win32;
 using Serilog;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using FModel.Framework;
@@ -96,7 +96,7 @@ public partial class App
         Log.Information("Version {Version}", Constants.APP_VERSION);
         Log.Information("{OS}", GetOperatingSystemProductName());
         Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);
-        Log.Information("Culture {SysLang}", Thread.CurrentThread.CurrentUICulture);
+        Log.Information("Culture {SysLang}", CultureInfo.CurrentCulture);
     }
 
     private void AppExit(object sender, ExitEventArgs e)

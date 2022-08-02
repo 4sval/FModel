@@ -41,11 +41,12 @@ public class Typefaces
     private const string _BURBANK_SMALL_BLACK = "burbanksmall-black";
     private const string _BURBANK_SMALL_BOLD = "burbanksmall-bold";
 
-    // Multiversus
-    private const string _MULTIVERSUS_BASE_PATH = "/Game/Panda_Main/UI/Fonts/";
+    // PandaGame
+    private const string _PANDAGAME_BASE_PATH = "/Game/Panda_Main/UI/Fonts/";
     private const string _NORMS_STD_CONDENSED_BLACK = "Norms/TT_Norms_Std_Condensed_Black";
-    private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
+    private const string _NORMS_PRO_BLACK_ITALIC = "Norms/TT_Norms_Pro_Black_Italic";
     private const string _NORMS_STD_CONDENSED_BOLD = "Norms/TT_Norms_Std_Condensed_Bold";
+    private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
     private const string _XIANGHEHEI_SC_PRO_HEAVY = "XiangHeHei_SC/MXiangHeHeiSCPro-Heavy";
 
     // Spellbreak
@@ -200,14 +201,27 @@ public class Typefaces
                 Description = OnTheFly(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD + _EXT);
                 break;
             }
-            case FGame.Multiversus:
+            case FGame.PandaGame:
             {
-                DisplayName = OnTheFly(_MULTIVERSUS_BASE_PATH + language switch
+                DisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
+                {
+                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
+                    _ => _NORMS_PRO_BLACK_ITALIC
+                } + _EXT);
+
+                Description = OnTheFly(_PANDAGAME_BASE_PATH + language switch
+                {
+                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_BLACK,
+                    _ => _NORMS_STD_CONDENSED_BOLD
+                } + _EXT);
+
+                TandemDisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
                 {
                     ELanguage.Chinese => _XIANGHEHEI_SC_PRO_BLACK,
                     _ => _NORMS_STD_CONDENSED_BLACK
                 } + _EXT);
-                Description = OnTheFly(_MULTIVERSUS_BASE_PATH + language switch
+
+                TandemGenDescription = OnTheFly(_PANDAGAME_BASE_PATH + language switch
                 {
                     ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
                     _ => _NORMS_STD_CONDENSED_BOLD

@@ -92,8 +92,8 @@ public enum FGame
     Gameface,
     [Description("Sea of Thieves")]
     Athena,
-    [Description("Multiversus")]
-    Multiversus
+    [Description("That Banned Panda")]
+    PandaGame
 }
 
 public enum ELoadingMode
