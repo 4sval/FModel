@@ -34,10 +34,12 @@ public class BasePandaIcon : UCreator
 
     public override void ParseForInfo()
     {
+        var category = Object.GetOrDefault("Category", EPerkCategory.Offense);
+        _rarity = Object.GetOrDefault("Rarity", ERewardRarity.None);
+
         _type = Object.ExportType;
-        var t = _type switch
+        var t = _type switch // ERewardType like
         {
-            // "CharacterData" => ,
             "StatTrackingBundleData" => EItemType.Badge,
             "AnnouncerPackData" => EItemType.Announcer,
             "CharacterGiftData" => EItemType.ExperiencePoints,
@@ -47,11 +49,12 @@ public class BasePandaIcon : UCreator
             "EmoteData" => EItemType.Sticker,
             "TauntData" => EItemType.Emote,
             "SkinData" => EItemType.Variant,
+            "PerkData" when category == EPerkCategory.CharacterSpecific => EItemType.SignaturePerk,
             "PerkData" => EItemType.Perk,
             _ => EItemType.Unknown
         };
 
-        _rarity = Object.GetOrDefault("Rarity", ERewardRarity.None);
+        if (t == EItemType.SignaturePerk) _rarity = ERewardRarity.Legendary;
         Background = GetRarityBackground(_rarity);
 
         if (Object.TryGetValue(out FSoftObjectPath rewardThumbnail, "RewardThumbnail", "DisplayTextureRef", "Texture"))
@@ -64,14 +67,16 @@ public class BasePandaIcon : UCreator
         if (Object.TryGetValue(out FText description, "Description"))
             Description = Utils.RemoveHtmlTags(description.Text);
 
-        _pictos.Add((
-            Utils.GetBitmap("/Game/Panda_Main/UI/Assets/Icons/ui_icons_unlocked.ui_icons_unlocked"),
-            Utils.GetLocalizedResource(Object.GetOrDefault("UnlockLocation", EUnlockLocation.None))));
+        var unlockLocation = Object.GetOrDefault("UnlockLocation", EUnlockLocation.None);
+        if (t == EItemType.Unknown && unlockLocation == EUnlockLocation.CharacterMastery) t = EItemType.MasteryLevel;
+
+        _pictos.Add((Utils.GetBitmap("/Game/Panda_Main/UI/Assets/Icons/ui_icons_unlocked.ui_icons_unlocked"), Utils.GetLocalizedResource(unlockLocation)));
         if (Object.TryGetValue(out string slug, "Slug"))
         {
             t = _type switch
             {
                 "HydraSyncedDataAsset" when slug == "gold" => EItemType.Gold,
+                "HydraSyncedDataAsset" when slug == "gleamium" => EItemType.Gleamium,
                 "HydraSyncedDataAsset" when slug == "match_toasts" => EItemType.Toast,
                 _ => t
             };
@@ -303,6 +308,14 @@ public enum EUnlockLocation : byte
 
     [Description("4A89F5DD432113750EF52D8B58977DCE")]
     Tutorial = 7
+}
+
+public enum EPerkCategory : byte
+{
+    Offense = 0, // Default
+    Defense = 1,
+    Utility = 2,
+    CharacterSpecific = 3
 }
 
 public enum EItemType
