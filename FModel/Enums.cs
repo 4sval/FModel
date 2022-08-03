@@ -92,7 +92,7 @@ public enum FGame
     Gameface,
     [Description("Sea of Thieves")]
     Athena,
-    [Description("That Banned Panda")]
+    [Description("Your Beloved ™ Panda")]
     PandaGame
 }
 

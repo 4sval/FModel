@@ -133,7 +133,7 @@ public class GameSelectorViewModel : ViewModel
                 if (installationList.AppName.Equals(gameName, StringComparison.OrdinalIgnoreCase))
                 {
                     var pak = Directory.GetDirectories(installationList.InstallLocation, "Paks*", SearchOption.AllDirectories);
-                    return new DetectedGame { GameName = installationList.AppName, GameDirectory = pak[0] };
+                    if (pak.Length > 0) return new DetectedGame { GameName = installationList.AppName, GameDirectory = pak[0] };
                 }
             }
         }
