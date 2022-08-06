@@ -141,3 +141,9 @@ public enum EIconStyle
     // [Description("Community")]
     // CommunityMade
 }
+
+public enum EEndpointType
+{
+    Aes,
+    Mapping
+}

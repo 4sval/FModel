@@ -39,6 +39,16 @@ namespace FModel.Settings
             if (File.Exists(FilePath)) File.Delete(FilePath);
         }
 
+        public static bool TryGetGameCustomEndpoint(FGame game, EEndpointType type, out FEndpoint endpoint)
+        {
+            endpoint = null;
+            if (!Default.CustomEndpoints.TryGetValue(game, out var endpoints))
+                return false;
+
+            endpoint = endpoints[(int) type];
+            return endpoint.IsEnabled;
+        }
+
         private bool _showChangelog = true;
         public bool ShowChangelog
         {
@@ -93,20 +103,6 @@ namespace FModel.Settings
         {
             get => _gameDirectory;
             set => SetProperty(ref _gameDirectory, value);
-        }
-
-        private bool _overwriteMapping;
-        public bool OverwriteMapping
-        {
-            get => _overwriteMapping;
-            set => SetProperty(ref _overwriteMapping, value);
-        }
-
-        private string _mappingFilePath;
-        public string MappingFilePath
-        {
-            get => _mappingFilePath;
-            set => SetProperty(ref _mappingFilePath, value);
         }
 
         private int _lastOpenedSettingTab;
@@ -380,6 +376,41 @@ namespace FModel.Settings
         {
             get => _overridedOptions;
             set => SetProperty(ref _overridedOptions, value);
+        }
+
+        private IDictionary<FGame, FEndpoint[]> _customEndpoints = new Dictionary<FGame, FEndpoint[]>
+        {
+            {FGame.Unknown, new FEndpoint[]{new (), new ()}},
+            {
+                FGame.FortniteGame, new []
+                {
+                    new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/aes"),
+                    new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/mappings")
+                }
+            },
+            {FGame.ShooterGame, new FEndpoint[]{new (), new ()}},
+            {FGame.DeadByDaylight, new FEndpoint[]{new (), new ()}},
+            {FGame.OakGame, new FEndpoint[]{new (), new ()}},
+            {FGame.Dungeons, new FEndpoint[]{new (), new ()}},
+            {FGame.WorldExplorers, new FEndpoint[]{new (), new ()}},
+            {FGame.g3, new FEndpoint[]{new (), new ()}},
+            {FGame.StateOfDecay2, new FEndpoint[]{new (), new ()}},
+            {FGame.Prospect, new FEndpoint[]{new (), new ()}},
+            {FGame.Indiana, new FEndpoint[]{new (), new ()}},
+            {FGame.RogueCompany, new FEndpoint[]{new (), new ()}},
+            {FGame.SwGame, new FEndpoint[]{new (), new ()}},
+            {FGame.Platform, new FEndpoint[]{new (), new ()}},
+            {FGame.BendGame, new FEndpoint[]{new (), new ()}},
+            {FGame.TslGame, new FEndpoint[]{new (), new ()}},
+            {FGame.PortalWars, new FEndpoint[]{new (), new ()}},
+            {FGame.Gameface, new FEndpoint[]{new (), new ()}},
+            {FGame.Athena, new FEndpoint[]{new (), new ()}},
+            {FGame.PandaGame, new FEndpoint[]{new (), new ()}}
+        };
+        public IDictionary<FGame, FEndpoint[]> CustomEndpoints
+        {
+            get => _customEndpoints;
+            set => SetProperty(ref _customEndpoints, value);
         }
 
         private IDictionary<FGame, IList<CustomDirectory>> _customDirectories = new Dictionary<FGame, IList<CustomDirectory>>

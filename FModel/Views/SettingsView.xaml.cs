@@ -99,8 +99,11 @@ public partial class SettingsView
             Filter = "USMAP Files (*.usmap)|*.usmap|All Files (*.*)|*.*"
         };
 
-        if (!openFileDialog.ShowDialog().GetValueOrDefault()) return;
-        UserSettings.Default.MappingFilePath = openFileDialog.FileName;
+        if (!openFileDialog.ShowDialog().GetValueOrDefault() ||
+            !UserSettings.TryGetGameCustomEndpoint(_applicationView.CUE4Parse.Game, EEndpointType.Mapping, out var endpoint))
+            return;
+
+        endpoint.Path = _applicationView.SettingsView.CurrentMappingFile = openFileDialog.FileName;
         await _applicationView.CUE4Parse.InitBenMappings();
     }
 

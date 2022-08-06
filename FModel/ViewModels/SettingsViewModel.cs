@@ -96,6 +96,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedCompressedAudio, value);
     }
 
+    private string _currentMappingFile;
+    public string CurrentMappingFile // only used so that it updates the UI
+    {
+        get => _currentMappingFile;
+        set => SetProperty(ref _currentMappingFile, value);
+    }
+
     private EIconStyle _selectedCosmeticStyle;
     public EIconStyle SelectedCosmeticStyle
     {
@@ -190,6 +197,9 @@ public class SettingsViewModel : ViewModel
             _customVersionsSnapshot = UserSettings.Default.OverridedCustomVersions[_game];
             _optionsSnapshot = UserSettings.Default.OverridedOptions[_game];
         }
+
+        if (UserSettings.TryGetGameCustomEndpoint(_game, EEndpointType.Mapping, out var endpoint))
+            CurrentMappingFile = endpoint.Path;
 
         _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
         _compressedAudioSnapshot = UserSettings.Default.CompressedAudioMode;

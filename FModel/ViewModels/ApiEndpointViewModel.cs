@@ -22,7 +22,8 @@ public class ApiEndpointViewModel
     public ValorantApiEndpoint ValorantApi { get; }
     public FortniteCentralApiEndpoint CentralApi { get; }
     public EpicApiEndpoint EpicApi { get; }
-    public FModelApi FModelApi { get; }
+    public FModelApiEndpoint FModelApi { get; }
+    public DynamicApiEndpoint DynamicApi { get; }
 
     public ApiEndpointViewModel()
     {
@@ -30,7 +31,8 @@ public class ApiEndpointViewModel
         ValorantApi = new ValorantApiEndpoint(_client);
         CentralApi = new FortniteCentralApiEndpoint(_client);
         EpicApi = new EpicApiEndpoint(_client);
-        FModelApi = new FModelApi(_client);
+        FModelApi = new FModelApiEndpoint(_client);
+        DynamicApi = new DynamicApiEndpoint(_client);
     }
 
     public async Task DownloadFileAsync(string fileLink, string installationPath)

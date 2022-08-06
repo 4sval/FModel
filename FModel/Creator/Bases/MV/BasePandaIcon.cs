@@ -212,12 +212,12 @@ public class BasePandaIcon : UCreator
             return;
 
         var x = 450f;
-        var y = Height / 2 - DisplayNamePaint.TextSize / 4;
-        while (DisplayNamePaint.MeasureText(DisplayName) > Width - x)
+        while (DisplayNamePaint.MeasureText(DisplayName) > Width - x / 1.25)
         {
             DisplayNamePaint.TextSize -= 1;
         }
 
+        var y = Height / 2 - DisplayNamePaint.TextSize / 4;
         foreach (var a in DisplayName.Select(character => character.ToString()))
         {
             c.DrawText(a, x, y, DisplayNamePaint);

@@ -20,7 +20,7 @@ using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace FModel.ViewModels.ApiEndpoints;
 
-public class FModelApi : AbstractApiProvider
+public class FModelApiEndpoint : AbstractApiProvider
 {
     private News _news;
     private Info _infos;
@@ -29,7 +29,7 @@ public class FModelApi : AbstractApiProvider
     private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
-    public FModelApi(RestClient client) : base(client)
+    public FModelApiEndpoint(RestClient client) : base(client)
     {
     }
 

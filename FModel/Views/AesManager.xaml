@@ -81,16 +81,13 @@
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="False"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Refresh" Click="OnRefreshAes">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding CUE4Parse.Game}" Value="{x:Static local:FGame.FortniteGame}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
+                    <Button.Visibility>
+                        <!-- if aes custom endpoint is enabled, make this visible  -->
+                        <MultiBinding Converter="{x:Static converters:EndpointToTypeConverter.Instance}">
+                            <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:Views.AesManager}}" Path="DataContext" />
+                            <Binding Source="{x:Static local:EEndpointType.Aes}" />
+                        </MultiBinding>
+                    </Button.Visibility>
                 </Button>
             </Grid>
         </Border>

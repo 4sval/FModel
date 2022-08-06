@@ -293,16 +293,18 @@ public class CUE4ParseViewModel : ViewModel
 
     public async Task RefreshAes()
     {
-        if (Game == FGame.FortniteGame) // game directory dependent, we don't have the provider game name yet since we don't have aes keys
-        {
-            await _threadWorkerView.Begin(cancellationToken =>
-            {
-                var aes = _apiEndpointView.CentralApi.GetAesKeys(cancellationToken);
-                if (aes?.MainKey == null && aes?.DynamicKeys == null && aes?.Version == null) return;
+        // game directory dependent, we don't have the provider game name yet since we don't have aes keys
+        // except when this comes from the AES Manager
+        if (!UserSettings.TryGetGameCustomEndpoint(Game, EEndpointType.Aes, out var endpoint))
+            return;
 
-                UserSettings.Default.AesKeys[Game] = aes;
-            });
-        }
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            var aes = _apiEndpointView.DynamicApi.GetAesKeys(cancellationToken, endpoint.Url);
+            if (aes?.MainKey == null && aes?.DynamicKeys == null) return;
+
+            UserSettings.Default.AesKeys[Game] = aes;
+        });
     }
 
     public async Task InitInformation()
@@ -321,20 +323,21 @@ public class CUE4ParseViewModel : ViewModel
 
     public async Task InitBenMappings()
     {
-        if (Game != FGame.FortniteGame) return;
+        if (!UserSettings.TryGetGameCustomEndpoint(Game, EEndpointType.Mapping, out var endpoint))
+            return;
 
         await _threadWorkerView.Begin(cancellationToken =>
         {
-            if (UserSettings.Default.OverwriteMapping && File.Exists(UserSettings.Default.MappingFilePath))
+            if (endpoint.Overwrite && File.Exists(endpoint.Path))
             {
-                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(UserSettings.Default.MappingFilePath);
+                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(endpoint.Path);
                 FLogger.AppendInformation();
-                FLogger.AppendText($"Mappings pulled from '{UserSettings.Default.MappingFilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
+                FLogger.AppendText($"Mappings pulled from '{endpoint.Path.SubstringAfterLast("\\")}'", Constants.WHITE, true);
             }
             else
             {
                 var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                var mappings = _apiEndpointView.CentralApi.GetMappings(cancellationToken);
+                var mappings = _apiEndpointView.DynamicApi.GetMappings(cancellationToken, endpoint.Url);
                 if (mappings is { Length: > 0 })
                 {
                     foreach (var mapping in mappings)
