@@ -68,6 +68,20 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedOptions, value);
     }
 
+    private FEndpoint _aesEndpoint;
+    public FEndpoint AesEndpoint
+    {
+        get => _aesEndpoint;
+        set => SetProperty(ref _aesEndpoint, value);
+    }
+
+    private FEndpoint _mappingEndpoint;
+    public FEndpoint MappingEndpoint
+    {
+        get => _mappingEndpoint;
+        set => SetProperty(ref _mappingEndpoint, value);
+    }
+
     private ELanguage _selectedAssetLanguage;
     public ELanguage SelectedAssetLanguage
     {
@@ -94,13 +108,6 @@ public class SettingsViewModel : ViewModel
     {
         get => _selectedCompressedAudio;
         set => SetProperty(ref _selectedCompressedAudio, value);
-    }
-
-    private string _currentMappingFile;
-    public string CurrentMappingFile // only used so that it updates the UI
-    {
-        get => _currentMappingFile;
-        set => SetProperty(ref _currentMappingFile, value);
     }
 
     private EIconStyle _selectedCosmeticStyle;
@@ -198,8 +205,11 @@ public class SettingsViewModel : ViewModel
             _optionsSnapshot = UserSettings.Default.OverridedOptions[_game];
         }
 
-        if (UserSettings.TryGetGameCustomEndpoint(_game, EEndpointType.Mapping, out var endpoint))
-            CurrentMappingFile = endpoint.Path;
+        if (UserSettings.Default.CustomEndpoints.TryGetValue(_game, out var endpoints))
+        {
+            AesEndpoint = endpoints[0];
+            MappingEndpoint = endpoints[1];
+        }
 
         _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
         _compressedAudioSnapshot = UserSettings.Default.CompressedAudioMode;

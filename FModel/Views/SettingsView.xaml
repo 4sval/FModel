@@ -199,23 +199,13 @@
                         </Button>
                     </Grid>
 
-                    <TextBlock Grid.Row="13" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5">
-                        <TextBlock.Visibility>
-                            <MultiBinding Converter="{x:Static converters:EndpointToTypeConverter.Instance}">
-                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}" Path="DataContext" />
-                                <Binding Source="{x:Static local:EEndpointType.Aes}" />
-                            </MultiBinding>
-                        </TextBlock.Visibility>
-                    </TextBlock>
+                    <TextBlock Grid.Row="13" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
+                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                               Visibility="{Binding SettingsView.AesEndpoint.IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <ComboBox Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
-                              ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}">
-                        <ComboBox.Visibility>
-                            <MultiBinding Converter="{x:Static converters:EndpointToTypeConverter.Instance}">
-                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}" Path="DataContext" />
-                                <Binding Source="{x:Static local:EEndpointType.Aes}" />
-                            </MultiBinding>
-                        </ComboBox.Visibility>
+                              ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
+                              Visibility="{Binding SettingsView.AesEndpoint.IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
@@ -227,42 +217,25 @@
                     <CheckBox Grid.Row="14" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
-                    <TextBlock Grid.Row="15" Grid.Column="0" Text="Overwrite Mapping File" VerticalAlignment="Center" Margin="0 0 0 5">
-                        <TextBlock.Visibility>
-                            <!-- if mapping custom endpoint is enabled, make this visible  -->
-                            <MultiBinding Converter="{x:Static converters:EndpointToTypeConverter.Instance}">
-                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}" Path="DataContext" />
-                                <Binding Source="{x:Static local:EEndpointType.Mapping}" />
-                            </MultiBinding>
-                        </TextBlock.Visibility>
-                    </TextBlock>
-                    <CheckBox x:Name="OverwriteCkBox" Grid.Row="15" Grid.Column="2" Margin="0 5 0 10"
-                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}">
-                        <CheckBox.Visibility>
-                            <!-- if mapping custom endpoint is enabled, make this visible  -->
-                            <MultiBinding Converter="{x:Static converters:EndpointToTypeConverter.Instance}">
-                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}" Path="DataContext" />
-                                <Binding Source="{x:Static local:EEndpointType.Mapping}" />
-                            </MultiBinding>
-                        </CheckBox.Visibility>
-                        <CheckBox.IsChecked>
-                            <!-- if mapping custom endpoint is enabled, this gets/sets the value of Overwrite  -->
-                            <MultiBinding Converter="{x:Static converters:EndpointOverwriteToBoolConverter.Instance}">
-                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}" Path="DataContext" />
-                                <Binding Path="." Source="{x:Static local:EEndpointType.Mapping}" /> <!-- TwoWay binding needs a Path -->
-                            </MultiBinding>
-                        </CheckBox.IsChecked>
-                    </CheckBox>
+                    <TextBlock Grid.Row="15" Grid.Column="0" Text="Overwrite Mapping File" VerticalAlignment="Center" Margin="0 0 0 5"
+                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                               Visibility="{Binding SettingsView.MappingEndpoint.IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <CheckBox Grid.Row="15" Grid.Column="2" Margin="0 5 0 10"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              Visibility="{Binding SettingsView.MappingEndpoint.IsEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                              IsChecked="{Binding SettingsView.MappingEndpoint.Overwrite, Mode=TwoWay}" />
 
                     <TextBlock Grid.Row="16" Grid.Column="0" Text="Mapping File Path" VerticalAlignment="Center" Margin="0 0 0 5"
-                               Visibility="{Binding IsChecked, ElementName=OverwriteCkBox, Converter={StaticResource BoolToVisibilityConverter}}">
+                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                               Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}">
                     </TextBlock>
-                    <TextBox Grid.Row="16" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
-                             IsReadOnly="True" Text="{Binding SettingsView.CurrentMappingFile, Mode=TwoWay}"
-                             Visibility="{Binding IsChecked, ElementName=OverwriteCkBox, Converter={StaticResource BoolToVisibilityConverter}}"
-                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" />
+                    <TextBox Grid.Row="16" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5" Text="{Binding SettingsView.MappingEndpoint.Path, Mode=TwoWay}"
+                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                             Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <Button Grid.Row="16" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
-                            Visibility="{Binding IsChecked, ElementName=OverwriteCkBox, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                            Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">

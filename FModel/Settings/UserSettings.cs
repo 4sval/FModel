@@ -39,7 +39,7 @@ namespace FModel.Settings
             if (File.Exists(FilePath)) File.Delete(FilePath);
         }
 
-        public static bool TryGetGameCustomEndpoint(FGame game, EEndpointType type, out FEndpoint endpoint)
+        public static bool IsEndpointEnabled(FGame game, EEndpointType type, out FEndpoint endpoint)
         {
             endpoint = null;
             if (!Default.CustomEndpoints.TryGetValue(game, out var endpoints))

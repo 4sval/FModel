@@ -295,7 +295,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         // game directory dependent, we don't have the provider game name yet since we don't have aes keys
         // except when this comes from the AES Manager
-        if (!UserSettings.TryGetGameCustomEndpoint(Game, EEndpointType.Aes, out var endpoint))
+        if (!UserSettings.IsEndpointEnabled(Game, EEndpointType.Aes, out var endpoint))
             return;
 
         await _threadWorkerView.Begin(cancellationToken =>
@@ -323,7 +323,7 @@ public class CUE4ParseViewModel : ViewModel
 
     public async Task InitBenMappings()
     {
-        if (!UserSettings.TryGetGameCustomEndpoint(Game, EEndpointType.Mapping, out var endpoint))
+        if (!UserSettings.IsEndpointEnabled(Game, EEndpointType.Mapping, out var endpoint))
             return;
 
         await _threadWorkerView.Begin(cancellationToken =>
