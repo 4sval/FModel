@@ -146,27 +146,53 @@ public partial class SettingsView
 
     private void OpenCustomVersions(object sender, RoutedEventArgs e)
     {
-        var dictionary = new DictionaryEditor(
+        var editor = new DictionaryEditor(
             _applicationView.SettingsView.SelectedCustomVersions,
             "Versioning Configuration (Custom Versions)",
             _applicationView.SettingsView.EnableElements);
-        var result = dictionary.ShowDialog();
+        var result = editor.ShowDialog();
         if (!result.HasValue || !result.Value)
             return;
 
-        _applicationView.SettingsView.SelectedCustomVersions = dictionary.CustomVersions;
+        _applicationView.SettingsView.SelectedCustomVersions = editor.CustomVersions;
     }
 
     private void OpenOptions(object sender, RoutedEventArgs e)
     {
-        var dictionary = new DictionaryEditor(
+        var editor = new DictionaryEditor(
             _applicationView.SettingsView.SelectedOptions,
             "Versioning Configuration (Options)",
             _applicationView.SettingsView.EnableElements);
-        var result = dictionary.ShowDialog();
+        var result = editor.ShowDialog();
         if (!result.HasValue || !result.Value)
             return;
 
-        _applicationView.SettingsView.SelectedOptions = dictionary.Options;
+        _applicationView.SettingsView.SelectedOptions = editor.Options;
+    }
+
+    private void OpenAesEndpoint(object sender, RoutedEventArgs e)
+    {
+        var editor = new EndpointEditor(
+            _applicationView.SettingsView.AesEndpoint,
+            "Endpoint Configuration (AES)",
+            EEndpointType.Aes);
+        var result = editor.ShowDialog();
+        if (!result.HasValue || !result.Value)
+            return;
+
+        _applicationView.SettingsView.AesEndpoint = editor.Endpoint;
+    }
+
+    private void OpenMappingEndpoint(object sender, RoutedEventArgs e)
+    {
+        var editor = new EndpointEditor(
+            _applicationView.SettingsView.MappingEndpoint,
+            "Endpoint Configuration (Mapping)",
+            EEndpointType.Mapping);
+        var result = editor.ShowDialog();
+        if (!result.HasValue || !result.Value)
+            return;
+
+        _applicationView.SettingsView.MappingEndpoint = editor.Endpoint;
     }
 }

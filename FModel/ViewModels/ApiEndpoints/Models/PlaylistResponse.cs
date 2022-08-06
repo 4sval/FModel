@@ -12,10 +12,9 @@ public class PlaylistResponse
     [J] public Playlist Data { get; private set; }
     [J] public string Error { get; private set; }
 
-    public bool IsSuccess => Status == 200;
-    public bool HasError => Error != null;
-
-    private object DebuggerDisplay => IsSuccess ? Data : $"Error: {Status} | {Error}";
+    [I] public bool IsSuccess => Status == 200;
+    [I] public bool HasError => Error != null;
+    [I] private object DebuggerDisplay => IsSuccess ? Data : $"Error: {Status} | {Error}";
 }
 
 [DebuggerDisplay("{" + nameof(Id) + "}")]

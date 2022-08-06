@@ -301,7 +301,7 @@ public class CUE4ParseViewModel : ViewModel
         await _threadWorkerView.Begin(cancellationToken =>
         {
             var aes = _apiEndpointView.DynamicApi.GetAesKeys(cancellationToken, endpoint.Url);
-            if (aes?.MainKey == null && aes?.DynamicKeys == null) return;
+            if (aes is not { IsValid: true }) return;
 
             UserSettings.Default.AesKeys[Game] = aes;
         });
@@ -342,7 +342,7 @@ public class CUE4ParseViewModel : ViewModel
                 {
                     foreach (var mapping in mappings)
                     {
-                        if (mapping.Meta.CompressionMethod != "Oodle") continue;
+                        if (!mapping.IsValid || !mapping.Meta.IsValid) continue;
 
                         var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
                         if (!File.Exists(mappingPath))

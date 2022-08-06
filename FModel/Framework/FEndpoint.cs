@@ -6,7 +6,11 @@ public class FEndpoint : ViewModel
     public string Url
     {
         get => _url;
-        set => SetProperty(ref _url, value);
+        set
+        {
+            SetProperty(ref _url, value);
+            RaisePropertyChanged(nameof(IsEnabled));
+        }
     }
 
     private bool _overwrite;

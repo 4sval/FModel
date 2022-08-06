@@ -184,8 +184,8 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Content="AES" />
-                        <Button Grid.Column="2" Content="Mapping">
+                        <Button Grid.Column="0" Content="AES" Click="OpenAesEndpoint" />
+                        <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                     <Setter Property="IsEnabled" Value="False"/>
