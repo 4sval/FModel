@@ -41,7 +41,7 @@ public partial class EndpointEditor
     ""key"": ""the archive aes key""
 }",
             EEndpointType.Mapping =>
-@"In order to make this work, you first need to understand JSON and its query language. If you don't, please close this window. If your game does not have unversioned package properties, please close this window. If you do understand what you are doing, you have to know that the Mapping path supports up to 2 tokens.
+@"In order to make this work, you first need to understand JSON and its query language. If you don't, please close this window. If your game does not use unversioned package properties, please close this window. If you do understand what you are doing, you have to know that the mapping path supports up to 2 tokens.
 
     The first token is mandatory and will be assigned to the mapping download URL, which can be all kinds of mapping but not Brotli compressed.
 
