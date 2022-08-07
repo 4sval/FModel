@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using FModel.Extensions;
@@ -53,8 +52,8 @@ public partial class EndpointEditor
 
     private void OnClick(object sender, RoutedEventArgs e)
     {
+        DialogResult = _isTested && DataContext is FEndpoint { IsValid: true };
         Close();
-        DialogResult = DataContext is FEndpoint { IsValid: true };
     }
 
     private async void OnSend(object sender, RoutedEventArgs e)
@@ -95,11 +94,6 @@ public partial class EndpointEditor
     private void OnEvaluator(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo { FileName = "https://jsonpath.herokuapp.com/", UseShellExecute = true });
-    }
-
-    private void OnClosing(object sender, CancelEventArgs e)
-    {
-        if (!_isTested) OnTest(null, null);
     }
 }
 

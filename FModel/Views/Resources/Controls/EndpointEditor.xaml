@@ -6,7 +6,7 @@
          xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
          xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
          xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" ResizeMode="NoResize" Closing="OnClosing"
+         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" ResizeMode="NoResize"
          Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.50'}"
          Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.35'}">
     <adonisControls:AdonisWindow.Resources>
