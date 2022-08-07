@@ -8,7 +8,7 @@
          xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
          WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" ResizeMode="NoResize" Closing="OnClosing"
          Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.50'}"
-         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.30'}">
+         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.35'}">
     <adonisControls:AdonisWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -58,11 +58,17 @@
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="5"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Margin="{adonisUi:Space 1, 0.5}">
+                <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
+                    <TextBlock Text="Instruction" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+                    <TextBlock x:Name="InstructionBox" TextAlignment="Justify" TextWrapping="Wrap" HorizontalAlignment="Center" />
+                </StackPanel>
+
+                <Grid Grid.Row="1" Margin="{adonisUi:Space 1, 0.5}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="10" />
@@ -77,7 +83,7 @@
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Click="OnTest"/>
                 </Grid>
 
-                <avalonEdit:TextEditor x:Name="TargetResponse" Grid.Row="2" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                <avalonEdit:TextEditor x:Name="TargetResponse" Grid.Row="3" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
                                        FontFamily="Consolas" FontSize="8pt" IsReadOnly="True" ShowLineNumbers="True" Foreground="#DAE5F2" />
             </Grid>
         </Grid>

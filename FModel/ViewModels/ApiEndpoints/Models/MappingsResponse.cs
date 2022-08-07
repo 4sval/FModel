@@ -12,13 +12,12 @@ public class MappingsResponse
     [I][J] public string Hash { get; private set; }
     [I][J] public long Length { get; private set; }
     [I][J] public string Uploaded { get; private set; }
-    [J] public Meta Meta { get; set; }
+    [I][J] public Meta Meta { get; set; }
 
     public MappingsResponse()
     {
         Url = string.Empty;
         FileName = string.Empty;
-        Meta = new Meta();
     }
 
     [I] public bool IsValid => !string.IsNullOrEmpty(Url) &&

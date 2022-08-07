@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
 using Newtonsoft.Json.Linq;
@@ -34,7 +35,11 @@ public class DynamicApiEndpoint : AbstractApiProvider
                 if (dynamicKey["guid"] is not { } guid || dynamicKey["key"] is not { } key)
                     continue;
 
-                ret.DynamicKeys.Add(new DynamicKey{Guid = guid.ToString(), Key = Helper.FixKey(key.ToString())});
+                ret.DynamicKeys.Add(new DynamicKey
+                {
+                    Name = dynamicKey["name"]?.ToString(),
+                    Guid = guid.ToString(), Key = Helper.FixKey(key.ToString())
+                });
             }
         }
         return ret;
@@ -58,7 +63,9 @@ public class DynamicApiEndpoint : AbstractApiProvider
         var tokens = body.SelectTokens(path);
         var ret = new MappingsResponse[] {new()};
         ret[0].Url = tokens.ElementAtOrDefault(0).ToString();
-        ret[0].FileName = tokens.ElementAtOrDefault(1).ToString();
+        if (tokens.ElementAtOrDefault(1) is not { } fileName)
+            fileName = ret[0].Url.SubstringAfterLast("/");
+        ret[0].FileName = fileName.ToString();
         return ret;
     }
 

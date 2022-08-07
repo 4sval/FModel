@@ -29,7 +29,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
-            <TextBlock Text="What to do?" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="Instruction" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
             <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" MaxWidth="576"
                        Text="In order to decipher archives' information, an AES key, in most cases, is needed. Here you can set the key for your static and dynamic archives. If you don't know what key to use for your set game, simply Google it. Keys must start with &quot;0x&quot; and contains 64 more characters." />
         </StackPanel>
