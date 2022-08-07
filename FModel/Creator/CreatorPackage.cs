@@ -149,7 +149,7 @@ public class CreatorPackage : IDisposable
             case "FortQuestItemDefinition_Athena":
             case "AthenaDailyQuestDefinition":
             case "FortUrgentQuestItemDefinition":
-                creator = new BaseQuest(_object, _style);
+                creator = new Bases.FN.BaseQuest(_object, _style);
                 return true;
             case "FortCompendiumItemDefinition":
             case "FortChallengeBundleItemDefinition":
@@ -193,6 +193,9 @@ public class CreatorPackage : IDisposable
             case "SkinData":
             case "PerkData":
                 creator = new BasePandaIcon(_object, _style);
+                return true;
+            case "QuestData":
+                creator = new Bases.MV.BaseQuest(_object, _style);
                 return true;
             // Battle Breakers
             case "WExpGenericAccountItemDefinition":

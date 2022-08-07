@@ -16,7 +16,7 @@ public class BasePandaIcon : UCreator
     private ERewardRarity _rarity;
     private string _type;
 
-    private readonly List<(SKBitmap, string)> _pictos;
+    protected readonly List<(SKBitmap, string)> Pictos;
 
     public BasePandaIcon(UObject uObject, EIconStyle style) : base(uObject, style)
     {
@@ -29,7 +29,7 @@ public class BasePandaIcon : UCreator
         DefaultPreview = Utils.GetBitmap("/Game/Panda_Main/UI/PreMatch/Images/DiamondPortraits/0010_Random.0010_Random");
 
         _y_offset = Height / 2 + DescriptionPaint.TextSize;
-        _pictos = new List<(SKBitmap, string)>();
+        Pictos = new List<(SKBitmap, string)>();
     }
 
     public override void ParseForInfo()
@@ -47,6 +47,7 @@ public class BasePandaIcon : UCreator
             "RingOutVfxData" => EItemType.Ringout,
             "BannerData" => EItemType.Banner,
             "EmoteData" => EItemType.Sticker,
+            "QuestData" => EItemType.Mission,
             "TauntData" => EItemType.Emote,
             "SkinData" => EItemType.Variant,
             "PerkData" when category == EPerkCategory.CharacterSpecific => EItemType.SignaturePerk,
@@ -62,15 +63,15 @@ public class BasePandaIcon : UCreator
         else if (Object.TryGetValue(out FPackageIndex icon, "Icon"))
             Preview = Utils.GetBitmap(icon);
 
-        if (Object.TryGetValue(out FText displayName, "DisplayName"))
+        if (Object.TryGetValue(out FText displayName, "DisplayName", "QuestName"))
             DisplayName = displayName.Text;
-        if (Object.TryGetValue(out FText description, "Description"))
+        if (Object.TryGetValue(out FText description, "Description", "QuestDescription"))
             Description = Utils.RemoveHtmlTags(description.Text);
 
         var unlockLocation = Object.GetOrDefault("UnlockLocation", EUnlockLocation.None);
         if (t == EItemType.Unknown && unlockLocation == EUnlockLocation.CharacterMastery) t = EItemType.MasteryLevel;
 
-        _pictos.Add((Utils.GetBitmap("/Game/Panda_Main/UI/Assets/Icons/ui_icons_unlocked.ui_icons_unlocked"), Utils.GetLocalizedResource(unlockLocation)));
+        Pictos.Add((Utils.GetBitmap("/Game/Panda_Main/UI/Assets/Icons/ui_icons_unlocked.ui_icons_unlocked"), Utils.GetLocalizedResource(unlockLocation)));
         if (Object.TryGetValue(out string slug, "Slug"))
         {
             t = _type switch
@@ -80,7 +81,7 @@ public class BasePandaIcon : UCreator
                 "HydraSyncedDataAsset" when slug == "match_toasts" => EItemType.Toast,
                 _ => t
             };
-            _pictos.Add((Utils.GetBitmap("/Game/Panda_Main/UI/Assets/Icons/ui_icons_link.ui_icons_link"), slug));
+            Pictos.Add((Utils.GetBitmap("/Game/Panda_Main/UI/Assets/Icons/ui_icons_link.ui_icons_link"), slug));
         }
 
         if (Object.TryGetValue(out int xpValue, "XPValue"))
@@ -240,7 +241,7 @@ public class BasePandaIcon : UCreator
 
     private void DrawPictos(SKCanvas c)
     {
-        if (_pictos.Count < 1) return;
+        if (Pictos.Count < 1) return;
 
         const float x = 450f;
         const int size = 24;
@@ -256,7 +257,7 @@ public class BasePandaIcon : UCreator
 
         ImagePaint.ColorFilter = SKColorFilter.CreateBlendMode(color, SKBlendMode.SrcIn);
 
-        foreach (var picto in _pictos)
+        foreach (var picto in Pictos)
         {
             c.DrawBitmap(picto.Item1, new SKRect(x, _y_offset + 10, x + size, _y_offset + 10 + size), ImagePaint);
             c.DrawText(picto.Item2, x + size + 10, _y_offset + size + 6, paint);
