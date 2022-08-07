@@ -470,7 +470,6 @@ namespace FModel.Settings
                     new("Strings", "g3/Content/Localization/")
                 }
             },
-            {FGame.PandaGame, new List<CustomDirectory>()},
             {FGame.StateOfDecay2, new List<CustomDirectory>()},
             {FGame.Prospect, new List<CustomDirectory>()},
             {FGame.Indiana, new List<CustomDirectory>()},
@@ -481,7 +480,8 @@ namespace FModel.Settings
             {FGame.TslGame, new List<CustomDirectory>()},
             {FGame.PortalWars, new List<CustomDirectory>()},
             {FGame.Gameface, new List<CustomDirectory>()},
-            {FGame.Athena, new List<CustomDirectory>()}
+            {FGame.Athena, new List<CustomDirectory>()},
+            {FGame.PandaGame, new List<CustomDirectory>()},
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {

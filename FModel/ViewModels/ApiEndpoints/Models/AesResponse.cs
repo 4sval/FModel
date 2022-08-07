@@ -19,7 +19,7 @@ public class AesResponse
     }
 
     [I] public bool HasDynamicKeys => DynamicKeys is { Count: > 0 };
-    [I] public bool IsValid => MainKey.Length == 66;
+    [I] public bool IsValid => MainKey.Length == 66 || HasDynamicKeys;
 }
 
 [DebuggerDisplay("{" + nameof(Key) + "}")]
