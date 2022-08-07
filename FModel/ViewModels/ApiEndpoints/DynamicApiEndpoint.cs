@@ -18,16 +18,10 @@ public class DynamicApiEndpoint : AbstractApiProvider
 
     public async Task<AesResponse> GetAesKeysAsync(CancellationToken token, string url, string path)
     {
-        var request = new FRestRequest(url)
-        {
-            OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
-        };
-        var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
-        var body = JToken.Parse(response.Content!);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-
+        var body = await GetRequestBody(token, url).ConfigureAwait(false);
         var tokens = body.SelectTokens(path);
-        var ret = new AesResponse { MainKey = Helper.FixKey(tokens.ElementAtOrDefault(0).ToString()) };
+
+        var ret = new AesResponse { MainKey = Helper.FixKey(tokens.ElementAtOrDefault(0)?.ToString()) };
         if (tokens.ElementAtOrDefault(1) is JArray dynamicKeys)
         {
             foreach (var dynamicKey in dynamicKeys)
@@ -52,19 +46,13 @@ public class DynamicApiEndpoint : AbstractApiProvider
 
     public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token, string url, string path)
     {
-        var request = new FRestRequest(url)
-        {
-            OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
-        };
-        var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
-        var body = JToken.Parse(response.Content!);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-
+        var body = await GetRequestBody(token, url).ConfigureAwait(false);
         var tokens = body.SelectTokens(path);
+
         var ret = new MappingsResponse[] {new()};
-        ret[0].Url = tokens.ElementAtOrDefault(0).ToString();
+        ret[0].Url = tokens.ElementAtOrDefault(0)?.ToString();
         if (tokens.ElementAtOrDefault(1) is not { } fileName)
-            fileName = ret[0].Url.SubstringAfterLast("/");
+            fileName = ret[0].Url?.SubstringAfterLast("/");
         ret[0].FileName = fileName.ToString();
         return ret;
     }
@@ -72,5 +60,16 @@ public class DynamicApiEndpoint : AbstractApiProvider
     public MappingsResponse[] GetMappings(CancellationToken token, string url, string path)
     {
         return GetMappingsAsync(token, url, path).GetAwaiter().GetResult();
+    }
+
+    private async Task<JToken> GetRequestBody(CancellationToken token, string url)
+    {
+        var request = new FRestRequest(url)
+        {
+            OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
+        };
+        var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
+        return string.IsNullOrEmpty(response.Content) ? JToken.Parse("{}") : JToken.Parse(response.Content);
     }
 }

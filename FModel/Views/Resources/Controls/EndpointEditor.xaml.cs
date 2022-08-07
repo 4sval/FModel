@@ -64,7 +64,7 @@ public partial class EndpointEditor
         {
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         }).ConfigureAwait(false);
-        var body = JToken.Parse(response.Content!);
+        var body = string.IsNullOrEmpty(response.Content) ? JToken.Parse("{}") : JToken.Parse(response.Content);
 
         Application.Current.Dispatcher.Invoke(delegate
         {
