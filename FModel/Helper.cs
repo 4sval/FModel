@@ -21,6 +21,17 @@ public static class Helper
            key.StartsWith("mu", StringComparison.OrdinalIgnoreCase) &&
            key.EndsWith("sus", StringComparison.OrdinalIgnoreCase);
 
+    public static string FixKey(string key)
+    {
+        if (string.IsNullOrEmpty(key))
+            return string.Empty;
+
+        if (key.StartsWith("0x"))
+            key = key[2..];
+
+        return "0x" + key.ToUpper().Trim();
+    }
+
     public static void OpenWindow<T>(string windowName, Action action) where T : Window
     {
         if (!IsWindowOpen<T>(windowName))

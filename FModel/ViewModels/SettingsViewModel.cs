@@ -324,12 +324,6 @@ public class SettingsViewModel : ViewModel
             UserSettings.Default.OverridedOptions[_game] = SelectedOptions;
         }
 
-        if (UserSettings.Default.CustomEndpoints.TryGetValue(_game, out var endpoints))
-        {
-            endpoints[0] = AesEndpoint;
-            endpoints[1] = MappingEndpoint;
-        }
-
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
         UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
         UserSettings.Default.CosmeticStyle = SelectedCosmeticStyle;

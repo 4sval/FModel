@@ -102,7 +102,7 @@ public partial class SettingsView
         if (!openFileDialog.ShowDialog().GetValueOrDefault())
             return;
 
-        _applicationView.SettingsView.MappingEndpoint.Path = openFileDialog.FileName;
+        _applicationView.SettingsView.MappingEndpoint.FilePath = openFileDialog.FileName;
         await _applicationView.CUE4Parse.InitBenMappings();
     }
 
@@ -173,26 +173,14 @@ public partial class SettingsView
     private void OpenAesEndpoint(object sender, RoutedEventArgs e)
     {
         var editor = new EndpointEditor(
-            _applicationView.SettingsView.AesEndpoint,
-            "Endpoint Configuration (AES)",
-            EEndpointType.Aes);
-        var result = editor.ShowDialog();
-        if (!result.HasValue || !result.Value)
-            return;
-
-        _applicationView.SettingsView.AesEndpoint = editor.Endpoint;
+            _applicationView.SettingsView.AesEndpoint, "Endpoint Configuration (AES)", EEndpointType.Aes);
+        editor.ShowDialog();
     }
 
     private void OpenMappingEndpoint(object sender, RoutedEventArgs e)
     {
         var editor = new EndpointEditor(
-            _applicationView.SettingsView.MappingEndpoint,
-            "Endpoint Configuration (Mapping)",
-            EEndpointType.Mapping);
-        var result = editor.ShowDialog();
-        if (!result.HasValue || !result.Value)
-            return;
-
-        _applicationView.SettingsView.MappingEndpoint = editor.Endpoint;
+            _applicationView.SettingsView.MappingEndpoint, "Endpoint Configuration (Mapping)", EEndpointType.Mapping);
+        editor.ShowDialog();
     }
 }

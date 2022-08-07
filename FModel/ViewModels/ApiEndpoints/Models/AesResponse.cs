@@ -19,7 +19,7 @@ public class AesResponse
     }
 
     [I] public bool HasDynamicKeys => DynamicKeys is { Count: > 0 };
-    [I] public bool IsValid => !string.IsNullOrEmpty(MainKey);
+    [I] public bool IsValid => MainKey.Length == 66;
 }
 
 [DebuggerDisplay("{" + nameof(Key) + "}")]
@@ -29,6 +29,5 @@ public class DynamicKey
     [J("guid")] public string Guid { get; set; }
     [J("key")] public string Key { get; set; }
 
-    [I] public bool IsValid => !string.IsNullOrEmpty(Guid) &&
-                              !string.IsNullOrEmpty(Key);
+    [I] public bool IsValid => Guid.Length == 32 && Key.Length == 66;
 }

@@ -1,8 +1,10 @@
-﻿using System;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using FModel.Extensions;
 using FModel.Framework;
-using FModel.ViewModels.ApiEndpoints.Models;
+using FModel.Services;
 using ICSharpCode.AvalonEdit.Document;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,61 +14,71 @@ namespace FModel.Views.Resources.Controls;
 
 public partial class EndpointEditor
 {
-    private readonly AesResponse _defaultAesResponse = new ();
-    private readonly MappingsResponse[] _defaultMappingResponse = {new ()};
-    private JObject _body;
-
-    public FEndpoint Endpoint { get; private set; }
+    private readonly EEndpointType _type;
+    private bool _isTested;
 
     public EndpointEditor(FEndpoint endpoint, string title, EEndpointType type)
     {
         DataContext = endpoint;
+        _type = type;
+        _isTested = endpoint.IsValid;
 
         InitializeComponent();
 
         Title = title;
-        EndpointUrl.Text = endpoint.Url;
-        TargetResponse.SyntaxHighlighting = EndpointResponse.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("json");
-        TargetResponse.Document = new TextDocument
-        {
-            Text = JsonConvert.SerializeObject(type switch
-            {
-                EEndpointType.Aes => _defaultAesResponse,
-                EEndpointType.Mapping => _defaultMappingResponse,
-                _ => throw new NotImplementedException()
-            }, Formatting.Indented)
-        };
+        TargetResponse.SyntaxHighlighting =
+            EndpointResponse.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("json");
     }
 
     private void OnClick(object sender, RoutedEventArgs e)
     {
-        Endpoint = new FEndpoint(EndpointUrl.Text);
-        DialogResult = true;
         Close();
+        DialogResult = DataContext is FEndpoint { IsValid: true };
     }
 
     private async void OnSend(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            var response = await new RestClient().ExecuteAsync(new FRestRequest(EndpointUrl.Text)
-            {
-                OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
-            }).ConfigureAwait(false);
-            _body = JObject.Parse(response.Content!);
+        if (DataContext is not FEndpoint endpoint) return;
 
-            Application.Current.Dispatcher.Invoke(delegate
-            {
-                EndpointResponse.Document = new TextDocument
-                {
-                    Text = _body.ToString(Formatting.Indented)
-                };
-            });
-        }
-        catch
+        var response = await new RestClient().ExecuteAsync(new FRestRequest(endpoint.Url)
         {
-            //
-        }
+            OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
+        }).ConfigureAwait(false);
+        var body = JToken.Parse(response.Content!);
+
+        Application.Current.Dispatcher.Invoke(delegate
+        {
+            EndpointResponse.Document ??= new TextDocument();
+            EndpointResponse.Document.Text = body.ToString(Formatting.Indented);
+        });
+    }
+
+    private void OnTest(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not FEndpoint endpoint) return;
+
+        endpoint.TryValidate(ApplicationService.ApiEndpointView.DynamicApi, _type, out var response);
+        _isTested = true;
+
+        TargetResponse.Document ??= new TextDocument();
+        TargetResponse.Document.Text = JsonConvert.SerializeObject(response, Formatting.Indented);
+    }
+
+    private void OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (sender is not TextBox { IsLoaded: true } ||
+            DataContext is not FEndpoint endpoint) return;
+        endpoint.IsValid = false;
+    }
+
+    private void OnEvaluator(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo { FileName = "https://jsonpath.herokuapp.com/", UseShellExecute = true });
+    }
+
+    private void OnClosing(object sender, CancelEventArgs e)
+    {
+        if (!_isTested) OnTest(null, null);
     }
 }
 

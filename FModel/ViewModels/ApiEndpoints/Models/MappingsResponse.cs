@@ -22,8 +22,7 @@ public class MappingsResponse
     }
 
     [I] public bool IsValid => !string.IsNullOrEmpty(Url) &&
-                              !string.IsNullOrEmpty(FileName) &&
-                              Meta != null;
+                              !string.IsNullOrEmpty(FileName);
 }
 
 [DebuggerDisplay("{" + nameof(CompressionMethod) + "}")]
@@ -31,11 +30,4 @@ public class Meta
 {
     [I][J] public string Version { get; private set; }
     [J] public string CompressionMethod { get; set; }
-
-    public Meta()
-    {
-        CompressionMethod = "Oodle";
-    }
-
-    [I] public bool IsValid => CompressionMethod == "Oodle";
 }

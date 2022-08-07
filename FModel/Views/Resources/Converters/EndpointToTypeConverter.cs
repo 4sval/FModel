@@ -17,10 +17,10 @@ public class EndpointToTypeConverter : IMultiValueConverter
             values[1] is not EEndpointType type)
             return false;
 
-        var isEnabled = UserSettings.IsEndpointEnabled(viewModel.CUE4Parse.Game, type, out _);
+        var isValid = UserSettings.IsEndpointValid(viewModel.CUE4Parse.Game, type, out _);
         return targetType switch
         {
-            not null when targetType == typeof(Visibility) => isEnabled ? Visibility.Visible : Visibility.Collapsed,
+            not null when targetType == typeof(Visibility) => isValid ? Visibility.Visible : Visibility.Collapsed,
             _ => throw new NotImplementedException()
         };
     }

@@ -39,14 +39,14 @@ namespace FModel.Settings
             if (File.Exists(FilePath)) File.Delete(FilePath);
         }
 
-        public static bool IsEndpointEnabled(FGame game, EEndpointType type, out FEndpoint endpoint)
+        public static bool IsEndpointValid(FGame game, EEndpointType type, out FEndpoint endpoint)
         {
             endpoint = null;
             if (!Default.CustomEndpoints.TryGetValue(game, out var endpoints))
                 return false;
 
             endpoint = endpoints[(int) type];
-            return endpoint.IsEnabled;
+            return endpoint.IsValid;
         }
 
         private bool _showChangelog = true;
@@ -384,8 +384,8 @@ namespace FModel.Settings
             {
                 FGame.FortniteGame, new []
                 {
-                    new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/aes"),
-                    new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/mappings")
+                    new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/aes", "$.['mainKey','dynamicKeys']"),
+                    new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/mappings", "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']")
                 }
             },
             {FGame.ShooterGame, new FEndpoint[]{new (), new ()}},

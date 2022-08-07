@@ -1,7 +1,9 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using Serilog;
 
@@ -13,35 +15,55 @@ public class DynamicApiEndpoint : AbstractApiProvider
     {
     }
 
-    public async Task<AesResponse> GetAesKeysAsync(CancellationToken token, string url)
+    public async Task<AesResponse> GetAesKeysAsync(CancellationToken token, string url, string path)
     {
         var request = new FRestRequest(url)
         {
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
-        var response = await _client.ExecuteAsync<AesResponse>(request, token).ConfigureAwait(false);
+        var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
+        var body = JToken.Parse(response.Content!);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-        return response.Data;
+
+        var tokens = body.SelectTokens(path);
+        var ret = new AesResponse { MainKey = Helper.FixKey(tokens.ElementAtOrDefault(0).ToString()) };
+        if (tokens.ElementAtOrDefault(1) is JArray dynamicKeys)
+        {
+            foreach (var dynamicKey in dynamicKeys)
+            {
+                if (dynamicKey["guid"] is not { } guid || dynamicKey["key"] is not { } key)
+                    continue;
+
+                ret.DynamicKeys.Add(new DynamicKey{Guid = guid.ToString(), Key = Helper.FixKey(key.ToString())});
+            }
+        }
+        return ret;
     }
 
-    public AesResponse GetAesKeys(CancellationToken token, string url)
+    public AesResponse GetAesKeys(CancellationToken token, string url, string path)
     {
-        return GetAesKeysAsync(token, url).GetAwaiter().GetResult();
+        return GetAesKeysAsync(token, url, path).GetAwaiter().GetResult();
     }
 
-    public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token, string url)
+    public async Task<MappingsResponse[]> GetMappingsAsync(CancellationToken token, string url, string path)
     {
         var request = new FRestRequest(url)
         {
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
-        var response = await _client.ExecuteAsync<MappingsResponse[]>(request, token).ConfigureAwait(false);
+        var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
+        var body = JToken.Parse(response.Content!);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-        return response.Data;
+
+        var tokens = body.SelectTokens(path);
+        var ret = new MappingsResponse[] {new()};
+        ret[0].Url = tokens.ElementAtOrDefault(0).ToString();
+        ret[0].FileName = tokens.ElementAtOrDefault(1).ToString();
+        return ret;
     }
 
-    public MappingsResponse[] GetMappings(CancellationToken token, string url)
+    public MappingsResponse[] GetMappings(CancellationToken token, string url, string path)
     {
-        return GetMappingsAsync(token, url).GetAwaiter().GetResult();
+        return GetMappingsAsync(token, url, path).GetAwaiter().GetResult();
     }
 }

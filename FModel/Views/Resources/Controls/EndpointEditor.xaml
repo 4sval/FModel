@@ -6,7 +6,7 @@
          xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
          xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
          xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" ResizeMode="NoResize"
+         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" ResizeMode="NoResize" Closing="OnClosing"
          Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.50'}"
          Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.30'}">
     <adonisControls:AdonisWindow.Resources>
@@ -23,38 +23,62 @@
         </Grid.RowDefinitions>
 
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="5"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <Grid Grid.Row="0" Margin="{adonisUi:Space 1, 0.5}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="10" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <TextBlock Grid.Column="0" Text="Endpoint" VerticalAlignment="Center" Margin="0 0 0 5" />
-                <TextBox x:Name="EndpointUrl" Grid.Column="2" Margin="0 0 0 5" />
-                <Button Grid.Column="4" Content="Send" HorizontalAlignment="Right" Margin="0 0 0 5"
-                        Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Click="OnSend"/>
+                <Grid Grid.Row="0" Margin="{adonisUi:Space 1, 0.5}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Endpoint" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBox Grid.Column="2" Margin="0 0 0 5" Text="{Binding Url, Mode=TwoWay}" TextChanged="OnTextChanged" />
+                    <Button Grid.Column="4" Content="Send" HorizontalAlignment="Right" Margin="0 0 0 5"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Click="OnSend"/>
+                </Grid>
+
+                <avalonEdit:TextEditor x:Name="EndpointResponse" Grid.Row="2" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                                       FontFamily="Consolas" FontSize="8pt" IsReadOnly="True" ShowLineNumbers="True" Foreground="#DAE5F2" />
             </Grid>
 
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <avalonEdit:TextEditor x:Name="EndpointResponse" Grid.Column="0" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                <Grid Grid.Row="0" Margin="{adonisUi:Space 1, 0.5}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Path" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBox Grid.Column="2" Margin="0 0 0 5" Text="{Binding Path, Mode=TwoWay}" TextChanged="OnTextChanged" />
+                    <Button Grid.Column="4" Content="Test" HorizontalAlignment="Right" Margin="0 0 0 5"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Click="OnTest"/>
+                </Grid>
+
+                <avalonEdit:TextEditor x:Name="TargetResponse" Grid.Row="2" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
                                        FontFamily="Consolas" FontSize="8pt" IsReadOnly="True" ShowLineNumbers="True" Foreground="#DAE5F2" />
-                <avalonEdit:TextEditor x:Name="TargetResponse" Grid.Column="2" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
-                                       FontFamily="Consolas" FontSize="8pt" IsReadOnly="False" ShowLineNumbers="True" Foreground="#DAE5F2" />
             </Grid>
         </Grid>
 
@@ -65,12 +89,17 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
+                <TextBlock Grid.Column="0" Text="{Binding Label}"
+                           HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" Margin="0 0 10 0" FontWeight="DemiBold"
+                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
+
+                <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
-                <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="True"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Cancel" />
+                <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Online Evaluator" Click="OnEvaluator" />
             </Grid>
         </Border>
     </Grid>
