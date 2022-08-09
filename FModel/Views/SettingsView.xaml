@@ -57,8 +57,12 @@
                     <TextBox x:Name="ImStockBro" Grid.Row="0" Grid.Column="2" Text="{Binding OutputDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseOutput" Margin="0 0 0 5" />
 
-                    <CheckBox x:Name="CustomOutputFolders" Grid.Row="0" Grid.Column="6" IsChecked="False" Margin="5 0 0 5" ToolTip="Customize the directory of more output folders" />
-                    <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Right" Visibility="{Binding IsChecked, ElementName=CustomOutputFolders, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <CheckBox Grid.Row="0" Grid.Column="6" Margin="5 0 0 5" ToolTip="Customize the directory of more output folders"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              IsChecked="{Binding SettingsView.UseCustomOutputFolders, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Right"
+                          DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                          Visibility="{Binding SettingsView.UseCustomOutputFolders, Converter={StaticResource BoolToVisibilityConverter}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />

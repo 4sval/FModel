@@ -22,6 +22,13 @@ public class SettingsViewModel : ViewModel
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
     private readonly DiscordHandler _discordHandler = DiscordService.DiscordHandler;
 
+    private bool _useCustomOutputFolders;
+    public bool UseCustomOutputFolders
+    {
+        get => _useCustomOutputFolders;
+        set => SetProperty(ref _useCustomOutputFolders, value);
+    }
+
     private EUpdateMode _selectedUpdateMode;
     public EUpdateMode SelectedUpdateMode
     {

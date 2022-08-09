@@ -57,7 +57,15 @@ public partial class SettingsView
 
     private void OnBrowseOutput(object sender, RoutedEventArgs e)
     {
-        if (TryBrowse(out var path)) UserSettings.Default.OutputDirectory = path;
+        if (!TryBrowse(out var path)) return;
+        UserSettings.Default.OutputDirectory = path;
+        if (_applicationView.SettingsView.UseCustomOutputFolders) return;
+
+        path = Path.Combine(path, "Exports");
+        UserSettings.Default.RawDataDirectory = path;
+        UserSettings.Default.PropertiesDirectory = path;
+        UserSettings.Default.TextureDirectory = path;
+        UserSettings.Default.AudioDirectory = path;
     }
 
     private void OnBrowseDirectories(object sender, RoutedEventArgs e)

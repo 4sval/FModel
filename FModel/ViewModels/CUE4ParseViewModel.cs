@@ -562,6 +562,8 @@ public class CUE4ParseViewModel : ViewModel
             case "xml":
             case "css":
             case "csv":
+            case "pem":
+            case "tps":
             case "js":
             case "po":
             case "h":

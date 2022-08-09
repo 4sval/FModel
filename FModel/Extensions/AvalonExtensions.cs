@@ -33,6 +33,7 @@ public static class AvalonExtensions
             case "csv":
                 return _iniHighlighter;
             case "xml":
+            case "tps":
                 return _xmlHighlighter;
             case "h":
             case "cpp":
@@ -43,6 +44,7 @@ public static class AvalonExtensions
                 return _ulangHighlighter;
             case "bat":
             case "txt":
+            case "pem":
             case "po":
                 return null;
             default:
