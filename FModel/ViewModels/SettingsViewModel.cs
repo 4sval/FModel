@@ -182,6 +182,8 @@ public class SettingsViewModel : ViewModel
     private ELodFormat _lodExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
 
+    private bool _mappingsUpdate = false;
+
     public SettingsViewModel(FGame game)
     {
         _game = game;
@@ -216,6 +218,11 @@ public class SettingsViewModel : ViewModel
         {
             AesEndpoint = endpoints[0];
             MappingEndpoint = endpoints[1];
+            MappingEndpoint.PropertyChanged += (sender, args) =>
+            {
+                if (sender is FEndpoint endpoint && !_mappingsUpdate)
+                    _mappingsUpdate = args.PropertyName is "Overwrite" or "FilePath" && endpoint.IsValid;
+            };
         }
 
         _assetLanguageSnapshot = UserSettings.Default.AssetLanguage;
@@ -294,9 +301,17 @@ public class SettingsViewModel : ViewModel
         SelectedOptions = _optionsSnapshot;
     }
 
-    public SettingsOut Save()
+    public bool Save(out List<SettingsOut> whatShouldIDo)
     {
-        var ret = SettingsOut.Nothing;
+        var restart = false;
+        whatShouldIDo = new List<SettingsOut>();
+
+        if (_assetLanguageSnapshot != SelectedAssetLanguage)
+            whatShouldIDo.Add(SettingsOut.ReloadLocres);
+        if (_mappingsUpdate)
+            whatShouldIDo.Add(SettingsOut.ReloadMappings);
+        if (_updateModeSnapshot != SelectedUpdateMode)
+            whatShouldIDo.Add(SettingsOut.CheckForUpdates);
 
         if (_ueGameSnapshot != SelectedUeGame || _customVersionsSnapshot != SelectedCustomVersions ||
             _uePlatformSnapshot != SelectedUePlatform || _optionsSnapshot != SelectedOptions || // combobox
@@ -307,13 +322,7 @@ public class SettingsViewModel : ViewModel
             _audioSnapshot != UserSettings.Default.AudioDirectory || // textbox
             _modelSnapshot != UserSettings.Default.ModelDirectory || // textbox
             _gameSnapshot != UserSettings.Default.GameDirectory) // textbox
-            ret = SettingsOut.Restart;
-
-        if (_assetLanguageSnapshot != SelectedAssetLanguage)
-            ret = SettingsOut.ReloadLocres;
-
-        if (_updateModeSnapshot != SelectedUpdateMode)
-            ret = SettingsOut.CheckForUpdates;
+            restart = true;
 
         UserSettings.Default.UpdateMode = SelectedUpdateMode;
         UserSettings.Default.Presets[_game] = SelectedPreset;
@@ -343,7 +352,7 @@ public class SettingsViewModel : ViewModel
         if (SelectedDiscordRpc == EDiscordRpc.Never)
             _discordHandler.Shutdown();
 
-        return ret;
+        return restart;
     }
 
     private IEnumerable<EUpdateMode> EnumerateUpdateModes() => Enum.GetValues<EUpdateMode>();

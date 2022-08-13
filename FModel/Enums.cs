@@ -18,10 +18,9 @@ public enum EErrorKind
 
 public enum SettingsOut
 {
-    Restart,
     ReloadLocres,
-    CheckForUpdates,
-    Nothing
+    ReloadMappings,
+    CheckForUpdates
 }
 
 public enum EStatusKind

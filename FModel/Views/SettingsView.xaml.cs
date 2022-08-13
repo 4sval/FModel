@@ -37,21 +37,27 @@ public partial class SettingsView
 
     private async void OnClick(object sender, RoutedEventArgs e)
     {
-        var whatShouldIDo = _applicationView.SettingsView.Save();
-        if (whatShouldIDo == SettingsOut.Restart)
+        var restart = _applicationView.SettingsView.Save(out var whatShouldIDo);
+        if (restart)
             _applicationView.RestartWithWarning();
 
         Close();
 
-        switch (whatShouldIDo)
+        foreach (var dOut in whatShouldIDo)
         {
-            case SettingsOut.ReloadLocres:
-                _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
-                await _applicationView.CUE4Parse.LoadLocalizedResources();
-                break;
-            case SettingsOut.CheckForUpdates:
-                ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
-                break;
+            switch (dOut)
+            {
+                case SettingsOut.ReloadLocres:
+                    _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
+                    await _applicationView.CUE4Parse.LoadLocalizedResources();
+                    break;
+                case SettingsOut.ReloadMappings:
+                    await _applicationView.CUE4Parse.InitBenMappings();
+                    break;
+                case SettingsOut.CheckForUpdates:
+                    ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
+                    break;
+            }
         }
     }
 
@@ -98,7 +104,7 @@ public partial class SettingsView
         if (TryBrowse(out var path)) UserSettings.Default.ModelDirectory = path;
     }
 
-    private async void OnBrowseMappings(object sender, RoutedEventArgs e)
+    private void OnBrowseMappings(object sender, RoutedEventArgs e)
     {
         var openFileDialog = new OpenFileDialog
         {
@@ -111,7 +117,6 @@ public partial class SettingsView
             return;
 
         _applicationView.SettingsView.MappingEndpoint.FilePath = openFileDialog.FileName;
-        await _applicationView.CUE4Parse.InitBenMappings();
     }
 
     private bool TryBrowse(out string path)
