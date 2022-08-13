@@ -40,6 +40,8 @@ public partial class AvalonEditor
 
         YesWeEditor = MyAvalonEditor;
         YesWeSearch = WpfSuckMyDick;
+        MyAvalonEditor.TextArea.TextView.LinkTextBackgroundBrush = null;
+        MyAvalonEditor.TextArea.TextView.LinkTextForegroundBrush = Brushes.Cornsilk;
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
 

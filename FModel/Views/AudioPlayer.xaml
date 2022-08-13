@@ -7,7 +7,8 @@
          xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
          xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
          xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed" Closing="OnClosing" PreviewKeyDown="OnPreviewKeyDown"
+         WindowStartupLocation="CenterScreen" IconVisibility="Collapsed"
+         Closing="OnClosing" PreviewKeyDown="OnPreviewKeyDown" Activated="OnActivatedDeactivated" Deactivated="OnActivatedDeactivated"
          Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.50'}"
          Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.55'}">
     <adonisControls:AdonisWindow.Style>
@@ -27,7 +28,7 @@
             <ColumnDefinition Width="350" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        
+
         <GroupBox Grid.Column="0" Padding="{adonisUi:Space 0}" Background="Transparent">
             <DockPanel Margin="10">
                 <Grid DockPanel.Dock="Top">
@@ -43,7 +44,7 @@
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                        
+
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Devices" VerticalAlignment="Center" Margin="0 0 0 10" />
                     <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding AudioPlayer.AudioDevicesView, IsAsync=True}"
                               SelectedItem="{Binding AudioPlayer.SelectedAudioDevice, Mode=TwoWay}" SelectionChanged="OnDeviceSwap">
@@ -53,18 +54,18 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    
+
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Volume" VerticalAlignment="Center" Margin="0 0 0 10" />
                     <Slider Grid.Row="1" Grid.Column="2" TickPlacement="None" Minimum="0" Maximum="100" TickFrequency="1"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" ValueChanged="OnVolumeChange"
                             Value="{Binding AudioPlayerVolume, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
-                    
+
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Encoding" VerticalAlignment="Center" Margin="0 0 0 10" />
                     <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding AudioPlayer.PlayedFile.Encoding, Converter={x:Static converters:EnumToStringConverter.Instance}}" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                    
+
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Length" VerticalAlignment="Center" Margin="0 0 0 10" />
                     <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding AudioPlayer.PlayedFile.Duration}" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                    
+
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Bytes Per Second" VerticalAlignment="Center" />
                     <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding AudioPlayer.PlayedFile.BytesPerSecond}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                 </Grid>
@@ -74,7 +75,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    
+
                     <Grid Grid.Column="0" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -130,14 +131,14 @@
                 </ListBox>
             </DockPanel>
         </GroupBox>
-        
+
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            
+
             <audioControls:Timeclock Grid.Row="0" />
             <StackPanel Grid.Row="1" Margin="0 0 25 0"
                         HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">

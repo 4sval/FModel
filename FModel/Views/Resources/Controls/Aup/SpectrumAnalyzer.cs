@@ -133,10 +133,12 @@ public sealed class SpectrumAnalyzer : UserControl
             case ESourceProperty.FftData:
                 UpdateSpectrum(SpectrumResolution, _source.FftData);
                 break;
+            case ESourceProperty.HideToggle when (bool) e.Value == false:
             case ESourceProperty.PlaybackState when (PlaybackState) e.Value == PlaybackState.Playing:
             case ESourceProperty.RecordingState when (RecordingState) e.Value == RecordingState.Recording:
                 CreateBars();
                 break;
+            case ESourceProperty.HideToggle when (bool) e.Value:
             case ESourceProperty.RecordingState when (RecordingState) e.Value == RecordingState.Stopped:
                 SilenceBars();
                 break;
@@ -332,15 +334,15 @@ public sealed class SpectrumAnalyzer : UserControl
         {
             if (_spectrumGrid == null) return;
 
+            var borderBrush = FrequencyBarBorderBrush.Clone();
+            var barBrush = FrequencyBarBrush.Clone();
+            borderBrush.Freeze();
+            barBrush.Freeze();
+
             _spectrumGrid.Children.Clear();
             _bars = new Border[FrequencyBarCount];
             for (var i = 0; i < _bars.Length; i++)
             {
-                var borderBrush = FrequencyBarBorderBrush.Clone();
-                var barBrush = FrequencyBarBrush.Clone();
-                borderBrush.Freeze();
-                barBrush.Freeze();
-
                 _bars[i] = new Border
                 {
                     CornerRadius = FrequencyBarCornerRadius,

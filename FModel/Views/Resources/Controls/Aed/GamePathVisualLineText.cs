@@ -29,8 +29,13 @@ public class GamePathVisualLineText : VisualLineText
         if (context == null)
             throw new ArgumentNullException(nameof(context));
 
-        TextRunProperties.SetForegroundBrush(Brushes.Plum);
-        return base.CreateTextRun(startVisualColumn, context);
+        var relativeOffset = startVisualColumn - VisualColumn;
+        var text = context.GetText(context.VisualLine.FirstDocumentLine.Offset + RelativeTextOffset + relativeOffset, DocumentLength - relativeOffset);
+
+        if (text.Count != 2) // ": "
+            TextRunProperties.SetForegroundBrush(Brushes.Plum);
+
+        return new TextCharacters(text.Text, text.Offset, text.Count, TextRunProperties);
     }
 
     private bool GamePathIsClickable() => !string.IsNullOrEmpty(_gamePath) && Keyboard.Modifiers == ModifierKeys.None;
