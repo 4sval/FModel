@@ -1,12 +1,12 @@
 # FModel [![Discord](https://discordapp.com/api/guilds/637265123144237061/widget.png?style=shield)](https://discord.gg/fdkNYYQ)
 
-Beginner-friendly and open-source software for data-mining games made with Unreal Engine.
+Open-source software for exploring Unreal Engine games.
 
 <img src="https://user-images.githubusercontent.com/26126862/119065662-52534800-b9de-11eb-85fd-a47797daa062.png" align="center" alt="FModel">
 
 ## Installation
 
-Follow [our documentation](https://fmodel.app/docs#installation)
+Read [our wiki](https://github.com/4sval/FModel/wiki)
 
 ## Authors
 

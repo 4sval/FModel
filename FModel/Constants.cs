@@ -17,8 +17,8 @@ public static class Constants
     public const string BLUE = "#528BCC";
 
     public const string ISSUE_LINK = "https://github.com/iAmAsval/FModel/issues/new/choose";
-    public const string DONATE_LINK = "https://fmodel.app/donate?utm_source=fmodel&utm_medium=app&utm_campaign=donations";
-    public const string DISCORD_LINK = "https://fmodel.app/discord?utm_source=fmodel&utm_medium=app&utm_campaign=discord-server";
+    public const string DONATE_LINK = "https://fmodel.app/donate";
+    public const string DISCORD_LINK = "https://fmodel.app/discord";
 
     public const string _FN_LIVE_TRIGGER = "fortnite-live.manifest";
     public const string _VAL_LIVE_TRIGGER = "valorant-live.manifest";
