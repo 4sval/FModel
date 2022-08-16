@@ -117,7 +117,7 @@ public class AssetsFolderViewModel
                         {
                             for (var i = 0; i < list.Count; i++)
                             {
-                                if (list[i].Header == header)
+                                if (list[i].Header.Equals(header, StringComparison.OrdinalIgnoreCase))
                                     return list[i];
                             }
 

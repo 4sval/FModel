@@ -385,7 +385,7 @@ namespace FModel.Settings
                 FGame.FortniteGame, new []
                 {
                     new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/aes", "$.['mainKey','dynamicKeys']"),
-                    new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/mappings", "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']")
+                    new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/mappings", "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") //  && @.meta.platform=='Windows'
                 }
             },
             {FGame.ShooterGame, new FEndpoint[]{new (), new ()}},

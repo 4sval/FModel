@@ -121,10 +121,11 @@ public class ThreadWorkerViewModel : ViewModel
                             FLogger.AppendText(exception.TargetSite.DeclaringType.FullName + _dot, Constants.GRAY);
                             FLogger.AppendText(exception.TargetSite.Name, Constants.YELLOW);
 
-                            var parameters = new StringBuilder();
-                            foreach (var parameter in exception.TargetSite.GetParameters())
+                            var p = exception.TargetSite.GetParameters();
+                            var parameters = new string[p.Length];
+                            for (int i = 0; i < parameters.Length; i++)
                             {
-                                parameters.Append(parameter.ParameterType.Name + " " + parameter.Name);
+                                parameters[i] = p[i].ParameterType.Name + " " + p[i].Name;
                             }
                             FLogger.AppendText("(" + string.Join(", ", parameters) + ")", Constants.GRAY, true);
                         }

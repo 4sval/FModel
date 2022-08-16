@@ -60,12 +60,7 @@ public partial class EndpointEditor
     {
         if (DataContext is not FEndpoint endpoint) return;
 
-        var response = await new RestClient().ExecuteAsync(new FRestRequest(endpoint.Url)
-        {
-            OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
-        }).ConfigureAwait(false);
-        var body = string.IsNullOrEmpty(response.Content) ? JToken.Parse("{}") : JToken.Parse(response.Content);
-
+        var body = await ApplicationService.ApiEndpointView.DynamicApi.GetRequestBody(default, endpoint.Url).ConfigureAwait(false);
         Application.Current.Dispatcher.Invoke(delegate
         {
             EndpointResponse.Document ??= new TextDocument();

@@ -62,7 +62,7 @@ public class DynamicApiEndpoint : AbstractApiProvider
         return GetMappingsAsync(token, url, path).GetAwaiter().GetResult();
     }
 
-    private async Task<JToken> GetRequestBody(CancellationToken token, string url)
+    public async Task<JToken> GetRequestBody(CancellationToken token, string url)
     {
         var request = new FRestRequest(url)
         {
@@ -70,6 +70,6 @@ public class DynamicApiEndpoint : AbstractApiProvider
         };
         var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
-        return string.IsNullOrEmpty(response.Content) ? JToken.Parse("{}") : JToken.Parse(response.Content);
+        return response.IsSuccessful && !string.IsNullOrEmpty(response.Content) ? JToken.Parse(response.Content) : JToken.Parse("{}");
     }
 }
