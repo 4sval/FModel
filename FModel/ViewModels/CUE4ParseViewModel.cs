@@ -356,10 +356,11 @@ public class CUE4ParseViewModel : ViewModel
                         break;
                     }
                 }
-                else
+
+                if (Provider.MappingsContainer == null)
                 {
                     var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
-                    if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
+                    if (latestUsmaps.Length <= 0) return;
 
                     var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
                     Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
