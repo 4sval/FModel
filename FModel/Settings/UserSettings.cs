@@ -302,7 +302,7 @@ namespace FModel.Settings
             {FGame.WorldExplorers, EGame.GAME_UE4_LATEST},
             {FGame.g3, EGame.GAME_UE4_22},
             {FGame.StateOfDecay2, EGame.GAME_StateOfDecay2},
-            {FGame.Prospect, EGame.GAME_UE4_LATEST},
+            {FGame.Prospect, EGame.GAME_Splitgate},
             {FGame.Indiana, EGame.GAME_UE4_LATEST},
             {FGame.RogueCompany, EGame.GAME_RogueCompany},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
