@@ -11,7 +11,6 @@ using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-using FModel.Views.Snooper;
 using ICSharpCode.AvalonEdit.Editing;
 
 namespace FModel;
@@ -53,10 +52,6 @@ public partial class MainWindow
         ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
 #endif
 
-        var v = new Viewer();
-        v.Run();
-        return;
-
         switch (UserSettings.Default.AesReload)
         {
             case EAesReload.Always:
@@ -80,6 +75,12 @@ public partial class MainWindow
 
         if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
             _discordHandler.Initialize(_applicationView.CUE4Parse.Game);
+
+#if DEBUG
+        await _threadWorkerView.Begin(_ =>
+            _applicationView.CUE4Parse.Extract(
+                "FortniteGame/Content/Environments/Props/Winter/Meshes/SM_Garland_Merge.uasset"));
+#endif
     }
 
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)

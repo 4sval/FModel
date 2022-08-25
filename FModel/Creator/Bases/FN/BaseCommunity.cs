@@ -1,8 +1,8 @@
+using CUE4Parse.FN.Enums;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
-using CUE4Parse_Fortnite.Enums;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;

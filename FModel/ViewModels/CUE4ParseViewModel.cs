@@ -38,6 +38,7 @@ using FModel.Services;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
+using FModel.Views.Snooper;
 using Newtonsoft.Json;
 using Serilog;
 using SkiaSharp;
@@ -752,11 +753,8 @@ public class CUE4ParseViewModel : ViewModel
                                                                                                  export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                                                                  export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
-                Application.Current.Dispatcher.Invoke(delegate
-                {
-                    var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                    modelViewer.Load(export);
-                });
+                var snooper = new Snooper(export);
+                snooper.Run();
                 return true;
             }
             case UMaterialInstance m when ModelIsOverwritingMaterial:
