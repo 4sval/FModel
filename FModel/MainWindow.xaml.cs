@@ -11,6 +11,7 @@ using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
+using FModel.Views.Snooper;
 using ICSharpCode.AvalonEdit.Editing;
 
 namespace FModel;
@@ -51,6 +52,10 @@ public partial class MainWindow
 #if !DEBUG
         ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
 #endif
+
+        var v = new Viewer();
+        v.Run();
+        return;
 
         switch (UserSettings.Default.AesReload)
         {

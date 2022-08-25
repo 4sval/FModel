@@ -100,4 +100,9 @@ public static class Helper
         var d = (Math.Abs(d1) + Math.Abs(d2) + 10) * 1.0e-15;
         return -d < n && d > n;
     }
+
+    public static float DegreesToRadians(float degrees)
+    {
+        return MathF.PI / 180f * degrees;
+    }
 }
