@@ -52,7 +52,7 @@ public partial class SettingsView
                     await _applicationView.CUE4Parse.LoadLocalizedResources();
                     break;
                 case SettingsOut.ReloadMappings:
-                    await _applicationView.CUE4Parse.InitBenMappings();
+                    await _applicationView.CUE4Parse.InitMappings();
                     break;
                 case SettingsOut.CheckForUpdates:
                     ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);

@@ -31,21 +31,21 @@ public partial class EndpointEditor
         InstructionBox.Text = type switch
         {
             EEndpointType.Aes =>
-@"In order to make this work, you first need to understand JSON and its query language. If you don't, please close this window. If your game never changes its AES keys or is not even encrypted, please close this window. If you do understand what you are doing, you have to know that the AES path supports up to 2 tokens.
+@"In order to make this work, you first need to understand JSON and its query language. If you don't, please close this window. If your game never changes its AES keys or is not even encrypted, please close this window. If you do understand what you are doing, you have to know that the AES expression supports up to 2 elements.
 
-    The first token is mandatory and will be assigned to the main AES key. It has to be looking like a key, else your configuration will not be valid (the key validity against your files will not be checked). Said key must be hexadecimal and can start without ""0x"".
+    The first element is mandatory and will be assigned to the main AES key. It has to be looking like a key, else your configuration will not be valid (the key validity against your files will not be checked). Said key must be hexadecimal and can start without ""0x"".
 
-    If your game uses several AES keys, you can specify a second token that will be your list of dynamic keys. The format needed is a list of objects with, at least, the next 2 variables:
+    If your game uses several AES keys, you can specify a second element that will be your list of dynamic keys. The format needed is a list of objects with, at least, the next 2 variables:
 {
     ""guid"": ""the archive guid"",
     ""key"": ""the archive aes key""
 }",
             EEndpointType.Mapping =>
-@"In order to make this work, you first need to understand JSON and its query language. If you don't, please close this window. If your game does not use unversioned package properties, please close this window. If you do understand what you are doing, you have to know that the mapping path supports up to 2 tokens.
+@"In order to make this work, you first need to understand JSON and its query language. If you don't, please close this window. If your game does not use unversioned package properties, please close this window. If you do understand what you are doing, you have to know that the mapping expression supports up to 2 elements.
 
-    The first token is mandatory and will be assigned to the mapping download URL, which can be all kinds of mapping but not Brotli compressed.
+    The first element is mandatory and will be assigned to the mapping download URL, which can be all kinds of mapping but not Brotli compressed.
 
-    The second token is optional and will be assigned to the mapping file name. If unspecified, said file name will be grabbed from the URL.",
+    The second element is optional and will be assigned to the mapping file name. If unspecified, said file name will be grabbed from the URL.",
             _ => ""
         };
     }
@@ -84,6 +84,11 @@ public partial class EndpointEditor
         if (sender is not TextBox { IsLoaded: true } ||
             DataContext is not FEndpoint endpoint) return;
         endpoint.IsValid = false;
+    }
+
+    private void OnSyntax(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo { FileName = "https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html", UseShellExecute = true });
     }
 
     private void OnEvaluator(object sender, RoutedEventArgs e)

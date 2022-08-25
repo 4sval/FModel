@@ -321,7 +321,7 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    public async Task InitBenMappings()
+    public async Task InitMappings()
     {
         if (!UserSettings.IsEndpointValid(Game, EEndpointType.Mapping, out var endpoint))
             return;

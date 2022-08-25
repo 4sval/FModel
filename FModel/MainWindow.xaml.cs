@@ -69,7 +69,7 @@ public partial class MainWindow
 #if !DEBUG
         await _applicationView.CUE4Parse.InitInformation();
 #endif
-        await _applicationView.CUE4Parse.InitBenMappings();
+        await _applicationView.CUE4Parse.InitMappings();
         await _applicationView.InitVgmStream();
         await _applicationView.InitOodle();
 
@@ -127,7 +127,7 @@ public partial class MainWindow
 
     private async void OnMappingsReload(object sender, ExecutedRoutedEventArgs e)
     {
-        await _applicationView.CUE4Parse.InitBenMappings();
+        await _applicationView.CUE4Parse.InitMappings();
     }
 
     private void OnAutoTriggerExecuted(object sender, ExecutedRoutedEventArgs e)
