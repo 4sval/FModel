@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports;
-using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
-using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse_Conversion.Meshes;
-using CUE4Parse_Conversion.Textures;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
@@ -22,24 +20,10 @@ public class Snooper
     private IKeyboard _keyboard;
     private Vector2 _previousMousePosition;
 
-    private BufferObject<uint> _ebo;
-    private BufferObject<float> _vbo;
-    private VertexArrayObject<float, uint> _vao;
-    private Shader _shader;
-    private CMaterialParams _params;
-
-    private Texture _albedoMap;
-    private Texture _normalMap;
-
-    private uint[] _indices;
-    private float[] _vertices;
+    private Mesh[] _meshes;
 
     public int Width { get; }
     public int Height { get; }
-
-    private const int _vertexSize = 8; // Position + Normals + UV
-    private const uint _faceSize = 3; // just so we don't have to do .Length
-    private readonly uint[] _facesIndex = { 1, 0, 2 };
 
     public Snooper(UObject export)
     {
@@ -60,42 +44,19 @@ public class Snooper
         _window.Render += OnRender;
         _window.Closing += OnClose;
 
+        _meshes = new Mesh[1];
         switch (export)
         {
             case UStaticMesh st when st.TryConvert(out var mesh):
             {
-                _indices = new uint[mesh.LODs[0].Sections.Value.Sum(section => section.NumFaces * _faceSize)];
-                _vertices = new float[_indices.Length * _vertexSize];
-                foreach (var section in mesh.LODs[0].Sections.Value)
-                {
-                    for (uint face = 0; face < section.NumFaces; face++)
-                    {
-                        foreach (var f in _facesIndex)
-                        {
-                            var i = face * _faceSize + f;
-                            var index = section.FirstIndex + i;
-                            var indice = mesh.LODs[0].Indices.Value[index];
-
-                            var vert = mesh.LODs[0].Verts[indice];
-                            _vertices[index * _vertexSize] = vert.Position.X * 0.01f;
-                            _vertices[index * _vertexSize + 1] = vert.Position.Z * 0.01f;
-                            _vertices[index * _vertexSize + 2] = vert.Position.Y * 0.01f;
-                            _vertices[index * _vertexSize + 3] = vert.Normal.X;
-                            _vertices[index * _vertexSize + 4] = vert.Normal.Z;
-                            _vertices[index * _vertexSize + 5] = vert.Normal.Y;
-                            _vertices[index * _vertexSize + 6] = vert.UV.U;
-                            _vertices[index * _vertexSize + 7] = vert.UV.V;
-
-                            _indices[index] = i;
-                        }
-                    }
-
-                    _params = new CMaterialParams();
-                    if (section.Material != null && section.Material.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
-                    {
-                        unrealMaterial.GetParams(_params);
-                    }
-                }
+                _meshes[0] = new Mesh(mesh.LODs[0], mesh.LODs[0].Verts);
+                SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+                break;
+            }
+            case USkeletalMesh sk when sk.TryConvert(out var mesh):
+            {
+                _meshes[0] = new Mesh(mesh.LODs[0], mesh.LODs[0].Verts);
+                SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
                 break;
             }
             default:
@@ -106,6 +67,17 @@ public class Snooper
     public void Run()
     {
         _window.Run();
+    }
+
+    private void SetupCamera(FBox box)
+    {
+        // X Yaw Gauche Droite
+        // Y Pitch Haut Bas
+        // Z Avant Arrière
+
+        var center = box.GetCenter();
+        var position = new Vector3(0f, center.Z, box.Max.Y * 3);
+        _camera = new Camera(position, center);
     }
 
     private void OnLoad()
@@ -121,65 +93,44 @@ public class Snooper
         }
 
         _gl = GL.GetApi(_window);
+        _gl.Enable(EnableCap.DepthTest);
 
-        _ebo = new BufferObject<uint>(_gl, _indices, BufferTargetARB.ElementArrayBuffer);
-        _vbo = new BufferObject<float>(_gl, _vertices, BufferTargetARB.ArrayBuffer);
-        _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
-
-        _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, _vertexSize, 0); // position
-        _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, _vertexSize, 3); // normals
-        _vao.VertexAttributePointer(2, 2, VertexAttribPointerType.Float, _vertexSize, 6); // uv
-
-        _shader = new Shader(_gl);
-
-        _camera = new Camera(Vector3.UnitZ * 6, Vector3.UnitZ * -1, Vector3.UnitY, Width / Height);
-
-        if (_params.Diffuse is UTexture2D { IsVirtual: false } diffuse && diffuse.GetFirstMip() is { } mip)
+        foreach (var mesh in _meshes)
         {
-            TextureDecoder.DecodeTexture(mip, diffuse.Format, diffuse.isNormalMap, out var data, out _);
-            _albedoMap = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY);
+            mesh.Setup(_gl);
         }
     }
 
-    private unsafe void OnRender(double deltaTime)
+    private void OnRender(double deltaTime)
     {
-        _gl.Clear((uint) ClearBufferMask.ColorBufferBit);
+        _gl.ClearColor(0.149f, 0.149f, 0.188f, 1.0f);
+        _gl.Clear((uint) ClearBufferMask.ColorBufferBit | (uint) ClearBufferMask.DepthBufferBit);
 
-        _vao.Bind();
-        _shader.Use();
-
-        _albedoMap.Bind(TextureUnit.Texture0);
-
-        _shader.SetUniform("uModel", Matrix4x4.Identity);
-        _shader.SetUniform("uView", _camera.GetViewMatrix());
-        _shader.SetUniform("uProjection", _camera.GetProjectionMatrix());
-        // _shader.SetUniform("viewPos", _camera.Position);
-
-        //Configure the materials variables.
-        _shader.SetUniform("material.albedo", 0);
-
-        _gl.DrawElements(PrimitiveType.Triangles, (uint) _indices.Length, DrawElementsType.UnsignedInt, null);
+        foreach (var mesh in _meshes)
+        {
+            mesh.Bind(_camera);
+        }
     }
 
     private void OnUpdate(double deltaTime)
     {
-        var speed = _keyboard.IsKeyPressed(Key.ShiftLeft) ? 5f : 2.5f;
+        var speed = _keyboard.IsKeyPressed(Key.ShiftLeft) ? 2.5f : 1f;
         var moveSpeed = speed * (float) deltaTime;
         if (_keyboard.IsKeyPressed(Key.W))
         {
-            _camera.Position += moveSpeed * _camera.Front;
+            _camera.Position += moveSpeed * _camera.Direction;
         }
         if (_keyboard.IsKeyPressed(Key.S))
         {
-            _camera.Position -= moveSpeed * _camera.Front;
+            _camera.Position -= moveSpeed * _camera.Direction;
         }
         if (_keyboard.IsKeyPressed(Key.A))
         {
-            _camera.Position -= Vector3.Normalize(Vector3.Cross(_camera.Front, _camera.Up)) * moveSpeed;
+            _camera.Position -= Vector3.Normalize(Vector3.Cross(_camera.Direction, _camera.Up)) * moveSpeed;
         }
         if (_keyboard.IsKeyPressed(Key.D))
         {
-            _camera.Position += Vector3.Normalize(Vector3.Cross(_camera.Front, _camera.Up)) * moveSpeed;
+            _camera.Position += Vector3.Normalize(Vector3.Cross(_camera.Direction, _camera.Up)) * moveSpeed;
         }
         if (_keyboard.IsKeyPressed(Key.E))
         {
@@ -212,10 +163,10 @@ public class Snooper
 
     private void OnClose()
     {
-        _ebo.Dispose();
-        _vbo.Dispose();
-        _vao.Dispose();
-        _shader.Dispose();
+        foreach (var mesh in _meshes)
+        {
+            mesh.Dispose();
+        }
     }
 
     private void KeyDown(IKeyboard keyboard, Key key, int arg3)

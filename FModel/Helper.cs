@@ -105,4 +105,9 @@ public static class Helper
     {
         return MathF.PI / 180f * degrees;
     }
+
+    public static float RadiansToDegrees(float radians)
+    {
+        return radians* 180f / MathF.PI;
+    }
 }

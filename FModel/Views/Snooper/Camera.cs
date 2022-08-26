@@ -6,22 +6,24 @@ namespace FModel.Views.Snooper;
 public class Camera
 {
     public Vector3 Position { get; set; }
-    public Vector3 Front { get; set; }
+    public Vector3 Direction { get; private set; }
+    public Vector3 Up = Vector3.UnitY;
 
-    public Vector3 Up { get; private set; }
-    public float AspectRatio { get; set; }
-
+    public float AspectRatio { get; }
     public float Yaw { get; set; } = -90f;
     public float Pitch { get; set; }
+    public float Zoom = 45f;
 
-    private float Zoom = 45f;
-
-    public Camera(Vector3 position, Vector3 front, Vector3 up, float aspectRatio)
+    public Camera(Vector3 position, Vector3 direction, float aspectRatio = 16f / 9f)
     {
         Position = position;
+        Direction = direction;
         AspectRatio = aspectRatio;
-        Front = front;
-        Up = up;
+
+        // trigonometric math to calculate the cam's yaw/pitch based on position and direction to look
+        var yaw = MathF.Atan((-Position.X - Direction.X) / (Position.Z - Direction.Z));
+        var pitch = MathF.Atan((Position.Y - Direction.Y) / (Position.Z - Direction.Z));
+        ModifyDirection(Helper.RadiansToDegrees(yaw), Helper.RadiansToDegrees(pitch));
     }
 
     public void ModifyZoom(float zoomAmount)
@@ -38,21 +40,25 @@ public class Camera
         //We don't want to be able to look behind us by going over our head or under our feet so make sure it stays within these bounds
         Pitch = Math.Clamp(Pitch, -89f, 89f);
 
-        var cameraDirection = Vector3.Zero;
-        cameraDirection.X = MathF.Cos(Helper.DegreesToRadians(Yaw)) * MathF.Cos(Helper.DegreesToRadians(Pitch));
-        cameraDirection.Y = MathF.Sin(Helper.DegreesToRadians(Pitch));
-        cameraDirection.Z = MathF.Sin(Helper.DegreesToRadians(Yaw)) * MathF.Cos(Helper.DegreesToRadians(Pitch));
-
-        Front = Vector3.Normalize(cameraDirection);
+        Direction = Vector3.Normalize(CalculateDirection());
     }
 
     public Matrix4x4 GetViewMatrix()
     {
-        return Matrix4x4.CreateLookAt(Position, Position + Front, Up);
+        return Matrix4x4.CreateLookAt(Position, Position + Direction, Up);
     }
 
     public Matrix4x4 GetProjectionMatrix()
     {
         return Matrix4x4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, 0.1f, 100.0f);
+    }
+
+    private Vector3 CalculateDirection()
+    {
+        var direction = Vector3.Zero;
+        direction.X = MathF.Cos(Helper.DegreesToRadians(Yaw)) * MathF.Cos(Helper.DegreesToRadians(Pitch));
+        direction.Y = MathF.Sin(Helper.DegreesToRadians(Pitch));
+        direction.Z = MathF.Sin(Helper.DegreesToRadians(Yaw)) * MathF.Cos(Helper.DegreesToRadians(Pitch));
+        return direction;
     }
 }
