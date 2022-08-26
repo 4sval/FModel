@@ -8,12 +8,12 @@ public class Texture : IDisposable
     private uint _handle;
     private GL _gl;
 
-    public unsafe Texture(GL gl, Span<byte> data, uint width, uint height)
+    public unsafe Texture(GL gl, byte[] data, uint width, uint height)
     {
         _gl = gl;
 
         _handle = _gl.GenTexture();
-        Bind();
+        Bind(TextureUnit.Texture0);
 
         fixed (void* d = &data[0])
         {
@@ -33,7 +33,7 @@ public class Texture : IDisposable
         _gl.GenerateMipmap(TextureTarget.Texture2D);
     }
 
-    public void Bind(TextureUnit textureSlot = TextureUnit.Texture0)
+    public void Bind(TextureUnit textureSlot)
     {
         _gl.ActiveTexture(textureSlot);
         _gl.BindTexture(TextureTarget.Texture2D, _handle);

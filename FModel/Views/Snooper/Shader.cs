@@ -25,13 +25,9 @@ out vec2 fTexCoords;
 
 void main()
 {
-    //Multiplying our uniform with the vertex position, the multiplication order here does matter.
     gl_Position = uProjection * uView * uModel * vec4(vPos, 1.0);
-    //We want to know the fragment's position in World space, so we multiply ONLY by uModel and not uView or uProjection
     fPos = vec3(uModel * vec4(vPos, 1.0));
-    //The Normal needs to be in World space too, but needs to account for Scaling of the object
     fNormal = mat3(transpose(inverse(uModel))) * vNormal;
-    //Pass the texture coordinates straight through to the fragment shader
     fTexCoords = vTexCoords;
 }
         ";
@@ -43,14 +39,22 @@ in vec3 fNormal;
 in vec3 fPos;
 in vec2 fTexCoords;
 
+struct Material {
+    sampler2D albedo;
+    sampler2D normal;
+    sampler2D specular;
+    sampler2D metallic;
+    sampler2D emissive;
+};
+
+uniform Material material;
 uniform vec3 viewPos;
 
 out vec4 FragColor;
 
 void main()
 {
-    vec3 viewDirection = normalize(viewPos - fPos);
-    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    FragColor = texture(material.albedo, fTexCoords);
 }
         ";
 
