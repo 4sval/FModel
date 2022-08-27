@@ -17,16 +17,16 @@ public class Section : IDisposable
 
     public uint FacesCount;
     public int FirstFaceIndex;
-    public CMaterialParams Params;
+    public CMaterialParams Parameters;
 
     public Section(uint facesCount, int firstFaceIndex, CMeshSection section)
     {
         FacesCount = facesCount;
         FirstFaceIndex = firstFaceIndex;
-        Params = new CMaterialParams();
+        Parameters = new CMaterialParams();
         if (section.Material != null && section.Material.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
         {
-            unrealMaterial.GetParams(Params);
+            unrealMaterial.GetParams(Parameters);
         }
     }
 
@@ -36,7 +36,7 @@ public class Section : IDisposable
 
         _handle = _gl.CreateProgram();
 
-        if (Params.Diffuse is UTexture2D { IsVirtual: false } diffuse && diffuse.GetFirstMip() is { } mip)
+        if (Parameters.Diffuse is UTexture2D { IsVirtual: false } diffuse && diffuse.GetFirstMip() is { } mip)
         {
             TextureDecoder.DecodeTexture(mip, diffuse.Format, diffuse.isNormalMap, out var data, out _);
             _albedoMap = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY);
@@ -45,13 +45,16 @@ public class Section : IDisposable
 
     public void Bind(Shader shader)
     {
+        if (Parameters.IsNull)
+            return;
+
         shader.SetUniform("material.albedo", 0);
-        _albedoMap.Bind(TextureUnit.Texture0);
+        _albedoMap?.Bind(TextureUnit.Texture0);
     }
 
     public void Dispose()
     {
-        _albedoMap.Dispose();
+        _albedoMap?.Dispose();
         _gl.DeleteProgram(_handle);
     }
 }

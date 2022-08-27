@@ -72,7 +72,7 @@ public class Snooper
     {
         var center = box.GetCenter();
         var position = new Vector3(0f, center.Z, box.Max.Y * 3);
-        _camera = new Camera(position, center);
+        _camera = new Camera(position, center, box.Max.Max() / 2f);
     }
 
     private void OnLoad()
@@ -109,8 +109,8 @@ public class Snooper
 
     private void OnUpdate(double deltaTime)
     {
-        var speed = _keyboard.IsKeyPressed(Key.ShiftLeft) ? 2.5f : 1f;
-        var moveSpeed = speed * (float) deltaTime;
+        var multiplier = _keyboard.IsKeyPressed(Key.ShiftLeft) ? 2f : 1f;
+        var moveSpeed = _camera.Speed * multiplier * (float) deltaTime;
         if (_keyboard.IsKeyPressed(Key.W))
         {
             _camera.Position += moveSpeed * _camera.Direction;

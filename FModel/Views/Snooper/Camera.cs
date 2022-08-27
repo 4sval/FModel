@@ -13,12 +13,14 @@ public class Camera
     public float Yaw { get; set; } = -90f;
     public float Pitch { get; set; } = 0f;
     public float Zoom { get; set; } = 45f;
+    public float Speed { get; set; } = 1f;
     public float AspectRatio => 16f / 9f;
 
-    public Camera(Vector3 position, Vector3 direction)
+    public Camera(Vector3 position, Vector3 direction, float speed)
     {
         Position = position;
         Direction = direction;
+        Speed = speed;
 
         // trigonometric math to calculate the cam's yaw/pitch based on position and direction to look
         var yaw = MathF.Atan((-Position.X - Direction.X) / (Position.Z - Direction.Z));
