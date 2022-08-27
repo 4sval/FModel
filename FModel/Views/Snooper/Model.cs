@@ -15,7 +15,7 @@ public class Model : IDisposable
     private BufferObject<float> _vbo;
     private VertexArrayObject<float, uint> _vao;
 
-    private const int _vertexSize = 8; // Position + Normals + UV
+    private const int _vertexSize = 8; // Position + Normal + UV
     private const uint _faceSize = 3; // just so we don't have to do .Length
     private readonly uint[] _facesIndex = { 1, 0, 2 };
 
@@ -73,7 +73,7 @@ public class Model : IDisposable
         _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
 
         _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, _vertexSize, 0); // position
-        _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, _vertexSize, 3); // normals
+        _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, _vertexSize, 3); // normal
         _vao.VertexAttributePointer(2, 2, VertexAttribPointerType.Float, _vertexSize, 6); // uv
 
         for (int section = 0; section < Sections.Length; section++)
@@ -91,11 +91,27 @@ public class Model : IDisposable
         _shader.SetUniform("uModel", Matrix4x4.Identity);
         _shader.SetUniform("uView", camera.GetViewMatrix());
         _shader.SetUniform("uProjection", camera.GetProjectionMatrix());
-        // _shader.SetUniform("viewPos", camera.Position);
+        _shader.SetUniform("viewPos", camera.Position);
+
+        _shader.SetUniform("material.diffuse", 0);
+        _shader.SetUniform("material.normal", 1);
+        _shader.SetUniform("material.specular", 2);
+        // _shader.SetUniform("material.metallic", 3);
+        // _shader.SetUniform("material.emission", 4);
+        _shader.SetUniform("material.shininess", 32f);
+
+        var lightColor = Vector3.One;
+        var diffuseColor = lightColor * new Vector3(0.5f);
+        var ambientColor = diffuseColor * new Vector3(0.2f);
+
+        _shader.SetUniform("light.ambient", ambientColor);
+        _shader.SetUniform("light.diffuse", diffuseColor); // darkened
+        _shader.SetUniform("light.specular", Vector3.One);
+        _shader.SetUniform("light.position", camera.Position);
 
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Bind(_shader);
+            Sections[section].Bind();
 
             _gl.DrawArrays(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount);
         }
