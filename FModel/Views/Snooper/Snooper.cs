@@ -20,7 +20,7 @@ public class Snooper
     private IKeyboard _keyboard;
     private Vector2 _previousMousePosition;
 
-    private Mesh[] _meshes;
+    private Model[] _models;
 
     public int Width { get; }
     public int Height { get; }
@@ -35,7 +35,6 @@ public class Snooper
 
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(Width, Height);
-        options.Position = new Vector2D<int>(Width, Height);
         options.Title = "Snooper";
         _window = Window.Create(options);
 
@@ -44,18 +43,18 @@ public class Snooper
         _window.Render += OnRender;
         _window.Closing += OnClose;
 
-        _meshes = new Mesh[1];
+        _models = new Model[1];
         switch (export)
         {
             case UStaticMesh st when st.TryConvert(out var mesh):
             {
-                _meshes[0] = new Mesh(mesh.LODs[0], mesh.LODs[0].Verts);
+                _models[0] = new Model(mesh.LODs[0], mesh.LODs[0].Verts);
                 SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
                 break;
             }
             case USkeletalMesh sk when sk.TryConvert(out var mesh):
             {
-                _meshes[0] = new Mesh(mesh.LODs[0], mesh.LODs[0].Verts);
+                _models[0] = new Model(mesh.LODs[0], mesh.LODs[0].Verts);
                 SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
                 break;
             }
@@ -71,10 +70,6 @@ public class Snooper
 
     private void SetupCamera(FBox box)
     {
-        // X Yaw Gauche Droite
-        // Y Pitch Haut Bas
-        // Z Avant Arrière
-
         var center = box.GetCenter();
         var position = new Vector3(0f, center.Z, box.Max.Y * 3);
         _camera = new Camera(position, center);
@@ -95,9 +90,9 @@ public class Snooper
         _gl = GL.GetApi(_window);
         _gl.Enable(EnableCap.DepthTest);
 
-        foreach (var mesh in _meshes)
+        foreach (var model in _models)
         {
-            mesh.Setup(_gl);
+            model.Setup(_gl);
         }
     }
 
@@ -106,9 +101,9 @@ public class Snooper
         _gl.ClearColor(0.149f, 0.149f, 0.188f, 1.0f);
         _gl.Clear((uint) ClearBufferMask.ColorBufferBit | (uint) ClearBufferMask.DepthBufferBit);
 
-        foreach (var mesh in _meshes)
+        foreach (var model in _models)
         {
-            mesh.Bind(_camera);
+            model.Bind(_camera);
         }
     }
 
@@ -163,9 +158,9 @@ public class Snooper
 
     private void OnClose()
     {
-        foreach (var mesh in _meshes)
+        foreach (var model in _models)
         {
-            mesh.Dispose();
+            model.Dispose();
         }
     }
 

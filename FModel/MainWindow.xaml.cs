@@ -79,7 +79,7 @@ public partial class MainWindow
 #if DEBUG
         await _threadWorkerView.Begin(_ =>
             _applicationView.CUE4Parse.Extract(
-                "/Game/Gadgets/Assets/VinderTech_GliderChute/Glider_Mark_II/Meshes/Glider_Mark_II.uasset"));
+                "FortniteGame/Content/Environments/Props/Winter/Meshes/SM_ChristmasTree_Llama.uasset"));
 #endif
     }
 

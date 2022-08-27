@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using Serilog;
 
 namespace FModel.Views.Snooper;
 
@@ -9,16 +10,15 @@ public class Camera
     public Vector3 Direction { get; private set; }
     public Vector3 Up = Vector3.UnitY;
 
-    public float AspectRatio { get; }
     public float Yaw { get; set; } = -90f;
-    public float Pitch { get; set; }
-    public float Zoom = 45f;
+    public float Pitch { get; set; } = 0f;
+    public float Zoom { get; set; } = 45f;
+    public float AspectRatio => 16f / 9f;
 
-    public Camera(Vector3 position, Vector3 direction, float aspectRatio = 16f / 9f)
+    public Camera(Vector3 position, Vector3 direction)
     {
         Position = position;
         Direction = direction;
-        AspectRatio = aspectRatio;
 
         // trigonometric math to calculate the cam's yaw/pitch based on position and direction to look
         var yaw = MathF.Atan((-Position.X - Direction.X) / (Position.Z - Direction.Z));
@@ -40,7 +40,7 @@ public class Camera
         //We don't want to be able to look behind us by going over our head or under our feet so make sure it stays within these bounds
         Pitch = Math.Clamp(Pitch, -89f, 89f);
 
-        Direction = Vector3.Normalize(CalculateDirection());
+        CalculateDirection();
     }
 
     public Matrix4x4 GetViewMatrix()
@@ -53,12 +53,22 @@ public class Camera
         return Matrix4x4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, 0.1f, 100.0f);
     }
 
-    private Vector3 CalculateDirection()
+    public void CalculateDirection()
     {
         var direction = Vector3.Zero;
-        direction.X = MathF.Cos(Helper.DegreesToRadians(Yaw)) * MathF.Cos(Helper.DegreesToRadians(Pitch));
-        direction.Y = MathF.Sin(Helper.DegreesToRadians(Pitch));
-        direction.Z = MathF.Sin(Helper.DegreesToRadians(Yaw)) * MathF.Cos(Helper.DegreesToRadians(Pitch));
-        return direction;
+        var yaw = Helper.DegreesToRadians(Yaw);
+        var pitch = Helper.DegreesToRadians(Pitch);
+        direction.X = MathF.Cos(yaw) * MathF.Cos(pitch);
+        direction.Y = MathF.Sin(pitch);
+        direction.Z = MathF.Sin(yaw) * MathF.Cos(pitch);
+        Direction = Vector3.Normalize(direction);
+    }
+
+    private void Loge()
+    {
+        Log.Logger.Information("Position {Position}", Position);
+        Log.Logger.Information("Direction {Direction}", Direction);
+        Log.Logger.Information("Yaw {Yaw}", Yaw);
+        Log.Logger.Information("Pitch {Pitch}", Pitch);
     }
 }

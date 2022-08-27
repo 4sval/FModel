@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
-using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Meshes.PSK;
-using CUE4Parse_Conversion.Textures;
 using Silk.NET.OpenGL;
 
 namespace FModel.Views.Snooper;
 
-public class Mesh : IDisposable
+public class Model : IDisposable
 {
     private uint _handle;
     private GL _gl;
@@ -18,28 +15,27 @@ public class Mesh : IDisposable
     private BufferObject<float> _vbo;
     private VertexArrayObject<float, uint> _vao;
 
-    private Shader _shader;
-    private Texture[] _albedoMap;
-    // private Texture _normalMap;
-
     private const int _vertexSize = 8; // Position + Normals + UV
     private const uint _faceSize = 3; // just so we don't have to do .Length
     private readonly uint[] _facesIndex = { 1, 0, 2 };
 
+    private Shader _shader;
+
     public uint[] Indices;
     public float[] Vertices;
-    public CMaterialParams[] Params;
+    public Section[] Sections;
 
-    public Mesh(CBaseMeshLod lod, CMeshVertex[] vertices)
+    public Model(CBaseMeshLod lod, CMeshVertex[] vertices)
     {
         var sections = lod.Sections.Value;
-        Params = new CMaterialParams[sections.Length];
+        Sections = new Section[sections.Length];
         Indices = new uint[sections.Sum(section => section.NumFaces * _faceSize)];
         Vertices = new float[Indices.Length * _vertexSize];
 
         for (var s = 0; s < sections.Length; s++)
         {
             var section = sections[s];
+            Sections[s] = new Section((uint) section.NumFaces * _faceSize, section.FirstIndex, section);
             for (uint face = 0; face < section.NumFaces; face++)
             {
                 foreach (var f in _facesIndex)
@@ -58,14 +54,8 @@ public class Mesh : IDisposable
                     Vertices[index * _vertexSize + 6] = vert.UV.U;
                     Vertices[index * _vertexSize + 7] = vert.UV.V;
 
-                    Indices[index] = (uint) index;
+                    Indices[index] = i;
                 }
-            }
-
-            Params[s] = new CMaterialParams();
-            if (section.Material != null && section.Material.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
-            {
-                unrealMaterial.GetParams(Params[s]);
             }
         }
     }
@@ -76,6 +66,8 @@ public class Mesh : IDisposable
 
         _handle = _gl.CreateProgram();
 
+        _shader = new Shader(_gl);
+
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
         _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
@@ -84,20 +76,13 @@ public class Mesh : IDisposable
         _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, _vertexSize, 3); // normals
         _vao.VertexAttributePointer(2, 2, VertexAttribPointerType.Float, _vertexSize, 6); // uv
 
-        _shader = new Shader(_gl);
-
-        _albedoMap = new Texture[Params.Length];
-        for (int i = 0; i < _albedoMap.Length; i++)
+        for (int section = 0; section < Sections.Length; section++)
         {
-            if (Params[i].Diffuse is UTexture2D { IsVirtual: false } diffuse && diffuse.GetFirstMip() is { } mip)
-            {
-                TextureDecoder.DecodeTexture(mip, diffuse.Format, diffuse.isNormalMap, out var data, out _);
-                _albedoMap[i] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY);
-            }
+            Sections[section].Setup(_gl);
         }
     }
 
-    public unsafe void Bind(Camera camera)
+    public void Bind(Camera camera)
     {
         _vao.Bind();
 
@@ -106,15 +91,14 @@ public class Mesh : IDisposable
         _shader.SetUniform("uModel", Matrix4x4.Identity);
         _shader.SetUniform("uView", camera.GetViewMatrix());
         _shader.SetUniform("uProjection", camera.GetProjectionMatrix());
-        // _shader.SetUniform("viewPos", _camera.Position);
+        // _shader.SetUniform("viewPos", camera.Position);
 
-        for (int i = 0; i < _albedoMap.Length; i++)
+        for (int section = 0; section < Sections.Length; section++)
         {
-            _shader.SetUniform("material.albedo", i);
-            _albedoMap[i].Bind(TextureUnit.Texture0 + i);
-        }
+            Sections[section].Bind(_shader);
 
-        _gl.DrawElements(PrimitiveType.Triangles, (uint) Indices.Length, DrawElementsType.UnsignedInt, null);
+            _gl.DrawArrays(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount);
+        }
     }
 
     public void Dispose()
@@ -123,6 +107,10 @@ public class Mesh : IDisposable
         _vbo.Dispose();
         _vao.Dispose();
         _shader.Dispose();
+        for (int section = 0; section < Sections.Length; section++)
+        {
+            Sections[section].Dispose();
+        }
         _gl.DeleteProgram(_handle);
     }
 }
