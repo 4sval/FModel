@@ -21,6 +21,7 @@ public class Snooper
     private Vector2 _previousMousePosition;
 
     private Model[] _models;
+    private Grid _grid;
 
     public int Width { get; }
     public int Height { get; }
@@ -43,6 +44,7 @@ public class Snooper
         _window.Render += OnRender;
         _window.Closing += OnClose;
 
+        _grid = new Grid();
         _models = new Model[1];
         switch (export)
         {
@@ -88,7 +90,11 @@ public class Snooper
         }
 
         _gl = GL.GetApi(_window);
+        _gl.Enable(EnableCap.Blend);
         _gl.Enable(EnableCap.DepthTest);
+        _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+        _grid.Setup(_gl);
 
         foreach (var model in _models)
         {
@@ -100,6 +106,8 @@ public class Snooper
     {
         _gl.ClearColor(0.149f, 0.149f, 0.188f, 1.0f);
         _gl.Clear((uint) ClearBufferMask.ColorBufferBit | (uint) ClearBufferMask.DepthBufferBit);
+
+        _grid.Bind(_camera);
 
         foreach (var model in _models)
         {
@@ -158,6 +166,7 @@ public class Snooper
 
     private void OnClose()
     {
+        _grid.Dispose();
         foreach (var model in _models)
         {
             model.Dispose();
