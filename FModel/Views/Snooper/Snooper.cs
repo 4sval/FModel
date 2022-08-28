@@ -8,6 +8,7 @@ using CUE4Parse_Conversion.Meshes;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
+using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
 
 namespace FModel.Views.Snooper;
@@ -15,6 +16,8 @@ namespace FModel.Views.Snooper;
 public class Snooper
 {
     private IWindow _window;
+    private IInputContext _input;
+    private ImGuiController _controller;
     private GL _gl;
     private Camera _camera;
     private IKeyboard _keyboard;
@@ -43,6 +46,7 @@ public class Snooper
         _window.Update += OnUpdate;
         _window.Render += OnRender;
         _window.Closing += OnClose;
+        _window.FramebufferResize += OnFramebufferResize;
 
         _grid = new Grid();
         _models = new Model[1];
@@ -79,10 +83,10 @@ public class Snooper
 
     private void OnLoad()
     {
-        var input = _window.CreateInput();
-        _keyboard = input.Keyboards[0];
+        _input = _window.CreateInput();
+        _keyboard = _input.Keyboards[0];
         _keyboard.KeyDown += KeyDown;
-        foreach (var mouse in input.Mice)
+        foreach (var mouse in _input.Mice)
         {
             mouse.Cursor.CursorMode = CursorMode.Raw;
             mouse.MouseMove += OnMouseMove;
@@ -94,6 +98,8 @@ public class Snooper
         _gl.Enable(EnableCap.DepthTest);
         _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
+        _controller = new ImGuiController(_gl, _window, _input);
+
         _grid.Setup(_gl);
 
         foreach (var model in _models)
@@ -102,8 +108,15 @@ public class Snooper
         }
     }
 
+    private void OnFramebufferResize(Vector2D<int> size)
+    {
+        _gl.Viewport(size);
+    }
+
     private void OnRender(double deltaTime)
     {
+        _controller.Update((float) deltaTime);
+
         _gl.ClearColor(0.149f, 0.149f, 0.188f, 1.0f);
         _gl.Clear((uint) ClearBufferMask.ColorBufferBit | (uint) ClearBufferMask.DepthBufferBit);
 
@@ -113,6 +126,10 @@ public class Snooper
         {
             model.Bind(_camera);
         }
+
+        ImGuiNET.ImGui.ShowAboutWindow();
+
+        _controller.Render();
     }
 
     private void OnUpdate(double deltaTime)
@@ -171,6 +188,9 @@ public class Snooper
         {
             model.Dispose();
         }
+        _input.Dispose();
+        _controller.Dispose();
+        _gl.Dispose();
     }
 
     private void KeyDown(IKeyboard keyboard, Key key, int arg3)
