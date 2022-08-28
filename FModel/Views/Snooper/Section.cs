@@ -4,6 +4,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Textures;
 using FModel.Settings;
+using ImGuiNET;
 using Silk.NET.OpenGL;
 
 namespace FModel.Views.Snooper;
@@ -19,12 +20,14 @@ public class Section : IDisposable
     // private Texture _metallicMap;
     private Texture _emissionMap;
 
+    public string Name;
     public uint FacesCount;
     public int FirstFaceIndex;
     public CMaterialParams Parameters;
 
-    public Section(uint facesCount, int firstFaceIndex, CMeshSection section)
+    public Section(string name, uint facesCount, int firstFaceIndex, CMeshSection section)
     {
+        Name = name;
         FacesCount = facesCount;
         FirstFaceIndex = firstFaceIndex;
         Parameters = new CMaterialParams();
@@ -72,11 +75,27 @@ public class Section : IDisposable
         }
     }
 
-    public void Bind()
+    public void Bind(int index)
     {
-        if (Parameters.IsNull)
-            return;
+        ImGui.TableNextRow();
 
+        ImGui.TableSetColumnIndex(0);
+        ImGui.Text(index.ToString());
+        ImGui.TableSetColumnIndex(1);
+        ImGui.Text(Name);
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text($"Faces: {FacesCount}");
+            ImGui.Text($"Face First Index: {FirstFaceIndex}");
+            ImGui.Separator();
+            ImGui.Text($"Diffuse: ({Parameters.Diffuse?.ExportType}) {Parameters.Diffuse?.Name}");
+            ImGui.EndTooltip();
+        }
+
+        _gl.DrawArrays(PrimitiveType.Triangles, FirstFaceIndex, FacesCount);
+
+        if (Parameters.IsNull) return;
         _diffuseMap?.Bind(TextureUnit.Texture0);
         _normalMap?.Bind(TextureUnit.Texture1);
         _specularMap?.Bind(TextureUnit.Texture2);

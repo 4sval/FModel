@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Numerics;
 using CUE4Parse_Conversion.Meshes.PSK;
+using ImGuiNET;
 using Silk.NET.OpenGL;
 
 namespace FModel.Views.Snooper;
@@ -21,12 +22,15 @@ public class Model : IDisposable
 
     private Shader _shader;
 
+    public string Name;
     public uint[] Indices;
     public float[] Vertices;
     public Section[] Sections;
 
-    public Model(CBaseMeshLod lod, CMeshVertex[] vertices)
+    public Model(string name, CBaseMeshLod lod, CMeshVertex[] vertices)
     {
+        Name = name;
+
         var sections = lod.Sections.Value;
         Sections = new Section[sections.Length];
         Indices = new uint[sections.Sum(section => section.NumFaces * _faceSize)];
@@ -35,7 +39,7 @@ public class Model : IDisposable
         for (var s = 0; s < sections.Length; s++)
         {
             var section = sections[s];
-            Sections[s] = new Section((uint) section.NumFaces * _faceSize, section.FirstIndex, section);
+            Sections[s] = new Section(section.MaterialName, (uint) section.NumFaces * _faceSize, section.FirstIndex, section);
             for (uint face = 0; face < section.NumFaces; face++)
             {
                 foreach (var f in _facesIndex)
@@ -109,12 +113,15 @@ public class Model : IDisposable
         _shader.SetUniform("light.specular", Vector3.One);
         _shader.SetUniform("light.position", camera.Position);
 
+        ImGui.BeginTable("Sections", 2, ImGuiTableFlags.RowBg);
+        ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.WidthFixed);
+        ImGui.TableSetupColumn("Material");
+        ImGui.TableHeadersRow();
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Bind();
-
-            _gl.DrawArrays(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount);
+            Sections[section].Bind(section);
         }
+        ImGui.EndTable();
     }
 
     public void Dispose()
