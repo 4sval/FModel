@@ -22,6 +22,7 @@ public class Snooper
     private GL _gl;
     private Camera _camera;
     private IKeyboard _keyboard;
+    private IMouse _mouse;
     private Vector2 _previousMousePosition;
 
     private Model[] _models;
@@ -40,6 +41,8 @@ public class Snooper
 
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(Width, Height);
+        options.WindowBorder = WindowBorder.Hidden;
+        options.Position = new Vector2D<int>(5, 5); // this doesn't fucking work WTF
         options.Title = "Snooper";
         _window = Window.Create(options);
 
@@ -87,12 +90,11 @@ public class Snooper
         _input = _window.CreateInput();
         _keyboard = _input.Keyboards[0];
         _keyboard.KeyDown += KeyDown;
-        foreach (var mouse in _input.Mice)
-        {
-            // mouse.Cursor.CursorMode = CursorMode.Raw;
-            // mouse.MouseMove += OnMouseMove;
-            // mouse.Scroll += OnMouseWheel;
-        }
+        _mouse = _input.Mice[0];
+        _mouse.MouseDown += OnMouseDown;
+        _mouse.MouseUp += OnMouseUp;
+        _mouse.MouseMove += OnMouseMove;
+        _mouse.Scroll += OnMouseWheel;
 
         _gl = GL.GetApi(_window);
         _gl.Enable(EnableCap.Blend);
@@ -130,9 +132,7 @@ public class Snooper
 
         foreach (var model in _models)
         {
-            ImGui.Text($"Entity: {model.Name}");
             model.Bind(_camera);
-            ImGui.Separator();
         }
 
         float framerate = ImGui.GetIO().Framerate;
@@ -174,17 +174,33 @@ public class Snooper
         }
     }
 
+    private void OnMouseDown(IMouse mouse, MouseButton button)
+    {
+        if (button != MouseButton.Left) return;
+        mouse.Cursor.CursorMode = CursorMode.Raw;
+    }
+
+    private void OnMouseUp(IMouse mouse, MouseButton button)
+    {
+        if (button != MouseButton.Left) return;
+        mouse.Cursor.CursorMode = CursorMode.Normal;
+    }
+
     private void OnMouseMove(IMouse mouse, Vector2 position)
     {
-        const float lookSensitivity = 0.1f;
         if (_previousMousePosition == default) { _previousMousePosition = position; }
         else
         {
-            var xOffset = (position.X - _previousMousePosition.X) * lookSensitivity;
-            var yOffset = (position.Y - _previousMousePosition.Y) * lookSensitivity;
-            _previousMousePosition = position;
+            if (mouse.Cursor.CursorMode == CursorMode.Raw)
+            {
+                const float lookSensitivity = 0.1f;
+                var xOffset = (position.X - _previousMousePosition.X) * lookSensitivity;
+                var yOffset = (position.Y - _previousMousePosition.Y) * lookSensitivity;
 
-            _camera.ModifyDirection(xOffset, yOffset);
+                _camera.ModifyDirection(xOffset, yOffset);
+            }
+
+            _previousMousePosition = position;
         }
     }
 

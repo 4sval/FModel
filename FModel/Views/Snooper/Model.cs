@@ -88,6 +88,8 @@ public class Model : IDisposable
 
     public void Bind(Camera camera)
     {
+        ImGui.Text($"Entity: {Name}");
+
         _vao.Bind();
 
         _shader.Use();
@@ -115,13 +117,15 @@ public class Model : IDisposable
 
         ImGui.BeginTable("Sections", 2, ImGuiTableFlags.RowBg);
         ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.WidthFixed);
-        ImGui.TableSetupColumn("Material");
+        ImGui.TableSetupColumn("Material", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableHeadersRow();
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Bind(section);
+            Sections[section].Bind(section, Indices.Length);
         }
         ImGui.EndTable();
+
+        ImGui.Separator();
     }
 
     public void Dispose()

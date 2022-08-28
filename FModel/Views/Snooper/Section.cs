@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Meshes.PSK;
@@ -75,7 +76,7 @@ public class Section : IDisposable
         }
     }
 
-    public void Bind(int index)
+    public void Bind(int index, float indices)
     {
         ImGui.TableNextRow();
 
@@ -86,10 +87,11 @@ public class Section : IDisposable
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.Text($"Faces: {FacesCount}");
-            ImGui.Text($"Face First Index: {FirstFaceIndex}");
+            ImGui.Text($"Faces: {FacesCount} ({Math.Floor(FacesCount / indices * 100f)}%%)");
+            ImGui.Text($"First Face: {FirstFaceIndex}");
             ImGui.Separator();
             ImGui.Text($"Diffuse: ({Parameters.Diffuse?.ExportType}) {Parameters.Diffuse?.Name}");
+            ImGui.Text($"Normal: ({Parameters.Normal?.ExportType}) {Parameters.Normal?.Name}");
             ImGui.EndTooltip();
         }
 
