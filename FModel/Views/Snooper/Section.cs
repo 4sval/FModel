@@ -95,8 +95,6 @@ public class Section : IDisposable
             ImGui.EndTooltip();
         }
 
-        _gl.DrawArrays(PrimitiveType.Triangles, FirstFaceIndex, FacesCount);
-
         if (Parameters.IsNull) return;
         _diffuseMap?.Bind(TextureUnit.Texture0);
         _normalMap?.Bind(TextureUnit.Texture1);

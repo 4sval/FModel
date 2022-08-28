@@ -122,6 +122,7 @@ public class Model : IDisposable
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Bind(section, Indices.Length);
+            _gl.DrawArrays(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount);
         }
         ImGui.EndTable();
 
