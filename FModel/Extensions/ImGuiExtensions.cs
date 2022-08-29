@@ -8,6 +8,29 @@ public static class ImGuiExtensions
     public const float PADDING = 5.0f;
     public static ImGuiStylePtr STYLE = ImGui.GetStyle();
 
+    public static void DrawNavbar()
+    {
+        if (ImGui.BeginMainMenuBar())
+        {
+            if (ImGui.BeginMenu("Edit"))
+            {
+                if (ImGui.MenuItem("Undo", "CTRL+Z")) {}
+                if (ImGui.MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+                ImGui.Separator();
+                if (ImGui.MenuItem("Cut", "CTRL+X")) {}
+                if (ImGui.MenuItem("Copy", "CTRL+C")) {}
+                if (ImGui.MenuItem("Paste", "CTRL+V")) {}
+                ImGui.EndMenu();
+            }
+
+            const string text = "Press ESC to Exit...";
+            ImGui.SetCursorPosX(ImGui.GetWindowViewport().WorkSize.X - ImGui.CalcTextSize(text).X - 5);
+            ImGui.TextColored(new Vector4(0.36f, 0.42f, 0.47f, 1.00f), text); // ImGuiCol.TextDisabled
+
+            ImGui.EndMainMenuBar();
+        }
+    }
+
     public static void DrawFPS()
     {
         const ImGuiWindowFlags flags =

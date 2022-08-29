@@ -753,8 +753,8 @@ public class CUE4ParseViewModel : ViewModel
                                                                                                  export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                                                                  export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
-                var snooper = new Snooper(export);
-                snooper.Run();
+                var snooper = new Snooper();
+                snooper.Run(export);
                 return true;
             }
             case UMaterialInstance m when ModelIsOverwritingMaterial:

@@ -61,6 +61,16 @@ public class Shader : IDisposable
         _gl.UniformMatrix4(location, 1, false, (float*) &value);
     }
 
+    public void SetUniform(string name, uint value)
+    {
+        int location = _gl.GetUniformLocation(_handle, name);
+        if (location == -1)
+        {
+            throw new Exception($"{name} uniform not found on shader.");
+        }
+        _gl.Uniform1(location, value);
+    }
+
     public void SetUniform(string name, float value)
     {
         int location = _gl.GetUniformLocation(_handle, name);
@@ -79,6 +89,16 @@ public class Shader : IDisposable
             throw new Exception($"{name} uniform not found on shader.");
         }
         _gl.Uniform3(location, value.X, value.Y, value.Z);
+    }
+
+    public void SetUniform(string name, Vector4 value)
+    {
+        int location = _gl.GetUniformLocation(_handle, name);
+        if (location == -1)
+        {
+            throw new Exception($"{name} uniform not found on shader.");
+        }
+        _gl.Uniform4(location, value.X, value.Y, value.Z, value.W);
     }
 
     public void Dispose()

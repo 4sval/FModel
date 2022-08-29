@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -32,23 +33,23 @@ public class Snooper
     private Vector2 _previousMousePosition;
     private RawImage _icon;
 
-    private Skybox _skybox;
-    private Grid _grid;
-    private Model[] _models;
+    private readonly Skybox _skybox;
+    private readonly Grid _grid;
+    private readonly List<Model> _models;
 
-    public int Width { get; }
-    public int Height { get; }
+    private readonly int _width;
+    private readonly int _height;
 
-    public Snooper(UObject export)
+    public Snooper()
     {
         const double ratio = .7;
         var x = SystemParameters.MaximizedPrimaryScreenWidth;
         var y = SystemParameters.MaximizedPrimaryScreenHeight;
-        Width = Convert.ToInt32(x * ratio);
-        Height = Convert.ToInt32(y * ratio);
+        _width = Convert.ToInt32(x * ratio);
+        _height = Convert.ToInt32(y * ratio);
 
         var options = WindowOptions.Default;
-        options.Size = new Vector2D<int>(Width, Height);
+        options.Size = new Vector2D<int>(_width, _height);
         options.WindowBorder = WindowBorder.Hidden;
         options.Title = "Snooper";
         options.Samples = 4;
@@ -77,28 +78,29 @@ public class Snooper
 
         _skybox = new Skybox();
         _grid = new Grid();
-        _models = new Model[1];
+        _models = new List<Model>();
+    }
+
+    public void Run(UObject export)
+    {
         switch (export)
         {
             case UStaticMesh st when st.TryConvert(out var mesh):
             {
-                _models[0] = new Model(st.Name, mesh.LODs[0], mesh.LODs[0].Verts);
+                _models.Add(new Model(st.Name, mesh.LODs[0], mesh.LODs[0].Verts));
                 SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
                 break;
             }
             case USkeletalMesh sk when sk.TryConvert(out var mesh):
             {
-                _models[0] = new Model(sk.Name, mesh.LODs[0], mesh.LODs[0].Verts);
+                _models.Add(new Model(sk.Name, mesh.LODs[0], mesh.LODs[0].Verts));
                 SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
                 break;
             }
             default:
                 throw new ArgumentOutOfRangeException(nameof(export));
         }
-    }
 
-    public void Run()
-    {
         _window.Run();
     }
 
@@ -132,6 +134,8 @@ public class Snooper
 
         _controller = new ImGuiController(_gl, _window, input);
 
+        ImGuiExtensions.Theme();
+
         _skybox.Setup(_gl);
         _grid.Setup(_gl);
 
@@ -156,27 +160,7 @@ public class Snooper
         _skybox.Bind(_camera);
         _grid.Bind(_camera);
 
-        ImGuiExtensions.Theme();
-
-        if (ImGui.BeginMainMenuBar())
-        {
-            if (ImGui.BeginMenu("Edit"))
-            {
-                if (ImGui.MenuItem("Undo", "CTRL+Z")) {}
-                if (ImGui.MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-                ImGui.Separator();
-                if (ImGui.MenuItem("Cut", "CTRL+X")) {}
-                if (ImGui.MenuItem("Copy", "CTRL+C")) {}
-                if (ImGui.MenuItem("Paste", "CTRL+V")) {}
-                ImGui.EndMenu();
-            }
-
-            const string text = "Press ESC to Exit...";
-            ImGui.SetCursorPosX(ImGui.GetWindowViewport().WorkSize.X - ImGui.CalcTextSize(text).X - 5);
-            ImGui.TextColored(ImGuiExtensions.STYLE.Colors[(int) ImGuiCol.TextDisabled], text);
-
-            ImGui.EndMainMenuBar();
-        }
+        ImGuiExtensions.DrawNavbar();
 
         ImGui.Begin("ImGui.NET", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoSavedSettings);
         foreach (var model in _models)
@@ -263,6 +247,7 @@ public class Snooper
         {
             model.Dispose();
         }
+        _models.Clear();
         _controller.Dispose();
         _window.Dispose();
         _gl.Dispose();

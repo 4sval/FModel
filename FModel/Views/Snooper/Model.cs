@@ -20,8 +20,6 @@ public class Model : IDisposable
     private const uint _faceSize = 3; // just so we don't have to do .Length
     private readonly uint[] _facesIndex = { 1, 0, 2 };
 
-    private Shader _shader;
-
     public readonly string Name;
     public readonly uint[] Indices;
     public readonly float[] Vertices;
@@ -70,8 +68,6 @@ public class Model : IDisposable
 
         _handle = _gl.CreateProgram();
 
-        _shader = new Shader(_gl);
-
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
         _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
@@ -92,36 +88,13 @@ public class Model : IDisposable
 
         _vao.Bind();
 
-        _shader.Use();
-
-        _shader.SetUniform("uModel", Matrix4x4.Identity);
-        _shader.SetUniform("uView", camera.GetViewMatrix());
-        _shader.SetUniform("uProjection", camera.GetProjectionMatrix());
-        _shader.SetUniform("viewPos", camera.Position);
-
-        _shader.SetUniform("material.diffuse", 0);
-        _shader.SetUniform("material.normal", 1);
-        _shader.SetUniform("material.specular", 2);
-        // _shader.SetUniform("material.metallic", 3);
-        // _shader.SetUniform("material.emission", 4);
-        _shader.SetUniform("material.shininess", 32f);
-
-        var lightColor = Vector3.One;
-        var diffuseColor = lightColor * new Vector3(0.5f);
-        var ambientColor = diffuseColor * new Vector3(0.2f);
-
-        _shader.SetUniform("light.ambient", ambientColor);
-        _shader.SetUniform("light.diffuse", diffuseColor); // darkened
-        _shader.SetUniform("light.specular", Vector3.One);
-        _shader.SetUniform("light.position", camera.Position);
-
         ImGui.BeginTable("Sections", 2, ImGuiTableFlags.RowBg);
         ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableSetupColumn("Material", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableHeadersRow();
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Bind(Indices.Length);
+            Sections[section].Bind(camera, Indices.Length);
             _gl.DrawArrays(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount);
         }
         ImGui.EndTable();
@@ -134,7 +107,6 @@ public class Model : IDisposable
         _ebo.Dispose();
         _vbo.Dispose();
         _vao.Dispose();
-        _shader.Dispose();
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Dispose();
