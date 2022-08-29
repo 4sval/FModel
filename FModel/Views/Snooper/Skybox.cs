@@ -12,7 +12,7 @@ public class Skybox : IDisposable
     private BufferObject<float> _vbo;
     private VertexArrayObject<float, uint> _vao;
 
-    private string[] _textures = { "nx", "ny", "nz", "px", "py", "pz" };
+    private string[] _textures = { "px", "nx", "py", "ny", "pz", "nz" };
 
     private Texture _cubeMap;
     private Shader _shader;

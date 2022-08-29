@@ -1,7 +1,8 @@
 ﻿using Silk.NET.OpenGL;
 using System;
-using System.IO;
 using System.Windows;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace FModel.Views.Snooper;
 
@@ -56,13 +57,19 @@ public class Texture : IDisposable
         for (int t = 0; t < textures.Length; t++)
         {
             var info = Application.GetResourceStream(new Uri($"/FModel;component/Resources/{textures[t]}.png", UriKind.Relative));
-            var stream = new MemoryStream();
-            info.Stream.CopyTo(stream);
+            using var img = Image.Load<Rgba32>(info.Stream);
+            _gl.TexImage2D(TextureTarget.TextureCubeMapPositiveX + t, 0, InternalFormat.Rgba8, (uint) img.Width, (uint) img.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, null);
 
-            fixed (void* d = &stream.ToArray()[0])
+            img.ProcessPixelRows(accessor =>
             {
-                _gl.TexImage2D(TextureTarget.TextureCubeMapPositiveX + t, 0, (int) InternalFormat.Rgb, 256, 256, 0, PixelFormat.Rgb, PixelType.UnsignedByte, d);
-            }
+                for (int y = 0; y < accessor.Height; y++)
+                {
+                    fixed (void* data = accessor.GetRowSpan(y))
+                    {
+                        gl.TexSubImage2D(TextureTarget.TextureCubeMapPositiveX + t, 0, 0, y, (uint) accessor.Width, 1, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+                    }
+                }
+            });
         }
 
         _gl.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int) GLEnum.Linear);

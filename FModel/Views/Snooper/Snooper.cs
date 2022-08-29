@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
@@ -7,11 +9,15 @@ using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse_Conversion.Meshes;
 using FModel.Extensions;
 using ImGuiNET;
+using Silk.NET.Core;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace FModel.Views.Snooper;
 
@@ -24,8 +30,9 @@ public class Snooper
     private IKeyboard _keyboard;
     private IMouse _mouse;
     private Vector2 _previousMousePosition;
+    private RawImage _icon;
 
-    // private Skybox _skybox;
+    private Skybox _skybox;
     private Grid _grid;
     private Model[] _models;
 
@@ -35,8 +42,8 @@ public class Snooper
     public Snooper(UObject export)
     {
         const double ratio = .7;
-        var x = System.Windows.SystemParameters.MaximizedPrimaryScreenWidth;
-        var y = System.Windows.SystemParameters.MaximizedPrimaryScreenHeight;
+        var x = SystemParameters.MaximizedPrimaryScreenWidth;
+        var y = SystemParameters.MaximizedPrimaryScreenHeight;
         Width = Convert.ToInt32(x * ratio);
         Height = Convert.ToInt32(y * ratio);
 
@@ -45,7 +52,22 @@ public class Snooper
         options.WindowBorder = WindowBorder.Hidden;
         options.Title = "Snooper";
         options.Samples = 4;
-        _window = Window.Create(options);
+        _window = Silk.NET.Windowing.Window.Create(options);
+
+        unsafe
+        {
+            var info = Application.GetResourceStream(new Uri("/FModel;component/Resources/materialicon.png", UriKind.Relative));
+            using var image = Image.Load<Rgba32>(info.Stream);
+            var memoryGroup = image.GetPixelMemoryGroup();
+            Memory<byte> array = new byte[memoryGroup.TotalLength * sizeof(Rgba32)];
+            var block = MemoryMarshal.Cast<byte, Rgba32>(array.Span);
+            foreach (var memory in memoryGroup)
+            {
+                memory.Span.CopyTo(block);
+                block = block.Slice(memory.Length);
+            }
+            _icon = new RawImage(image.Width, image.Height, array);
+        }
 
         _window.Load += OnLoad;
         _window.Update += OnUpdate;
@@ -53,7 +75,7 @@ public class Snooper
         _window.Closing += OnClose;
         _window.FramebufferResize += OnFramebufferResize;
 
-        // _skybox = new Skybox();
+        _skybox = new Skybox();
         _grid = new Grid();
         _models = new Model[1];
         switch (export)
@@ -90,6 +112,7 @@ public class Snooper
 
     private void OnLoad()
     {
+        _window.SetWindowIcon(ref _icon);
         _window.Center();
 
         var input = _window.CreateInput();
@@ -109,7 +132,7 @@ public class Snooper
 
         _controller = new ImGuiController(_gl, _window, input);
 
-        // _skybox.Setup(_gl);
+        _skybox.Setup(_gl);
         _grid.Setup(_gl);
 
         foreach (var model in _models)
@@ -130,7 +153,7 @@ public class Snooper
         _gl.ClearColor(0.102f, 0.102f, 0.129f, 1.0f);
         _gl.Clear((uint) ClearBufferMask.ColorBufferBit | (uint) ClearBufferMask.DepthBufferBit);
 
-        // _skybox.Bind(_camera);
+        _skybox.Bind(_camera);
         _grid.Bind(_camera);
 
         ImGuiExtensions.Theme();
@@ -148,7 +171,7 @@ public class Snooper
                 ImGui.EndMenu();
             }
 
-            const string text = "ESC to Exit...";
+            const string text = "Press ESC to Exit...";
             ImGui.SetCursorPosX(ImGui.GetWindowViewport().WorkSize.X - ImGui.CalcTextSize(text).X - 5);
             ImGui.TextColored(ImGuiExtensions.STYLE.Colors[(int) ImGuiCol.TextDisabled], text);
 
@@ -235,7 +258,7 @@ public class Snooper
     private void OnClose()
     {
         _grid.Dispose();
-        // _skybox.Dispose();
+        _skybox.Dispose();
         foreach (var model in _models)
         {
             model.Dispose();
