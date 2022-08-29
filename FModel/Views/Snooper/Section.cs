@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Meshes.PSK;
@@ -22,18 +21,21 @@ public class Section : IDisposable
     private Texture _emissionMap;
 
     public string Name;
+    public int Index;
     public uint FacesCount;
     public int FirstFaceIndex;
     public CMaterialParams Parameters;
 
-    public Section(string name, uint facesCount, int firstFaceIndex, CMeshSection section)
+    public Section(string name, int index, uint facesCount, int firstFaceIndex, CMeshSection section)
     {
         Name = name;
+        Index = index;
         FacesCount = facesCount;
         FirstFaceIndex = firstFaceIndex;
         Parameters = new CMaterialParams();
         if (section.Material != null && section.Material.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
         {
+            Name = unrealMaterial.Name;
             unrealMaterial.GetParams(Parameters);
         }
     }
@@ -76,18 +78,18 @@ public class Section : IDisposable
         }
     }
 
-    public void Bind(int index, float indices)
+    public void Bind(float indices)
     {
         ImGui.TableNextRow();
 
         ImGui.TableSetColumnIndex(0);
-        ImGui.Text(index.ToString());
+        ImGui.Text(Index.ToString());
         ImGui.TableSetColumnIndex(1);
         ImGui.Text(Name);
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.Text($"Faces: {FacesCount} ({Math.Floor(FacesCount / indices * 100f)}%%)");
+            ImGui.Text($"Faces: {FacesCount} ({Math.Round(FacesCount / indices * 100f, 2)}%%)");
             ImGui.Text($"First Face: {FirstFaceIndex}");
             ImGui.Separator();
             ImGui.Text($"Diffuse: ({Parameters.Diffuse?.ExportType}) {Parameters.Diffuse?.Name}");

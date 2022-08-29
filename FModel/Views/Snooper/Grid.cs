@@ -51,8 +51,8 @@ public class Grid : IDisposable
 
         _shader.SetUniform("view", camera.GetViewMatrix());
         _shader.SetUniform("proj", camera.GetProjectionMatrix());
-        _shader.SetUniform("uNear", -0.01f);
-        _shader.SetUniform("uFar", 100f);
+        _shader.SetUniform("uNear", camera.Near);
+        _shader.SetUniform("uFar", camera.Far);
 
         _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint) Indices.Length);
 

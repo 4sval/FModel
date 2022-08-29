@@ -13,13 +13,17 @@ public class Camera
     public float Yaw { get; set; } = -90f;
     public float Pitch { get; set; } = 0f;
     public float Zoom { get; set; } = 45f;
-    public float Speed { get; set; } = 1f;
+    public float Speed { get; } = 1f;
+    public float Near { get; } = 0.01f;
+    public float Far { get; } = 100f;
     public float AspectRatio => 16f / 9f;
 
-    public Camera(Vector3 position, Vector3 direction, float speed)
+    public Camera(Vector3 position, Vector3 direction, float near, float far, float speed)
     {
         Position = position;
         Direction = direction;
+        Near = near;
+        Far = far;
         Speed = speed;
 
         // trigonometric math to calculate the cam's yaw/pitch based on position and direction to look
@@ -52,7 +56,7 @@ public class Camera
 
     public Matrix4x4 GetProjectionMatrix()
     {
-        return Matrix4x4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, 0.1f, 100.0f);
+        return Matrix4x4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, Near, Far);
     }
 
     public void CalculateDirection()

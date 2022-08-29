@@ -80,9 +80,10 @@ public class Snooper
 
     private void SetupCamera(FBox box)
     {
+        var far = box.Max.Max();
         var center = box.GetCenter();
         var position = new Vector3(0f, center.Z, box.Max.Y * 3);
-        _camera = new Camera(position, center, box.Max.Max() / 2f);
+        _camera = new Camera(position, center, 0.01f, far * 50f, far / 2f);
     }
 
     private void OnLoad()
