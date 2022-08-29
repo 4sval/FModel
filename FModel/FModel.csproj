@@ -97,6 +97,8 @@
     <None Remove="Resources\shader.vert" />
     <None Remove="Resources\grid.frag" />
     <None Remove="Resources\grid.vert" />
+    <None Remove="Resources\skybox.frag" />
+    <None Remove="Resources\skybox.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -110,6 +112,8 @@
     <EmbeddedResource Include="Resources\shader.vert" />
     <EmbeddedResource Include="Resources\grid.frag" />
     <EmbeddedResource Include="Resources\grid.vert" />
+    <EmbeddedResource Include="Resources\skybox.frag" />
+    <EmbeddedResource Include="Resources\skybox.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -132,7 +136,6 @@
     <PackageReference Include="Silk.NET.Input" Version="2.16.0" />
     <PackageReference Include="Silk.NET.OpenGL" Version="2.16.0" />
     <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.16.0" />
-    <PackageReference Include="Silk.NET.Windowing" Version="2.16.0" />
     <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.88.0" />
     <PackageReference Include="SkiaSharp.Svg" Version="1.60.0" />
   </ItemGroup>
@@ -202,6 +205,12 @@
     <Resource Include="Resources\go_to_directory.png" />
     <Resource Include="Resources\approaching_storm_cubemap.dds" />
     <Resource Include="Resources\npcleftside.png" />
+    <Resource Include="Resources\nx.png" />
+    <Resource Include="Resources\ny.png" />
+    <Resource Include="Resources\nz.png" />
+    <Resource Include="Resources\px.png" />
+    <Resource Include="Resources\py.png" />
+    <Resource Include="Resources\pz.png" />
   </ItemGroup>
 
   <ItemGroup>

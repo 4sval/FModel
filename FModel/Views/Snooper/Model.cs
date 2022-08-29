@@ -22,10 +22,10 @@ public class Model : IDisposable
 
     private Shader _shader;
 
-    public string Name;
-    public uint[] Indices;
-    public float[] Vertices;
-    public Section[] Sections;
+    public readonly string Name;
+    public readonly uint[] Indices;
+    public readonly float[] Vertices;
+    public readonly Section[] Sections;
 
     public Model(string name, CBaseMeshLod lod, CMeshVertex[] vertices)
     {

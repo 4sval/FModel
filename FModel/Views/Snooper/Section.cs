@@ -20,11 +20,11 @@ public class Section : IDisposable
     // private Texture _metallicMap;
     private Texture _emissionMap;
 
-    public string Name;
-    public int Index;
-    public uint FacesCount;
-    public int FirstFaceIndex;
-    public CMaterialParams Parameters;
+    public readonly string Name;
+    public readonly int Index;
+    public readonly uint FacesCount;
+    public readonly int FirstFaceIndex;
+    public readonly CMaterialParams Parameters;
 
     public Section(string name, int index, uint facesCount, int firstFaceIndex, CMeshSection section)
     {
