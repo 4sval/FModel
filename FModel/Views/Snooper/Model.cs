@@ -12,8 +12,6 @@ public class Model : IDisposable
     private uint _handle;
     private GL _gl;
 
-    private Shader _shader;
-
     private BufferObject<uint> _ebo;
     private BufferObject<float> _vbo;
     private VertexArrayObject<float, uint> _vao;
@@ -84,8 +82,6 @@ public class Model : IDisposable
 
         _handle = _gl.CreateProgram();
 
-        _shader = new Shader(_gl);
-
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
         _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
@@ -101,7 +97,7 @@ public class Model : IDisposable
         }
     }
 
-    public void Bind(Camera camera)
+    public void Bind(Shader shader)
     {
         ImGui.Text($"Entity: {Name}");
         if (HasVertexColors)
@@ -109,18 +105,7 @@ public class Model : IDisposable
 
         _vao.Bind();
 
-        _shader.Use();
-
-        _shader.SetUniform("uModel", Matrix4x4.Identity);
-        _shader.SetUniform("uView", camera.GetViewMatrix());
-        _shader.SetUniform("uProjection", camera.GetProjectionMatrix());
-        _shader.SetUniform("viewPos", camera.Position);
-        _shader.SetUniform("display_vertex_colors", _display_vertex_colors);
-
-        _shader.SetUniform("material.diffuseMap", 0);
-        _shader.SetUniform("material.normalMap", 1);
-        _shader.SetUniform("material.specularMap", 2);
-        _shader.SetUniform("material.emissionMap", 3);
+        shader.SetUniform("display_vertex_colors", _display_vertex_colors);
 
         ImGui.BeginTable("Sections", 2, ImGuiTableFlags.RowBg);
         ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.WidthFixed);
@@ -128,20 +113,17 @@ public class Model : IDisposable
         ImGui.TableHeadersRow();
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Bind(_shader, Indices.Length);
+            Sections[section].Bind(shader, Indices.Length);
             // if (!Sections[section].Show) continue;
             _gl.DrawArrays(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount);
         }
         ImGui.EndTable();
-
-        _shader.SetUniform("light.position", camera.Position);
 
         ImGui.Separator();
     }
 
     public void Dispose()
     {
-        _shader.Dispose();
         _ebo.Dispose();
         _vbo.Dispose();
         _vao.Dispose();

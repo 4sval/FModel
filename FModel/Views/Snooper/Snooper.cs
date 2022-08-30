@@ -37,6 +37,8 @@ public class Snooper
     private readonly Grid _grid;
     private readonly List<Model> _models;
 
+    private Shader _shader;
+
     private readonly int _width;
     private readonly int _height;
 
@@ -139,6 +141,7 @@ public class Snooper
         _skybox.Setup(_gl);
         _grid.Setup(_gl);
 
+        _shader = new Shader(_gl);
         foreach (var model in _models)
         {
             model.Setup(_gl);
@@ -160,16 +163,28 @@ public class Snooper
         _skybox.Bind(_camera);
         _grid.Bind(_camera);
 
-        ImGuiExtensions.DrawNavbar();
+        _shader.Use();
 
+        _shader.SetUniform("uModel", Matrix4x4.Identity);
+        _shader.SetUniform("uView", _camera.GetViewMatrix());
+        _shader.SetUniform("uProjection", _camera.GetProjectionMatrix());
+        _shader.SetUniform("viewPos", _camera.Position);
+
+        _shader.SetUniform("material.diffuseMap", 0);
+        _shader.SetUniform("material.normalMap", 1);
+        _shader.SetUniform("material.specularMap", 2);
+        _shader.SetUniform("material.emissionMap", 3);
+
+        ImGuiExtensions.DrawNavbar();
         ImGui.Begin("ImGui.NET", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoSavedSettings);
         foreach (var model in _models)
         {
-            model.Bind(_camera);
+            model.Bind(_shader);
         }
         ImGui.End();
-
         ImGuiExtensions.DrawFPS();
+
+        _shader.SetUniform("light.position", _camera.Position);
 
         _controller.Render();
     }
@@ -243,6 +258,7 @@ public class Snooper
     {
         _grid.Dispose();
         _skybox.Dispose();
+        _shader.Dispose();
         foreach (var model in _models)
         {
             model.Dispose();
