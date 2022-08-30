@@ -15,7 +15,6 @@ public class Section : IDisposable
 {
     private uint _handle;
     private GL _gl;
-    private FGame _game;
 
     private Texture _diffuseMap;
     private Texture _normalMap;
@@ -30,6 +29,8 @@ public class Section : IDisposable
     private Vector3 _ambientLight;
     private Vector3 _diffuseLight;
     private Vector3 _specularLight;
+
+    private readonly FGame _game;
 
     public readonly string Name;
     public readonly int Index;
@@ -222,7 +223,7 @@ public class Section : IDisposable
         }
     }
 
-    public void Bind(Shader shader, Camera camera, float indices)
+    public void Bind(Shader shader, float indices)
     {
         ImGui.TableNextRow();
 
@@ -252,10 +253,6 @@ public class Section : IDisposable
             ImGui.EndTooltip();
         }
 
-        shader.SetUniform("material.diffuseMap", 0);
-        shader.SetUniform("material.normalMap", 1);
-        shader.SetUniform("material.specularMap", 2);
-        shader.SetUniform("material.emissionMap", 3);
         _diffuseMap?.Bind(TextureUnit.Texture0);
         _normalMap?.Bind(TextureUnit.Texture1);
         _specularMap?.Bind(TextureUnit.Texture2);
@@ -273,7 +270,6 @@ public class Section : IDisposable
         shader.SetUniform("light.ambient", _ambientLight);
         shader.SetUniform("light.diffuse", _diffuseLight);
         shader.SetUniform("light.specular", _specularLight);
-        shader.SetUniform("light.position", camera.Position);
     }
 
     public void Dispose()

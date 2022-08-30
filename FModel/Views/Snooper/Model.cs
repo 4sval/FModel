@@ -117,17 +117,24 @@ public class Model : IDisposable
         _shader.SetUniform("viewPos", camera.Position);
         _shader.SetUniform("display_vertex_colors", _display_vertex_colors);
 
+        _shader.SetUniform("material.diffuseMap", 0);
+        _shader.SetUniform("material.normalMap", 1);
+        _shader.SetUniform("material.specularMap", 2);
+        _shader.SetUniform("material.emissionMap", 3);
+
         ImGui.BeginTable("Sections", 2, ImGuiTableFlags.RowBg);
         ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableSetupColumn("Material", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableHeadersRow();
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Bind(_shader, camera, Indices.Length);
+            Sections[section].Bind(_shader, Indices.Length);
             // if (!Sections[section].Show) continue;
             _gl.DrawArrays(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount);
         }
         ImGui.EndTable();
+
+        _shader.SetUniform("light.position", camera.Position);
 
         ImGui.Separator();
     }
