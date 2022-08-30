@@ -22,10 +22,14 @@ public class Section : IDisposable
     private Texture _specularMap;
     private Texture _emissionMap;
 
-    private bool _hasDiffuseColor;
     private bool _hasSpecularMap;
+    private bool _hasDiffuseColor;
     private Vector4 _diffuseColor = Vector4.Zero;
     private Vector4 _emissionColor = Vector4.Zero;
+
+    private Vector3 _ambientLight;
+    private Vector3 _diffuseLight;
+    private Vector3 _specularLight;
 
     private Shader _shader;
 
@@ -109,6 +113,10 @@ public class Section : IDisposable
             }
         }
 
+        // diffuse light is based on normal map, so increase ambient if no normal map
+        _ambientLight = new Vector3(_normalMap == null ? 1.0f : 0.2f);
+        _diffuseLight = new Vector3(0.75f);
+        _specularLight = new Vector3(0.5f);
         _hasSpecularMap = _specularMap != null;
         _hasDiffuseColor = _diffuseColor != Vector4.Zero;
         _show = !Parameters.IsNull && !Parameters.IsTransparent;
@@ -273,9 +281,9 @@ public class Section : IDisposable
         _specularMap?.Bind(TextureUnit.Texture2);
         _emissionMap?.Bind(TextureUnit.Texture4);
 
-        _shader.SetUniform("light.ambient", new Vector3(0.2f));
-        _shader.SetUniform("light.diffuse", new Vector3(0.75f));
-        _shader.SetUniform("light.specular", new Vector3(0.5f));
+        _shader.SetUniform("light.ambient", _ambientLight);
+        _shader.SetUniform("light.diffuse", _diffuseLight);
+        _shader.SetUniform("light.specular", _specularLight);
         _shader.SetUniform("light.position", camera.Position);
     }
 
