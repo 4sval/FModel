@@ -90,6 +90,8 @@ public class Texture : IDisposable
         _gl.BindTexture(target, _handle);
     }
 
+    public IntPtr GetPointer() => (IntPtr) _handle;
+
     public void Dispose()
     {
         _gl.DeleteTexture(_handle);

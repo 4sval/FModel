@@ -7,14 +7,16 @@ in vec2 fTexCoords;
 struct Material {
     sampler2D diffuseMap;
     sampler2D normalMap;
-    sampler2D specularMap;
-    sampler2D metallicMap;
     sampler2D emissionMap;
 
-    bool swap;
+    bool useSpecularMap;
+    sampler2D specularMap;
 
+    bool hasDiffuseColor;
     vec4 diffuseColor;
+
     vec4 emissionColor;
+
     float shininess;
 };
 
@@ -31,36 +33,55 @@ uniform vec3 viewPos;
 
 out vec4 FragColor;
 
+vec3 getNormalFromMap()
+{
+    vec3 tangentNormal = texture(material.normalMap, fTexCoords).xyz * 2.0 - 1.0;
+
+    vec3 q1  = dFdx(fPos);
+    vec3 q2  = dFdy(fPos);
+    vec2 st1 = dFdx(fTexCoords);
+    vec2 st2 = dFdy(fTexCoords);
+
+    vec3 n   = normalize(fNormal);
+    vec3 t  = normalize(q1*st2.t - q2*st1.t);
+    vec3 b  = -normalize(cross(n, t));
+    mat3 tbn = mat3(t, b, n);
+
+    return normalize(tbn * tangentNormal);
+}
+
 void main()
 {
-    if (material.swap)
+    if (material.hasDiffuseColor)
     {
         FragColor = material.diffuseColor;
-        return;
     }
+    else
+    {
+        vec3 n_normal_map = getNormalFromMap();
+        vec3 n_light_direction = normalize(light.position - fPos);
+        vec3 result = light.ambient * vec3(texture(material.diffuseMap, fTexCoords));
 
-    // ambient
-    vec3 ambient = light.ambient * vec3(texture(material.diffuseMap, fTexCoords));
+        // diffuse
+        float diff = max(dot(n_normal_map, n_light_direction), 0.0f);
+        vec4 diffuse_map = texture(material.diffuseMap, fTexCoords);
+        if(diffuse_map.a < 0.1f) discard;
+        result += light.diffuse * diff * diffuse_map.rgb;
 
-    // diffuse
-    vec3 norm = texture(material.normalMap, fTexCoords).rgb;
-    norm = normalize(norm * 2.0 - 1.0);
-    vec3 lightDir = normalize(light.position - fPos);
-    float diff = max(dot(norm, lightDir), 0.0f);
-    vec3 diffuseMap = vec3(texture(material.diffuseMap, fTexCoords));
-    vec3 diffuse = light.diffuse * diff * diffuseMap;
+        // specular
+        if (material.useSpecularMap)
+        {
+            vec3 n_view_direction = normalize(viewPos - fPos);
+            vec3 reflect_direction = reflect(-n_light_direction, n_normal_map);
+            float spec = pow(max(dot(n_view_direction, reflect_direction), 0.0f), material.shininess);
+            vec3 specular_map = vec3(texture(material.specularMap, fTexCoords));
+            result += light.specular * spec * specular_map.b;
+        }
 
-    // specular
-    vec3 viewDir = normalize(viewPos - fPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-    vec3 specularMap = vec3(texture(material.specularMap, fTexCoords));
-    vec3 specular = light.specular * spec * specularMap;
+        // emission
+        vec3 emission_map = vec3(texture(material.emissionMap, fTexCoords));
+        result += material.emissionColor.rgb * emission_map;
 
-    // emission
-    vec3 emissionMap = vec3(texture(material.emissionMap, fTexCoords));
-    vec3 emission = material.emissionColor.rgb * emissionMap;
-
-    vec3 result = ambient + diffuse + specular + emission;
-    FragColor = vec4(result, 1.0);
+        FragColor = vec4(result, 1.0);
+    }
 }

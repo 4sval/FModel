@@ -90,11 +90,12 @@ public class Model : IDisposable
 
         ImGui.BeginTable("Sections", 2, ImGuiTableFlags.RowBg);
         ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.WidthFixed);
-        ImGui.TableSetupColumn("Material", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("Material", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableHeadersRow();
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Bind(camera, Indices.Length);
+            // if (!Sections[section].Show) continue;
             _gl.DrawArrays(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount);
         }
         ImGui.EndTable();

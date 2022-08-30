@@ -134,7 +134,7 @@ public class Snooper
 
         _controller = new ImGuiController(_gl, _window, input);
 
-        ImGuiExtensions.Theme();
+        // ImGuiExtensions.Theme();
 
         _skybox.Setup(_gl);
         _grid.Setup(_gl);

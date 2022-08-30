@@ -61,6 +61,8 @@ public class Shader : IDisposable
         _gl.UniformMatrix4(location, 1, false, (float*) &value);
     }
 
+    public void SetUniform(string name, bool value) => SetUniform(name, Convert.ToUInt32(value));
+
     public void SetUniform(string name, uint value)
     {
         int location = _gl.GetUniformLocation(_handle, name);
