@@ -3,6 +3,7 @@
 in vec3 fPos;
 in vec3 fNormal;
 in vec2 fTexCoords;
+in vec4 fColor;
 
 struct Material {
     sampler2D diffuseMap;
@@ -30,6 +31,7 @@ struct Light {
 uniform Material material;
 uniform Light light;
 uniform vec3 viewPos;
+uniform bool display_vertex_colors;
 
 out vec4 FragColor;
 
@@ -52,7 +54,11 @@ vec3 getNormalFromMap()
 
 void main()
 {
-    if (material.hasDiffuseColor)
+    if (display_vertex_colors)
+    {
+        FragColor = fColor;
+    }
+    else if (material.hasDiffuseColor)
     {
         FragColor = material.diffuseColor;
     }

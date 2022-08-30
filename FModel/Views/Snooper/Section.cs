@@ -31,8 +31,6 @@ public class Section : IDisposable
     private Vector3 _diffuseLight;
     private Vector3 _specularLight;
 
-    private Shader _shader;
-
     public readonly string Name;
     public readonly int Index;
     public readonly uint FacesCount;
@@ -67,8 +65,6 @@ public class Section : IDisposable
         _gl = gl;
 
         _handle = _gl.CreateProgram();
-
-        _shader = new Shader(_gl);
 
         if (Parameters.IsNull)
         {
@@ -226,7 +222,7 @@ public class Section : IDisposable
         }
     }
 
-    public void Bind(Camera camera, float indices)
+    public void Bind(Shader shader, Camera camera, float indices)
     {
         ImGui.TableNextRow();
 
@@ -256,40 +252,32 @@ public class Section : IDisposable
             ImGui.EndTooltip();
         }
 
-        _shader.Use();
-
-        _shader.SetUniform("uModel", Matrix4x4.Identity);
-        _shader.SetUniform("uView", camera.GetViewMatrix());
-        _shader.SetUniform("uProjection", camera.GetProjectionMatrix());
-        _shader.SetUniform("viewPos", camera.Position);
-
-        _shader.SetUniform("material.diffuseMap", 0);
-        _shader.SetUniform("material.normalMap", 1);
-        _shader.SetUniform("material.specularMap", 2);
-        _shader.SetUniform("material.useSpecularMap", _hasSpecularMap);
-
-        _shader.SetUniform("material.hasDiffuseColor", _hasDiffuseColor);
-        _shader.SetUniform("material.diffuseColor", _diffuseColor);
-
-        _shader.SetUniform("material.emissionMap", 4);
-        _shader.SetUniform("material.emissionColor", _emissionColor);
-
-        _shader.SetUniform("material.shininess", Parameters.MetallicValue);
-
+        shader.SetUniform("material.diffuseMap", 0);
+        shader.SetUniform("material.normalMap", 1);
+        shader.SetUniform("material.specularMap", 2);
+        shader.SetUniform("material.emissionMap", 3);
         _diffuseMap?.Bind(TextureUnit.Texture0);
         _normalMap?.Bind(TextureUnit.Texture1);
         _specularMap?.Bind(TextureUnit.Texture2);
-        _emissionMap?.Bind(TextureUnit.Texture4);
+        _emissionMap?.Bind(TextureUnit.Texture3);
 
-        _shader.SetUniform("light.ambient", _ambientLight);
-        _shader.SetUniform("light.diffuse", _diffuseLight);
-        _shader.SetUniform("light.specular", _specularLight);
-        _shader.SetUniform("light.position", camera.Position);
+        shader.SetUniform("material.useSpecularMap", _hasSpecularMap);
+
+        shader.SetUniform("material.hasDiffuseColor", _hasDiffuseColor);
+        shader.SetUniform("material.diffuseColor", _diffuseColor);
+
+        shader.SetUniform("material.emissionColor", _emissionColor);
+
+        shader.SetUniform("material.shininess", Parameters.MetallicValue);
+
+        shader.SetUniform("light.ambient", _ambientLight);
+        shader.SetUniform("light.diffuse", _diffuseLight);
+        shader.SetUniform("light.specular", _specularLight);
+        shader.SetUniform("light.position", camera.Position);
     }
 
     public void Dispose()
     {
-        _shader.Dispose();
         _diffuseMap?.Dispose();
         _normalMap?.Dispose();
         _specularMap?.Dispose();
