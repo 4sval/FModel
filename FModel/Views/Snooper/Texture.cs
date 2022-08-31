@@ -22,11 +22,20 @@ public class Texture : IDisposable
         Bind(TextureUnit.Texture0);
     }
 
+    // public Texture(GL gl, uint width, uint height) : this(gl, TextureType.MsaaFramebuffer)
+    // {
+    //     _gl.TexImage2DMultisample(TextureTarget.Texture2DMultisample, Constants.SAMPLES_COUNT, InternalFormat.Rgb, width, height, Silk.NET.OpenGL.Boolean.True);
+    //
+    //     _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) GLEnum.Nearest);
+    //     _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) GLEnum.Nearest);
+    //     _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) GLEnum.ClampToEdge);
+    //     _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) GLEnum.ClampToEdge);
+    //
+    //     _gl.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, _handle, 0);
+    // }
+
     public unsafe Texture(GL gl, uint width, uint height) : this(gl, TextureType.Framebuffer)
     {
-        _gl = gl;
-        _handle = _gl.GenTexture();
-
         _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgb, width, height, 0, PixelFormat.Rgb, PixelType.UnsignedByte, null);
 
         _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) GLEnum.Nearest);
@@ -102,5 +111,6 @@ public enum TextureType
 {
     Normal,
     Cubemap,
-    Framebuffer
+    Framebuffer,
+    MsaaFramebuffer
 }

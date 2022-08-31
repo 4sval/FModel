@@ -30,31 +30,28 @@ public class Snooper
     private Camera _camera;
     private IKeyboard _keyboard;
     private IMouse _mouse;
-    private Vector2 _previousMousePosition;
     private RawImage _icon;
 
+    private readonly FramebufferObject _framebuffer;
     private readonly Skybox _skybox;
     private readonly Grid _grid;
     private readonly List<Model> _models;
 
     private Shader _shader;
 
-    private readonly int _width;
-    private readonly int _height;
+    private Vector2D<int> _size;
 
     public Snooper()
     {
         const double ratio = .7;
         var x = SystemParameters.MaximizedPrimaryScreenWidth;
         var y = SystemParameters.MaximizedPrimaryScreenHeight;
-        _width = Convert.ToInt32(x * ratio);
-        _height = Convert.ToInt32(y * ratio);
 
         var options = WindowOptions.Default;
-        options.Size = new Vector2D<int>(_width, _height);
+        options.Size = _size = new Vector2D<int>(Convert.ToInt32(x * ratio), Convert.ToInt32(y * ratio));
         options.WindowBorder = WindowBorder.Hidden;
         options.Title = "Snooper";
-        options.Samples = 4;
+        options.Samples = (int) Constants.SAMPLES_COUNT;
         _window = Silk.NET.Windowing.Window.Create(options);
 
         unsafe
@@ -76,8 +73,13 @@ public class Snooper
         _window.Update += OnUpdate;
         _window.Render += OnRender;
         _window.Closing += OnClose;
-        _window.FramebufferResize += OnFramebufferResize;
+        _window.FramebufferResize += delegate(Vector2D<int> vector2D)
+        {
+            _gl.Viewport(vector2D);
+            _size = vector2D;
+        };
 
+        _framebuffer = new FramebufferObject(_size);
         _skybox = new Skybox();
         _grid = new Grid();
         _models = new List<Model>();
@@ -123,21 +125,15 @@ public class Snooper
         _keyboard = input.Keyboards[0];
         _keyboard.KeyDown += KeyDown;
         _mouse = input.Mice[0];
-        _mouse.MouseDown += OnMouseDown;
-        _mouse.MouseUp += OnMouseUp;
-        _mouse.MouseMove += OnMouseMove;
-        _mouse.Scroll += OnMouseWheel;
 
         _gl = GL.GetApi(_window);
-        _gl.Enable(EnableCap.Blend);
-        _gl.Enable(EnableCap.DepthTest);
         _gl.Enable(EnableCap.Multisample);
-        _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
         _controller = new ImGuiController(_gl, _window, input);
 
-        // ImGuiExtensions.Theme();
+        ImGuiExtensions.Theme();
 
+        _framebuffer.Setup(_gl);
         _skybox.Setup(_gl);
         _grid.Setup(_gl);
 
@@ -148,18 +144,24 @@ public class Snooper
         }
     }
 
-    private void OnFramebufferResize(Vector2D<int> size)
-    {
-        _gl.Viewport(size);
-    }
-
+    /// <summary>
+    /// friendly reminder this is called each frame
+    /// don't do crazy things inside
+    /// </summary>
     private void OnRender(double deltaTime)
     {
         _controller.Update((float) deltaTime);
 
-        _gl.ClearColor(0.102f, 0.102f, 0.129f, 1.0f);
-        _gl.Clear((uint) ClearBufferMask.ColorBufferBit | (uint) ClearBufferMask.DepthBufferBit);
+        ClearWhatHasBeenDrawn(); // in main window
 
+        _framebuffer.Bind(); // switch to dedicated window
+        ClearWhatHasBeenDrawn(); // in dedicated window
+
+        ImGuiExtensions.DrawDockSpace(_size);
+        ImGuiExtensions.DrawNavbar();
+        ImGui.ShowDemoWindow();
+
+        _framebuffer.BindStuff();
         _skybox.Bind(_camera);
         _grid.Bind(_camera);
 
@@ -175,18 +177,30 @@ public class Snooper
         _shader.SetUniform("material.specularMap", 2);
         _shader.SetUniform("material.emissionMap", 3);
 
-        ImGuiExtensions.DrawNavbar();
-        ImGui.Begin("ImGui.NET", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoSavedSettings);
+        _shader.SetUniform("light.position", _camera.Position);
+
+        ImGui.Begin("ImGui.NET");
         foreach (var model in _models)
         {
             model.Bind(_shader);
         }
         ImGui.End();
+
+        ImGuiExtensions.DrawViewport(_framebuffer, _camera, _mouse);
         ImGuiExtensions.DrawFPS();
 
-        _shader.SetUniform("light.position", _camera.Position);
+        _framebuffer.UnBind(); // switch back to main window
+        _controller.Render(); // render ImGui in main window
+    }
 
-        _controller.Render();
+    private void ClearWhatHasBeenDrawn()
+    {
+        _gl.Enable(EnableCap.Blend);
+        _gl.Enable(EnableCap.DepthTest);
+        _gl.ClearColor(1.0f, 0.102f, 0.129f, 1.0f);
+        _gl.Clear((uint) ClearBufferMask.ColorBufferBit | (uint) ClearBufferMask.DepthBufferBit);
+        _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        _gl.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }
 
     private void OnUpdate(double deltaTime)
@@ -219,43 +233,9 @@ public class Snooper
         }
     }
 
-    private void OnMouseDown(IMouse mouse, MouseButton button)
-    {
-        if (button != MouseButton.Left) return;
-        mouse.Cursor.CursorMode = CursorMode.Raw;
-    }
-
-    private void OnMouseUp(IMouse mouse, MouseButton button)
-    {
-        if (button != MouseButton.Left) return;
-        mouse.Cursor.CursorMode = CursorMode.Normal;
-    }
-
-    private void OnMouseMove(IMouse mouse, Vector2 position)
-    {
-        if (_previousMousePosition == default) { _previousMousePosition = position; }
-        else
-        {
-            if (mouse.Cursor.CursorMode == CursorMode.Raw)
-            {
-                const float lookSensitivity = 0.1f;
-                var xOffset = (position.X - _previousMousePosition.X) * lookSensitivity;
-                var yOffset = (position.Y - _previousMousePosition.Y) * lookSensitivity;
-
-                _camera.ModifyDirection(xOffset, yOffset);
-            }
-
-            _previousMousePosition = position;
-        }
-    }
-
-    private void OnMouseWheel(IMouse mouse, ScrollWheel scrollWheel)
-    {
-        _camera.ModifyZoom(scrollWheel.Y);
-    }
-
     private void OnClose()
     {
+        _framebuffer.Dispose();
         _grid.Dispose();
         _skybox.Dispose();
         _shader.Dispose();

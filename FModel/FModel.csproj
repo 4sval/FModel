@@ -99,6 +99,8 @@
     <None Remove="Resources\grid.vert" />
     <None Remove="Resources\skybox.frag" />
     <None Remove="Resources\skybox.vert" />
+    <None Remove="Resources\framebuffer.frag" />
+    <None Remove="Resources\framebuffer.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -114,6 +116,8 @@
     <EmbeddedResource Include="Resources\grid.vert" />
     <EmbeddedResource Include="Resources\skybox.frag" />
     <EmbeddedResource Include="Resources\skybox.vert" />
+    <EmbeddedResource Include="Resources\framebuffer.frag" />
+    <EmbeddedResource Include="Resources\framebuffer.vert" />
   </ItemGroup>
 
   <ItemGroup>

@@ -39,11 +39,7 @@ public class Section : IDisposable
     public readonly CMaterialParams Parameters;
 
     private bool _show = true;
-    public bool Show
-    {
-        get => _show;
-        set => _show = value;
-    }
+    private bool _wireframe;
 
     public Section(string name, int index, uint facesCount, int firstFaceIndex, CMeshSection section)
     {
@@ -225,33 +221,35 @@ public class Section : IDisposable
 
     public void Bind(Shader shader, float indices)
     {
-        ImGui.TableNextRow();
+        // ImGui.TableNextRow();
+        //
+        // ImGui.TableSetColumnIndex(0);
+        // ImGui.Text(Index.ToString());
+        // ImGui.TableSetColumnIndex(1);
+        // ImGui.Text(Name);
+        // if (ImGui.IsItemHovered())
+        // {
+        //     ImGui.BeginTooltip();
+        //     ImGui.Text($"Faces: {FacesCount} ({Math.Round(FacesCount / indices * 100f, 2)}%%)");
+        //     ImGui.Text($"First Face: {FirstFaceIndex}");
+        //     ImGui.Separator();
+        //     if (_hasDiffuseColor)
+        //     {
+        //         ImGui.ColorEdit4("Diffuse Color", ref _diffuseColor, ImGuiColorEditFlags.NoInputs);
+        //     }
+        //     else
+        //     {
+        //         ImGui.Text($"Diffuse: ({Parameters.Diffuse?.ExportType}) {Parameters.Diffuse?.Name}");
+        //         ImGui.Text($"Normal: ({Parameters.Normal?.ExportType}) {Parameters.Normal?.Name}");
+        //         ImGui.Text($"Specular: ({Parameters.Specular?.ExportType}) {Parameters.Specular?.Name}");
+        //         if (Parameters.HasTopEmissiveTexture)
+        //             ImGui.Text($"Emissive: ({Parameters.Emissive?.ExportType}) {Parameters.Emissive?.Name}");
+        //         ImGui.Separator();
+        //     }
+        //     ImGui.EndTooltip();
+        // }
 
-        ImGui.TableSetColumnIndex(0);
-        ImGui.Text(Index.ToString());
-        ImGui.TableSetColumnIndex(1);
-        ImGui.Text(Name);
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-            ImGui.Text($"Faces: {FacesCount} ({Math.Round(FacesCount / indices * 100f, 2)}%%)");
-            ImGui.Text($"First Face: {FirstFaceIndex}");
-            ImGui.Separator();
-            if (_hasDiffuseColor)
-            {
-                ImGui.ColorEdit4("Diffuse Color", ref _diffuseColor, ImGuiColorEditFlags.NoInputs);
-            }
-            else
-            {
-                ImGui.Text($"Diffuse: ({Parameters.Diffuse?.ExportType}) {Parameters.Diffuse?.Name}");
-                ImGui.Text($"Normal: ({Parameters.Normal?.ExportType}) {Parameters.Normal?.Name}");
-                ImGui.Text($"Specular: ({Parameters.Specular?.ExportType}) {Parameters.Specular?.Name}");
-                if (Parameters.HasTopEmissiveTexture)
-                    ImGui.Text($"Emissive: ({Parameters.Emissive?.ExportType}) {Parameters.Emissive?.Name}");
-                ImGui.Separator();
-            }
-            ImGui.EndTooltip();
-        }
+        // DrawImGui();
 
         _diffuseMap?.Bind(TextureUnit.Texture0);
         _normalMap?.Bind(TextureUnit.Texture1);
@@ -270,6 +268,9 @@ public class Section : IDisposable
         shader.SetUniform("light.ambient", _ambientLight);
         shader.SetUniform("light.diffuse", _diffuseLight);
         shader.SetUniform("light.specular", _specularLight);
+
+        _gl.PolygonMode(MaterialFace.Front, _wireframe ? PolygonMode.Line : PolygonMode.Fill);
+        if (_show) _gl.DrawArrays(PrimitiveType.Triangles, FirstFaceIndex, FacesCount);
     }
 
     public void Dispose()
@@ -279,5 +280,12 @@ public class Section : IDisposable
         _specularMap?.Dispose();
         _emissionMap?.Dispose();
         _gl.DeleteProgram(_handle);
+    }
+
+    private void DrawImGui()
+    {
+        ImGui.Checkbox($"Show {Name}", ref _show);
+        ImGui.Checkbox($"Wireframe {Name}", ref _wireframe);
+        ImGui.Separator();
     }
 }
