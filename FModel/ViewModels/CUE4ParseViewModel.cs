@@ -69,6 +69,9 @@ public class CUE4ParseViewModel : ViewModel
         set => SetProperty(ref _modelIsOverwritingMaterial, value);
     }
 
+    public Snooper SnooperViewer => _snooper ??= new Snooper();
+    private Snooper _snooper;
+
     public AbstractVfsFileProvider Provider { get; }
     public GameDirectoryViewModel GameDirectory { get; }
     public AssetsFolderViewModel AssetsFolder { get; }
@@ -753,8 +756,7 @@ public class CUE4ParseViewModel : ViewModel
                                                                                                  export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                                                                  export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
-                var snooper = new Snooper();
-                snooper.Run(export);
+                SnooperViewer.Run(export);
                 return true;
             }
             case UMaterialInstance m when ModelIsOverwritingMaterial:

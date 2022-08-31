@@ -24,7 +24,7 @@ namespace FModel.Views.Snooper;
 
 public class Snooper
 {
-    private IWindow _window;
+    private readonly IWindow _window;
     private ImGuiController _controller;
     private GL _gl;
     private Camera _camera;
@@ -122,7 +122,6 @@ public class Snooper
 
         var input = _window.CreateInput();
         _keyboard = input.Keyboards[0];
-        _keyboard.KeyDown += KeyDown;
         _mouse = input.Mice[0];
 
         _gl = GL.GetApi(_window);
@@ -209,29 +208,19 @@ public class Snooper
         var multiplier = _keyboard.IsKeyPressed(Key.ShiftLeft) ? 2f : 1f;
         var moveSpeed = _camera.Speed * multiplier * (float) deltaTime;
         if (_keyboard.IsKeyPressed(Key.W))
-        {
             _camera.Position += moveSpeed * _camera.Direction;
-        }
         if (_keyboard.IsKeyPressed(Key.S))
-        {
             _camera.Position -= moveSpeed * _camera.Direction;
-        }
         if (_keyboard.IsKeyPressed(Key.A))
-        {
             _camera.Position -= Vector3.Normalize(Vector3.Cross(_camera.Direction, _camera.Up)) * moveSpeed;
-        }
         if (_keyboard.IsKeyPressed(Key.D))
-        {
             _camera.Position += Vector3.Normalize(Vector3.Cross(_camera.Direction, _camera.Up)) * moveSpeed;
-        }
         if (_keyboard.IsKeyPressed(Key.E))
-        {
             _camera.Position += moveSpeed * _camera.Up;
-        }
         if (_keyboard.IsKeyPressed(Key.Q))
-        {
             _camera.Position -= moveSpeed * _camera.Up;
-        }
+        if (_keyboard.IsKeyPressed(Key.Escape))
+            _window.Close();
     }
 
     private void OnClose()
@@ -248,15 +237,5 @@ public class Snooper
         _controller.Dispose();
         _window.Dispose();
         _gl.Dispose();
-    }
-
-    private void KeyDown(IKeyboard keyboard, Key key, int arg3)
-    {
-        switch (key)
-        {
-            case Key.Escape:
-                _window.Close();
-                break;
-        }
     }
 }
