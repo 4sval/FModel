@@ -23,7 +23,7 @@ public class RenderbufferObject : IDisposable
         _handle = _gl.GenRenderbuffer();
 
         _gl.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _handle);
-        _gl.RenderbufferStorage(RenderbufferTarget.Renderbuffer, InternalFormat.Depth24Stencil8, _width, _height);
+        _gl.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, Constants.SAMPLES_COUNT, InternalFormat.Depth24Stencil8, _width, _height);
         _gl.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, _handle);
     }
 

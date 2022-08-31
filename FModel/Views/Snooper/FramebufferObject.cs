@@ -6,7 +6,8 @@ namespace FModel.Views.Snooper;
 
 public class FramebufferObject : IDisposable
 {
-    private uint _handle;
+    private uint _framebufferHandle;
+    private uint _postProcessingHandle;
     private GL _gl;
 
     private readonly int _width;
@@ -18,7 +19,8 @@ public class FramebufferObject : IDisposable
     private VertexArrayObject<float, uint> _vao;
 
     private Shader _shader;
-    private Texture _texture;
+    private Texture _framebufferTexture;
+    private Texture _postProcessingTexture;
 
     public readonly uint[] Indices = { 0, 1, 2, 3, 4, 5 };
     public readonly float[] Vertices = {
@@ -42,10 +44,11 @@ public class FramebufferObject : IDisposable
     public void Setup(GL gl)
     {
         _gl = gl;
-        _handle = _gl.GenFramebuffer();
-        Bind();
 
-        _texture = new Texture(_gl, (uint) _width, (uint) _height);
+        _framebufferHandle = _gl.GenFramebuffer();
+        Bind(_framebufferHandle);
+
+        _framebufferTexture = new Texture(_gl, (uint) _width, (uint) _height);
 
         _renderbuffer.Setup(gl);
 
@@ -63,18 +66,32 @@ public class FramebufferObject : IDisposable
         var status = _gl.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
         if (status != GLEnum.FramebufferComplete)
         {
-            throw new Exception($"Framebuffer failed to bind with error: {_gl.GetProgramInfoLog(_handle)}");
+            throw new Exception($"Framebuffer failed to bind with error: {_gl.GetProgramInfoLog(_framebufferHandle)}");
+        }
+
+        _postProcessingHandle = _gl.GenFramebuffer();
+        Bind(_postProcessingHandle);
+
+        _postProcessingTexture = new Texture(_gl, _width, _height);
+
+        status = _gl.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
+        if (status != GLEnum.FramebufferComplete)
+        {
+            throw new Exception($"Post-Processing framebuffer failed to bind with error: {_gl.GetProgramInfoLog(_postProcessingHandle)}");
         }
     }
 
-    public void Bind()
+    public void Bind() => Bind(_framebufferHandle);
+    public void Bind(uint handle)
     {
-        _gl.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _handle);
+        _gl.BindFramebuffer(FramebufferTarget.Framebuffer, handle);
     }
 
-    public void UnBind()
+    public void BindMsaa()
     {
-        _gl.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+        _gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _framebufferHandle);
+        _gl.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _postProcessingHandle);
+        _gl.BlitFramebuffer(0, 0, _width, _height, 0, 0, _width, _height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
     }
 
     public void BindStuff()
@@ -84,21 +101,23 @@ public class FramebufferObject : IDisposable
         _shader.Use();
         _vao.Bind();
 
-        _texture.Bind(TextureUnit.Texture0);
+        _postProcessingTexture.Bind(TextureUnit.Texture0);
 
         _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint) Indices.Length);
 
         _gl.DepthMask(true);
     }
 
-    public IntPtr GetPointer() => _texture.GetPointer();
+    public IntPtr GetPointer() => _postProcessingTexture.GetPointer();
 
     public void Dispose()
     {
         _vao.Dispose();
         _shader.Dispose();
-        _texture.Dispose();
+        _framebufferTexture.Dispose();
+        _postProcessingTexture.Dispose();
         _renderbuffer.Dispose();
-        _gl.DeleteFramebuffer(_handle);
+        _gl.DeleteFramebuffer(_framebufferHandle);
+        _gl.DeleteFramebuffer(_postProcessingHandle);
     }
 }

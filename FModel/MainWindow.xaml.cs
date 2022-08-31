@@ -79,7 +79,7 @@ public partial class MainWindow
 #if DEBUG
         await _threadWorkerView.Begin(_ =>
             _applicationView.CUE4Parse.Extract(
-                "/Game/Characters/Player/Female/Medium/Bodies/F_MED_Neon_Cat_Tech/Meshes/F_MED_Neon_Cat_Tech.uasset"));
+                "FortniteGame/Content/Environments/Props/Winter/Meshes/SM_ChristmasTree_Llama.uasset"));
 #endif
     }
 

@@ -51,7 +51,6 @@ public class Snooper
         options.Size = _size = new Vector2D<int>(Convert.ToInt32(x * ratio), Convert.ToInt32(y * ratio));
         options.WindowBorder = WindowBorder.Hidden;
         options.Title = "Snooper";
-        options.Samples = (int) Constants.SAMPLES_COUNT;
         _window = Silk.NET.Windowing.Window.Create(options);
 
         unsafe
@@ -161,7 +160,6 @@ public class Snooper
         ImGuiExtensions.DrawNavbar();
         ImGui.ShowDemoWindow();
 
-        _framebuffer.BindStuff();
         _skybox.Bind(_camera);
         _grid.Bind(_camera);
 
@@ -189,7 +187,10 @@ public class Snooper
         ImGuiExtensions.DrawViewport(_framebuffer, _camera, _mouse);
         ImGuiExtensions.DrawFPS();
 
-        _framebuffer.UnBind(); // switch back to main window
+        _framebuffer.BindMsaa();
+        _framebuffer.Bind(0); // switch back to main window
+        _framebuffer.BindStuff();
+
         _controller.Render(); // render ImGui in main window
     }
 
