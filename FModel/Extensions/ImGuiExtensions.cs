@@ -23,30 +23,29 @@ public static class ImGuiExtensions
         ImGui.SetNextWindowPos(new Vector2(0, 0));
         ImGui.SetNextWindowSize(new Vector2(size.X, size.Y));
         ImGui.Begin("Snooper", flags);
-        ImGui.DockSpace(ImGui.GetID("Snooper"));
+        ImGui.DockSpace(0);
     }
 
     public static void DrawNavbar()
     {
-        if (ImGui.BeginMainMenuBar())
+        if (!ImGui.BeginMainMenuBar()) return;
+
+        if (ImGui.BeginMenu("Edit"))
         {
-            if (ImGui.BeginMenu("Edit"))
-            {
-                if (ImGui.MenuItem("Undo", "CTRL+Z")) {}
-                if (ImGui.MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-                ImGui.Separator();
-                if (ImGui.MenuItem("Cut", "CTRL+X")) {}
-                if (ImGui.MenuItem("Copy", "CTRL+C")) {}
-                if (ImGui.MenuItem("Paste", "CTRL+V")) {}
-                ImGui.EndMenu();
-            }
-
-            const string text = "Press ESC to Exit...";
-            ImGui.SetCursorPosX(ImGui.GetWindowViewport().WorkSize.X - ImGui.CalcTextSize(text).X - 5);
-            ImGui.TextColored(new Vector4(0.36f, 0.42f, 0.47f, 1.00f), text); // ImGuiCol.TextDisabled
-
-            ImGui.EndMainMenuBar();
+            if (ImGui.MenuItem("Undo", "CTRL+Z")) {}
+            if (ImGui.MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+            ImGui.Separator();
+            if (ImGui.MenuItem("Cut", "CTRL+X")) {}
+            if (ImGui.MenuItem("Copy", "CTRL+C")) {}
+            if (ImGui.MenuItem("Paste", "CTRL+V")) {}
+            ImGui.EndMenu();
         }
+
+        const string text = "Press ESC to Exit...";
+        ImGui.SetCursorPosX(ImGui.GetWindowViewport().WorkSize.X - ImGui.CalcTextSize(text).X - 5);
+        ImGui.TextColored(new Vector4(0.36f, 0.42f, 0.47f, 1.00f), text); // ImGuiCol.TextDisabled
+
+        ImGui.EndMainMenuBar();
     }
 
     public static void DrawFPS()

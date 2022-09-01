@@ -127,7 +127,10 @@ public class Snooper
         _gl = GL.GetApi(_window);
         _gl.Enable(EnableCap.Multisample);
 
-        _controller = new ImGuiController(_gl, _window, input);
+        // we don't need to bother with file check
+        // but keep an eye on font size for different monitors
+        var fontConfig = new ImGuiFontConfig("C:\\Windows\\Fonts\\segoeui.ttf", 16);
+        _controller = new ImGuiController(_gl, _window, input, fontConfig);
 
         ImGuiExtensions.Theme();
 
@@ -205,6 +208,7 @@ public class Snooper
 
     private void OnUpdate(double deltaTime)
     {
+        if (ImGui.GetIO().WantTextInput) return;
         var multiplier = _keyboard.IsKeyPressed(Key.ShiftLeft) ? 2f : 1f;
         var moveSpeed = _camera.Speed * multiplier * (float) deltaTime;
         if (_keyboard.IsKeyPressed(Key.W))

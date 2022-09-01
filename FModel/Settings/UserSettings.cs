@@ -140,7 +140,7 @@ namespace FModel.Settings
             set => SetProperty(ref _isLoggerExpanded, value);
         }
 
-        private GridLength _avalonImageSize = GridLength.Auto;
+        private GridLength _avalonImageSize = new (200, GridUnitType.Pixel);
         public GridLength AvalonImageSize
         {
             get => _avalonImageSize;
