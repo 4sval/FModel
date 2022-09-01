@@ -444,24 +444,8 @@ public class ModelViewerViewModel : ViewModel
             if (parameters.Specular is UTexture2D specular)
             {
                 var mip = specular.GetFirstMip();
-                byte[] data;
-                SKColorType colorType;
-                switch (UserSettings.Default.OverridedPlatform)
-                {
-                    case ETexturePlatform.Playstation:
-                        PlaystationDecoder.DecodeTexturePlaystation(mip, specular.Format, specular.isNormalMap,
-                            out data, out colorType);
-                        break;
-                    case ETexturePlatform.NintendoSwitch:
-                        NintendoSwitchDecoder.DecodeTextureNSW(mip, specular.Format, specular.isNormalMap,
-                            out data, out colorType);
-                        break;
-                    default:
-                        TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap,
-                            out data, out colorType);
-                        break;
-                }
-
+                var platform = UserSettings.Default.OverridedPlatform;
+                TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap, platform, out var data, out var colorType);
 
                 switch (_game)
                 {
