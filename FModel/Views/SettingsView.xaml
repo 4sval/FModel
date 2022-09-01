@@ -189,18 +189,7 @@
                         </Grid.ColumnDefinitions>
 
                         <Button Grid.Column="0" Content="AES" Click="OpenAesEndpoint" />
-                        <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CUE4Parse.Game}" Value="{x:Static local:FGame.FortniteGame}">
-                                            <Setter Property="IsEnabled" Value="True" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                        <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint" />
                     </Grid>
 
                     <TextBlock Grid.Row="13" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
