@@ -11,16 +11,16 @@ public class Shader : IDisposable
     private uint _handle;
     private GL _gl;
 
-    public Shader(GL gl) : this(gl, "shader.vert", "shader.frag") {}
+    public Shader(GL gl) : this(gl, "default") {}
 
-    public Shader(GL gl, string vertex, string fragment)
+    public Shader(GL gl, string name)
     {
         _gl = gl;
 
         _handle = _gl.CreateProgram();
 
-        uint v = LoadShader(ShaderType.VertexShader, vertex);
-        uint f = LoadShader(ShaderType.FragmentShader, fragment);
+        uint v = LoadShader(ShaderType.VertexShader, $"{name}.vert");
+        uint f = LoadShader(ShaderType.FragmentShader, $"{name}.frag");
         _gl.AttachShader(_handle, v);
         _gl.AttachShader(_handle, f);
         _gl.LinkProgram(_handle);

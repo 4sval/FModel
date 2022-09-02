@@ -52,7 +52,7 @@ public class FramebufferObject : IDisposable
 
         _renderbuffer.Setup(gl);
 
-        _shader = new Shader(_gl, "framebuffer.vert", "framebuffer.frag");
+        _shader = new Shader(_gl, "framebuffer");
         _shader.Use();
         _shader.SetUniform("screenTexture", 0);
 

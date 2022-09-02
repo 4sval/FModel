@@ -8,7 +8,7 @@ namespace FModel.Extensions;
 
 public static class ImGuiExtensions
 {
-    public const float PADDING = 2.5f;
+    public const uint DockspaceId = 1337;
 
     private static bool _viewportFocus;
 
@@ -23,13 +23,19 @@ public static class ImGuiExtensions
         ImGui.SetNextWindowPos(new Vector2(0, 0));
         ImGui.SetNextWindowSize(new Vector2(size.X, size.Y));
         ImGui.Begin("Snooper", flags);
-        ImGui.DockSpace(0);
+        ImGui.DockSpace(DockspaceId);
     }
 
     public static void DrawNavbar()
     {
         if (!ImGui.BeginMainMenuBar()) return;
 
+        if (ImGui.BeginMenu("Window"))
+        {
+            ImGui.MenuItem("Append", "CTRL+A");
+            ImGui.MenuItem("Close", "ESC");
+            ImGui.EndMenu();
+        }
         if (ImGui.BeginMenu("Edit"))
         {
             if (ImGui.MenuItem("Undo", "CTRL+Z")) {}
@@ -48,29 +54,12 @@ public static class ImGuiExtensions
         ImGui.EndMainMenuBar();
     }
 
-    public static void DrawFPS()
-    {
-        const ImGuiWindowFlags flags =
-            ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysAutoResize |
-            ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing |
-            ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoNav;
-        var viewport = ImGui.GetMainViewport();
-        var work_pos = viewport.WorkPos;
-        var work_size = viewport.WorkSize;
-
-        ImGui.SetNextWindowPos(new Vector2(work_pos.X + PADDING, work_pos.Y + work_size.Y - PADDING), ImGuiCond.Always, new Vector2(0, 1));
-        if (ImGui.Begin("FPS Overlay", flags))
-        {
-            float framerate = ImGui.GetIO().Framerate;
-            ImGui.Text($"FPS: {framerate:0} ({1000.0f / framerate:0.##} ms)");
-        }
-        ImGui.End();
-    }
-
     public static void DrawViewport(FramebufferObject framebuffer, Camera camera, IMouse mouse)
     {
         const float lookSensitivity = 0.1f;
-        const ImGuiWindowFlags flags = ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
+        const ImGuiWindowFlags flags =
+            ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse |
+            ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysUseWindowPadding;
 
         ImGui.Begin("Viewport", flags);
 
@@ -87,8 +76,9 @@ public static class ImGuiExtensions
         }
 
         var pos = new Vector2(largest.X / 2f - width / 2f + ImGui.GetCursorPosX(), largest.Y / 2f - height / 2f + ImGui.GetCursorPosY());
+        var size = new Vector2(width, height);
         ImGui.SetCursorPos(pos);
-        ImGui.ImageButton(framebuffer.GetPointer(), new Vector2(width, height), new Vector2(0, 1), new Vector2(1, 0), 0);
+        ImGui.ImageButton(framebuffer.GetPointer(), size, new Vector2(0, 1), new Vector2(1, 0), 0);
 
         // it took me 5 hours to make it work, don't change any of the following code
         // basically the Raw cursor doesn't actually freeze the mouse position
@@ -121,6 +111,12 @@ public static class ImGuiExtensions
             mouse.Cursor.CursorMode = CursorMode.Normal;
         }
 
+        const float padding = 5f;
+        float framerate = ImGui.GetIO().Framerate;
+        var text = $"FPS: {framerate:0} ({1000.0f / framerate:0.##} ms)";
+        ImGui.SetCursorPos(new Vector2(pos.X + padding, pos.Y + size.Y - ImGui.CalcTextSize(text).Y - padding));
+        ImGui.Text(text);
+
         ImGui.End();
     }
 
@@ -130,13 +126,10 @@ public static class ImGuiExtensions
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
         io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
-        io.ConfigWindowsResizeFromEdges = false;
+        io.ConfigDockingWithShift = true;
 
         var style = ImGui.GetStyle();
-        style.FrameRounding = 2.0f;
-        style.GrabRounding = 2.0f;
         style.WindowPadding = Vector2.Zero;
-
         // style.Colors[(int) ImGuiCol.Text] = new Vector4(0.95f, 0.96f, 0.98f, 1.00f);
         // style.Colors[(int) ImGuiCol.TextDisabled] = new Vector4(0.36f, 0.42f, 0.47f, 1.00f);
         // style.Colors[(int) ImGuiCol.WindowBg] = new Vector4(0.149f, 0.149f, 0.188f, 0.35f);

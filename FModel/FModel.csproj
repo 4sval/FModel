@@ -93,8 +93,8 @@
     <None Remove="Resources\edit.png" />
     <None Remove="Resources\go_to_directory.png" />
     <None Remove="Resources\npcleftside.png" />
-    <None Remove="Resources\shader.frag" />
-    <None Remove="Resources\shader.vert" />
+    <None Remove="Resources\default.frag" />
+    <None Remove="Resources\default.vert" />
     <None Remove="Resources\grid.frag" />
     <None Remove="Resources\grid.vert" />
     <None Remove="Resources\skybox.frag" />
@@ -110,8 +110,8 @@
     <EmbeddedResource Include="Resources\Xml.xshd" />
     <EmbeddedResource Include="Resources\Cpp.xshd" />
     <EmbeddedResource Include="Resources\Changelog.xshd" />
-    <EmbeddedResource Include="Resources\shader.frag" />
-    <EmbeddedResource Include="Resources\shader.vert" />
+    <EmbeddedResource Include="Resources\default.frag" />
+    <EmbeddedResource Include="Resources\default.vert" />
     <EmbeddedResource Include="Resources\grid.frag" />
     <EmbeddedResource Include="Resources\grid.vert" />
     <EmbeddedResource Include="Resources\skybox.frag" />

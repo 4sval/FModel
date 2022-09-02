@@ -4,12 +4,21 @@ namespace FModel.Views.Snooper;
 
 public class Transform
 {
-    public Vector3 Position { get; set; } = new Vector3(0, 0, 0);
+    public static Transform Identity
+    {
+        get => new ();
+    }
 
-    public float Scale { get; set; } = 1f;
+    public Vector3 Position = Vector3.Zero;
+    public Vector3 Rotation = Vector3.Zero;
+    public Vector3 Scale = Vector3.One;
 
-    public Quaternion Rotation { get; set; } = Quaternion.Identity;
-
-    //Note: The order here does matter.
-    public Matrix4x4 ViewMatrix => Matrix4x4.Identity * Matrix4x4.CreateFromQuaternion(Rotation) * Matrix4x4.CreateScale(Scale) * Matrix4x4.CreateTranslation(Position);
+    public Matrix4x4 Matrix =>
+        Matrix4x4.Identity *
+        Matrix4x4.CreateFromYawPitchRoll(
+            Helper.DegreesToRadians(Rotation.Y),
+            Helper.DegreesToRadians(Rotation.X),
+            Helper.DegreesToRadians(Rotation.Z)) *
+        Matrix4x4.CreateScale(Scale) *
+        Matrix4x4.CreateTranslation(Position);
 }

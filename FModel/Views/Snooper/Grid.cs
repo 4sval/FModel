@@ -32,11 +32,11 @@ public class Grid : IDisposable
 
         _handle = _gl.CreateProgram();
 
-        _shader = new Shader(_gl, "grid.vert", "grid.frag");
-
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
         _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
+
+        _shader = new Shader(_gl, "grid");
 
         _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 3, 0); // position
     }

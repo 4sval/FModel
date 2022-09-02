@@ -71,12 +71,12 @@ public class Skybox : IDisposable
 
         _handle = _gl.CreateProgram();
 
-        _cubeMap = new Texture(_gl, _textures);
-        _shader = new Shader(_gl, "skybox.vert", "skybox.frag");
-
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
         _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
+
+        _cubeMap = new Texture(_gl, _textures);
+        _shader = new Shader(_gl, "skybox");
 
         _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 3, 0); // position
     }

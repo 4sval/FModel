@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Numerics;
-using Serilog;
 
 namespace FModel.Views.Snooper;
 
@@ -68,13 +67,5 @@ public class Camera
         direction.Y = MathF.Sin(pitch);
         direction.Z = MathF.Sin(yaw) * MathF.Cos(pitch);
         Direction = Vector3.Normalize(direction);
-    }
-
-    private void Loge()
-    {
-        Log.Logger.Information("Position {Position}", Position);
-        Log.Logger.Information("Direction {Direction}", Direction);
-        Log.Logger.Information("Yaw {Yaw}", Yaw);
-        Log.Logger.Information("Pitch {Pitch}", Pitch);
     }
 }

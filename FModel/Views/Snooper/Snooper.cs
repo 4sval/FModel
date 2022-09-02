@@ -37,8 +37,6 @@ public class Snooper
     private readonly Grid _grid;
     private readonly List<Model> _models;
 
-    private Shader _shader;
-
     private Vector2D<int> _size;
 
     public Snooper()
@@ -49,7 +47,7 @@ public class Snooper
 
         var options = WindowOptions.Default;
         options.Size = _size = new Vector2D<int>(Convert.ToInt32(x * ratio), Convert.ToInt32(y * ratio));
-        options.WindowBorder = WindowBorder.Hidden;
+        options.WindowBorder = WindowBorder.Fixed;
         options.Title = "Snooper";
         _window = Silk.NET.Windowing.Window.Create(options);
 
@@ -138,7 +136,6 @@ public class Snooper
         _skybox.Setup(_gl);
         _grid.Setup(_gl);
 
-        _shader = new Shader(_gl);
         foreach (var model in _models)
         {
             model.Setup(_gl);
@@ -165,29 +162,24 @@ public class Snooper
         _skybox.Bind(_camera);
         _grid.Bind(_camera);
 
-        _shader.Use();
-
-        _shader.SetUniform("uModel", Matrix4x4.Identity);
-        _shader.SetUniform("uView", _camera.GetViewMatrix());
-        _shader.SetUniform("uProjection", _camera.GetProjectionMatrix());
-        _shader.SetUniform("viewPos", _camera.Position);
-
-        _shader.SetUniform("material.diffuseMap", 0);
-        _shader.SetUniform("material.normalMap", 1);
-        _shader.SetUniform("material.specularMap", 2);
-        _shader.SetUniform("material.emissionMap", 3);
-
-        _shader.SetUniform("light.position", _camera.Position);
-
-        ImGui.Begin("ImGui.NET");
+        ImGui.Begin("Properties", ImGuiWindowFlags.NoFocusOnAppearing);
+        if (ImGui.TreeNode("Camera"))
+        {
+            ImGui.Text($"Position: {_camera.Position}");
+            ImGui.Text($"Direction: {_camera.Direction}");
+            ImGui.Text($"Speed: {_camera.Speed}");
+            ImGui.Text($"Far: {_camera.Far}");
+            ImGui.Text($"Near: {_camera.Near}");
+            ImGui.Text($"Zoom: {_camera.Zoom}");
+            ImGui.TreePop();
+        }
         foreach (var model in _models)
         {
-            model.Bind(_shader);
+            model.Bind(_camera);
         }
         ImGui.End();
 
         ImGuiExtensions.DrawViewport(_framebuffer, _camera, _mouse);
-        ImGuiExtensions.DrawFPS();
 
         _framebuffer.BindMsaa();
         _framebuffer.Bind(0); // switch back to main window
@@ -232,7 +224,6 @@ public class Snooper
         _framebuffer.Dispose();
         _grid.Dispose();
         _skybox.Dispose();
-        _shader.Dispose();
         foreach (var model in _models)
         {
             model.Dispose();

@@ -40,6 +40,7 @@ public class Section : IDisposable
 
     private bool _show = true;
     private bool _wireframe;
+    private bool _selected;
 
     public Section(string name, int index, uint facesCount, int firstFaceIndex, CMeshSection section)
     {
@@ -219,7 +220,7 @@ public class Section : IDisposable
         }
     }
 
-    public void Bind(Shader shader, float indices)
+    public void Bind(int index, Shader shader)
     {
         // ImGui.TableNextRow();
         //
@@ -249,7 +250,7 @@ public class Section : IDisposable
         //     ImGui.EndTooltip();
         // }
 
-        // DrawImGui();
+        DrawImGui(index);
 
         _diffuseMap?.Bind(TextureUnit.Texture0);
         _normalMap?.Bind(TextureUnit.Texture1);
@@ -282,10 +283,14 @@ public class Section : IDisposable
         _gl.DeleteProgram(_handle);
     }
 
-    private void DrawImGui()
+    private void DrawImGui(int index)
     {
-        ImGui.Checkbox($"Show {Name}", ref _show);
-        ImGui.Checkbox($"Wireframe {Name}", ref _wireframe);
-        ImGui.Separator();
+        ImGui.PushID(index);
+        ImGui.Selectable(Name, ref _selected);
+        if (_selected)
+        {
+
+        }
+        ImGui.PopID();
     }
 }
