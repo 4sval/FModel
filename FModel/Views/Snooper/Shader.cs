@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
@@ -8,8 +9,10 @@ namespace FModel.Views.Snooper;
 
 public class Shader : IDisposable
 {
-    private uint _handle;
-    private GL _gl;
+    private readonly uint _handle;
+    private readonly GL _gl;
+    private readonly Dictionary<string, int> _uniformToLocation = new ();
+    private readonly Dictionary<string, int> _attribLocation = new ();
 
     public Shader(GL gl) : this(gl, "default") {}
 
@@ -101,6 +104,34 @@ public class Shader : IDisposable
             throw new Exception($"{name} uniform not found on shader.");
         }
         _gl.Uniform4(location, value.X, value.Y, value.Z, value.W);
+    }
+
+    public int GetUniformLocation(string uniform)
+    {
+        if (!_uniformToLocation.TryGetValue(uniform, out int location))
+        {
+            location = _gl.GetUniformLocation(_handle, uniform);
+            _uniformToLocation.Add(uniform, location);
+            if (location == -1)
+            {
+                Serilog.Log.Debug($"The uniform '{uniform}' does not exist in the shader!");
+            }
+        }
+        return location;
+    }
+
+    public int GetAttribLocation(string attrib)
+    {
+        if (!_attribLocation.TryGetValue(attrib, out int location))
+        {
+            location = _gl.GetAttribLocation(_handle, attrib);
+            _attribLocation.Add(attrib, location);
+            if (location == -1)
+            {
+                Serilog.Log.Debug($"The attrib '{attrib}' does not exist in the shader!");
+            }
+        }
+        return location;
     }
 
     public void Dispose()

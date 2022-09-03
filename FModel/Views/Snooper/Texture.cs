@@ -8,22 +8,21 @@ namespace FModel.Views.Snooper;
 
 public class Texture : IDisposable
 {
-    private uint _handle;
-    private GL _gl;
-
-    private TextureType _type;
+    private readonly uint _handle;
+    private readonly GL _gl;
+    private readonly TextureType _type;
 
     public Texture(GL gl, TextureType type)
     {
         _gl = gl;
         _handle = _gl.GenTexture();
         _type = type;
-
-        Bind(TextureUnit.Texture0);
     }
 
     public Texture(GL gl, uint width, uint height) : this(gl, TextureType.MsaaFramebuffer)
     {
+        Bind(TextureUnit.Texture0);
+
         _gl.TexImage2DMultisample(TextureTarget.Texture2DMultisample, Constants.SAMPLES_COUNT, InternalFormat.Rgb, width, height, Silk.NET.OpenGL.Boolean.True);
 
         _gl.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int) GLEnum.Nearest);
@@ -36,6 +35,8 @@ public class Texture : IDisposable
 
     public unsafe Texture(GL gl, int width, int height) : this(gl, TextureType.Framebuffer)
     {
+        Bind(TextureUnit.Texture0);
+
         _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgb, (uint) width, (uint) height, 0, PixelFormat.Rgb, PixelType.UnsignedByte, null);
 
         _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) GLEnum.Linear);
@@ -48,6 +49,8 @@ public class Texture : IDisposable
 
     public unsafe Texture(GL gl, byte[] data, uint width, uint height) : this(gl, TextureType.Normal)
     {
+        Bind(TextureUnit.Texture0);
+
         fixed (void* d = &data[0])
         {
             _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, d);
@@ -63,6 +66,8 @@ public class Texture : IDisposable
 
     public unsafe Texture(GL gl, string[] textures) : this(gl, TextureType.Cubemap)
     {
+        Bind(TextureUnit.Texture0);
+
         for (int t = 0; t < textures.Length; t++)
         {
             var info = Application.GetResourceStream(new Uri($"/FModel;component/Resources/{textures[t]}.png", UriKind.Relative));
@@ -88,16 +93,43 @@ public class Texture : IDisposable
         _gl.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int) GLEnum.ClampToEdge);
     }
 
+    public unsafe Texture(GL gl, uint width, uint height, IntPtr data) : this(gl, TextureType.Normal)
+    {
+        Bind(TextureTarget.Texture2D);
+
+        _gl.TexStorage2D(GLEnum.Texture2D, 1, SizedInternalFormat.Rgba8, width, height);
+        _gl.TexSubImage2D(GLEnum.Texture2D, 0, 0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, (void*) data);
+
+        _gl.TexParameterI(GLEnum.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+        _gl.TexParameterI(GLEnum.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+        _gl.TexParameterI(GLEnum.Texture2D, TextureParameterName.TextureMaxLevel, 1 - 1);
+    }
+
     public void Bind(TextureUnit textureSlot)
     {
         _gl.ActiveTexture(textureSlot);
-        var target = _type switch
+        Bind(_type switch
         {
             TextureType.Cubemap => TextureTarget.TextureCubeMap,
             TextureType.MsaaFramebuffer => TextureTarget.Texture2DMultisample,
             _ => TextureTarget.Texture2D
-        };
+        });
+    }
+
+    public void Bind(TextureTarget target)
+    {
         _gl.BindTexture(target, _handle);
+    }
+
+    public void SetMinFilter(TextureMinFilter filter)
+    {
+        _gl.TexParameterI(GLEnum.Texture2D, TextureParameterName.TextureMinFilter, (int)filter);
+    }
+
+    public void SetMagFilter(TextureMagFilter filter)
+    {
+        _gl.TexParameterI(GLEnum.Texture2D, TextureParameterName.TextureMagFilter, (int)filter);
     }
 
     public IntPtr GetPointer() => (IntPtr) _handle;

@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using FModel.Extensions;
+using FModel.Framework;
 using ImGuiNET;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
-using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
 
 namespace FModel.Views.Snooper;
 
 public class SnimGui : IDisposable
 {
-    private readonly ImGuiController _controller;
+    private readonly ImGuiControllerExtensions _controller;
+    private readonly GraphicsAPI _api;
 
     private readonly Vector2 _outlinerSize;
     private readonly Vector2 _outlinerPosition;
@@ -20,29 +22,36 @@ public class SnimGui : IDisposable
     private readonly Vector2 _propertiesPosition;
     private readonly Vector2 _viewportSize;
     private readonly Vector2 _viewportPosition;
+    private readonly Vector2 _textureSize;
+    private readonly Vector2 _texturePosition;
     private bool _viewportFocus;
     private int _selectedModel;
+    private int _selectedSection;
 
-    private const ImGuiWindowFlags _noResize = ImGuiWindowFlags.NoResize; // delete once we have a proper docking branch
+    private const ImGuiWindowFlags _noResize = ImGuiWindowFlags.NoResize| ImGuiWindowFlags.NoMove; // delete once we have a proper docking branch
     private const ImGuiCond _firstUse = ImGuiCond.Appearing; // switch to FirstUseEver once the docking branch will not be useful anymore...
     private const uint _dockspaceId = 1337;
 
     public SnimGui(GL gl, IWindow window, IInputContext input)
     {
         var fontConfig = new ImGuiFontConfig("C:\\Windows\\Fonts\\segoeui.ttf", 16);
-        _controller = new ImGuiController(gl, window, input, fontConfig);
+        _controller = new ImGuiControllerExtensions(gl, window, input, fontConfig);
+        _api = window.API;
 
         var style = ImGui.GetStyle();
         var viewport = ImGui.GetMainViewport();
         var titleBarHeight = ImGui.GetFontSize() + style.FramePadding.Y * 2;
 
-        _outlinerSize = new Vector2(300, 350);
+        _outlinerSize = new Vector2(400, 250);
         _outlinerPosition = new Vector2(viewport.WorkSize.X - _outlinerSize.X, titleBarHeight);
         _propertiesSize = _outlinerSize with { Y = viewport.WorkSize.Y - _outlinerSize.Y - titleBarHeight };
         _propertiesPosition = new Vector2(viewport.WorkSize.X - _propertiesSize.X, _outlinerPosition.Y + _outlinerSize.Y);
-        _viewportSize = _outlinerPosition with { Y = viewport.WorkSize.Y - titleBarHeight };
+        _viewportSize = _outlinerPosition with { Y = viewport.WorkSize.Y - titleBarHeight - 150 };
         _viewportPosition = new Vector2(0, titleBarHeight);
+        _textureSize = _viewportSize with { Y = viewport.WorkSize.Y - _viewportSize.Y - titleBarHeight };
+        _texturePosition = new Vector2(0, _viewportPosition.Y + _viewportSize.Y);
         _selectedModel = 0;
+        _selectedSection = 0;
 
         Theme(style);
     }
@@ -54,6 +63,7 @@ public class SnimGui : IDisposable
 
         DrawOuliner(camera, models);
         DrawProperties(camera, models);
+        DrawTextures(models);
         Draw3DViewport(framebuffer, camera, mouse);
     }
 
@@ -108,12 +118,19 @@ public class SnimGui : IDisposable
         ImGui.SetNextWindowPos(_outlinerPosition, _firstUse);
         ImGui.Begin("Scene", _noResize | ImGuiWindowFlags.NoCollapse);
 
+        ImGui.Text($"{_api.API} {_api.Profile} {_api.Version.MajorVersion}.{_api.Version.MinorVersion}");
+
+        var vertices = 0;
+        var indices = 0;
+
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.TreeNode("Collection"))
         {
             for (var i = 0; i < models.Count; i++)
             {
                 var model = models[i];
+                vertices += model.Vertices.Length;
+                indices += model.Indices.Length;
                 if (ImGui.Selectable(model.Name, _selectedModel == i))
                     _selectedModel = i;
             }
@@ -131,8 +148,8 @@ public class SnimGui : IDisposable
             ImGui.TreePop();
         }
 
-        ImGui.Text($"Position: {_viewportPosition}");
-        ImGui.Text($"Size: {_viewportSize}");
+        ImGui.Text($"Vertices: {vertices}");
+        ImGui.Text($"Indices: {indices}");
 
         ImGui.End();
     }
@@ -149,7 +166,6 @@ public class SnimGui : IDisposable
         ImGui.Checkbox("Vertex Colors", ref model.DisplayVertexColors);
         ImGui.EndDisabled();
 
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.TreeNode("Transform"))
         {
             const int width = 100;
@@ -198,6 +214,90 @@ public class SnimGui : IDisposable
 
             ImGui.TreePop();
         }
+
+        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+        if (ImGui.TreeNode("Materials"))
+        {
+            ImGui.BeginTable("Sections", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable);
+            ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed);
+            ImGui.TableSetupColumn("Name");
+            ImGui.TableHeadersRow();
+            for (var i = 0; i < model.Sections.Length; i++)
+            {
+                var section = model.Sections[i];
+
+                ImGui.PushID(i);
+                ImGui.TableNextRow();
+                if (!section.Show)
+                    ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
+                ImGui.TableSetColumnIndex(0);
+                ImGui.Text(section.Index.ToString("D"));
+                ImGui.TableSetColumnIndex(1);
+                if (ImGui.Selectable(section.Name, _selectedSection == i, ImGuiSelectableFlags.SpanAllColumns))
+                    _selectedSection = i;
+                ImGui.PopID();
+            }
+            ImGui.EndTable();
+            ImGui.TreePop();
+        }
+
+        ImGui.End();
+    }
+
+    private void DrawTextures(IList<Model> models)
+    {
+        ImGui.SetNextWindowSize(_textureSize, _firstUse);
+        ImGui.SetNextWindowPos(_texturePosition, _firstUse);
+        ImGui.Begin("Textures", _noResize | ImGuiWindowFlags.NoCollapse);
+
+        var section = models[_selectedModel].Sections[_selectedSection];
+        ImGui.BeginGroup();
+        ImGui.Checkbox("Show", ref section.Show);
+        ImGui.Checkbox("Wireframe", ref section.Wireframe);
+        ImGui.Checkbox("3", ref section.Wireframe);
+        ImGui.Checkbox("4", ref section.Wireframe);
+        ImGui.EndGroup();
+        ImGui.SameLine();
+        ImGui.BeginGroup();
+        if (section.HasDiffuseColor)
+        {
+            ImGui.ColorEdit4(section.TexturesLabels[0], ref section.DiffuseColor, ImGuiColorEditFlags.AlphaPreview | ImGuiColorEditFlags.AlphaBar);
+        }
+        else
+        {
+            for (var i = 0; i < section.Textures.Length; i++)
+            {
+                if (section.Textures[i] is not {} texture)
+                    continue;
+
+                ImGui.SameLine();
+                ImGui.BeginGroup();
+                ImGui.Image(texture.GetPointer(), new Vector2(88), Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1, 1, 1, .5f));
+                var text = section.TexturesLabels[i];
+                var width = ImGui.GetCursorPos().X;
+                ImGui.SetCursorPosX(width + ImGui.CalcTextSize(text).X * 0.5f);
+                ImGui.Text(text);
+                ImGui.EndGroup();
+            }
+        }
+        ImGui.EndGroup();
+
+        // ImGui.Text($"Faces: {FacesCount} ({Math.Round(FacesCount / indices * 100f, 2)}%%)");
+        // ImGui.Text($"First Face: {FirstFaceIndex}");
+        // ImGui.Separator();
+        // if (_hasDiffuseColor)
+        // {
+        //     ImGui.ColorEdit4("Diffuse Color", ref _diffuseColor, ImGuiColorEditFlags.NoInputs);
+        // }
+        // else
+        // {
+        //     ImGui.Text($"Diffuse: ({Parameters.Diffuse?.ExportType}) {Parameters.Diffuse?.Name}");
+        //     ImGui.Text($"Normal: ({Parameters.Normal?.ExportType}) {Parameters.Normal?.Name}");
+        //     ImGui.Text($"Specular: ({Parameters.Specular?.ExportType}) {Parameters.Specular?.Name}");
+        //     if (Parameters.HasTopEmissiveTexture)
+        //         ImGui.Text($"Emissive: ({Parameters.Emissive?.ExportType}) {Parameters.Emissive?.Name}");
+        //     ImGui.Separator();
+        // }
 
         ImGui.End();
     }
@@ -278,7 +378,7 @@ public class SnimGui : IDisposable
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
         io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
-        io.ConfigDockingWithShift = true;
+        // io.ConfigDockingWithShift = true;
 
         // style.WindowPadding = Vector2.Zero;
         // style.Colors[(int) ImGuiCol.Text] = new Vector4(0.95f, 0.96f, 0.98f, 1.00f);

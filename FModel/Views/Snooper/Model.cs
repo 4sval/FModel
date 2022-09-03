@@ -26,7 +26,7 @@ public class Model : IDisposable
     public readonly float[] Vertices;
     public readonly Section[] Sections;
 
-    public Transform Transforms = Transform.Identity;
+    public readonly Transform Transforms = Transform.Identity;
     public readonly string[] TransformsLabels = {
         "X Location", "Y", "Z",
         "X Rotation", "Y", "Z",
@@ -127,7 +127,7 @@ public class Model : IDisposable
 
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Bind(section, _shader);
+            Sections[section].Bind(_shader);
         }
     }
 
