@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Windows;
+using FModel.Creator;
 using ImGuiNET;
 using Silk.NET.Input;
 using Silk.NET.Maths;
@@ -255,13 +257,12 @@ public class SnimGui : IDisposable
         ImGui.BeginGroup();
         ImGui.Checkbox("Show", ref section.Show);
         ImGui.Checkbox("Wireframe", ref section.Wireframe);
-        ImGui.Checkbox("3", ref section.Wireframe);
-        ImGui.Checkbox("4", ref section.Wireframe);
         ImGui.EndGroup();
         ImGui.SameLine();
         ImGui.BeginGroup();
         if (section.HasDiffuseColor)
         {
+            ImGui.SetNextItemWidth(300);
             ImGui.ColorEdit4(section.TexturesLabels[0], ref section.DiffuseColor, ImGuiColorEditFlags.AlphaPreview | ImGuiColorEditFlags.AlphaBar);
         }
         else
@@ -274,6 +275,33 @@ public class SnimGui : IDisposable
                 ImGui.SameLine();
                 ImGui.BeginGroup();
                 ImGui.Image(texture.GetPointer(), new Vector2(88), Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1, 1, 1, .5f));
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.BeginTooltip();
+                    ImGui.Text($"Type: ({texture.Format}) {texture.Type}");
+                    ImGui.Text($"Texture: {texture.Path}.{texture.Name}");
+                    ImGui.Text($"Imported: {texture.ImportedWidth}x{texture.ImportedHeight}");
+                    ImGui.Text($"Mip Used: {texture.Width}x{texture.Height}");
+                    ImGui.Spacing();
+                    ImGui.TextDisabled(texture.Label);
+                    ImGui.EndTooltip();
+                }
+
+                if (ImGui.IsItemClicked())
+                {
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        Clipboard.SetText(Utils.FixPath(texture.Path));
+                        texture.Label = "(?) Copied to Clipboard";
+                    });
+                }
+
+                if (i == 3) // emissive, show color
+                {
+                    ImGui.SameLine();
+                    ImGui.SetNextItemWidth(300);
+                    ImGui.ColorEdit4($"{section.TexturesLabels[i]} Color", ref section.EmissionColor, ImGuiColorEditFlags.NoAlpha);
+                }
                 var text = section.TexturesLabels[i];
                 var width = ImGui.GetCursorPos().X;
                 ImGui.SetCursorPosX(width + ImGui.CalcTextSize(text).X * 0.5f);
@@ -381,7 +409,7 @@ public class SnimGui : IDisposable
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         io.ConfigDockingWithShift = true;
 
-        // style.WindowPadding = Vector2.Zero;
+        style.WindowMenuButtonPosition = ImGuiDir.Right;
         // style.Colors[(int) ImGuiCol.Text] = new Vector4(0.95f, 0.96f, 0.98f, 1.00f);
         // style.Colors[(int) ImGuiCol.TextDisabled] = new Vector4(0.36f, 0.42f, 0.47f, 1.00f);
         // style.Colors[(int) ImGuiCol.WindowBg] = new Vector4(0.149f, 0.149f, 0.188f, 0.35f);

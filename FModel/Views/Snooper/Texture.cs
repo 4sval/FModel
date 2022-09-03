@@ -1,6 +1,7 @@
 ﻿using Silk.NET.OpenGL;
 using System;
 using System.Windows;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -12,18 +13,32 @@ public class Texture : IDisposable
     private readonly GL _gl;
     private readonly TextureType _type;
 
+    public readonly string Type;
+    public readonly string Name;
+    public readonly string Path;
+    public readonly EPixelFormat Format;
+    public readonly uint ImportedWidth;
+    public readonly uint ImportedHeight;
+    public readonly uint Width;
+    public readonly uint Height;
+    public string Label;
+
     public Texture(GL gl, TextureType type)
     {
         _gl = gl;
         _handle = _gl.GenTexture();
         _type = type;
+
+        Label = "(?) Click to Copy";
     }
 
     public Texture(GL gl, uint width, uint height) : this(gl, TextureType.MsaaFramebuffer)
     {
+        Width = width;
+        Height = height;
         Bind(TextureUnit.Texture0);
 
-        _gl.TexImage2DMultisample(TextureTarget.Texture2DMultisample, Constants.SAMPLES_COUNT, InternalFormat.Rgb, width, height, Silk.NET.OpenGL.Boolean.True);
+        _gl.TexImage2DMultisample(TextureTarget.Texture2DMultisample, Constants.SAMPLES_COUNT, InternalFormat.Rgb, Width, Height, Silk.NET.OpenGL.Boolean.True);
 
         _gl.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMinFilter, (int) GLEnum.Nearest);
         _gl.TexParameter(TextureTarget.Texture2DMultisample, TextureParameterName.TextureMagFilter, (int) GLEnum.Nearest);
@@ -35,9 +50,11 @@ public class Texture : IDisposable
 
     public unsafe Texture(GL gl, int width, int height) : this(gl, TextureType.Framebuffer)
     {
+        Width = (uint) width;
+        Height = (uint) height;
         Bind(TextureUnit.Texture0);
 
-        _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgb, (uint) width, (uint) height, 0, PixelFormat.Rgb, PixelType.UnsignedByte, null);
+        _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgb, Width, Height, 0, PixelFormat.Rgb, PixelType.UnsignedByte, null);
 
         _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) GLEnum.Linear);
         _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) GLEnum.Linear);
@@ -47,13 +64,21 @@ public class Texture : IDisposable
         _gl.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _handle, 0);
     }
 
-    public unsafe Texture(GL gl, byte[] data, uint width, uint height) : this(gl, TextureType.Normal)
+    public unsafe Texture(GL gl, byte[] data, uint width, uint height, UTexture2D texture2D) : this(gl, TextureType.Normal)
     {
+        Type = texture2D.ExportType;
+        Name = texture2D.Name;
+        Path = texture2D.Owner?.Name;
+        Format = texture2D.Format;
+        ImportedWidth = texture2D.ImportedSize.X;
+        ImportedHeight = texture2D.ImportedSize.Y;
+        Width = width;
+        Height = height;
         Bind(TextureUnit.Texture0);
 
         fixed (void* d = &data[0])
         {
-            _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, d);
+            _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, d);
 
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) GLEnum.LinearMipmapLinear);
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) GLEnum.Linear);
@@ -72,7 +97,9 @@ public class Texture : IDisposable
         {
             var info = Application.GetResourceStream(new Uri($"/FModel;component/Resources/{textures[t]}.png", UriKind.Relative));
             using var img = Image.Load<Rgba32>(info.Stream);
-            _gl.TexImage2D(TextureTarget.TextureCubeMapPositiveX + t, 0, InternalFormat.Rgba8, (uint) img.Width, (uint) img.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, null);
+            Width = (uint) img.Width; // we don't care anyway
+            Height = (uint) img.Height; // we don't care anyway
+            _gl.TexImage2D(TextureTarget.TextureCubeMapPositiveX + t, 0, InternalFormat.Rgba8, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, null);
 
             img.ProcessPixelRows(accessor =>
             {
@@ -95,10 +122,12 @@ public class Texture : IDisposable
 
     public unsafe Texture(GL gl, uint width, uint height, IntPtr data) : this(gl, TextureType.Normal)
     {
+        Width = width;
+        Height = height;
         Bind(TextureTarget.Texture2D);
 
-        _gl.TexStorage2D(GLEnum.Texture2D, 1, SizedInternalFormat.Rgba8, width, height);
-        _gl.TexSubImage2D(GLEnum.Texture2D, 0, 0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, (void*) data);
+        _gl.TexStorage2D(GLEnum.Texture2D, 1, SizedInternalFormat.Rgba8, Width, Height);
+        _gl.TexSubImage2D(GLEnum.Texture2D, 0, 0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, (void*) data);
 
         _gl.TexParameterI(GLEnum.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
         _gl.TexParameterI(GLEnum.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);

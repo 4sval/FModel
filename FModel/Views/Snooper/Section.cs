@@ -79,21 +79,21 @@ public class Section : IDisposable
             {
                 var mip = diffuse.GetFirstMip();
                 TextureDecoder.DecodeTexture(mip, diffuse.Format, diffuse.isNormalMap, platform, out var data, out _);
-                Textures[0] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY);
+                Textures[0] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, diffuse);
             }
 
             if (Parameters.Normal is UTexture2D { IsVirtual: false } normal)
             {
                 var mip = normal.GetFirstMip();
                 TextureDecoder.DecodeTexture(mip, normal.Format, normal.isNormalMap, platform, out var data, out _);
-                Textures[1] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY);
+                Textures[1] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, normal);
             }
 
             if (Parameters.Specular is UTexture2D { IsVirtual: false } specular)
             {
                 var mip = specular.GetFirstMip();
                 SwapSpecular(specular, mip, platform, out var data);
-                Textures[2] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY);
+                Textures[2] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, specular);
             }
 
             if (Parameters.HasTopEmissiveTexture &&
@@ -102,7 +102,7 @@ public class Section : IDisposable
             {
                 var mip = emissive.GetFirstMip();
                 TextureDecoder.DecodeTexture(mip, emissive.Format, emissive.isNormalMap, platform, out var data, out _);
-                Textures[3] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY);
+                Textures[3] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, emissive);
                 EmissionColor = new Vector4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
             }
         }
@@ -240,7 +240,7 @@ public class Section : IDisposable
         shader.SetUniform("light.diffuse", _diffuseLight);
         shader.SetUniform("light.specular", _specularLight);
 
-        _gl.PolygonMode(MaterialFace.Front, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
+        _gl.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
         if (Show) _gl.DrawArrays(PrimitiveType.Triangles, FirstFaceIndex, FacesCount);
     }
 
