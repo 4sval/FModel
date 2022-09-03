@@ -8,13 +8,11 @@ using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse_Conversion.Meshes;
-using FModel.Extensions;
 using ImGuiNET;
 using Silk.NET.Core;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
-using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
@@ -25,8 +23,8 @@ namespace FModel.Views.Snooper;
 public class Snooper
 {
     private readonly IWindow _window;
-    private ImGuiController _controller;
     private GL _gl;
+    private SnimGui _imGui;
     private Camera _camera;
     private IKeyboard _keyboard;
     private IMouse _mouse;
@@ -125,12 +123,7 @@ public class Snooper
         _gl = GL.GetApi(_window);
         _gl.Enable(EnableCap.Multisample);
 
-        // we don't need to bother with file check
-        // but keep an eye on font size for different monitors
-        var fontConfig = new ImGuiFontConfig("C:\\Windows\\Fonts\\segoeui.ttf", 16);
-        _controller = new ImGuiController(_gl, _window, input, fontConfig);
-
-        ImGuiExtensions.Theme();
+        _imGui = new SnimGui(_gl, _window, input);
 
         _framebuffer.Setup(_gl);
         _skybox.Setup(_gl);
@@ -148,44 +141,28 @@ public class Snooper
     /// </summary>
     private void OnRender(double deltaTime)
     {
-        _controller.Update((float) deltaTime);
+        _imGui.Update((float) deltaTime);
 
         ClearWhatHasBeenDrawn(); // in main window
 
         _framebuffer.Bind(); // switch to dedicated window
         ClearWhatHasBeenDrawn(); // in dedicated window
 
-        ImGuiExtensions.DrawDockSpace(_size);
-        ImGuiExtensions.DrawNavbar();
-        ImGui.ShowDemoWindow();
-
         _skybox.Bind(_camera);
         _grid.Bind(_camera);
 
-        ImGui.Begin("Properties", ImGuiWindowFlags.NoFocusOnAppearing);
-        if (ImGui.TreeNode("Camera"))
-        {
-            ImGui.Text($"Position: {_camera.Position}");
-            ImGui.Text($"Direction: {_camera.Direction}");
-            ImGui.Text($"Speed: {_camera.Speed}");
-            ImGui.Text($"Far: {_camera.Far}");
-            ImGui.Text($"Near: {_camera.Near}");
-            ImGui.Text($"Zoom: {_camera.Zoom}");
-            ImGui.TreePop();
-        }
         foreach (var model in _models)
         {
             model.Bind(_camera);
         }
-        ImGui.End();
 
-        ImGuiExtensions.DrawViewport(_framebuffer, _camera, _mouse);
+        _imGui.Construct(_size, _framebuffer, _camera, _mouse, _models);
 
         _framebuffer.BindMsaa();
         _framebuffer.Bind(0); // switch back to main window
         _framebuffer.BindStuff();
 
-        _controller.Render(); // render ImGui in main window
+        _imGui.Render(); // render ImGui in main window
     }
 
     private void ClearWhatHasBeenDrawn()
@@ -229,7 +206,7 @@ public class Snooper
             model.Dispose();
         }
         _models.Clear();
-        _controller.Dispose();
+        _imGui.Dispose();
         _window.Dispose();
         _gl.Dispose();
     }

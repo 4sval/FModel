@@ -250,7 +250,7 @@ public class Section : IDisposable
         //     ImGui.EndTooltip();
         // }
 
-        DrawImGui(index);
+        // DrawImGui(index);
 
         _diffuseMap?.Bind(TextureUnit.Texture0);
         _normalMap?.Bind(TextureUnit.Texture1);

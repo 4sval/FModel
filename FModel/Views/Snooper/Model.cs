@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Numerics;
 using CUE4Parse_Conversion.Meshes.PSK;
-using ImGuiNET;
 using Silk.NET.OpenGL;
 
 namespace FModel.Views.Snooper;
@@ -28,13 +26,13 @@ public class Model : IDisposable
     public readonly float[] Vertices;
     public readonly Section[] Sections;
 
-    private string[] _transforms = {
+    public Transform Transforms = Transform.Identity;
+    public readonly string[] TransformsLabels = {
         "X Location", "Y", "Z",
         "X Rotation", "Y", "Z",
         "X Scale", "Y", "Z"
     };
-    private bool _display_vertex_colors;
-    private Transform _transform = Transform.Identity;
+    public bool DisplayVertexColors;
 
     public Model(string name, CBaseMeshLod lod, CMeshVertex[] vertices)
     {
@@ -113,7 +111,7 @@ public class Model : IDisposable
 
         _shader.Use();
 
-        _shader.SetUniform("uModel", _transform.Matrix);
+        _shader.SetUniform("uModel", Transforms.Matrix);
         _shader.SetUniform("uView", camera.GetViewMatrix());
         _shader.SetUniform("uProjection", camera.GetProjectionMatrix());
         _shader.SetUniform("viewPos", camera.Position);
@@ -125,59 +123,7 @@ public class Model : IDisposable
 
         _shader.SetUniform("light.position", camera.Position);
 
-        _shader.SetUniform("display_vertex_colors", _display_vertex_colors);
-
-        ImGui.Text($"Entity: {Name}");
-        if (ImGui.TreeNode("Transform"))
-        {
-            const int width = 100;
-            var speed = camera.Speed / 100;
-            var index = 0;
-
-            ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(_transforms[index], ref _transform.Position.X, speed, 0f, 0f, "%.2f m");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(_transforms[index], ref _transform.Position.Z, speed, 0f, 0f, "%.2f m");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(_transforms[index], ref _transform.Position.Y, speed, 0f, 0f, "%.2f m");
-            ImGui.PopID();
-
-            ImGui.Spacing();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(_transforms[index], ref _transform.Rotation.X, 1f, 0f, 0f, "%.1f°");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(_transforms[index], ref _transform.Rotation.Z, 1f, 0f, 0f, "%.1f°");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(_transforms[index], ref _transform.Rotation.Y, 1f, 0f, 0f, "%.1f°");
-            ImGui.PopID();
-
-            ImGui.Spacing();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(_transforms[index], ref _transform.Scale.X, speed, 0f, 0f, "%.3f");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(_transforms[index], ref _transform.Scale.Z, speed, 0f, 0f, "%.3f");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(_transforms[index], ref _transform.Scale.Y, speed, 0f, 0f, "%.3f");
-            ImGui.PopID();
-
-            ImGui.TreePop();
-        }
-        if (HasVertexColors) ImGui.Checkbox("Display Vertex Colors", ref _display_vertex_colors);
-        ImGui.Separator();
+        _shader.SetUniform("display_vertex_colors", DisplayVertexColors);
 
         for (int section = 0; section < Sections.Length; section++)
         {

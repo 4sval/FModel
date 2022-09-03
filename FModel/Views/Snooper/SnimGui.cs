@@ -1,18 +1,66 @@
-﻿using System.Numerics;
-using FModel.Views.Snooper;
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using ImGuiNET;
 using Silk.NET.Input;
 using Silk.NET.Maths;
+using Silk.NET.OpenGL;
+using Silk.NET.OpenGL.Extensions.ImGui;
+using Silk.NET.Windowing;
 
-namespace FModel.Extensions;
+namespace FModel.Views.Snooper;
 
-public static class ImGuiExtensions
+public class SnimGui : IDisposable
 {
-    public const uint DockspaceId = 1337;
+    private readonly ImGuiController _controller;
 
-    private static bool _viewportFocus;
+    private readonly Vector2 _outlinerSize;
+    private readonly Vector2 _outlinerPosition;
+    private readonly Vector2 _propertiesSize;
+    private readonly Vector2 _propertiesPosition;
+    private readonly Vector2 _viewportSize;
+    private readonly Vector2 _viewportPosition;
+    private bool _viewportFocus;
+    private int _selectedModel;
 
-    public static void DrawDockSpace(Vector2D<int> size)
+    private const ImGuiWindowFlags _noResize = ImGuiWindowFlags.NoResize; // delete once we have a proper docking branch
+    private const ImGuiCond _firstUse = ImGuiCond.Appearing; // switch to FirstUseEver once the docking branch will not be useful anymore...
+    private const uint _dockspaceId = 1337;
+
+    public SnimGui(GL gl, IWindow window, IInputContext input)
+    {
+        var fontConfig = new ImGuiFontConfig("C:\\Windows\\Fonts\\segoeui.ttf", 16);
+        _controller = new ImGuiController(gl, window, input, fontConfig);
+
+        var style = ImGui.GetStyle();
+        var viewport = ImGui.GetMainViewport();
+        var titleBarHeight = ImGui.GetFontSize() + style.FramePadding.Y * 2;
+
+        _outlinerSize = new Vector2(300, 350);
+        _outlinerPosition = new Vector2(viewport.WorkSize.X - _outlinerSize.X, titleBarHeight);
+        _propertiesSize = _outlinerSize with { Y = viewport.WorkSize.Y - _outlinerSize.Y - titleBarHeight };
+        _propertiesPosition = new Vector2(viewport.WorkSize.X - _propertiesSize.X, _outlinerPosition.Y + _outlinerSize.Y);
+        _viewportSize = _outlinerPosition with { Y = viewport.WorkSize.Y - titleBarHeight };
+        _viewportPosition = new Vector2(0, titleBarHeight);
+        _selectedModel = 0;
+
+        Theme(style);
+    }
+
+    public void Construct(Vector2D<int> size, FramebufferObject framebuffer, Camera camera, IMouse mouse, IList<Model> models)
+    {
+        DrawDockSpace(size);
+        DrawNavbar();
+
+        DrawOuliner(camera, models);
+        DrawProperties(camera, models);
+        Draw3DViewport(framebuffer, camera, mouse);
+    }
+
+    /// <summary>
+    /// absolutely useless at the moment since ImGui.NET lacks DockerBuilder bindinds
+    /// </summary>
+    private void DrawDockSpace(Vector2D<int> size)
     {
         const ImGuiWindowFlags flags =
             ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking |
@@ -23,10 +71,10 @@ public static class ImGuiExtensions
         ImGui.SetNextWindowPos(new Vector2(0, 0));
         ImGui.SetNextWindowSize(new Vector2(size.X, size.Y));
         ImGui.Begin("Snooper", flags);
-        ImGui.DockSpace(DockspaceId);
+        ImGui.DockSpace(_dockspaceId);
     }
 
-    public static void DrawNavbar()
+    private void DrawNavbar()
     {
         if (!ImGui.BeginMainMenuBar()) return;
 
@@ -54,14 +102,118 @@ public static class ImGuiExtensions
         ImGui.EndMainMenuBar();
     }
 
-    public static void DrawViewport(FramebufferObject framebuffer, Camera camera, IMouse mouse)
+    private void DrawOuliner(Camera camera, IList<Model> models)
+    {
+        ImGui.SetNextWindowSize(_outlinerSize, _firstUse);
+        ImGui.SetNextWindowPos(_outlinerPosition, _firstUse);
+        ImGui.Begin("Scene", _noResize | ImGuiWindowFlags.NoCollapse);
+
+        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+        if (ImGui.TreeNode("Collection"))
+        {
+            for (var i = 0; i < models.Count; i++)
+            {
+                var model = models[i];
+                if (ImGui.Selectable(model.Name, _selectedModel == i))
+                    _selectedModel = i;
+            }
+            ImGui.TreePop();
+        }
+
+        if (ImGui.TreeNode("Camera"))
+        {
+            ImGui.Text($"Position: {camera.Position}");
+            ImGui.Text($"Direction: {camera.Direction}");
+            ImGui.Text($"Speed: {camera.Speed}");
+            ImGui.Text($"Far: {camera.Far}");
+            ImGui.Text($"Near: {camera.Near}");
+            ImGui.Text($"Zoom: {camera.Zoom}");
+            ImGui.TreePop();
+        }
+
+        ImGui.Text($"Position: {_viewportPosition}");
+        ImGui.Text($"Size: {_viewportSize}");
+
+        ImGui.End();
+    }
+
+    private void DrawProperties(Camera camera, IList<Model> models)
+    {
+        ImGui.SetNextWindowSize(_propertiesSize, _firstUse);
+        ImGui.SetNextWindowPos(_propertiesPosition, _firstUse);
+        ImGui.Begin("Properties", _noResize | ImGuiWindowFlags.NoCollapse);
+
+        var model = models[_selectedModel];
+        ImGui.Text($"Entity: {model.Name}");
+        ImGui.BeginDisabled(!model.HasVertexColors);
+        ImGui.Checkbox("Vertex Colors", ref model.DisplayVertexColors);
+        ImGui.EndDisabled();
+
+        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+        if (ImGui.TreeNode("Transform"))
+        {
+            const int width = 100;
+            var speed = camera.Speed / 100;
+            var index = 0;
+
+            ImGui.SetNextItemWidth(width); ImGui.PushID(index);
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Position.X, speed, 0f, 0f, "%.2f m");
+            ImGui.PopID();
+
+            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Position.Z, speed, 0f, 0f, "%.2f m");
+            ImGui.PopID();
+
+            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Position.Y, speed, 0f, 0f, "%.2f m");
+            ImGui.PopID();
+
+            ImGui.Spacing();
+
+            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Rotation.X, 1f, 0f, 0f, "%.1f°");
+            ImGui.PopID();
+
+            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Rotation.Z, 1f, 0f, 0f, "%.1f°");
+            ImGui.PopID();
+
+            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Rotation.Y, 1f, 0f, 0f, "%.1f°");
+            ImGui.PopID();
+
+            ImGui.Spacing();
+
+            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Scale.X, speed, 0f, 0f, "%.3f");
+            ImGui.PopID();
+
+            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Scale.Z, speed, 0f, 0f, "%.3f");
+            ImGui.PopID();
+
+            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Scale.Y, speed, 0f, 0f, "%.3f");
+            ImGui.PopID();
+
+            ImGui.TreePop();
+        }
+
+        ImGui.End();
+    }
+
+    private void Draw3DViewport(FramebufferObject framebuffer, Camera camera, IMouse mouse)
     {
         const float lookSensitivity = 0.1f;
         const ImGuiWindowFlags flags =
             ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse |
             ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysUseWindowPadding;
 
-        ImGui.Begin("Viewport", flags);
+        ImGui.SetNextWindowSize(_viewportSize, _firstUse);
+        ImGui.SetNextWindowPos(_viewportPosition, _firstUse);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+        ImGui.Begin("Viewport", _noResize | flags);
+        ImGui.PopStyleVar();
 
         var largest = ImGui.GetContentRegionAvail();
         largest.X -= ImGui.GetScrollX();
@@ -120,7 +272,7 @@ public static class ImGuiExtensions
         ImGui.End();
     }
 
-    public static void Theme()
+    private void Theme(ImGuiStylePtr style)
     {
         var io = ImGui.GetIO();
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
@@ -128,8 +280,7 @@ public static class ImGuiExtensions
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         io.ConfigDockingWithShift = true;
 
-        var style = ImGui.GetStyle();
-        style.WindowPadding = Vector2.Zero;
+        // style.WindowPadding = Vector2.Zero;
         // style.Colors[(int) ImGuiCol.Text] = new Vector4(0.95f, 0.96f, 0.98f, 1.00f);
         // style.Colors[(int) ImGuiCol.TextDisabled] = new Vector4(0.36f, 0.42f, 0.47f, 1.00f);
         // style.Colors[(int) ImGuiCol.WindowBg] = new Vector4(0.149f, 0.149f, 0.188f, 0.35f);
@@ -179,4 +330,8 @@ public static class ImGuiExtensions
         // style.Colors[(int) ImGuiCol.NavWindowingDimBg] = new Vector4(0.80f, 0.80f, 0.80f, 0.20f);
         // style.Colors[(int) ImGuiCol.ModalWindowDimBg] = new Vector4(0.80f, 0.80f, 0.80f, 0.35f);
     }
+
+    public void Update(float deltaTime) => _controller.Update(deltaTime);
+    public void Render() => _controller.Render();
+    public void Dispose() => _controller.Dispose();
 }
