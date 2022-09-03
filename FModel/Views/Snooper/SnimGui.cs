@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using FModel.Extensions;
-using FModel.Framework;
 using ImGuiNET;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
+using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
 
 namespace FModel.Views.Snooper;
 
 public class SnimGui : IDisposable
 {
-    private readonly ImGuiControllerExtensions _controller;
+    private readonly ImGuiController _controller;
     private readonly GraphicsAPI _api;
 
     private readonly Vector2 _outlinerSize;
@@ -28,14 +27,14 @@ public class SnimGui : IDisposable
     private int _selectedModel;
     private int _selectedSection;
 
-    private const ImGuiWindowFlags _noResize = ImGuiWindowFlags.NoResize| ImGuiWindowFlags.NoMove; // delete once we have a proper docking branch
+    private const ImGuiWindowFlags _noResize = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove; // delete once we have a proper docking branch
     private const ImGuiCond _firstUse = ImGuiCond.Appearing; // switch to FirstUseEver once the docking branch will not be useful anymore...
     private const uint _dockspaceId = 1337;
 
     public SnimGui(GL gl, IWindow window, IInputContext input)
     {
         var fontConfig = new ImGuiFontConfig("C:\\Windows\\Fonts\\segoeui.ttf", 16);
-        _controller = new ImGuiControllerExtensions(gl, window, input, fontConfig);
+        _controller = new ImGuiController(gl, window, input, fontConfig);
         _api = window.API;
 
         var style = ImGui.GetStyle();
@@ -80,7 +79,9 @@ public class SnimGui : IDisposable
 
         ImGui.SetNextWindowPos(new Vector2(0, 0));
         ImGui.SetNextWindowSize(new Vector2(size.X, size.Y));
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
         ImGui.Begin("Snooper", flags);
+        ImGui.PopStyleVar();
         ImGui.DockSpace(_dockspaceId);
     }
 
@@ -378,7 +379,7 @@ public class SnimGui : IDisposable
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
         io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
-        // io.ConfigDockingWithShift = true;
+        io.ConfigDockingWithShift = true;
 
         // style.WindowPadding = Vector2.Zero;
         // style.Colors[(int) ImGuiCol.Text] = new Vector4(0.95f, 0.96f, 0.98f, 1.00f);
