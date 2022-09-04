@@ -134,8 +134,19 @@ public class SnimGui : IDisposable
                 var model = models[i];
                 vertices += model.Vertices.Length;
                 indices += model.Indices.Length;
+                ImGui.PushID(i);
                 if (ImGui.Selectable(model.Name, _selectedModel == i))
                     _selectedModel = i;
+                if (ImGui.BeginPopupContextItem())
+                {
+                    if (ImGui.Selectable("Delete"))
+                    {
+                        _selectedModel--;
+                        models.RemoveAt(i);
+                    }
+                    ImGui.EndPopup();
+                }
+                ImGui.PopID();
             }
             ImGui.TreePop();
         }
@@ -163,6 +174,7 @@ public class SnimGui : IDisposable
         ImGui.SetNextWindowPos(_propertiesPosition, _firstUse);
         ImGui.Begin("Properties", _noResize | ImGuiWindowFlags.NoCollapse);
 
+        if (_selectedModel < 0) return;
         var model = models[_selectedModel];
         ImGui.Text($"Entity: {model.Name}");
         ImGui.BeginDisabled(!model.HasVertexColors);
@@ -253,6 +265,7 @@ public class SnimGui : IDisposable
         ImGui.SetNextWindowPos(_texturePosition, _firstUse);
         ImGui.Begin("Textures", _noResize | ImGuiWindowFlags.NoCollapse);
 
+        if (_selectedModel < 0) return;
         var section = models[_selectedModel].Sections[_selectedSection];
         ImGui.BeginGroup();
         ImGui.Checkbox("Show", ref section.Show);

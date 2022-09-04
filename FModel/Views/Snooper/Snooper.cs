@@ -37,7 +37,6 @@ public class Snooper
 
     private Vector2D<int> _size;
     private float _previousSpeed;
-    private bool _close;
     private bool _append;
 
     public Snooper()
@@ -85,7 +84,6 @@ public class Snooper
 
     public void Run(UObject export)
     {
-        _close = false;
         _append = false;
         switch (export)
         {
@@ -105,16 +103,7 @@ public class Snooper
                 throw new ArgumentOutOfRangeException(nameof(export));
         }
 
-        _window.Initialize();
-        while (!_close && !_append)
-        {
-            _window.DoEvents();
-            _window.DoUpdate();
-            _window.DoRender();
-        }
-        _window.DoEvents();
-        if (!_append) _window.Close(); // dispose
-        else _window.Reset();
+        _window.Run();
     }
 
     private void SetupCamera(FBox box)
@@ -220,13 +209,18 @@ public class Snooper
             _camera.Position -= moveSpeed * _camera.Up;
 
         if (_keyboard.IsKeyPressed(Key.H))
+        {
             _append = true;
+            _window.Close();
+        }
         if (_keyboard.IsKeyPressed(Key.Escape))
-            _close = true;
+            _window.Close();
     }
 
     private void OnClose()
     {
+        if (_append) // don't dispose anything, especially _models
+            return;
         _framebuffer.Dispose();
         _grid.Dispose();
         _skybox.Dispose();
