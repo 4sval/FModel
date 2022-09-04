@@ -93,7 +93,7 @@ public class SnimGui : IDisposable
 
         if (ImGui.BeginMenu("Window"))
         {
-            ImGui.MenuItem("Append", "CTRL+A");
+            ImGui.MenuItem("Append", "H");
             ImGui.MenuItem("Close", "ESC");
             ImGui.EndMenu();
         }
@@ -278,8 +278,8 @@ public class SnimGui : IDisposable
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.BeginTooltip();
-                    ImGui.Text($"Type: ({texture.Format}) {texture.Type}");
-                    ImGui.Text($"Texture: {texture.Path}.{texture.Name}");
+                    ImGui.Text($"Type: ({texture.Format}) {texture.Type} \"{texture.Name}\"");
+                    ImGui.Text($"Texture: {texture.Path}");
                     ImGui.Text($"Imported: {texture.ImportedWidth}x{texture.ImportedHeight}");
                     ImGui.Text($"Mip Used: {texture.Width}x{texture.Height}");
                     ImGui.Spacing();

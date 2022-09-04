@@ -36,6 +36,9 @@ public class Snooper
     private readonly List<Model> _models;
 
     private Vector2D<int> _size;
+    private float _previousSpeed;
+    private bool _close;
+    private bool _append;
 
     public Snooper()
     {
@@ -82,6 +85,8 @@ public class Snooper
 
     public void Run(UObject export)
     {
+        _close = false;
+        _append = false;
         switch (export)
         {
             case UStaticMesh st when st.TryConvert(out var mesh):
@@ -100,7 +105,16 @@ public class Snooper
                 throw new ArgumentOutOfRangeException(nameof(export));
         }
 
-        _window.Run();
+        _window.Initialize();
+        while (!_close && !_append)
+        {
+            _window.DoEvents();
+            _window.DoUpdate();
+            _window.DoRender();
+        }
+        _window.DoEvents();
+        if (!_append) _window.Close(); // dispose
+        else _window.Reset();
     }
 
     private void SetupCamera(FBox box)
@@ -108,7 +122,12 @@ public class Snooper
         var far = box.Max.Max();
         var center = box.GetCenter();
         var position = new Vector3(0f, center.Z, box.Max.Y * 3);
-        _camera = new Camera(position, center, 0.01f, far * 50f, far / 2f);
+        var speed = far / 2f;
+        if (speed > _previousSpeed)
+        {
+            _camera = new Camera(position, center, 0.01f, far * 50f, speed);
+            _previousSpeed = _camera.Speed;
+        }
     }
 
     private void OnLoad()
@@ -116,22 +135,29 @@ public class Snooper
         _window.SetWindowIcon(ref _icon);
         _window.Center();
 
-        var input = _window.CreateInput();
-        _keyboard = input.Keyboards[0];
-        _mouse = input.Mice[0];
-
-        _gl = GL.GetApi(_window);
-        _gl.Enable(EnableCap.Multisample);
-
-        _imGui = new SnimGui(_gl, _window, input);
-
-        _framebuffer.Setup(_gl);
-        _skybox.Setup(_gl);
-        _grid.Setup(_gl);
-
-        foreach (var model in _models)
+        if (_append)
         {
-            model.Setup(_gl);
+            _models[^1].Setup(_gl);
+        }
+        else
+        {
+            var input = _window.CreateInput();
+            _keyboard = input.Keyboards[0];
+            _mouse = input.Mice[0];
+
+            _gl = GL.GetApi(_window);
+            _gl.Enable(EnableCap.Multisample);
+
+            _imGui = new SnimGui(_gl, _window, input);
+
+            _framebuffer.Setup(_gl);
+            _skybox.Setup(_gl);
+            _grid.Setup(_gl);
+
+            foreach (var model in _models)
+            {
+                model.Setup(_gl);
+            }
         }
     }
 
@@ -192,8 +218,11 @@ public class Snooper
             _camera.Position += moveSpeed * _camera.Up;
         if (_keyboard.IsKeyPressed(Key.Q))
             _camera.Position -= moveSpeed * _camera.Up;
+
+        if (_keyboard.IsKeyPressed(Key.H))
+            _append = true;
         if (_keyboard.IsKeyPressed(Key.Escape))
-            _window.Close();
+            _close = true;
     }
 
     private void OnClose()
@@ -206,6 +235,7 @@ public class Snooper
             model.Dispose();
         }
         _models.Clear();
+        _previousSpeed = 0f;
         _imGui.Dispose();
         _window.Dispose();
         _gl.Dispose();

@@ -4,6 +4,7 @@ using System.Windows;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SkiaSharp;
 
 namespace FModel.Views.Snooper;
 
@@ -64,7 +65,7 @@ public class Texture : IDisposable
         _gl.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _handle, 0);
     }
 
-    public unsafe Texture(GL gl, byte[] data, uint width, uint height, UTexture2D texture2D) : this(gl, TextureType.Normal)
+    public unsafe Texture(GL gl, byte[] data, uint width, uint height, SKColorType colorType, UTexture2D texture2D) : this(gl, TextureType.Normal)
     {
         Type = texture2D.ExportType;
         Name = texture2D.Name;
@@ -79,7 +80,6 @@ public class Texture : IDisposable
         fixed (void* d = &data[0])
         {
             _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, d);
-
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) GLEnum.LinearMipmapLinear);
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) GLEnum.Linear);
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, 0);

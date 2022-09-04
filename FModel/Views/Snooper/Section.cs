@@ -7,6 +7,7 @@ using CUE4Parse_Conversion.Textures;
 using FModel.Services;
 using FModel.Settings;
 using Silk.NET.OpenGL;
+using SkiaSharp;
 
 namespace FModel.Views.Snooper;
 
@@ -78,22 +79,22 @@ public class Section : IDisposable
             else if (Parameters.Diffuse is UTexture2D { IsVirtual: false } diffuse)
             {
                 var mip = diffuse.GetFirstMip();
-                TextureDecoder.DecodeTexture(mip, diffuse.Format, diffuse.isNormalMap, platform, out var data, out _);
-                Textures[0] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, diffuse);
+                TextureDecoder.DecodeTexture(mip, diffuse.Format, diffuse.isNormalMap, platform, out var data, out var colorType);
+                Textures[0] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, diffuse);
             }
 
             if (Parameters.Normal is UTexture2D { IsVirtual: false } normal)
             {
                 var mip = normal.GetFirstMip();
-                TextureDecoder.DecodeTexture(mip, normal.Format, normal.isNormalMap, platform, out var data, out _);
-                Textures[1] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, normal);
+                TextureDecoder.DecodeTexture(mip, normal.Format, normal.isNormalMap, platform, out var data, out var colorType);
+                Textures[1] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, normal);
             }
 
             if (Parameters.Specular is UTexture2D { IsVirtual: false } specular)
             {
                 var mip = specular.GetFirstMip();
-                SwapSpecular(specular, mip, platform, out var data);
-                Textures[2] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, specular);
+                SwapSpecular(specular, mip, platform, out var data, out var colorType);
+                Textures[2] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, specular);
             }
 
             if (Parameters.HasTopEmissiveTexture &&
@@ -101,8 +102,8 @@ public class Section : IDisposable
                 Parameters.Emissive is UTexture2D { IsVirtual: false } emissive)
             {
                 var mip = emissive.GetFirstMip();
-                TextureDecoder.DecodeTexture(mip, emissive.Format, emissive.isNormalMap, platform, out var data, out _);
-                Textures[3] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, emissive);
+                TextureDecoder.DecodeTexture(mip, emissive.Format, emissive.isNormalMap, platform, out var data, out var colorType);
+                Textures[3] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, emissive);
                 EmissionColor = new Vector4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
             }
         }
@@ -122,9 +123,9 @@ public class Section : IDisposable
     /// Roughness on Green
     /// Ambient Occlusion on Red
     /// </summary>
-    private void SwapSpecular(UTexture2D specular, FTexture2DMipMap mip, ETexturePlatform platform, out byte[] data)
+    private void SwapSpecular(UTexture2D specular, FTexture2DMipMap mip, ETexturePlatform platform, out byte[] data, out SKColorType colorType)
     {
-        TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap, platform, out data, out _);
+        TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap, platform, out data, out colorType);
 
         switch (_game)
         {
