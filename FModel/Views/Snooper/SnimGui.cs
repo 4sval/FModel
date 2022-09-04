@@ -16,6 +16,8 @@ public class SnimGui : IDisposable
 {
     private readonly ImGuiController _controller;
     private readonly GraphicsAPI _api;
+    private readonly string _renderer;
+    private readonly string _version;
 
     private readonly Vector2 _outlinerSize;
     private readonly Vector2 _outlinerPosition;
@@ -38,6 +40,8 @@ public class SnimGui : IDisposable
         var fontConfig = new ImGuiFontConfig("C:\\Windows\\Fonts\\segoeui.ttf", 16);
         _controller = new ImGuiController(gl, window, input, fontConfig);
         _api = window.API;
+        _renderer = gl.GetStringS(StringName.Renderer);
+        _version = gl.GetStringS(StringName.Version);
 
         var style = ImGui.GetStyle();
         var viewport = ImGui.GetMainViewport();
@@ -121,10 +125,9 @@ public class SnimGui : IDisposable
         ImGui.SetNextWindowPos(_outlinerPosition, _firstUse);
         ImGui.Begin("Scene", _noResize | ImGuiWindowFlags.NoCollapse);
 
-        ImGui.Text($"{_api.API} {_api.Profile} {_api.Version.MajorVersion}.{_api.Version.MinorVersion}");
-
-        var vertices = 0;
-        var indices = 0;
+        ImGui.Text($"Platform: {_api.API} {_api.Profile} {_api.Version.MajorVersion}.{_api.Version.MinorVersion}");
+        ImGui.Text($"Renderer: {_renderer}");
+        ImGui.Text($"Version: {_version}");
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.TreeNode("Collection"))
@@ -132,8 +135,6 @@ public class SnimGui : IDisposable
             for (var i = 0; i < models.Count; i++)
             {
                 var model = models[i];
-                vertices += model.Vertices.Length;
-                indices += model.Indices.Length;
                 ImGui.PushID(i);
                 if (ImGui.Selectable(model.Name, _selectedModel == i))
                     _selectedModel = i;
@@ -162,9 +163,6 @@ public class SnimGui : IDisposable
             ImGui.TreePop();
         }
 
-        ImGui.Text($"Vertices: {vertices}");
-        ImGui.Text($"Indices: {indices}");
-
         ImGui.End();
     }
 
@@ -176,9 +174,13 @@ public class SnimGui : IDisposable
 
         if (_selectedModel < 0) return;
         var model = models[_selectedModel];
+        ImGui.Text($"Type: {model.Type}");
         ImGui.Text($"Entity: {model.Name}");
         ImGui.BeginDisabled(!model.HasVertexColors);
         ImGui.Checkbox("Vertex Colors", ref model.DisplayVertexColors);
+        ImGui.EndDisabled();
+        ImGui.BeginDisabled(!model.HasBones);
+        ImGui.Checkbox("Bones", ref model.DisplayBones);
         ImGui.EndDisabled();
 
         if (ImGui.TreeNode("Transform"))
@@ -291,7 +293,7 @@ public class SnimGui : IDisposable
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.BeginTooltip();
-                    ImGui.Text($"Type: ({texture.Format}) {texture.Type} \"{texture.Name}\"");
+                    ImGui.Text($"Type: ({texture.Format}) {texture.Type}:{texture.Name}");
                     ImGui.Text($"Texture: {texture.Path}");
                     ImGui.Text($"Imported: {texture.ImportedWidth}x{texture.ImportedHeight}");
                     ImGui.Text($"Mip Used: {texture.Width}x{texture.Height}");

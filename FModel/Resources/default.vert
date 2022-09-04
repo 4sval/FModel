@@ -4,6 +4,8 @@ layout (location = 0) in vec3 vPos;
 layout (location = 1) in vec3 vNormal;
 layout (location = 2) in vec2 vTexCoords;
 layout (location = 3) in vec4 vColor;
+layout (location = 4) in ivec4 vBoneIds;
+layout (location = 5) in vec4 vWeights;
 
 uniform mat4 uModel;
 uniform mat4 uView;

@@ -20,7 +20,15 @@ public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVer
 
     public unsafe void VertexAttributePointer(uint index, int count, VertexAttribPointerType type, uint vertexSize, int offSet)
     {
-        _gl.VertexAttribPointer(index, count, type, false, vertexSize * (uint) sizeof(TVertexType), (void*) (offSet * sizeof(TVertexType)));
+        switch (type)
+        {
+            case VertexAttribPointerType.Int:
+                _gl.VertexAttribIPointer(index, count, VertexAttribIType.Int, vertexSize * (uint) sizeof(TVertexType), (void*) (offSet * sizeof(TVertexType)));
+                break;
+            default:
+                _gl.VertexAttribPointer(index, count, type, false, vertexSize * (uint) sizeof(TVertexType), (void*) (offSet * sizeof(TVertexType)));
+                break;
+        }
         _gl.EnableVertexAttribArray(index);
     }
 

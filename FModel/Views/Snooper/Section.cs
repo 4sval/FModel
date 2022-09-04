@@ -37,18 +37,13 @@ public class Section : IDisposable
     public bool HasSpecularMap;
     public bool HasDiffuseColor;
 
-    public Section(string name, int index, uint facesCount, int firstFaceIndex, CMeshSection section)
+    private Section(string name, int index, uint facesCount, int firstFaceIndex)
     {
         Name = name;
         Index = index;
         FacesCount = facesCount;
         FirstFaceIndex = firstFaceIndex;
         Parameters = new CMaterialParams();
-        if (section.Material != null && section.Material.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
-        {
-            Name = unrealMaterial.Name;
-            unrealMaterial.GetParams(Parameters);
-        }
 
         Show = true;
         Textures = new Texture[4];
@@ -57,6 +52,20 @@ public class Section : IDisposable
         EmissionColor = Vector4.Zero;
 
         _game = ApplicationService.ApplicationView.CUE4Parse.Game;
+    }
+
+    public Section(string name, int index, uint facesCount, int firstFaceIndex, CMeshSection section) : this(name, index, facesCount, firstFaceIndex)
+    {
+        if (section.Material != null && section.Material.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
+        {
+            Name = unrealMaterial.Name;
+            unrealMaterial.GetParams(Parameters);
+        }
+    }
+
+    public Section(string name, int index, uint facesCount, int firstFaceIndex, UMaterialInterface unrealMaterial) : this(name, index, facesCount, firstFaceIndex)
+    {
+        unrealMaterial.GetParams(Parameters);
     }
 
     public void Setup(GL gl)

@@ -12,7 +12,7 @@ public class Camera
     public float Yaw { get; set; } = -90f;
     public float Pitch { get; set; } = 0f;
     public float Zoom { get; set; } = 45f;
-    public float Speed { get; } = 1f;
+    public float Speed { get; set; } = 1f;
     public float Near { get; } = 0.01f;
     public float Far { get; } = 100f;
     public float AspectRatio => 16f / 9f;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CUE4Parse_Conversion.Meshes.PSK;
 using Silk.NET.OpenGL;
@@ -21,10 +22,13 @@ public class Model : IDisposable
     private readonly uint[] _facesIndex = { 1, 0, 2 };
 
     public readonly string Name;
+    public readonly string Type;
     public readonly bool HasVertexColors;
-    public readonly uint[] Indices;
-    public readonly float[] Vertices;
-    public readonly Section[] Sections;
+    public readonly bool HasBones;
+    public uint[] Indices;
+    public float[] Vertices;
+    public Section[] Sections;
+    public readonly List<CSkelMeshBone> Skeleton;
 
     public readonly Transform Transforms = Transform.Identity;
     public readonly string[] TransformsLabels = {
@@ -33,12 +37,22 @@ public class Model : IDisposable
         "X Scale", "Y", "Z"
     };
     public bool DisplayVertexColors;
+    public bool DisplayBones;
 
-    public Model(string name, CBaseMeshLod lod, CMeshVertex[] vertices)
+    protected Model(string name, string type)
     {
         Name = name;
+        Type = type;
+    }
+
+    public Model(string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, List<CSkelMeshBone> skeleton = null) : this(name, type)
+    {
         HasVertexColors = lod.VertexColors != null;
         if (HasVertexColors) _vertexSize += 4; // + Color
+
+        Skeleton = skeleton;
+        HasBones = Skeleton != null;
+        if (HasBones) _vertexSize += 8; // + BoneIds + BoneWeights
 
         var sections = lod.Sections.Value;
         Sections = new Section[sections.Length];
@@ -53,27 +67,43 @@ public class Model : IDisposable
             {
                 foreach (var f in _facesIndex)
                 {
+                    var count = 0;
                     var i = face * _faceSize + f;
                     var index = section.FirstIndex + i;
                     var indice = lod.Indices.Value[index];
 
                     var vert = vertices[indice];
-                    Vertices[index * _vertexSize] = vert.Position.X * Constants.SCALE_DOWN_RATIO;
-                    Vertices[index * _vertexSize + 1] = vert.Position.Z * Constants.SCALE_DOWN_RATIO;
-                    Vertices[index * _vertexSize + 2] = vert.Position.Y * Constants.SCALE_DOWN_RATIO;
-                    Vertices[index * _vertexSize + 3] = vert.Normal.X;
-                    Vertices[index * _vertexSize + 4] = vert.Normal.Z;
-                    Vertices[index * _vertexSize + 5] = vert.Normal.Y;
-                    Vertices[index * _vertexSize + 6] = vert.UV.U;
-                    Vertices[index * _vertexSize + 7] = vert.UV.V;
+                    Vertices[index * _vertexSize + count++] = vert.Position.X * Constants.SCALE_DOWN_RATIO;
+                    Vertices[index * _vertexSize + count++] = vert.Position.Z * Constants.SCALE_DOWN_RATIO;
+                    Vertices[index * _vertexSize + count++] = vert.Position.Y * Constants.SCALE_DOWN_RATIO;
+                    Vertices[index * _vertexSize + count++] = vert.Normal.X;
+                    Vertices[index * _vertexSize + count++] = vert.Normal.Z;
+                    Vertices[index * _vertexSize + count++] = vert.Normal.Y;
+                    Vertices[index * _vertexSize + count++] = vert.UV.U;
+                    Vertices[index * _vertexSize + count++] = vert.UV.V;
+
 
                     if (HasVertexColors)
                     {
                         var color = lod.VertexColors[indice];
-                        Vertices[index * _vertexSize + 8] = color.R;
-                        Vertices[index * _vertexSize + 9] = color.G;
-                        Vertices[index * _vertexSize + 10] = color.B;
-                        Vertices[index * _vertexSize + 11] = color.A;
+                        Vertices[index * _vertexSize + count++] = color.R;
+                        Vertices[index * _vertexSize + count++] = color.G;
+                        Vertices[index * _vertexSize + count++] = color.B;
+                        Vertices[index * _vertexSize + count++] = color.A;
+                    }
+
+                    if (HasBones)
+                    {
+                        var skelVert = (CSkelMeshVertex) vert;
+                        var weightsHash = skelVert.UnpackWeights();
+                        Vertices[index * _vertexSize + count++] = skelVert.Bone[0];
+                        Vertices[index * _vertexSize + count++] = skelVert.Bone[1];
+                        Vertices[index * _vertexSize + count++] = skelVert.Bone[2];
+                        Vertices[index * _vertexSize + count++] = skelVert.Bone[3];
+                        Vertices[index * _vertexSize + count++] = weightsHash[0];
+                        Vertices[index * _vertexSize + count++] = weightsHash[1];
+                        Vertices[index * _vertexSize + count++] = weightsHash[2];
+                        Vertices[index * _vertexSize + count++] = weightsHash[3];
                     }
 
                     Indices[index] = i;
@@ -98,6 +128,8 @@ public class Model : IDisposable
         _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, _vertexSize, 3); // normal
         _vao.VertexAttributePointer(2, 2, VertexAttribPointerType.Float, _vertexSize, 6); // uv
         _vao.VertexAttributePointer(3, 4, VertexAttribPointerType.Float, _vertexSize, 8); // color
+        _vao.VertexAttributePointer(4, 4, VertexAttribPointerType.Int, _vertexSize, 12); // boneids
+        _vao.VertexAttributePointer(5, 4, VertexAttribPointerType.Float, _vertexSize, 16); // boneweights
 
         for (int section = 0; section < Sections.Length; section++)
         {

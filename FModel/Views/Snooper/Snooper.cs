@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -84,25 +85,32 @@ public class Snooper
 
     public void Run(UObject export)
     {
-        _append = false;
         switch (export)
         {
             case UStaticMesh st when st.TryConvert(out var mesh):
             {
-                _models.Add(new Model(st.Name, mesh.LODs[0], mesh.LODs[0].Verts));
+                _models.Add(new Model(st.Name, st.ExportType, mesh.LODs[0], mesh.LODs[0].Verts));
                 SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
                 break;
             }
             case USkeletalMesh sk when sk.TryConvert(out var mesh):
             {
-                _models.Add(new Model(sk.Name, mesh.LODs[0], mesh.LODs[0].Verts));
+                _models.Add(new Model(sk.Name, sk.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, mesh.RefSkeleton));
                 SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+                break;
+            }
+            case UMaterialInstance mi:
+            {
+                _models.Add(new Cube(mi.Name, mi.ExportType, mi));
+                _camera = new Camera(new Vector3(0f, 0f, 2f), Vector3.Zero, 0.01f, 0.5f * 50f, 0.5f / 2f);
                 break;
             }
             default:
                 throw new ArgumentOutOfRangeException(nameof(export));
         }
 
+        // because this calls Reset from an internal class we must recall GL.GetApi(_window) on load
+        // so basically we can't keep our current scene and we have to setup everything again
         _window.Run();
     }
 
@@ -112,11 +120,11 @@ public class Snooper
         var center = box.GetCenter();
         var position = new Vector3(0f, center.Z, box.Max.Y * 3);
         var speed = far / 2f;
-        if (speed > _previousSpeed)
-        {
+
+        if (_camera == null)
             _camera = new Camera(position, center, 0.01f, far * 50f, speed);
-            _previousSpeed = _camera.Speed;
-        }
+        else if (speed > _previousSpeed)
+            _camera.Speed = _previousSpeed = speed;
     }
 
     private void OnLoad()
@@ -124,29 +132,22 @@ public class Snooper
         _window.SetWindowIcon(ref _icon);
         _window.Center();
 
-        if (_append)
+        var input = _window.CreateInput();
+        _keyboard = input.Keyboards[0];
+        _mouse = input.Mice[0];
+
+        _gl = GL.GetApi(_window);
+        _gl.Enable(EnableCap.Multisample);
+
+        _imGui = new SnimGui(_gl, _window, input);
+
+        _framebuffer.Setup(_gl);
+        _skybox.Setup(_gl);
+        _grid.Setup(_gl);
+
+        foreach (var model in _models)
         {
-            _models[^1].Setup(_gl);
-        }
-        else
-        {
-            var input = _window.CreateInput();
-            _keyboard = input.Keyboards[0];
-            _mouse = input.Mice[0];
-
-            _gl = GL.GetApi(_window);
-            _gl.Enable(EnableCap.Multisample);
-
-            _imGui = new SnimGui(_gl, _window, input);
-
-            _framebuffer.Setup(_gl);
-            _skybox.Setup(_gl);
-            _grid.Setup(_gl);
-
-            foreach (var model in _models)
-            {
-                model.Setup(_gl);
-            }
+            model.Setup(_gl);
         }
     }
 
@@ -219,8 +220,6 @@ public class Snooper
 
     private void OnClose()
     {
-        if (_append) // don't dispose anything, especially _models
-            return;
         _framebuffer.Dispose();
         _grid.Dispose();
         _skybox.Dispose();
@@ -228,8 +227,11 @@ public class Snooper
         {
             model.Dispose();
         }
-        _models.Clear();
-        _previousSpeed = 0f;
+        if (!_append)
+        {
+            _models.Clear();
+            _previousSpeed = 0f;
+        }
         _imGui.Dispose();
         _window.Dispose();
         _gl.Dispose();
