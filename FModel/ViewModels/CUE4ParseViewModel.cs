@@ -23,6 +23,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Shaders;
@@ -749,6 +750,7 @@ public class CUE4ParseViewModel : ViewModel
                 SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                 return false;
             }
+            case UWorld:
             case UStaticMesh when UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when UserSettings.Default.PreviewSkeletalMeshes:
             case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&

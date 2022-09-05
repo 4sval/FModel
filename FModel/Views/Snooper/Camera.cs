@@ -45,7 +45,13 @@ public class Camera
         //We don't want to be able to look behind us by going over our head or under our feet so make sure it stays within these bounds
         Pitch = Math.Clamp(Pitch, -89f, 89f);
 
-        CalculateDirection();
+        var direction = Vector3.Zero;
+        var yaw = Helper.DegreesToRadians(Yaw);
+        var pitch = Helper.DegreesToRadians(Pitch);
+        direction.X = MathF.Cos(yaw) * MathF.Cos(pitch);
+        direction.Y = MathF.Sin(pitch);
+        direction.Z = MathF.Sin(yaw) * MathF.Cos(pitch);
+        Direction = Vector3.Normalize(direction);
     }
 
     public Matrix4x4 GetViewMatrix()
@@ -56,16 +62,5 @@ public class Camera
     public Matrix4x4 GetProjectionMatrix()
     {
         return Matrix4x4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, Near, Far);
-    }
-
-    public void CalculateDirection()
-    {
-        var direction = Vector3.Zero;
-        var yaw = Helper.DegreesToRadians(Yaw);
-        var pitch = Helper.DegreesToRadians(Pitch);
-        direction.X = MathF.Cos(yaw) * MathF.Cos(pitch);
-        direction.Y = MathF.Sin(pitch);
-        direction.Z = MathF.Sin(yaw) * MathF.Cos(pitch);
-        Direction = Vector3.Normalize(direction);
     }
 }

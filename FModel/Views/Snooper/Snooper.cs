@@ -7,7 +7,11 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.Core.Misc;
+using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Meshes;
 using ImGuiNET;
 using Silk.NET.Core;
@@ -15,9 +19,9 @@ using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
-using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace FModel.Views.Snooper;
 
@@ -34,7 +38,11 @@ public class Snooper
     private readonly FramebufferObject _framebuffer;
     private readonly Skybox _skybox;
     private readonly Grid _grid;
-    private readonly List<Model> _models;
+
+    private Shader _shader;
+    private Vector3 _diffuseLight;
+    private Vector3 _specularLight;
+    private readonly Dictionary<FGuid, Model> _models;
 
     private Vector2D<int> _size;
     private float _previousSpeed;
@@ -80,7 +88,7 @@ public class Snooper
         _framebuffer = new FramebufferObject(_size);
         _skybox = new Skybox();
         _grid = new Grid();
-        _models = new List<Model>();
+        _models = new Dictionary<FGuid, Model>();
     }
 
     public void Run(UObject export)
@@ -89,29 +97,139 @@ public class Snooper
         {
             case UStaticMesh st when st.TryConvert(out var mesh):
             {
-                _models.Add(new Model(st.Name, st.ExportType, mesh.LODs[0], mesh.LODs[0].Verts));
-                SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+                var guid = st.LightingGuid;
+                if (!_models.TryGetValue(guid, out _))
+                {
+                    _models[guid] = new Model(st.Name, st.ExportType, mesh.LODs[0], mesh.LODs[0].Verts);
+                    SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+                }
                 break;
             }
             case USkeletalMesh sk when sk.TryConvert(out var mesh):
             {
-                _models.Add(new Model(sk.Name, sk.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, mesh.RefSkeleton));
-                SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+                var guid = Guid.NewGuid();
+                if (!_models.TryGetValue(guid, out _))
+                {
+                    _models[guid] = new Model(sk.Name, sk.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, mesh.RefSkeleton);
+                    SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+                }
                 break;
             }
             case UMaterialInstance mi:
             {
-                _models.Add(new Cube(mi.Name, mi.ExportType, mi));
-                _camera = new Camera(new Vector3(0f, 0f, 2f), Vector3.Zero, 0.01f, 0.5f * 50f, 0.5f / 2f);
+                var guid = Guid.NewGuid();
+                if (!_models.TryGetValue(guid, out _))
+                {
+                    _models[guid] = new Cube(mi.Name, mi.ExportType, mi);
+                    SetupCamera(new FBox(new FVector(-.65f), new FVector(.65f)));
+                }
+                break;
+            }
+            case UWorld wd:
+            {
+                var persistentLevel = wd.PersistentLevel.Load<ULevel>();
+                for (var i = 0; i < persistentLevel.Actors.Length; i++)
+                {
+                    if (persistentLevel.Actors[i].Load() is not { } actor || actor.ExportType == "LODActor" ||
+                        !actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent") ||
+                        staticMeshComponent.Load() is not { } staticMeshComp) continue;
+
+                    if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)
+                    {
+                        foreach (var actorExp in actor.Class.Owner.GetExports())
+                            if (actorExp.TryGetValue(out staticMesh, "StaticMesh"))
+                                break;
+                    }
+
+                    if (staticMesh?.Load() is not UStaticMesh m || !m.TryConvert(out var mesh))
+                        continue;
+
+                    var guid = m.LightingGuid;
+                    var transform = new Transform
+                    {
+                        Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
+                        Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
+                        Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
+                    };
+                    // can't seem to find the problem here
+                    // some meshes should have their yaw reversed and others not
+                    transform.Rotation.Yaw = -transform.Rotation.Yaw;
+                    if (_models.TryGetValue(guid, out var model))
+                    {
+                        model.AddInstance(transform);
+                        continue;
+                    }
+
+                    model = new Model(m.Name, m.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, null, transform);
+                    if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
+                    {
+                        for (int j = 0; j < textureData.Length; j++)
+                        {
+                            if (textureData[j].Load() is not { } textureDataIdx)
+                                continue;
+
+                            if (textureDataIdx.TryGetValue(out FPackageIndex diffuse, "Diffuse") &&
+                                diffuse.Load() is UTexture2D diffuseTexture)
+                                model.Sections[j].Parameters.Diffuse = diffuseTexture;
+                            if (textureDataIdx.TryGetValue(out FPackageIndex normal, "Normal") &&
+                                normal.Load() is UTexture2D normalTexture)
+                                model.Sections[j].Parameters.Normal = normalTexture;
+                            if (textureDataIdx.TryGetValue(out FPackageIndex specular, "Specular") &&
+                                specular.Load() is UTexture2D specularTexture)
+                                model.Sections[j].Parameters.Specular = specularTexture;
+                        }
+                    }
+                    if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))
+                    {
+                        var max = model.Sections.Length - 1;
+                        for (var j = 0; j < overrideMaterials.Length; j++)
+                        {
+                            if (j > max) break;
+                            if (overrideMaterials[j].Load() is not UMaterialInterface unrealMaterial) continue;
+                            model.Sections[j].SwapMaterial(unrealMaterial);
+                        }
+                    }
+
+                    _models[guid] = model;
+                }
+                _camera = new Camera(new Vector3(0f, 0f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
                 break;
             }
             default:
                 throw new ArgumentOutOfRangeException(nameof(export));
         }
 
-        // because this calls Reset from an internal class we must recall GL.GetApi(_window) on load
-        // so basically we can't keep our current scene and we have to setup everything again
+        DoLoop();
+    }
+
+    private void DoLoop()
+    {
+        if (_append) _append = false;
         _window.Run();
+        // if (_window.IsInitialized)
+        // {
+        //     if (!_window.GLContext.IsCurrent)
+        //     {
+        //         // huston we have a problem
+        //         // this is apparently a bug
+        //     }
+        //     _models[^1].Setup(_gl);
+        //     _imGui.Increment();
+        // }
+        // else _window.Initialize();
+        //
+        // while (!_window.IsClosing && _window.IsVisible)
+        // {
+        //     _window.DoEvents();
+        //     if (!_window.IsClosing && _window.IsVisible)
+        //         _window.DoUpdate();
+        //     if (_window.IsClosing || !_window.IsVisible)
+        //         return;
+        //     _window.DoRender();
+        // }
+        //
+        // _window.DoEvents();
+        // if (_window.IsClosing) _window.Reset();
     }
 
     private void SetupCamera(FBox box)
@@ -120,11 +238,11 @@ public class Snooper
         var center = box.GetCenter();
         var position = new Vector3(0f, center.Z, box.Max.Y * 3);
         var speed = far / 2f;
-
-        if (_camera == null)
+        if (speed > _previousSpeed)
+        {
             _camera = new Camera(position, center, 0.01f, far * 50f, speed);
-        else if (speed > _previousSpeed)
-            _camera.Speed = _previousSpeed = speed;
+            _previousSpeed = _camera.Speed;
+        }
     }
 
     private void OnLoad()
@@ -145,7 +263,10 @@ public class Snooper
         _skybox.Setup(_gl);
         _grid.Setup(_gl);
 
-        foreach (var model in _models)
+        _shader = new Shader(_gl);
+        _diffuseLight = new Vector3(0.75f);
+        _specularLight = new Vector3(0.5f);
+        foreach (var model in _models.Values)
         {
             model.Setup(_gl);
         }
@@ -167,9 +288,24 @@ public class Snooper
         _skybox.Bind(_camera);
         _grid.Bind(_camera);
 
-        foreach (var model in _models)
+        _shader.Use();
+
+        _shader.SetUniform("uView", _camera.GetViewMatrix());
+        _shader.SetUniform("uProjection", _camera.GetProjectionMatrix());
+        _shader.SetUniform("viewPos", _camera.Position);
+
+        _shader.SetUniform("material.diffuseMap", 0);
+        _shader.SetUniform("material.normalMap", 1);
+        _shader.SetUniform("material.specularMap", 2);
+        _shader.SetUniform("material.emissionMap", 3);
+
+        _shader.SetUniform("light.position", _camera.Position);
+        _shader.SetUniform("light.diffuse", _diffuseLight);
+        _shader.SetUniform("light.specular", _specularLight);
+
+        foreach (var model in _models.Values)
         {
-            model.Bind(_camera);
+            model.Bind(_shader);
         }
 
         _imGui.Construct(_size, _framebuffer, _camera, _mouse, _models);
@@ -211,6 +347,10 @@ public class Snooper
 
         if (_keyboard.IsKeyPressed(Key.H))
         {
+            // because we lose GLContext when the window is invisible after a few seconds (it's apparently a bug)
+            // we can't use GLContext back on next load and so, for now, we basically have to reset the window
+            // if we can't use GLContext, we can't generate handles, can't interact with IsVisible, State, etc
+            // tldr we dispose everything but don't clear models, so the more you append, the longer it takes to load
             _append = true;
             _window.Close();
         }
@@ -223,7 +363,8 @@ public class Snooper
         _framebuffer.Dispose();
         _grid.Dispose();
         _skybox.Dispose();
-        foreach (var model in _models)
+        _shader.Dispose();
+        foreach (var model in _models.Values)
         {
             model.Dispose();
         }

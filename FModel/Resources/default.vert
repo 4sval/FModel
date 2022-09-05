@@ -6,8 +6,8 @@ layout (location = 2) in vec2 vTexCoords;
 layout (location = 3) in vec4 vColor;
 layout (location = 4) in ivec4 vBoneIds;
 layout (location = 5) in vec4 vWeights;
+layout (location = 6) in mat4 vInstanceMatrix;
 
-uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProjection;
 
@@ -18,10 +18,10 @@ out vec4 fColor;
 
 void main()
 {
-    gl_Position = uProjection * uView * uModel * vec4(vPos, 1.0);
+    gl_Position = uProjection * uView * vInstanceMatrix * vec4(vPos, 1.0);
 
-    fPos = vec3(uModel * vec4(vPos, 1.0));
-    fNormal = mat3(transpose(inverse(uModel))) * vNormal;
+    fPos = vec3(vInstanceMatrix * vec4(vPos, 1.0));
+    fNormal = mat3(transpose(inverse(vInstanceMatrix))) * vNormal;
     fTexCoords = vTexCoords;
     fColor = vColor;
 }

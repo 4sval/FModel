@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using CUE4Parse_Conversion.Meshes.PSK;
 using Silk.NET.OpenGL;
 
@@ -13,9 +14,8 @@ public class Model : IDisposable
 
     private BufferObject<uint> _ebo;
     private BufferObject<float> _vbo;
+    private BufferObject<Matrix4x4> _mvbo;
     private VertexArrayObject<float, uint> _vao;
-
-    private Shader _shader;
 
     private uint _vertexSize = 8; // Position + Normal + UV
     private const uint _faceSize = 3; // just so we don't have to do .Length
@@ -30,7 +30,8 @@ public class Model : IDisposable
     public Section[] Sections;
     public readonly List<CSkelMeshBone> Skeleton;
 
-    public readonly Transform Transforms = Transform.Identity;
+    public int TransformsCount;
+    public readonly List<Transform> Transforms;
     public readonly string[] TransformsLabels = {
         "X Location", "Y", "Z",
         "X Rotation", "Y", "Z",
@@ -43,9 +44,10 @@ public class Model : IDisposable
     {
         Name = name;
         Type = type;
+        Transforms = new List<Transform>();
     }
 
-    public Model(string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, List<CSkelMeshBone> skeleton = null) : this(name, type)
+    public Model(string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, List<CSkelMeshBone> skeleton = null, Transform transform = null) : this(name, type)
     {
         HasVertexColors = lod.VertexColors != null;
         if (HasVertexColors) _vertexSize += 4; // + Color
@@ -53,6 +55,8 @@ public class Model : IDisposable
         Skeleton = skeleton;
         HasBones = Skeleton != null;
         if (HasBones) _vertexSize += 8; // + BoneIds + BoneWeights
+
+        _vertexSize += 16; // + InstanceMatrix
 
         var sections = lod.Sections.Value;
         Sections = new Section[sections.Length];
@@ -110,6 +114,17 @@ public class Model : IDisposable
                 }
             }
         }
+
+        AddInstance(transform ?? Transform.Identity);
+    }
+
+    public void AddInstance(Transform transform) => Transforms.Add(transform);
+
+    public void UpdateMatrix(int index)
+    {
+        _mvbo.Bind();
+        _mvbo.Update(index, Transforms[index].Matrix);
+        _mvbo.Unbind();
     }
 
     public void Setup(GL gl)
@@ -117,8 +132,6 @@ public class Model : IDisposable
         _gl = gl;
 
         _handle = _gl.CreateProgram();
-
-        _shader = new Shader(_gl);
 
         _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
@@ -130,36 +143,34 @@ public class Model : IDisposable
         _vao.VertexAttributePointer(3, 4, VertexAttribPointerType.Float, _vertexSize, 8); // color
         _vao.VertexAttributePointer(4, 4, VertexAttribPointerType.Int, _vertexSize, 12); // boneids
         _vao.VertexAttributePointer(5, 4, VertexAttribPointerType.Float, _vertexSize, 16); // boneweights
+        _vao.VertexAttributePointer(6, 16, VertexAttribPointerType.Float, _vertexSize, 20); // instancematrix
+
+        TransformsCount = Transforms.Count;
+        var instanceMatrix = new Matrix4x4[TransformsCount];
+        for (var i = 0; i < instanceMatrix.Length; i++)
+            instanceMatrix[i] = Transforms[i].Matrix;
+        _mvbo = new BufferObject<Matrix4x4>(_gl, instanceMatrix, BufferTargetARB.ArrayBuffer);
 
         for (int section = 0; section < Sections.Length; section++)
         {
+            _vao.Bind();
+            _vao.BindInstancing();
+            _vao.Unbind();
+
             Sections[section].Setup(_gl);
         }
     }
 
-    public void Bind(Camera camera)
+    public void Bind(Shader shader)
     {
-        _vao.Bind();
+        shader.SetUniform("display_vertex_colors", DisplayVertexColors);
 
-        _shader.Use();
-
-        _shader.SetUniform("uModel", Transforms.Matrix);
-        _shader.SetUniform("uView", camera.GetViewMatrix());
-        _shader.SetUniform("uProjection", camera.GetProjectionMatrix());
-        _shader.SetUniform("viewPos", camera.Position);
-
-        _shader.SetUniform("material.diffuseMap", 0);
-        _shader.SetUniform("material.normalMap", 1);
-        _shader.SetUniform("material.specularMap", 2);
-        _shader.SetUniform("material.emissionMap", 3);
-
-        _shader.SetUniform("light.position", camera.Position);
-
-        _shader.SetUniform("display_vertex_colors", DisplayVertexColors);
-
+        var instanceCount = (uint) TransformsCount;
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Bind(_shader);
+            _vao.Bind();
+            Sections[section].Bind(shader, instanceCount);
+            _vao.Unbind();
         }
     }
 
@@ -167,8 +178,8 @@ public class Model : IDisposable
     {
         _ebo.Dispose();
         _vbo.Dispose();
+        _mvbo.Dispose();
         _vao.Dispose();
-        _shader.Dispose();
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Dispose();

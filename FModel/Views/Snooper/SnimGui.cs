@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Windows;
+using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Creator;
 using ImGuiNET;
 using Silk.NET.Input;
@@ -17,7 +18,6 @@ public class SnimGui : IDisposable
     private readonly ImGuiController _controller;
     private readonly GraphicsAPI _api;
     private readonly string _renderer;
-    private readonly string _version;
 
     private readonly Vector2 _outlinerSize;
     private readonly Vector2 _outlinerPosition;
@@ -28,7 +28,8 @@ public class SnimGui : IDisposable
     private readonly Vector2 _textureSize;
     private readonly Vector2 _texturePosition;
     private bool _viewportFocus;
-    private int _selectedModel;
+    private FGuid _selectedModel;
+    private int _selectedInstance;
     private int _selectedSection;
 
     private const ImGuiWindowFlags _noResize = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove; // delete once we have a proper docking branch
@@ -41,13 +42,12 @@ public class SnimGui : IDisposable
         _controller = new ImGuiController(gl, window, input, fontConfig);
         _api = window.API;
         _renderer = gl.GetStringS(StringName.Renderer);
-        _version = gl.GetStringS(StringName.Version);
 
         var style = ImGui.GetStyle();
         var viewport = ImGui.GetMainViewport();
         var titleBarHeight = ImGui.GetFontSize() + style.FramePadding.Y * 2;
 
-        _outlinerSize = new Vector2(400, 250);
+        _outlinerSize = new Vector2(400, 300);
         _outlinerPosition = new Vector2(viewport.WorkSize.X - _outlinerSize.X, titleBarHeight);
         _propertiesSize = _outlinerSize with { Y = viewport.WorkSize.Y - _outlinerSize.Y - titleBarHeight };
         _propertiesPosition = new Vector2(viewport.WorkSize.X - _propertiesSize.X, _outlinerPosition.Y + _outlinerSize.Y);
@@ -55,13 +55,16 @@ public class SnimGui : IDisposable
         _viewportPosition = new Vector2(0, titleBarHeight);
         _textureSize = _viewportSize with { Y = viewport.WorkSize.Y - _viewportSize.Y - titleBarHeight };
         _texturePosition = new Vector2(0, _viewportPosition.Y + _viewportSize.Y);
-        _selectedModel = 0;
+        _selectedModel = new FGuid();
+        _selectedInstance = 0;
         _selectedSection = 0;
 
         Theme(style);
     }
 
-    public void Construct(Vector2D<int> size, FramebufferObject framebuffer, Camera camera, IMouse mouse, IList<Model> models)
+    public void Increment(FGuid guid) => _selectedModel = guid;
+
+    public void Construct(Vector2D<int> size, FramebufferObject framebuffer, Camera camera, IMouse mouse, IDictionary<FGuid, Model> models)
     {
         DrawDockSpace(size);
         DrawNavbar();
@@ -119,35 +122,38 @@ public class SnimGui : IDisposable
         ImGui.EndMainMenuBar();
     }
 
-    private void DrawOuliner(Camera camera, IList<Model> models)
+    private void DrawOuliner(Camera camera, IDictionary<FGuid, Model> models)
     {
         ImGui.SetNextWindowSize(_outlinerSize, _firstUse);
         ImGui.SetNextWindowPos(_outlinerPosition, _firstUse);
         ImGui.Begin("Scene", _noResize | ImGuiWindowFlags.NoCollapse);
 
-        ImGui.Text($"Platform: {_api.API} {_api.Profile} {_api.Version.MajorVersion}.{_api.Version.MinorVersion}");
-        ImGui.Text($"Renderer: {_renderer}");
-        ImGui.Text($"Version: {_version}");
-
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.TreeNode("Collection"))
         {
-            for (var i = 0; i < models.Count; i++)
+            var i = 0;
+            foreach (var (guid, model) in models)
             {
-                var model = models[i];
                 ImGui.PushID(i);
-                if (ImGui.Selectable(model.Name, _selectedModel == i))
-                    _selectedModel = i;
+                if (ImGui.Selectable(model.Name, _selectedModel == guid))
+                {
+                    _selectedModel = guid;
+                    _selectedInstance = 0;
+                    _selectedSection = 0;
+                }
                 if (ImGui.BeginPopupContextItem())
                 {
                     if (ImGui.Selectable("Delete"))
-                    {
-                        _selectedModel--;
-                        models.RemoveAt(i);
-                    }
+                        models.Remove(guid);
+                    if (ImGui.Selectable("Copy to Clipboard"))
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            Clipboard.SetText(model.Name);
+                        });
                     ImGui.EndPopup();
                 }
                 ImGui.PopID();
+                i++;
             }
             ImGui.TreePop();
         }
@@ -166,16 +172,22 @@ public class SnimGui : IDisposable
         ImGui.End();
     }
 
-    private void DrawProperties(Camera camera, IList<Model> models)
+    private void DrawProperties(Camera camera, IDictionary<FGuid, Model> models)
     {
         ImGui.SetNextWindowSize(_propertiesSize, _firstUse);
         ImGui.SetNextWindowPos(_propertiesPosition, _firstUse);
         ImGui.Begin("Properties", _noResize | ImGuiWindowFlags.NoCollapse);
 
-        if (_selectedModel < 0) return;
-        var model = models[_selectedModel];
+        if (!models.TryGetValue(_selectedModel, out var model)) return;
         ImGui.Text($"Type: {model.Type}");
         ImGui.Text($"Entity: {model.Name}");
+        ImGui.Separator();
+        if (ImGui.Button("Focus"))
+            camera.Position = model.Transforms[_selectedInstance].Position;
+        ImGui.SameLine();
+        ImGui.BeginDisabled(model.TransformsCount < 2);
+        ImGui.SliderInt("Instance", ref _selectedInstance, 0, model.TransformsCount - 1, "%i", ImGuiSliderFlags.AlwaysClamp);
+        ImGui.EndDisabled();
         ImGui.BeginDisabled(!model.HasVertexColors);
         ImGui.Checkbox("Vertex Colors", ref model.DisplayVertexColors);
         ImGui.EndDisabled();
@@ -190,45 +202,46 @@ public class SnimGui : IDisposable
             var index = 0;
 
             ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Position.X, speed, 0f, 0f, "%.2f m");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Position.X, speed, 0f, 0f, "%.2f m");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Position.Z, speed, 0f, 0f, "%.2f m");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Position.Y, speed, 0f, 0f, "%.2f m");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Position.Y, speed, 0f, 0f, "%.2f m");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Position.Z, speed, 0f, 0f, "%.2f m");
             ImGui.PopID();
 
             ImGui.Spacing();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Rotation.X, 1f, 0f, 0f, "%.1f°");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Rotation.Pitch, .5f, 0f, 0f, "%.1f°");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Rotation.Z, 1f, 0f, 0f, "%.1f°");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Rotation.Roll, .5f, 0f, 0f, "%.1f°");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Rotation.Y, 1f, 0f, 0f, "%.1f°");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Rotation.Yaw, .5f, 0f, 0f, "%.1f°");
             ImGui.PopID();
 
             ImGui.Spacing();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Scale.X, speed, 0f, 0f, "%.3f");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Scale.X, speed, 0f, 0f, "%.3f");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Scale.Z, speed, 0f, 0f, "%.3f");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Scale.Y, speed, 0f, 0f, "%.3f");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms.Scale.Y, speed, 0f, 0f, "%.3f");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Scale.Z, speed, 0f, 0f, "%.3f");
             ImGui.PopID();
 
+            model.UpdateMatrix(_selectedInstance);
             ImGui.TreePop();
         }
 
@@ -245,11 +258,11 @@ public class SnimGui : IDisposable
 
                 ImGui.PushID(i);
                 ImGui.TableNextRow();
+                ImGui.TableNextColumn();
                 if (!section.Show)
                     ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
-                ImGui.TableSetColumnIndex(0);
                 ImGui.Text(section.Index.ToString("D"));
-                ImGui.TableSetColumnIndex(1);
+                ImGui.TableNextColumn();
                 if (ImGui.Selectable(section.Name, _selectedSection == i, ImGuiSelectableFlags.SpanAllColumns))
                     _selectedSection = i;
                 ImGui.PopID();
@@ -261,14 +274,14 @@ public class SnimGui : IDisposable
         ImGui.End();
     }
 
-    private void DrawTextures(IList<Model> models)
+    private void DrawTextures(IDictionary<FGuid, Model> models)
     {
         ImGui.SetNextWindowSize(_textureSize, _firstUse);
         ImGui.SetNextWindowPos(_texturePosition, _firstUse);
         ImGui.Begin("Textures", _noResize | ImGuiWindowFlags.NoCollapse);
 
-        if (_selectedModel < 0) return;
-        var section = models[_selectedModel].Sections[_selectedSection];
+        if (!models.TryGetValue(_selectedModel, out var model)) return;
+        var section = model.Sections[_selectedSection];
         ImGui.BeginGroup();
         ImGui.Checkbox("Show", ref section.Show);
         ImGui.Checkbox("Wireframe", ref section.Wireframe);
@@ -356,7 +369,7 @@ public class SnimGui : IDisposable
         ImGui.SetNextWindowSize(_viewportSize, _firstUse);
         ImGui.SetNextWindowPos(_viewportPosition, _firstUse);
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        ImGui.Begin("Viewport", _noResize | flags);
+        ImGui.Begin($"Viewport ({_api.API} {_api.Version.MajorVersion}.{_api.Version.MinorVersion}) ({_renderer})", _noResize | flags);
         ImGui.PopStyleVar();
 
         var largest = ImGui.GetContentRegionAvail();
@@ -425,6 +438,7 @@ public class SnimGui : IDisposable
         io.ConfigDockingWithShift = true;
 
         style.WindowMenuButtonPosition = ImGuiDir.Right;
+        style.ScrollbarSize = 10f;
         // style.Colors[(int) ImGuiCol.Text] = new Vector4(0.95f, 0.96f, 0.98f, 1.00f);
         // style.Colors[(int) ImGuiCol.TextDisabled] = new Vector4(0.36f, 0.42f, 0.47f, 1.00f);
         // style.Colors[(int) ImGuiCol.WindowBg] = new Vector4(0.149f, 0.149f, 0.188f, 0.35f);

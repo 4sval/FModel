@@ -62,6 +62,8 @@ public class Cube : Model
         };
 
         Sections = new Section[1];
-        Sections[0] = new Section(unrealMaterial.Name, 0, (uint) Indices.Length, 0, unrealMaterial);
+        Sections[0] = new Section(0, (uint) Indices.Length, 0, unrealMaterial);
+
+        AddInstance(Transform.Identity);
     }
 }

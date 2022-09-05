@@ -17,12 +17,10 @@ public class Section : IDisposable
     private GL _gl;
 
     private Vector3 _ambientLight;
-    private Vector3 _diffuseLight;
-    private Vector3 _specularLight;
 
     private readonly FGame _game;
 
-    public readonly string Name;
+    public string Name;
     public readonly int Index;
     public readonly uint FacesCount;
     public readonly int FirstFaceIndex;
@@ -58,13 +56,18 @@ public class Section : IDisposable
     {
         if (section.Material != null && section.Material.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
         {
-            Name = unrealMaterial.Name;
-            unrealMaterial.GetParams(Parameters);
+            SwapMaterial(unrealMaterial);
         }
     }
 
-    public Section(string name, int index, uint facesCount, int firstFaceIndex, UMaterialInterface unrealMaterial) : this(name, index, facesCount, firstFaceIndex)
+    public Section(int index, uint facesCount, int firstFaceIndex, UMaterialInterface unrealMaterial) : this(string.Empty, index, facesCount, firstFaceIndex)
     {
+        SwapMaterial(unrealMaterial);
+    }
+
+    public void SwapMaterial(UMaterialInterface unrealMaterial)
+    {
+        Name = unrealMaterial.Name;
         unrealMaterial.GetParams(Parameters);
     }
 
@@ -119,8 +122,6 @@ public class Section : IDisposable
 
         // diffuse light is based on normal map, so increase ambient if no normal map
         _ambientLight = new Vector3(Textures[1] == null ? 1.0f : 0.2f);
-        _diffuseLight = new Vector3(0.75f);
-        _specularLight = new Vector3(0.5f);
         HasSpecularMap = Textures[2] != null;
         HasDiffuseColor = DiffuseColor != Vector4.Zero;
         Show = !Parameters.IsNull && !Parameters.IsTransparent;
@@ -230,7 +231,7 @@ public class Section : IDisposable
         }
     }
 
-    public void Bind(Shader shader)
+    public void Bind(Shader shader, uint instanceCount)
     {
         for (var i = 0; i < Textures.Length; i++)
         {
@@ -247,11 +248,9 @@ public class Section : IDisposable
         shader.SetUniform("material.shininess", Parameters.MetallicValue);
 
         shader.SetUniform("light.ambient", _ambientLight);
-        shader.SetUniform("light.diffuse", _diffuseLight);
-        shader.SetUniform("light.specular", _specularLight);
 
         _gl.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
-        if (Show) _gl.DrawArrays(PrimitiveType.Triangles, FirstFaceIndex, FacesCount);
+        if (Show) _gl.DrawArraysInstanced(PrimitiveType.Triangles, FirstFaceIndex, FacesCount, instanceCount);
     }
 
     public void Dispose()
