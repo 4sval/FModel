@@ -4,7 +4,6 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
                     xmlns:soundOut="clr-namespace:CSCore.SoundOut;assembly=CSCore"
-                    xmlns:sharpDx="clr-namespace:SharpDX.Direct3D11;assembly=SharpDX.Direct3D11"
                     xmlns:audioControls="clr-namespace:FModel.Views.Resources.Controls.Aup"
                     xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                     xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
@@ -636,91 +635,6 @@
                 </Style>
             </Setter.Value>
         </Setter>
-    </Style>
-
-    <Style x:Key="MaterialsListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
-        <Setter Property="ItemsSource" Value="{Binding ModelViewer.SelectedModel.Group3d, IsAsync=True}" />
-        <Setter Property="SelectedItem" Value="{Binding ModelViewer.SelectedModel.SelectedGeometry}" />
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
-        <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
-        <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="25" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <Image Grid.Column="0" Source="/FModel;component/Resources/materialicon.png" Width="16" Height="16" Margin="5 0" HorizontalAlignment="Center" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" />
-                        <ToggleButton Grid.Column="3" IsChecked="{Binding IsRendering}" Padding="3" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
-                            <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                <Canvas Width="24" Height="24">
-                                    <Path x:Name="SvgIcon1" Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource VisibleIcon}" />
-                                </Canvas>
-                            </Viewbox>
-                        </ToggleButton>
-                        <ToggleButton Grid.Column="4" IsChecked="{Binding FillMode, Converter={x:Static converters:BoolToFillModeConverter.Instance}}" Padding="3" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
-                            <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                <Canvas Width="24" Height="24">
-                                    <Path x:Name="SvgIcon2" Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource WireframeIcon}" />
-                                </Canvas>
-                            </Viewbox>
-                        </ToggleButton>
-                        <Rectangle Grid.Column="5" Width="19" Height="22" Fill="{Binding Material, Converter={x:Static converters:TagToColorConverter.Instance}}"
-                                   Visibility="{Binding DataContext.ModelViewer.SelectedModel.ShowMaterialColor,
-                                   RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:Views.ModelViewer}},
-                                   Converter={StaticResource BoolToVisibilityConverter}}" />
-                    </Grid>
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsRendering}" Value="True">
-                            <Setter TargetName="SvgIcon1" Property="Data" Value="{StaticResource VisibleIcon}" />
-                            <Setter TargetName="SvgIcon1" Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsRendering}" Value="False">
-                            <Setter TargetName="SvgIcon1" Property="Data" Value="{StaticResource NotVisibleIcon}" />
-                            <Setter TargetName="SvgIcon1" Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding FillMode}" Value="{x:Static sharpDx:FillMode.Solid}">
-                            <Setter TargetName="SvgIcon2" Property="Data" Value="{StaticResource WireframeIcon}" />
-                            <Setter TargetName="SvgIcon2" Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding FillMode}" Value="{x:Static sharpDx:FillMode.Wireframe}">
-                            <Setter TargetName="SvgIcon2" Property="Data" Value="{StaticResource NotWireframeIcon}" />
-                            <Setter TargetName="SvgIcon2" Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ItemContainerStyle">
-            <Setter.Value>
-                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Padding" Value="0" />
-                </Style>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding ModelViewer.SelectedModel.Group3d.Count, FallbackValue=0}" Value="0">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate>
-                            <Grid>
-                                <TextBlock Text="No material found in the mesh" FontWeight="SemiBold" TextAlignment="Center"
-                                           Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
 
     <Style x:Key="GameFilesTabControl" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">

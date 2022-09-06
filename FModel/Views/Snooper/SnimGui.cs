@@ -29,7 +29,6 @@ public class SnimGui : IDisposable
     private readonly Vector2 _texturePosition;
     private bool _viewportFocus;
     private FGuid _selectedModel;
-    private int _selectedInstance;
     private int _selectedSection;
 
     private const ImGuiWindowFlags _noResize = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove; // delete once we have a proper docking branch
@@ -56,7 +55,6 @@ public class SnimGui : IDisposable
         _textureSize = _viewportSize with { Y = viewport.WorkSize.Y - _viewportSize.Y - titleBarHeight };
         _texturePosition = new Vector2(0, _viewportPosition.Y + _viewportSize.Y);
         _selectedModel = new FGuid();
-        _selectedInstance = 0;
         _selectedSection = 0;
 
         Theme(style);
@@ -126,7 +124,7 @@ public class SnimGui : IDisposable
     {
         ImGui.SetNextWindowSize(_outlinerSize, _firstUse);
         ImGui.SetNextWindowPos(_outlinerPosition, _firstUse);
-        ImGui.Begin("Scene", _noResize | ImGuiWindowFlags.NoCollapse);
+        ImGui.Begin("Scene Hierarchy", _noResize | ImGuiWindowFlags.NoCollapse);
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.TreeNode("Collection"))
@@ -135,14 +133,16 @@ public class SnimGui : IDisposable
             foreach (var (guid, model) in models)
             {
                 ImGui.PushID(i);
-                if (ImGui.Selectable(model.Name, _selectedModel == guid))
+                model.IsSelected = _selectedModel == guid;
+                if (ImGui.Selectable(model.Name, model.IsSelected))
                 {
                     _selectedModel = guid;
-                    _selectedInstance = 0;
                     _selectedSection = 0;
                 }
                 if (ImGui.BeginPopupContextItem())
                 {
+                    if (ImGui.Selectable("Deselect"))
+                        _selectedModel = Guid.Empty;
                     if (ImGui.Selectable("Delete"))
                         models.Remove(guid);
                     if (ImGui.Selectable("Copy to Clipboard"))
@@ -183,10 +183,10 @@ public class SnimGui : IDisposable
         ImGui.Text($"Entity: {model.Name}");
         ImGui.Separator();
         if (ImGui.Button("Focus"))
-            camera.Position = model.Transforms[_selectedInstance].Position;
+            camera.Position = model.Transforms[model.InstanceIndex].Position;
         ImGui.SameLine();
         ImGui.BeginDisabled(model.TransformsCount < 2);
-        ImGui.SliderInt("Instance", ref _selectedInstance, 0, model.TransformsCount - 1, "%i", ImGuiSliderFlags.AlwaysClamp);
+        ImGui.SliderInt("Instance", ref model.InstanceIndex, 0, model.TransformsCount - 1, "%i", ImGuiSliderFlags.AlwaysClamp);
         ImGui.EndDisabled();
         ImGui.BeginDisabled(!model.HasVertexColors);
         ImGui.Checkbox("Vertex Colors", ref model.DisplayVertexColors);
@@ -202,46 +202,46 @@ public class SnimGui : IDisposable
             var index = 0;
 
             ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Position.X, speed, 0f, 0f, "%.2f m");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[model.InstanceIndex].Position.X, speed, 0f, 0f, "%.2f m");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Position.Y, speed, 0f, 0f, "%.2f m");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[model.InstanceIndex].Position.Y, speed, 0f, 0f, "%.2f m");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Position.Z, speed, 0f, 0f, "%.2f m");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[model.InstanceIndex].Position.Z, speed, 0f, 0f, "%.2f m");
             ImGui.PopID();
 
             ImGui.Spacing();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Rotation.Pitch, .5f, 0f, 0f, "%.1f°");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[model.InstanceIndex].Rotation.Pitch, .5f, 0f, 0f, "%.1f°");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Rotation.Roll, .5f, 0f, 0f, "%.1f°");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[model.InstanceIndex].Rotation.Roll, .5f, 0f, 0f, "%.1f°");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Rotation.Yaw, .5f, 0f, 0f, "%.1f°");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[model.InstanceIndex].Rotation.Yaw, .5f, 0f, 0f, "%.1f°");
             ImGui.PopID();
 
             ImGui.Spacing();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Scale.X, speed, 0f, 0f, "%.3f");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[model.InstanceIndex].Scale.X, speed, 0f, 0f, "%.3f");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Scale.Y, speed, 0f, 0f, "%.3f");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[model.InstanceIndex].Scale.Y, speed, 0f, 0f, "%.3f");
             ImGui.PopID();
 
             index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Scale.Z, speed, 0f, 0f, "%.3f");
+            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[model.InstanceIndex].Scale.Z, speed, 0f, 0f, "%.3f");
             ImGui.PopID();
 
-            model.UpdateMatrix(_selectedInstance);
+            model.UpdateMatrix(model.InstanceIndex);
             ImGui.TreePop();
         }
 

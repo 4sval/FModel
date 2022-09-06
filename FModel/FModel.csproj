@@ -101,8 +101,8 @@
     <None Remove="Resources\skybox.vert" />
     <None Remove="Resources\framebuffer.frag" />
     <None Remove="Resources\framebuffer.vert" />
-    <None Remove="Resources\imgui.frag" />
-    <None Remove="Resources\imgui.vert" />
+    <None Remove="Resources\outline.frag" />
+    <None Remove="Resources\outline.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -120,8 +120,8 @@
     <EmbeddedResource Include="Resources\skybox.vert" />
     <EmbeddedResource Include="Resources\framebuffer.frag" />
     <EmbeddedResource Include="Resources\framebuffer.vert" />
-    <EmbeddedResource Include="Resources\imgui.frag" />
-    <EmbeddedResource Include="Resources\imgui.vert" />
+    <EmbeddedResource Include="Resources\outline.frag" />
+    <EmbeddedResource Include="Resources\outline.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -132,7 +132,6 @@
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
     <PackageReference Include="EpicManifestParser" Version="1.2.70-temp" />
-    <PackageReference Include="HelixToolkit.SharpDX.Core.Wpf" Version="2.21.0" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.16" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NVorbis" Version="0.10.4" />
@@ -236,6 +235,12 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="deps\glfw3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

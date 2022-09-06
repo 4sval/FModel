@@ -30,6 +30,7 @@ public class Model : IDisposable
     public Section[] Sections;
     public readonly List<CSkelMeshBone> Skeleton;
 
+    public int InstanceIndex;
     public int TransformsCount;
     public readonly List<Transform> Transforms;
     public readonly string[] TransformsLabels = {
@@ -37,6 +38,8 @@ public class Model : IDisposable
         "X Rotation", "Y", "Z",
         "X Scale", "Y", "Z"
     };
+
+    public bool IsSelected;
     public bool DisplayVertexColors;
     public bool DisplayBones;
 
@@ -44,6 +47,7 @@ public class Model : IDisposable
     {
         Name = name;
         Type = type;
+        InstanceIndex = 0;
         Transforms = new List<Transform>();
     }
 
@@ -161,17 +165,35 @@ public class Model : IDisposable
         }
     }
 
-    public void Bind(Shader shader)
+    public void Bind(Shader shader, Shader outline)
     {
-        shader.SetUniform("display_vertex_colors", DisplayVertexColors);
+        _vao.Bind();
 
-        var instanceCount = (uint) TransformsCount;
+        shader.SetUniform("display_vertex_colors", DisplayVertexColors);
         for (int section = 0; section < Sections.Length; section++)
         {
-            _vao.Bind();
-            Sections[section].Bind(shader, instanceCount);
-            _vao.Unbind();
+            Sections[section].Bind(shader, (uint) TransformsCount);
         }
+
+        if (IsSelected)
+        {
+            outline.Use();
+            _gl.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            _gl.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
+            _gl.Disable(EnableCap.DepthTest);
+            _gl.StencilMask(0x00);
+            for (int section = 0; section < Sections.Length; section++)
+            {
+                _gl.DrawArraysInstanced(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount, (uint) InstanceIndex + 1);
+            }
+            _gl.StencilMask(0xFF);
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.StencilFunc(StencilFunction.Always, 0, 0xFF);
+            _gl.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            shader.Use();
+        }
+
+        _vao.Unbind();
     }
 
     public void Dispose()

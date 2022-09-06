@@ -40,6 +40,7 @@ public class Snooper
     private readonly Grid _grid;
 
     private Shader _shader;
+    private Shader _outline;
     private Vector3 _diffuseLight;
     private Vector3 _specularLight;
     private readonly Dictionary<FGuid, Model> _models;
@@ -255,7 +256,11 @@ public class Snooper
         _mouse = input.Mice[0];
 
         _gl = GL.GetApi(_window);
+        _gl.Enable(EnableCap.Blend);
+        _gl.Enable(EnableCap.DepthTest);
         _gl.Enable(EnableCap.Multisample);
+        _gl.Enable(EnableCap.StencilTest);
+        _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
         _imGui = new SnimGui(_gl, _window, input);
 
@@ -264,6 +269,7 @@ public class Snooper
         _grid.Setup(_gl);
 
         _shader = new Shader(_gl);
+        _outline = new Shader(_gl, "outline");
         _diffuseLight = new Vector3(0.75f);
         _specularLight = new Vector3(0.5f);
         foreach (var model in _models.Values)
@@ -288,10 +294,16 @@ public class Snooper
         _skybox.Bind(_camera);
         _grid.Bind(_camera);
 
-        _shader.Use();
+        var viewMatrix = _camera.GetViewMatrix();
+        var projMatrix = _camera.GetProjectionMatrix();
 
-        _shader.SetUniform("uView", _camera.GetViewMatrix());
-        _shader.SetUniform("uProjection", _camera.GetProjectionMatrix());
+        _outline.Use();
+        _outline.SetUniform("uView", viewMatrix);
+        _outline.SetUniform("uProjection", projMatrix);
+
+        _shader.Use();
+        _shader.SetUniform("uView", viewMatrix);
+        _shader.SetUniform("uProjection", projMatrix);
         _shader.SetUniform("viewPos", _camera.Position);
 
         _shader.SetUniform("material.diffuseMap", 0);
@@ -305,7 +317,7 @@ public class Snooper
 
         foreach (var model in _models.Values)
         {
-            model.Bind(_shader);
+            model.Bind(_shader, _outline);
         }
 
         _imGui.Construct(_size, _framebuffer, _camera, _mouse, _models);
@@ -319,11 +331,8 @@ public class Snooper
 
     private void ClearWhatHasBeenDrawn()
     {
-        _gl.Enable(EnableCap.Blend);
-        _gl.Enable(EnableCap.DepthTest);
         _gl.ClearColor(1.0f, 0.102f, 0.129f, 1.0f);
-        _gl.Clear((uint) ClearBufferMask.ColorBufferBit | (uint) ClearBufferMask.DepthBufferBit);
-        _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        _gl.Clear((uint) ClearBufferMask.ColorBufferBit | (uint) ClearBufferMask.DepthBufferBit | (uint) ClearBufferMask.StencilBufferBit);
         _gl.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }
 
@@ -364,6 +373,7 @@ public class Snooper
         _grid.Dispose();
         _skybox.Dispose();
         _shader.Dispose();
+        _outline.Dispose();
         foreach (var model in _models.Values)
         {
             model.Dispose();

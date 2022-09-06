@@ -72,7 +72,6 @@ public class ApplicationViewModel : ViewModel
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
     public MapViewerViewModel MapViewer { get; }
-    public ModelViewerViewModel ModelViewer { get; }
     private OodleCompressor _oodle;
 
     public ApplicationViewModel()
@@ -94,7 +93,6 @@ public class ApplicationViewModel : ViewModel
         AesManager = new AesManagerViewModel(CUE4Parse);
         MapViewer = new MapViewerViewModel(CUE4Parse);
         AudioPlayer = new AudioPlayerViewModel();
-        ModelViewer = new ModelViewerViewModel(CUE4Parse.Game);
         Status = EStatusKind.Ready;
     }
 

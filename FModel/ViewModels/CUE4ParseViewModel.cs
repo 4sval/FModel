@@ -763,12 +763,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             case UMaterialInstance m when ModelIsOverwritingMaterial:
             {
-                Application.Current.Dispatcher.Invoke(delegate
-                {
-                    var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                    modelViewer.Overwrite(m);
-                });
-                return true;
+                throw new NotImplementedException();
             }
             case UStaticMesh when UserSettings.Default.SaveStaticMeshes:
             case USkeletalMesh when UserSettings.Default.SaveSkeletalMeshes:
