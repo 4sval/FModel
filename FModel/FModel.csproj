@@ -103,6 +103,10 @@
     <None Remove="Resources\framebuffer.vert" />
     <None Remove="Resources\outline.frag" />
     <None Remove="Resources\outline.vert" />
+    <None Update="glfw3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>True</ExcludeFromSingleFile>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -235,12 +239,6 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="deps\glfw3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
