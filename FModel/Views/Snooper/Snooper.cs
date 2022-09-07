@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -259,7 +260,7 @@ public class Snooper
         _gl.Enable(EnableCap.Blend);
         _gl.Enable(EnableCap.DepthTest);
         _gl.Enable(EnableCap.Multisample);
-        _gl.Enable(EnableCap.StencilTest);
+        _gl.StencilOp(StencilOp.Keep, StencilOp.Replace, StencilOp.Replace);
         _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
         _imGui = new SnimGui(_gl, _window, input);
@@ -300,6 +301,7 @@ public class Snooper
         _outline.Use();
         _outline.SetUniform("uView", viewMatrix);
         _outline.SetUniform("uProjection", projMatrix);
+        _outline.SetUniform("viewPos", _camera.Position);
 
         _shader.Use();
         _shader.SetUniform("uView", viewMatrix);
@@ -315,9 +317,14 @@ public class Snooper
         _shader.SetUniform("light.diffuse", _diffuseLight);
         _shader.SetUniform("light.specular", _specularLight);
 
-        foreach (var model in _models.Values)
+        foreach (var model in _models.Values.Where(model => model.Show))
         {
-            model.Bind(_shader, _outline);
+            model.Bind(_shader);
+        }
+        _gl.Enable(EnableCap.StencilTest); // I don't get why this must be here but it works now so...
+        foreach (var model in _models.Values.Where(model => model.IsSelected && model.Show))
+        {
+            model.Outline(_outline);
         }
 
         _imGui.Construct(_size, _framebuffer, _camera, _mouse, _models);

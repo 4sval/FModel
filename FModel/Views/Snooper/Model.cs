@@ -30,7 +30,6 @@ public class Model : IDisposable
     public Section[] Sections;
     public readonly List<CSkelMeshBone> Skeleton;
 
-    public int InstanceIndex;
     public int TransformsCount;
     public readonly List<Transform> Transforms;
     public readonly string[] TransformsLabels = {
@@ -39,6 +38,7 @@ public class Model : IDisposable
         "X Scale", "Y", "Z"
     };
 
+    public bool Show;
     public bool IsSelected;
     public bool DisplayVertexColors;
     public bool DisplayBones;
@@ -47,8 +47,8 @@ public class Model : IDisposable
     {
         Name = name;
         Type = type;
-        InstanceIndex = 0;
         Transforms = new List<Transform>();
+        Show = true;
     }
 
     public Model(string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, List<CSkelMeshBone> skeleton = null, Transform transform = null) : this(name, type)
@@ -165,35 +165,47 @@ public class Model : IDisposable
         }
     }
 
-    public void Bind(Shader shader, Shader outline)
+    public void Bind(Shader shader)
     {
-        _vao.Bind();
+        if (IsSelected)
+        {
+            _gl.Enable(EnableCap.StencilTest);
+            _gl.StencilFunc(StencilFunction.Always, 1, 0xFF);
+        }
 
+        _vao.Bind();
         shader.SetUniform("display_vertex_colors", DisplayVertexColors);
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Bind(shader, (uint) TransformsCount);
         }
+        _vao.Unbind();
 
         if (IsSelected)
         {
-            outline.Use();
-            _gl.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-            _gl.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
-            _gl.Disable(EnableCap.DepthTest);
-            _gl.StencilMask(0x00);
-            for (int section = 0; section < Sections.Length; section++)
-            {
-                _gl.DrawArraysInstanced(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount, (uint) InstanceIndex + 1);
-            }
-            _gl.StencilMask(0xFF);
-            _gl.Enable(EnableCap.DepthTest);
             _gl.StencilFunc(StencilFunction.Always, 0, 0xFF);
-            _gl.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            shader.Use();
+            _gl.Disable(EnableCap.StencilTest);
         }
+    }
 
+    public void Outline(Shader shader)
+    {
+        _gl.StencilMask(0x00);
+        _gl.Disable(EnableCap.DepthTest);
+        _gl.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
+
+        _vao.Bind();
+        shader.Use();
+        for (int section = 0; section < Sections.Length; section++)
+        {
+            if (!Sections[section].Show) continue;
+            _gl.DrawArraysInstanced(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount, (uint) TransformsCount);
+        }
         _vao.Unbind();
+
+        _gl.StencilFunc(StencilFunction.Always, 0, 0xFF);
+        _gl.Enable(EnableCap.DepthTest);
+        _gl.StencilMask(0xFF);
     }
 
     public void Dispose()

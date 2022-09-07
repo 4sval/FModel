@@ -96,7 +96,7 @@ public class FramebufferObject : IDisposable
 
     public void BindStuff()
     {
-        _gl.DepthMask(false);
+        _gl.Disable(EnableCap.DepthTest);
 
         _shader.Use();
         _vao.Bind();
@@ -104,8 +104,7 @@ public class FramebufferObject : IDisposable
         _postProcessingTexture.Bind(TextureUnit.Texture0);
 
         _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint) Indices.Length);
-
-        _gl.DepthMask(true);
+        _gl.Enable(EnableCap.DepthTest);
     }
 
     public IntPtr GetPointer() => _postProcessingTexture.GetPointer();

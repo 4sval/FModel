@@ -11,7 +11,7 @@ public class Camera
 
     public float Yaw { get; set; } = -90f;
     public float Pitch { get; set; } = 0f;
-    public float Zoom { get; set; } = 45f;
+    public float Zoom { get; set; } = 60f;
     public float Speed { get; set; } = 1f;
     public float Near { get; } = 0.01f;
     public float Far { get; } = 100f;
@@ -34,7 +34,7 @@ public class Camera
     public void ModifyZoom(float zoomAmount)
     {
         //We don't want to be able to zoom in too close or too far away so clamp to these values
-        Zoom = Math.Clamp(Zoom - zoomAmount, 1.0f, 45f);
+        Zoom = Math.Clamp(Zoom - zoomAmount, 1.0f, 60f);
     }
 
     public void ModifyDirection(float xOffset, float yOffset)

@@ -43,8 +43,7 @@ public class Grid : IDisposable
 
     public void Bind(Camera camera)
     {
-        _gl.DepthMask(false);
-
+        _gl.Disable(EnableCap.DepthTest);
         _vao.Bind();
 
         _shader.Use();
@@ -55,8 +54,7 @@ public class Grid : IDisposable
         _shader.SetUniform("uFar", camera.Far);
 
         _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint) Indices.Length);
-
-        _gl.DepthMask(true);
+        _gl.Enable(EnableCap.DepthTest);
     }
 
     public void Dispose()
