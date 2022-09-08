@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -102,7 +102,7 @@ public class Snooper
                 var guid = st.LightingGuid;
                 if (!_models.TryGetValue(guid, out _))
                 {
-                    _models[guid] = new Model(st.Name, st.ExportType, mesh.LODs[0], mesh.LODs[0].Verts);
+                    _models[guid] = new Model(export, st.Name, st.ExportType, mesh.LODs[0], mesh.LODs[0].Verts);
                     SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
                 }
                 break;
@@ -112,7 +112,7 @@ public class Snooper
                 var guid = Guid.NewGuid();
                 if (!_models.TryGetValue(guid, out _))
                 {
-                    _models[guid] = new Model(sk.Name, sk.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, mesh.RefSkeleton);
+                    _models[guid] = new Model(export, sk.Name, sk.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, mesh.RefSkeleton);
                     SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
                 }
                 break;
@@ -122,7 +122,7 @@ public class Snooper
                 var guid = Guid.NewGuid();
                 if (!_models.TryGetValue(guid, out _))
                 {
-                    _models[guid] = new Cube(mi.Name, mi.ExportType, mi);
+                    _models[guid] = new Cube(export, mi.Name, mi.ExportType, mi);
                     SetupCamera(new FBox(new FVector(-.65f), new FVector(.65f)));
                 }
                 break;
@@ -162,7 +162,7 @@ public class Snooper
                         continue;
                     }
 
-                    model = new Model(m.Name, m.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, null, transform);
+                    model = new Model(export, m.Name, m.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, null, transform);
                     if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
                     {
                         for (int j = 0; j < textureData.Length; j++)
@@ -194,7 +194,7 @@ public class Snooper
 
                     _models[guid] = model;
                 }
-                _camera = new Camera(new Vector3(0f, 0f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
+                _camera = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
                 break;
             }
             default:
@@ -212,11 +212,14 @@ public class Snooper
         // {
         //     if (!_window.GLContext.IsCurrent)
         //     {
-        //         // huston we have a problem
-        //         // this is apparently a bug
+        //         _window.GLContext.MakeCurrent();
         //     }
-        //     _models[^1].Setup(_gl);
-        //     _imGui.Increment();
+        //
+        //     _append = false;
+        //     _window.IsVisible = true;
+        //     var model = _models.Last();
+        //     model.Value.Setup(_gl);
+        //     _imGui.Increment(model.Key);
         // }
         // else _window.Initialize();
         //
@@ -369,6 +372,7 @@ public class Snooper
             // tldr we dispose everything but don't clear models, so the more you append, the longer it takes to load
             _append = true;
             _window.Close();
+            // _window.IsVisible = false;
         }
         if (_keyboard.IsKeyPressed(Key.Escape))
             _window.Close();

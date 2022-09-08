@@ -1,10 +1,11 @@
-﻿using CUE4Parse.UE4.Assets.Exports.Material;
+﻿using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Material;
 
 namespace FModel.Views.Snooper;
 
 public class Cube : Model
 {
-    public Cube(string name, string type, UMaterialInterface unrealMaterial) : base(name, type)
+    public Cube(UObject owner, string name, string type, UMaterialInterface unrealMaterial) : base(owner, name, type)
     {
         Indices = new uint[]
         {

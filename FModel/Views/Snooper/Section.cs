@@ -152,7 +152,6 @@ public class Section : IDisposable
                     {
                         for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
                         {
-                            d[offset] = 0;
                             (d[offset + 1], d[offset + 2]) = (d[offset + 2], d[offset + 1]); // swap G and B
                             offset += 4;
                         }
@@ -226,6 +225,8 @@ public class Section : IDisposable
                     }
                 }
 
+                Parameters.RoughnessValue = 1;
+                Parameters.MetallicValue = 1;
                 break;
             }
         }
@@ -245,7 +246,8 @@ public class Section : IDisposable
 
         shader.SetUniform("material.emissionColor", EmissionColor);
 
-        shader.SetUniform("material.shininess", Parameters.MetallicValue);
+        shader.SetUniform("material.metallic_value", Parameters.MetallicValue);
+        shader.SetUniform("material.roughness_value", Parameters.RoughnessValue);
 
         shader.SetUniform("light.ambient", _ambientLight);
 

@@ -19,6 +19,10 @@ public class SnimGui : IDisposable
     private readonly GraphicsAPI _api;
     private readonly string _renderer;
 
+    private readonly Vector4 _xAxis = new (1.0f, 0.102f, 0.129f, 1.0f);
+    private readonly Vector4 _yAxis = new (0.102f, 0.102f, 1.0f, 1.0f);
+    private readonly Vector4 _zAxis = new (0.102f, 0.102f, 0.129f, 1.0f);
+
     private readonly Vector2 _outlinerSize;
     private readonly Vector2 _outlinerPosition;
     private readonly Vector2 _propertiesSize;
@@ -128,48 +132,55 @@ public class SnimGui : IDisposable
         ImGui.SetNextWindowPos(_outlinerPosition, _firstUse);
         ImGui.Begin("Scene Hierarchy", _noResize | ImGuiWindowFlags.NoCollapse);
 
+        ImGui.Text("hello world!");
+        ImGui.Spacing();
+
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.TreeNode("Collection"))
+        if (ImGui.CollapsingHeader("Collection"))
         {
-            var i = 0;
-            foreach (var (guid, model) in models)
+            if (ImGui.BeginListBox("", new Vector2(ImGui.GetContentRegionAvail().X, _outlinerSize.Y / 2)))
             {
-                ImGui.PushID(i);
-                model.IsSelected = _selectedModel == guid;
-                if (ImGui.Selectable(model.Name, model.IsSelected))
+                var i = 0;
+                foreach (var (guid, model) in models)
                 {
-                    _selectedModel = guid;
-                    _selectedInstance = 0;
-                    _selectedSection = 0;
+                    ImGui.PushID(i);
+                    model.IsSelected = _selectedModel == guid;
+                    if (ImGui.Selectable(model.Name, model.IsSelected))
+                    {
+                        _selectedModel = guid;
+                        _selectedInstance = 0;
+                        _selectedSection = 0;
+                    }
+                    if (ImGui.BeginPopupContextItem())
+                    {
+                        if (ImGui.Selectable("Deselect"))
+                            _selectedModel = Guid.Empty;
+                        if (ImGui.Selectable("Delete"))
+                            models.Remove(guid);
+                        if (ImGui.Selectable("Copy to Clipboard"))
+                            Application.Current.Dispatcher.Invoke(delegate
+                            {
+                                Clipboard.SetText(model.Name);
+                            });
+                        ImGui.EndPopup();
+                    }
+                    ImGui.PopID();
+                    i++;
                 }
-                if (ImGui.BeginPopupContextItem())
-                {
-                    if (ImGui.Selectable("Deselect"))
-                        _selectedModel = Guid.Empty;
-                    if (ImGui.Selectable("Delete"))
-                        models.Remove(guid);
-                    if (ImGui.Selectable("Copy to Clipboard"))
-                        Application.Current.Dispatcher.Invoke(delegate
-                        {
-                            Clipboard.SetText(model.Name);
-                        });
-                    ImGui.EndPopup();
-                }
-                ImGui.PopID();
-                i++;
+                ImGui.EndListBox();
             }
-            ImGui.TreePop();
         }
 
-        if (ImGui.TreeNode("Camera"))
+        if (ImGui.CollapsingHeader("Camera"))
         {
+            PushStyleCompact();
             ImGui.Text($"Position: {camera.Position}");
             ImGui.Text($"Direction: {camera.Direction}");
             ImGui.Text($"Speed: {camera.Speed}");
             ImGui.Text($"Far: {camera.Far}");
             ImGui.Text($"Near: {camera.Near}");
             ImGui.Text($"Zoom: {camera.Zoom}");
-            ImGui.TreePop();
+            PopStyleCompact();
         }
 
         ImGui.End();
@@ -180,99 +191,118 @@ public class SnimGui : IDisposable
         ImGui.SetNextWindowSize(_propertiesSize, _firstUse);
         ImGui.SetNextWindowPos(_propertiesPosition, _firstUse);
         ImGui.Begin("Properties", _noResize | ImGuiWindowFlags.NoCollapse);
+        if (!models.TryGetValue(_selectedModel, out var model))
+            return;
 
-        if (!models.TryGetValue(_selectedModel, out var model)) return;
-        ImGui.Text($"Type: {model.Type}");
-        ImGui.Text($"Entity: {model.Name}");
+        ImGui.Text($"Entity: ({model.Type}) {model.Name}");
+        ImGui.Text($"Guid: {_selectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
+        PushStyleCompact();
+        ImGui.Columns(4, "Actions", false);
+        if (ImGui.Button("Go To")) camera.Position = model.Transforms[_selectedInstance].Position;
+        ImGui.NextColumn(); ImGui.Checkbox("Show", ref model.Show);
+        ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasVertexColors); ImGui.Checkbox("Colors", ref model.DisplayVertexColors); ImGui.EndDisabled();
+        ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasBones); ImGui.Checkbox("Bones", ref model.DisplayBones); ImGui.EndDisabled();
+        ImGui.Columns(1);
+        PopStyleCompact();
+
         ImGui.Separator();
-        if (ImGui.Button("Focus"))
-            camera.Position = model.Transforms[_selectedInstance].Position;
-        ImGui.SameLine();
-        ImGui.BeginDisabled(model.TransformsCount < 2);
-        ImGui.SliderInt("Instance", ref _selectedInstance, 0, model.TransformsCount - 1, "%i", ImGuiSliderFlags.AlwaysClamp);
-        ImGui.EndDisabled();
-        ImGui.Checkbox("Show", ref model.Show);
-        ImGui.BeginDisabled(!model.HasVertexColors);
-        ImGui.Checkbox("Vertex Colors", ref model.DisplayVertexColors);
-        ImGui.EndDisabled();
-        ImGui.BeginDisabled(!model.HasBones);
-        ImGui.Checkbox("Bones", ref model.DisplayBones);
-        ImGui.EndDisabled();
-
-        if (ImGui.TreeNode("Transform"))
-        {
-            const int width = 100;
-            var speed = camera.Speed / 100;
-            var index = 0;
-
-            ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Position.X, speed, 0f, 0f, "%.2f m");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Position.Y, speed, 0f, 0f, "%.2f m");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Position.Z, speed, 0f, 0f, "%.2f m");
-            ImGui.PopID();
-
-            ImGui.Spacing();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Rotation.Pitch, .5f, 0f, 0f, "%.1f°");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Rotation.Roll, .5f, 0f, 0f, "%.1f°");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Rotation.Yaw, .5f, 0f, 0f, "%.1f°");
-            ImGui.PopID();
-
-            ImGui.Spacing();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Scale.X, speed, 0f, 0f, "%.3f");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Scale.Y, speed, 0f, 0f, "%.3f");
-            ImGui.PopID();
-
-            index++; ImGui.SetNextItemWidth(width); ImGui.PushID(index);
-            ImGui.DragFloat(model.TransformsLabels[index], ref model.Transforms[_selectedInstance].Scale.Z, speed, 0f, 0f, "%.3f");
-            ImGui.PopID();
-
-            model.UpdateMatrix(_selectedInstance);
-            ImGui.TreePop();
-        }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.TreeNode("Materials"))
+        if (ImGui.BeginTabBar("properties_tab_bar", ImGuiTabBarFlags.None))
         {
-            ImGui.BeginTable("Sections", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable);
-            ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed);
-            ImGui.TableSetupColumn("Name");
-            ImGui.TableHeadersRow();
-            for (var i = 0; i < model.Sections.Length; i++)
+            if (ImGui.BeginTabItem("Transform"))
             {
-                var section = model.Sections[i];
+                const int width = 100;
+                var speed = camera.Speed / 100;
 
-                ImGui.PushID(i);
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                if (!section.Show)
-                    ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
-                ImGui.Text(section.Index.ToString("D"));
-                ImGui.TableNextColumn();
-                if (ImGui.Selectable(section.Name, _selectedSection == i, ImGuiSelectableFlags.SpanAllColumns))
-                    _selectedSection = i;
-                ImGui.PopID();
+                PushStyleCompact();
+                ImGui.PushID(0); ImGui.BeginDisabled(model.TransformsCount < 2);
+                ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
+                ImGui.SliderInt("", ref _selectedInstance, 0, model.TransformsCount - 1, "Instance %i", ImGuiSliderFlags.AlwaysClamp);
+                ImGui.EndDisabled(); ImGui.PopID();
+
+                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+                if (ImGui.TreeNode("Location"))
+                {
+                    ImGui.PushID(1);
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("X", ref model.Transforms[_selectedInstance].Position.X, speed, 0f, 0f, "%.2f m");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Y", ref model.Transforms[_selectedInstance].Position.Y, speed, 0f, 0f, "%.2f m");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Z", ref model.Transforms[_selectedInstance].Position.Z, speed, 0f, 0f, "%.2f m");
+
+                    ImGui.PopID();
+                    ImGui.TreePop();
+                }
+
+                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+                if (ImGui.TreeNode("Rotation"))
+                {
+                    ImGui.PushID(2);
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("X", ref model.Transforms[_selectedInstance].Rotation.Pitch, .5f, 0f, 0f, "%.1f°");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Y", ref model.Transforms[_selectedInstance].Rotation.Roll, .5f, 0f, 0f, "%.1f°");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Z", ref model.Transforms[_selectedInstance].Rotation.Yaw, .5f, 0f, 0f, "%.1f°");
+
+                    ImGui.PopID();
+                    ImGui.TreePop();
+                }
+
+                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+                if (ImGui.TreeNode("Scale"))
+                {
+                    ImGui.PushID(3);
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("X", ref model.Transforms[_selectedInstance].Scale.X, speed, 0f, 0f, "%.3f");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Y", ref model.Transforms[_selectedInstance].Scale.Y, speed, 0f, 0f, "%.3f");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Z", ref model.Transforms[_selectedInstance].Scale.Z, speed, 0f, 0f, "%.3f");
+
+                    ImGui.PopID();
+                    ImGui.TreePop();
+                }
+
+                model.UpdateMatrix(_selectedInstance);
+                PopStyleCompact();
+                ImGui.EndTabItem();
             }
-            ImGui.EndTable();
-            ImGui.TreePop();
+
+            if (ImGui.BeginTabItem("Materials"))
+            {
+                PushStyleCompact();
+                ImGui.BeginTable("Sections", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable);
+                ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed);
+                ImGui.TableSetupColumn("Name");
+                ImGui.TableHeadersRow();
+                for (var i = 0; i < model.Sections.Length; i++)
+                {
+                    var section = model.Sections[i];
+
+                    ImGui.PushID(i);
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    if (!section.Show)
+                        ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
+                    ImGui.Text(section.Index.ToString("D"));
+                    ImGui.TableNextColumn();
+                    if (ImGui.Selectable(section.Name, _selectedSection == i, ImGuiSelectableFlags.SpanAllColumns))
+                        _selectedSection = i;
+                    ImGui.PopID();
+                }
+                ImGui.EndTable();
+                PopStyleCompact();
+                ImGui.EndTabItem();
+            }
         }
 
         ImGui.End();
@@ -283,15 +313,16 @@ public class SnimGui : IDisposable
         ImGui.SetNextWindowSize(_textureSize, _firstUse);
         ImGui.SetNextWindowPos(_texturePosition, _firstUse);
         ImGui.Begin("Textures", _noResize | ImGuiWindowFlags.NoCollapse);
+        if (!models.TryGetValue(_selectedModel, out var model))
+            return;
 
-        if (!models.TryGetValue(_selectedModel, out var model)) return;
         var section = model.Sections[_selectedSection];
-        ImGui.BeginGroup();
+        PushStyleCompact(); ImGui.BeginGroup();
         ImGui.Checkbox("Show", ref section.Show);
         ImGui.Checkbox("Wireframe", ref section.Wireframe);
-        ImGui.EndGroup();
-        ImGui.SameLine();
-        ImGui.BeginGroup();
+        ImGui.SetNextItemWidth(50); ImGui.DragFloat("Metallic", ref section.Parameters.MetallicValue, 0.01f, 0.0f, 1.0f, "%.2f");
+        ImGui.SetNextItemWidth(50); ImGui.DragFloat("Roughness", ref section.Parameters.RoughnessValue, 0.01f, 0.0f, 1.0f, "%.2f");
+        ImGui.EndGroup(); PopStyleCompact(); ImGui.SameLine(); ImGui.BeginGroup();
         if (section.HasDiffuseColor)
         {
             ImGui.SetNextItemWidth(300);
@@ -433,6 +464,15 @@ public class SnimGui : IDisposable
         ImGui.End();
     }
 
+    private void PushStyleCompact()
+    {
+        var style = ImGui.GetStyle();
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, style.FramePadding with { Y = style.FramePadding.Y * 0.6f });
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, style.ItemSpacing with { Y = style.ItemSpacing.Y * 0.6f });
+    }
+
+    private void PopStyleCompact() => ImGui.PopStyleVar(2);
+
     private void Theme(ImGuiStylePtr style)
     {
         var io = ImGui.GetIO();
@@ -443,54 +483,63 @@ public class SnimGui : IDisposable
 
         style.WindowMenuButtonPosition = ImGuiDir.Right;
         style.ScrollbarSize = 10f;
-        // style.Colors[(int) ImGuiCol.Text] = new Vector4(0.95f, 0.96f, 0.98f, 1.00f);
-        // style.Colors[(int) ImGuiCol.TextDisabled] = new Vector4(0.36f, 0.42f, 0.47f, 1.00f);
-        // style.Colors[(int) ImGuiCol.WindowBg] = new Vector4(0.149f, 0.149f, 0.188f, 0.35f);
-        // style.Colors[(int) ImGuiCol.ChildBg] = new Vector4(0.15f, 0.18f, 0.22f, 1.00f);
-        // style.Colors[(int) ImGuiCol.PopupBg] = new Vector4(0.08f, 0.08f, 0.08f, 0.94f);
-        // style.Colors[(int) ImGuiCol.Border] = new Vector4(0.08f, 0.10f, 0.12f, 1.00f);
-        // style.Colors[(int) ImGuiCol.BorderShadow] = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
-        // style.Colors[(int) ImGuiCol.FrameBg] = new Vector4(0.20f, 0.25f, 0.29f, 1.00f);
-        // style.Colors[(int) ImGuiCol.FrameBgHovered] = new Vector4(0.12f, 0.20f, 0.28f, 1.00f);
-        // style.Colors[(int) ImGuiCol.FrameBgActive] = new Vector4(0.09f, 0.12f, 0.14f, 1.00f);
-        // style.Colors[(int) ImGuiCol.TitleBg] = new Vector4(0.09f, 0.12f, 0.14f, 0.65f);
-        // style.Colors[(int) ImGuiCol.TitleBgActive] = new Vector4(0.08f, 0.10f, 0.12f, 1.00f);
-        // style.Colors[(int) ImGuiCol.TitleBgCollapsed] = new Vector4(0.00f, 0.00f, 0.00f, 0.51f);
-        // style.Colors[(int) ImGuiCol.MenuBarBg] = new Vector4(0.15f, 0.18f, 0.22f, 1.00f);
-        // style.Colors[(int) ImGuiCol.ScrollbarBg] = new Vector4(0.02f, 0.02f, 0.02f, 0.39f);
-        // style.Colors[(int) ImGuiCol.ScrollbarGrab] = new Vector4(0.20f, 0.25f, 0.29f, 1.00f);
-        // style.Colors[(int) ImGuiCol.ScrollbarGrabHovered] = new Vector4(0.18f, 0.22f, 0.25f, 1.00f);
-        // style.Colors[(int) ImGuiCol.ScrollbarGrabActive] = new Vector4(0.09f, 0.21f, 0.31f, 1.00f);
-        // style.Colors[(int) ImGuiCol.CheckMark] = new Vector4(0.28f, 0.56f, 1.00f, 1.00f);
-        // style.Colors[(int) ImGuiCol.SliderGrab] = new Vector4(0.28f, 0.56f, 1.00f, 1.00f);
-        // style.Colors[(int) ImGuiCol.SliderGrabActive] = new Vector4(0.37f, 0.61f, 1.00f, 1.00f);
-        // style.Colors[(int) ImGuiCol.Button] = new Vector4(0.20f, 0.25f, 0.29f, 1.00f);
-        // style.Colors[(int) ImGuiCol.ButtonHovered] = new Vector4(0.28f, 0.56f, 1.00f, 1.00f);
-        // style.Colors[(int) ImGuiCol.ButtonActive] = new Vector4(0.06f, 0.53f, 0.98f, 1.00f);
-        // style.Colors[(int) ImGuiCol.Header] = new Vector4(0.20f, 0.25f, 0.29f, 0.55f);
-        // style.Colors[(int) ImGuiCol.HeaderHovered] = new Vector4(0.26f, 0.59f, 0.98f, 0.80f);
-        // style.Colors[(int) ImGuiCol.HeaderActive] = new Vector4(0.26f, 0.59f, 0.98f, 1.00f);
-        // style.Colors[(int) ImGuiCol.Separator] = new Vector4(0.20f, 0.25f, 0.29f, 1.00f);
-        // style.Colors[(int) ImGuiCol.SeparatorHovered] = new Vector4(0.10f, 0.40f, 0.75f, 0.78f);
-        // style.Colors[(int) ImGuiCol.SeparatorActive] = new Vector4(0.10f, 0.40f, 0.75f, 1.00f);
-        // style.Colors[(int) ImGuiCol.ResizeGrip] = new Vector4(0.26f, 0.59f, 0.98f, 0.25f);
-        // style.Colors[(int) ImGuiCol.ResizeGripHovered] = new Vector4(0.26f, 0.59f, 0.98f, 0.67f);
-        // style.Colors[(int) ImGuiCol.ResizeGripActive] = new Vector4(0.26f, 0.59f, 0.98f, 0.95f);
-        // style.Colors[(int) ImGuiCol.Tab] = new Vector4(0.11f, 0.15f, 0.17f, 1.00f);
-        // style.Colors[(int) ImGuiCol.TabHovered] = new Vector4(0.26f, 0.59f, 0.98f, 0.80f);
-        // style.Colors[(int) ImGuiCol.TabActive] = new Vector4(0.20f, 0.25f, 0.29f, 1.00f);
-        // style.Colors[(int) ImGuiCol.TabUnfocused] = new Vector4(0.11f, 0.15f, 0.17f, 1.00f);
-        // style.Colors[(int) ImGuiCol.TabUnfocusedActive] = new Vector4(0.11f, 0.15f, 0.17f, 1.00f);
-        // style.Colors[(int) ImGuiCol.PlotLines] = new Vector4(0.61f, 0.61f, 0.61f, 1.00f);
-        // style.Colors[(int) ImGuiCol.PlotLinesHovered] = new Vector4(1.00f, 0.43f, 0.35f, 1.00f);
-        // style.Colors[(int) ImGuiCol.PlotHistogram] = new Vector4(0.90f, 0.70f, 0.00f, 1.00f);
-        // style.Colors[(int) ImGuiCol.PlotHistogramHovered] = new Vector4(1.00f, 0.60f, 0.00f, 1.00f);
-        // style.Colors[(int) ImGuiCol.TextSelectedBg] = new Vector4(0.26f, 0.59f, 0.98f, 0.35f);
-        // style.Colors[(int) ImGuiCol.DragDropTarget] = new Vector4(1.00f, 1.00f, 0.00f, 0.90f);
-        // style.Colors[(int) ImGuiCol.NavHighlight] = new Vector4(0.26f, 0.59f, 0.98f, 1.00f);
-        // style.Colors[(int) ImGuiCol.NavWindowingHighlight] = new Vector4(1.00f, 1.00f, 1.00f, 0.70f);
-        // style.Colors[(int) ImGuiCol.NavWindowingDimBg] = new Vector4(0.80f, 0.80f, 0.80f, 0.20f);
-        // style.Colors[(int) ImGuiCol.ModalWindowDimBg] = new Vector4(0.80f, 0.80f, 0.80f, 0.35f);
+        style.FrameRounding = 3.0f;
+
+        style.Colors[(int) ImGuiCol.Text]                   = new Vector4(1.00f, 1.00f, 1.00f, 1.00f);
+        style.Colors[(int) ImGuiCol.TextDisabled]           = new Vector4(0.50f, 0.50f, 0.50f, 1.00f);
+        style.Colors[(int) ImGuiCol.WindowBg]               = new Vector4(0.11f, 0.11f, 0.12f, 1.00f);
+        style.Colors[(int) ImGuiCol.ChildBg]                = new Vector4(0.15f, 0.15f, 0.19f, 1.00f);
+        style.Colors[(int) ImGuiCol.PopupBg]                = new Vector4(0.08f, 0.08f, 0.08f, 0.94f);
+        style.Colors[(int) ImGuiCol.Border]                 = new Vector4(0.25f, 0.26f, 0.33f, 1.00f);
+        style.Colors[(int) ImGuiCol.BorderShadow]           = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
+        style.Colors[(int) ImGuiCol.FrameBg]                = new Vector4(0.05f, 0.05f, 0.05f, 0.54f);
+        style.Colors[(int) ImGuiCol.FrameBgHovered]         = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
+        style.Colors[(int) ImGuiCol.FrameBgActive]          = new Vector4(0.69f, 0.69f, 1.00f, 0.39f);
+        style.Colors[(int) ImGuiCol.TitleBg]                = new Vector4(0.09f, 0.09f, 0.09f, 1.00f);
+        style.Colors[(int) ImGuiCol.TitleBgActive]          = new Vector4(0.09f, 0.09f, 0.09f, 1.00f);
+        style.Colors[(int) ImGuiCol.TitleBgCollapsed]       = new Vector4(0.05f, 0.05f, 0.05f, 0.51f);
+        style.Colors[(int) ImGuiCol.MenuBarBg]              = new Vector4(0.14f, 0.14f, 0.14f, 1.00f);
+        style.Colors[(int) ImGuiCol.ScrollbarBg]            = new Vector4(0.02f, 0.02f, 0.02f, 0.53f);
+        style.Colors[(int) ImGuiCol.ScrollbarGrab]          = new Vector4(0.31f, 0.31f, 0.31f, 1.00f);
+        style.Colors[(int) ImGuiCol.ScrollbarGrabHovered]   = new Vector4(0.41f, 0.41f, 0.41f, 1.00f);
+        style.Colors[(int) ImGuiCol.ScrollbarGrabActive]    = new Vector4(0.51f, 0.51f, 0.51f, 1.00f);
+        style.Colors[(int) ImGuiCol.CheckMark]              = new Vector4(0.13f, 0.42f, 0.83f, 1.00f);
+        style.Colors[(int) ImGuiCol.SliderGrab]             = new Vector4(0.13f, 0.42f, 0.83f, 0.78f);
+        style.Colors[(int) ImGuiCol.SliderGrabActive]       = new Vector4(0.13f, 0.42f, 0.83f, 1.00f);
+        style.Colors[(int) ImGuiCol.Button]                 = new Vector4(0.05f, 0.05f, 0.05f, 0.54f);
+        style.Colors[(int) ImGuiCol.ButtonHovered]          = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
+        style.Colors[(int) ImGuiCol.ButtonActive]           = new Vector4(0.69f, 0.69f, 1.00f, 0.39f);
+        style.Colors[(int) ImGuiCol.Header]                 = new Vector4(0.16f, 0.16f, 0.21f, 1.00f);
+        style.Colors[(int) ImGuiCol.HeaderHovered]          = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
+        style.Colors[(int) ImGuiCol.HeaderActive]           = new Vector4(0.69f, 0.69f, 1.00f, 0.39f);
+        style.Colors[(int) ImGuiCol.Separator]              = new Vector4(0.43f, 0.43f, 0.50f, 0.50f);
+        style.Colors[(int) ImGuiCol.SeparatorHovered]       = new Vector4(0.10f, 0.40f, 0.75f, 0.78f);
+        style.Colors[(int) ImGuiCol.SeparatorActive]        = new Vector4(0.10f, 0.40f, 0.75f, 1.00f);
+        style.Colors[(int) ImGuiCol.ResizeGrip]             = new Vector4(0.13f, 0.42f, 0.83f, 0.39f);
+        style.Colors[(int) ImGuiCol.ResizeGripHovered]      = new Vector4(0.12f, 0.41f, 0.81f, 0.78f);
+        style.Colors[(int) ImGuiCol.ResizeGripActive]       = new Vector4(0.12f, 0.41f, 0.81f, 1.00f);
+        style.Colors[(int) ImGuiCol.Tab]                    = new Vector4(0.15f, 0.15f, 0.19f, 1.00f);
+        style.Colors[(int) ImGuiCol.TabHovered]             = new Vector4(0.35f, 0.35f, 0.41f, 0.80f);
+        style.Colors[(int) ImGuiCol.TabActive]              = new Vector4(0.23f, 0.24f, 0.29f, 1.00f);
+        style.Colors[(int) ImGuiCol.TabUnfocused]           = new Vector4(0.15f, 0.15f, 0.15f, 1.00f);
+        style.Colors[(int) ImGuiCol.TabUnfocusedActive]     = new Vector4(0.14f, 0.26f, 0.42f, 1.00f);
+        style.Colors[(int) ImGuiCol.DockingPreview]         = new Vector4(0.26f, 0.59f, 0.98f, 0.70f);
+        style.Colors[(int) ImGuiCol.DockingEmptyBg]         = new Vector4(0.20f, 0.20f, 0.20f, 1.00f);
+        style.Colors[(int) ImGuiCol.PlotLines]              = new Vector4(0.61f, 0.61f, 0.61f, 1.00f);
+        style.Colors[(int) ImGuiCol.PlotLinesHovered]       = new Vector4(1.00f, 0.43f, 0.35f, 1.00f);
+        style.Colors[(int) ImGuiCol.PlotHistogram]          = new Vector4(0.90f, 0.70f, 0.00f, 1.00f);
+        style.Colors[(int) ImGuiCol.PlotHistogramHovered]   = new Vector4(1.00f, 0.60f, 0.00f, 1.00f);
+        style.Colors[(int) ImGuiCol.TableHeaderBg]          = new Vector4(0.09f, 0.09f, 0.09f, 1.00f);
+        style.Colors[(int) ImGuiCol.TableBorderStrong]      = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
+        style.Colors[(int) ImGuiCol.TableBorderLight]       = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
+        style.Colors[(int) ImGuiCol.TableRowBg]             = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
+        style.Colors[(int) ImGuiCol.TableRowBgAlt]          = new Vector4(1.00f, 1.00f, 1.00f, 0.06f);
+        style.Colors[(int) ImGuiCol.TextSelectedBg]         = new Vector4(0.26f, 0.59f, 0.98f, 0.35f);
+        style.Colors[(int) ImGuiCol.DragDropTarget]         = new Vector4(1.00f, 1.00f, 0.00f, 0.90f);
+        style.Colors[(int) ImGuiCol.NavHighlight]           = new Vector4(0.26f, 0.59f, 0.98f, 1.00f);
+        style.Colors[(int) ImGuiCol.NavWindowingHighlight]  = new Vector4(1.00f, 1.00f, 1.00f, 0.70f);
+        style.Colors[(int) ImGuiCol.NavWindowingDimBg]      = new Vector4(0.80f, 0.80f, 0.80f, 0.20f);
+        style.Colors[(int) ImGuiCol.ModalWindowDimBg]       = new Vector4(0.80f, 0.80f, 0.80f, 0.35f);
     }
 
     public void Update(float deltaTime) => _controller.Update(deltaTime);

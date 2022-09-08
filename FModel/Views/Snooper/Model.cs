@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse_Conversion.Meshes.PSK;
 using Silk.NET.OpenGL;
 
@@ -21,6 +23,7 @@ public class Model : IDisposable
     private const uint _faceSize = 3; // just so we don't have to do .Length
     private readonly uint[] _facesIndex = { 1, 0, 2 };
 
+    public readonly UObject Owner;
     public readonly string Name;
     public readonly string Type;
     public readonly bool HasVertexColors;
@@ -32,26 +35,25 @@ public class Model : IDisposable
 
     public int TransformsCount;
     public readonly List<Transform> Transforms;
-    public readonly string[] TransformsLabels = {
-        "X Location", "Y", "Z",
-        "X Rotation", "Y", "Z",
-        "X Scale", "Y", "Z"
-    };
 
     public bool Show;
     public bool IsSelected;
+    public bool IsSavable;
     public bool DisplayVertexColors;
     public bool DisplayBones;
 
-    protected Model(string name, string type)
+    protected Model(UObject owner, string name, string type)
     {
+        Owner = owner;
         Name = name;
         Type = type;
         Transforms = new List<Transform>();
         Show = true;
+        IsSavable = owner is not UWorld;
     }
 
-    public Model(string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, List<CSkelMeshBone> skeleton = null, Transform transform = null) : this(name, type)
+    public Model(UObject owner, string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, List<CSkelMeshBone> skeleton = null, Transform transform = null)
+        : this(owner, name, type)
     {
         HasVertexColors = lod.VertexColors != null;
         if (HasVertexColors) _vertexSize += 4; // + Color
