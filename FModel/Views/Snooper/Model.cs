@@ -18,7 +18,6 @@ public class Model : IDisposable
 
     private BufferObject<uint> _ebo;
     private BufferObject<float> _vbo;
-    private BufferObject<float>[] _morphVbo;
     private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
@@ -54,8 +53,6 @@ public class Model : IDisposable
         Transforms = new List<Transform>();
         Show = true;
         IsSavable = owner is not UWorld;
-
-        _morphVbo = Array.Empty<BufferObject<float>>();
     }
 
     public Model(UObject owner, string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, FPackageIndex[] morphTargets = null, List<CSkelMeshBone> skeleton = null, Transform transform = null)
@@ -71,7 +68,6 @@ public class Model : IDisposable
         HasMorphTargets = morphTargets != null;
         if (HasMorphTargets)
         {
-            _morphVbo = new BufferObject<float>[4 * morphTargets.Length]; // PositionDelta + SourceIdx
             var morph = morphTargets[0].Load<UMorphTarget>().MorphLODModels[0];
             foreach (var delta in morph.Vertices)
             {
@@ -229,10 +225,6 @@ public class Model : IDisposable
         _ebo.Dispose();
         _vbo.Dispose();
         _matrixVbo.Dispose();
-        for (int i = 0; i < _morphVbo.Length; i++)
-        {
-            _morphVbo[i].Dispose();
-        }
         _vao.Dispose();
         for (int section = 0; section < Sections.Length; section++)
         {

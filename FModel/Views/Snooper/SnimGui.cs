@@ -313,10 +313,12 @@ public class SnimGui : IDisposable
                 ImGui.EndTabItem();
             }
 
+            ImGui.BeginDisabled(!model.HasMorphTargets);
             if (ImGui.BeginTabItem("Shape Keys"))
             {
                 ImGui.EndTabItem();
             }
+            ImGui.EndDisabled();
         }
 
         ImGui.End();
@@ -342,7 +344,7 @@ public class SnimGui : IDisposable
             ImGui.SetNextItemWidth(300);
             ImGui.ColorEdit4(section.TexturesLabels[0], ref section.DiffuseColor, ImGuiColorEditFlags.AlphaPreview | ImGuiColorEditFlags.AlphaBar);
         }
-        else
+        // else
         {
             for (var i = 0; i < section.Textures.Length; i++)
             {
@@ -387,23 +389,6 @@ public class SnimGui : IDisposable
             }
         }
         ImGui.EndGroup();
-
-        // ImGui.Text($"Faces: {FacesCount} ({Math.Round(FacesCount / indices * 100f, 2)}%%)");
-        // ImGui.Text($"First Face: {FirstFaceIndex}");
-        // ImGui.Separator();
-        // if (_hasDiffuseColor)
-        // {
-        //     ImGui.ColorEdit4("Diffuse Color", ref _diffuseColor, ImGuiColorEditFlags.NoInputs);
-        // }
-        // else
-        // {
-        //     ImGui.Text($"Diffuse: ({Parameters.Diffuse?.ExportType}) {Parameters.Diffuse?.Name}");
-        //     ImGui.Text($"Normal: ({Parameters.Normal?.ExportType}) {Parameters.Normal?.Name}");
-        //     ImGui.Text($"Specular: ({Parameters.Specular?.ExportType}) {Parameters.Specular?.Name}");
-        //     if (Parameters.HasTopEmissiveTexture)
-        //         ImGui.Text($"Emissive: ({Parameters.Emissive?.ExportType}) {Parameters.Emissive?.Name}");
-        //     ImGui.Separator();
-        // }
 
         ImGui.End();
     }
