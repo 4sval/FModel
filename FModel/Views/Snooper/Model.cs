@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Meshes.PSK;
 using Silk.NET.OpenGL;
 
@@ -16,7 +18,8 @@ public class Model : IDisposable
 
     private BufferObject<uint> _ebo;
     private BufferObject<float> _vbo;
-    private BufferObject<Matrix4x4> _mvbo;
+    private BufferObject<float>[] _morphVbo;
+    private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
     private uint _vertexSize = 8; // Position + Normal + UV
@@ -28,6 +31,7 @@ public class Model : IDisposable
     public readonly string Type;
     public readonly bool HasVertexColors;
     public readonly bool HasBones;
+    public readonly bool HasMorphTargets;
     public uint[] Indices;
     public float[] Vertices;
     public Section[] Sections;
@@ -50,9 +54,11 @@ public class Model : IDisposable
         Transforms = new List<Transform>();
         Show = true;
         IsSavable = owner is not UWorld;
+
+        _morphVbo = Array.Empty<BufferObject<float>>();
     }
 
-    public Model(UObject owner, string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, List<CSkelMeshBone> skeleton = null, Transform transform = null)
+    public Model(UObject owner, string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, FPackageIndex[] morphTargets = null, List<CSkelMeshBone> skeleton = null, Transform transform = null)
         : this(owner, name, type)
     {
         HasVertexColors = lod.VertexColors != null;
@@ -61,6 +67,17 @@ public class Model : IDisposable
         Skeleton = skeleton;
         HasBones = Skeleton != null;
         if (HasBones) _vertexSize += 8; // + BoneIds + BoneWeights
+
+        HasMorphTargets = morphTargets != null;
+        if (HasMorphTargets)
+        {
+            _morphVbo = new BufferObject<float>[4 * morphTargets.Length]; // PositionDelta + SourceIdx
+            var morph = morphTargets[0].Load<UMorphTarget>().MorphLODModels[0];
+            foreach (var delta in morph.Vertices)
+            {
+                vertices[delta.SourceIdx].Position += delta.PositionDelta;
+            }
+        }
 
         _vertexSize += 16; // + InstanceMatrix
 
@@ -128,9 +145,9 @@ public class Model : IDisposable
 
     public void UpdateMatrix(int index)
     {
-        _mvbo.Bind();
-        _mvbo.Update(index, Transforms[index].Matrix);
-        _mvbo.Unbind();
+        _matrixVbo.Bind();
+        _matrixVbo.Update(index, Transforms[index].Matrix);
+        _matrixVbo.Unbind();
     }
 
     public void Setup(GL gl)
@@ -155,14 +172,11 @@ public class Model : IDisposable
         var instanceMatrix = new Matrix4x4[TransformsCount];
         for (var i = 0; i < instanceMatrix.Length; i++)
             instanceMatrix[i] = Transforms[i].Matrix;
-        _mvbo = new BufferObject<Matrix4x4>(_gl, instanceMatrix, BufferTargetARB.ArrayBuffer);
+        _matrixVbo = new BufferObject<Matrix4x4>(_gl, instanceMatrix, BufferTargetARB.ArrayBuffer);
 
         for (int section = 0; section < Sections.Length; section++)
         {
-            _vao.Bind();
             _vao.BindInstancing();
-            _vao.Unbind();
-
             Sections[section].Setup(_gl);
         }
     }
@@ -214,7 +228,11 @@ public class Model : IDisposable
     {
         _ebo.Dispose();
         _vbo.Dispose();
-        _mvbo.Dispose();
+        _matrixVbo.Dispose();
+        for (int i = 0; i < _morphVbo.Length; i++)
+        {
+            _morphVbo[i].Dispose();
+        }
         _vao.Dispose();
         for (int section = 0; section < Sections.Length; section++)
         {

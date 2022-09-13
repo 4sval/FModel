@@ -157,9 +157,6 @@ public class Section : IDisposable
                         }
                     }
                 }
-
-                Parameters.RoughnessValue = 1;
-                Parameters.MetallicValue = 1;
                 break;
             }
             case FGame.ShooterGame:
@@ -201,9 +198,6 @@ public class Section : IDisposable
 
                         break;
                 }
-
-                Parameters.RoughnessValue = 1;
-                Parameters.MetallicValue = 1;
                 break;
             }
             case FGame.Gameface:
@@ -224,12 +218,12 @@ public class Section : IDisposable
                         }
                     }
                 }
-
-                Parameters.RoughnessValue = 1;
-                Parameters.MetallicValue = 1;
                 break;
             }
         }
+
+        Parameters.RoughnessValue = 1;
+        Parameters.MetallicValue = 1;
     }
 
     public void Bind(Shader shader, uint instanceCount)

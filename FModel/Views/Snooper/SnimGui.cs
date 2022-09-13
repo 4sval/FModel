@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Windows;
@@ -174,12 +174,13 @@ public class SnimGui : IDisposable
         if (ImGui.CollapsingHeader("Camera"))
         {
             PushStyleCompact();
-            ImGui.Text($"Position: {camera.Position}");
-            ImGui.Text($"Direction: {camera.Direction}");
-            ImGui.Text($"Speed: {camera.Speed}");
-            ImGui.Text($"Far: {camera.Far}");
-            ImGui.Text($"Near: {camera.Near}");
-            ImGui.Text($"Zoom: {camera.Zoom}");
+            string[] modes = { "free cam", "orbital cam" };
+            int selectedMode = 0;
+            ImGui.Combo("Projection", ref selectedMode, modes, modes.Length);
+            ImGui.DragFloat3("Position", ref camera.Position);
+            ImGui.DragFloat3("Direction", ref camera.Direction);
+            ImGui.DragFloat("Speed", ref camera.Speed, 0.01f);
+            ImGui.DragFloat("Zoom", ref camera.Zoom);
             PopStyleCompact();
         }
 
@@ -297,10 +298,23 @@ public class SnimGui : IDisposable
                     ImGui.TableNextColumn();
                     if (ImGui.Selectable(section.Name, _selectedSection == i, ImGuiSelectableFlags.SpanAllColumns))
                         _selectedSection = i;
+                    if (ImGui.BeginPopupContextItem())
+                    {
+                        if (ImGui.Selectable("Swap"))
+                        {
+
+                        }
+                        ImGui.EndPopup();
+                    }
                     ImGui.PopID();
                 }
                 ImGui.EndTable();
                 PopStyleCompact();
+                ImGui.EndTabItem();
+            }
+
+            if (ImGui.BeginTabItem("Shape Keys"))
+            {
                 ImGui.EndTabItem();
             }
         }

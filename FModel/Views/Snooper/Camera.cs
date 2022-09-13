@@ -5,16 +5,16 @@ namespace FModel.Views.Snooper;
 
 public class Camera
 {
-    public Vector3 Position { get; set; }
-    public Vector3 Direction { get; private set; }
+    public Vector3 Position;
+    public Vector3 Direction;
     public Vector3 Up = Vector3.UnitY;
 
-    public float Yaw { get; set; } = -90f;
-    public float Pitch { get; set; } = 0f;
-    public float Zoom { get; set; } = 60f;
-    public float Speed { get; set; } = 1f;
-    public float Near { get; } = 0.01f;
-    public float Far { get; } = 100f;
+    public float Yaw = -90f;
+    public float Pitch = 0f;
+    public float Zoom = 60f;
+    public float Speed = 1f;
+    public float Near = 0.01f;
+    public float Far = 100f;
     public float AspectRatio => 16f / 9f;
 
     public Camera(Vector3 position, Vector3 direction, float near, float far, float speed)

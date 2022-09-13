@@ -112,7 +112,7 @@ public class Snooper
                 var guid = Guid.NewGuid();
                 if (!_models.TryGetValue(guid, out _))
                 {
-                    _models[guid] = new Model(export, sk.Name, sk.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, mesh.RefSkeleton);
+                    _models[guid] = new Model(export, sk.Name, sk.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, sk.MorphTargets, mesh.RefSkeleton);
                     SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
                 }
                 break;
@@ -162,7 +162,7 @@ public class Snooper
                         continue;
                     }
 
-                    model = new Model(export, m.Name, m.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, null, transform);
+                    model = new Model(export, m.Name, m.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, null, null, transform);
                     if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
                     {
                         for (int j = 0; j < textureData.Length; j++)

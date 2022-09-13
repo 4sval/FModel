@@ -40,6 +40,8 @@ public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVer
 
     public unsafe void BindInstancing()
     {
+        Bind();
+
         var vec4Size = (uint) sizeof(Vector4);
         _gl.EnableVertexAttribArray(6);
         _gl.VertexAttribPointer(6, 4, VertexAttribPointerType.Float, false, 4 * vec4Size, (void*)0);
@@ -54,6 +56,8 @@ public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVer
         _gl.VertexAttribDivisor(7, 1);
         _gl.VertexAttribDivisor(8, 1);
         _gl.VertexAttribDivisor(9, 1);
+
+        Unbind();
     }
 
     public void Unbind()
