@@ -1,15 +1,18 @@
 ﻿#version 330 core
 
-layout (location = 0) in vec3 vPos;
-layout (location = 1) in vec3 vNormal;
-layout (location = 2) in vec2 vTexCoords;
-layout (location = 3) in vec4 vColor;
-layout (location = 4) in ivec4 vBoneIds;
-layout (location = 5) in vec4 vWeights;
-layout (location = 6) in mat4 vInstanceMatrix;
+layout (location = 1) in vec3 vPos;
+layout (location = 2) in vec3 vNormal;
+layout (location = 3) in vec2 vTexCoords;
+layout (location = 4) in vec4 vColor;
+layout (location = 5) in ivec4 vBoneIds;
+layout (location = 6) in vec4 vWeights;
+layout (location = 7) in mat4 vInstanceMatrix;
+
+layout (location = 11) in vec3 vPosTarget;
 
 uniform mat4 uView;
 uniform mat4 uProjection;
+uniform float morph_time;
 
 out vec3 fPos;
 out vec3 fNormal;
@@ -18,9 +21,10 @@ out vec4 fColor;
 
 void main()
 {
-    gl_Position = uProjection * uView * vInstanceMatrix * vec4(vPos, 1.0);
+    vec3 pos = mix(vPos, vPosTarget, morph_time);
+    gl_Position = uProjection * uView * vInstanceMatrix * vec4(pos, 1.0);
 
-    fPos = vec3(vInstanceMatrix * vec4(vPos, 1.0));
+    fPos = vec3(vInstanceMatrix * vec4(pos, 1.0));
     fNormal = mat3(transpose(inverse(vInstanceMatrix))) * vNormal;
     fTexCoords = vTexCoords;
     fColor = vColor;

@@ -316,6 +316,13 @@ public class SnimGui : IDisposable
             ImGui.BeginDisabled(!model.HasMorphTargets);
             if (ImGui.BeginTabItem("Shape Keys"))
             {
+                for (int i = 0; i < model.Morphs.Length; i++)
+                {
+                    ImGui.PushID(i);
+                    ImGui.Text(model.Morphs[i].Name);
+                    ImGui.DragFloat("Value", ref model.Morphs[i].Value, 0.01f, 0.0f, 1.0f, "%.2f", ImGuiSliderFlags.AlwaysClamp);
+                    ImGui.PopID();
+                }
                 ImGui.EndTabItem();
             }
             ImGui.EndDisabled();
@@ -343,37 +350,16 @@ public class SnimGui : IDisposable
         {
             ImGui.SetNextItemWidth(300);
             ImGui.ColorEdit4(section.TexturesLabels[0], ref section.DiffuseColor, ImGuiColorEditFlags.AlphaPreview | ImGuiColorEditFlags.AlphaBar);
+            if (section.Textures[1] is { } normalMap) DrawTexture(normalMap);
         }
-        // else
+        else
         {
-            for (var i = 0; i < section.Textures.Length; i++)
+            for (var i = 0;i < section.Textures.Length; i++)
             {
                 if (section.Textures[i] is not {} texture)
                     continue;
 
-                ImGui.SameLine();
-                ImGui.BeginGroup();
-                ImGui.Image(texture.GetPointer(), new Vector2(88), Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1, 1, 1, .5f));
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.BeginTooltip();
-                    ImGui.Text($"Type: ({texture.Format}) {texture.Type}:{texture.Name}");
-                    ImGui.Text($"Texture: {texture.Path}");
-                    ImGui.Text($"Imported: {texture.ImportedWidth}x{texture.ImportedHeight}");
-                    ImGui.Text($"Mip Used: {texture.Width}x{texture.Height}");
-                    ImGui.Spacing();
-                    ImGui.TextDisabled(texture.Label);
-                    ImGui.EndTooltip();
-                }
-
-                if (ImGui.IsItemClicked())
-                {
-                    Application.Current.Dispatcher.Invoke(delegate
-                    {
-                        Clipboard.SetText(Utils.FixPath(texture.Path));
-                        texture.Label = "(?) Copied to Clipboard";
-                    });
-                }
+                DrawTexture(texture);
 
                 if (i == 3) // emissive, show color
                 {
@@ -391,6 +377,33 @@ public class SnimGui : IDisposable
         ImGui.EndGroup();
 
         ImGui.End();
+    }
+
+    private void DrawTexture(Texture texture)
+    {
+        ImGui.SameLine();
+        ImGui.BeginGroup();
+        ImGui.Image(texture.GetPointer(), new Vector2(88), Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1, 1, 1, .5f));
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text($"Type: ({texture.Format}) {texture.Type}:{texture.Name}");
+            ImGui.Text($"Texture: {texture.Path}");
+            ImGui.Text($"Imported: {texture.ImportedWidth}x{texture.ImportedHeight}");
+            ImGui.Text($"Mip Used: {texture.Width}x{texture.Height}");
+            ImGui.Spacing();
+            ImGui.TextDisabled(texture.Label);
+            ImGui.EndTooltip();
+        }
+
+        if (ImGui.IsItemClicked())
+        {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                Clipboard.SetText(Utils.FixPath(texture.Path));
+                texture.Label = "(?) Copied to Clipboard";
+            });
+        }
     }
 
     private void Draw3DViewport(FramebufferObject framebuffer, Camera camera, IMouse mouse)

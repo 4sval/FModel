@@ -21,7 +21,7 @@ public class Model : IDisposable
     private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
-    private uint _vertexSize = 8; // Position + Normal + UV
+    private uint _vertexSize = 9; // VertexIndex + Position + Normal + UV
     private const uint _faceSize = 3; // just so we don't have to do .Length
     private readonly uint[] _facesIndex = { 1, 0, 2 };
 
@@ -34,6 +34,7 @@ public class Model : IDisposable
     public uint[] Indices;
     public float[] Vertices;
     public Section[] Sections;
+    public Morph[] Morphs;
     public readonly List<CSkelMeshBone> Skeleton;
 
     public int TransformsCount;
@@ -65,18 +66,6 @@ public class Model : IDisposable
         HasBones = Skeleton != null;
         if (HasBones) _vertexSize += 8; // + BoneIds + BoneWeights
 
-        HasMorphTargets = morphTargets != null;
-        if (HasMorphTargets)
-        {
-            var morph = morphTargets[0].Load<UMorphTarget>().MorphLODModels[0];
-            foreach (var delta in morph.Vertices)
-            {
-                vertices[delta.SourceIdx].Position += delta.PositionDelta;
-            }
-        }
-
-        _vertexSize += 16; // + InstanceMatrix
-
         var sections = lod.Sections.Value;
         Sections = new Section[sections.Length];
         Indices = new uint[sections.Sum(section => section.NumFaces * _faceSize)];
@@ -93,44 +82,55 @@ public class Model : IDisposable
                     var count = 0;
                     var i = face * _faceSize + f;
                     var index = section.FirstIndex + i;
+                    var baseIndex = index * _vertexSize;
                     var indice = lod.Indices.Value[index];
 
                     var vert = vertices[indice];
-                    Vertices[index * _vertexSize + count++] = vert.Position.X * Constants.SCALE_DOWN_RATIO;
-                    Vertices[index * _vertexSize + count++] = vert.Position.Z * Constants.SCALE_DOWN_RATIO;
-                    Vertices[index * _vertexSize + count++] = vert.Position.Y * Constants.SCALE_DOWN_RATIO;
-                    Vertices[index * _vertexSize + count++] = vert.Normal.X;
-                    Vertices[index * _vertexSize + count++] = vert.Normal.Z;
-                    Vertices[index * _vertexSize + count++] = vert.Normal.Y;
-                    Vertices[index * _vertexSize + count++] = vert.UV.U;
-                    Vertices[index * _vertexSize + count++] = vert.UV.V;
-
+                    Vertices[baseIndex + count++] = indice;
+                    Vertices[baseIndex + count++] = vert.Position.X * Constants.SCALE_DOWN_RATIO;
+                    Vertices[baseIndex + count++] = vert.Position.Z * Constants.SCALE_DOWN_RATIO;
+                    Vertices[baseIndex + count++] = vert.Position.Y * Constants.SCALE_DOWN_RATIO;
+                    Vertices[baseIndex + count++] = vert.Normal.X;
+                    Vertices[baseIndex + count++] = vert.Normal.Z;
+                    Vertices[baseIndex + count++] = vert.Normal.Y;
+                    Vertices[baseIndex + count++] = vert.UV.U;
+                    Vertices[baseIndex + count++] = vert.UV.V;
 
                     if (HasVertexColors)
                     {
                         var color = lod.VertexColors[indice];
-                        Vertices[index * _vertexSize + count++] = color.R;
-                        Vertices[index * _vertexSize + count++] = color.G;
-                        Vertices[index * _vertexSize + count++] = color.B;
-                        Vertices[index * _vertexSize + count++] = color.A;
+                        Vertices[baseIndex + count++] = color.R;
+                        Vertices[baseIndex + count++] = color.G;
+                        Vertices[baseIndex + count++] = color.B;
+                        Vertices[baseIndex + count++] = color.A;
                     }
 
                     if (HasBones)
                     {
                         var skelVert = (CSkelMeshVertex) vert;
                         var weightsHash = skelVert.UnpackWeights();
-                        Vertices[index * _vertexSize + count++] = skelVert.Bone[0];
-                        Vertices[index * _vertexSize + count++] = skelVert.Bone[1];
-                        Vertices[index * _vertexSize + count++] = skelVert.Bone[2];
-                        Vertices[index * _vertexSize + count++] = skelVert.Bone[3];
-                        Vertices[index * _vertexSize + count++] = weightsHash[0];
-                        Vertices[index * _vertexSize + count++] = weightsHash[1];
-                        Vertices[index * _vertexSize + count++] = weightsHash[2];
-                        Vertices[index * _vertexSize + count++] = weightsHash[3];
+                        Vertices[baseIndex + count++] = skelVert.Bone[0];
+                        Vertices[baseIndex + count++] = skelVert.Bone[1];
+                        Vertices[baseIndex + count++] = skelVert.Bone[2];
+                        Vertices[baseIndex + count++] = skelVert.Bone[3];
+                        Vertices[baseIndex + count++] = weightsHash[0];
+                        Vertices[baseIndex + count++] = weightsHash[1];
+                        Vertices[baseIndex + count++] = weightsHash[2];
+                        Vertices[baseIndex + count++] = weightsHash[3];
                     }
 
                     Indices[index] = i;
                 }
+            }
+        }
+
+        HasMorphTargets = morphTargets != null;
+        if (HasMorphTargets)
+        {
+            Morphs = new Morph[morphTargets.Length];
+            for (var i = 0; i < Morphs.Length; i++)
+            {
+                Morphs[i] = new Morph(Vertices, _vertexSize, morphTargets[i].Load<UMorphTarget>());
             }
         }
 
@@ -156,23 +156,28 @@ public class Model : IDisposable
         _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
         _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
 
-        _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, _vertexSize, 0); // position
-        _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, _vertexSize, 3); // normal
-        _vao.VertexAttributePointer(2, 2, VertexAttribPointerType.Float, _vertexSize, 6); // uv
-        _vao.VertexAttributePointer(3, 4, VertexAttribPointerType.Float, _vertexSize, 8); // color
-        _vao.VertexAttributePointer(4, 4, VertexAttribPointerType.Int, _vertexSize, 12); // boneids
-        _vao.VertexAttributePointer(5, 4, VertexAttribPointerType.Float, _vertexSize, 16); // boneweights
-        _vao.VertexAttributePointer(6, 16, VertexAttribPointerType.Float, _vertexSize, 20); // instancematrix
+        _vao.VertexAttributePointer(0, 1, VertexAttribPointerType.Int, _vertexSize, 0); // vertex index
+        _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, _vertexSize, 1); // position
+        _vao.VertexAttributePointer(2, 3, VertexAttribPointerType.Float, _vertexSize, 4); // normal
+        _vao.VertexAttributePointer(3, 2, VertexAttribPointerType.Float, _vertexSize, 7); // uv
+        _vao.VertexAttributePointer(4, 4, VertexAttribPointerType.Float, _vertexSize, 9); // color
+        _vao.VertexAttributePointer(5, 4, VertexAttribPointerType.Int, _vertexSize, 13); // boneids
+        _vao.VertexAttributePointer(6, 4, VertexAttribPointerType.Float, _vertexSize, 17); // boneweights
 
         TransformsCount = Transforms.Count;
         var instanceMatrix = new Matrix4x4[TransformsCount];
         for (var i = 0; i < instanceMatrix.Length; i++)
             instanceMatrix[i] = Transforms[i].Matrix;
         _matrixVbo = new BufferObject<Matrix4x4>(_gl, instanceMatrix, BufferTargetARB.ArrayBuffer);
+        _vao.BindInstancing();
+
+        Morphs[0].Setup(gl);
+        _vao.Bind();
+        _vao.VertexAttributePointer(11, 3, VertexAttribPointerType.Float, _vertexSize, 1); // target position
+        _vao.Unbind();
 
         for (int section = 0; section < Sections.Length; section++)
         {
-            _vao.BindInstancing();
             Sections[section].Setup(_gl);
         }
     }
@@ -187,6 +192,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("display_vertex_colors", DisplayVertexColors);
+        Morphs[0].Bind(shader);
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Bind(shader, (uint) TransformsCount);
