@@ -283,7 +283,8 @@ namespace FModel.Settings
             {FGame.PortalWars, Constants._NO_PRESET_TRIGGER},
             {FGame.Gameface, Constants._NO_PRESET_TRIGGER},
             {FGame.Athena, Constants._NO_PRESET_TRIGGER},
-            {FGame.PandaGame, Constants._NO_PRESET_TRIGGER}
+            {FGame.PandaGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.Hotta, Constants._NO_PRESET_TRIGGER},
         };
         public IDictionary<FGame, string> Presets
         {
@@ -312,7 +313,8 @@ namespace FModel.Settings
             {FGame.PortalWars, EGame.GAME_UE4_LATEST},
             {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition},
             {FGame.Athena, EGame.GAME_SeaOfThieves},
-            {FGame.PandaGame, EGame.GAME_UE4_26}
+            {FGame.PandaGame, EGame.GAME_UE4_26},
+            {FGame.Hotta, EGame.GAME_TowerOfFantasy}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -341,7 +343,8 @@ namespace FModel.Settings
             {FGame.PortalWars, null},
             {FGame.Gameface, null},
             {FGame.Athena, null},
-            {FGame.PandaGame, null}
+            {FGame.PandaGame, null},
+            {FGame.Hotta, null},
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
@@ -370,7 +373,8 @@ namespace FModel.Settings
             {FGame.PortalWars, null},
             {FGame.Gameface, null},
             {FGame.Athena, null},
-            {FGame.PandaGame, null}
+            {FGame.PandaGame, null},
+            {FGame.Hotta, null},
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
@@ -405,7 +409,12 @@ namespace FModel.Settings
             {FGame.PortalWars, new FEndpoint[]{new (), new ()}},
             {FGame.Gameface, new FEndpoint[]{new (), new ()}},
             {FGame.Athena, new FEndpoint[]{new (), new ()}},
-            {FGame.PandaGame, new FEndpoint[]{new (), new ()}}
+            {FGame.PandaGame, new FEndpoint[]{new (), new ()}},
+            {FGame.Hotta, new []
+                {
+                    new FEndpoint("https://shimizu-izumi.github.io/fmodel/api/v1/aes/hotta.json", "$.['mainKey']")
+                }
+            }
         };
         public IDictionary<FGame, FEndpoint[]> CustomEndpoints
         {
@@ -482,6 +491,7 @@ namespace FModel.Settings
             {FGame.Gameface, new List<CustomDirectory>()},
             {FGame.Athena, new List<CustomDirectory>()},
             {FGame.PandaGame, new List<CustomDirectory>()},
+            {FGame.Hotta, new List<CustomDirectory>()},
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {
