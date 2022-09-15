@@ -13,7 +13,7 @@ public class Morph : IDisposable
     private BufferObject<float> _vbo;
 
     public readonly string Name;
-    public float[] Vertices;
+    public readonly float[] Vertices;
 
     public float Value;
 
@@ -57,7 +57,7 @@ public class Morph : IDisposable
 
     public void Bind(Shader shader)
     {
-        shader.SetUniform("morph_time", Value);
+        shader.SetUniform("uMorphTime", Value);
     }
 
     public void Dispose()

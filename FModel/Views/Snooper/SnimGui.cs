@@ -319,8 +319,7 @@ public class SnimGui : IDisposable
                 for (int i = 0; i < model.Morphs.Length; i++)
                 {
                     ImGui.PushID(i);
-                    ImGui.Text(model.Morphs[i].Name);
-                    ImGui.DragFloat("Value", ref model.Morphs[i].Value, 0.01f, 0.0f, 1.0f, "%.2f", ImGuiSliderFlags.AlwaysClamp);
+                    ImGui.DragFloat(model.Morphs[i].Name, ref model.Morphs[i].Value, 0.001f, 0.0f, 1.0f, "%.2f", ImGuiSliderFlags.AlwaysClamp);
                     ImGui.PopID();
                 }
                 ImGui.EndTabItem();

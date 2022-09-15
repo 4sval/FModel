@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -34,7 +34,7 @@ public class Model : IDisposable
     public uint[] Indices;
     public float[] Vertices;
     public Section[] Sections;
-    public Morph[] Morphs;
+    public readonly Morph[] Morphs;
     public readonly List<CSkelMeshBone> Skeleton;
 
     public int TransformsCount;
@@ -171,11 +171,10 @@ public class Model : IDisposable
         _matrixVbo = new BufferObject<Matrix4x4>(_gl, instanceMatrix, BufferTargetARB.ArrayBuffer);
         _vao.BindInstancing();
 
-        Morphs[0].Setup(gl);
-        _vao.Bind();
-        _vao.VertexAttributePointer(11, 3, VertexAttribPointerType.Float, _vertexSize, 1); // target position
-        _vao.Unbind();
-
+        for (uint morph = 0; morph < Morphs.Length; morph++)
+        {
+            Morphs[morph].Setup(gl);
+        }
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Setup(_gl);
@@ -192,7 +191,6 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("display_vertex_colors", DisplayVertexColors);
-        Morphs[0].Bind(shader);
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Bind(shader, (uint) TransformsCount);
@@ -232,6 +230,10 @@ public class Model : IDisposable
         _vbo.Dispose();
         _matrixVbo.Dispose();
         _vao.Dispose();
+        for (var morph = 0; morph < Morphs.Length; morph++)
+        {
+            Morphs[morph].Dispose();
+        }
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Dispose();
