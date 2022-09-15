@@ -410,11 +410,7 @@ namespace FModel.Settings
             {FGame.Gameface, new FEndpoint[]{new (), new ()}},
             {FGame.Athena, new FEndpoint[]{new (), new ()}},
             {FGame.PandaGame, new FEndpoint[]{new (), new ()}},
-            {FGame.Hotta, new []
-                {
-                    new FEndpoint("https://shimizu-izumi.github.io/fmodel/api/v1/aes/hotta.json", "$.['mainKey']")
-                }
-            }
+            {FGame.Hotta, new FEndpoint[]{new (), new ()}},
         };
         public IDictionary<FGame, FEndpoint[]> CustomEndpoints
         {
