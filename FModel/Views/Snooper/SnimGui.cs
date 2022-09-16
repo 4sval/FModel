@@ -313,18 +313,26 @@ public class SnimGui : IDisposable
                 ImGui.EndTabItem();
             }
 
-            ImGui.BeginDisabled(!model.HasMorphTargets);
-            if (ImGui.BeginTabItem("Shape Keys"))
+            if (model.HasMorphTargets && ImGui.BeginTabItem("Morph Targets"))
             {
-                for (int i = 0; i < model.Morphs.Length; i++)
+                if (ImGui.BeginListBox("", new Vector2(ImGui.GetContentRegionAvail().X, _propertiesSize.Y / 2)))
                 {
-                    ImGui.PushID(i);
-                    ImGui.DragFloat(model.Morphs[i].Name, ref model.Morphs[i].Value, 0.001f, 0.0f, 1.0f, "%.2f", ImGuiSliderFlags.AlwaysClamp);
-                    ImGui.PopID();
+                    for (int i = 0; i < model.Morphs.Length; i++)
+                    {
+                        ImGui.PushID(i);
+                        if (ImGui.Selectable(model.Morphs[i].Name, model.SelectedMorph == i))
+                        {
+                            model.SelectedMorph = i;
+                            model.UpdateMorph();
+                        }
+                        ImGui.PopID();
+                    }
+                    ImGui.EndListBox();
+                    ImGui.Separator();
+                    ImGui.DragFloat("Value", ref model.MorphTime, 0.001f, 0.0f, 1.0f, "%.2f", ImGuiSliderFlags.AlwaysClamp);
                 }
                 ImGui.EndTabItem();
             }
-            ImGui.EndDisabled();
         }
 
         ImGui.End();
@@ -349,7 +357,7 @@ public class SnimGui : IDisposable
         {
             ImGui.SetNextItemWidth(300);
             ImGui.ColorEdit4(section.TexturesLabels[0], ref section.DiffuseColor, ImGuiColorEditFlags.AlphaPreview | ImGuiColorEditFlags.AlphaBar);
-            if (section.Textures[1] is { } normalMap) DrawTexture(normalMap);
+            if (section.Textures[1] is { } normalMap) DrawTexture(normalMap, "Normal");
         }
         else
         {
@@ -358,7 +366,7 @@ public class SnimGui : IDisposable
                 if (section.Textures[i] is not {} texture)
                     continue;
 
-                DrawTexture(texture);
+                DrawTexture(texture, section.TexturesLabels[i]);
 
                 if (i == 3) // emissive, show color
                 {
@@ -366,11 +374,6 @@ public class SnimGui : IDisposable
                     ImGui.SetNextItemWidth(300);
                     ImGui.ColorEdit4($"{section.TexturesLabels[i]} Color", ref section.EmissionColor, ImGuiColorEditFlags.NoAlpha);
                 }
-                var text = section.TexturesLabels[i];
-                var width = ImGui.GetCursorPos().X;
-                ImGui.SetCursorPosX(width + ImGui.CalcTextSize(text).X * 0.5f);
-                ImGui.Text(text);
-                ImGui.EndGroup();
             }
         }
         ImGui.EndGroup();
@@ -378,7 +381,7 @@ public class SnimGui : IDisposable
         ImGui.End();
     }
 
-    private void DrawTexture(Texture texture)
+    private void DrawTexture(Texture texture, string label)
     {
         ImGui.SameLine();
         ImGui.BeginGroup();
@@ -403,6 +406,11 @@ public class SnimGui : IDisposable
                 texture.Label = "(?) Copied to Clipboard";
             });
         }
+
+        var width = ImGui.GetCursorPos().X;
+        ImGui.SetCursorPosX(width + ImGui.CalcTextSize(label).X * 0.5f);
+        ImGui.Text(label);
+        ImGui.EndGroup();
     }
 
     private void Draw3DViewport(FramebufferObject framebuffer, Camera camera, IMouse mouse)

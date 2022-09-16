@@ -79,7 +79,7 @@ public partial class MainWindow
 #if DEBUG
         await _threadWorkerView.Begin(_ =>
             _applicationView.CUE4Parse.Extract(
-                "Hk_project/Content/Character/Zurg/Mesh/SKM_Zurg.uasset"));
+                "/Game/Weapons/FORT_Melee/Pickaxe_Slurp_Monster/Meshes/Slurp_Monster_Axe.uasset"));
 #endif
     }
 

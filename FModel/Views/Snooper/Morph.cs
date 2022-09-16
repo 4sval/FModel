@@ -10,12 +10,8 @@ public class Morph : IDisposable
     private uint _handle;
     private GL _gl;
 
-    private BufferObject<float> _vbo;
-
     public readonly string Name;
     public readonly float[] Vertices;
-
-    public float Value;
 
     public Morph(float[] vertices, uint vertexSize, UMorphTarget morphTarget)
     {
@@ -49,20 +45,11 @@ public class Morph : IDisposable
     public void Setup(GL gl)
     {
         _gl = gl;
-
         _handle = _gl.CreateProgram();
-
-        _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
-    }
-
-    public void Bind(Shader shader)
-    {
-        shader.SetUniform("uMorphTime", Value);
     }
 
     public void Dispose()
     {
-        _vbo.Dispose();
         _gl.DeleteProgram(_handle);
     }
 }

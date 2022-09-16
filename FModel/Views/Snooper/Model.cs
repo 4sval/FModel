@@ -18,6 +18,7 @@ public class Model : IDisposable
 
     private BufferObject<uint> _ebo;
     private BufferObject<float> _vbo;
+    private BufferObject<float> _morphVbo;
     private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
@@ -45,6 +46,8 @@ public class Model : IDisposable
     public bool IsSavable;
     public bool DisplayVertexColors;
     public bool DisplayBones;
+    public int SelectedMorph;
+    public float MorphTime;
 
     protected Model(UObject owner, string name, string type)
     {
@@ -146,6 +149,13 @@ public class Model : IDisposable
         _matrixVbo.Unbind();
     }
 
+    public void UpdateMorph()
+    {
+        _morphVbo.Bind();
+        _morphVbo.Update(Morphs[SelectedMorph].Vertices);
+        _morphVbo.Unbind();
+    }
+
     public void Setup(GL gl)
     {
         _gl = gl;
@@ -164,17 +174,28 @@ public class Model : IDisposable
         _vao.VertexAttributePointer(5, 4, VertexAttribPointerType.Int, _vertexSize, 13); // boneids
         _vao.VertexAttributePointer(6, 4, VertexAttribPointerType.Float, _vertexSize, 17); // boneweights
 
-        TransformsCount = Transforms.Count;
-        var instanceMatrix = new Matrix4x4[TransformsCount];
-        for (var i = 0; i < instanceMatrix.Length; i++)
-            instanceMatrix[i] = Transforms[i].Matrix;
-        _matrixVbo = new BufferObject<Matrix4x4>(_gl, instanceMatrix, BufferTargetARB.ArrayBuffer);
-        _vao.BindInstancing();
-
-        for (uint morph = 0; morph < Morphs.Length; morph++)
-        {
-            Morphs[morph].Setup(gl);
+        {   // instanced models transform
+            TransformsCount = Transforms.Count;
+            var instanceMatrix = new Matrix4x4[TransformsCount];
+            for (var i = 0; i < instanceMatrix.Length; i++)
+                instanceMatrix[i] = Transforms[i].Matrix;
+            _matrixVbo = new BufferObject<Matrix4x4>(_gl, instanceMatrix, BufferTargetARB.ArrayBuffer);
+            _vao.BindInstancing(); // VertexAttributePointer 7, 8, 9, 10
         }
+
+        if (HasMorphTargets)
+        {
+            for (uint morph = 0; morph < Morphs.Length; morph++)
+            {
+                Morphs[morph].Setup(gl);
+                if (morph == SelectedMorph)
+                    _morphVbo = new BufferObject<float>(_gl, Morphs[morph].Vertices, BufferTargetARB.ArrayBuffer);
+            }
+            _vao.Bind();
+            _vao.VertexAttributePointer(11, 3, VertexAttribPointerType.Float, _vertexSize, 1); // morph position
+            _vao.Unbind();
+        }
+
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Setup(_gl);
@@ -190,6 +211,7 @@ public class Model : IDisposable
         }
 
         _vao.Bind();
+        shader.SetUniform("uMorphTime", MorphTime);
         shader.SetUniform("display_vertex_colors", DisplayVertexColors);
         for (int section = 0; section < Sections.Length; section++)
         {
@@ -212,6 +234,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.Use();
+        shader.SetUniform("uMorphTime", MorphTime);
         for (int section = 0; section < Sections.Length; section++)
         {
             if (!Sections[section].Show) continue;
@@ -230,9 +253,13 @@ public class Model : IDisposable
         _vbo.Dispose();
         _matrixVbo.Dispose();
         _vao.Dispose();
-        for (var morph = 0; morph < Morphs.Length; morph++)
+        if (HasMorphTargets)
         {
-            Morphs[morph].Dispose();
+            _morphVbo.Dispose();
+            for (var morph = 0; morph < Morphs.Length; morph++)
+            {
+                Morphs[morph].Dispose();
+            }
         }
         for (int section = 0; section < Sections.Length; section++)
         {

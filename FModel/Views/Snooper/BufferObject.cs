@@ -31,6 +31,14 @@ public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
         _gl.BufferSubData(_bufferType, offset * sizeof(TDataType), (nuint) sizeof(TDataType), data);
     }
 
+    public unsafe void Update(Span<TDataType> data)
+    {
+        fixed (void* d = data)
+        {
+            _gl.BufferSubData(_bufferType, 0, (nuint) (data.Length * sizeof(TDataType)), d);
+        }
+    }
+
     public void Bind()
     {
         _gl.BindBuffer(_bufferType, _handle);
