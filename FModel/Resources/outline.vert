@@ -12,8 +12,10 @@ uniform vec3 viewPos;
 
 void main()
 {
-    vec3 pos = mix(vPos, vMorphTarget, uMorphTime);
+    vec3 pos = vec3(vInstanceMatrix * vec4(mix(vPos, vMorphTarget, uMorphTime), 1.0));
+    vec3 nor = mat3(transpose(inverse(vInstanceMatrix))) * vNormal;
+
     float scaleFactor = distance(pos, viewPos) * 0.0025;
-    vec3 scaleVertex = pos + vNormal * scaleFactor;
-    gl_Position = uProjection * uView * vInstanceMatrix * vec4(scaleVertex, 1.0);
+    vec3 scaleVertex = pos + nor * scaleFactor;
+    gl_Position = uProjection * uView * vec4(scaleVertex, 1.0);
 }
