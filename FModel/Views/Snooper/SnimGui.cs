@@ -315,6 +315,7 @@ public class SnimGui : IDisposable
 
             if (model.HasMorphTargets && ImGui.BeginTabItem("Morph Targets"))
             {
+                PushStyleCompact();
                 if (ImGui.BeginListBox("", new Vector2(ImGui.GetContentRegionAvail().X, _propertiesSize.Y / 2)))
                 {
                     for (int i = 0; i < model.Morphs.Length; i++)
@@ -329,8 +330,9 @@ public class SnimGui : IDisposable
                     }
                     ImGui.EndListBox();
                     ImGui.Separator();
-                    ImGui.DragFloat("Value", ref model.MorphTime, 0.001f, 0.0f, 1.0f, "%.2f", ImGuiSliderFlags.AlwaysClamp);
+                    ImGui.DragFloat("Value", ref model.MorphTime, 0.01f, 0.0f, 1.0f, "%.2f", ImGuiSliderFlags.AlwaysClamp);
                 }
+                PopStyleCompact();
                 ImGui.EndTabItem();
             }
         }

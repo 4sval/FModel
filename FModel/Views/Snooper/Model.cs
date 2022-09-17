@@ -192,7 +192,7 @@ public class Model : IDisposable
                     _morphVbo = new BufferObject<float>(_gl, Morphs[morph].Vertices, BufferTargetARB.ArrayBuffer);
             }
             _vao.Bind();
-            _vao.VertexAttributePointer(11, 3, VertexAttribPointerType.Float, _vertexSize, 1); // morph position
+            _vao.VertexAttributePointer(11, 3, VertexAttribPointerType.Float, 3, 0); // morph position
             _vao.Unbind();
         }
 

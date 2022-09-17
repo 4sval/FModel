@@ -10,13 +10,15 @@ public class Morph : IDisposable
     private uint _handle;
     private GL _gl;
 
+    private uint _vertexSize = 3; // Position
+
     public readonly string Name;
     public readonly float[] Vertices;
 
     public Morph(float[] vertices, uint vertexSize, UMorphTarget morphTarget)
     {
         Name = morphTarget.Name;
-        Vertices = (float[]) vertices.Clone();
+        Vertices = new float[vertices.Length / vertexSize * _vertexSize];
 
         bool TryFindVertex(uint index, out FVector positionDelta)
         {
@@ -32,13 +34,22 @@ public class Morph : IDisposable
             return false;
         }
 
-        for (uint i = 0; i < Vertices.Length; i += vertexSize)
+        for (uint i = 0; i < vertices.Length; i += vertexSize)
         {
-            if (!TryFindVertex((uint) Vertices[i + 0], out var positionDelta)) continue;
-
-            Vertices[i + 1] += positionDelta.X * Constants.SCALE_DOWN_RATIO;
-            Vertices[i + 2] += positionDelta.Z * Constants.SCALE_DOWN_RATIO;
-            Vertices[i + 3] += positionDelta.Y * Constants.SCALE_DOWN_RATIO;
+            var count = 0;
+            var baseIndex = i / vertexSize * _vertexSize;
+            if (TryFindVertex((uint) vertices[i + 0], out var positionDelta))
+            {
+                Vertices[baseIndex + count++] = vertices[i + 1] + positionDelta.X * Constants.SCALE_DOWN_RATIO;
+                Vertices[baseIndex + count++] = vertices[i + 2] + positionDelta.Z * Constants.SCALE_DOWN_RATIO;
+                Vertices[baseIndex + count++] = vertices[i + 3] + positionDelta.Y * Constants.SCALE_DOWN_RATIO;
+            }
+            else
+            {
+                Vertices[baseIndex + count++] = vertices[i + 1];
+                Vertices[baseIndex + count++] = vertices[i + 2];
+                Vertices[baseIndex + count++] = vertices[i + 3];
+            }
         }
     }
 
