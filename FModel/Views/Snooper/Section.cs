@@ -110,13 +110,19 @@ public class Section : IDisposable
             }
 
             if (Parameters.HasTopEmissiveTexture &&
-                Parameters.EmissiveColor is { A: > 0 } emissiveColor &&
                 Parameters.Emissive is UTexture2D { IsVirtual: false } emissive)
             {
                 var mip = emissive.GetFirstMip();
                 TextureDecoder.DecodeTexture(mip, emissive.Format, emissive.isNormalMap, platform, out var data, out var colorType);
                 Textures[3] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, emissive);
-                EmissionColor = new Vector4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
+                if (Parameters.EmissiveColor is { A: > 0 } emissiveColor)
+                {
+                    EmissionColor = new Vector4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
+                }
+                else
+                {
+                    EmissionColor = Vector4.One;
+                }
             }
         }
 
