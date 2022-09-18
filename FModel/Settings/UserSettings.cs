@@ -294,7 +294,7 @@ namespace FModel.Settings
         private IDictionary<FGame, EGame> _overridedGame = new Dictionary<FGame, EGame>
         {
             {FGame.Unknown, EGame.GAME_UE4_LATEST},
-            {FGame.FortniteGame, EGame.GAME_UE5_LATEST},
+            {FGame.FortniteGame, EGame.GAME_UE5_1},
             {FGame.ShooterGame, EGame.GAME_Valorant},
             {FGame.DeadByDaylight, EGame.GAME_UE4_LATEST},
             {FGame.OakGame, EGame.GAME_Borderlands3},
