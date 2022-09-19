@@ -97,20 +97,20 @@ public class Snooper
     {
         switch (export)
         {
-            case UStaticMesh st when st.TryConvert(out var mesh):
+            case UStaticMesh st:
             {
                 var guid = st.LightingGuid;
-                if (!_models.TryGetValue(guid, out _))
+                if (!_models.TryGetValue(guid, out _) && st.TryConvert(out var mesh))
                 {
                     _models[guid] = new Model(export, st.Name, st.ExportType, mesh.LODs[0], mesh.LODs[0].Verts);
                     SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
                 }
                 break;
             }
-            case USkeletalMesh sk when sk.TryConvert(out var mesh):
+            case USkeletalMesh sk:
             {
                 var guid = Guid.NewGuid();
-                if (!_models.TryGetValue(guid, out _))
+                if (!_models.TryGetValue(guid, out _) && sk.TryConvert(out var mesh))
                 {
                     _models[guid] = new Model(export, sk.Name, sk.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, sk.MorphTargets, mesh.RefSkeleton);
                     SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
@@ -137,13 +137,10 @@ public class Snooper
                         staticMeshComponent.Load() is not { } staticMeshComp) continue;
 
                     if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)
-                    {
                         foreach (var actorExp in actor.Class.Owner.GetExports())
                             if (actorExp.TryGetValue(out staticMesh, "StaticMesh"))
                                 break;
-                    }
-
-                    if (staticMesh?.Load() is not UStaticMesh m || !m.TryConvert(out var mesh))
+                    if (staticMesh?.Load() is not UStaticMesh m)
                         continue;
 
                     var guid = m.LightingGuid;
@@ -153,46 +150,47 @@ public class Snooper
                         Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
                         Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
                     };
-                    // can't seem to find the problem here
-                    // some meshes should have their yaw reversed and others not
                     transform.Rotation.Yaw = -transform.Rotation.Yaw;
+
                     if (_models.TryGetValue(guid, out var model))
                     {
                         model.AddInstance(transform);
-                        continue;
                     }
-
-                    model = new Model(export, m.Name, m.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, null, null, transform);
-                    if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
+                    else if (m.TryConvert(out var mesh))
                     {
-                        for (int j = 0; j < textureData.Length; j++)
-                        {
-                            if (textureData[j].Load() is not { } textureDataIdx)
-                                continue;
+                        model = new Model(export, m.Name, m.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, null, null, transform);
 
-                            if (textureDataIdx.TryGetValue(out FPackageIndex diffuse, "Diffuse") &&
-                                diffuse.Load() is UTexture2D diffuseTexture)
-                                model.Sections[j].Parameters.Diffuse = diffuseTexture;
-                            if (textureDataIdx.TryGetValue(out FPackageIndex normal, "Normal") &&
-                                normal.Load() is UTexture2D normalTexture)
-                                model.Sections[j].Parameters.Normal = normalTexture;
-                            if (textureDataIdx.TryGetValue(out FPackageIndex specular, "Specular") &&
-                                specular.Load() is UTexture2D specularTexture)
-                                model.Sections[j].Parameters.Specular = specularTexture;
-                        }
-                    }
-                    if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))
-                    {
-                        var max = model.Sections.Length - 1;
-                        for (var j = 0; j < overrideMaterials.Length; j++)
+                        if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
                         {
-                            if (j > max) break;
-                            if (overrideMaterials[j].Load() is not UMaterialInterface unrealMaterial) continue;
-                            model.Sections[j].SwapMaterial(unrealMaterial);
-                        }
-                    }
+                            for (int j = 0; j < textureData.Length; j++)
+                            {
+                                if (textureData[j].Load() is not { } textureDataIdx)
+                                    continue;
 
-                    _models[guid] = model;
+                                if (textureDataIdx.TryGetValue(out FPackageIndex diffuse, "Diffuse") &&
+                                    diffuse.Load() is UTexture2D diffuseTexture)
+                                    model.Sections[j].Parameters.Diffuse = diffuseTexture;
+                                if (textureDataIdx.TryGetValue(out FPackageIndex normal, "Normal") &&
+                                    normal.Load() is UTexture2D normalTexture)
+                                    model.Sections[j].Parameters.Normal = normalTexture;
+                                if (textureDataIdx.TryGetValue(out FPackageIndex specular, "Specular") &&
+                                    specular.Load() is UTexture2D specularTexture)
+                                    model.Sections[j].Parameters.Specular = specularTexture;
+                            }
+                        }
+                        if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))
+                        {
+                            var max = model.Sections.Length - 1;
+                            for (var j = 0; j < overrideMaterials.Length; j++)
+                            {
+                                if (j > max) break;
+                                if (overrideMaterials[j].Load() is not UMaterialInterface unrealMaterial) continue;
+                                model.Sections[j].SwapMaterial(unrealMaterial);
+                            }
+                        }
+
+                        _models[guid] = model;
+                    }
                 }
                 _camera = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
                 break;

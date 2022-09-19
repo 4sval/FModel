@@ -86,7 +86,8 @@ void main()
                 vec3 reflect_direction = reflect(-n_light_direction, n_normal_map);
                 float metallic = pow(max(dot(n_view_direction, reflect_direction), 0.0f), material.metallic_value);
                 vec3 specular_map = vec3(texture(material.specularMap, fTexCoords));
-                result += light.specular * metallic * specular_map.b * material.roughness_value * specular_map.g * specular_map.r;
+                result += specular_map.r * light.specular * (metallic * specular_map.b);
+                result += material.roughness_value * specular_map.g;
             }
 
             // emission

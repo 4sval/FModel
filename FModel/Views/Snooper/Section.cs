@@ -228,8 +228,8 @@ public class Section : IDisposable
             }
         }
 
-        Parameters.RoughnessValue = 1;
         Parameters.MetallicValue = 1;
+        Parameters.RoughnessValue = 0;
     }
 
     public void Bind(Shader shader, uint instanceCount)
