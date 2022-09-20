@@ -30,7 +30,7 @@ public class Texture : IDisposable
         _handle = _gl.GenTexture();
         _type = type;
 
-        Label = "(?) Click to Copy";
+        Label = "(?) Click to Copy Path";
     }
 
     public Texture(GL gl, uint width, uint height) : this(gl, TextureType.MsaaFramebuffer)

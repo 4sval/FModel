@@ -35,6 +35,7 @@ public class Snooper
     private IKeyboard _keyboard;
     private IMouse _mouse;
     private RawImage _icon;
+    private Options _options;
 
     private readonly FramebufferObject _framebuffer;
     private readonly Skybox _skybox;
@@ -87,6 +88,7 @@ public class Snooper
             _size = vector2D;
         };
 
+        _options = new Options();
         _framebuffer = new FramebufferObject(_size);
         _skybox = new Skybox();
         _grid = new Grid();
@@ -104,6 +106,7 @@ public class Snooper
                 {
                     _models[guid] = new Model(export, st.Name, st.ExportType, mesh.LODs[0], mesh.LODs[0].Verts);
                     SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+                    _options.SelectModel(guid);
                 }
                 break;
             }
@@ -114,6 +117,7 @@ public class Snooper
                 {
                     _models[guid] = new Model(export, sk.Name, sk.ExportType, mesh.LODs[0], mesh.LODs[0].Verts, sk.MorphTargets, mesh.RefSkeleton);
                     SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+                    _options.SelectModel(guid);
                 }
                 break;
             }
@@ -328,7 +332,7 @@ public class Snooper
             model.Outline(_outline);
         }
 
-        _imGui.Construct(_size, _framebuffer, _camera, _mouse, _models);
+        _imGui.Construct(ref _options, _size, _framebuffer, _camera, _mouse, _models);
 
         _framebuffer.BindMsaa();
         _framebuffer.Bind(0); // switch back to main window
@@ -361,6 +365,10 @@ public class Snooper
             _camera.Position += moveSpeed * _camera.Up;
         if (_keyboard.IsKeyPressed(Key.Q))
             _camera.Position -= moveSpeed * _camera.Up;
+        if (_keyboard.IsKeyPressed(Key.X))
+            _camera.ModifyZoom(-.5f);
+        if (_keyboard.IsKeyPressed(Key.C))
+            _camera.ModifyZoom(+.5f);
 
         if (_keyboard.IsKeyPressed(Key.H))
         {
@@ -390,6 +398,7 @@ public class Snooper
         if (!_append)
         {
             _models.Clear();
+            _options.Reset();
             _previousSpeed = 0f;
         }
         _imGui.Dispose();

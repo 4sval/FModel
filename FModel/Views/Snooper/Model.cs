@@ -46,7 +46,6 @@ public class Model : IDisposable
     public bool IsSavable;
     public bool DisplayVertexColors;
     public bool DisplayBones;
-    public int SelectedMorph;
     public float MorphTime;
 
     protected Model(UObject owner, string name, string type)
@@ -149,10 +148,10 @@ public class Model : IDisposable
         _matrixVbo.Unbind();
     }
 
-    public void UpdateMorph()
+    public void UpdateMorph(int index)
     {
         _morphVbo.Bind();
-        _morphVbo.Update(Morphs[SelectedMorph].Vertices);
+        _morphVbo.Update(Morphs[index].Vertices);
         _morphVbo.Unbind();
     }
 
@@ -188,7 +187,7 @@ public class Model : IDisposable
             for (uint morph = 0; morph < Morphs.Length; morph++)
             {
                 Morphs[morph].Setup(gl);
-                if (morph == SelectedMorph)
+                if (morph == 0)
                     _morphVbo = new BufferObject<float>(_gl, Morphs[morph].Vertices, BufferTargetARB.ArrayBuffer);
             }
             _vao.Bind();

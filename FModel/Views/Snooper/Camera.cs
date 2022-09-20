@@ -34,7 +34,7 @@ public class Camera
     public void ModifyZoom(float zoomAmount)
     {
         //We don't want to be able to zoom in too close or too far away so clamp to these values
-        Zoom = Math.Clamp(Zoom - zoomAmount, 1.0f, 60f);
+        Zoom = Math.Clamp(Zoom - zoomAmount, 1.0f, 89f);
     }
 
     public void ModifyDirection(float xOffset, float yOffset)
