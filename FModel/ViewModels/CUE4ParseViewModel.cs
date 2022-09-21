@@ -763,7 +763,8 @@ public class CUE4ParseViewModel : ViewModel
             }
             case UMaterialInstance m when ModelIsOverwritingMaterial:
             {
-                throw new NotImplementedException();
+                SnooperViewer.SwapMaterial(m);
+                return true;
             }
             case UStaticMesh when UserSettings.Default.SaveStaticMeshes:
             case USkeletalMesh when UserSettings.Default.SaveSkeletalMeshes:

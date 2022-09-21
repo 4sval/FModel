@@ -293,9 +293,7 @@ public class SnimGui : IDisposable
                     {
                         options.SelectSection(i);
                         if (ImGui.Selectable("Swap"))
-                        {
-
-                        }
+                            options.SwapMaterial(true);
                         if (ImGui.Selectable("Copy Name to Clipboard"))
                             Application.Current.Dispatcher.Invoke(delegate
                             {

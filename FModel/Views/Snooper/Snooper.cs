@@ -49,7 +49,6 @@ public class Snooper
 
     private Vector2D<int> _size;
     private float _previousSpeed;
-    private bool _append;
 
     public Snooper()
     {
@@ -206,9 +205,19 @@ public class Snooper
         DoLoop();
     }
 
+    public void SwapMaterial(UMaterialInstance mi)
+    {
+        if (!_models.TryGetValue(_options.SelectedModel, out var model) ||
+            !_options.TryGetSection(model, out var section)) return;
+
+        section.SwapMaterial(mi);
+        _options.SwapMaterial(false);
+        DoLoop();
+    }
+
     private void DoLoop()
     {
-        if (_append) _append = false;
+        if (_options.Append) _options.Append = false;
         _window.Run();
         // if (_window.IsInitialized)
         // {
@@ -376,7 +385,7 @@ public class Snooper
             // we can't use GLContext back on next load and so, for now, we basically have to reset the window
             // if we can't use GLContext, we can't generate handles, can't interact with IsVisible, State, etc
             // tldr we dispose everything but don't clear models, so the more you append, the longer it takes to load
-            _append = true;
+            _options.Append = true;
             _window.Close();
             // _window.IsVisible = false;
         }
@@ -395,7 +404,7 @@ public class Snooper
         {
             model.Dispose();
         }
-        if (!_append)
+        if (!_options.Append)
         {
             _models.Clear();
             _options.Reset();

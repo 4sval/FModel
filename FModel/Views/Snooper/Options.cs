@@ -11,6 +11,9 @@ public class Options
     public int SelectedSection { get; private set; }
     public int SelectedMorph { get; private set; }
 
+    public bool Append { get; set; }
+    public bool Close { get; set; }
+
     public Options()
     {
         Reset();
@@ -22,6 +25,8 @@ public class Options
         SelectedModelInstance = 0;
         SelectedSection = 0;
         SelectedMorph = 0;
+        Append = false;
+        Close = false;
     }
 
     public void SelectModel(FGuid guid)
@@ -48,5 +53,10 @@ public class Options
         if (SelectedSection >= 0 && SelectedSection < model.Sections.Length)
             section = model.Sections[SelectedSection]; else section = null;
         return section != null;
+    }
+
+    public void SwapMaterial(bool value)
+    {
+        Services.ApplicationService.ApplicationView.CUE4Parse.ModelIsOverwritingMaterial = value;
     }
 }
