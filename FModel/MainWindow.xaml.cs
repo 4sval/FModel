@@ -95,10 +95,10 @@ public partial class MainWindow
 
         if (_threadWorkerView.CanBeCanceled && e.Key == Key.Escape)
         {
-            _applicationView.Status = EStatusKind.Stopping;
+            _applicationView.Status.SetStatus(EStatusKind.Stopping);
             _threadWorkerView.Cancel();
         }
-        else if (_applicationView.IsReady && e.Key == Key.F && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+        else if (_applicationView.Status.IsReady && e.Key == Key.F && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             OnSearchViewClick(null, null);
         else if (e.Key == Key.Left && _applicationView.CUE4Parse.TabControl.SelectedTab.HasImage)
             _applicationView.CUE4Parse.TabControl.SelectedTab.GoPreviousImage();
@@ -230,14 +230,14 @@ public partial class MainWindow
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (!_applicationView.IsReady || sender is not ListBox listBox) return;
+        if (!_applicationView.Status.IsReady || sender is not ListBox listBox) return;
         UserSettings.Default.LoadingMode = ELoadingMode.Multiple;
         _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
     }
 
     private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (!_applicationView.IsReady || sender is not ListBox listBox) return;
+        if (!_applicationView.Status.IsReady || sender is not ListBox listBox) return;
 
         switch (e.Key)
         {

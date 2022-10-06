@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -94,7 +95,7 @@ public class Snooper
         _models = new Dictionary<FGuid, Model>();
     }
 
-    public void Run(UObject export)
+    public void Run(CancellationToken cancellationToken, UObject export)
     {
         switch (export)
         {
@@ -133,8 +134,10 @@ public class Snooper
             case UWorld wd:
             {
                 var persistentLevel = wd.PersistentLevel.Load<ULevel>();
-                for (var i = 0; i < persistentLevel.Actors.Length; i++)
+                var length = persistentLevel.Actors.Length;
+                for (var i = 0; i < length; i++)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (persistentLevel.Actors[i].Load() is not { } actor || actor.ExportType == "LODActor" ||
                         !actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent") ||
                         staticMeshComponent.Load() is not { } staticMeshComp) continue;
@@ -145,6 +148,8 @@ public class Snooper
                                 break;
                     if (staticMesh?.Load() is not UStaticMesh m)
                         continue;
+
+                    Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"Actor {i}/{length}");
 
                     var guid = m.LightingGuid;
                     var transform = new Transform

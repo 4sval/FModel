@@ -29,7 +29,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(asset.FullPath, true);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, true);
                     }
 
                     break;
@@ -45,7 +45,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(asset.FullPath);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath);
                         contextViewModel.CUE4Parse.TabControl.SelectedTab.SaveProperty(false);
                     }
 
@@ -54,7 +54,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(asset.FullPath);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath);
                         contextViewModel.CUE4Parse.TabControl.SelectedTab.SaveImage(false);
                     }
 

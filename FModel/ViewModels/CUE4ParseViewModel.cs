@@ -56,7 +56,6 @@ public class CUE4ParseViewModel : ViewModel
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private FGame _game;
-
     public FGame Game
     {
         get => _game;
@@ -458,7 +457,7 @@ public class CUE4ParseViewModel : ViewModel
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                Extract(asset.FullPath, TabControl.HasNoTabs);
+                Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs);
             }
             catch
             {
@@ -489,7 +488,7 @@ public class CUE4ParseViewModel : ViewModel
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                Extract(asset.FullPath, TabControl.HasNoTabs, true);
+                Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, true);
             }
             catch
             {
@@ -506,11 +505,11 @@ public class CUE4ParseViewModel : ViewModel
         {
             Thread.Sleep(10);
             cancellationToken.ThrowIfCancellationRequested();
-            Extract(asset.FullPath, TabControl.HasNoTabs);
+            Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs);
         }
     }
 
-    public void Extract(string fullPath, bool addNewTab = false, bool bulkSave = false)
+    public void Extract(CancellationToken cancellationToken, string fullPath, bool addNewTab = false, bool bulkSave = false)
     {
         Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", fullPath);
 
@@ -543,7 +542,7 @@ public class CUE4ParseViewModel : ViewModel
 
                 foreach (var e in exports)
                 {
-                    if (CheckExport(e))
+                    if (CheckExport(cancellationToken, e))
                         break;
                 }
 
@@ -704,7 +703,7 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    public void ExtractAndScroll(string fullPath, string objectName)
+    public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName)
     {
         Log.Information("User CTRL-CLICKED to extract '{FullPath}'", fullPath);
         TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'));
@@ -716,12 +715,12 @@ public class CUE4ParseViewModel : ViewModel
 
         foreach (var e in exports)
         {
-            if (CheckExport(e))
+            if (CheckExport(cancellationToken, e))
                 break;
         }
     }
 
-    private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
+    private bool CheckExport(CancellationToken cancellationToken, UObject export) // return true once you wanna stop searching for exports
     {
         switch (export)
         {
@@ -758,7 +757,7 @@ public class CUE4ParseViewModel : ViewModel
                                                                                                  export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                                                                  export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
-                SnooperViewer.Run(export);
+                SnooperViewer.Run(cancellationToken, export);
                 return true;
             }
             case UMaterialInstance m when ModelIsOverwritingMaterial:

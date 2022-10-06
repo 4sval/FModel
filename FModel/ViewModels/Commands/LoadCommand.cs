@@ -105,8 +105,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
     private void FilterDirectoryFilesToDisplay(CancellationToken cancellationToken, IEnumerable<FileItem> directoryFiles)
     {
         HashSet<string> filter;
-        if (directoryFiles == null)
-            filter = null;
+        if (directoryFiles == null) filter = null;
         else
         {
             filter = new HashSet<string>();

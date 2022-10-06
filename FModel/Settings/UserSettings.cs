@@ -46,7 +46,7 @@ namespace FModel.Settings
                 return false;
 
             endpoint = endpoints[(int) type];
-            return endpoint.IsValid;
+            return endpoint.Overwrite || endpoint.IsValid;
         }
 
         private bool _showChangelog = true;

@@ -22,7 +22,6 @@ namespace FModel.ViewModels;
 public class ApplicationViewModel : ViewModel
 {
     private EBuildKind _build;
-
     public EBuildKind Build
     {
         get => _build;
@@ -33,24 +32,11 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    private bool _isReady;
-
-    public bool IsReady
-    {
-        get => _isReady;
-        private set => SetProperty(ref _isReady, value);
-    }
-
-    private EStatusKind _status;
-
-    public EStatusKind Status
+    private FStatus _status;
+    public FStatus Status
     {
         get => _status;
-        set
-        {
-            SetProperty(ref _status, value);
-            IsReady = Status != EStatusKind.Loading && Status != EStatusKind.Stopping;
-        }
+        set => SetProperty(ref _status, value);
     }
 
     public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);
@@ -76,7 +62,7 @@ public class ApplicationViewModel : ViewModel
 
     public ApplicationViewModel()
     {
-        Status = EStatusKind.Loading;
+        Status = new FStatus();
 #if DEBUG
         Build = EBuildKind.Debug;
 #elif RELEASE
@@ -93,7 +79,7 @@ public class ApplicationViewModel : ViewModel
         AesManager = new AesManagerViewModel(CUE4Parse);
         MapViewer = new MapViewerViewModel(CUE4Parse);
         AudioPlayer = new AudioPlayerViewModel();
-        Status = EStatusKind.Ready;
+        Status.SetStatus(EStatusKind.Ready);
     }
 
     public void AvoidEmptyGameDirectoryAndSetEGame(bool bAlreadyLaunched)

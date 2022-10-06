@@ -75,8 +75,8 @@ public class GamePathVisualLineText : VisualLineText
             }
             else
             {
-                await _threadWorkerView.Begin(_ =>
-                    _applicationView.CUE4Parse.ExtractAndScroll(fullPath, obj));
+                await _threadWorkerView.Begin(cancellationToken =>
+                    _applicationView.CUE4Parse.ExtractAndScroll(cancellationToken, fullPath, obj));
             }
         };
         return a;
