@@ -77,9 +77,9 @@ public partial class MainWindow
             _discordHandler.Initialize(_applicationView.CUE4Parse.Game);
 
 #if DEBUG
-        await _threadWorkerView.Begin(_ =>
-            _applicationView.CUE4Parse.Extract(
-                "/Game/Weapons/FORT_Melee/Pickaxe_Slurp_Monster/Meshes/Slurp_Monster_Axe.uasset"));
+        await _threadWorkerView.Begin(cancellationToken =>
+            _applicationView.CUE4Parse.Extract(cancellationToken,
+                "FortniteGame/Content/Characters/Player/Male/Medium/Bodies/M_MED_Despair/Meshes/M_MED_Despair.uasset"));
 #endif
     }
 
