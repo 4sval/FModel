@@ -4,17 +4,15 @@ using System.Linq;
 using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
-using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Meshes.PSK;
-using Silk.NET.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
 
 public class Model : IDisposable
 {
-    private uint _handle;
-    private GL _gl;
+    private int _handle;
 
     private BufferObject<uint> _ebo;
     private BufferObject<float> _vbo;
@@ -22,9 +20,9 @@ public class Model : IDisposable
     private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
-    private uint _vertexSize = 9; // VertexIndex + Position + Normal + UV
-    private const uint _faceSize = 3; // just so we don't have to do .Length
+    private readonly int _vertexSize = 9; // VertexIndex + Position + Normal + UV
     private readonly uint[] _facesIndex = { 1, 0, 2 };
+    private const int _faceSize = 3; // just so we don't have to do .Length
 
     public readonly UObject Owner;
     public readonly string Name;
@@ -43,7 +41,6 @@ public class Model : IDisposable
 
     public bool Show;
     public bool IsSelected;
-    public bool IsSavable;
     public bool DisplayVertexColors;
     public bool DisplayBones;
     public float MorphTime;
@@ -55,7 +52,6 @@ public class Model : IDisposable
         Type = type;
         Transforms = new List<Transform>();
         Show = true;
-        IsSavable = owner is not UWorld;
     }
 
     public Model(UObject owner, string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, FPackageIndex[] morphTargets = null, List<CSkelMeshBone> skeleton = null, Transform transform = null)
@@ -76,7 +72,7 @@ public class Model : IDisposable
         for (var s = 0; s < sections.Length; s++)
         {
             var section = sections[s];
-            Sections[s] = new Section(section.MaterialName, section.MaterialIndex, (uint) section.NumFaces * _faceSize, section.FirstIndex, section);
+            Sections[s] = new Section(section.MaterialName, section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex, section);
             for (uint face = 0; face < section.NumFaces; face++)
             {
                 foreach (var f in _facesIndex)
@@ -155,15 +151,13 @@ public class Model : IDisposable
         _morphVbo.Unbind();
     }
 
-    public void Setup(GL gl)
+    public void Setup()
     {
-        _gl = gl;
+        _handle = GL.CreateProgram();
 
-        _handle = _gl.CreateProgram();
-
-        _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
-        _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
-        _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
+        _ebo = new BufferObject<uint>(Indices, BufferTarget.ElementArrayBuffer);
+        _vbo = new BufferObject<float>(Vertices, BufferTarget.ArrayBuffer);
+        _vao = new VertexArrayObject<float, uint>(_vbo, _ebo);
 
         _vao.VertexAttributePointer(0, 1, VertexAttribPointerType.Int, _vertexSize, 0); // vertex index
         _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, _vertexSize, 1); // position
@@ -178,7 +172,7 @@ public class Model : IDisposable
             var instanceMatrix = new Matrix4x4[TransformsCount];
             for (var i = 0; i < instanceMatrix.Length; i++)
                 instanceMatrix[i] = Transforms[i].Matrix;
-            _matrixVbo = new BufferObject<Matrix4x4>(_gl, instanceMatrix, BufferTargetARB.ArrayBuffer);
+            _matrixVbo = new BufferObject<Matrix4x4>(instanceMatrix, BufferTarget.ArrayBuffer);
             _vao.BindInstancing(); // VertexAttributePointer 7, 8, 9, 10
         }
 
@@ -186,9 +180,9 @@ public class Model : IDisposable
         {
             for (uint morph = 0; morph < Morphs.Length; morph++)
             {
-                Morphs[morph].Setup(gl);
+                Morphs[morph].Setup();
                 if (morph == 0)
-                    _morphVbo = new BufferObject<float>(_gl, Morphs[morph].Vertices, BufferTargetARB.ArrayBuffer);
+                    _morphVbo = new BufferObject<float>(Morphs[morph].Vertices, BufferTarget.ArrayBuffer);
             }
             _vao.Bind();
             _vao.VertexAttributePointer(11, 3, VertexAttribPointerType.Float, 3, 0); // morph position
@@ -197,7 +191,7 @@ public class Model : IDisposable
 
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Setup(_gl);
+            Sections[section].Setup();
         }
     }
 
@@ -205,8 +199,8 @@ public class Model : IDisposable
     {
         if (IsSelected)
         {
-            _gl.Enable(EnableCap.StencilTest);
-            _gl.StencilFunc(StencilFunction.Always, 1, 0xFF);
+            GL.Enable(EnableCap.StencilTest);
+            GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
         }
 
         _vao.Bind();
@@ -214,22 +208,22 @@ public class Model : IDisposable
         shader.SetUniform("display_vertex_colors", DisplayVertexColors);
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Bind(shader, (uint) TransformsCount);
+            Sections[section].Bind(shader, TransformsCount);
         }
         _vao.Unbind();
 
         if (IsSelected)
         {
-            _gl.StencilFunc(StencilFunction.Always, 0, 0xFF);
-            _gl.Disable(EnableCap.StencilTest);
+            GL.StencilFunc(StencilFunction.Always, 0, 0xFF);
+            GL.Disable(EnableCap.StencilTest);
         }
     }
 
     public void Outline(Shader shader)
     {
-        _gl.StencilMask(0x00);
-        _gl.Disable(EnableCap.DepthTest);
-        _gl.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
+        GL.StencilMask(0x00);
+        GL.Disable(EnableCap.DepthTest);
+        GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
 
         _vao.Bind();
         shader.Use();
@@ -237,13 +231,13 @@ public class Model : IDisposable
         for (int section = 0; section < Sections.Length; section++)
         {
             if (!Sections[section].Show) continue;
-            _gl.DrawArraysInstanced(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount, (uint) TransformsCount);
+            GL.DrawArraysInstanced(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount, TransformsCount);
         }
         _vao.Unbind();
 
-        _gl.StencilFunc(StencilFunction.Always, 0, 0xFF);
-        _gl.Enable(EnableCap.DepthTest);
-        _gl.StencilMask(0xFF);
+        GL.StencilFunc(StencilFunction.Always, 0, 0xFF);
+        GL.Enable(EnableCap.DepthTest);
+        GL.StencilMask(0xFF);
     }
 
     public void Dispose()
@@ -264,6 +258,6 @@ public class Model : IDisposable
         {
             Sections[section].Dispose();
         }
-        _gl.DeleteProgram(_handle);
+        GL.DeleteProgram(_handle);
     }
 }

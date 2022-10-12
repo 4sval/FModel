@@ -10,7 +10,7 @@ public static class Constants
     public static readonly FGuid ZERO_GUID = new(0U);
 
     public const float SCALE_DOWN_RATIO = 0.01F;
-    public const uint SAMPLES_COUNT = 4;
+    public const int SAMPLES_COUNT = 4;
 
     public const string WHITE = "#DAE5F2";
     public const string GRAY = "#BBBBBB";

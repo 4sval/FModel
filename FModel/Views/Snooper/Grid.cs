@@ -1,12 +1,11 @@
 ﻿using System;
-using Silk.NET.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
 
 public class Grid : IDisposable
 {
-    private uint _handle;
-    private GL _gl;
+    private int _handle;
 
     private BufferObject<uint> _ebo;
     private BufferObject<float> _vbo;
@@ -26,24 +25,22 @@ public class Grid : IDisposable
 
     public Grid() {}
 
-    public void Setup(GL gl)
+    public void Setup()
     {
-        _gl = gl;
+        _handle = GL.CreateProgram();
 
-        _handle = _gl.CreateProgram();
+        _ebo = new BufferObject<uint>(Indices, BufferTarget.ElementArrayBuffer);
+        _vbo = new BufferObject<float>(Vertices, BufferTarget.ArrayBuffer);
+        _vao = new VertexArrayObject<float, uint>(_vbo, _ebo);
 
-        _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
-        _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
-        _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
-
-        _shader = new Shader(_gl, "grid");
+        _shader = new Shader("grid");
 
         _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 3, 0); // position
     }
 
     public void Bind(Camera camera)
     {
-        _gl.Disable(EnableCap.DepthTest);
+        GL.Disable(EnableCap.DepthTest);
         _vao.Bind();
 
         _shader.Use();
@@ -53,8 +50,8 @@ public class Grid : IDisposable
         _shader.SetUniform("uNear", camera.Near);
         _shader.SetUniform("uFar", camera.Far);
 
-        _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint) Indices.Length);
-        _gl.Enable(EnableCap.DepthTest);
+        GL.DrawArrays(PrimitiveType.Triangles, 0, Indices.Length);
+        GL.Enable(EnableCap.DepthTest);
     }
 
     public void Dispose()
@@ -63,6 +60,6 @@ public class Grid : IDisposable
         _vbo.Dispose();
         _vao.Dispose();
         _shader.Dispose();
-        _gl.DeleteProgram(_handle);
+        GL.DeleteProgram(_handle);
     }
 }

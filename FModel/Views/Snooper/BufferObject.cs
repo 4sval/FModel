@@ -1,56 +1,48 @@
 ﻿using System;
-using Silk.NET.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
 
 public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
 {
-    private uint _handle;
-    private BufferTargetARB _bufferType;
-    private GL _gl;
+    private readonly int _handle;
+    private readonly BufferTarget _bufferTarget;
 
-    public BufferObject(GL gl, BufferTargetARB bufferType)
+    private BufferObject(BufferTarget bufferTarget)
     {
-        _gl = gl;
-        _bufferType = bufferType;
+        _bufferTarget = bufferTarget;
+        _handle = GL.GenBuffer();
 
-        _handle = _gl.GenBuffer();
         Bind();
     }
 
-    public unsafe BufferObject(GL gl, Span<TDataType> data, BufferTargetARB bufferType) : this(gl, bufferType)
+    public unsafe BufferObject(TDataType[] data, BufferTarget bufferTarget) : this(bufferTarget)
     {
-        fixed (void* d = data)
-        {
-            _gl.BufferData(bufferType, (nuint) (data.Length * sizeof(TDataType)), d, BufferUsageARB.StaticDraw);
-        }
+        GL.BufferData(bufferTarget, data.Length * sizeof(TDataType), data, BufferUsageHint.StaticDraw);
     }
 
     public unsafe void Update(int offset, TDataType data)
     {
-        _gl.BufferSubData(_bufferType, offset * sizeof(TDataType), (nuint) sizeof(TDataType), data);
+        GL.BufferSubData(_bufferTarget,  (IntPtr) (offset * sizeof(TDataType)), sizeof(TDataType), ref data);
     }
 
-    public unsafe void Update(Span<TDataType> data)
+    public unsafe void Update(TDataType[] data)
     {
-        fixed (void* d = data)
-        {
-            _gl.BufferSubData(_bufferType, 0, (nuint) (data.Length * sizeof(TDataType)), d);
-        }
+        GL.BufferSubData(_bufferTarget, IntPtr.Zero, data.Length * sizeof(TDataType), data);
     }
 
     public void Bind()
     {
-        _gl.BindBuffer(_bufferType, _handle);
+        GL.BindBuffer(_bufferTarget, _handle);
     }
 
     public void Unbind()
     {
-        _gl.BindBuffer(_bufferType, 0);
+        GL.BindBuffer(_bufferTarget, 0);
     }
 
     public void Dispose()
     {
-        _gl.DeleteBuffer(_handle);
+        GL.DeleteBuffer(_handle);
     }
 }

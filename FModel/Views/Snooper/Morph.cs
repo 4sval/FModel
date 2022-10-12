@@ -1,21 +1,20 @@
 ﻿using System;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.Core.Math;
-using Silk.NET.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
 
 public class Morph : IDisposable
 {
-    private uint _handle;
-    private GL _gl;
+    private int _handle;
 
-    private uint _vertexSize = 3; // Position
+    private readonly int _vertexSize = 3; // Position
 
     public readonly string Name;
     public readonly float[] Vertices;
 
-    public Morph(float[] vertices, uint vertexSize, UMorphTarget morphTarget)
+    public Morph(float[] vertices, int vertexSize, UMorphTarget morphTarget)
     {
         Name = morphTarget.Name;
         Vertices = new float[vertices.Length / vertexSize * _vertexSize];
@@ -34,7 +33,7 @@ public class Morph : IDisposable
             return false;
         }
 
-        for (uint i = 0; i < vertices.Length; i += vertexSize)
+        for (int i = 0; i < vertices.Length; i += vertexSize)
         {
             var count = 0;
             var baseIndex = i / vertexSize * _vertexSize;
@@ -53,14 +52,13 @@ public class Morph : IDisposable
         }
     }
 
-    public void Setup(GL gl)
+    public void Setup()
     {
-        _gl = gl;
-        _handle = _gl.CreateProgram();
+        _handle = GL.CreateProgram();
     }
 
     public void Dispose()
     {
-        _gl.DeleteProgram(_handle);
+        GL.DeleteProgram(_handle);
     }
 }

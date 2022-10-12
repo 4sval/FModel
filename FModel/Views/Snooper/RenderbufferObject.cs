@@ -1,34 +1,32 @@
 ﻿using System;
-using Silk.NET.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
 
 public class RenderbufferObject : IDisposable
 {
-    private uint _handle;
-    private GL _gl;
+    private int _handle;
 
-    private readonly uint _width;
-    private readonly uint _height;
+    private readonly int _width;
+    private readonly int _height;
 
-    public RenderbufferObject(uint width, uint height)
+    public RenderbufferObject(int width, int height)
     {
         _width = width;
         _height = height;
     }
 
-    public void Setup(GL gl)
+    public void Setup()
     {
-        _gl = gl;
-        _handle = _gl.GenRenderbuffer();
+        _handle = GL.GenRenderbuffer();
 
-        _gl.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _handle);
-        _gl.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, Constants.SAMPLES_COUNT, InternalFormat.Depth24Stencil8, _width, _height);
-        _gl.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, _handle);
+        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _handle);
+        GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, Constants.SAMPLES_COUNT, RenderbufferStorage.Depth24Stencil8, _width, _height);
+        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, _handle);
     }
 
     public void Dispose()
     {
-        _gl.DeleteRenderbuffer(_handle);
+        GL.DeleteRenderbuffer(_handle);
     }
 }

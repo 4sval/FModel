@@ -1,12 +1,11 @@
 ﻿using System;
-using Silk.NET.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
 
 public class Skybox : IDisposable
 {
-    private uint _handle;
-    private GL _gl;
+    private int _handle;
 
     private BufferObject<uint> _ebo;
     private BufferObject<float> _vbo;
@@ -65,25 +64,23 @@ public class Skybox : IDisposable
 
     public Skybox() {}
 
-    public void Setup(GL gl)
+    public void Setup()
     {
-        _gl = gl;
+        _handle = GL.CreateProgram();
 
-        _handle = _gl.CreateProgram();
+        _ebo = new BufferObject<uint>(Indices, BufferTarget.ElementArrayBuffer);
+        _vbo = new BufferObject<float>(Vertices, BufferTarget.ArrayBuffer);
+        _vao = new VertexArrayObject<float, uint>(_vbo, _ebo);
 
-        _ebo = new BufferObject<uint>(_gl, Indices, BufferTargetARB.ElementArrayBuffer);
-        _vbo = new BufferObject<float>(_gl, Vertices, BufferTargetARB.ArrayBuffer);
-        _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
-
-        _cubeMap = new Texture(_gl, _textures);
-        _shader = new Shader(_gl, "skybox");
+        _cubeMap = new Texture(_textures);
+        _shader = new Shader("skybox");
 
         _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 3, 0); // position
     }
 
     public void Bind(Camera camera)
     {
-        _gl.DepthFunc(DepthFunction.Lequal);
+        GL.DepthFunc(DepthFunction.Lequal);
 
         _vao.Bind();
 
@@ -99,9 +96,9 @@ public class Skybox : IDisposable
 
         _shader.SetUniform("cubemap", 0);
 
-        _gl.DrawArrays(PrimitiveType.Triangles, 0, 36);
+        GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
 
-        _gl.DepthFunc(DepthFunction.Less);
+        GL.DepthFunc(DepthFunction.Less);
     }
 
     public void Dispose()
@@ -110,6 +107,6 @@ public class Skybox : IDisposable
         _vbo.Dispose();
         _vao.Dispose();
         _shader.Dispose();
-        _gl.DeleteProgram(_handle);
+        GL.DeleteProgram(_handle);
     }
 }

@@ -1,72 +1,70 @@
 ﻿using System;
 using System.Numerics;
-using Silk.NET.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
 
 public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVertexType : unmanaged where TIndexType : unmanaged
 {
-    private readonly uint _handle;
-    private readonly GL _gl;
+    private readonly int _handle;
 
-    public VertexArrayObject(GL gl, BufferObject<TVertexType> vbo, BufferObject<TIndexType> ebo)
+    public VertexArrayObject(BufferObject<TVertexType> vbo, BufferObject<TIndexType> ebo)
     {
-        _gl = gl;
+        _handle = GL.GenVertexArray();
 
-        _handle = _gl.GenVertexArray();
         Bind();
         vbo.Bind();
         ebo.Bind();
     }
 
-    public unsafe void VertexAttributePointer(uint index, int count, VertexAttribPointerType type, uint vertexSize, int offSet)
+    public unsafe void VertexAttributePointer(uint index, int count, VertexAttribPointerType type, int vertexSize, int offset)
     {
         switch (type)
         {
             case VertexAttribPointerType.Int:
-                _gl.VertexAttribIPointer(index, count, VertexAttribIType.Int, vertexSize * (uint) sizeof(TVertexType), (void*) (offSet * sizeof(TVertexType)));
+                GL.VertexAttribIPointer(index, count, VertexAttribIntegerType.Int, vertexSize * sizeof(TVertexType), (IntPtr) (offset * sizeof(TVertexType)));
                 break;
             default:
-                _gl.VertexAttribPointer(index, count, type, false, vertexSize * (uint) sizeof(TVertexType), (void*) (offSet * sizeof(TVertexType)));
+                GL.VertexAttribPointer(index, count, type, false, vertexSize * sizeof(TVertexType), offset * sizeof(TVertexType));
                 break;
         }
-        _gl.EnableVertexAttribArray(index);
+        GL.EnableVertexAttribArray(index);
     }
 
     public void Bind()
     {
-        _gl.BindVertexArray(_handle);
+        GL.BindVertexArray(_handle);
     }
 
     public unsafe void BindInstancing()
     {
         Bind();
 
-        var vec4Size = (uint) sizeof(Vector4);
-        _gl.EnableVertexAttribArray(7);
-        _gl.VertexAttribPointer(7, 4, VertexAttribPointerType.Float, false, 4 * vec4Size, (void*)0);
-        _gl.EnableVertexAttribArray(8);
-        _gl.VertexAttribPointer(8, 4, VertexAttribPointerType.Float, false, 4 * vec4Size, (void*)(1 * vec4Size));
-        _gl.EnableVertexAttribArray(9);
-        _gl.VertexAttribPointer(9, 4, VertexAttribPointerType.Float, false, 4 * vec4Size, (void*)(2 * vec4Size));
-        _gl.EnableVertexAttribArray(10);
-        _gl.VertexAttribPointer(10, 4, VertexAttribPointerType.Float, false, 4 * vec4Size, (void*)(3 * vec4Size));
+        var size = sizeof(Vector4);
+        GL.EnableVertexAttribArray(7);
+        GL.VertexAttribPointer(7, 4, VertexAttribPointerType.Float, false, 4 * size, 0);
+        GL.EnableVertexAttribArray(8);
+        GL.VertexAttribPointer(8, 4, VertexAttribPointerType.Float, false, 4 * size, 1 * size);
+        GL.EnableVertexAttribArray(9);
+        GL.VertexAttribPointer(9, 4, VertexAttribPointerType.Float, false, 4 * size, 2 * size);
+        GL.EnableVertexAttribArray(10);
+        GL.VertexAttribPointer(10, 4, VertexAttribPointerType.Float, false, 4 * size, 3 * size);
 
-        _gl.VertexAttribDivisor(7, 1);
-        _gl.VertexAttribDivisor(8, 1);
-        _gl.VertexAttribDivisor(9, 1);
-        _gl.VertexAttribDivisor(10, 1);
+        GL.VertexAttribDivisor(7, 1);
+        GL.VertexAttribDivisor(8, 1);
+        GL.VertexAttribDivisor(9, 1);
+        GL.VertexAttribDivisor(10, 1);
 
         Unbind();
     }
 
     public void Unbind()
     {
-        _gl.BindVertexArray(0);
+        GL.BindVertexArray(0);
     }
 
     public void Dispose()
     {
-        _gl.DeleteVertexArray(_handle);
+        GL.DeleteVertexArray(_handle);
     }
 }

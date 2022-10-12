@@ -6,15 +6,14 @@ using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Textures;
 using FModel.Services;
 using FModel.Settings;
-using Silk.NET.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 using SkiaSharp;
 
 namespace FModel.Views.Snooper;
 
 public class Section : IDisposable
 {
-    private uint _handle;
-    private GL _gl;
+    private int _handle;
 
     private Vector3 _ambientLight;
 
@@ -22,7 +21,7 @@ public class Section : IDisposable
 
     public string Name;
     public readonly int Index;
-    public readonly uint FacesCount;
+    public readonly int FacesCount;
     public readonly int FirstFaceIndex;
     public readonly CMaterialParams Parameters;
 
@@ -35,7 +34,7 @@ public class Section : IDisposable
     public bool HasSpecularMap;
     public bool HasDiffuseColor;
 
-    private Section(string name, int index, uint facesCount, int firstFaceIndex)
+    private Section(string name, int index, int facesCount, int firstFaceIndex)
     {
         Name = name;
         Index = index;
@@ -52,7 +51,7 @@ public class Section : IDisposable
         _game = ApplicationService.ApplicationView.CUE4Parse.Game;
     }
 
-    public Section(string name, int index, uint facesCount, int firstFaceIndex, CMeshSection section) : this(name, index, facesCount, firstFaceIndex)
+    public Section(string name, int index, int facesCount, int firstFaceIndex, CMeshSection section) : this(name, index, facesCount, firstFaceIndex)
     {
         if (section.Material != null && section.Material.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
         {
@@ -60,7 +59,7 @@ public class Section : IDisposable
         }
     }
 
-    public Section(int index, uint facesCount, int firstFaceIndex, UMaterialInterface unrealMaterial) : this(string.Empty, index, facesCount, firstFaceIndex)
+    public Section(int index, int facesCount, int firstFaceIndex, UMaterialInterface unrealMaterial) : this(string.Empty, index, facesCount, firstFaceIndex)
     {
         SwapMaterial(unrealMaterial);
     }
@@ -71,11 +70,9 @@ public class Section : IDisposable
         unrealMaterial.GetParams(Parameters);
     }
 
-    public void Setup(GL gl)
+    public void Setup()
     {
-        _gl = gl;
-
-        _handle = _gl.CreateProgram();
+        _handle = GL.CreateProgram();
 
         if (Parameters.IsNull)
         {
@@ -92,21 +89,21 @@ public class Section : IDisposable
             {
                 var mip = diffuse.GetFirstMip();
                 TextureDecoder.DecodeTexture(mip, diffuse.Format, diffuse.isNormalMap, platform, out var data, out var colorType);
-                Textures[0] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, diffuse);
+                Textures[0] = new Texture(data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, diffuse);
             }
 
             if (Parameters.Normal is UTexture2D { IsVirtual: false } normal)
             {
                 var mip = normal.GetFirstMip();
                 TextureDecoder.DecodeTexture(mip, normal.Format, normal.isNormalMap, platform, out var data, out var colorType);
-                Textures[1] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, normal);
+                Textures[1] = new Texture(data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, normal);
             }
 
             if (Parameters.Specular is UTexture2D { IsVirtual: false } specular)
             {
                 var mip = specular.GetFirstMip();
                 SwapSpecular(specular, mip, platform, out var data, out var colorType);
-                Textures[2] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, specular);
+                Textures[2] = new Texture(data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, specular);
             }
 
             if (Parameters.HasTopEmissiveTexture &&
@@ -114,7 +111,7 @@ public class Section : IDisposable
             {
                 var mip = emissive.GetFirstMip();
                 TextureDecoder.DecodeTexture(mip, emissive.Format, emissive.isNormalMap, platform, out var data, out var colorType);
-                Textures[3] = new Texture(_gl, data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, emissive);
+                Textures[3] = new Texture(data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, emissive);
                 if (Parameters.EmissiveColor is { A: > 0 } emissiveColor)
                 {
                     EmissionColor = new Vector4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
@@ -232,7 +229,7 @@ public class Section : IDisposable
         Parameters.RoughnessValue = 0;
     }
 
-    public void Bind(Shader shader, uint instanceCount)
+    public void Bind(Shader shader, int instanceCount)
     {
         for (var i = 0; i < Textures.Length; i++)
         {
@@ -251,8 +248,8 @@ public class Section : IDisposable
 
         shader.SetUniform("light.ambient", _ambientLight);
 
-        _gl.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
-        if (Show) _gl.DrawArraysInstanced(PrimitiveType.Triangles, FirstFaceIndex, FacesCount, instanceCount);
+        GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
+        if (Show) GL.DrawArraysInstanced(PrimitiveType.Triangles, FirstFaceIndex, FacesCount, instanceCount);
     }
 
     public void Dispose()
@@ -261,6 +258,6 @@ public class Section : IDisposable
         {
             Textures[i]?.Dispose();
         }
-        _gl.DeleteProgram(_handle);
+        GL.DeleteProgram(_handle);
     }
 }
