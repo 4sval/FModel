@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -13,7 +14,6 @@ using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Meshes;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -22,13 +22,11 @@ namespace FModel.Views.Snooper;
 
 public class FWindow : GameWindow
 {
-    private SnimGui _imGui;
     private Camera _camera;
-    private IMouse _mouse;
     private Image _icon;
     private Options _options;
 
-    private readonly FramebufferObject _framebuffer;
+    // private readonly FramebufferObject _framebuffer;
     private readonly Skybox _skybox;
     private readonly Grid _grid;
 
@@ -43,7 +41,7 @@ public class FWindow : GameWindow
     public FWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
     {
         _options = new Options();
-        _framebuffer = new FramebufferObject(Size);
+        // _framebuffer = new FramebufferObject(Size);
         _skybox = new Skybox();
         _grid = new Grid();
         _models = new Dictionary<FGuid, Model>();
@@ -161,7 +159,7 @@ public class FWindow : GameWindow
                 throw new ArgumentOutOfRangeException(nameof(export));
         }
 
-        DoLoop();
+        Run();
     }
 
     public void SwapMaterial(UMaterialInstance mi)
@@ -171,13 +169,12 @@ public class FWindow : GameWindow
 
         section.SwapMaterial(mi);
         _options.SwapMaterial(false);
-        DoLoop();
+        Run();
     }
 
     private void DoLoop()
     {
         if (_options.Append) _options.Append = false;
-        _window.Run();
         // if (_window.IsInitialized)
         // {
         //     if (!_window.GLContext.IsCurrent)
@@ -223,24 +220,15 @@ public class FWindow : GameWindow
     protected override void OnLoad()
     {
         base.OnLoad();
+        CenterWindow();
 
-        _window.SetWindowIcon(ref _icon);
-        _window.Center();
+        GL.Enable(EnableCap.Blend);
+        GL.Enable(EnableCap.DepthTest);
+        GL.Enable(EnableCap.Multisample);
+        GL.StencilOp(StencilOp.Keep, StencilOp.Replace, StencilOp.Replace);
+        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-        var input = _window.CreateInput();
-        _keyboard = input.Keyboards[0];
-        _mouse = input.Mice[0];
-
-        _gl = GL.GetApi(_window);
-        _gl.Enable(EnableCap.Blend);
-        _gl.Enable(EnableCap.DepthTest);
-        _gl.Enable(EnableCap.Multisample);
-        _gl.StencilOp(StencilOp.Keep, StencilOp.Replace, StencilOp.Replace);
-        _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-        _imGui = new SnimGui(_gl, _window, input);
-
-        _framebuffer.Setup();
+        // _framebuffer.Setup();
         _skybox.Setup();
         _grid.Setup();
 
@@ -258,12 +246,10 @@ public class FWindow : GameWindow
     {
         base.OnRenderFrame(args);
 
-        _imGui.Update((float) args.Time);
-
         ClearWhatHasBeenDrawn(); // in main window
 
-        _framebuffer.Bind(); // switch to dedicated window
-        ClearWhatHasBeenDrawn(); // in dedicated window
+        // _framebuffer.Bind(); // switch to dedicated window
+        // ClearWhatHasBeenDrawn(); // in dedicated window
 
         _skybox.Bind(_camera);
         _grid.Bind(_camera);
@@ -300,20 +286,16 @@ public class FWindow : GameWindow
             model.Outline(_outline);
         }
 
-        _imGui.Construct(ref _options, _size, _framebuffer, _camera, _mouse, _models);
-
-        _framebuffer.BindMsaa();
-        _framebuffer.Bind(0); // switch back to main window
-        _framebuffer.BindStuff();
-
-        _imGui.Render(); // render ImGui in main window
+        // _framebuffer.BindMsaa();
+        // _framebuffer.Bind(0); // switch back to main window
+        // _framebuffer.BindStuff();
 
         SwapBuffers();
     }
 
     private void ClearWhatHasBeenDrawn()
     {
-        GL.ClearColor(1.0f, 0.102f, 0.129f, 1.0f);
+        GL.ClearColor(1.0f, 0f, 0f, 1.0f);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }
@@ -321,27 +303,31 @@ public class FWindow : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
         base.OnUpdateFrame(e);
-        if (!IsFocused || ImGui.GetIO().WantTextInput)
+        if (!IsFocused)
             return;
 
-        var multiplier = KeyboardState.IsKeyPressed(Keys.LeftShift) ? 2f : 1f;
+        var multiplier = KeyboardState.IsKeyDown(Keys.LeftShift) ? 2f : 1f;
         var moveSpeed = _camera.Speed * multiplier * (float) e.Time;
-        if (KeyboardState.IsKeyPressed(Keys.W))
+        if (KeyboardState.IsKeyDown(Keys.W))
             _camera.Position += moveSpeed * _camera.Direction;
-        if (KeyboardState.IsKeyPressed(Keys.S))
+        if (KeyboardState.IsKeyDown(Keys.S))
             _camera.Position -= moveSpeed * _camera.Direction;
-        if (KeyboardState.IsKeyPressed(Keys.A))
+        if (KeyboardState.IsKeyDown(Keys.A))
             _camera.Position -= Vector3.Normalize(Vector3.Cross(_camera.Direction, _camera.Up)) * moveSpeed;
-        if (KeyboardState.IsKeyPressed(Keys.D))
+        if (KeyboardState.IsKeyDown(Keys.D))
             _camera.Position += Vector3.Normalize(Vector3.Cross(_camera.Direction, _camera.Up)) * moveSpeed;
-        if (KeyboardState.IsKeyPressed(Keys.E))
+        if (KeyboardState.IsKeyDown(Keys.E))
             _camera.Position += moveSpeed * _camera.Up;
-        if (KeyboardState.IsKeyPressed(Keys.Q))
+        if (KeyboardState.IsKeyDown(Keys.Q))
             _camera.Position -= moveSpeed * _camera.Up;
-        if (KeyboardState.IsKeyPressed(Keys.X))
+        if (KeyboardState.IsKeyDown(Keys.X))
             _camera.ModifyZoom(-.5f);
-        if (KeyboardState.IsKeyPressed(Keys.C))
+        if (KeyboardState.IsKeyDown(Keys.C))
             _camera.ModifyZoom(+.5f);
+
+        const float lookSensitivity = 0.1f;
+        var delta = MouseState.Delta * lookSensitivity;
+        _camera.ModifyDirection(delta.X, delta.Y);
 
         if (KeyboardState.IsKeyPressed(Keys.H))
             IsVisible = false;
@@ -351,7 +337,7 @@ public class FWindow : GameWindow
 
     private void OnClose()
     {
-        _framebuffer.Dispose();
+        // _framebuffer.Dispose();
         _grid.Dispose();
         _skybox.Dispose();
         _shader.Dispose();
@@ -366,9 +352,6 @@ public class FWindow : GameWindow
             _options.Reset();
             _previousSpeed = 0f;
         }
-        _imGui.Dispose();
-        _window.Dispose();
-        _gl.Dispose();
     }
 
     protected override void OnResize(ResizeEventArgs e)
@@ -376,6 +359,6 @@ public class FWindow : GameWindow
         base.OnResize(e);
 
         GL.Viewport(0, 0, Size.X, Size.Y);
-        _camera.AspectRatio = Size.X / (float)Size.Y;
+        // _camera.AspectRatio = Size.X / (float)Size.Y;
     }
 }

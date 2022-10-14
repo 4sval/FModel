@@ -31,7 +31,7 @@ public class Snooper
 
     public void Run(CancellationToken cancellationToken, UObject export)
     {
-        _window.Run();
+        _window.Run(cancellationToken, export);
     }
 
     public void SwapMaterial(UMaterialInstance mi)
