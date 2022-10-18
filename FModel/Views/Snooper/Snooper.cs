@@ -20,12 +20,15 @@ public class Snooper : GameWindow
     private Camera _camera;
     private float _previousSpeed;
 
+    private bool _init;
+
     public Snooper(GameWindowSettings gwSettings, NativeWindowSettings nwSettings) : base(gwSettings, nwSettings)
     {
         // _framebuffer = new FramebufferObject(Size);
         _skybox = new Skybox();
         _grid = new Grid();
         _renderer = new Renderer();
+        _init = false;
     }
 
     public void SwapMaterial(UMaterialInstance mi) => _renderer.Swap(mi);
@@ -53,6 +56,12 @@ public class Snooper : GameWindow
 
     protected override void OnLoad()
     {
+        if (_init)
+        {
+            _renderer.Cache.Setup(_renderer.Settings.SelectedModel);
+            return;
+        }
+
         base.OnLoad();
 
         GL.ClearColor(Color4.Red);
@@ -66,6 +75,7 @@ public class Snooper : GameWindow
         _skybox.Setup();
         _grid.Setup();
         _renderer.Setup();
+        _init = true;
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)

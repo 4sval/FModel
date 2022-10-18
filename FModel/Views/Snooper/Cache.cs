@@ -24,6 +24,7 @@ public class Cache : IDisposable
     public bool TryGetModel(FGuid guid, out Model model) => _models.TryGetValue(guid, out model);
     public bool TryGetTexture(FGuid guid, out Texture texture) => _textures.TryGetValue(guid, out texture);
 
+    public void Setup(FGuid guid) => _models[guid].Setup();
     public void Setup()
     {
         foreach (var model in _models.Values)
@@ -31,6 +32,7 @@ public class Cache : IDisposable
             model.Setup();
         }
     }
+
     public void Render(Shader shader)
     {
         foreach (var model in _models.Values)
