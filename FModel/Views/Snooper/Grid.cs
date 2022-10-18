@@ -38,7 +38,7 @@ public class Grid : IDisposable
         _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 3, 0); // position
     }
 
-    public void Bind(Camera camera)
+    public void Render(Camera camera)
     {
         GL.Disable(EnableCap.DepthTest);
         _vao.Bind();

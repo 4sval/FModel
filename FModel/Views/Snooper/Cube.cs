@@ -5,7 +5,7 @@ namespace FModel.Views.Snooper;
 
 public class Cube : Model
 {
-    public Cube(UObject owner, string name, string type, UMaterialInterface unrealMaterial) : base(owner, name, type)
+    public Cube(UMaterialInterface unrealMaterial) : base(unrealMaterial.Name, unrealMaterial.ExportType)
     {
         Indices = new uint[]
         {

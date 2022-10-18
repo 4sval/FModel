@@ -41,6 +41,9 @@ using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
 using Newtonsoft.Json;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 using Serilog;
 using SkiaSharp;
 
@@ -69,8 +72,28 @@ public class CUE4ParseViewModel : ViewModel
         set => SetProperty(ref _modelIsOverwritingMaterial, value);
     }
 
-    public Snooper SnooperViewer => _snooper ??= new Snooper();
     private Snooper _snooper;
+    public Snooper SnooperViewer
+    {
+        get
+        {
+            return Application.Current.Dispatcher.Invoke(delegate
+            {
+                return _snooper ??= new Snooper(GameWindowSettings.Default,
+                    new NativeWindowSettings
+                    {
+                        Size = new Vector2i(
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .7),
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .7)),
+                        NumberOfSamples = Constants.SAMPLES_COUNT,
+                        WindowBorder = WindowBorder.Resizable,
+                        StartVisible = false,
+                        StartFocused = false,
+                        Title = "Title"
+                    });
+            });
+        }
+    }
 
     public AbstractVfsFileProvider Provider { get; }
     public GameDirectoryViewModel GameDirectory { get; }
@@ -757,15 +780,14 @@ public class CUE4ParseViewModel : ViewModel
                                                                                                  export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                                                                  export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
-                Application.Current.Dispatcher.Invoke(delegate
-                {
-                    SnooperViewer.Run(cancellationToken, export);
-                });
+                SnooperViewer.LoadExport(cancellationToken, export);
+                SnooperViewer.Run();
                 return true;
             }
             case UMaterialInstance m when ModelIsOverwritingMaterial:
             {
                 SnooperViewer.SwapMaterial(m);
+                SnooperViewer.Run();
                 return true;
             }
             case UStaticMesh when UserSettings.Default.SaveStaticMeshes:

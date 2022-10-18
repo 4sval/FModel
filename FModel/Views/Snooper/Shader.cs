@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Numerics;
 using System.Reflection;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;
 
@@ -50,7 +50,7 @@ public class Shader : IDisposable
         GL.Uniform1(location, value);
     }
 
-    public unsafe void SetUniform(string name, Matrix4x4 value)
+    public unsafe void SetUniform(string name, Matrix4 value)
     {
         //A new overload has been created for setting a uniform so we can use the transform in our shader.
         int location = GL.GetUniformLocation(_handle, name);

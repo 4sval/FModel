@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Meshes.PSK;
@@ -24,7 +23,6 @@ public class Model : IDisposable
     private readonly uint[] _facesIndex = { 1, 0, 2 };
     private const int _faceSize = 3; // just so we don't have to do .Length
 
-    public readonly UObject Owner;
     public readonly string Name;
     public readonly string Type;
     public readonly bool HasVertexColors;
@@ -45,24 +43,44 @@ public class Model : IDisposable
     public bool DisplayBones;
     public float MorphTime;
 
-    protected Model(UObject owner, string name, string type)
+    protected Model(string name, string type)
     {
-        Owner = owner;
         Name = name;
         Type = type;
         Transforms = new List<Transform>();
         Show = true;
     }
 
-    public Model(UObject owner, string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, FPackageIndex[] morphTargets = null, List<CSkelMeshBone> skeleton = null, Transform transform = null)
-        : this(owner, name, type)
+    public Model(string name, string type, CStaticMesh staticMesh) : this(name, type, staticMesh.LODs[0], staticMesh.LODs[0].Verts) {}
+    public Model(string name, string type, CStaticMesh staticMesh, Transform transform) : this(name, type, staticMesh.LODs[0], staticMesh.LODs[0].Verts, null, transform) {}
+    public Model(string name, string type, CSkeletalMesh skeletalMesh) : this(name, type, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, skeletalMesh.RefSkeleton) {}
+    public Model(string name, string type, FPackageIndex[] morphTargets, CSkeletalMesh skeletalMesh) : this(name, type, skeletalMesh)
     {
-        HasVertexColors = lod.VertexColors != null;
-        if (HasVertexColors) _vertexSize += 4; // + Color
+        if (morphTargets is not { Length: > 0 })
+            return;
 
-        Skeleton = skeleton;
-        HasBones = Skeleton != null;
-        if (HasBones) _vertexSize += 8; // + BoneIds + BoneWeights
+        HasMorphTargets = true;
+        Morphs = new Morph[morphTargets.Length];
+        for (var i = 0; i < Morphs.Length; i++)
+        {
+            Morphs[i] = new Morph(Vertices, _vertexSize, morphTargets[i].Load<UMorphTarget>());
+        }
+    }
+
+    public Model(string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, List<CSkelMeshBone> skeleton = null, Transform transform = null) : this(name, type)
+    {
+        if (lod.VertexColors is { Length: > 0})
+        {
+            HasVertexColors = true;
+            _vertexSize += 4; // + Color
+        }
+
+        if (skeleton is { Count: > 0 })
+        {
+            HasBones = true;
+            Skeleton = skeleton;
+            _vertexSize += 8; // + BoneIds + BoneWeights
+        }
 
         var sections = lod.Sections.Value;
         Sections = new Section[sections.Length];
@@ -119,16 +137,6 @@ public class Model : IDisposable
 
                     Indices[index] = i;
                 }
-            }
-        }
-
-        HasMorphTargets = morphTargets != null;
-        if (HasMorphTargets)
-        {
-            Morphs = new Morph[morphTargets.Length];
-            for (var i = 0; i < Morphs.Length; i++)
-            {
-                Morphs[i] = new Morph(Vertices, _vertexSize, morphTargets[i].Load<UMorphTarget>());
             }
         }
 
@@ -195,7 +203,7 @@ public class Model : IDisposable
         }
     }
 
-    public void Bind(Shader shader)
+    public void Render(Shader shader)
     {
         if (IsSelected)
         {
@@ -208,7 +216,7 @@ public class Model : IDisposable
         shader.SetUniform("display_vertex_colors", DisplayVertexColors);
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Bind(shader, TransformsCount);
+            Sections[section].Render(shader, TransformsCount);
         }
         _vao.Unbind();
 

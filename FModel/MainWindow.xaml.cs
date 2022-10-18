@@ -79,7 +79,7 @@ public partial class MainWindow
 #if DEBUG
         await _threadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.Extract(cancellationToken,
-                "FortniteGame/Content/Characters/Player/Male/Medium/Bodies/M_MED_Despair/Meshes/M_MED_Despair.uasset"));
+                "FortniteGame/Content/Environments/Apollo/Props/Log_Sign/Meshes/SM_Apollo_Log_Sign.uasset"));
 #endif
     }
 

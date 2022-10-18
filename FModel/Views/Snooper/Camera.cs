@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;
 
@@ -54,13 +54,13 @@ public class Camera
         Direction = Vector3.Normalize(direction);
     }
 
-    public Matrix4x4 GetViewMatrix()
+    public Matrix4 GetViewMatrix()
     {
-        return Matrix4x4.CreateLookAt(Position, Position + Direction, Up);
+        return Matrix4.LookAt(Position, Position + Direction, Up);
     }
 
-    public Matrix4x4 GetProjectionMatrix()
+    public Matrix4 GetProjectionMatrix()
     {
-        return Matrix4x4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, Near, Far);
+        return Matrix4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, Near, Far);
     }
 }

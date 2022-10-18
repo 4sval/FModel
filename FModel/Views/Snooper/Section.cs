@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Meshes.PSK;
@@ -7,6 +6,7 @@ using CUE4Parse_Conversion.Textures;
 using FModel.Services;
 using FModel.Settings;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using SkiaSharp;
 
 namespace FModel.Views.Snooper;
@@ -229,7 +229,7 @@ public class Section : IDisposable
         Parameters.RoughnessValue = 0;
     }
 
-    public void Bind(Shader shader, int instanceCount)
+    public void Render(Shader shader, int instanceCount)
     {
         for (var i = 0; i < Textures.Length; i++)
         {
