@@ -34,12 +34,23 @@ public class Snooper : GameWindow
     public void SwapMaterial(UMaterialInstance mi) => _renderer.Swap(mi);
     public void LoadExport(CancellationToken cancellationToken, UObject export)
     {
-        _renderer.Load(cancellationToken, export);
-        _camera = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
+        var newCamera = _renderer.Load(cancellationToken, export);
+        if (newCamera == null || !(newCamera.Speed > _previousSpeed)) return;
+
+        _camera = newCamera;
+        _previousSpeed = _camera.Speed;
     }
 
-    private unsafe void WindowShouldClose(bool value)
+    private unsafe void WindowShouldClose(bool value, bool clear)
     {
+        if (clear)
+        {
+            _renderer.Cache.DisposeModels();
+            _renderer.Cache.ClearModels();
+            _renderer.Settings.Reset();
+            _previousSpeed = 0f;
+        }
+
         GLFW.SetWindowShouldClose(WindowPtr, value); // start / stop game loop
         CursorState = value ? CursorState.Normal : CursorState.Grabbed;
         IsVisible = !value;
@@ -49,7 +60,7 @@ public class Snooper : GameWindow
     {
         Application.Current.Dispatcher.Invoke(delegate
         {
-            WindowShouldClose(false);
+            WindowShouldClose(false, false);
             base.Run();
         });
     }
@@ -58,11 +69,12 @@ public class Snooper : GameWindow
     {
         if (_init)
         {
-            _renderer.Cache.Setup(_renderer.Settings.SelectedModel);
+            _renderer.Cache.Setup();
             return;
         }
 
         base.OnLoad();
+        CenterWindow();
 
         GL.ClearColor(Color4.Red);
         GL.Enable(EnableCap.Blend);
@@ -109,7 +121,7 @@ public class Snooper : GameWindow
     protected override void OnMouseMove(MouseMoveEventArgs e)
     {
         base.OnMouseMove(e);
-        if (!IsFocused)
+        if (!IsVisible)
             return;
 
         const float lookSensitivity = 0.1f;
@@ -120,7 +132,7 @@ public class Snooper : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
         base.OnUpdateFrame(e);
-        if (!IsFocused)
+        if (!IsVisible)
             return;
 
         var multiplier = KeyboardState.IsKeyDown(Keys.LeftShift) ? 2f : 1f;
@@ -142,10 +154,10 @@ public class Snooper : GameWindow
         if (KeyboardState.IsKeyDown(Keys.C))
             _camera.ModifyZoom(+.5f);
 
-        if (KeyboardState.IsKeyPressed(Keys.H))
-            IsVisible = false;
+        if (KeyboardState.IsKeyPressed(Keys.R))
+            WindowShouldClose(true, false);
         if (KeyboardState.IsKeyPressed(Keys.Escape))
-            WindowShouldClose(true);
+            WindowShouldClose(true, true);
     }
 
     protected override void OnResize(ResizeEventArgs e)

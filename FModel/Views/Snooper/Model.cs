@@ -38,6 +38,7 @@ public class Model : IDisposable
     public readonly List<Transform> Transforms;
 
     public bool Show;
+    public bool IsSetup;
     public bool IsSelected;
     public bool DisplayVertexColors;
     public bool DisplayBones;
@@ -201,6 +202,8 @@ public class Model : IDisposable
         {
             Sections[section].Setup();
         }
+
+        IsSetup = true;
     }
 
     public void Render(Shader shader)

@@ -89,7 +89,7 @@ public class CUE4ParseViewModel : ViewModel
                         WindowBorder = WindowBorder.Resizable,
                         StartVisible = false,
                         StartFocused = false,
-                        Title = "Title"
+                        Title = "3D Viewer"
                     });
             });
         }

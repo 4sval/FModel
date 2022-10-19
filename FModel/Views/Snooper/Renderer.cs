@@ -17,7 +17,7 @@ namespace FModel.Views.Snooper;
 public class Renderer : IDisposable
 {
     private Shader _shader;
-    private Shader _outline;
+    // private Shader _outline; // fix stutter
     private Vector3 _diffuseLight;
     private Vector3 _specularLight;
 
@@ -30,34 +30,16 @@ public class Renderer : IDisposable
         Settings = new Options();
     }
 
-    public void Load(CancellationToken cancellationToken, UObject export)
+    public Camera Load(CancellationToken cancellationToken, UObject export)
     {
-        switch (export)
+        return export switch
         {
-            case UStaticMesh st:
-            {
-                LoadStaticMesh(st);
-                break;
-            }
-            case USkeletalMesh sk:
-            {
-                LoadSkeletalMesh(sk);
-                break;
-            }
-            case UMaterialInstance mi:
-            {
-                LoadMaterialInstance(mi);
-                break;
-            }
-            case UWorld wd:
-            {
-                LoadWorld(cancellationToken, wd);
-                // _camera = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
-                break;
-            }
-            default:
-                throw new ArgumentOutOfRangeException(nameof(export));
-        }
+            UStaticMesh st => LoadStaticMesh(st),
+            USkeletalMesh sk => LoadSkeletalMesh(sk),
+            UMaterialInstance mi => LoadMaterialInstance(mi),
+            UWorld wd => LoadWorld(cancellationToken, wd),
+            _ => throw new ArgumentOutOfRangeException(nameof(export))
+        };
     }
 
     public void Swap(UMaterialInstance unrealMaterial)
@@ -72,7 +54,7 @@ public class Renderer : IDisposable
     public void Setup()
     {
         _shader = new Shader();
-        _outline = new Shader("outline");
+        // _outline = new Shader("outline");
         _diffuseLight = new Vector3(0.75f);
         _specularLight = new Vector3(0.5f);
 
@@ -84,10 +66,10 @@ public class Renderer : IDisposable
         var viewMatrix = cam.GetViewMatrix();
         var projMatrix = cam.GetProjectionMatrix();
 
-        _outline.Use();
-        _outline.SetUniform("uView", viewMatrix);
-        _outline.SetUniform("uProjection", projMatrix);
-        _outline.SetUniform("viewPos", cam.Position);
+        // _outline.Use();
+        // _outline.SetUniform("uView", viewMatrix);
+        // _outline.SetUniform("uProjection", projMatrix);
+        // _outline.SetUniform("viewPos", cam.Position);
 
         _shader.Use();
         _shader.SetUniform("uView", viewMatrix);
@@ -104,62 +86,62 @@ public class Renderer : IDisposable
         _shader.SetUniform("light.specular", _specularLight);
 
         Cache.Render(_shader);
-        GL.Enable(EnableCap.StencilTest); // I don't get why this must be here but it works now so...
-        Cache.Outline(_outline);
+        // GL.Enable(EnableCap.StencilTest); // I don't get why this must be here but it works now so...
+        // Cache.Outline(_outline);
     }
 
-    // private void SetupCamera(FBox box)
-    // {
-    //     var far = box.Max.Max();
-    //     var center = box.GetCenter();
-    //     var position = new Vector3(0f, center.Z, box.Max.Y * 3);
-    //     var speed = far / 2f;
-    //     if (speed > _previousSpeed)
-    //     {
-    //         _camera = new Camera(position, center, 0.01f, far * 50f, speed);
-    //         _previousSpeed = _camera.Speed;
-    //     }
-    // }
+    private Camera SetupCamera(FBox box)
+    {
+        var far = box.Max.Max();
+        var center = box.GetCenter();
+        return new Camera(
+            new Vector3(0f, center.Z, box.Max.Y * 3),
+            new Vector3(center.X, center.Z, center.Y),
+            0.01f, far * 50f, far / 2f);
+    }
 
-    private void LoadStaticMesh(UStaticMesh original)
+    private Camera LoadStaticMesh(UStaticMesh original)
     {
         var guid = original.LightingGuid;
         if (Cache.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
+            return null;
         }
-        else if (original.TryConvert(out var mesh))
-        {
-            Cache.AddModel(guid, new Model(original.Name, original.ExportType, mesh));
-            // SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
-            Settings.SelectModel(guid);
-        }
+
+        if (!original.TryConvert(out var mesh))
+            return null;
+
+        Cache.AddModel(guid, new Model(original.Name, original.ExportType, mesh));
+        Settings.SelectModel(guid);
+        return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }
 
-    private void LoadSkeletalMesh(USkeletalMesh original)
+    private Camera LoadSkeletalMesh(USkeletalMesh original)
     {
         var guid = Guid.NewGuid();
-        if (Cache.HasModel(guid) || !original.TryConvert(out var mesh)) return;
+        if (Cache.HasModel(guid) || !original.TryConvert(out var mesh)) return null;
 
         Cache.AddModel(guid, new Model(original.Name, original.ExportType, original.MorphTargets, mesh));
-        // SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
         Settings.SelectModel(guid);
+        return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }
 
-    private void LoadMaterialInstance(UMaterialInstance original)
+    private Camera LoadMaterialInstance(UMaterialInstance original)
     {
         var guid = Guid.NewGuid();
-        if (Cache.HasModel(guid)) return;
+        if (Cache.HasModel(guid)) return null;
 
         Cache.AddModel(guid, new Cube(original));
-        // SetupCamera(new FBox(new FVector(-.65f), new FVector(.65f)));
         Settings.SelectModel(guid);
+        return SetupCamera(new FBox(new FVector(-.65f), new FVector(.65f)));
     }
 
-    private void LoadWorld(CancellationToken cancellationToken, UWorld original)
+    private Camera LoadWorld(CancellationToken cancellationToken, UWorld original)
     {
+        var ret = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
         if (original.PersistentLevel.Load<ULevel>() is not { } persistentLevel)
-            return;
+            return ret;
 
         var length = persistentLevel.Actors.Length;
         for (var i = 0; i < length; i++)
@@ -228,12 +210,14 @@ public class Renderer : IDisposable
                 Cache.AddModel(guid, model);
             }
         }
+        Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"Actor {length}/{length}");
+        return ret;
     }
 
     public void Dispose()
     {
         _shader.Dispose();
-        _outline.Dispose();
+        // _outline.Dispose();
         Cache.Dispose();
     }
 }
