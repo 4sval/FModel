@@ -9,7 +9,6 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;

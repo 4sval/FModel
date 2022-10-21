@@ -29,7 +29,7 @@ public class Cache : IDisposable
         foreach (var model in _models.Values)
         {
             if (model.IsSetup) continue;
-            model.Setup();
+            model.Setup(this);
         }
     }
     public void Render(Shader shader)

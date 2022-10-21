@@ -16,6 +16,7 @@ public class Snooper : GameWindow
     private readonly Skybox _skybox;
     private readonly Grid _grid;
     private readonly Renderer _renderer;
+    private readonly SnimGui _gui;
 
     private Camera _camera;
     private float _previousSpeed;
@@ -28,6 +29,7 @@ public class Snooper : GameWindow
         _skybox = new Skybox();
         _grid = new Grid();
         _renderer = new Renderer();
+        _gui = new SnimGui(ClientSize.X, ClientSize.Y);
         _init = false;
     }
 
@@ -96,6 +98,7 @@ public class Snooper : GameWindow
         if (!IsVisible)
             return;
 
+        _gui.Update(this, (float)args.Time);
         ClearWhatHasBeenDrawn(); // in main window
 
         // _framebuffer.Bind(); // switch to dedicated window
@@ -104,6 +107,7 @@ public class Snooper : GameWindow
         _skybox.Render(_camera);
         _grid.Render(_camera);
         _renderer.Render(_camera);
+        _gui.Render();
 
         // _framebuffer.BindMsaa();
         // _framebuffer.Bind(0); // switch back to main window
@@ -165,6 +169,18 @@ public class Snooper : GameWindow
         base.OnResize(e);
 
         GL.Viewport(0, 0, Size.X, Size.Y);
-        // _camera.AspectRatio = Size.X / (float)Size.Y;
+
+        _camera.AspectRatio = Size.X / (float)Size.Y;
+        _gui.WindowResized(ClientSize.X, ClientSize.Y);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+
+        _skybox?.Dispose();
+        _grid?.Dispose();
+        _renderer?.Dispose();
+        _gui?.Dispose();
     }
 }

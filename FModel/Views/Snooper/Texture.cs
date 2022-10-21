@@ -46,7 +46,7 @@ public class Texture : IDisposable
         GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, _handle, 0);
     }
 
-    public unsafe Texture(int width, int height) : this(TextureType.Framebuffer)
+    public Texture(int width, int height) : this(TextureType.Framebuffer)
     {
         Width = width;
         Height = height;
@@ -62,7 +62,7 @@ public class Texture : IDisposable
         GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _handle, 0);
     }
 
-    public unsafe Texture(byte[] data, uint width, uint height, SKColorType colorType, UTexture2D texture2D) : this(TextureType.Normal)
+    public Texture(byte[] data, int width, int height, UTexture2D texture2D) : this(TextureType.Normal)
     {
         Type = texture2D.ExportType;
         Name = texture2D.Name;
@@ -70,8 +70,8 @@ public class Texture : IDisposable
         Format = texture2D.Format;
         ImportedWidth = texture2D.ImportedSize.X;
         ImportedHeight = texture2D.ImportedSize.Y;
-        Width = (int) width;
-        Height = (int) height;
+        Width = width;
+        Height = height;
         Bind(TextureUnit.Texture0);
 
         GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
@@ -83,7 +83,7 @@ public class Texture : IDisposable
         GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
     }
 
-    public unsafe Texture(string[] textures) : this(TextureType.Cubemap)
+    public Texture(string[] textures) : this(TextureType.Cubemap)
     {
         Bind(TextureUnit.Texture0);
 
@@ -111,7 +111,7 @@ public class Texture : IDisposable
         GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int) TextureWrapMode.ClampToEdge);
     }
 
-    public unsafe Texture(uint width, uint height, IntPtr data) : this(TextureType.Normal)
+    public Texture(uint width, uint height, IntPtr data) : this(TextureType.Normal)
     {
         Width = (int) width;
         Height = (int) height;

@@ -15,7 +15,7 @@ public class Camera
     public float Speed = 1f;
     public float Near = 0.01f;
     public float Far = 100f;
-    public float AspectRatio => 16f / 9f;
+    public float AspectRatio = 16f / 9f;
 
     public Camera(Vector3 position, Vector3 direction, float near, float far, float speed)
     {

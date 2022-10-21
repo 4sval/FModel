@@ -70,7 +70,7 @@ public class Section : IDisposable
         unrealMaterial.GetParams(Parameters);
     }
 
-    public void Setup()
+    public void Setup(Cache cache)
     {
         _handle = GL.CreateProgram();
 
@@ -81,45 +81,46 @@ public class Section : IDisposable
         else
         {
             var platform = UserSettings.Default.OverridedPlatform;
+            void Add(int index, UTexture2D original)
+            {
+                var guid = original.LightingGuid;
+                if (cache.TryGetTexture(guid, out var texture))
+                {
+                    // Anything in Parameters that is supposed to be modified will not be modified
+                    // eg. Metallic Roughness
+                    Textures[index] = texture;
+                }
+                else if (original.GetFirstMip() is { } mip)
+                {
+                    byte[] data;
+                    if (index != 2) TextureDecoder.DecodeTexture(mip, original.Format, original.isNormalMap, platform, out data, out _);
+                    else SwapSpecular(original, mip, platform, out data);
+
+                    var t = new Texture(data, mip.SizeX, mip.SizeY, original);
+                    cache.AddTexture(guid, t);
+                    Textures[index] = t;
+                }
+            }
+
             if (!Parameters.HasTopDiffuseTexture && Parameters.DiffuseColor is { A: > 0 } diffuseColor)
-            {
                 DiffuseColor = new Vector4(diffuseColor.R, diffuseColor.G, diffuseColor.B, diffuseColor.A);
-            }
             else if (Parameters.Diffuse is UTexture2D { IsVirtual: false } diffuse)
-            {
-                var mip = diffuse.GetFirstMip();
-                TextureDecoder.DecodeTexture(mip, diffuse.Format, diffuse.isNormalMap, platform, out var data, out var colorType);
-                Textures[0] = new Texture(data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, diffuse);
-            }
+                Add(0, diffuse);
 
             if (Parameters.Normal is UTexture2D { IsVirtual: false } normal)
-            {
-                var mip = normal.GetFirstMip();
-                TextureDecoder.DecodeTexture(mip, normal.Format, normal.isNormalMap, platform, out var data, out var colorType);
-                Textures[1] = new Texture(data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, normal);
-            }
+                Add(1, normal);
 
             if (Parameters.Specular is UTexture2D { IsVirtual: false } specular)
-            {
-                var mip = specular.GetFirstMip();
-                SwapSpecular(specular, mip, platform, out var data, out var colorType);
-                Textures[2] = new Texture(data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, specular);
-            }
+                Add(2, specular);
 
             if (Parameters.HasTopEmissiveTexture &&
                 Parameters.Emissive is UTexture2D { IsVirtual: false } emissive)
             {
-                var mip = emissive.GetFirstMip();
-                TextureDecoder.DecodeTexture(mip, emissive.Format, emissive.isNormalMap, platform, out var data, out var colorType);
-                Textures[3] = new Texture(data, (uint) mip.SizeX, (uint) mip.SizeY, colorType, emissive);
+                Add(3, emissive);
                 if (Parameters.EmissiveColor is { A: > 0 } emissiveColor)
-                {
                     EmissionColor = new Vector4(emissiveColor.R, emissiveColor.G, emissiveColor.B, emissiveColor.A);
-                }
                 else
-                {
                     EmissionColor = Vector4.One;
-                }
             }
         }
 
@@ -136,9 +137,9 @@ public class Section : IDisposable
     /// Roughness on Green
     /// Ambient Occlusion on Red
     /// </summary>
-    private void SwapSpecular(UTexture2D specular, FTexture2DMipMap mip, ETexturePlatform platform, out byte[] data, out SKColorType colorType)
+    private void SwapSpecular(UTexture2D specular, FTexture2DMipMap mip, ETexturePlatform platform, out byte[] data)
     {
-        TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap, platform, out data, out colorType);
+        TextureDecoder.DecodeTexture(mip, specular.Format, specular.isNormalMap, platform, out data, out _);
 
         switch (_game)
         {
@@ -243,8 +244,8 @@ public class Section : IDisposable
 
         shader.SetUniform("material.emissionColor", EmissionColor);
 
-        shader.SetUniform("material.metallic_value", Parameters.MetallicValue);
-        shader.SetUniform("material.roughness_value", Parameters.RoughnessValue);
+        shader.SetUniform("material.metallic_value", 1f);
+        shader.SetUniform("material.roughness_value", 0f);
 
         shader.SetUniform("light.ambient", _ambientLight);
 

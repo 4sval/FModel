@@ -160,7 +160,7 @@ public class Model : IDisposable
         _morphVbo.Unbind();
     }
 
-    public void Setup()
+    public void Setup(Cache cache)
     {
         _handle = GL.CreateProgram();
 
@@ -200,7 +200,7 @@ public class Model : IDisposable
 
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Setup();
+            Sections[section].Setup(cache);
         }
 
         IsSetup = true;
