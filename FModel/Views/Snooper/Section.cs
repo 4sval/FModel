@@ -7,7 +7,6 @@ using FModel.Services;
 using FModel.Settings;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using SkiaSharp;
 
 namespace FModel.Views.Snooper;
 
