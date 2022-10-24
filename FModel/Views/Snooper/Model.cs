@@ -5,6 +5,8 @@ using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Meshes.PSK;
+using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.Assets.Exports.Material;
 using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
@@ -31,11 +33,13 @@ public class Model : IDisposable
     public uint[] Indices;
     public float[] Vertices;
     public Section[] Sections;
-    public readonly Morph[] Morphs;
+    public Material[] Materials;
     public readonly List<CSkelMeshBone> Skeleton;
 
     public int TransformsCount;
     public readonly List<Transform> Transforms;
+
+    public readonly Morph[] Morphs;
 
     public bool Show;
     public bool IsSetup;
@@ -52,10 +56,11 @@ public class Model : IDisposable
         Show = true;
     }
 
-    public Model(string name, string type, CStaticMesh staticMesh) : this(name, type, staticMesh.LODs[0], staticMesh.LODs[0].Verts) {}
-    public Model(string name, string type, CStaticMesh staticMesh, Transform transform) : this(name, type, staticMesh.LODs[0], staticMesh.LODs[0].Verts, null, transform) {}
-    public Model(string name, string type, CSkeletalMesh skeletalMesh) : this(name, type, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, skeletalMesh.RefSkeleton) {}
-    public Model(string name, string type, FPackageIndex[] morphTargets, CSkeletalMesh skeletalMesh) : this(name, type, skeletalMesh)
+    public Model(string name, string type, ResolvedObject[] materials, CStaticMesh staticMesh) : this(name, type, materials, staticMesh, Transform.Identity) {}
+    public Model(string name, string type, ResolvedObject[] materials, CStaticMesh staticMesh, Transform transform) : this(name, type, materials, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform) {}
+    public Model(string name, string type, ResolvedObject[] materials, CSkeletalMesh skeletalMesh) : this(name, type, materials, skeletalMesh, Transform.Identity) {}
+    public Model(string name, string type, ResolvedObject[] materials, CSkeletalMesh skeletalMesh, Transform transform) : this(name, type, materials, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform, skeletalMesh.RefSkeleton) {}
+    public Model(string name, string type, ResolvedObject[] materials, FPackageIndex[] morphTargets, CSkeletalMesh skeletalMesh) : this(name, type, materials, skeletalMesh)
     {
         if (morphTargets is not { Length: > 0 })
             return;
@@ -68,8 +73,15 @@ public class Model : IDisposable
         }
     }
 
-    public Model(string name, string type, CBaseMeshLod lod, CMeshVertex[] vertices, List<CSkelMeshBone> skeleton = null, Transform transform = null) : this(name, type)
+    private Model(string name, string type, ResolvedObject[] materials, CBaseMeshLod lod, CMeshVertex[] vertices, Transform transform, List<CSkelMeshBone> skeleton = null) : this(name, type)
     {
+        Materials = new Material[materials.Length];
+        for (int m = 0; m < Materials.Length; m++)
+        {
+            if (materials[m].TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
+                Materials[m] = new Material(1, unrealMaterial); // lod.NumTexCoords
+        }
+
         if (lod.VertexColors is { Length: > 0})
         {
             HasVertexColors = true;
@@ -91,7 +103,7 @@ public class Model : IDisposable
         for (var s = 0; s < sections.Length; s++)
         {
             var section = sections[s];
-            Sections[s] = new Section(section.MaterialName, section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex, section);
+            Sections[s] = new Section(section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex, Materials[section.MaterialIndex]);
             for (uint face = 0; face < section.NumFaces; face++)
             {
                 foreach (var f in _facesIndex)
@@ -141,7 +153,7 @@ public class Model : IDisposable
             }
         }
 
-        AddInstance(transform ?? Transform.Identity);
+        AddInstance(transform);
     }
 
     public void AddInstance(Transform transform) => Transforms.Add(transform);
@@ -183,6 +195,13 @@ public class Model : IDisposable
                 instanceMatrix[i] = Transforms[i].Matrix;
             _matrixVbo = new BufferObject<Matrix4x4>(instanceMatrix, BufferTarget.ArrayBuffer);
             _vao.BindInstancing(); // VertexAttributePointer 7, 8, 9, 10
+        }
+
+        {   // setup all materials for use in different UV channels
+            for (var i = 0; i < Materials.Length; i++)
+            {
+                Materials[i].Setup(cache);
+            }
         }
 
         if (HasMorphTargets)
@@ -265,10 +284,16 @@ public class Model : IDisposable
                 Morphs[morph].Dispose();
             }
         }
+
+        for (int material = 0; material < Materials.Length; material++)
+        {
+            Materials[material]?.Dispose();
+        }
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Dispose();
         }
+
         GL.DeleteProgram(_handle);
     }
 }

@@ -8,10 +8,10 @@ in vec4 fColor;
 struct Material {
     sampler2D diffuseMap;
     sampler2D normalMap;
+    sampler2D specularMap;
     sampler2D emissionMap;
 
     bool useSpecularMap;
-    sampler2D specularMap;
 
     bool hasDiffuseColor;
     vec4 diffuseColor;

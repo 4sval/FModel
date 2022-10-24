@@ -1,5 +1,4 @@
-﻿using CUE4Parse.UE4.Assets.Exports;
-using CUE4Parse.UE4.Assets.Exports.Material;
+﻿using CUE4Parse.UE4.Assets.Exports.Material;
 
 namespace FModel.Views.Snooper;
 
@@ -62,8 +61,11 @@ public class Cube : Model
             -1, -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f
         };
 
+        Materials = new Material[1];
+        Materials[0] = new Material(1, unrealMaterial);
+
         Sections = new Section[1];
-        Sections[0] = new Section(0, Indices.Length, 0, unrealMaterial);
+        Sections[0] = new Section(0, Indices.Length, 0, Materials[0]);
 
         AddInstance(Transform.Identity);
     }

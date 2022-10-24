@@ -46,7 +46,7 @@ public class Renderer : IDisposable
         if (!Cache.TryGetModel(Settings.SelectedModel, out var model) ||
             !Settings.TryGetSection(model, out var section)) return;
 
-        section.SwapMaterial(unrealMaterial);
+        section.Material.SwapMaterial(unrealMaterial);
         Settings.SwapMaterial(false);
     }
 
@@ -111,7 +111,7 @@ public class Renderer : IDisposable
         if (!original.TryConvert(out var mesh))
             return null;
 
-        Cache.AddModel(guid, new Model(original.Name, original.ExportType, mesh));
+        Cache.AddModel(guid, new Model(original.Name, original.ExportType, original.Materials, mesh));
         Settings.SelectModel(guid);
         return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }
@@ -121,7 +121,7 @@ public class Renderer : IDisposable
         var guid = Guid.NewGuid();
         if (Cache.HasModel(guid) || !original.TryConvert(out var mesh)) return null;
 
-        Cache.AddModel(guid, new Model(original.Name, original.ExportType, original.MorphTargets, mesh));
+        Cache.AddModel(guid, new Model(original.Name, original.ExportType, original.Materials, original.MorphTargets, mesh));
         Settings.SelectModel(guid);
         return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }
@@ -175,7 +175,7 @@ public class Renderer : IDisposable
             }
             else if (m.TryConvert(out var mesh))
             {
-                model = new Model(m.Name, m.ExportType, mesh, transform);
+                model = new Model(m.Name, m.ExportType, m.Materials, mesh, transform);
 
                 if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
                 {
@@ -186,13 +186,13 @@ public class Renderer : IDisposable
 
                         if (textureDataIdx.TryGetValue(out FPackageIndex diffuse, "Diffuse") &&
                             diffuse.Load() is UTexture2D diffuseTexture)
-                            model.Sections[j].Parameters.Diffuse = diffuseTexture;
+                            model.Sections[j].Material.Parameters.Textures["Diffuse"] = diffuseTexture;
                         if (textureDataIdx.TryGetValue(out FPackageIndex normal, "Normal") &&
                             normal.Load() is UTexture2D normalTexture)
-                            model.Sections[j].Parameters.Normal = normalTexture;
+                            model.Sections[j].Material.Parameters.Textures["Normals"] = normalTexture;
                         if (textureDataIdx.TryGetValue(out FPackageIndex specular, "Specular") &&
                             specular.Load() is UTexture2D specularTexture)
-                            model.Sections[j].Parameters.Specular = specularTexture;
+                            model.Sections[j].Material.Parameters.Textures["SpecularMasks"] = specularTexture;
                     }
                 }
                 if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))
@@ -202,7 +202,7 @@ public class Renderer : IDisposable
                     {
                         if (j > max) break;
                         if (overrideMaterials[j].Load() is not UMaterialInterface unrealMaterial) continue;
-                        model.Sections[j].SwapMaterial(unrealMaterial);
+                        model.Sections[j].Material.SwapMaterial(unrealMaterial);
                     }
                 }
 
