@@ -49,6 +49,8 @@ public class Snooper : GameWindow
         {
             _renderer.Cache.DisposeModels();
             _renderer.Cache.ClearModels();
+            _renderer.Cache.DisposeTextures();
+            _renderer.Cache.ClearTextures();
             _renderer.Settings.Reset();
             _previousSpeed = 0f;
         }
