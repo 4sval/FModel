@@ -285,10 +285,6 @@ public class Model : IDisposable
             }
         }
 
-        for (int material = 0; material < Materials.Length; material++)
-        {
-            Materials[material]?.Dispose();
-        }
         for (int section = 0; section < Sections.Length; section++)
         {
             Sections[section].Dispose();
