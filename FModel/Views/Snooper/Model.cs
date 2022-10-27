@@ -238,17 +238,12 @@ public class Model : IDisposable
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
         }
 
-        for (var i = 0; i < Materials.Length; i++)
-        {
-            if (!Materials[i].IsUsed) continue;
-            Materials[i].Render(shader);
-        }
-
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
         shader.SetUniform("display_vertex_colors", DisplayVertexColors);
         for (int section = 0; section < Sections.Length; section++)
         {
+            Materials[Sections[section].MaterialIndex].Render(shader);
             Sections[section].Render(TransformsCount);
         }
         _vao.Unbind();
