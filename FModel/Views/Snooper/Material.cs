@@ -16,6 +16,7 @@ public class Material : IDisposable
 
     public readonly CMaterialParams2 Parameters;
     public readonly int UvNumber;
+    public bool IsUsed;
 
     public Texture[] Diffuse;
     public Texture[] Normals;
@@ -29,14 +30,15 @@ public class Material : IDisposable
 
     public Material()
     {
+        Parameters = new CMaterialParams2();
         DiffuseColor = Vector4.Zero;
         EmissionColor = Vector4.Zero;
+        IsUsed = false;
     }
 
     public Material(int numUvs, UMaterialInterface unrealMaterial) : this()
     {
         UvNumber = numUvs;
-        Parameters = new CMaterialParams2();
         SwapMaterial(unrealMaterial);
     }
 

@@ -62,10 +62,10 @@ public class Cube : Model
         };
 
         Materials = new Material[1];
-        Materials[0] = new Material(1, unrealMaterial);
+        Materials[0] = new Material(1, unrealMaterial) { IsUsed = true };
 
         Sections = new Section[1];
-        Sections[0] = new Section(0, Indices.Length, 0, Materials[0]);
+        Sections[0] = new Section(0, Indices.Length, 0);
 
         AddInstance(Transform.Identity);
     }

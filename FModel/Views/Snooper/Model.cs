@@ -78,8 +78,9 @@ public class Model : IDisposable
         Materials = new Material[materials.Length];
         for (int m = 0; m < Materials.Length; m++)
         {
-            if (materials[m].TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
-                Materials[m] = new Material(lod.NumTexCoords, unrealMaterial); // lod.NumTexCoords
+            if ((materials[m]?.TryLoad(out var material) ?? false) && material is UMaterialInterface unrealMaterial)
+                Materials[m] = new Material(lod.NumTexCoords, unrealMaterial);
+            else Materials[m] = new Material();
         }
 
         if (lod.VertexColors is { Length: > 0})
@@ -103,7 +104,8 @@ public class Model : IDisposable
         for (var s = 0; s < sections.Length; s++)
         {
             var section = sections[s];
-            Sections[s] = new Section(section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex, Materials[section.MaterialIndex]);
+            Materials[section.MaterialIndex].IsUsed = true;
+            Sections[s] = new Section(section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex);
             for (uint face = 0; face < section.NumFaces; face++)
             {
                 foreach (var f in _facesIndex)
@@ -202,6 +204,7 @@ public class Model : IDisposable
         {   // setup all materials for use in different UV channels
             for (var i = 0; i < Materials.Length; i++)
             {
+                if (!Materials[i].IsUsed) continue;
                 Materials[i].Setup(cache);
             }
         }
@@ -221,7 +224,7 @@ public class Model : IDisposable
 
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Setup(cache);
+            Sections[section].Setup();
         }
 
         IsSetup = true;
@@ -235,12 +238,18 @@ public class Model : IDisposable
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
         }
 
+        for (var i = 0; i < Materials.Length; i++)
+        {
+            if (!Materials[i].IsUsed) continue;
+            Materials[i].Render(shader);
+        }
+
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
         shader.SetUniform("display_vertex_colors", DisplayVertexColors);
         for (int section = 0; section < Sections.Length; section++)
         {
-            Sections[section].Render(shader, TransformsCount);
+            Sections[section].Render(TransformsCount);
         }
         _vao.Unbind();
 
