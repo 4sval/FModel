@@ -21,7 +21,7 @@ public class Model : IDisposable
     private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
-    private readonly int _vertexSize = 9; // VertexIndex + Position + Normal + UV
+    private readonly int _vertexSize = 10; // VertexIndex + Position + Normal + UV + TextureIndex
     private readonly uint[] _facesIndex = { 1, 0, 2 };
     private const int _faceSize = 3; // just so we don't have to do .Length
 
@@ -79,7 +79,7 @@ public class Model : IDisposable
         for (int m = 0; m < Materials.Length; m++)
         {
             if (materials[m].TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
-                Materials[m] = new Material(1, unrealMaterial); // lod.NumTexCoords
+                Materials[m] = new Material(lod.NumTexCoords, unrealMaterial); // lod.NumTexCoords
         }
 
         if (lod.VertexColors is { Length: > 0})
@@ -124,6 +124,7 @@ public class Model : IDisposable
                     Vertices[baseIndex + count++] = vert.Normal.Y;
                     Vertices[baseIndex + count++] = vert.UV.U;
                     Vertices[baseIndex + count++] = vert.UV.V;
+                    Vertices[baseIndex + count++] = lod.ExtraUV.IsValueCreated ? lod.ExtraUV.Value[0][indice].U : .5f;
 
                     if (HasVertexColors)
                     {
@@ -184,9 +185,10 @@ public class Model : IDisposable
         _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, _vertexSize, 1); // position
         _vao.VertexAttributePointer(2, 3, VertexAttribPointerType.Float, _vertexSize, 4); // normal
         _vao.VertexAttributePointer(3, 2, VertexAttribPointerType.Float, _vertexSize, 7); // uv
-        _vao.VertexAttributePointer(4, 4, VertexAttribPointerType.Float, _vertexSize, 9); // color
-        _vao.VertexAttributePointer(5, 4, VertexAttribPointerType.Int, _vertexSize, 13); // boneids
-        _vao.VertexAttributePointer(6, 4, VertexAttribPointerType.Float, _vertexSize, 17); // boneweights
+        _vao.VertexAttributePointer(4, 1, VertexAttribPointerType.Float, _vertexSize, 9); // texture index
+        _vao.VertexAttributePointer(5, 4, VertexAttribPointerType.Float, _vertexSize, 10); // color
+        _vao.VertexAttributePointer(6, 4, VertexAttribPointerType.Int, _vertexSize, 14); // boneids
+        _vao.VertexAttributePointer(7, 4, VertexAttribPointerType.Float, _vertexSize, 18); // boneweights
 
         {   // instanced models transform
             TransformsCount = Transforms.Count;
@@ -213,7 +215,7 @@ public class Model : IDisposable
                     _morphVbo = new BufferObject<float>(Morphs[morph].Vertices, BufferTarget.ArrayBuffer);
             }
             _vao.Bind();
-            _vao.VertexAttributePointer(11, 3, VertexAttribPointerType.Float, 3, 0); // morph position
+            _vao.VertexAttributePointer(12, 3, VertexAttribPointerType.Float, 3, 0); // morph position
             _vao.Unbind();
         }
 

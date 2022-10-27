@@ -98,19 +98,19 @@ public class Material : IDisposable
 
         for (var i = 0; i < Diffuse.Length; i++)
         {
-            shader.SetUniform("material.diffuseMap", unit);
+            shader.SetUniform($"material.diffuseMap[{i}]", unit);
             Diffuse[i]?.Bind(TextureUnit.Texture0 + unit++);
         }
 
         for (var i = 0; i < Normals.Length; i++)
         {
-            shader.SetUniform("material.normalMap", unit);
+            shader.SetUniform($"material.normalMap[{i}]", unit);
             Normals[i]?.Bind(TextureUnit.Texture0 + unit++);
         }
 
         for (var i = 0; i < SpecularMasks.Length; i++)
         {
-            shader.SetUniform("material.specularMap", unit);
+            shader.SetUniform($"material.specularMap[{i}]", unit);
             SpecularMasks[i]?.Bind(TextureUnit.Texture0 + unit++);
         }
 

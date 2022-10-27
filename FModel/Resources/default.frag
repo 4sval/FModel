@@ -3,12 +3,13 @@
 in vec3 fPos;
 in vec3 fNormal;
 in vec2 fTexCoords;
+in float fTexIndex;
 in vec4 fColor;
 
 struct Material {
-    sampler2D diffuseMap;
-    sampler2D normalMap;
-    sampler2D specularMap;
+    sampler2D diffuseMap[4];
+    sampler2D normalMap[4];
+    sampler2D specularMap[4];
     sampler2D emissionMap;
 
     bool useSpecularMap;
@@ -36,9 +37,21 @@ uniform bool display_vertex_colors;
 
 out vec4 FragColor;
 
+vec4 getValueFromSamplerArray(sampler2D array[4]) {
+    if (fTexIndex < 1.0) {
+        return texture(array[0], fTexCoords);
+    } if (fTexIndex < 2.0) {
+        return texture(array[2], fTexCoords);
+    } if (fTexIndex < 3.0) {
+        return texture(array[1], fTexCoords);
+    } else {
+        return texture(array[3], fTexCoords);
+    }
+}
+
 vec3 getNormalFromMap()
 {
-    vec3 tangentNormal = texture(material.normalMap, fTexCoords).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = getValueFromSamplerArray(material.normalMap).xyz * 2.0 - 1.0;
 
     vec3 q1  = dFdx(fPos);
     vec3 q2  = dFdy(fPos);
@@ -73,10 +86,10 @@ void main()
         }
         else
         {
-            vec3 result = light.ambient * vec3(texture(material.diffuseMap, fTexCoords));
+            vec3 result = light.ambient * vec3(getValueFromSamplerArray(material.diffuseMap));
 
             // diffuse
-            vec4 diffuse_map = texture(material.diffuseMap, fTexCoords);
+            vec4 diffuse_map = getValueFromSamplerArray(material.diffuseMap);
             result += light.diffuse * diff * diffuse_map.rgb;
 
             // specular
@@ -85,7 +98,7 @@ void main()
                 vec3 n_view_direction = normalize(viewPos - fPos);
                 vec3 reflect_direction = reflect(-n_light_direction, n_normal_map);
                 float metallic = pow(max(dot(n_view_direction, reflect_direction), 0.0f), material.metallic_value);
-                vec3 specular_map = vec3(texture(material.specularMap, fTexCoords));
+                vec3 specular_map = vec3(getValueFromSamplerArray(material.specularMap));
                 result += specular_map.r * light.specular * (metallic * specular_map.b);
                 result += material.roughness_value * specular_map.g;
             }

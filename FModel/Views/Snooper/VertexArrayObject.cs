@@ -41,19 +41,19 @@ public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVer
         Bind();
 
         var size = sizeof(Vector4);
-        GL.EnableVertexAttribArray(7);
-        GL.VertexAttribPointer(7, 4, VertexAttribPointerType.Float, false, 4 * size, 0);
         GL.EnableVertexAttribArray(8);
-        GL.VertexAttribPointer(8, 4, VertexAttribPointerType.Float, false, 4 * size, 1 * size);
+        GL.VertexAttribPointer(8, 4, VertexAttribPointerType.Float, false, 4 * size, 0);
         GL.EnableVertexAttribArray(9);
-        GL.VertexAttribPointer(9, 4, VertexAttribPointerType.Float, false, 4 * size, 2 * size);
+        GL.VertexAttribPointer(9, 4, VertexAttribPointerType.Float, false, 4 * size, 1 * size);
         GL.EnableVertexAttribArray(10);
-        GL.VertexAttribPointer(10, 4, VertexAttribPointerType.Float, false, 4 * size, 3 * size);
+        GL.VertexAttribPointer(10, 4, VertexAttribPointerType.Float, false, 4 * size, 2 * size);
+        GL.EnableVertexAttribArray(11);
+        GL.VertexAttribPointer(11, 4, VertexAttribPointerType.Float, false, 4 * size, 3 * size);
 
-        GL.VertexAttribDivisor(7, 1);
         GL.VertexAttribDivisor(8, 1);
         GL.VertexAttribDivisor(9, 1);
         GL.VertexAttribDivisor(10, 1);
+        GL.VertexAttribDivisor(11, 1);
 
         Unbind();
     }

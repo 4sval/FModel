@@ -144,16 +144,6 @@ public class Texture : IDisposable
         GL.BindTexture(target, _handle);
     }
 
-    public void SetMinFilter(int filter)
-    {
-        GL.TexParameterI(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, ref filter);
-    }
-
-    public void SetMagFilter(int filter)
-    {
-        GL.TexParameterI(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, ref filter);
-    }
-
     public IntPtr GetPointer() => (IntPtr) _handle;
 
     public void Dispose()

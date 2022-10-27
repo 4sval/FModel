@@ -2,8 +2,8 @@
 
 layout (location = 1) in vec3 vPos;
 layout (location = 2) in vec3 vNormal;
-layout (location = 7) in mat4 vInstanceMatrix;
-layout (location = 11) in vec3 vMorphTarget;
+layout (location = 8) in mat4 vInstanceMatrix;
+layout (location = 12) in vec3 vMorphTarget;
 
 uniform mat4 uView;
 uniform mat4 uProjection;
