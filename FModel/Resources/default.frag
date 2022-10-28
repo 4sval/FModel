@@ -7,9 +7,9 @@ in float fTexIndex;
 in vec4 fColor;
 
 struct Material {
-    sampler2D diffuseMap[4];
-    sampler2D normalMap[4];
-    sampler2D specularMap[4];
+    sampler2D diffuseMap[8];
+    sampler2D normalMap[8];
+    sampler2D specularMap[8];
     sampler2D emissionMap;
 
     bool useSpecularMap;
@@ -37,13 +37,13 @@ uniform bool display_vertex_colors;
 
 out vec4 FragColor;
 
-vec4 getValueFromSamplerArray(sampler2D array[4]) {
+vec4 getValueFromSamplerArray(sampler2D array[8]) {
     if (fTexIndex < 1.0) {
         return texture(array[0], fTexCoords);
     } if (fTexIndex < 2.0) {
-        return texture(array[2], fTexCoords);
-    } if (fTexIndex < 3.0) {
         return texture(array[1], fTexCoords);
+    } if (fTexIndex < 3.0) {
+        return texture(array[2], fTexCoords);
     } else {
         return texture(array[3], fTexCoords);
     }

@@ -79,7 +79,7 @@ public class Model : IDisposable
         for (int m = 0; m < Materials.Length; m++)
         {
             if ((materials[m]?.TryLoad(out var material) ?? false) && material is UMaterialInterface unrealMaterial)
-                Materials[m] = new Material(lod.NumTexCoords, unrealMaterial);
+                Materials[m] = new Material(4, unrealMaterial); // lod.NumTexCoords
             else Materials[m] = new Material();
         }
 
@@ -201,7 +201,7 @@ public class Model : IDisposable
             _vao.BindInstancing(); // VertexAttributePointer 7, 8, 9, 10
         }
 
-        {   // setup all materials for use in different UV channels
+        {   // setup all used materials for use in different UV channels
             for (var i = 0; i < Materials.Length; i++)
             {
                 if (!Materials[i].IsUsed) continue;

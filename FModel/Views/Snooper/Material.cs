@@ -31,6 +31,7 @@ public class Material : IDisposable
     public Material()
     {
         Parameters = new CMaterialParams2();
+        UvNumber = 1;
         DiffuseColor = Vector4.Zero;
         EmissionColor = Vector4.Zero;
         IsUsed = false;
@@ -58,7 +59,7 @@ public class Material : IDisposable
             var guid = original.LightingGuid;
             if (cache.TryGetTexture(guid, out var texture))
             {
-                array[index++] = texture;
+                array[index] = texture;
             }
             else if (original.GetFirstMip() is { } mip)
             {
@@ -66,27 +67,36 @@ public class Material : IDisposable
 
                 var t = new Texture(data, mip.SizeX, mip.SizeY, original);
                 cache.AddTexture(guid, t);
-                array[index++] = t;
+                array[index] = t;
             }
         }
 
         index = 0;
         Diffuse = new Texture[UvNumber];
         foreach (var d in Parameters.GetDiffuseTextures())
+        {
             if (index < UvNumber && d is UTexture2D original)
                 Add(Diffuse, original);
+            index++;
+        }
 
         index = 0;
         Normals = new Texture[UvNumber];
         foreach (var n in Parameters.GetNormalsTextures())
+        {
             if (index < UvNumber && n is UTexture2D original)
                 Add(Normals, original);
+            index++;
+        }
 
         index = 0;
         SpecularMasks = new Texture[UvNumber];
         foreach (var s in Parameters.GetSpecularMasksTextures())
+        {
             if (index < UvNumber && s is UTexture2D original)
                 Add(SpecularMasks, original);
+            index++;
+        }
 
         // diffuse light is based on normal map, so increase ambient if no normal map
         _ambientLight = new Vector3(Normals[0] == null ? 1.0f : 0.2f);
