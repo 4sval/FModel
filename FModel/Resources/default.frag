@@ -10,14 +10,14 @@ struct Material {
     sampler2D diffuseMap[8];
     sampler2D normalMap[8];
     sampler2D specularMap[8];
-    sampler2D emissionMap;
+    sampler2D emissionMap[8];
 
     bool useSpecularMap;
 
     bool hasDiffuseColor;
     vec4 diffuseColor;
 
-    vec4 emissionColor;
+    vec4 emissionColor[8];
 
     float metallic_value;
     float roughness_value;
@@ -46,6 +46,18 @@ vec4 getValueFromSamplerArray(sampler2D array[8]) {
         return texture(array[2], fTexCoords);
     } else {
         return texture(array[3], fTexCoords);
+    }
+}
+
+vec3 getValueFromVec4Array(vec4 array[8]) {
+    if (fTexIndex < 1.0) {
+        return array[0].rgb;
+    } if (fTexIndex < 2.0) {
+        return array[1].rgb;
+    } if (fTexIndex < 3.0) {
+        return array[2].rgb;
+    } else {
+        return array[3].rgb;
     }
 }
 
@@ -86,11 +98,12 @@ void main()
         }
         else
         {
-            vec3 result = light.ambient * vec3(getValueFromSamplerArray(material.diffuseMap));
+            vec4 diffuse_map = getValueFromSamplerArray(material.diffuseMap);
+            vec3 diffuse_no_alpha = vec3(diffuse_map);
+            vec3 result = light.ambient * diffuse_no_alpha;
 
             // diffuse
-            vec4 diffuse_map = getValueFromSamplerArray(material.diffuseMap);
-            result += light.diffuse * diff * diffuse_map.rgb;
+            result += light.diffuse * diff * diffuse_no_alpha;
 
             // specular
             if (material.useSpecularMap)
@@ -104,8 +117,8 @@ void main()
             }
 
             // emission
-            vec3 emission_map = vec3(texture(material.emissionMap, fTexCoords));
-            result += material.emissionColor.rgb * emission_map;
+            vec3 emission_map = vec3(getValueFromSamplerArray(material.emissionMap));
+            result += getValueFromVec4Array(material.emissionColor) * emission_map;
 
             FragColor = vec4(result, 1.0);
         }

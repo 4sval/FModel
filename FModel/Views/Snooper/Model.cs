@@ -79,7 +79,7 @@ public class Model : IDisposable
         for (int m = 0; m < Materials.Length; m++)
         {
             if ((materials[m]?.TryLoad(out var material) ?? false) && material is UMaterialInterface unrealMaterial)
-                Materials[m] = new Material(4, unrealMaterial); // lod.NumTexCoords
+                Materials[m] = new Material(lod.NumTexCoords, unrealMaterial); // lod.NumTexCoords
             else Materials[m] = new Material();
         }
 

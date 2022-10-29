@@ -21,10 +21,10 @@ public class Material : IDisposable
     public Texture[] Diffuse;
     public Texture[] Normals;
     public Texture[] SpecularMasks;
-    public Texture Emissive;
+    public Texture[] Emissive;
 
     public Vector4 DiffuseColor;
-    public Vector4 EmissionColor;
+    public Vector4[] EmissionColor;
     public bool HasSpecularMap;
     public bool HasDiffuseColor;
 
@@ -33,7 +33,7 @@ public class Material : IDisposable
         Parameters = new CMaterialParams2();
         UvNumber = 1;
         DiffuseColor = Vector4.Zero;
-        EmissionColor = Vector4.Zero;
+        EmissionColor = Array.Empty<Vector4>();
         IsUsed = false;
     }
 
@@ -98,6 +98,23 @@ public class Material : IDisposable
             index++;
         }
 
+        index = 0;
+        Emissive = new Texture[UvNumber];
+        EmissionColor = new Vector4[UvNumber];
+        foreach (var e in Parameters.GetEmissiveTextures())
+        {
+            if (index < UvNumber && e is UTexture2D original)
+            {
+                if (Parameters.TryGetLinearColor(out var color, $"Emissive{(index > 0 ? index + 1 : "")}") && color is { A: > 0})
+                    EmissionColor[index] = new Vector4(color.R, color.G, color.B, color.A);
+                else EmissionColor[index] = Vector4.One;
+
+                Add(Emissive, original);
+            }
+            else if (index < UvNumber) EmissionColor[index] = Vector4.Zero;
+            index++;
+        }
+
         // diffuse light is based on normal map, so increase ambient if no normal map
         _ambientLight = new Vector3(Normals[0] == null ? 1.0f : 0.2f);
         HasSpecularMap = SpecularMasks[0] != null;
@@ -126,12 +143,17 @@ public class Material : IDisposable
             SpecularMasks[i]?.Bind(TextureUnit.Texture0 + unit++);
         }
 
+        for (var i = 0; i < Emissive.Length; i++)
+        {
+            shader.SetUniform($"material.emissionMap[{i}]", unit);
+            shader.SetUniform($"material.emissionColor[{i}]", EmissionColor[i]);
+            Emissive[i]?.Bind(TextureUnit.Texture0 + unit++);
+        }
+
         shader.SetUniform("material.useSpecularMap", HasSpecularMap);
 
         shader.SetUniform("material.hasDiffuseColor", HasDiffuseColor);
         shader.SetUniform("material.diffuseColor", DiffuseColor);
-
-        shader.SetUniform("material.emissionColor", EmissionColor);
 
         shader.SetUniform("material.metallic_value", 1f);
         shader.SetUniform("material.roughness_value", 0f);
@@ -153,7 +175,10 @@ public class Material : IDisposable
         {
             SpecularMasks[i]?.Dispose();
         }
-        Emissive?.Dispose();
+        for (int i = 0; i < Emissive.Length; i++)
+        {
+            Emissive[i]?.Dispose();
+        }
         GL.DeleteProgram(_handle);
     }
 }
