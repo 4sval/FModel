@@ -80,7 +80,7 @@ public class Model : IDisposable
         {
             if ((materials[m]?.TryLoad(out var material) ?? false) && material is UMaterialInterface unrealMaterial)
                 Materials[m] = new Material(lod.NumTexCoords, unrealMaterial); // lod.NumTexCoords
-            else Materials[m] = new Material();
+            else Materials[m] = new Material(1);
         }
 
         if (lod.VertexColors is { Length: > 0})
@@ -104,8 +104,7 @@ public class Model : IDisposable
         for (var s = 0; s < sections.Length; s++)
         {
             var section = sections[s];
-            Materials[section.MaterialIndex].IsUsed = true;
-            Sections[s] = new Section(section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex);
+            Sections[s] = new Section(section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex, Materials[section.MaterialIndex]);
             for (uint face = 0; face < section.NumFaces; face++)
             {
                 foreach (var f in _facesIndex)

@@ -75,11 +75,6 @@ public class Renderer : IDisposable
         _shader.SetUniform("uProjection", projMatrix);
         _shader.SetUniform("viewPos", cam.Position);
 
-        // _shader.SetUniform("material.diffuseMap", 0);
-        // _shader.SetUniform("material.normalMap", 1);
-        // _shader.SetUniform("material.specularMap", 2);
-        // _shader.SetUniform("material.emissionMap", 3);
-
         _shader.SetUniform("light.position", cam.Position);
         _shader.SetUniform("light.diffuse", _diffuseLight);
         _shader.SetUniform("light.specular", _specularLight);
@@ -191,13 +186,13 @@ public class Renderer : IDisposable
 
                         if (textureDataIdx.TryGetValue(out FPackageIndex diffuse, "Diffuse") &&
                             diffuse.Load() is UTexture2D diffuseTexture)
-                            model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.Diffuse[0]] = diffuseTexture;
+                            model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.Diffuse[0][0]] = diffuseTexture;
                         if (textureDataIdx.TryGetValue(out FPackageIndex normal, "Normal") &&
                             normal.Load() is UTexture2D normalTexture)
-                            model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.Normals[0]] = normalTexture;
+                            model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.Normals[0][0]] = normalTexture;
                         if (textureDataIdx.TryGetValue(out FPackageIndex specular, "Specular") &&
                             specular.Load() is UTexture2D specularTexture)
-                            model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.SpecularMasks[0]] = specularTexture;
+                            model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.SpecularMasks[0][0]] = specularTexture;
                     }
                 }
                 if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))

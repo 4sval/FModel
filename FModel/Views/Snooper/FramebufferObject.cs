@@ -89,10 +89,6 @@ public class FramebufferObject : IDisposable
         GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _framebufferHandle);
         GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _postProcessingHandle);
         GL.BlitFramebuffer(0, 0, _width, _height, 0, 0, _width, _height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
-    }
-
-    public void BindStuff()
-    {
         GL.Disable(EnableCap.DepthTest);
 
         _shader.Use();

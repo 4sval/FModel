@@ -12,8 +12,6 @@ public class Material : IDisposable
 {
     private int _handle;
 
-    private Vector3 _ambientLight;
-
     public readonly CMaterialParams2 Parameters;
     public readonly int UvNumber;
     public bool IsUsed;
@@ -28,18 +26,29 @@ public class Material : IDisposable
     public bool HasSpecularMap;
     public bool HasDiffuseColor;
 
-    public Material()
+    private Vector3 _ambientLight;
+
+    public Material(int numUvs)
     {
         Parameters = new CMaterialParams2();
-        UvNumber = 1;
+        UvNumber = numUvs;
+        IsUsed = false;
+
+        Diffuse = Array.Empty<Texture>();
+        Normals = Array.Empty<Texture>();
+        SpecularMasks = Array.Empty<Texture>();
+        Emissive = Array.Empty<Texture>();
+
         DiffuseColor = Vector4.Zero;
         EmissionColor = Array.Empty<Vector4>();
-        IsUsed = false;
+        HasSpecularMap = false;
+        HasDiffuseColor = false;
+
+        _ambientLight = Vector3.One;
     }
 
-    public Material(int numUvs, UMaterialInterface unrealMaterial) : this()
+    public Material(int numUvs, UMaterialInterface unrealMaterial) : this(numUvs)
     {
-        UvNumber = numUvs;
         SwapMaterial(unrealMaterial);
     }
 
@@ -52,72 +61,62 @@ public class Material : IDisposable
     {
         _handle = GL.CreateProgram();
 
-        int index;
-        var platform = UserSettings.Default.OverridedPlatform;
-        void Add(Texture[] array, UTexture2D original)
+        if (Parameters.IsNull)
         {
-            var guid = original.LightingGuid;
-            if (cache.TryGetTexture(guid, out var texture))
+            DiffuseColor = new Vector4(1, 0, 0, 1);
+        }
+        else
+        {
+            var platform = UserSettings.Default.OverridedPlatform;
+            bool TryGetCached(UTexture2D o, out Texture t)
             {
-                array[index] = texture;
+                var guid = o.LightingGuid;
+                if (!cache.TryGetTexture(guid, out t))
+                {
+                    if (o.GetFirstMip() is { } mip)
+                    {
+                        TextureDecoder.DecodeTexture(mip, o.Format, o.isNormalMap, platform, out var data, out _);
+
+                        t = new Texture(data, mip.SizeX, mip.SizeY, o);
+                        cache.AddTexture(guid, t);
+                    }
+                    else t = null;
+                }
+                return t != null;
             }
-            else if (original.GetFirstMip() is { } mip)
-            {
-                TextureDecoder.DecodeTexture(mip, original.Format, original.isNormalMap, platform, out var data, out _);
 
-                var t = new Texture(data, mip.SizeX, mip.SizeY, original);
-                cache.AddTexture(guid, t);
-                array[index] = t;
-            }
+            Diffuse = new Texture[UvNumber];
+            for (int i = 0; i < Diffuse.Length; i++)
+                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Diffuse[i]) && TryGetCached(o, out var t))
+                    Diffuse[i] = t;
+
+            Normals = new Texture[UvNumber];
+            for (int i = 0; i < Normals.Length; i++)
+                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Normals[i]) && TryGetCached(o, out var t))
+                    Normals[i] = t;
+
+            SpecularMasks = new Texture[UvNumber];
+            for (int i = 0; i < SpecularMasks.Length; i++)
+                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.SpecularMasks[i]) && TryGetCached(o, out var t))
+                    SpecularMasks[i] = t;
+
+            Emissive = new Texture[UvNumber];
+            EmissionColor = new Vector4[UvNumber];
+            for (int i = 0; i < Emissive.Length; i++)
+                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Emissive[i]) && TryGetCached(o, out var t))
+                {
+                    Emissive[i] = t;
+
+                    if (Parameters.TryGetLinearColor(out var color, $"Emissive{(i > 0 ? i + 1 : "")}") && color is { A: > 0})
+                        EmissionColor[i] = new Vector4(color.R, color.G, color.B, color.A);
+                    else EmissionColor[i] = Vector4.One;
+                }
+
+            // diffuse light is based on normal map, so increase ambient if no normal map
+            _ambientLight = new Vector3(Normals[0] == null ? 1.0f : 0.2f);
+            HasSpecularMap = SpecularMasks[0] != null;
         }
 
-        index = 0;
-        Diffuse = new Texture[UvNumber];
-        foreach (var d in Parameters.GetDiffuseTextures())
-        {
-            if (index < UvNumber && d is UTexture2D original)
-                Add(Diffuse, original);
-            index++;
-        }
-
-        index = 0;
-        Normals = new Texture[UvNumber];
-        foreach (var n in Parameters.GetNormalsTextures())
-        {
-            if (index < UvNumber && n is UTexture2D original)
-                Add(Normals, original);
-            index++;
-        }
-
-        index = 0;
-        SpecularMasks = new Texture[UvNumber];
-        foreach (var s in Parameters.GetSpecularMasksTextures())
-        {
-            if (index < UvNumber && s is UTexture2D original)
-                Add(SpecularMasks, original);
-            index++;
-        }
-
-        index = 0;
-        Emissive = new Texture[UvNumber];
-        EmissionColor = new Vector4[UvNumber];
-        foreach (var e in Parameters.GetEmissiveTextures())
-        {
-            if (index < UvNumber && e is UTexture2D original)
-            {
-                if (Parameters.TryGetLinearColor(out var color, $"Emissive{(index > 0 ? index + 1 : "")}") && color is { A: > 0})
-                    EmissionColor[index] = new Vector4(color.R, color.G, color.B, color.A);
-                else EmissionColor[index] = Vector4.One;
-
-                Add(Emissive, original);
-            }
-            else if (index < UvNumber) EmissionColor[index] = Vector4.Zero;
-            index++;
-        }
-
-        // diffuse light is based on normal map, so increase ambient if no normal map
-        _ambientLight = new Vector3(Normals[0] == null ? 1.0f : 0.2f);
-        HasSpecularMap = SpecularMasks[0] != null;
         HasDiffuseColor = DiffuseColor != Vector4.Zero;
     }
 

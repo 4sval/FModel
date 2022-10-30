@@ -12,7 +12,7 @@ namespace FModel.Views.Snooper;
 
 public class Snooper : GameWindow
 {
-    // private readonly FramebufferObject _framebuffer;
+    private FramebufferObject _framebuffer;
     private readonly Skybox _skybox;
     private readonly Grid _grid;
     private readonly Renderer _renderer;
@@ -25,7 +25,7 @@ public class Snooper : GameWindow
 
     public Snooper(GameWindowSettings gwSettings, NativeWindowSettings nwSettings) : base(gwSettings, nwSettings)
     {
-        // _framebuffer = new FramebufferObject(Size);
+        _framebuffer = new FramebufferObject(Size);
         _skybox = new Skybox();
         _grid = new Grid();
         _renderer = new Renderer();
@@ -54,7 +54,7 @@ public class Snooper : GameWindow
         }
 
         GLFW.SetWindowShouldClose(WindowPtr, value); // start / stop game loop
-        CursorState = value ? CursorState.Normal : CursorState.Grabbed;
+        // CursorState = value ? CursorState.Normal : CursorState.Grabbed;
         IsVisible = !value;
     }
 
@@ -85,7 +85,7 @@ public class Snooper : GameWindow
         GL.StencilOp(StencilOp.Keep, StencilOp.Replace, StencilOp.Replace);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-        // _framebuffer.Setup();
+        _framebuffer.Setup();
         _skybox.Setup();
         _grid.Setup();
         _renderer.Setup();
@@ -99,19 +99,19 @@ public class Snooper : GameWindow
             return;
 
         _gui.Update(this, (float)args.Time);
-        ClearWhatHasBeenDrawn(); // in main window
+        ClearWhatHasBeenDrawn();
 
-        // _framebuffer.Bind(); // switch to dedicated window
-        // ClearWhatHasBeenDrawn(); // in dedicated window
+        _framebuffer.Bind();
+        ClearWhatHasBeenDrawn();
 
         _skybox.Render(_camera);
         _grid.Render(_camera);
         _renderer.Render(_camera);
-        _gui.Render();
 
-        // _framebuffer.BindMsaa();
-        // _framebuffer.Bind(0); // switch back to main window
-        // _framebuffer.BindStuff();
+        _framebuffer.BindMsaa();
+        _framebuffer.Bind(0);
+
+        _gui.Render(Size, _framebuffer, _camera);
 
         SwapBuffers();
     }
@@ -128,9 +128,9 @@ public class Snooper : GameWindow
         if (!IsVisible)
             return;
 
-        const float lookSensitivity = 0.1f;
-        var delta = e.Delta * lookSensitivity;
-        _camera.ModifyDirection(delta.X, delta.Y);
+        // const float lookSensitivity = 0.1f;
+        // var delta = e.Delta * lookSensitivity;
+        // _camera.ModifyDirection(delta.X, delta.Y);
     }
 
     protected override void OnUpdateFrame(FrameEventArgs e)
@@ -170,6 +170,8 @@ public class Snooper : GameWindow
 
         GL.Viewport(0, 0, Size.X, Size.Y);
 
+        _framebuffer = new FramebufferObject(Size);
+        _framebuffer.Setup();
         _camera.AspectRatio = Size.X / (float)Size.Y;
         _gui.WindowResized(ClientSize.X, ClientSize.Y);
     }
