@@ -1,8 +1,5 @@
 ﻿using System;
-using CUE4Parse_Conversion.Textures;
 using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Assets.Exports.Texture;
-using FModel.Settings;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -67,43 +64,25 @@ public class Material : IDisposable
         }
         else
         {
-            var platform = UserSettings.Default.OverridedPlatform;
-            bool TryGetCached(UTexture2D o, out Texture t)
-            {
-                var guid = o.LightingGuid;
-                if (!cache.TryGetTexture(guid, out t))
-                {
-                    if (o.GetFirstMip() is { } mip)
-                    {
-                        TextureDecoder.DecodeTexture(mip, o.Format, o.isNormalMap, platform, out var data, out _);
-
-                        t = new Texture(data, mip.SizeX, mip.SizeY, o);
-                        cache.AddTexture(guid, t);
-                    }
-                    else t = null;
-                }
-                return t != null;
-            }
-
             Diffuse = new Texture[UvNumber];
             for (int i = 0; i < Diffuse.Length; i++)
-                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Diffuse[i]) && TryGetCached(o, out var t))
+                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Diffuse[i]) && cache.TryGetCachedTexture(o, out var t))
                     Diffuse[i] = t;
 
             Normals = new Texture[UvNumber];
             for (int i = 0; i < Normals.Length; i++)
-                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Normals[i]) && TryGetCached(o, out var t))
+                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Normals[i]) && cache.TryGetCachedTexture(o, out var t))
                     Normals[i] = t;
 
             SpecularMasks = new Texture[UvNumber];
             for (int i = 0; i < SpecularMasks.Length; i++)
-                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.SpecularMasks[i]) && TryGetCached(o, out var t))
+                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.SpecularMasks[i]) && cache.TryGetCachedTexture(o, out var t))
                     SpecularMasks[i] = t;
 
             Emissive = new Texture[UvNumber];
             EmissionColor = new Vector4[UvNumber];
             for (int i = 0; i < Emissive.Length; i++)
-                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Emissive[i]) && TryGetCached(o, out var t))
+                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Emissive[i]) && cache.TryGetCachedTexture(o, out var t))
                 {
                     Emissive[i] = t;
 

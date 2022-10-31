@@ -9,6 +9,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;
@@ -16,7 +17,7 @@ namespace FModel.Views.Snooper;
 public class Renderer : IDisposable
 {
     private Shader _shader;
-    // private Shader _outline; // fix stutter
+    private Shader _outline;
     private Vector3 _diffuseLight;
     private Vector3 _specularLight;
 
@@ -43,7 +44,7 @@ public class Renderer : IDisposable
 
     public void Swap(UMaterialInstance unrealMaterial)
     {
-        if (!Cache.TryGetModel(Settings.SelectedModel, out var model) ||
+        if (!Cache.Models.TryGetValue(Settings.SelectedModel, out var model) ||
             !Settings.TryGetSection(model, out var section)) return;
 
         model.Materials[section.MaterialIndex].SwapMaterial(unrealMaterial);
@@ -53,7 +54,7 @@ public class Renderer : IDisposable
     public void Setup()
     {
         _shader = new Shader();
-        // _outline = new Shader("outline");
+        _outline = new Shader("outline");
         _diffuseLight = new Vector3(0.75f);
         _specularLight = new Vector3(0.5f);
 
@@ -65,10 +66,10 @@ public class Renderer : IDisposable
         var viewMatrix = cam.GetViewMatrix();
         var projMatrix = cam.GetProjectionMatrix();
 
-        // _outline.Use();
-        // _outline.SetUniform("uView", viewMatrix);
-        // _outline.SetUniform("uProjection", projMatrix);
-        // _outline.SetUniform("viewPos", cam.Position);
+        _outline.Use();
+        _outline.SetUniform("uView", viewMatrix);
+        _outline.SetUniform("uProjection", projMatrix);
+        _outline.SetUniform("viewPos", cam.Position);
 
         _shader.Use();
         _shader.SetUniform("uView", viewMatrix);
@@ -80,8 +81,8 @@ public class Renderer : IDisposable
         _shader.SetUniform("light.specular", _specularLight);
 
         Cache.Render(_shader);
-        // GL.Enable(EnableCap.StencilTest); // I don't get why this must be here but it works now so...
-        // Cache.Outline(_outline);
+        GL.Enable(EnableCap.StencilTest);
+        Cache.Outline(_outline);
     }
 
     private Camera SetupCamera(FBox box)
@@ -97,7 +98,7 @@ public class Renderer : IDisposable
     private Camera LoadStaticMesh(UStaticMesh original)
     {
         var guid = original.LightingGuid;
-        if (Cache.TryGetModel(guid, out var model))
+        if (Cache.Models.TryGetValue(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
             return null;
@@ -106,7 +107,7 @@ public class Renderer : IDisposable
         if (!original.TryConvert(out var mesh))
             return null;
 
-        Cache.AddModel(guid, new Model(original.Name, original.ExportType, original.Materials, mesh));
+        Cache.Models[guid] = new Model(original.Name, original.ExportType, original.Materials, mesh);
         Settings.SelectModel(guid);
         return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }
@@ -114,9 +115,9 @@ public class Renderer : IDisposable
     private Camera LoadSkeletalMesh(USkeletalMesh original)
     {
         var guid = Guid.NewGuid();
-        if (Cache.HasModel(guid) || !original.TryConvert(out var mesh)) return null;
+        if (Cache.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return null;
 
-        Cache.AddModel(guid, new Model(original.Name, original.ExportType, original.Materials, original.MorphTargets, mesh));
+        Cache.Models[guid] = new Model(original.Name, original.ExportType, original.Materials, original.MorphTargets, mesh);
         Settings.SelectModel(guid);
         return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }
@@ -124,9 +125,9 @@ public class Renderer : IDisposable
     private Camera LoadMaterialInstance(UMaterialInstance original)
     {
         var guid = Guid.NewGuid();
-        if (Cache.HasModel(guid)) return null;
+        if (Cache.Models.ContainsKey(guid)) return null;
 
-        Cache.AddModel(guid, new Cube(original));
+        Cache.Models[guid] = new Cube(original);
         Settings.SelectModel(guid);
         return SetupCamera(new FBox(new FVector(-.65f), new FVector(.65f)));
     }
@@ -164,7 +165,7 @@ public class Renderer : IDisposable
             };
             transform.Rotation.Yaw = -transform.Rotation.Yaw;
 
-            if (Cache.TryGetModel(guid, out var model))
+            if (Cache.Models.TryGetValue(guid, out var model))
             {
                 model.AddInstance(transform);
             }
@@ -207,7 +208,7 @@ public class Renderer : IDisposable
                     }
                 }
 
-                Cache.AddModel(guid, model);
+                Cache.Models[guid] = model;
             }
         }
         Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"Actor {length}/{length}");
@@ -217,7 +218,7 @@ public class Renderer : IDisposable
     public void Dispose()
     {
         _shader.Dispose();
-        // _outline.Dispose();
+        _outline.Dispose();
         Cache.Dispose();
     }
 }

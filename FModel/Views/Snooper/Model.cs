@@ -46,6 +46,7 @@ public class Model : IDisposable
     public bool IsSelected;
     public bool DisplayVertexColors;
     public bool DisplayBones;
+    public int SelectedInstance;
     public float MorphTime;
 
     protected Model(string name, string type)
@@ -53,7 +54,6 @@ public class Model : IDisposable
         Name = name;
         Type = type;
         Transforms = new List<Transform>();
-        Show = true;
     }
 
     public Model(string name, string type, ResolvedObject[] materials, CStaticMesh staticMesh) : this(name, type, materials, staticMesh, Transform.Identity) {}
@@ -79,7 +79,7 @@ public class Model : IDisposable
         for (int m = 0; m < Materials.Length; m++)
         {
             if ((materials[m]?.TryLoad(out var material) ?? false) && material is UMaterialInterface unrealMaterial)
-                Materials[m] = new Material(lod.NumTexCoords, unrealMaterial); // lod.NumTexCoords
+                Materials[m] = new Material(lod.NumTexCoords, unrealMaterial);
             else Materials[m] = new Material(1);
         }
 
@@ -160,10 +160,10 @@ public class Model : IDisposable
 
     public void AddInstance(Transform transform) => Transforms.Add(transform);
 
-    public void UpdateMatrix(int index)
+    public void UpdateMatrix(int instance)
     {
         _matrixVbo.Bind();
-        _matrixVbo.Update(index, Transforms[index].Matrix);
+        _matrixVbo.Update(instance, Transforms[instance].Matrix);
         _matrixVbo.Unbind();
     }
 
@@ -223,6 +223,7 @@ public class Model : IDisposable
 
         for (int section = 0; section < Sections.Length; section++)
         {
+            if (Sections[section].Show) Show = true;
             Sections[section].Setup();
         }
 
@@ -266,7 +267,7 @@ public class Model : IDisposable
         for (int section = 0; section < Sections.Length; section++)
         {
             if (!Sections[section].Show) continue;
-            GL.DrawArraysInstanced(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount, TransformsCount);
+            GL.DrawArraysInstancedBaseInstance(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount, TransformsCount, SelectedInstance);
         }
         _vao.Unbind();
 

@@ -232,25 +232,19 @@ outputColor = color * texture(in_fontTexture, texCoord);
     private void UpdateImGuiInput(GameWindow wnd)
     {
         ImGuiIOPtr io = ImGui.GetIO();
+        var mState = wnd.MouseState;
+        var kState = wnd.KeyboardState;
 
-        MouseState MouseState = wnd.MouseState;
-        KeyboardState KeyboardState = wnd.KeyboardState;
+        io.AddMouseButtonEvent(0, mState[MouseButton.Left]);
+        io.AddMouseButtonEvent(1, mState[MouseButton.Right]);
+        io.AddMouseButtonEvent(2, mState[MouseButton.Middle]);
 
-        io.MouseDown[0] = MouseState[MouseButton.Left];
-        io.MouseDown[1] = MouseState[MouseButton.Right];
-        io.MouseDown[2] = MouseState[MouseButton.Middle];
-
-        var screenPoint = new Vector2i((int)MouseState.X, (int)MouseState.Y);
-        var point = screenPoint;//wnd.PointToClient(screenPoint);
-        io.MousePos = new System.Numerics.Vector2(point.X, point.Y);
+        io.AddMousePosEvent(mState.PreviousX, mState.PreviousY);
 
         foreach (Keys key in Enum.GetValues(typeof(Keys)))
         {
-            if (key == Keys.Unknown)
-            {
-                continue;
-            }
-            io.KeysDown[(int)key] = KeyboardState.IsKeyDown(key);
+            if (key == Keys.Unknown) continue;
+            io.AddKeyEvent((ImGuiKey) (int)key, kState.IsKeyDown(key));
         }
 
         foreach (var c in PressedChars)
@@ -259,10 +253,10 @@ outputColor = color * texture(in_fontTexture, texCoord);
         }
         PressedChars.Clear();
 
-        io.KeyCtrl = KeyboardState.IsKeyDown(Keys.LeftControl) || KeyboardState.IsKeyDown(Keys.RightControl);
-        io.KeyAlt = KeyboardState.IsKeyDown(Keys.LeftAlt) || KeyboardState.IsKeyDown(Keys.RightAlt);
-        io.KeyShift = KeyboardState.IsKeyDown(Keys.LeftShift) || KeyboardState.IsKeyDown(Keys.RightShift);
-        io.KeySuper = KeyboardState.IsKeyDown(Keys.LeftSuper) || KeyboardState.IsKeyDown(Keys.RightSuper);
+        io.KeyCtrl = kState.IsKeyDown(Keys.LeftControl) || kState.IsKeyDown(Keys.RightControl);
+        io.KeyAlt = kState.IsKeyDown(Keys.LeftAlt) || kState.IsKeyDown(Keys.RightAlt);
+        io.KeyShift = kState.IsKeyDown(Keys.LeftShift) || kState.IsKeyDown(Keys.RightShift);
+        io.KeySuper = kState.IsKeyDown(Keys.LeftSuper) || kState.IsKeyDown(Keys.RightSuper);
     }
 
     internal void PressChar(char keyChar)
@@ -273,7 +267,6 @@ outputColor = color * texture(in_fontTexture, texCoord);
     internal void MouseScroll(Vector2 offset)
     {
         ImGuiIOPtr io = ImGui.GetIO();
-
         io.MouseWheel = offset.Y;
         io.MouseWheelH = offset.X;
     }

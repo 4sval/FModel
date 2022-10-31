@@ -83,8 +83,8 @@ public class CUE4ParseViewModel : ViewModel
                     new NativeWindowSettings
                     {
                         Size = new Vector2i(
-                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .7),
-                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .7)),
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75),
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85)),
                         NumberOfSamples = Constants.SAMPLES_COUNT,
                         WindowBorder = WindowBorder.Resizable,
                         StartVisible = false,
@@ -786,7 +786,7 @@ public class CUE4ParseViewModel : ViewModel
             }
             case UMaterialInstance m when ModelIsOverwritingMaterial:
             {
-                SnooperViewer.SwapMaterial(m);
+                SnooperViewer.Renderer.Swap(m);
                 SnooperViewer.Run();
                 return true;
             }

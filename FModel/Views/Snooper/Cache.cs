@@ -1,67 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
+using CUE4Parse_Conversion.Meshes;
+using CUE4Parse_Conversion.Textures;
+using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
+using FModel.Settings;
 
 namespace FModel.Views.Snooper;
 
 public class Cache : IDisposable
 {
-    private readonly Dictionary<FGuid, Model> _models;
-    private readonly Dictionary<FGuid, Texture> _textures;
+    public readonly Dictionary<FGuid, Model> Models;
+    public readonly Dictionary<FGuid, Texture> Textures;
+
+    private ETexturePlatform _platform;
 
     public Cache()
     {
-        _models = new Dictionary<FGuid, Model>();
-        _textures = new Dictionary<FGuid, Texture>();
+        Models = new Dictionary<FGuid, Model>();
+        Textures = new Dictionary<FGuid, Texture>();
+        _platform = UserSettings.Default.OverridedPlatform;
     }
 
-    public void AddModel(FGuid guid, Model model) => _models.Add(guid, model);
-    public void AddTexture(FGuid guid, Texture texture) => _textures.Add(guid, texture);
+    public bool TryGetCachedModel(UStaticMesh o, out Model model)
+    {
+        var guid = o.LightingGuid;
+        if (!Models.TryGetValue(guid, out model) && o.TryConvert(out var mesh))
+        {
+            model = new Model(o.Name, o.ExportType, o.Materials, mesh);
+            Models[guid] = model;
+        }
+        return model != null;
+    }
 
-    public bool HasModel(FGuid guid) => _models.ContainsKey(guid);
-    public bool HasTexture(FGuid guid) => _textures.ContainsKey(guid);
+    public bool TryGetCachedTexture(UTexture2D o, out Texture texture)
+    {
+        var guid = o.LightingGuid;
+        if (!Textures.TryGetValue(guid, out texture) && o.GetFirstMip() is { } mip)
+        {
+            TextureDecoder.DecodeTexture(mip, o.Format, o.isNormalMap, _platform, out var data, out _);
 
-    public bool TryGetModel(FGuid guid, out Model model) => _models.TryGetValue(guid, out model);
-    public bool TryGetTexture(FGuid guid, out Texture texture) => _textures.TryGetValue(guid, out texture);
+            texture = new Texture(data, mip.SizeX, mip.SizeY, o);
+            Textures[guid] = texture;
+        }
+        return texture != null;
+    }
 
     public void Setup()
     {
-        foreach (var model in _models.Values)
+        foreach (var model in Models.Values)
         {
             if (model.IsSetup) continue;
             model.Setup(this);
         }
     }
+
     public void Render(Shader shader)
     {
-        foreach (var model in _models.Values)
+        foreach (var model in Models.Values)
         {
             if (!model.Show) continue;
             model.Render(shader);
         }
     }
+
     public void Outline(Shader shader)
     {
-        foreach (var model in _models.Values)
+        foreach (var model in Models.Values)
         {
-            if (!model.IsSelected) continue;
+            if (!model.IsSelected || !model.Show) continue;
             model.Outline(shader);
         }
     }
 
-    public void ClearModels() => _models.Clear();
-    public void ClearTextures() => _textures.Clear();
-
     public void DisposeModels()
     {
-        foreach (var model in _models.Values)
+        foreach (var model in Models.Values)
         {
             model.Dispose();
         }
     }
     public void DisposeTextures()
     {
-        foreach (var texture in _textures.Values)
+        foreach (var texture in Textures.Values)
         {
             texture.Dispose();
         }
@@ -70,9 +92,9 @@ public class Cache : IDisposable
     public void Dispose()
     {
         DisposeModels();
-        ClearModels();
+        Models.Clear();
 
         DisposeTextures();
-        ClearTextures();
+        Textures.Clear();
     }
 }

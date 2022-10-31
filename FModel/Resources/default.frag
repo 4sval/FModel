@@ -3,7 +3,7 @@
 in vec3 fPos;
 in vec3 fNormal;
 in vec2 fTexCoords;
-in float fTexIndex;
+in float fTexLayer;
 in vec4 fColor;
 
 struct Material {
@@ -37,33 +37,24 @@ uniform bool display_vertex_colors;
 
 out vec4 FragColor;
 
-vec4 getValueFromSamplerArray(sampler2D array[8]) {
-    if (fTexIndex < 1.0) {
-        return texture(array[0], fTexCoords);
-    } if (fTexIndex < 2.0) {
-        return texture(array[1], fTexCoords);
-    } if (fTexIndex < 3.0) {
-        return texture(array[2], fTexCoords);
-    } else {
-        return texture(array[3], fTexCoords);
-    }
+int LayerToIndex(int max)
+{
+    return min(int(fTexLayer), max);
 }
 
-vec3 getValueFromVec4Array(vec4 array[8]) {
-    if (fTexIndex < 1.0) {
-        return array[0].rgb;
-    } if (fTexIndex < 2.0) {
-        return array[1].rgb;
-    } if (fTexIndex < 3.0) {
-        return array[2].rgb;
-    } else {
-        return array[3].rgb;
-    }
+vec4 SamplerSelector(sampler2D array[8])
+{
+    return texture(array[LayerToIndex(7)], fTexCoords);
+}
+
+vec4 VectorSelector(vec4 array[8])
+{
+    return array[LayerToIndex(7)];
 }
 
 vec3 getNormalFromMap()
 {
-    vec3 tangentNormal = getValueFromSamplerArray(material.normalMap).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = SamplerSelector(material.normalMap).xyz * 2.0 - 1.0;
 
     vec3 q1  = dFdx(fPos);
     vec3 q2  = dFdy(fPos);
@@ -98,7 +89,7 @@ void main()
         }
         else
         {
-            vec4 diffuse_map = getValueFromSamplerArray(material.diffuseMap);
+            vec4 diffuse_map = SamplerSelector(material.diffuseMap);
             vec3 diffuse_no_alpha = vec3(diffuse_map);
             vec3 result = light.ambient * diffuse_no_alpha;
 
@@ -111,14 +102,14 @@ void main()
                 vec3 n_view_direction = normalize(viewPos - fPos);
                 vec3 reflect_direction = reflect(-n_light_direction, n_normal_map);
                 float metallic = pow(max(dot(n_view_direction, reflect_direction), 0.0f), material.metallic_value);
-                vec3 specular_map = vec3(getValueFromSamplerArray(material.specularMap));
+                vec3 specular_map = vec3(SamplerSelector(material.specularMap));
                 result += specular_map.r * light.specular * (metallic * specular_map.g);
                 result += material.roughness_value * specular_map.b;
             }
 
             // emission
-            vec3 emission_map = vec3(getValueFromSamplerArray(material.emissionMap));
-            result += getValueFromVec4Array(material.emissionColor) * emission_map;
+            vec3 emission_map = vec3(SamplerSelector(material.emissionMap));
+            result += VectorSelector(material.emissionColor).rgb * emission_map;
 
             FragColor = vec4(result, 1.0);
         }

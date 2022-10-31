@@ -1,7 +1,6 @@
 using System.Threading;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
-using CUE4Parse.UE4.Assets.Exports.Material;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -12,49 +11,50 @@ namespace FModel.Views.Snooper;
 
 public class Snooper : GameWindow
 {
-    private FramebufferObject _framebuffer;
+    public Camera Camera;
+    public FramebufferObject Framebuffer;
+    public readonly Renderer Renderer;
+
     private readonly Skybox _skybox;
     private readonly Grid _grid;
-    private readonly Renderer _renderer;
     private readonly SnimGui _gui;
 
-    private Camera _camera;
     private float _previousSpeed;
 
     private bool _init;
 
     public Snooper(GameWindowSettings gwSettings, NativeWindowSettings nwSettings) : base(gwSettings, nwSettings)
     {
-        _framebuffer = new FramebufferObject(Size);
+        Framebuffer = new FramebufferObject(Size);
+        Renderer = new Renderer();
+
         _skybox = new Skybox();
         _grid = new Grid();
-        _renderer = new Renderer();
         _gui = new SnimGui(ClientSize.X, ClientSize.Y);
+
         _init = false;
     }
 
-    public void SwapMaterial(UMaterialInstance mi) => _renderer.Swap(mi);
     public void LoadExport(CancellationToken cancellationToken, UObject export)
     {
-        var newCamera = _renderer.Load(cancellationToken, export);
+        var newCamera = Renderer.Load(cancellationToken, export);
         if (newCamera == null || !(newCamera.Speed > _previousSpeed)) return;
 
-        _camera = newCamera;
-        _previousSpeed = _camera.Speed;
+        Camera = newCamera;
+        _previousSpeed = Camera.Speed;
     }
 
     private unsafe void WindowShouldClose(bool value, bool clear)
     {
         if (clear)
         {
-            _renderer.Cache.DisposeModels();
-            _renderer.Cache.ClearModels();
-            _renderer.Settings.Reset();
+            Renderer.Cache.DisposeModels();
+            Renderer.Cache.Models.Clear();
+            Renderer.Settings.Reset();
             _previousSpeed = 0f;
         }
 
         GLFW.SetWindowShouldClose(WindowPtr, value); // start / stop game loop
-        // CursorState = value ? CursorState.Normal : CursorState.Grabbed;
         IsVisible = !value;
     }
 
@@ -71,7 +71,7 @@ public class Snooper : GameWindow
     {
         if (_init)
         {
-            _renderer.Cache.Setup();
+            Renderer.Cache.Setup();
             return;
         }
 
@@ -85,10 +85,10 @@ public class Snooper : GameWindow
         GL.StencilOp(StencilOp.Keep, StencilOp.Replace, StencilOp.Replace);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-        _framebuffer.Setup();
+        Framebuffer.Setup();
         _skybox.Setup();
         _grid.Setup();
-        _renderer.Setup();
+        Renderer.Setup();
         _init = true;
     }
 
@@ -98,20 +98,20 @@ public class Snooper : GameWindow
         if (!IsVisible)
             return;
 
-        _gui.Update(this, (float)args.Time);
+        _gui.Controller.Update(this, (float)args.Time);
         ClearWhatHasBeenDrawn();
 
-        _framebuffer.Bind();
+        Framebuffer.Bind();
         ClearWhatHasBeenDrawn();
 
-        _skybox.Render(_camera);
-        _grid.Render(_camera);
-        _renderer.Render(_camera);
+        _skybox.Render(Camera);
+        _grid.Render(Camera);
+        Renderer.Render(Camera);
 
-        _framebuffer.BindMsaa();
-        _framebuffer.Bind(0);
+        Framebuffer.BindMsaa();
+        Framebuffer.Bind(0);
 
-        _gui.Render(Size, _framebuffer, _camera);
+        _gui.Render(this);
 
         SwapBuffers();
     }
@@ -122,15 +122,22 @@ public class Snooper : GameWindow
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }
 
-    protected override void OnMouseMove(MouseMoveEventArgs e)
+    protected override void OnMouseWheel(MouseWheelEventArgs e)
     {
-        base.OnMouseMove(e);
+        base.OnMouseWheel(e);
         if (!IsVisible)
             return;
 
-        // const float lookSensitivity = 0.1f;
-        // var delta = e.Delta * lookSensitivity;
-        // _camera.ModifyDirection(delta.X, delta.Y);
+        _gui.Controller.MouseScroll(e.Offset);
+    }
+
+    protected override void OnTextInput(TextInputEventArgs e)
+    {
+        base.OnTextInput(e);
+        if (!IsVisible)
+            return;
+
+        _gui.Controller.PressChar((char) e.Unicode);
     }
 
     protected override void OnUpdateFrame(FrameEventArgs e)
@@ -140,23 +147,23 @@ public class Snooper : GameWindow
             return;
 
         var multiplier = KeyboardState.IsKeyDown(Keys.LeftShift) ? 2f : 1f;
-        var moveSpeed = _camera.Speed * multiplier * (float) e.Time;
+        var moveSpeed = Camera.Speed * multiplier * (float) e.Time;
         if (KeyboardState.IsKeyDown(Keys.W))
-            _camera.Position += moveSpeed * _camera.Direction;
+            Camera.Position += moveSpeed * Camera.Direction;
         if (KeyboardState.IsKeyDown(Keys.S))
-            _camera.Position -= moveSpeed * _camera.Direction;
+            Camera.Position -= moveSpeed * Camera.Direction;
         if (KeyboardState.IsKeyDown(Keys.A))
-            _camera.Position -= Vector3.Normalize(Vector3.Cross(_camera.Direction, _camera.Up)) * moveSpeed;
+            Camera.Position -= Vector3.Normalize(Vector3.Cross(Camera.Direction, Camera.Up)) * moveSpeed;
         if (KeyboardState.IsKeyDown(Keys.D))
-            _camera.Position += Vector3.Normalize(Vector3.Cross(_camera.Direction, _camera.Up)) * moveSpeed;
+            Camera.Position += Vector3.Normalize(Vector3.Cross(Camera.Direction, Camera.Up)) * moveSpeed;
         if (KeyboardState.IsKeyDown(Keys.E))
-            _camera.Position += moveSpeed * _camera.Up;
+            Camera.Position += moveSpeed * Camera.Up;
         if (KeyboardState.IsKeyDown(Keys.Q))
-            _camera.Position -= moveSpeed * _camera.Up;
+            Camera.Position -= moveSpeed * Camera.Up;
         if (KeyboardState.IsKeyDown(Keys.X))
-            _camera.ModifyZoom(-.5f);
+            Camera.ModifyZoom(-.5f);
         if (KeyboardState.IsKeyDown(Keys.C))
-            _camera.ModifyZoom(+.5f);
+            Camera.ModifyZoom(+.5f);
 
         if (KeyboardState.IsKeyPressed(Keys.R))
             WindowShouldClose(true, false);
@@ -170,10 +177,10 @@ public class Snooper : GameWindow
 
         GL.Viewport(0, 0, Size.X, Size.Y);
 
-        _framebuffer = new FramebufferObject(Size);
-        _framebuffer.Setup();
-        _camera.AspectRatio = Size.X / (float)Size.Y;
-        _gui.WindowResized(ClientSize.X, ClientSize.Y);
+        Framebuffer = new FramebufferObject(Size);
+        Framebuffer.Setup();
+        Camera.AspectRatio = Size.X / (float)Size.Y;
+        _gui.Controller.WindowResized(ClientSize.X, ClientSize.Y);
     }
 
     protected override void Dispose(bool disposing)
@@ -182,7 +189,7 @@ public class Snooper : GameWindow
 
         _skybox?.Dispose();
         _grid?.Dispose();
-        _renderer?.Dispose();
-        _gui?.Dispose();
+        Renderer?.Dispose();
+        _gui?.Controller.Dispose();
     }
 }

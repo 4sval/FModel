@@ -6,8 +6,6 @@ namespace FModel.Views.Snooper;
 public class Options
 {
     public FGuid SelectedModel { get; private set; }
-    public int SelectedModelInstance;
-
     public int SelectedSection { get; private set; }
     public int SelectedMorph { get; private set; }
 
@@ -19,7 +17,6 @@ public class Options
     public void Reset()
     {
         SelectedModel = Guid.Empty;
-        SelectedModelInstance = 0;
         SelectedSection = 0;
         SelectedMorph = 0;
     }
@@ -27,7 +24,6 @@ public class Options
     public void SelectModel(FGuid guid)
     {
         SelectedModel = guid;
-        SelectedModelInstance = 0;
         SelectedSection = 0;
         SelectedMorph = 0;
     }

@@ -5,15 +5,15 @@ using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Framework;
 using ImGuiNET;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.Common;
 using Vector2 = System.Numerics.Vector2;
 using Vector4 = System.Numerics.Vector4;
 
 namespace FModel.Views.Snooper;
 
-public class SnimGui : IDisposable
+public class SnimGui
 {
-    private readonly ImGuiController _controller;
+    public readonly ImGuiController Controller;
 
     private readonly Vector2 _outlinerSize;
     private readonly Vector2 _outlinerPosition;
@@ -31,7 +31,7 @@ public class SnimGui : IDisposable
 
     public SnimGui(int width, int height)
     {
-        _controller = new ImGuiController(width, height);
+        Controller = new ImGuiController(width, height);
 
         var style = ImGui.GetStyle();
         var viewport = ImGui.GetMainViewport();
@@ -49,22 +49,32 @@ public class SnimGui : IDisposable
         Theme(style);
     }
 
-    public void Render(Vector2i size, FramebufferObject framebuffer, Camera camera)
+    public void Render(Snooper s)
     {
-        DrawDockSpace(size);
-
+        DrawDockSpace(s.Size);
         DrawNavbar();
-        ImGui.Begin("Outliner");
+
+        ImGui.Begin("Camera");
         ImGui.End();
-        ImGui.Begin("Properties");
+        ImGui.Begin("World");
         ImGui.End();
-        ImGui.Begin("UV Editor");
+        ImGui.Begin("UV Channels");
         ImGui.End();
         ImGui.Begin("Timeline");
         ImGui.End();
-        Draw3DViewport(framebuffer, camera);
+        ImGui.Begin("Materials");
+        ImGui.End();
+        ImGui.Begin("Textures");
+        ImGui.End();
 
-        _controller.Render();
+        DrawTransform(s);
+        DrawDetails(s);
+        DrawOuliner(s);
+        Draw3DViewport(s);
+        // last render will always be on top
+        // order by decreasing importance
+
+        Controller.Render();
 
         ImGuiController.CheckGLError("End of frame");
     }
@@ -113,7 +123,157 @@ public class SnimGui : IDisposable
         ImGui.EndMainMenuBar();
     }
 
-    private void Draw3DViewport(FramebufferObject framebuffer, Camera camera)
+    private void DrawOuliner(Snooper s)
+    {
+        ImGui.Begin("Outliner");
+
+        PushStyleCompact();
+        if (ImGui.BeginTable("Items", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable))
+        {
+            ImGui.TableSetupColumn("Count", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed);
+            ImGui.TableSetupColumn("Name");
+            ImGui.TableHeadersRow();
+
+            var i = 0;
+            foreach ((FGuid guid, Model model) in s.Renderer.Cache.Models)
+            {
+                ImGui.PushID(i);
+                ImGui.TableNextRow();
+                ImGui.TableNextColumn();
+                if (!model.Show)
+                    ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
+                ImGui.Text(model.TransformsCount.ToString("D"));
+                ImGui.TableNextColumn();
+                model.IsSelected = s.Renderer.Settings.SelectedModel == guid;
+                if (ImGui.Selectable(model.Name, model.IsSelected, ImGuiSelectableFlags.SpanAllColumns))
+                {
+                    s.Renderer.Settings.SelectModel(guid);
+                }
+                if (ImGui.BeginPopupContextItem())
+                {
+                    s.Renderer.Settings.SelectModel(guid);
+                    if (ImGui.Selectable("Deselect"))
+                        s.Renderer.Settings.SelectModel(Guid.Empty);
+                    if (ImGui.Selectable("Delete"))
+                        s.Renderer.Cache.Models.Remove(guid);
+                    if (ImGui.Selectable("Copy Name to Clipboard"))
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            Clipboard.SetText(model.Name);
+                        });
+                    ImGui.EndPopup();
+                }
+                ImGui.PopID();
+                i++;
+            }
+
+            ImGui.EndTable();
+        }
+        PopStyleCompact();
+
+        ImGui.End();
+    }
+
+    private void DrawDetails(Snooper s)
+    {
+        if (ImGui.Begin("Details"))
+        {
+            var guid = s.Renderer.Settings.SelectedModel;
+            if (s.Renderer.Cache.Models.TryGetValue(guid, out var model))
+            {
+                ImGui.Text($"Entity: ({model.Type}) {model.Name}");
+                ImGui.Text($"Guid: {guid.ToString(EGuidFormats.UniqueObjectGuid)}");
+
+                PushStyleCompact();
+                ImGui.Columns(4, "Actions", false);
+                // if (ImGui.Button("Go To")) s.Camera.Position = model.Transforms[s.Renderer.Settings.SelectedModelInstance].Position;
+                ImGui.NextColumn(); ImGui.Checkbox("Show", ref model.Show);
+                ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasVertexColors); ImGui.Checkbox("Colors", ref model.DisplayVertexColors); ImGui.EndDisabled();
+                ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasBones); ImGui.Checkbox("Bones", ref model.DisplayBones); ImGui.EndDisabled();
+                ImGui.Columns(1);
+                PopStyleCompact();
+
+                ImGui.Separator();
+            }
+
+            ImGui.End();
+        }
+    }
+
+    private void DrawTransform(Snooper s)
+    {
+        if (ImGui.Begin("Transform"))
+        {
+            if (s.Renderer.Cache.Models.TryGetValue(s.Renderer.Settings.SelectedModel, out var model))
+            {
+                const int width = 100;
+                var speed = s.Camera.Speed / 100;
+
+                PushStyleCompact();
+                ImGui.PushID(0); ImGui.BeginDisabled(model.TransformsCount < 2);
+                ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
+                ImGui.SliderInt("", ref model.SelectedInstance, 0, model.TransformsCount - 1, "Instance %i", ImGuiSliderFlags.AlwaysClamp);
+                ImGui.EndDisabled(); ImGui.PopID();
+
+                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+                if (ImGui.TreeNode("Location"))
+                {
+                    ImGui.PushID(1);
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("X", ref model.Transforms[model.SelectedInstance].Position.X, speed, 0f, 0f, "%.2f m");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Position.Y, speed, 0f, 0f, "%.2f m");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Position.Z, speed, 0f, 0f, "%.2f m");
+
+                    ImGui.PopID();
+                    ImGui.TreePop();
+                }
+
+                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+                if (ImGui.TreeNode("Rotation"))
+                {
+                    ImGui.PushID(2);
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("X", ref model.Transforms[model.SelectedInstance].Rotation.Pitch, .5f, 0f, 0f, "%.1f°");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Rotation.Roll, .5f, 0f, 0f, "%.1f°");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Rotation.Yaw, .5f, 0f, 0f, "%.1f°");
+
+                    ImGui.PopID();
+                    ImGui.TreePop();
+                }
+
+                if (ImGui.TreeNode("Scale"))
+                {
+                    ImGui.PushID(3);
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("X", ref model.Transforms[model.SelectedInstance].Scale.X, speed, 0f, 0f, "%.3f");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Scale.Y, speed, 0f, 0f, "%.3f");
+
+                    ImGui.SetNextItemWidth(width);
+                    ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Scale.Z, speed, 0f, 0f, "%.3f");
+
+                    ImGui.PopID();
+                    ImGui.TreePop();
+                }
+
+                model.UpdateMatrix(model.SelectedInstance);
+                PopStyleCompact();
+            }
+
+            ImGui.End();
+        }
+    }
+
+    private void Draw3DViewport(Snooper s)
     {
         const float lookSensitivity = 0.1f;
         const ImGuiWindowFlags flags =
@@ -131,43 +291,45 @@ public class SnimGui : IDisposable
         largest.Y -= ImGui.GetScrollY();
 
         var size = new Vector2(largest.X, largest.Y);
-        camera.AspectRatio = size.X / size.Y;
-        ImGui.ImageButton(framebuffer.GetPointer(), size, new Vector2(0, 1), new Vector2(1, 0), 0);
+        s.Camera.AspectRatio = size.X / size.Y;
+        ImGui.ImageButton(s.Framebuffer.GetPointer(), size, new Vector2(0, 1), new Vector2(1, 0), 0);
 
         // it took me 5 hours to make it work, don't change any of the following code
         // basically the Raw cursor doesn't actually freeze the mouse position
         // so for ImGui, the IsItemHovered will be false if mouse leave, even in Raw mode
-        // var io = ImGui.GetIO();
-        // if (ImGui.IsItemHovered())
-        // {
-        //     // if right button down while mouse is hover viewport
-        //     if (ImGui.IsMouseDown(ImGuiMouseButton.Right) && !_viewportFocus)
-        //         _viewportFocus = true;
-        // }
+        if (ImGui.IsItemHovered())
+        {
+            // if left button down while mouse is hover viewport
+            if (ImGui.IsMouseDown(ImGuiMouseButton.Left) && !_viewportFocus)
+            {
+                _viewportFocus = true;
+                s.CursorState = CursorState.Grabbed;
+            }
+        }
 
         // this can't be inside IsItemHovered! read it as
-        // if right mouse button was pressed while hovering the viewport
-        // move camera until right mouse button is released
+        // if left mouse button was pressed while hovering the viewport
+        // move camera until left mouse button is released
         // no matter where mouse position end up
-        // if (ImGui.IsMouseDragging(ImGuiMouseButton.Right, lookSensitivity) && _viewportFocus)
-        // {
-        //     var delta = io.MouseDelta * lookSensitivity;
-        //     camera.ModifyDirection(delta.X, delta.Y);
-        //     mouse.Cursor.CursorMode = CursorMode.Raw;
-        // }
+        var io = ImGui.GetIO();
+        if (ImGui.IsMouseDragging(ImGuiMouseButton.Left, lookSensitivity) && _viewportFocus)
+        {
+            var delta = io.MouseDelta * lookSensitivity;
+            s.Camera.ModifyDirection(delta.X, delta.Y);
+        }
 
         // if left button up and mouse was in viewport
-        // if (ImGui.IsMouseReleased(ImGuiMouseButton.Right) && _viewportFocus)
-        // {
-        //     _viewportFocus = false;
-        //     mouse.Cursor.CursorMode = CursorMode.Normal;
-        // }
+        if (ImGui.IsMouseReleased(ImGuiMouseButton.Left) && _viewportFocus)
+        {
+            _viewportFocus = false;
+            s.CursorState = CursorState.Normal;
+        }
 
-        // const float padding = 5f;
-        // float framerate = ImGui.GetIO().Framerate;
-        // var text = $"FPS: {framerate:0} ({1000.0f / framerate:0.##} ms)";
-        // ImGui.SetCursorPos(new Vector2(pos.X + padding, pos.Y + size.Y - ImGui.CalcTextSize(text).Y - padding));
-        // ImGui.Text(text);
+        const float padding = 7.5f;
+        float framerate = ImGui.GetIO().Framerate;
+        var text = $"FPS: {framerate:0} ({1000.0f / framerate:0.##} ms)";
+        ImGui.SetCursorPos(size with { X = padding });
+        ImGui.Text(text);
 
         ImGui.End();
     }
@@ -249,8 +411,4 @@ public class SnimGui : IDisposable
         style.Colors[(int) ImGuiCol.NavWindowingDimBg]      = new Vector4(0.80f, 0.80f, 0.80f, 0.20f);
         style.Colors[(int) ImGuiCol.ModalWindowDimBg]       = new Vector4(0.80f, 0.80f, 0.80f, 0.35f);
     }
-
-    public void Update(GameWindow wnd, float deltaSeconds) => _controller.Update(wnd, deltaSeconds);
-    public void WindowResized(int width, int height) => _controller.WindowResized(width, height);
-    public void Dispose() => _controller.Dispose();
 }
