@@ -21,7 +21,7 @@ public class Model : IDisposable
     private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
-    private readonly int _vertexSize = 10; // VertexIndex + Position + Normal + UV + TextureIndex
+    private readonly int _vertexSize = 10; // VertexIndex + Position + Normal + UV + TextureLayer
     private readonly uint[] _facesIndex = { 1, 0, 2 };
     private const int _faceSize = 3; // just so we don't have to do .Length
 

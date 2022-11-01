@@ -144,7 +144,7 @@ public class Renderer : IDisposable
             cancellationToken.ThrowIfCancellationRequested();
 
             if (persistentLevel.Actors[i].Load() is not { } actor ||actor.ExportType == "LODActor" ||
-                !actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent") ||
+                !actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "Mesh") ||
                 staticMeshComponent.Load() is not { } staticMeshComp) continue;
 
             if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)

@@ -239,7 +239,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
         io.AddMouseButtonEvent(1, mState[MouseButton.Right]);
         io.AddMouseButtonEvent(2, mState[MouseButton.Middle]);
 
-        io.AddMousePosEvent(mState.PreviousX, mState.PreviousY);
+        io.AddMousePosEvent(mState.X, mState.Y);
 
         foreach (Keys key in Enum.GetValues(typeof(Keys)))
         {

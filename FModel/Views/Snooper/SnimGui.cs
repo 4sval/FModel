@@ -55,6 +55,9 @@ public class SnimGui
         DrawNavbar();
 
         ImGui.Begin("Camera");
+        ImGui.DragFloat("Speed", ref s.Camera.Speed, 0.01f);
+        ImGui.DragFloat("Near", ref s.Camera.Near, 0.1f, 0.01f, s.Camera.Far - 0.1f, "%.2f m", ImGuiSliderFlags.AlwaysClamp);
+        ImGui.DragFloat("Far", ref s.Camera.Far, 0.1f, s.Camera.Near + 0.1f, 0f, "%.2f m", ImGuiSliderFlags.AlwaysClamp);
         ImGui.End();
         ImGui.Begin("World");
         ImGui.End();
@@ -186,7 +189,11 @@ public class SnimGui
 
                 PushStyleCompact();
                 ImGui.Columns(4, "Actions", false);
-                // if (ImGui.Button("Go To")) s.Camera.Position = model.Transforms[s.Renderer.Settings.SelectedModelInstance].Position;
+                if (ImGui.Button("Go To"))
+                {
+                    var instancePos = model.Transforms[model.SelectedInstance].Position;
+                    s.Camera.Position = new Vector3(instancePos.X, instancePos.Z, instancePos.Y);
+                }
                 ImGui.NextColumn(); ImGui.Checkbox("Show", ref model.Show);
                 ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasVertexColors); ImGui.Checkbox("Colors", ref model.DisplayVertexColors); ImGui.EndDisabled();
                 ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasBones); ImGui.Checkbox("Bones", ref model.DisplayBones); ImGui.EndDisabled();

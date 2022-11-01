@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -64,32 +66,22 @@ public class Material : IDisposable
         }
         else
         {
-            Diffuse = new Texture[UvNumber];
-            for (int i = 0; i < Diffuse.Length; i++)
-                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Diffuse[i]) && cache.TryGetCachedTexture(o, out var t))
-                    Diffuse[i] = t;
+            Fill(cache, ref Diffuse, Parameters.HasTopDiffuse, CMaterialParams2.Diffuse, CMaterialParams2.FallbackDiffuse);
+            Fill(cache, ref Normals, true, CMaterialParams2.Normals, CMaterialParams2.FallbackNormals);
+            Fill(cache, ref SpecularMasks, true, CMaterialParams2.SpecularMasks, CMaterialParams2.FallbackSpecularMasks);
+            Fill(cache, ref Emissive, true, CMaterialParams2.Emissive, CMaterialParams2.FallbackEmissive);
 
-            Normals = new Texture[UvNumber];
-            for (int i = 0; i < Normals.Length; i++)
-                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Normals[i]) && cache.TryGetCachedTexture(o, out var t))
-                    Normals[i] = t;
-
-            SpecularMasks = new Texture[UvNumber];
-            for (int i = 0; i < SpecularMasks.Length; i++)
-                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.SpecularMasks[i]) && cache.TryGetCachedTexture(o, out var t))
-                    SpecularMasks[i] = t;
-
-            Emissive = new Texture[UvNumber];
             EmissionColor = new Vector4[UvNumber];
-            for (int i = 0; i < Emissive.Length; i++)
-                if (Parameters.TryGetTexture2d(out var o, CMaterialParams2.Emissive[i]) && cache.TryGetCachedTexture(o, out var t))
-                {
-                    Emissive[i] = t;
+            for (int i = 0; i < EmissionColor.Length; i++)
+            {
+                if (Emissive[i] == null) continue;
 
-                    if (Parameters.TryGetLinearColor(out var color, $"Emissive{(i > 0 ? i + 1 : "")}") && color is { A: > 0})
-                        EmissionColor[i] = new Vector4(color.R, color.G, color.B, color.A);
-                    else EmissionColor[i] = Vector4.One;
+                if (Parameters.TryGetLinearColor(out var color, $"Emissive{(i > 0 ? i + 1 : "")}") && color is { A: > 0 })
+                {
+                    EmissionColor[i] = new Vector4(color.R, color.G, color.B, color.A);
                 }
+                else EmissionColor[i] = Vector4.One;
+            }
 
             // diffuse light is based on normal map, so increase ambient if no normal map
             _ambientLight = new Vector3(Normals[0] == null ? 1.0f : 0.2f);
@@ -97,6 +89,31 @@ public class Material : IDisposable
         }
 
         HasDiffuseColor = DiffuseColor != Vector4.Zero;
+    }
+
+    /// <param name="cache"></param>
+    /// <param name="array"></param>
+    /// <param name="top">has at least 1 clearly defined texture</param>
+    /// <param name="triggers">list of texture parameter names</param>
+    /// <param name="fallback">fallback texture parameter name</param>
+    private void Fill(Cache cache, ref Texture[] array, bool top, IReadOnlyList<string[]> triggers, string fallback)
+    {
+        array = new Texture[UvNumber];
+        if (top)
+        {
+            for (int i = 0; i < array.Length; i++)
+                if (Parameters.TryGetTexture2d(out var o, triggers[i]) && cache.TryGetCachedTexture(o, out var t))
+                    array[i] = t;
+        }
+        // else if (Parameters.Colors.TryGetValue("ColorMult", out var color) && color is { A: > 0})
+        // {
+        //
+        // }
+        else if (Parameters.Textures.TryGetValue(fallback, out var u) && u is UTexture2D o && cache.TryGetCachedTexture(o, out var t))
+        {
+            for (int i = 0; i < array.Length; i++)
+                array[i] = t;
+        }
     }
 
     public void Render(Shader shader)

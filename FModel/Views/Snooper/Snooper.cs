@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
+using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -143,7 +144,7 @@ public class Snooper : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
         base.OnUpdateFrame(e);
-        if (!IsVisible)
+        if (!IsVisible || ImGui.GetIO().WantTextInput)
             return;
 
         var multiplier = KeyboardState.IsKeyDown(Keys.LeftShift) ? 2f : 1f;
