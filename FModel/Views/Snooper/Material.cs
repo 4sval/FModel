@@ -13,6 +13,8 @@ public class Material : IDisposable
 
     public readonly CMaterialParams2 Parameters;
     public readonly int UvNumber;
+    public string Name;
+    public int SelectedChannel;
     public bool IsUsed;
 
     public Texture[] Diffuse;
@@ -31,6 +33,7 @@ public class Material : IDisposable
     {
         Parameters = new CMaterialParams2();
         UvNumber = numUvs;
+        Name = "";
         IsUsed = false;
 
         Diffuse = Array.Empty<Texture>();
@@ -53,6 +56,7 @@ public class Material : IDisposable
 
     public void SwapMaterial(UMaterialInterface unrealMaterial)
     {
+        Name = unrealMaterial.Name;
         unrealMaterial.GetParams(Parameters);
     }
 

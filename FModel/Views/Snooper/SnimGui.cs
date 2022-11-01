@@ -61,8 +61,6 @@ public class SnimGui
         ImGui.End();
         ImGui.Begin("World");
         ImGui.End();
-        ImGui.Begin("UV Channels");
-        ImGui.End();
         ImGui.Begin("Timeline");
         ImGui.End();
         ImGui.Begin("Materials");
@@ -70,6 +68,7 @@ public class SnimGui
         ImGui.Begin("Textures");
         ImGui.End();
 
+        DrawUvChannels(s);
         DrawTransform(s);
         DrawDetails(s);
         DrawOuliner(s);
@@ -128,53 +127,53 @@ public class SnimGui
 
     private void DrawOuliner(Snooper s)
     {
-        ImGui.Begin("Outliner");
-
-        PushStyleCompact();
-        if (ImGui.BeginTable("Items", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable))
+        if (ImGui.Begin("Outliner"))
         {
-            ImGui.TableSetupColumn("Count", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed);
-            ImGui.TableSetupColumn("Name");
-            ImGui.TableHeadersRow();
+            PushStyleCompact();
 
-            var i = 0;
-            foreach ((FGuid guid, Model model) in s.Renderer.Cache.Models)
+            if (ImGui.BeginTable("Items", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable))
             {
-                ImGui.PushID(i);
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                if (!model.Show)
-                    ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
-                ImGui.Text(model.TransformsCount.ToString("D"));
-                ImGui.TableNextColumn();
-                model.IsSelected = s.Renderer.Settings.SelectedModel == guid;
-                if (ImGui.Selectable(model.Name, model.IsSelected, ImGuiSelectableFlags.SpanAllColumns))
+                ImGui.TableSetupColumn("Count", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed);
+                ImGui.TableSetupColumn("Name");
+                ImGui.TableHeadersRow();
+
+                var i = 0;
+                foreach ((FGuid guid, Model model) in s.Renderer.Cache.Models)
                 {
-                    s.Renderer.Settings.SelectModel(guid);
+                    ImGui.PushID(i);
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    if (!model.Show)
+                    {
+                        ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
+                    }
+
+                    ImGui.Text(model.TransformsCount.ToString("D"));
+                    ImGui.TableNextColumn();
+                    model.IsSelected = s.Renderer.Settings.SelectedModel == guid;
+                    if (ImGui.Selectable(model.Name, model.IsSelected, ImGuiSelectableFlags.SpanAllColumns))
+                    {
+                        s.Renderer.Settings.SelectModel(guid);
+                    }
+                    if (ImGui.BeginPopupContextItem())
+                    {
+                        s.Renderer.Settings.SelectModel(guid);
+                        if (ImGui.Selectable("Delete")) s.Renderer.Cache.Models.Remove(guid);
+                        if (ImGui.Selectable("Deselect")) s.Renderer.Settings.SelectModel(Guid.Empty);
+                        if (ImGui.Selectable("Copy Name to Clipboard")) Application.Current.Dispatcher.Invoke(() => Clipboard.SetText(model.Name));
+                        ImGui.EndPopup();
+                    }
+                    ImGui.PopID();
+                    i++;
                 }
-                if (ImGui.BeginPopupContextItem())
-                {
-                    s.Renderer.Settings.SelectModel(guid);
-                    if (ImGui.Selectable("Deselect"))
-                        s.Renderer.Settings.SelectModel(Guid.Empty);
-                    if (ImGui.Selectable("Delete"))
-                        s.Renderer.Cache.Models.Remove(guid);
-                    if (ImGui.Selectable("Copy Name to Clipboard"))
-                        Application.Current.Dispatcher.Invoke(delegate
-                        {
-                            Clipboard.SetText(model.Name);
-                        });
-                    ImGui.EndPopup();
-                }
-                ImGui.PopID();
-                i++;
+
+                ImGui.EndTable();
             }
 
-            ImGui.EndTable();
-        }
-        PopStyleCompact();
+            PopStyleCompact();
 
-        ImGui.End();
+            ImGui.End();
+        }
     }
 
     private void DrawDetails(Snooper s)
@@ -198,9 +197,53 @@ public class SnimGui
                 ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasVertexColors); ImGui.Checkbox("Colors", ref model.DisplayVertexColors); ImGui.EndDisabled();
                 ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasBones); ImGui.Checkbox("Bones", ref model.DisplayBones); ImGui.EndDisabled();
                 ImGui.Columns(1);
-                PopStyleCompact();
 
+                ImGui.Spacing();
                 ImGui.Separator();
+                ImGui.Spacing();
+
+                if (ImGui.BeginTable("Sections", 3, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable))
+                {
+                    ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.WidthFixed);
+                    ImGui.TableSetupColumn("Channels", ImGuiTableColumnFlags.WidthFixed);
+                    ImGui.TableSetupColumn("Material");
+                    ImGui.TableHeadersRow();
+
+                    for (var i = 0; i < model.Sections.Length; i++)
+                    {
+                        var section = model.Sections[i];
+                        var material = model.Materials[section.MaterialIndex];
+
+                        ImGui.PushID(i);
+                        ImGui.TableNextRow();
+                        ImGui.TableNextColumn();
+                        if (!section.Show)
+                        {
+                            ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
+                        }
+
+                        ImGui.Text(section.MaterialIndex.ToString("D"));
+                        ImGui.TableNextColumn();
+                        ImGui.Text(material.UvNumber.ToString("D"));
+                        ImGui.TableNextColumn();
+                        if (ImGui.Selectable(material.Name, s.Renderer.Settings.SelectedSection == i, ImGuiSelectableFlags.SpanAllColumns))
+                        {
+                            s.Renderer.Settings.SelectSection(i);
+                        }
+                        if (ImGui.BeginPopupContextItem())
+                        {
+                            s.Renderer.Settings.SelectSection(i);
+                            if (ImGui.Selectable("Swap")) s.Renderer.Settings.SwapMaterial(true);
+                            if (ImGui.Selectable("Copy Name to Clipboard")) Application.Current.Dispatcher.Invoke(() => Clipboard.SetText(material.Name));
+                            ImGui.EndPopup();
+                        }
+                        ImGui.PopID();
+                    }
+
+                    ImGui.EndTable();
+                }
+
+                PopStyleCompact();
             }
 
             ImGui.End();
@@ -280,6 +323,39 @@ public class SnimGui
         }
     }
 
+    private void DrawUvChannels(Snooper s)
+    {
+        if (ImGui.Begin("UV Channels"))
+        {
+            if (s.Renderer.Cache.Models.TryGetValue(s.Renderer.Settings.SelectedModel, out var model) &&
+                s.Renderer.Settings.TryGetSection(model, out var section))
+            {
+                var width = ImGui.GetContentRegionAvail().X;
+                var material = model.Materials[section.MaterialIndex];
+
+                PushStyleCompact();
+                ImGui.PushID(0); ImGui.BeginDisabled(material.UvNumber < 2);
+                ImGui.SetNextItemWidth(width);
+                ImGui.SliderInt("", ref material.SelectedChannel, 0, material.UvNumber - 1, "Channel %i", ImGuiSliderFlags.AlwaysClamp);
+                ImGui.EndDisabled(); ImGui.PopID();
+
+                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+                if (ImGui.TreeNode("Textures"))
+                {
+                    var size = new Vector2(ImGui.GetContentRegionAvail().X / 4.75f);
+                    DrawSquareTexture(material.Diffuse[material.SelectedChannel], size); ImGui.SameLine();
+                    DrawSquareTexture(material.Normals[material.SelectedChannel], size); ImGui.SameLine();
+                    DrawSquareTexture(material.SpecularMasks[material.SelectedChannel], size); ImGui.SameLine();
+                    DrawSquareTexture(material.Emissive[material.SelectedChannel], size); ImGui.SameLine();
+                }
+
+                PopStyleCompact();
+            }
+
+            ImGui.End();
+        }
+    }
+
     private void Draw3DViewport(Snooper s)
     {
         const float lookSensitivity = 0.1f;
@@ -349,6 +425,9 @@ public class SnimGui
     }
 
     private void PopStyleCompact() => ImGui.PopStyleVar(2);
+
+    private void DrawSquareTexture(Texture texture, Vector2 size) =>
+        ImGui.Image(texture?.GetPointer() ?? IntPtr.Zero, size, Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1, 1, 1, .5f));
 
     private void Theme(ImGuiStylePtr style)
     {
