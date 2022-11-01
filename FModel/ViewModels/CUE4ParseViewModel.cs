@@ -334,7 +334,7 @@ public class CUE4ParseViewModel : ViewModel
                 FLogger.AppendInformation();
                 FLogger.AppendText($"Mappings pulled from '{endpoint.FilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
             }
-            else
+            else if (endpoint.IsValid)
             {
                 var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
                 var mappings = _apiEndpointView.DynamicApi.GetMappings(cancellationToken, endpoint.Url, endpoint.Path);

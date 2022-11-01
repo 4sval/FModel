@@ -315,7 +315,7 @@ public class ModelViewerViewModel : ViewModel
                 st.Materials[SelectedModel.SelectedGeometry.MaterialIndex] = obj;
                 break;
             case USkeletalMesh sk:
-                sk.Materials[SelectedModel.SelectedGeometry.MaterialIndex].Material = obj;
+                sk.SkeletalMaterials[SelectedModel.SelectedGeometry.MaterialIndex].Material = obj;
                 break;
             case UMaterialInstance:
                 SelectedModel.SwapExport(materialInstance);

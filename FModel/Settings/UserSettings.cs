@@ -46,7 +46,7 @@ namespace FModel.Settings
                 return false;
 
             endpoint = endpoints[(int) type];
-            return endpoint.IsValid;
+            return endpoint.Overwrite || endpoint.IsValid;
         }
 
         private bool _showChangelog = true;
@@ -140,7 +140,7 @@ namespace FModel.Settings
             set => SetProperty(ref _isLoggerExpanded, value);
         }
 
-        private GridLength _avalonImageSize = GridLength.Auto;
+        private GridLength _avalonImageSize = new (200);
         public GridLength AvalonImageSize
         {
             get => _avalonImageSize;
