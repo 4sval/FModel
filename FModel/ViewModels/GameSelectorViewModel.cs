@@ -120,6 +120,7 @@ public class GameSelectorViewModel : ViewModel
         yield return GetRockstarGamesGame("GTA III - Definitive Edition", "\\Gameface\\Content\\Paks");
         yield return GetRockstarGamesGame("GTA San Andreas - Definitive Edition", "\\Gameface\\Content\\Paks");
         yield return GetRockstarGamesGame("GTA Vice City - Definitive Edition", "\\Gameface\\Content\\Paks");
+        yield return GetLevelInfiniteGame("tof_launcher", "\\Hotta\\Content\\Paks");
     }
 
     private LauncherInstalled _launcherInstalled;
@@ -194,6 +195,28 @@ public class GameSelectorViewModel : ViewModel
 
         if (!string.IsNullOrEmpty(installLocation))
             return new DetectedGame { GameName = key, GameDirectory = $"{installLocation}{pakDirectory}" };
+
+        Log.Warning("Could not find {GameName} in the registry", key);
+        return null;
+    }
+
+    private DetectedGame GetLevelInfiniteGame(string key, string pakDirectory)
+    {
+        var installLocation = string.Empty;
+        var displayName = string.Empty;
+
+        try
+        {
+            installLocation = App.GetRegistryValue($@"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{key}", "GameInstallPath", RegistryHive.CurrentUser);
+            displayName = App.GetRegistryValue($@"Software\Microsoft\Windows\CurrentVersion\Uninstall\{key}", "DisplayName", RegistryHive.CurrentUser);
+        }
+        catch
+        {
+            // ignored
+        }
+
+        if (!string.IsNullOrEmpty(installLocation))
+            return new DetectedGame { GameName = displayName, GameDirectory = $"{installLocation}{pakDirectory}" };
 
         Log.Warning("Could not find {GameName} in the registry", key);
         return null;

@@ -92,7 +92,9 @@ public enum FGame
     [Description("Sea of Thieves")]
     Athena,
     [Description("Your Beloved ™ Panda")]
-    PandaGame
+    PandaGame,
+    [Description("Tower of Fantasy")]
+    Hotta
 }
 
 public enum ELoadingMode
