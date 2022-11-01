@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Windows;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -48,6 +49,7 @@ public class Renderer : IDisposable
             !Settings.TryGetSection(model, out var section)) return;
 
         model.Materials[section.MaterialIndex].SwapMaterial(unrealMaterial);
+        Application.Current.Dispatcher.Invoke(() => model.Materials[section.MaterialIndex].Setup(Cache, model.NumTexCoords));
         Settings.SwapMaterial(false);
     }
 
@@ -92,7 +94,7 @@ public class Renderer : IDisposable
         return new Camera(
             new Vector3(0f, center.Z, box.Max.Y * 3),
             new Vector3(center.X, center.Z, center.Y),
-            0.01f, far * 50f, far / 2f);
+            0.01f, far * 50f, far / 1.5f);
     }
 
     private Camera LoadStaticMesh(UStaticMesh original)
@@ -101,6 +103,7 @@ public class Renderer : IDisposable
         if (Cache.Models.TryGetValue(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
+            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
             return null;
         }
 

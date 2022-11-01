@@ -12,7 +12,6 @@ public class Section : IDisposable
     public readonly int FirstFaceIndex;
 
     public bool Show;
-    public bool Wireframe;
 
     public Section(int index, int facesCount, int firstFaceIndex)
     {
@@ -35,7 +34,6 @@ public class Section : IDisposable
 
     public void Render(int instanceCount)
     {
-        GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
         if (Show) GL.DrawArraysInstanced(PrimitiveType.Triangles, FirstFaceIndex, FacesCount, instanceCount);
     }
 

@@ -12,7 +12,6 @@ public class Material : IDisposable
     private int _handle;
 
     public readonly CMaterialParams2 Parameters;
-    public readonly int UvNumber;
     public string Name;
     public int SelectedChannel;
     public bool IsUsed;
@@ -29,10 +28,9 @@ public class Material : IDisposable
 
     private Vector3 _ambientLight;
 
-    public Material(int numUvs)
+    public Material()
     {
         Parameters = new CMaterialParams2();
-        UvNumber = numUvs;
         Name = "";
         IsUsed = false;
 
@@ -49,7 +47,7 @@ public class Material : IDisposable
         _ambientLight = Vector3.One;
     }
 
-    public Material(int numUvs, UMaterialInterface unrealMaterial) : this(numUvs)
+    public Material(UMaterialInterface unrealMaterial) : this()
     {
         SwapMaterial(unrealMaterial);
     }
@@ -60,7 +58,7 @@ public class Material : IDisposable
         unrealMaterial.GetParams(Parameters);
     }
 
-    public void Setup(Cache cache)
+    public void Setup(Cache cache, int numTexCoords)
     {
         _handle = GL.CreateProgram();
 
@@ -70,12 +68,17 @@ public class Material : IDisposable
         }
         else
         {
-            Fill(cache, ref Diffuse, Parameters.HasTopDiffuse, CMaterialParams2.Diffuse, CMaterialParams2.FallbackDiffuse);
-            Fill(cache, ref Normals, true, CMaterialParams2.Normals, CMaterialParams2.FallbackNormals);
-            Fill(cache, ref SpecularMasks, true, CMaterialParams2.SpecularMasks, CMaterialParams2.FallbackSpecularMasks);
-            Fill(cache, ref Emissive, true, CMaterialParams2.Emissive, CMaterialParams2.FallbackEmissive);
+            Fill(cache, numTexCoords, ref Diffuse, Parameters.HasTopDiffuse, CMaterialParams2.Diffuse, CMaterialParams2.FallbackDiffuse);
+            Fill(cache, numTexCoords, ref Normals, true, CMaterialParams2.Normals, CMaterialParams2.FallbackNormals);
+            Fill(cache, numTexCoords, ref SpecularMasks, true, CMaterialParams2.SpecularMasks, CMaterialParams2.FallbackSpecularMasks);
+            Fill(cache, numTexCoords, ref Emissive, true, CMaterialParams2.Emissive, CMaterialParams2.FallbackEmissive);
 
-            EmissionColor = new Vector4[UvNumber];
+            // if (Parameters.Colors.TryGetValue("ColorMult", out var color) && color is { A: > 0})
+            // {
+            //     DiffuseColor = new Vector4(color.R, color.G, color.B, color.A);
+            // }
+
+            EmissionColor = new Vector4[numTexCoords];
             for (int i = 0; i < EmissionColor.Length; i++)
             {
                 if (Emissive[i] == null) continue;
@@ -96,23 +99,20 @@ public class Material : IDisposable
     }
 
     /// <param name="cache"></param>
+    /// <param name="numTexCoords"></param>
     /// <param name="array"></param>
     /// <param name="top">has at least 1 clearly defined texture</param>
     /// <param name="triggers">list of texture parameter names</param>
     /// <param name="fallback">fallback texture parameter name</param>
-    private void Fill(Cache cache, ref Texture[] array, bool top, IReadOnlyList<string[]> triggers, string fallback)
+    private void Fill(Cache cache, int numTexCoords, ref Texture[] array, bool top, IReadOnlyList<string[]> triggers, string fallback)
     {
-        array = new Texture[UvNumber];
+        array = new Texture[numTexCoords];
         if (top)
         {
             for (int i = 0; i < array.Length; i++)
                 if (Parameters.TryGetTexture2d(out var o, triggers[i]) && cache.TryGetCachedTexture(o, out var t))
                     array[i] = t;
         }
-        // else if (Parameters.Colors.TryGetValue("ColorMult", out var color) && color is { A: > 0})
-        // {
-        //
-        // }
         else if (Parameters.Textures.TryGetValue(fallback, out var u) && u is UTexture2D o && cache.TryGetCachedTexture(o, out var t))
         {
             for (int i = 0; i < array.Length; i++)

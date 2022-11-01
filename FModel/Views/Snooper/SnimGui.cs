@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Framework;
@@ -14,19 +13,13 @@ namespace FModel.Views.Snooper;
 public class SnimGui
 {
     public readonly ImGuiController Controller;
-
-    private readonly Vector2 _outlinerSize;
-    private readonly Vector2 _outlinerPosition;
-    private readonly Vector2 _propertiesSize;
-    private readonly Vector2 _propertiesPosition;
-    private readonly Vector2 _viewportSize;
-    private readonly Vector2 _viewportPosition;
-    private readonly Vector2 _textureSize;
-    private readonly Vector2 _texturePosition;
     private bool _viewportFocus;
 
-    private const ImGuiWindowFlags _noResize = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove; // delete once we have a proper docking branch
-    private const ImGuiCond _firstUse = ImGuiCond.Appearing; // switch to FirstUseEver once the docking branch will not be useful anymore...
+    private readonly Vector4 _accentColor = new (32, 107, 212, 1f);
+    private readonly Vector4 _alertColor = new (212, 146, 32, 1f);
+    private readonly Vector4 _errorColor = new (194, 43, 43, 1f);
+
+    private const ImGuiCond _firstUse = ImGuiCond.FirstUseEver; // switch to FirstUseEver once the docking branch will not be useful anymore...
     private const uint _dockspaceId = 1337;
 
     public SnimGui(int width, int height)
@@ -34,18 +27,6 @@ public class SnimGui
         Controller = new ImGuiController(width, height);
 
         var style = ImGui.GetStyle();
-        var viewport = ImGui.GetMainViewport();
-        var titleBarHeight = ImGui.GetFontSize() + style.FramePadding.Y * 2;
-
-        // _outlinerSize = new Vector2(400, 300);
-        // _outlinerPosition = new Vector2(viewport.WorkSize.X - _outlinerSize.X, titleBarHeight);
-        // _propertiesSize = _outlinerSize with { Y = viewport.WorkSize.Y - _outlinerSize.Y - titleBarHeight };
-        // _propertiesPosition = new Vector2(viewport.WorkSize.X - _propertiesSize.X, _outlinerPosition.Y + _outlinerSize.Y);
-        _viewportSize = new Vector2(width, height);
-        _viewportPosition = new Vector2(0, titleBarHeight);
-        // _textureSize = _viewportSize with { Y = viewport.WorkSize.Y - _viewportSize.Y - titleBarHeight };
-        // _texturePosition = new Vector2(0, _viewportPosition.Y + _viewportSize.Y);
-
         Theme(style);
     }
 
@@ -131,9 +112,10 @@ public class SnimGui
         {
             PushStyleCompact();
 
-            if (ImGui.BeginTable("Items", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable))
+            if (ImGui.BeginTable("Items", 3, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable))
             {
-                ImGui.TableSetupColumn("Count", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed);
+                ImGui.TableSetupColumn("Instance", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed);
+                ImGui.TableSetupColumn("Channels", ImGuiTableColumnFlags.WidthFixed);
                 ImGui.TableSetupColumn("Name");
                 ImGui.TableHeadersRow();
 
@@ -149,6 +131,8 @@ public class SnimGui
                     }
 
                     ImGui.Text(model.TransformsCount.ToString("D"));
+                    ImGui.TableNextColumn();
+                    ImGui.Text(model.NumTexCoords.ToString("D"));
                     ImGui.TableNextColumn();
                     model.IsSelected = s.Renderer.Settings.SelectedModel == guid;
                     if (ImGui.Selectable(model.Name, model.IsSelected, ImGuiSelectableFlags.SpanAllColumns))
@@ -180,13 +164,13 @@ public class SnimGui
     {
         if (ImGui.Begin("Details"))
         {
+            PushStyleCompact();
             var guid = s.Renderer.Settings.SelectedModel;
             if (s.Renderer.Cache.Models.TryGetValue(guid, out var model))
             {
                 ImGui.Text($"Entity: ({model.Type}) {model.Name}");
                 ImGui.Text($"Guid: {guid.ToString(EGuidFormats.UniqueObjectGuid)}");
 
-                PushStyleCompact();
                 ImGui.Columns(4, "Actions", false);
                 if (ImGui.Button("Go To"))
                 {
@@ -194,58 +178,90 @@ public class SnimGui
                     s.Camera.Position = new Vector3(instancePos.X, instancePos.Z, instancePos.Y);
                 }
                 ImGui.NextColumn(); ImGui.Checkbox("Show", ref model.Show);
+                ImGui.NextColumn(); ImGui.BeginDisabled(!model.Show); ImGui.Checkbox("Wire", ref model.Wireframe); ImGui.EndDisabled();
                 ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasVertexColors); ImGui.Checkbox("Colors", ref model.DisplayVertexColors); ImGui.EndDisabled();
-                ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasBones); ImGui.Checkbox("Bones", ref model.DisplayBones); ImGui.EndDisabled();
                 ImGui.Columns(1);
 
-                ImGui.Spacing();
                 ImGui.Separator();
-                ImGui.Spacing();
 
-                if (ImGui.BeginTable("Sections", 3, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable))
+                if (ImGui.BeginTabBar("tabbar_details", ImGuiTabBarFlags.None))
                 {
-                    ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.WidthFixed);
-                    ImGui.TableSetupColumn("Channels", ImGuiTableColumnFlags.WidthFixed);
-                    ImGui.TableSetupColumn("Material");
-                    ImGui.TableHeadersRow();
-
-                    for (var i = 0; i < model.Sections.Length; i++)
+                    if (ImGui.BeginTabItem("Sections") && ImGui.BeginTable("table_sections", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable))
                     {
-                        var section = model.Sections[i];
-                        var material = model.Materials[section.MaterialIndex];
+                        ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.WidthFixed);
+                        ImGui.TableSetupColumn("Material");
+                        ImGui.TableHeadersRow();
 
-                        ImGui.PushID(i);
-                        ImGui.TableNextRow();
-                        ImGui.TableNextColumn();
-                        if (!section.Show)
+                        for (var i = 0; i < model.Sections.Length; i++)
                         {
-                            ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
+                            var section = model.Sections[i];
+                            var material = model.Materials[section.MaterialIndex];
+
+                            ImGui.PushID(i);
+                            ImGui.TableNextRow();
+                            ImGui.TableNextColumn();
+                            if (!section.Show)
+                            {
+                                ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
+                            }
+
+                            ImGui.Text(section.MaterialIndex.ToString("D"));
+                            ImGui.TableNextColumn();
+                            if (ImGui.Selectable(material.Name, s.Renderer.Settings.SelectedSection == i, ImGuiSelectableFlags.SpanAllColumns))
+                            {
+                                s.Renderer.Settings.SelectSection(i);
+                            }
+                            if (ImGui.BeginPopupContextItem())
+                            {
+                                s.Renderer.Settings.SelectSection(i);
+                                if (ImGui.Selectable("Swap")) s.Renderer.Settings.SwapMaterial(true);
+                                if (ImGui.Selectable("Copy Name to Clipboard")) Application.Current.Dispatcher.Invoke(() => Clipboard.SetText(material.Name));
+                                ImGui.EndPopup();
+                            }
+                            ImGui.PopID();
                         }
 
-                        ImGui.Text(section.MaterialIndex.ToString("D"));
-                        ImGui.TableNextColumn();
-                        ImGui.Text(material.UvNumber.ToString("D"));
-                        ImGui.TableNextColumn();
-                        if (ImGui.Selectable(material.Name, s.Renderer.Settings.SelectedSection == i, ImGuiSelectableFlags.SpanAllColumns))
-                        {
-                            s.Renderer.Settings.SelectSection(i);
-                        }
-                        if (ImGui.BeginPopupContextItem())
-                        {
-                            s.Renderer.Settings.SelectSection(i);
-                            if (ImGui.Selectable("Swap")) s.Renderer.Settings.SwapMaterial(true);
-                            if (ImGui.Selectable("Copy Name to Clipboard")) Application.Current.Dispatcher.Invoke(() => Clipboard.SetText(material.Name));
-                            ImGui.EndPopup();
-                        }
-                        ImGui.PopID();
+                        ImGui.EndTable();
+                        ImGui.EndTabItem();
                     }
 
-                    ImGui.EndTable();
+                    if (ImGui.BeginTabItem("Morph Targets"))
+                    {
+                        if (model.HasMorphTargets)
+                        {
+                            const float width = 10;
+                            var region = ImGui.GetContentRegionAvail();
+                            var box = new Vector2(region.X - width, region.Y / 1.5f);
+
+                            if (ImGui.BeginListBox("", box))
+                            {
+                                for (int i = 0; i < model.Morphs.Length; i++)
+                                {
+                                    ImGui.PushID(i);
+                                    if (ImGui.Selectable(model.Morphs[i].Name, s.Renderer.Settings.SelectedMorph == i))
+                                    {
+                                        s.Renderer.Settings.SelectMorph(i, model);
+                                    }
+                                    ImGui.PopID();
+                                }
+                                ImGui.EndListBox();
+
+                                ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(2f, 0f));
+                                ImGui.SameLine(); ImGui.PushID(99);
+                                ImGui.VSliderFloat("", box with { X = width }, ref model.MorphTime, 0.0f, 1.0f, "", ImGuiSliderFlags.AlwaysClamp);
+                                ImGui.PopID(); ImGui.PopStyleVar();
+                            }
+                        }
+                        else
+                        {
+                            ImGui.TextColored(_errorColor, "mesh has no morph targets");
+                        }
+
+                        ImGui.EndTabItem();
+                    }
                 }
-
-                PopStyleCompact();
             }
-
+            PopStyleCompact();
             ImGui.End();
         }
     }
@@ -254,12 +270,12 @@ public class SnimGui
     {
         if (ImGui.Begin("Transform"))
         {
+            PushStyleCompact();
             if (s.Renderer.Cache.Models.TryGetValue(s.Renderer.Settings.SelectedModel, out var model))
             {
                 const int width = 100;
                 var speed = s.Camera.Speed / 100;
 
-                PushStyleCompact();
                 ImGui.PushID(0); ImGui.BeginDisabled(model.TransformsCount < 2);
                 ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
                 ImGui.SliderInt("", ref model.SelectedInstance, 0, model.TransformsCount - 1, "Instance %i", ImGuiSliderFlags.AlwaysClamp);
@@ -316,9 +332,8 @@ public class SnimGui
                 }
 
                 model.UpdateMatrix(model.SelectedInstance);
-                PopStyleCompact();
             }
-
+            PopStyleCompact();
             ImGui.End();
         }
     }
@@ -327,16 +342,16 @@ public class SnimGui
     {
         if (ImGui.Begin("UV Channels"))
         {
+            PushStyleCompact();
             if (s.Renderer.Cache.Models.TryGetValue(s.Renderer.Settings.SelectedModel, out var model) &&
                 s.Renderer.Settings.TryGetSection(model, out var section))
             {
                 var width = ImGui.GetContentRegionAvail().X;
                 var material = model.Materials[section.MaterialIndex];
 
-                PushStyleCompact();
-                ImGui.PushID(0); ImGui.BeginDisabled(material.UvNumber < 2);
+                ImGui.PushID(0); ImGui.BeginDisabled(model.NumTexCoords < 2);
                 ImGui.SetNextItemWidth(width);
-                ImGui.SliderInt("", ref material.SelectedChannel, 0, material.UvNumber - 1, "Channel %i", ImGuiSliderFlags.AlwaysClamp);
+                ImGui.SliderInt("", ref material.SelectedChannel, 0, model.NumTexCoords - 1, "Channel %i", ImGuiSliderFlags.AlwaysClamp);
                 ImGui.EndDisabled(); ImGui.PopID();
 
                 ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
@@ -348,10 +363,8 @@ public class SnimGui
                     DrawSquareTexture(material.SpecularMasks[material.SelectedChannel], size); ImGui.SameLine();
                     DrawSquareTexture(material.Emissive[material.SelectedChannel], size); ImGui.SameLine();
                 }
-
-                PopStyleCompact();
             }
-
+            PopStyleCompact();
             ImGui.End();
         }
     }
@@ -417,14 +430,13 @@ public class SnimGui
         ImGui.End();
     }
 
+    private void PopStyleCompact() => ImGui.PopStyleVar(2);
     private void PushStyleCompact()
     {
         var style = ImGui.GetStyle();
         ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, style.FramePadding with { Y = style.FramePadding.Y * 0.6f });
         ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, style.ItemSpacing with { Y = style.ItemSpacing.Y * 0.6f });
     }
-
-    private void PopStyleCompact() => ImGui.PopStyleVar(2);
 
     private void DrawSquareTexture(Texture texture, Vector2 size) =>
         ImGui.Image(texture?.GetPointer() ?? IntPtr.Zero, size, Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1, 1, 1, .5f));

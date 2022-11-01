@@ -30,6 +30,7 @@ public class Model : IDisposable
     public readonly bool HasVertexColors;
     public readonly bool HasBones;
     public readonly bool HasMorphTargets;
+    public readonly int NumTexCoords;
     public uint[] Indices;
     public float[] Vertices;
     public Section[] Sections;
@@ -42,6 +43,7 @@ public class Model : IDisposable
     public readonly Morph[] Morphs;
 
     public bool Show;
+    public bool Wireframe;
     public bool IsSetup;
     public bool IsSelected;
     public bool DisplayVertexColors;
@@ -53,6 +55,7 @@ public class Model : IDisposable
     {
         Name = name;
         Type = type;
+        NumTexCoords = 1;
         Transforms = new List<Transform>();
     }
 
@@ -75,12 +78,13 @@ public class Model : IDisposable
 
     private Model(string name, string type, ResolvedObject[] materials, CBaseMeshLod lod, CMeshVertex[] vertices, Transform transform, List<CSkelMeshBone> skeleton = null) : this(name, type)
     {
+        NumTexCoords = lod.NumTexCoords;
+
         Materials = new Material[materials.Length];
         for (int m = 0; m < Materials.Length; m++)
         {
             if ((materials[m]?.TryLoad(out var material) ?? false) && material is UMaterialInterface unrealMaterial)
-                Materials[m] = new Material(lod.NumTexCoords, unrealMaterial);
-            else Materials[m] = new Material(1);
+                Materials[m] = new Material(unrealMaterial); else Materials[m] = new Material();
         }
 
         if (lod.VertexColors is { Length: > 0})
@@ -158,7 +162,11 @@ public class Model : IDisposable
         AddInstance(transform);
     }
 
-    public void AddInstance(Transform transform) => Transforms.Add(transform);
+    public void AddInstance(Transform transform)
+    {
+        TransformsCount++;
+        Transforms.Add(transform);
+    }
 
     public void UpdateMatrix(int instance)
     {
@@ -172,6 +180,15 @@ public class Model : IDisposable
         _morphVbo.Bind();
         _morphVbo.Update(Morphs[index].Vertices);
         _morphVbo.Unbind();
+    }
+
+    public void SetupInstances()
+    {
+        var instanceMatrix = new Matrix4x4[TransformsCount];
+        for (var i = 0; i < instanceMatrix.Length; i++)
+            instanceMatrix[i] = Transforms[i].Matrix;
+        _matrixVbo = new BufferObject<Matrix4x4>(instanceMatrix, BufferTarget.ArrayBuffer);
+        _vao.BindInstancing(); // VertexAttributePointer 7, 8, 9, 10
     }
 
     public void Setup(Cache cache)
@@ -191,21 +208,13 @@ public class Model : IDisposable
         _vao.VertexAttributePointer(6, 4, VertexAttribPointerType.Int, _vertexSize, 14); // boneids
         _vao.VertexAttributePointer(7, 4, VertexAttribPointerType.Float, _vertexSize, 18); // boneweights
 
-        {   // instanced models transform
-            TransformsCount = Transforms.Count;
-            var instanceMatrix = new Matrix4x4[TransformsCount];
-            for (var i = 0; i < instanceMatrix.Length; i++)
-                instanceMatrix[i] = Transforms[i].Matrix;
-            _matrixVbo = new BufferObject<Matrix4x4>(instanceMatrix, BufferTarget.ArrayBuffer);
-            _vao.BindInstancing(); // VertexAttributePointer 7, 8, 9, 10
-        }
+        SetupInstances(); // instanced models transform
 
-        {   // setup all used materials for use in different UV channels
-            for (var i = 0; i < Materials.Length; i++)
-            {
-                if (!Materials[i].IsUsed) continue;
-                Materials[i].Setup(cache);
-            }
+        // setup all used materials for use in different UV channels
+        for (var i = 0; i < Materials.Length; i++)
+        {
+            if (!Materials[i].IsUsed) continue;
+            Materials[i].Setup(cache, NumTexCoords);
         }
 
         if (HasMorphTargets)
@@ -223,7 +232,7 @@ public class Model : IDisposable
 
         for (int section = 0; section < Sections.Length; section++)
         {
-            if (Sections[section].Show) Show = true;
+            if (!Show) Show = Sections[section].Show;
             Sections[section].Setup();
         }
 
@@ -241,6 +250,8 @@ public class Model : IDisposable
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
         shader.SetUniform("display_vertex_colors", DisplayVertexColors);
+
+        GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
         for (int section = 0; section < Sections.Length; section++)
         {
             Materials[Sections[section].MaterialIndex].Render(shader);
@@ -264,6 +275,8 @@ public class Model : IDisposable
         _vao.Bind();
         shader.Use();
         shader.SetUniform("uMorphTime", MorphTime);
+
+        GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
         for (int section = 0; section < Sections.Length; section++)
         {
             if (!Sections[section].Show) continue;
