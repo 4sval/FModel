@@ -94,7 +94,7 @@ public class Renderer : IDisposable
 
     private Camera SetupCamera(FBox box)
     {
-        var far = box.Max.Max();
+        var far = Math.Abs(box.Max.Max());
         var center = box.GetCenter();
         return new Camera(
             new Vector3(0f, center.Z, box.Max.Y * 3),

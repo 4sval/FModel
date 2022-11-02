@@ -250,6 +250,7 @@ public class Model : IDisposable
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
         shader.SetUniform("display_vertex_colors", DisplayVertexColors);
+        shader.SetUniform("numTexCoords", NumTexCoords);
 
         GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
         for (int section = 0; section < Sections.Length; section++)

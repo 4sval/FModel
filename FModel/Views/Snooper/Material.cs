@@ -110,8 +110,12 @@ public class Material : IDisposable
         if (top)
         {
             for (int i = 0; i < array.Length; i++)
+            {
                 if (Parameters.TryGetTexture2d(out var o, triggers[i]) && cache.TryGetCachedTexture(o, out var t))
                     array[i] = t;
+                else if (i > 0 && array[i - 1] != null)
+                    array[i] = array[i - 1];
+            }
         }
         else if (Parameters.Textures.TryGetValue(fallback, out var u) && u is UTexture2D o && cache.TryGetCachedTexture(o, out var t))
         {

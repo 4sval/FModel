@@ -34,22 +34,23 @@ uniform Material material;
 uniform Light light;
 uniform vec3 viewPos;
 uniform bool display_vertex_colors;
+uniform int numTexCoords;
 
 out vec4 FragColor;
 
-int LayerToIndex(int max)
+int LayerToIndex()
 {
-    return min(int(fTexLayer), max);
+    return min(int(fTexLayer), numTexCoords - 1);
 }
 
 vec4 SamplerSelector(sampler2D array[8])
 {
-    return texture(array[LayerToIndex(7)], fTexCoords);
+    return texture(array[LayerToIndex()], fTexCoords);
 }
 
 vec4 VectorSelector(vec4 array[8])
 {
-    return array[LayerToIndex(7)];
+    return array[LayerToIndex()];
 }
 
 vec3 getNormalFromMap()
