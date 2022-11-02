@@ -266,6 +266,17 @@ public class Model : IDisposable
         }
     }
 
+    public void SimpleRender(Shader shader)
+    {
+        _vao.Bind();
+        shader.SetUniform("uMorphTime", MorphTime);
+        for (int section = 0; section < Sections.Length; section++)
+        {
+            Sections[section].Render(TransformsCount);
+        }
+        _vao.Unbind();
+    }
+
     public void Outline(Shader shader)
     {
         GL.StencilMask(0x00);

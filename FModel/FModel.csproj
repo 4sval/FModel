@@ -103,6 +103,8 @@
     <None Remove="Resources\framebuffer.vert" />
     <None Remove="Resources\outline.frag" />
     <None Remove="Resources\outline.vert" />
+    <None Remove="Resources\picking.frag" />
+    <None Remove="Resources\picking.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -122,6 +124,8 @@
     <EmbeddedResource Include="Resources\framebuffer.vert" />
     <EmbeddedResource Include="Resources\outline.frag" />
     <EmbeddedResource Include="Resources\outline.vert" />
+    <EmbeddedResource Include="Resources\picking.frag" />
+    <EmbeddedResource Include="Resources\picking.vert" />
   </ItemGroup>
 
   <ItemGroup>

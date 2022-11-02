@@ -32,7 +32,7 @@ public class ImGuiController : IDisposable
     private int _windowWidth;
     private int _windowHeight;
 
-    private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
+    private readonly System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
     private static bool KHRDebugAvailable = false;
 

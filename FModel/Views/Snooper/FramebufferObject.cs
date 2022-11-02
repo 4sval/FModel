@@ -9,8 +9,8 @@ public class FramebufferObject : IDisposable
     private int _framebufferHandle;
     private int _postProcessingHandle;
 
-    private readonly int _width;
-    private readonly int _height;
+    private int _width;
+    private int _height;
     private readonly RenderbufferObject _renderbuffer;
 
     private BufferObject<uint> _ebo;
@@ -43,7 +43,7 @@ public class FramebufferObject : IDisposable
     public void Setup()
     {
         _framebufferHandle = GL.GenFramebuffer();
-        Bind(_framebufferHandle);
+        Bind();
 
         _framebufferTexture = new Texture((uint) _width, (uint) _height);
 
@@ -101,6 +101,17 @@ public class FramebufferObject : IDisposable
     }
 
     public IntPtr GetPointer() => _postProcessingTexture.GetPointer();
+
+    public void WindowResized(int width, int height)
+    {
+        _width = width;
+        _height = height;
+
+        _renderbuffer.WindowResized(width, height);
+
+        _framebufferTexture.WindowResized(width, height);
+        _postProcessingTexture.WindowResized(width, height);
+    }
 
     public void Dispose()
     {

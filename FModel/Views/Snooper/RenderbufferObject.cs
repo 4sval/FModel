@@ -7,8 +7,8 @@ public class RenderbufferObject : IDisposable
 {
     private int _handle;
 
-    private readonly int _width;
-    private readonly int _height;
+    private int _width;
+    private int _height;
 
     public RenderbufferObject(int width, int height)
     {
@@ -23,6 +23,15 @@ public class RenderbufferObject : IDisposable
         GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _handle);
         GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, Constants.SAMPLES_COUNT, RenderbufferStorage.Depth24Stencil8, _width, _height);
         GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, _handle);
+    }
+
+    public void WindowResized(int width, int height)
+    {
+        _width = width;
+        _height = height;
+
+        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _handle);
+        GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, Constants.SAMPLES_COUNT, RenderbufferStorage.Depth24Stencil8, _width, _height);
     }
 
     public void Dispose()

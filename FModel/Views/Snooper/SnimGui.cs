@@ -1,5 +1,4 @@
 using System;
-using System.Windows;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Framework;
 using ImGuiNET;
@@ -449,15 +448,20 @@ public class SnimGui
                 _viewportFocus = true;
                 s.CursorState = CursorState.Grabbed;
             }
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+            {
+                var guid = s.Renderer.Picking.ReadPixel(ImGui.GetMousePos(), ImGui.GetCursorScreenPos(), size);
+                s.Renderer.Settings.SelectModel(guid);
+            }
         }
 
         // this can't be inside IsItemHovered! read it as
         // if left mouse button was pressed while hovering the viewport
         // move camera until left mouse button is released
         // no matter where mouse position end up
-        var io = ImGui.GetIO();
         if (ImGui.IsMouseDragging(ImGuiMouseButton.Left, lookSensitivity) && _viewportFocus)
         {
+            var io = ImGui.GetIO();
             var delta = io.MouseDelta * lookSensitivity;
             s.Camera.ModifyDirection(delta.X, delta.Y);
         }

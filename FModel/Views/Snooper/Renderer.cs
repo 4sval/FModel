@@ -22,11 +22,13 @@ public class Renderer : IDisposable
     private Vector3 _diffuseLight;
     private Vector3 _specularLight;
 
+    public PickingTexture Picking { get; }
     public Cache Cache { get; }
     public Options Settings { get; }
 
-    public Renderer()
+    public Renderer(int width, int height)
     {
+        Picking = new PickingTexture(width, height);
         Cache = new Cache();
         Settings = new Options();
     }
@@ -60,6 +62,7 @@ public class Renderer : IDisposable
         _diffuseLight = new Vector3(0.75f);
         _specularLight = new Vector3(0.5f);
 
+        Picking.Setup();
         Cache.Setup();
     }
 
@@ -85,6 +88,8 @@ public class Renderer : IDisposable
         Cache.Render(_shader);
         GL.Enable(EnableCap.StencilTest);
         Cache.Outline(_outline);
+
+        Picking.Render(viewMatrix, projMatrix, Cache.Models);
     }
 
     private Camera SetupCamera(FBox box)
@@ -222,6 +227,7 @@ public class Renderer : IDisposable
     {
         _shader.Dispose();
         _outline.Dispose();
+        Picking.Dispose();
         Cache.Dispose();
     }
 }

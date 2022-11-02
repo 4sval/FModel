@@ -13,7 +13,7 @@ namespace FModel.Views.Snooper;
 public class Snooper : GameWindow
 {
     public Camera Camera;
-    public FramebufferObject Framebuffer;
+    public readonly FramebufferObject Framebuffer;
     public readonly Renderer Renderer;
 
     private readonly Skybox _skybox;
@@ -26,8 +26,8 @@ public class Snooper : GameWindow
 
     public Snooper(GameWindowSettings gwSettings, NativeWindowSettings nwSettings) : base(gwSettings, nwSettings)
     {
-        Framebuffer = new FramebufferObject(Size);
-        Renderer = new Renderer();
+        Framebuffer = new FramebufferObject(ClientSize);
+        Renderer = new Renderer(ClientSize.X, ClientSize.Y);
 
         _skybox = new Skybox();
         _grid = new Grid();
@@ -87,9 +87,10 @@ public class Snooper : GameWindow
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
         Framebuffer.Setup();
+        Renderer.Setup();
+
         _skybox.Setup();
         _grid.Setup();
-        Renderer.Setup();
         _init = true;
     }
 
@@ -177,9 +178,10 @@ public class Snooper : GameWindow
 
         GL.Viewport(0, 0, e.Width, e.Height);
 
-        Framebuffer = new FramebufferObject(e.Size);
-        Framebuffer.Setup();
         Camera.AspectRatio = e.Width / (float) e.Height;
+        Framebuffer.WindowResized(e.Width, e.Height);
+        Renderer.Picking.WindowResized(e.Width, e.Height);
+
         _gui.Controller.WindowResized(e.Width, e.Height);
     }
 
@@ -187,9 +189,11 @@ public class Snooper : GameWindow
     {
         base.Dispose(disposing);
 
+        Framebuffer?.Dispose();
+        Renderer?.Dispose();
+
         _skybox?.Dispose();
         _grid?.Dispose();
-        Renderer?.Dispose();
         _gui?.Controller.Dispose();
     }
 }
