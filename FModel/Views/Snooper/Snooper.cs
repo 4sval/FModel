@@ -45,7 +45,7 @@ public class Snooper : GameWindow
         _previousSpeed = Camera.Speed;
     }
 
-    private unsafe void WindowShouldClose(bool value, bool clear)
+    public unsafe void WindowShouldClose(bool value, bool clear)
     {
         if (clear)
         {
@@ -175,12 +175,12 @@ public class Snooper : GameWindow
     {
         base.OnResize(e);
 
-        GL.Viewport(0, 0, Size.X, Size.Y);
+        GL.Viewport(0, 0, e.Width, e.Height);
 
-        Framebuffer = new FramebufferObject(Size);
+        Framebuffer = new FramebufferObject(e.Size);
         Framebuffer.Setup();
-        Camera.AspectRatio = Size.X / (float)Size.Y;
-        _gui.Controller.WindowResized(ClientSize.X, ClientSize.Y);
+        Camera.AspectRatio = e.Width / (float) e.Height;
+        _gui.Controller.WindowResized(e.Width, e.Height);
     }
 
     protected override void Dispose(bool disposing)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Framework;
@@ -14,6 +14,7 @@ public class SnimGui
 {
     public readonly ImGuiController Controller;
     private bool _viewportFocus;
+    private bool _swapAwareness;
 
     private readonly Vector4 _accentColor = new (32, 107, 212, 1f);
     private readonly Vector4 _alertColor = new (212, 146, 32, 1f);
@@ -144,7 +145,7 @@ public class SnimGui
                         s.Renderer.Settings.SelectModel(guid);
                         if (ImGui.Selectable("Delete")) s.Renderer.Cache.Models.Remove(guid);
                         if (ImGui.Selectable("Deselect")) s.Renderer.Settings.SelectModel(Guid.Empty);
-                        if (ImGui.Selectable("Copy Name to Clipboard")) Application.Current.Dispatcher.Invoke(() => Clipboard.SetText(model.Name));
+                        if (ImGui.Selectable("Copy Name to Clipboard")) ImGui.SetClipboardText(model.Name);
                         ImGui.EndPopup();
                     }
                     ImGui.PopID();
@@ -192,6 +193,7 @@ public class SnimGui
                         ImGui.TableSetupColumn("Material");
                         ImGui.TableHeadersRow();
 
+                        var swap = false;
                         for (var i = 0; i < model.Sections.Length; i++)
                         {
                             var section = model.Sections[i];
@@ -214,14 +216,53 @@ public class SnimGui
                             if (ImGui.BeginPopupContextItem())
                             {
                                 s.Renderer.Settings.SelectSection(i);
-                                if (ImGui.Selectable("Swap")) s.Renderer.Settings.SwapMaterial(true);
-                                if (ImGui.Selectable("Copy Name to Clipboard")) Application.Current.Dispatcher.Invoke(() => Clipboard.SetText(material.Name));
+                                if (ImGui.Selectable("Swap"))
+                                {
+                                    if (_swapAwareness)
+                                    {
+                                        s.Renderer.Settings.SwapMaterial(true);
+                                        s.WindowShouldClose(true, false);
+                                    }
+                                    else swap = true;
+                                }
+                                if (ImGui.Selectable("Copy Name to Clipboard")) ImGui.SetClipboardText(material.Name);
                                 ImGui.EndPopup();
                             }
                             ImGui.PopID();
                         }
-
                         ImGui.EndTable();
+
+                        var p_open = true;
+                        if (swap) ImGui.OpenPopup("Swap?");
+                        ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Vector2(.5f));
+                        if (ImGui.BeginPopupModal("Swap?", ref p_open, ImGuiWindowFlags.AlwaysAutoResize))
+                        {
+                            ImGui.TextWrapped("You're about to swap a material.\nThe window will close for you to extract a material!\n\n");
+                            ImGui.Separator();
+
+                            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, Vector2.Zero);
+                            ImGui.Checkbox("Got it! Don't show me again", ref _swapAwareness);
+                            ImGui.PopStyleVar();
+
+                            var size = new Vector2(120, 0);
+                            if (ImGui.Button("OK", size))
+                            {
+                                ImGui.CloseCurrentPopup();
+                                s.Renderer.Settings.SwapMaterial(true);
+                                s.WindowShouldClose(true, false);
+                            }
+
+                            ImGui.SetItemDefaultFocus();
+                            ImGui.SameLine();
+
+                            if (ImGui.Button("Cancel", size))
+                            {
+                                ImGui.CloseCurrentPopup();
+                            }
+
+                            ImGui.EndPopup();
+                        }
+
                         ImGui.EndTabItem();
                     }
 
@@ -261,6 +302,7 @@ public class SnimGui
                     }
                 }
             }
+            else NoMeshSelected();
             PopStyleCompact();
             ImGui.End();
         }
@@ -333,6 +375,7 @@ public class SnimGui
 
                 model.UpdateMatrix(model.SelectedInstance);
             }
+            else NoMeshSelected();
             PopStyleCompact();
             ImGui.End();
         }
@@ -357,13 +400,18 @@ public class SnimGui
                 ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
                 if (ImGui.TreeNode("Textures"))
                 {
-                    var size = new Vector2(ImGui.GetContentRegionAvail().X / 4.75f);
-                    DrawSquareTexture(material.Diffuse[material.SelectedChannel], size); ImGui.SameLine();
-                    DrawSquareTexture(material.Normals[material.SelectedChannel], size); ImGui.SameLine();
-                    DrawSquareTexture(material.SpecularMasks[material.SelectedChannel], size); ImGui.SameLine();
-                    DrawSquareTexture(material.Emissive[material.SelectedChannel], size); ImGui.SameLine();
+                    if (material.Diffuse.Length > 0)
+                    {
+                        var size = new Vector2(ImGui.GetContentRegionAvail().X / 4.75f);
+                        DrawSquareTexture(material.Diffuse[material.SelectedChannel], size); ImGui.SameLine();
+                        DrawSquareTexture(material.Normals[material.SelectedChannel], size); ImGui.SameLine();
+                        DrawSquareTexture(material.SpecularMasks[material.SelectedChannel], size); ImGui.SameLine();
+                        DrawSquareTexture(material.Emissive[material.SelectedChannel], size); ImGui.SameLine();
+                    }
+                    else TextColored(_errorColor, "no texture in material section");
                 }
             }
+            else NoMeshSelected();
             PopStyleCompact();
             ImGui.End();
         }
@@ -438,6 +486,12 @@ public class SnimGui
         ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, style.ItemSpacing with { Y = style.ItemSpacing.Y * 0.6f });
     }
 
+    private void NoMeshSelected() => TextColored(_errorColor, "no mesh selected");
+    private void TextColored(Vector4 color, string text)
+    {
+        ImGui.TextColored(color, text);
+    }
+
     private void DrawSquareTexture(Texture texture, Vector2 size) =>
         ImGui.Image(texture?.GetPointer() ?? IntPtr.Zero, size, Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1, 1, 1, .5f));
 
@@ -490,7 +544,7 @@ public class SnimGui
         style.Colors[(int) ImGuiCol.TabHovered]             = new Vector4(0.35f, 0.35f, 0.41f, 0.80f);
         style.Colors[(int) ImGuiCol.TabActive]              = new Vector4(0.23f, 0.24f, 0.29f, 1.00f);
         style.Colors[(int) ImGuiCol.TabUnfocused]           = new Vector4(0.15f, 0.15f, 0.15f, 1.00f);
-        style.Colors[(int) ImGuiCol.TabUnfocusedActive]     = new Vector4(0.14f, 0.26f, 0.42f, 1.00f);
+        style.Colors[(int) ImGuiCol.TabUnfocusedActive]     = new Vector4(0.15f, 0.15f, 0.15f, 1.00f);
         style.Colors[(int) ImGuiCol.DockingPreview]         = new Vector4(0.26f, 0.59f, 0.98f, 0.70f);
         style.Colors[(int) ImGuiCol.DockingEmptyBg]         = new Vector4(0.20f, 0.20f, 0.20f, 1.00f);
         style.Colors[(int) ImGuiCol.PlotLines]              = new Vector4(0.61f, 0.61f, 0.61f, 1.00f);
