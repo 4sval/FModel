@@ -306,6 +306,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -330,8 +331,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Level Of Detail Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.LodExportFormats}" SelectedItem="{Binding SettingsView.SelectedLodExportFormat, Mode=TwoWay}"
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Socket Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.SocketExportFormats}" SelectedItem="{Binding SettingsView.SelectedSocketExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -340,8 +341,18 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Preview in Model Viewer" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <UniformGrid Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 10">
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Level Of Detail Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.LodExportFormats}" SelectedItem="{Binding SettingsView.SelectedLodExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Preview in Model Viewer" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <UniformGrid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 10">
                         <CheckBox Content="Static Meshes" HorizontalAlignment="Left"
                                   IsChecked="{Binding PreviewStaticMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
                         <CheckBox Content="Skeletal Meshes" HorizontalAlignment="Center"
@@ -350,8 +361,8 @@
                                   IsChecked="{Binding PreviewMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
                     </UniformGrid>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Auto-Export without Previewing" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <UniformGrid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 10">
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Auto-Export without Previewing" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <UniformGrid Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Rows="1" Columns="3" Margin="0 5 0 10">
                         <CheckBox Content="Static Meshes" HorizontalAlignment="Left"
                                   IsChecked="{Binding SaveStaticMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                         <CheckBox Content="Skeletal Meshes" HorizontalAlignment="Center"
@@ -360,25 +371,25 @@
                                   IsChecked="{Binding SaveMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
                     </UniformGrid>
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Auto-Export Morph Targets" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Auto-Export Morph Targets" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveMorphTargets, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Auto-Export Animations" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Auto-Export Animations" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveAnimations, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Export Skeletons as Empty Meshes" VerticalAlignment="Center" />
-                    <CheckBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Export Skeletons as Empty Meshes" VerticalAlignment="Center" />
+                    <CheckBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveSkeletonAsMesh, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 0"/>
 
-                    <Separator Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
