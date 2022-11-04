@@ -192,6 +192,7 @@ public class ModelViewerViewModel : ViewModel
                 TextureFormat = UserSettings.Default.TextureExportFormat,
                 LodFormat = UserSettings.Default.LodExportFormat,
                 MeshFormat = UserSettings.Default.MeshExportFormat,
+                SocketFormat = UserSettings.Default.SocketExportFormat,
                 Platform = UserSettings.Default.OverridedPlatform,
                 ExportMorphTargets = UserSettings.Default.SaveMorphTargets
             };

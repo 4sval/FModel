@@ -607,6 +607,13 @@ namespace FModel.Settings
             set => SetProperty(ref _meshExportFormat, value);
         }
 
+        private ESocketFormat _socketExportFormat = ESocketFormat.Bone;
+        public ESocketFormat SocketExportFormat
+        {
+            get => _socketExportFormat;
+            set => SetProperty(ref _socketExportFormat, value);
+        }
+
         private ELodFormat _lodExportFormat = ELodFormat.FirstLod;
         public ELodFormat LodExportFormat
         {

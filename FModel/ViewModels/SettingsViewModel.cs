@@ -131,6 +131,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedMeshExportFormat, value);
     }
 
+    private ESocketFormat _selectedSocketExportFormat;
+    public ESocketFormat SelectedSocketExportFormat
+    {
+        get => _selectedSocketExportFormat;
+        set => SetProperty(ref _selectedSocketExportFormat, value);
+    }
+
     private ELodFormat _selectedLodExportFormat;
     public ELodFormat SelectedLodExportFormat
     {
@@ -154,6 +161,7 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<ECompressedAudio> CompressedAudios { get; private set; }
     public ReadOnlyObservableCollection<EIconStyle> CosmeticStyles { get; private set; }
     public ReadOnlyObservableCollection<EMeshFormat> MeshExportFormats { get; private set; }
+    public ReadOnlyObservableCollection<ESocketFormat> SocketExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ELodFormat> LodExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETexturePlatform> Platforms { get; private set; }
@@ -179,6 +187,7 @@ public class SettingsViewModel : ViewModel
     private ECompressedAudio _compressedAudioSnapshot;
     private EIconStyle _cosmeticStyleSnapshot;
     private EMeshFormat _meshExportFormatSnapshot;
+    private ESocketFormat _socketExportFormatSnapshot;
     private ELodFormat _lodExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
 
@@ -229,6 +238,7 @@ public class SettingsViewModel : ViewModel
         _compressedAudioSnapshot = UserSettings.Default.CompressedAudioMode;
         _cosmeticStyleSnapshot = UserSettings.Default.CosmeticStyle;
         _meshExportFormatSnapshot = UserSettings.Default.MeshExportFormat;
+        _socketExportFormatSnapshot = UserSettings.Default.SocketExportFormat;
         _lodExportFormatSnapshot = UserSettings.Default.LodExportFormat;
         _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
 
@@ -242,6 +252,7 @@ public class SettingsViewModel : ViewModel
         SelectedCompressedAudio = _compressedAudioSnapshot;
         SelectedCosmeticStyle = _cosmeticStyleSnapshot;
         SelectedMeshExportFormat = _meshExportFormatSnapshot;
+        SelectedSocketExportFormat = _socketExportFormatSnapshot;
         SelectedLodExportFormat = _lodExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         SelectedAesReload = UserSettings.Default.AesReload;
@@ -256,6 +267,7 @@ public class SettingsViewModel : ViewModel
         CompressedAudios = new ReadOnlyObservableCollection<ECompressedAudio>(new ObservableCollection<ECompressedAudio>(EnumerateCompressedAudios()));
         CosmeticStyles = new ReadOnlyObservableCollection<EIconStyle>(new ObservableCollection<EIconStyle>(EnumerateCosmeticStyles()));
         MeshExportFormats = new ReadOnlyObservableCollection<EMeshFormat>(new ObservableCollection<EMeshFormat>(EnumerateMeshExportFormat()));
+        SocketExportFormats = new ReadOnlyObservableCollection<ESocketFormat>(new ObservableCollection<ESocketFormat>(EnumerateSocketExportFormat()));
         LodExportFormats = new ReadOnlyObservableCollection<ELodFormat>(new ObservableCollection<ELodFormat>(EnumerateLodExportFormat()));
         TextureExportFormats = new ReadOnlyObservableCollection<ETextureFormat>(new ObservableCollection<ETextureFormat>(EnumerateTextureExportFormat()));
         Platforms = new ReadOnlyObservableCollection<ETexturePlatform>(new ObservableCollection<ETexturePlatform>(EnumerateUePlatforms()));
@@ -344,6 +356,7 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
         UserSettings.Default.CosmeticStyle = SelectedCosmeticStyle;
         UserSettings.Default.MeshExportFormat = SelectedMeshExportFormat;
+        UserSettings.Default.SocketExportFormat = SelectedSocketExportFormat;
         UserSettings.Default.LodExportFormat = SelectedLodExportFormat;
         UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
         UserSettings.Default.AesReload = SelectedAesReload;
@@ -367,6 +380,7 @@ public class SettingsViewModel : ViewModel
     private IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues<ECompressedAudio>();
     private IEnumerable<EIconStyle> EnumerateCosmeticStyles() => Enum.GetValues<EIconStyle>();
     private IEnumerable<EMeshFormat> EnumerateMeshExportFormat() => Enum.GetValues<EMeshFormat>();
+    private IEnumerable<ESocketFormat> EnumerateSocketExportFormat() => Enum.GetValues<ESocketFormat>();
     private IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues<ELodFormat>();
     private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
     private IEnumerable<ETexturePlatform> EnumerateUePlatforms() => Enum.GetValues<ETexturePlatform>();
