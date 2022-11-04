@@ -94,7 +94,7 @@ public class Renderer : IDisposable
 
     private Camera SetupCamera(FBox box)
     {
-        var far = Math.Abs(box.Max.Max());
+        var far = box.Max.AbsMax();
         var center = box.GetCenter();
         return new Camera(
             new Vector3(0f, center.Z, box.Max.Y * 3),
@@ -151,8 +151,22 @@ public class Renderer : IDisposable
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (persistentLevel.Actors[i].Load() is not { } actor ||actor.ExportType == "LODActor" ||
-                !actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "Mesh") ||
+            if (persistentLevel.Actors[i].Load() is not { } actor || actor.ExportType == "LODActor") continue;
+
+            if (actor.ExportType == "LevelBounds" && actor.TryGetValue(out FPackageIndex boxComponent, "BoxComponent") &&
+                boxComponent.Load() is { } boxObject && boxObject.TryGetValue(out FVector relativeLocation, "RelativeLocation") &&
+                boxObject.TryGetValue(out FVector relativeScale3D, "RelativeScale3D"))
+            {
+                var direction = relativeLocation.ToMapVector() * Constants.SCALE_DOWN_RATIO;
+                var position = relativeScale3D.ToMapVector() / 2f * Constants.SCALE_DOWN_RATIO;
+                var far = position.AbsMax();
+                ret = new Camera(
+                    new Vector3(position.X, position.Y, position.Z),
+                    new Vector3(direction.X, direction.Y, direction.Z),
+                    0.01f, far * 25f, far / 10f);
+            }
+
+            if (!actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "Mesh") ||
                 staticMeshComponent.Load() is not { } staticMeshComp) continue;
 
             if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)
@@ -167,11 +181,10 @@ public class Renderer : IDisposable
             var guid = m.LightingGuid;
             var transform = new Transform
             {
-                Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
+                Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO,
                 Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
-                Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
+                Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector).ToMapVector()
             };
-            transform.Rotation.Yaw = -transform.Rotation.Yaw;
 
             if (Cache.Models.TryGetValue(guid, out var model))
             {

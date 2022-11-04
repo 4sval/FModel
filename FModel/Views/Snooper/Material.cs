@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using OpenTK.Graphics.OpenGL4;
@@ -117,10 +118,20 @@ public class Material : IDisposable
                     array[i] = array[i - 1];
             }
         }
+        else if (Parameters.Colors.TryGetValue("Color", out var linearColor)) // POC
+        {
+            for (int i = 0; i < array.Length; i++)
+                array[i] = new Texture(linearColor);
+        }
         else if (Parameters.Textures.TryGetValue(fallback, out var u) && u is UTexture2D o && cache.TryGetCachedTexture(o, out var t))
         {
             for (int i = 0; i < array.Length; i++)
                 array[i] = t;
+        }
+        else if (Parameters.Textures.First() is { Value: UTexture2D d } && cache.TryGetCachedTexture(d, out var rip))
+        {
+            for (int i = 0; i < array.Length; i++)
+                array[i] = rip;
         }
     }
 

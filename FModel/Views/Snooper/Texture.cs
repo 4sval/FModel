@@ -1,10 +1,10 @@
 using System;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.UE4.Objects.Core.Math;
 using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using SkiaSharp;
 
 namespace FModel.Views.Snooper;
 
@@ -82,6 +82,23 @@ public class Texture : IDisposable
         Bind(TextureUnit.Texture0);
 
         GL.TexImage2D(_target, 0, PixelInternalFormat.Rgb, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+        GL.TexParameter(_target, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.LinearMipmapLinear);
+        GL.TexParameter(_target, TextureParameterName.TextureMagFilter, (int) TextureMinFilter.Linear);
+        GL.TexParameter(_target, TextureParameterName.TextureBaseLevel, 0);
+        GL.TexParameter(_target, TextureParameterName.TextureMaxLevel, 8);
+
+        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+    }
+
+    public Texture(FLinearColor color) : this(TextureType.Normal)
+    {
+        Type = "LinearColor";
+        Name = color.Hex;
+        Width = 1;
+        Height = 1;
+        Bind(TextureUnit.Texture0);
+
+        GL.TexImage2D(_target, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.Float, ref color);
         GL.TexParameter(_target, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.LinearMipmapLinear);
         GL.TexParameter(_target, TextureParameterName.TextureMagFilter, (int) TextureMinFilter.Linear);
         GL.TexParameter(_target, TextureParameterName.TextureBaseLevel, 0);

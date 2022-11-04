@@ -37,8 +37,7 @@ public class SnimGui
 
         ImGui.Begin("Camera");
         ImGui.DragFloat("Speed", ref s.Camera.Speed, 0.01f);
-        ImGui.DragFloat("Near", ref s.Camera.Near, 0.1f, 0.01f, s.Camera.Far - 0.1f, "%.2f m", ImGuiSliderFlags.AlwaysClamp);
-        ImGui.DragFloat("Far", ref s.Camera.Far, 0.1f, s.Camera.Near + 0.1f, 0f, "%.2f m", ImGuiSliderFlags.AlwaysClamp);
+        ImGui.DragFloat("Far Plane", ref s.Camera.Far, 0.1f, 5f, s.Camera.Far * 2f, "%.2f m", ImGuiSliderFlags.AlwaysClamp);
         ImGui.End();
         ImGui.Begin("World");
         ImGui.End();
@@ -175,7 +174,7 @@ public class SnimGui
                 if (ImGui.Button("Go To"))
                 {
                     var instancePos = model.Transforms[model.SelectedInstance].Position;
-                    s.Camera.Position = new Vector3(instancePos.X, instancePos.Z, instancePos.Y);
+                    s.Camera.Position = new Vector3(instancePos.X, instancePos.Y, instancePos.Z);
                 }
                 ImGui.NextColumn(); ImGui.Checkbox("Show", ref model.Show);
                 ImGui.NextColumn(); ImGui.BeginDisabled(!model.Show); ImGui.Checkbox("Wire", ref model.Wireframe); ImGui.EndDisabled();
@@ -290,6 +289,8 @@ public class SnimGui
                                 ImGui.SameLine(); ImGui.PushID(99);
                                 ImGui.VSliderFloat("", box with { X = width }, ref model.MorphTime, 0.0f, 1.0f, "", ImGuiSliderFlags.AlwaysClamp);
                                 ImGui.PopID(); ImGui.PopStyleVar();
+                                ImGui.Spacing();
+                                ImGui.Text($"Time: {model.MorphTime:P}%");
                             }
                         }
                         else
@@ -330,10 +331,10 @@ public class SnimGui
                     ImGui.DragFloat("X", ref model.Transforms[model.SelectedInstance].Position.X, speed, 0f, 0f, "%.2f m");
 
                     ImGui.SetNextItemWidth(width);
-                    ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Position.Y, speed, 0f, 0f, "%.2f m");
+                    ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Position.Z, speed, 0f, 0f, "%.2f m");
 
                     ImGui.SetNextItemWidth(width);
-                    ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Position.Z, speed, 0f, 0f, "%.2f m");
+                    ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Position.Y, speed, 0f, 0f, "%.2f m");
 
                     ImGui.PopID();
                     ImGui.TreePop();
@@ -344,10 +345,10 @@ public class SnimGui
                 {
                     ImGui.PushID(2);
                     ImGui.SetNextItemWidth(width);
-                    ImGui.DragFloat("X", ref model.Transforms[model.SelectedInstance].Rotation.Pitch, .5f, 0f, 0f, "%.1f°");
+                    ImGui.DragFloat("X", ref model.Transforms[model.SelectedInstance].Rotation.Roll, .5f, 0f, 0f, "%.1f°");
 
                     ImGui.SetNextItemWidth(width);
-                    ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Rotation.Roll, .5f, 0f, 0f, "%.1f°");
+                    ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Rotation.Pitch, .5f, 0f, 0f, "%.1f°");
 
                     ImGui.SetNextItemWidth(width);
                     ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Rotation.Yaw, .5f, 0f, 0f, "%.1f°");
@@ -363,10 +364,10 @@ public class SnimGui
                     ImGui.DragFloat("X", ref model.Transforms[model.SelectedInstance].Scale.X, speed, 0f, 0f, "%.3f");
 
                     ImGui.SetNextItemWidth(width);
-                    ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Scale.Y, speed, 0f, 0f, "%.3f");
+                    ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Scale.Z, speed, 0f, 0f, "%.3f");
 
                     ImGui.SetNextItemWidth(width);
-                    ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Scale.Z, speed, 0f, 0f, "%.3f");
+                    ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Scale.Y, speed, 0f, 0f, "%.3f");
 
                     ImGui.PopID();
                     ImGui.TreePop();
@@ -496,8 +497,28 @@ public class SnimGui
         ImGui.TextColored(color, text);
     }
 
-    private void DrawSquareTexture(Texture texture, Vector2 size) =>
+    private void DrawSquareTexture(Texture texture, Vector2 size)
+    {
         ImGui.Image(texture?.GetPointer() ?? IntPtr.Zero, size, Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1, 1, 1, .5f));
+        if (texture == null) return;
+
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text($"Type: ({texture.Format}) {texture.Type}:{texture.Name}");
+            ImGui.Text($"Texture: {texture.Path}");
+            ImGui.Text($"Imported: {texture.ImportedWidth}x{texture.ImportedHeight}");
+            ImGui.Text($"Mip Used: {texture.Width}x{texture.Height}");
+            ImGui.Spacing();
+            ImGui.TextDisabled(texture.Label);
+            ImGui.EndTooltip();
+        }
+        if (ImGui.IsItemClicked())
+        {
+            ImGui.SetClipboardText(Creator.Utils.FixPath(texture.Path));
+            texture.Label = "(?) Path Copied to Clipboard";
+        }
+    }
 
     private void Theme(ImGuiStylePtr style)
     {

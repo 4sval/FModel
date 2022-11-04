@@ -79,7 +79,7 @@ public partial class MainWindow
 #if DEBUG
         await _threadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.Extract(cancellationToken,
-                "FortniteGame/Content/Athena/Artemis/Maps/Buildings/15x25/Artemis_Blimp_party.umap"));
+                "FortniteGame/Content/Athena/Artemis/Maps/Buildings/5x5/Artemis_5x5_Shop_AB.umap"));
 #endif
     }
 
