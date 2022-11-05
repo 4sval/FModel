@@ -40,7 +40,7 @@ public class Renderer : IDisposable
             UStaticMesh st => LoadStaticMesh(st),
             USkeletalMesh sk => LoadSkeletalMesh(sk),
             UMaterialInstance mi => LoadMaterialInstance(mi),
-            UWorld wd => LoadWorld(cancellationToken, wd),
+            UWorld wd => LoadWorld(cancellationToken, wd, Transform.Identity),
             _ => throw new ArgumentOutOfRangeException(nameof(export))
         };
     }
@@ -140,100 +140,128 @@ public class Renderer : IDisposable
         return SetupCamera(new FBox(new FVector(-.65f), new FVector(.65f)));
     }
 
-    private Camera LoadWorld(CancellationToken cancellationToken, UWorld original)
+    private Camera LoadWorld(CancellationToken cancellationToken, UWorld original, Transform transform)
     {
-        var ret = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
+        var cam = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
         if (original.PersistentLevel.Load<ULevel>() is not { } persistentLevel)
-            return ret;
+            return cam;
 
         var length = persistentLevel.Actors.Length;
         for (var i = 0; i < length; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (persistentLevel.Actors[i].Load() is not { } actor || actor.ExportType == "LODActor") continue;
-
-            if (actor.ExportType == "LevelBounds" && actor.TryGetValue(out FPackageIndex boxComponent, "BoxComponent") &&
-                boxComponent.Load() is { } boxObject && boxObject.TryGetValue(out FVector relativeLocation, "RelativeLocation") &&
-                boxObject.TryGetValue(out FVector relativeScale3D, "RelativeScale3D"))
-            {
-                var direction = relativeLocation.ToMapVector() * Constants.SCALE_DOWN_RATIO;
-                var position = relativeScale3D.ToMapVector() / 2f * Constants.SCALE_DOWN_RATIO;
-                var far = position.AbsMax();
-                ret = new Camera(
-                    new Vector3(position.X, position.Y, position.Z),
-                    new Vector3(direction.X, direction.Y, direction.Z),
-                    0.01f, far * 25f, far / 10f);
-            }
-
-            if (!actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "Mesh") ||
-                staticMeshComponent.Load() is not { } staticMeshComp) continue;
-
-            if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)
-                foreach (var actorExp in actor.Class.Owner.GetExports())
-                    if (actorExp.TryGetValue(out staticMesh, "StaticMesh"))
-                        break;
-            if (staticMesh?.Load() is not UStaticMesh m)
+            if (persistentLevel.Actors[i].Load() is not { } actor ||
+                actor.ExportType is "LODActor" or "SplineMeshActor")
                 continue;
 
-            Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"Actor {i}/{length}");
-
-            var guid = m.LightingGuid;
-            var transform = new Transform
-            {
-                Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO,
-                Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
-                Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector).ToMapVector()
-            };
-
-            if (Cache.Models.TryGetValue(guid, out var model))
-            {
-                model.AddInstance(transform);
-            }
-            else if (m.TryConvert(out var mesh))
-            {
-                model = new Model(m.Name, m.ExportType, m.Materials, mesh, transform);
-
-                if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
-                {
-                    for (int j = 0; j < textureData.Length; j++)
-                    {
-                        if (!model.Materials[model.Sections[j].MaterialIndex].IsUsed ||
-                            textureData[j].Load() is not { } textureDataIdx)
-                            continue;
-
-                        if (textureDataIdx.TryGetValue(out FPackageIndex overrideMaterial, "OverrideMaterial") &&
-                            overrideMaterial.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
-                            model.Materials[model.Sections[j].MaterialIndex].SwapMaterial(unrealMaterial);
-
-                        if (textureDataIdx.TryGetValue(out FPackageIndex diffuse, "Diffuse") &&
-                            diffuse.Load() is UTexture2D diffuseTexture)
-                            model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.Diffuse[0][0]] = diffuseTexture;
-                        if (textureDataIdx.TryGetValue(out FPackageIndex normal, "Normal") &&
-                            normal.Load() is UTexture2D normalTexture)
-                            model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.Normals[0][0]] = normalTexture;
-                        if (textureDataIdx.TryGetValue(out FPackageIndex specular, "Specular") &&
-                            specular.Load() is UTexture2D specularTexture)
-                            model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.SpecularMasks[0][0]] = specularTexture;
-                    }
-                }
-                if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))
-                {
-                    var max = model.Sections.Length - 1;
-                    for (var j = 0; j < overrideMaterials.Length; j++)
-                    {
-                        if (j > max) break;
-                        if (!model.Materials[model.Sections[j].MaterialIndex].IsUsed ||
-                            overrideMaterials[j].Load() is not UMaterialInterface unrealMaterial) continue;
-                        model.Materials[model.Sections[j].MaterialIndex].SwapMaterial(unrealMaterial);
-                    }
-                }
-
-                Cache.Models[guid] = model;
-            }
+            Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} {i}/{length}");
+            WorldCamera(actor, ref cam);
+            WorldMesh(actor, transform);
+            AdditionalWorlds(actor, cancellationToken);
         }
-        Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"Actor {length}/{length}");
-        return ret;
+        Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} {length}/{length}");
+        return cam;
+    }
+
+    private void WorldCamera(UObject actor, ref Camera cam)
+    {
+        if (actor.ExportType != "LevelBounds" || !actor.TryGetValue(out FPackageIndex boxComponent, "BoxComponent") ||
+            boxComponent.Load() is not { } boxObject) return;
+
+        var direction = boxObject.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO;
+        var position = boxObject.GetOrDefault("RelativeScale3D", FVector.OneVector).ToMapVector() / 2f * Constants.SCALE_DOWN_RATIO;
+        var far = position.AbsMax();
+        cam = new Camera(
+            new Vector3(position.X, position.Y, position.Z),
+            new Vector3(direction.X, direction.Y, direction.Z),
+            0.01f, far * 25f, far / 10f);
+    }
+
+    private void WorldMesh(UObject actor, Transform transform)
+    {
+        if (!actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "Mesh") ||
+            staticMeshComponent.Load() is not { } staticMeshComp) return;
+
+        if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)
+            foreach (var actorExp in actor.Class.Owner.GetExports())
+                if (actorExp.TryGetValue(out staticMesh, "StaticMesh"))
+                    break;
+
+        if (staticMesh?.Load() is not UStaticMesh m)
+            return;
+
+        var guid = m.LightingGuid;
+        var t = new Transform
+        {
+            Relation = transform.Matrix,
+            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO,
+            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
+            Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector).ToMapVector()
+        };
+
+        if (Cache.Models.TryGetValue(guid, out var model))
+        {
+            model.AddInstance(t);
+        }
+        else if (m.TryConvert(out var mesh))
+        {
+            model = new Model(m.Name, m.ExportType, m.Materials, mesh, t);
+            if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
+            {
+                for (int j = 0; j < textureData.Length; j++)
+                {
+                    if (!model.Materials[model.Sections[j].MaterialIndex].IsUsed ||
+                        textureData[j].Load() is not { } textureDataIdx)
+                        continue;
+
+                    if (textureDataIdx.TryGetValue(out FPackageIndex overrideMaterial, "OverrideMaterial") &&
+                        overrideMaterial.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
+                        model.Materials[model.Sections[j].MaterialIndex].SwapMaterial(unrealMaterial);
+
+                    if (textureDataIdx.TryGetValue(out FPackageIndex diffuse, "Diffuse") &&
+                        diffuse.Load() is UTexture2D diffuseTexture)
+                        model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.Diffuse[0][0]] = diffuseTexture;
+                    if (textureDataIdx.TryGetValue(out FPackageIndex normal, "Normal") &&
+                        normal.Load() is UTexture2D normalTexture)
+                        model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.Normals[0][0]] = normalTexture;
+                    if (textureDataIdx.TryGetValue(out FPackageIndex specular, "Specular") &&
+                        specular.Load() is UTexture2D specularTexture)
+                        model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures[CMaterialParams2.SpecularMasks[0][0]] = specularTexture;
+                }
+            }
+            if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))
+            {
+                var max = model.Sections.Length - 1;
+                for (var j = 0; j < overrideMaterials.Length; j++)
+                {
+                    if (j > max) break;
+                    if (!model.Materials[model.Sections[j].MaterialIndex].IsUsed ||
+                        overrideMaterials[j].Load() is not UMaterialInterface unrealMaterial) continue;
+                    model.Materials[model.Sections[j].MaterialIndex].SwapMaterial(unrealMaterial);
+                }
+            }
+            Cache.Models[guid] = model;
+        }
+    }
+
+    private void AdditionalWorlds(UObject actor, CancellationToken cancellationToken)
+    {
+        if (!actor.TryGetValue(out FSoftObjectPath[] additionalWorlds, "AdditionalWorlds") ||
+            !actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "Mesh") ||
+            staticMeshComponent.Load() is not { } staticMeshComp)
+            return;
+
+        var transform = new Transform
+        {
+            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO,
+            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
+            Scale = FVector.OneVector.ToMapVector()
+        };
+
+        for (int j = 0; j < additionalWorlds.Length; j++)
+            if (Creator.Utils.TryLoadObject(additionalWorlds[j].AssetPathName.Text, out UWorld w))
+                LoadWorld(cancellationToken, w, transform);
     }
 
     public void Dispose()
