@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Threading;
 using System.Windows;
 using CUE4Parse_Conversion.Meshes;
@@ -11,7 +12,7 @@ using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+using Vector3 = OpenTK.Mathematics.Vector3;
 
 namespace FModel.Views.Snooper;
 
@@ -155,12 +156,12 @@ public class Renderer : IDisposable
                 actor.ExportType is "LODActor" or "SplineMeshActor")
                 continue;
 
-            Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} {i}/{length}");
+            Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {i}/{length}");
             WorldCamera(actor, ref cam);
             WorldMesh(actor, transform);
-            AdditionalWorlds(actor, cancellationToken);
+            AdditionalWorlds(actor, transform.Matrix, cancellationToken);
         }
-        Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} {length}/{length}");
+        Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {length}/{length}");
         return cam;
     }
 
@@ -245,7 +246,7 @@ public class Renderer : IDisposable
         }
     }
 
-    private void AdditionalWorlds(UObject actor, CancellationToken cancellationToken)
+    private void AdditionalWorlds(UObject actor, Matrix4x4 relation, CancellationToken cancellationToken)
     {
         if (!actor.TryGetValue(out FSoftObjectPath[] additionalWorlds, "AdditionalWorlds") ||
             !actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "Mesh") ||
@@ -254,6 +255,7 @@ public class Renderer : IDisposable
 
         var transform = new Transform
         {
+            Relation = relation,
             Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO,
             Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
             Scale = FVector.OneVector.ToMapVector()
