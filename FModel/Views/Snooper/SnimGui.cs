@@ -1,4 +1,6 @@
 using System;
+using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Framework;
 using ImGuiNET;
@@ -36,17 +38,51 @@ public class SnimGui
         DrawNavbar();
 
         ImGui.Begin("Camera");
-        ImGui.DragFloat("Speed", ref s.Camera.Speed, 0.01f);
+        ImGui.DragFloat("Speed", ref s.Camera.Speed, 0.01f, 0.05f);
         ImGui.DragFloat("Far Plane", ref s.Camera.Far, 0.1f, 5f, s.Camera.Far * 2f, "%.2f m", ImGuiSliderFlags.AlwaysClamp);
         ImGui.End();
         ImGui.Begin("World");
         ImGui.End();
         ImGui.Begin("Timeline");
         ImGui.End();
-        ImGui.Begin("Materials");
-        ImGui.End();
-        ImGui.Begin("Textures");
-        ImGui.End();
+        if (ImGui.Begin("Materials"))
+        {
+            PushStyleCompact();
+            var guid = s.Renderer.Settings.SelectedModel;
+            if (s.Renderer.Cache.Models.TryGetValue(guid, out var model) &&
+                s.Renderer.Settings.TryGetSection(model, out var section))
+            {
+                var material = model.Materials[section.MaterialIndex];
+                foreach ((string key, float value) in material.Parameters.Scalars)
+                {
+                    ImGui.Text($"{key}: {value}");
+                }
+                ImGui.Spacing(); ImGui.Separator(); ImGui.Spacing();
+                foreach ((string key, FLinearColor value) in material.Parameters.Colors)
+                {
+                    ImGui.Text(key); ImGui.SameLine();
+                    ImGui.ColorButton(key, new Vector4(value.R, value.G, value.B, value.A));
+                }
+            }
+            else NoMeshSelected();
+            PopStyleCompact();
+        }
+        if (ImGui.Begin("Textures"))
+        {
+            PushStyleCompact();
+            var guid = s.Renderer.Settings.SelectedModel;
+            if (s.Renderer.Cache.Models.TryGetValue(guid, out var model) &&
+                s.Renderer.Settings.TryGetSection(model, out var section))
+            {
+                var material = model.Materials[section.MaterialIndex];
+                foreach ((string key, UUnrealMaterial value) in material.Parameters.Textures)
+                {
+                    ImGui.Text($"{key}: {value.Name}");
+                }
+            }
+            else NoMeshSelected();
+            PopStyleCompact();
+        }
 
         DrawUvChannels(s);
         DrawTransform(s);
@@ -170,7 +206,7 @@ public class SnimGui
                 ImGui.Text($"Entity: ({model.Type}) {model.Name}");
                 ImGui.Text($"Guid: {guid.ToString(EGuidFormats.UniqueObjectGuid)}");
 
-                ImGui.Columns(4, "Actions", false);
+                ImGui.Columns(3, "Actions", false);
                 if (ImGui.Button("Go To"))
                 {
                     var instancePos = model.Transforms[model.SelectedInstance].Position;
@@ -178,7 +214,11 @@ public class SnimGui
                 }
                 ImGui.NextColumn(); ImGui.Checkbox("Show", ref model.Show);
                 ImGui.NextColumn(); ImGui.BeginDisabled(!model.Show); ImGui.Checkbox("Wire", ref model.Wireframe); ImGui.EndDisabled();
-                ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasVertexColors); ImGui.Checkbox("Colors", ref model.DisplayVertexColors); ImGui.EndDisabled();
+                ImGui.Columns(4);
+                ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasVertexColors); ImGui.Checkbox("Colors", ref model.bVertexColors); ImGui.EndDisabled();
+                ImGui.NextColumn(); ImGui.Checkbox("Normals", ref model.bVertexNormals);
+                ImGui.NextColumn(); ImGui.Checkbox("Tangent", ref model.bVertexTangent);
+                ImGui.NextColumn(); ImGui.Checkbox("Coords", ref model.bVertexTexCoords);
                 ImGui.Columns(1);
 
                 ImGui.Separator();
@@ -301,6 +341,22 @@ public class SnimGui
                         ImGui.EndTabItem();
                     }
                 }
+
+                if (ImGui.Begin("test") && s.Renderer.Settings.TryGetSection(model, out var sec))
+                {
+                    var material = model.Materials[sec.MaterialIndex];
+                    ImGui.DragFloat("Roughness", ref material.Roughness, .01f, 0f, 1f);
+                    ImGui.DragFloat("Specular Multiplier", ref material.SpecularMult, .01f, 0f);
+                    ImGui.DragFloat("Emissive Multiplier", ref material.EmissiveMult, .01f, 0f);
+                    ImGui.DragFloat("UV Scale", ref material.UVScale, .01f, 0f);
+                    if (material.HasM)
+                    {
+                        ImGui.ColorEdit3("Skin Boost Color", ref material.M.SkinBoost.Color);
+                        ImGui.DragFloat("Skin Boost Exponent", ref material.M.SkinBoost.Exponent, .01f, 0f);
+                        ImGui.DragFloat("AmbientOcclusion", ref material.M.AmbientOcclusion, .01f, 0f, 1f);
+                        ImGui.DragFloat("Cavity", ref material.M.Cavity, .01f, 0f, 1f);
+                    }
+                }
             }
             else NoMeshSelected();
             PopStyleCompact();
@@ -402,10 +458,11 @@ public class SnimGui
                 {
                     if (material.Diffuse.Length > 0)
                     {
-                        var size = new Vector2(ImGui.GetContentRegionAvail().X / 4.75f);
+                        var size = new Vector2(ImGui.GetContentRegionAvail().X / 5.75f);
                         DrawSquareTexture(material.Diffuse[material.SelectedChannel], size); ImGui.SameLine();
                         DrawSquareTexture(material.Normals[material.SelectedChannel], size); ImGui.SameLine();
                         DrawSquareTexture(material.SpecularMasks[material.SelectedChannel], size); ImGui.SameLine();
+                        DrawSquareTexture(material.M.Texture, size); ImGui.SameLine();
                         DrawSquareTexture(material.Emissive[material.SelectedChannel], size); ImGui.SameLine();
                     }
                     else TextColored(_errorColor, "no texture in material section");
@@ -453,6 +510,7 @@ public class SnimGui
             {
                 var guid = s.Renderer.Picking.ReadPixel(ImGui.GetMousePos(), ImGui.GetCursorScreenPos(), size);
                 s.Renderer.Settings.SelectModel(guid);
+                ImGui.SetWindowFocus("Outliner");
             }
         }
 

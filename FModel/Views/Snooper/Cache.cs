@@ -56,24 +56,6 @@ public class Cache : IDisposable
         }
     }
 
-    public void Render(Shader shader)
-    {
-        foreach (var model in Models.Values)
-        {
-            if (!model.Show) continue;
-            model.Render(shader);
-        }
-    }
-
-    public void Outline(Shader shader)
-    {
-        foreach (var model in Models.Values)
-        {
-            if (!model.IsSelected || !model.Show) continue;
-            model.Outline(shader);
-        }
-    }
-
     public void DisposeModels()
     {
         foreach (var model in Models.Values)

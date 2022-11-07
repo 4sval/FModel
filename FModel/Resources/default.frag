@@ -1,118 +1,136 @@
 ﻿#version 330 core
+#define MAX_UV_COUNT 8
 
 in vec3 fPos;
 in vec3 fNormal;
+in vec3 fTangent;
 in vec2 fTexCoords;
 in float fTexLayer;
 in vec4 fColor;
 
-struct Material {
-    sampler2D diffuseMap[8];
-    sampler2D normalMap[8];
-    sampler2D specularMap[8];
-    sampler2D emissionMap[8];
-
-    bool useSpecularMap;
-
-    bool hasDiffuseColor;
-    vec4 diffuseColor;
-
-    vec4 emissionColor[8];
-
-    float metallic_value;
-    float roughness_value;
+struct Texture
+{
+    sampler2D Sampler;
+    vec4 Color;
 };
 
-struct Light {
-    vec3 position;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
+struct Boost
+{
+    vec3 Color;
+    float Exponent;
 };
 
-uniform Material material;
-uniform Light light;
-uniform vec3 viewPos;
-uniform bool display_vertex_colors;
-uniform int numTexCoords;
+struct Mask
+{
+    sampler2D Sampler;
+    Boost SkinBoost;
+
+    float AmbientOcclusion;
+    float Cavity;
+};
+
+struct Parameters
+{
+    Texture Diffuse[MAX_UV_COUNT];
+    Texture Normals[MAX_UV_COUNT];
+    Texture SpecularMasks[MAX_UV_COUNT];
+    Texture Emissive[MAX_UV_COUNT];
+
+    Mask M;
+    bool HasM;
+
+    float Roughness;
+    float SpecularMult;
+    float EmissiveMult;
+
+    float UVScale;
+};
+
+uniform Parameters uParameters;
+uniform int uNumTexCoords;
+uniform vec3 uViewPos;
+uniform bool bVertexColors;
+uniform bool bVertexNormals;
+uniform bool bVertexTangent;
+uniform bool bVertexTexCoords;
 
 out vec4 FragColor;
 
 int LayerToIndex()
 {
-    return min(int(fTexLayer), numTexCoords - 1);
+    return min(int(fTexLayer), uNumTexCoords - 1);
 }
 
-vec4 SamplerSelector(sampler2D array[8])
+vec4 SamplerToVector(sampler2D s)
 {
-    return texture(array[LayerToIndex()], fTexCoords);
+    return texture(s, fTexCoords * uParameters.UVScale);
 }
 
-vec4 VectorSelector(vec4 array[8])
+vec3 ComputeNormals(int layer)
 {
-    return array[LayerToIndex()];
-}
+    vec3 normal = SamplerToVector(uParameters.Normals[layer].Sampler).rgb * 2.0 - 1.0;
 
-vec3 getNormalFromMap()
-{
-    vec3 tangentNormal = SamplerSelector(material.normalMap).xyz * 2.0 - 1.0;
-
-    vec3 q1  = dFdx(fPos);
-    vec3 q2  = dFdy(fPos);
-    vec2 st1 = dFdx(fTexCoords);
-    vec2 st2 = dFdy(fTexCoords);
-
-    vec3 n   = normalize(fNormal);
-    vec3 t  = normalize(q1*st2.t - q2*st1.t);
+    vec3 t  = normalize(fTangent);
+    vec3 n  = normalize(fNormal);
     vec3 b  = -normalize(cross(n, t));
     mat3 tbn = mat3(t, b, n);
 
-    return normalize(tbn * tangentNormal);
+    return normalize(tbn * normal);
 }
 
 void main()
 {
-    if (display_vertex_colors)
+    if (bVertexColors)
     {
         FragColor = fColor;
     }
+    else if (bVertexNormals)
+    {
+        FragColor = vec4(fNormal, 1);
+    }
+    else if (bVertexTangent)
+    {
+        FragColor = vec4(fTangent, 1);
+    }
+    else if (bVertexTexCoords)
+    {
+        FragColor = vec4(fTexCoords, 0, 1);
+    }
     else
     {
-        vec3 n_normal_map = getNormalFromMap();
-        vec3 n_light_direction = normalize(light.position - fPos);
-        float diff = max(dot(n_normal_map, n_light_direction), 0.0f);
+        int layer = LayerToIndex();
+        vec4 diffuse = SamplerToVector(uParameters.Diffuse[layer].Sampler);
+        vec3 result = uParameters.Diffuse[layer].Color.rgb * diffuse.rgb;
 
-        if (material.hasDiffuseColor)
+        vec3 normals = ComputeNormals(layer);
+        vec3 light_direction = normalize(uViewPos - fPos);
+        result += max(dot(normals, light_direction), 0.0f) * result;
+
+        if (uParameters.HasM)
         {
-            vec4 result = vec4(light.ambient, 1.0) * material.diffuseColor;
-            result += vec4(light.diffuse, 1.0) * diff * material.diffuseColor;
-            FragColor = result;
-        }
-        else
-        {
-            vec4 diffuse_map = SamplerSelector(material.diffuseMap);
-            vec3 diffuse_no_alpha = vec3(diffuse_map);
-            vec3 result = light.ambient * diffuse_no_alpha;
+            vec3 m = SamplerToVector(uParameters.M.Sampler).rgb;
+            float subsurface = clamp(m.b * .04f, 0.0f, 1.0f);
 
-            // diffuse
-            result += light.diffuse * diff * diffuse_no_alpha;
-
-            // specular
-            if (material.useSpecularMap)
+            if (subsurface > 0.0f && uParameters.M.SkinBoost.Exponent > 0.0f)
             {
-                vec3 n_view_direction = normalize(viewPos - fPos);
-                vec3 reflect_direction = reflect(-n_light_direction, n_normal_map);
-                float metallic = pow(max(dot(n_view_direction, reflect_direction), 0.0f), material.metallic_value);
-                vec3 specular_map = vec3(SamplerSelector(material.specularMap));
-                result += specular_map.r * light.specular * (metallic * specular_map.g);
-                result += material.roughness_value * specular_map.b;
+                vec3 color = pow(uParameters.M.SkinBoost.Exponent, 2) * uParameters.M.SkinBoost.Color;
+                result *= clamp(color * m.b, 0.0f, 1.0f);
             }
 
-            // emission
-            vec3 emission_map = vec3(SamplerSelector(material.emissionMap));
-            result += VectorSelector(material.emissionColor).rgb * emission_map;
-
-            FragColor = vec4(result, 1.0);
+            result *= m.r * uParameters.M.AmbientOcclusion;
+            result += m.g * uParameters.M.Cavity;
         }
+
+        vec3 reflect_direction = reflect(-light_direction, normals);
+        vec3 specular_masks = SamplerToVector(uParameters.SpecularMasks[layer].Sampler).rgb;
+        float specular = uParameters.SpecularMult * max(0.0f, specular_masks.r);
+        float metallic = max(0.0f, dot(light_direction, reflect_direction) * specular_masks.g);
+        float roughness = max(0.0f, uParameters.Roughness * specular_masks.b);
+        result += metallic * roughness * specular;
+
+        vec4 emissive = SamplerToVector(uParameters.Emissive[layer].Sampler);
+        result += uParameters.Emissive[layer].Color.rgb * emissive.rgb * uParameters.EmissiveMult;
+
+        FragColor = vec4(result, 1.0f);
     }
 }

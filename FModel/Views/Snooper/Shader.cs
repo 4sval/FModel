@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -35,9 +35,38 @@ public class Shader : IDisposable
         GL.DeleteShader(f);
     }
 
+    private int LoadShader(ShaderType type, string file)
+    {
+        var executingAssembly = Assembly.GetExecutingAssembly();
+        using var stream = executingAssembly.GetManifestResourceStream($"{executingAssembly.GetName().Name}.Resources.{file}");
+        using var reader = new StreamReader(stream);
+        var handle = GL.CreateShader(type);
+        GL.ShaderSource(handle, reader.ReadToEnd());
+        GL.CompileShader(handle);
+        string infoLog = GL.GetShaderInfoLog(handle);
+        if (!string.IsNullOrWhiteSpace(infoLog))
+        {
+            throw new Exception($"Error compiling shader of type {type}, failed with error {infoLog}");
+        }
+
+        return handle;
+    }
+
     public void Use()
     {
         GL.UseProgram(_handle);
+    }
+
+    public void Render(Matrix4 viewMatrix, Vector3 viewPos, Matrix4 projMatrix)
+    {
+        Render(viewMatrix, projMatrix);
+        SetUniform("uViewPos", viewPos);
+    }
+    public void Render(Matrix4 viewMatrix, Matrix4 projMatrix)
+    {
+        Use();
+        SetUniform("uView", viewMatrix);
+        SetUniform("uProjection", projMatrix);
     }
 
     public void SetUniform(string name, int value)
@@ -83,24 +112,28 @@ public class Shader : IDisposable
         GL.Uniform1(location, value);
     }
 
-    public void SetUniform(string name, Vector3 value)
+    public void SetUniform(string name, Vector3 value) => SetUniform3(name, value.X, value.Y, value.Z);
+    public void SetUniform(string name, System.Numerics.Vector3 value) => SetUniform3(name, value.X, value.Y, value.Z);
+    public void SetUniform3(string name, float x, float y, float z)
     {
         int location = GL.GetUniformLocation(_handle, name);
         if (location == -1)
         {
             throw new Exception($"{name} uniform not found on shader.");
         }
-        GL.Uniform3(location, value.X, value.Y, value.Z);
+        GL.Uniform3(location, x, y, z);
     }
 
-    public void SetUniform(string name, Vector4 value)
+    public void SetUniform(string name, Vector4 value) => SetUniform4(name, value.X, value.Y, value.Z, value.W);
+    public void SetUniform(string name, System.Numerics.Vector4 value) => SetUniform4(name, value.X, value.Y, value.Z, value.W);
+    public void SetUniform4(string name, float x, float y, float z, float w)
     {
         int location = GL.GetUniformLocation(_handle, name);
         if (location == -1)
         {
             throw new Exception($"{name} uniform not found on shader.");
         }
-        GL.Uniform4(location, value.X, value.Y, value.Z, value.W);
+        GL.Uniform4(location, x, y, z, w);
     }
 
     public int GetUniformLocation(string uniform)
@@ -134,22 +167,5 @@ public class Shader : IDisposable
     public void Dispose()
     {
         GL.DeleteProgram(_handle);
-    }
-
-    private int LoadShader(ShaderType type, string file)
-    {
-        var executingAssembly = Assembly.GetExecutingAssembly();
-        using var stream = executingAssembly.GetManifestResourceStream($"{executingAssembly.GetName().Name}.Resources.{file}");
-        using var reader = new StreamReader(stream);
-        var handle = GL.CreateShader(type);
-        GL.ShaderSource(handle, reader.ReadToEnd());
-        GL.CompileShader(handle);
-        string infoLog = GL.GetShaderInfoLog(handle);
-        if (!string.IsNullOrWhiteSpace(infoLog))
-        {
-            throw new Exception($"Error compiling shader of type {type}, failed with error {infoLog}");
-        }
-
-        return handle;
     }
 }

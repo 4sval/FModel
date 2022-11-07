@@ -21,7 +21,7 @@ public class Model : IDisposable
     private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
-    private readonly int _vertexSize = 10; // VertexIndex + Position + Normal + UV + TextureLayer
+    private readonly int _vertexSize = 13; // VertexIndex + Position + Normal + Tangent + UV + TextureLayer
     private readonly uint[] _facesIndex = { 1, 0, 2 };
     private const int _faceSize = 3; // just so we don't have to do .Length
 
@@ -46,7 +46,10 @@ public class Model : IDisposable
     public bool Wireframe;
     public bool IsSetup;
     public bool IsSelected;
-    public bool DisplayVertexColors;
+    public bool bVertexColors;
+    public bool bVertexNormals;
+    public bool bVertexTangent;
+    public bool bVertexTexCoords;
     public bool DisplayBones;
     public int SelectedInstance;
     public float MorphTime;
@@ -127,6 +130,9 @@ public class Model : IDisposable
                     Vertices[baseIndex + count++] = vert.Normal.X;
                     Vertices[baseIndex + count++] = vert.Normal.Z;
                     Vertices[baseIndex + count++] = vert.Normal.Y;
+                    Vertices[baseIndex + count++] = vert.Tangent.X;
+                    Vertices[baseIndex + count++] = vert.Tangent.Z;
+                    Vertices[baseIndex + count++] = vert.Tangent.Y;
                     Vertices[baseIndex + count++] = vert.UV.U;
                     Vertices[baseIndex + count++] = vert.UV.V;
                     Vertices[baseIndex + count++] = lod.ExtraUV.IsValueCreated ? lod.ExtraUV.Value[0][indice].U : .5f;
@@ -188,7 +194,7 @@ public class Model : IDisposable
         for (var i = 0; i < instanceMatrix.Length; i++)
             instanceMatrix[i] = Transforms[i].Matrix;
         _matrixVbo = new BufferObject<Matrix4x4>(instanceMatrix, BufferTarget.ArrayBuffer);
-        _vao.BindInstancing(); // VertexAttributePointer 7, 8, 9, 10
+        _vao.BindInstancing(); // VertexAttributePointer
     }
 
     public void Setup(Cache cache)
@@ -202,11 +208,12 @@ public class Model : IDisposable
         _vao.VertexAttributePointer(0, 1, VertexAttribPointerType.Int, _vertexSize, 0); // vertex index
         _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, _vertexSize, 1); // position
         _vao.VertexAttributePointer(2, 3, VertexAttribPointerType.Float, _vertexSize, 4); // normal
-        _vao.VertexAttributePointer(3, 2, VertexAttribPointerType.Float, _vertexSize, 7); // uv
-        _vao.VertexAttributePointer(4, 1, VertexAttribPointerType.Float, _vertexSize, 9); // texture index
-        _vao.VertexAttributePointer(5, 4, VertexAttribPointerType.Float, _vertexSize, 10); // color
-        _vao.VertexAttributePointer(6, 4, VertexAttribPointerType.Int, _vertexSize, 14); // boneids
-        _vao.VertexAttributePointer(7, 4, VertexAttribPointerType.Float, _vertexSize, 18); // boneweights
+        _vao.VertexAttributePointer(3, 3, VertexAttribPointerType.Float, _vertexSize, 7); // tangent
+        _vao.VertexAttributePointer(4, 2, VertexAttribPointerType.Float, _vertexSize, 10); // uv
+        _vao.VertexAttributePointer(5, 1, VertexAttribPointerType.Float, _vertexSize, 12); // texture index
+        _vao.VertexAttributePointer(6, 4, VertexAttribPointerType.Float, _vertexSize, 13); // color
+        _vao.VertexAttributePointer(7, 4, VertexAttribPointerType.Int, _vertexSize, 17); // boneids
+        _vao.VertexAttributePointer(8, 4, VertexAttribPointerType.Float, _vertexSize, 21); // boneweights
 
         SetupInstances(); // instanced models transform
 
@@ -226,7 +233,7 @@ public class Model : IDisposable
                     _morphVbo = new BufferObject<float>(Morphs[morph].Vertices, BufferTarget.ArrayBuffer);
             }
             _vao.Bind();
-            _vao.VertexAttributePointer(12, 3, VertexAttribPointerType.Float, 3, 0); // morph position
+            _vao.VertexAttributePointer(13, 3, VertexAttribPointerType.Float, 3, 0); // morph position
             _vao.Unbind();
         }
 
@@ -249,8 +256,11 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        shader.SetUniform("display_vertex_colors", DisplayVertexColors);
-        shader.SetUniform("numTexCoords", NumTexCoords);
+        shader.SetUniform("uNumTexCoords", NumTexCoords);
+        shader.SetUniform("bVertexColors", bVertexColors);
+        shader.SetUniform("bVertexNormals", bVertexNormals);
+        shader.SetUniform("bVertexTangent", bVertexTangent);
+        shader.SetUniform("bVertexTexCoords", bVertexTexCoords);
 
         GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
         for (int section = 0; section < Sections.Length; section++)
@@ -280,12 +290,11 @@ public class Model : IDisposable
 
     public void Outline(Shader shader)
     {
-        GL.StencilMask(0x00);
+        GL.Enable(EnableCap.StencilTest);
         GL.Disable(EnableCap.DepthTest);
         GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
 
         _vao.Bind();
-        shader.Use();
         shader.SetUniform("uMorphTime", MorphTime);
 
         GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
@@ -298,7 +307,7 @@ public class Model : IDisposable
 
         GL.StencilFunc(StencilFunction.Always, 0, 0xFF);
         GL.Enable(EnableCap.DepthTest);
-        GL.StencilMask(0xFF);
+        GL.Disable(EnableCap.StencilTest);
     }
 
     public void Dispose()

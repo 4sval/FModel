@@ -58,10 +58,7 @@ public class PickingTexture : IDisposable
         Bind();
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-        _shader.Use();
-        _shader.SetUniform("uView", viewMatrix);
-        _shader.SetUniform("uProjection", projMatrix);
-
+        _shader.Render(viewMatrix, projMatrix);
         foreach ((FGuid guid, Model model) in models)
         {
             _shader.SetUniform("uA", guid.A);

@@ -1,8 +1,8 @@
 ﻿#version 330 core
 
 layout (location = 1) in vec3 vPos;
-layout (location = 8) in mat4 vInstanceMatrix;
-layout (location = 12) in vec3 vMorphTarget;
+layout (location = 9) in mat4 vInstanceMatrix;
+layout (location = 13) in vec3 vMorphTarget;
 
 uniform mat4 uView;
 uniform mat4 uProjection;

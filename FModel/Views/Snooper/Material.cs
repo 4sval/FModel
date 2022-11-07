@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.UE4.Objects.Core.Math;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;
 
@@ -22,12 +23,17 @@ public class Material : IDisposable
     public Texture[] SpecularMasks;
     public Texture[] Emissive;
 
-    public Vector4 DiffuseColor;
-    public Vector4[] EmissionColor;
-    public bool HasSpecularMap;
-    public bool HasDiffuseColor;
+    public Vector4[] DiffuseColor;
+    public Vector4[] EmissiveColor;
 
-    private Vector3 _ambientLight;
+    public Mask M;
+    public bool HasM;
+
+    public float Roughness;
+    public float SpecularMult = 1f;
+    public float EmissiveMult = 1f;
+
+    public float UVScale = 1f;
 
     public Material()
     {
@@ -39,13 +45,7 @@ public class Material : IDisposable
         Normals = Array.Empty<Texture>();
         SpecularMasks = Array.Empty<Texture>();
         Emissive = Array.Empty<Texture>();
-
-        DiffuseColor = Vector4.Zero;
-        EmissionColor = Array.Empty<Vector4>();
-        HasSpecularMap = false;
-        HasDiffuseColor = false;
-
-        _ambientLight = Vector3.One;
+        EmissiveColor = Array.Empty<Vector4>();
     }
 
     public Material(UMaterialInterface unrealMaterial) : this()
@@ -65,7 +65,7 @@ public class Material : IDisposable
 
         if (Parameters.IsNull)
         {
-            DiffuseColor = new Vector4(1, 0, 0, 1);
+            Diffuse = new[] { new Texture(new FLinearColor(1f, 0f, 0f, 1f)) };
         }
         else
         {
@@ -74,29 +74,53 @@ public class Material : IDisposable
             Fill(cache, numTexCoords, ref SpecularMasks, true, CMaterialParams2.SpecularMasks, CMaterialParams2.FallbackSpecularMasks);
             Fill(cache, numTexCoords, ref Emissive, true, CMaterialParams2.Emissive, CMaterialParams2.FallbackEmissive);
 
-            // if (Parameters.Colors.TryGetValue("ColorMult", out var color) && color is { A: > 0})
-            // {
-            //     DiffuseColor = new Vector4(color.R, color.G, color.B, color.A);
-            // }
+            if (Parameters.TryGetTexture2d(out var o, "M") && cache.TryGetCachedTexture(o, out var t))
+            {
+                M = new Mask { Texture = t, AmbientOcclusion = 0.7f };
+                HasM = true;
+                if (Parameters.TryGetLinearColor(out var l, "Skin Boost Color And Exponent"))
+                    M.SkinBoost = new Boost { Color = new Vector3(l.R, l.G, l.B), Exponent = l.A };
+            }
 
-            EmissionColor = new Vector4[numTexCoords];
-            for (int i = 0; i < EmissionColor.Length; i++)
+            if (Parameters.TryGetScalar(out var roughnessMin, "RoughnessMin", "SpecRoughnessMin") &&
+                Parameters.TryGetScalar(out var roughnessMax, "RoughnessMax", "SpecRoughnessMax"))
+                Roughness = (roughnessMin + roughnessMax) / 2f;
+            if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness"))
+                Roughness = roughness;
+
+            if (Parameters.TryGetScalar(out var specularMult, "SpecularMult"))
+                SpecularMult = specularMult;
+            if (Parameters.TryGetScalar(out var emissiveMult, "emissive mult", "Emissive_Mult"))
+                EmissiveMult = emissiveMult;
+
+            if (Parameters.TryGetScalar(out var uvScale, "UV Scale"))
+                UVScale = uvScale;
+
+            DiffuseColor = new Vector4[numTexCoords];
+            for (int i = 0; i < DiffuseColor.Length; i++)
+            {
+                if (Diffuse[i] == null) continue;
+
+                if (Parameters.TryGetLinearColor(out var color, "ColorMult", "Color_mul", "Color") && color is { A: > 0 })
+                {
+                    DiffuseColor[i] = new Vector4(color.R, color.G, color.B, color.A);
+                }
+                else DiffuseColor[i] = new Vector4(0.5f);
+            }
+
+            EmissiveColor = new Vector4[numTexCoords];
+            for (int i = 0; i < EmissiveColor.Length; i++)
             {
                 if (Emissive[i] == null) continue;
 
-                if (Parameters.TryGetLinearColor(out var color, $"Emissive{(i > 0 ? i + 1 : "")}") && color is { A: > 0 })
+                string[] names = i == 0 ? new[] { "Emissive", "EmissiveColor", "Emissive Color" } : new[] { $"Emissive{i + 1}" };
+                if (Parameters.TryGetLinearColor(out var color, names) && color is { A: > 0 })
                 {
-                    EmissionColor[i] = new Vector4(color.R, color.G, color.B, color.A);
+                    EmissiveColor[i] = new Vector4(color.R, color.G, color.B, color.A);
                 }
-                else EmissionColor[i] = Vector4.One;
+                else EmissiveColor[i] = Vector4.One;
             }
-
-            // diffuse light is based on normal map, so increase ambient if no normal map
-            _ambientLight = new Vector3(Normals[0] == null ? 1.0f : 0.2f);
-            HasSpecularMap = SpecularMasks[0] != null;
         }
-
-        HasDiffuseColor = DiffuseColor != Vector4.Zero;
     }
 
     /// <param name="cache"></param>
@@ -118,11 +142,6 @@ public class Material : IDisposable
                     array[i] = array[i - 1];
             }
         }
-        else if (Parameters.Colors.TryGetValue("Color", out var linearColor)) // POC
-        {
-            for (int i = 0; i < array.Length; i++)
-                array[i] = new Texture(linearColor);
-        }
         else if (Parameters.Textures.TryGetValue(fallback, out var u) && u is UTexture2D o && cache.TryGetCachedTexture(o, out var t))
         {
             for (int i = 0; i < array.Length; i++)
@@ -138,41 +157,45 @@ public class Material : IDisposable
     public void Render(Shader shader)
     {
         var unit = 0;
-
         for (var i = 0; i < Diffuse.Length; i++)
         {
-            shader.SetUniform($"material.diffuseMap[{i}]", unit);
+            shader.SetUniform($"uParameters.Diffuse[{i}].Sampler", unit);
+            shader.SetUniform($"uParameters.Diffuse[{i}].Color", DiffuseColor[i]);
             Diffuse[i]?.Bind(TextureUnit.Texture0 + unit++);
         }
 
         for (var i = 0; i < Normals.Length; i++)
         {
-            shader.SetUniform($"material.normalMap[{i}]", unit);
+            shader.SetUniform($"uParameters.Normals[{i}].Sampler", unit);
             Normals[i]?.Bind(TextureUnit.Texture0 + unit++);
         }
 
         for (var i = 0; i < SpecularMasks.Length; i++)
         {
-            shader.SetUniform($"material.specularMap[{i}]", unit);
+            shader.SetUniform($"uParameters.SpecularMasks[{i}].Sampler", unit);
             SpecularMasks[i]?.Bind(TextureUnit.Texture0 + unit++);
         }
 
         for (var i = 0; i < Emissive.Length; i++)
         {
-            shader.SetUniform($"material.emissionMap[{i}]", unit);
-            shader.SetUniform($"material.emissionColor[{i}]", EmissionColor[i]);
+            shader.SetUniform($"uParameters.Emissive[{i}].Sampler", unit);
+            shader.SetUniform($"uParameters.Emissive[{i}].Color", EmissiveColor[i]);
             Emissive[i]?.Bind(TextureUnit.Texture0 + unit++);
         }
 
-        shader.SetUniform("material.useSpecularMap", HasSpecularMap);
+        M.Texture?.Bind(TextureUnit.Texture31);
+        shader.SetUniform("uParameters.M.Sampler", 31);
+        shader.SetUniform("uParameters.M.SkinBoost.Color", M.SkinBoost.Color);
+        shader.SetUniform("uParameters.M.SkinBoost.Exponent", M.SkinBoost.Exponent);
+        shader.SetUniform("uParameters.M.AmbientOcclusion", M.AmbientOcclusion);
+        shader.SetUniform("uParameters.M.Cavity", M.Cavity);
+        shader.SetUniform("uParameters.HasM", HasM);
 
-        shader.SetUniform("material.hasDiffuseColor", HasDiffuseColor);
-        shader.SetUniform("material.diffuseColor", DiffuseColor);
+        shader.SetUniform("uParameters.Roughness", Roughness);
+        shader.SetUniform("uParameters.SpecularMult", SpecularMult);
+        shader.SetUniform("uParameters.EmissiveMult", EmissiveMult);
 
-        shader.SetUniform("material.metallic_value", 1f);
-        shader.SetUniform("material.roughness_value", 0f);
-
-        shader.SetUniform("light.ambient", _ambientLight);
+        shader.SetUniform("uParameters.UVScale", UVScale);
     }
 
     public void Dispose()
@@ -193,6 +216,22 @@ public class Material : IDisposable
         {
             Emissive[i]?.Dispose();
         }
+        M.Texture?.Dispose();
         GL.DeleteProgram(_handle);
     }
+}
+
+public struct Mask
+{
+    public Texture Texture;
+    public Boost SkinBoost;
+
+    public float AmbientOcclusion;
+    public float Cavity;
+}
+
+public struct Boost
+{
+    public Vector3 Color;
+    public float Exponent;
 }

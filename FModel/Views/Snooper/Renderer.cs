@@ -11,7 +11,6 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
-using OpenTK.Graphics.OpenGL4;
 using Vector3 = OpenTK.Mathematics.Vector3;
 
 namespace FModel.Views.Snooper;
@@ -20,8 +19,6 @@ public class Renderer : IDisposable
 {
     private Shader _shader;
     private Shader _outline;
-    private Vector3 _diffuseLight;
-    private Vector3 _specularLight;
 
     public PickingTexture Picking { get; }
     public Cache Cache { get; }
@@ -60,8 +57,6 @@ public class Renderer : IDisposable
     {
         _shader = new Shader();
         _outline = new Shader("outline");
-        _diffuseLight = new Vector3(0.75f);
-        _specularLight = new Vector3(0.5f);
 
         Picking.Setup();
         Cache.Setup();
@@ -72,24 +67,22 @@ public class Renderer : IDisposable
         var viewMatrix = cam.GetViewMatrix();
         var projMatrix = cam.GetProjectionMatrix();
 
-        _outline.Use();
-        _outline.SetUniform("uView", viewMatrix);
-        _outline.SetUniform("uProjection", projMatrix);
-        _outline.SetUniform("viewPos", cam.Position);
+        // render pass
+        _shader.Render(viewMatrix, cam.Position, projMatrix);
+        foreach (var model in Cache.Models.Values)
+        {
+            if (!model.Show) continue;
+            model.Render(_shader);
+        }
 
-        _shader.Use();
-        _shader.SetUniform("uView", viewMatrix);
-        _shader.SetUniform("uProjection", projMatrix);
-        _shader.SetUniform("viewPos", cam.Position);
+        // outline pass
+        if (Cache.Models.TryGetValue(Settings.SelectedModel, out var selected) && selected.Show)
+        {
+            _outline.Render(viewMatrix, cam.Position, projMatrix);
+            selected.Outline(_outline);
+        }
 
-        _shader.SetUniform("light.position", cam.Position);
-        _shader.SetUniform("light.diffuse", _diffuseLight);
-        _shader.SetUniform("light.specular", _specularLight);
-
-        Cache.Render(_shader);
-        GL.Enable(EnableCap.StencilTest);
-        Cache.Outline(_outline);
-
+        // picking pass (dedicated FBO, binding to 0 afterward)
         Picking.Render(viewMatrix, projMatrix, Cache.Models);
     }
 
