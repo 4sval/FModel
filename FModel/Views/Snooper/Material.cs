@@ -45,6 +45,8 @@ public class Material : IDisposable
         Normals = Array.Empty<Texture>();
         SpecularMasks = Array.Empty<Texture>();
         Emissive = Array.Empty<Texture>();
+
+        DiffuseColor = Array.Empty<Vector4>();
         EmissiveColor = Array.Empty<Vector4>();
     }
 
@@ -63,95 +65,108 @@ public class Material : IDisposable
     {
         _handle = GL.CreateProgram();
 
-        if (Parameters.IsNull)
+        if (numTexCoords < 1 || Parameters.IsNull)
         {
             Diffuse = new[] { new Texture(new FLinearColor(1f, 0f, 0f, 1f)) };
+            Normals = new[] { new Texture(new FLinearColor(0.498f, 0.498f, 0.996f, 1f))};
+            SpecularMasks = new Texture[1];
+            Emissive = new Texture[1];
+            DiffuseColor = new[] { new Vector4(0.5f) };
+            EmissiveColor = new[] { Vector4.One };
         }
         else
         {
-            Fill(cache, numTexCoords, ref Diffuse, Parameters.HasTopDiffuse, CMaterialParams2.Diffuse, CMaterialParams2.FallbackDiffuse);
-            Fill(cache, numTexCoords, ref Normals, true, CMaterialParams2.Normals, CMaterialParams2.FallbackNormals);
-            Fill(cache, numTexCoords, ref SpecularMasks, true, CMaterialParams2.SpecularMasks, CMaterialParams2.FallbackSpecularMasks);
-            Fill(cache, numTexCoords, ref Emissive, true, CMaterialParams2.Emissive, CMaterialParams2.FallbackEmissive);
-
-            if (Parameters.TryGetTexture2d(out var o, "M") && cache.TryGetCachedTexture(o, out var t))
-            {
-                M = new Mask { Texture = t, AmbientOcclusion = 0.7f };
-                HasM = true;
-                if (Parameters.TryGetLinearColor(out var l, "Skin Boost Color And Exponent"))
-                    M.SkinBoost = new Boost { Color = new Vector3(l.R, l.G, l.B), Exponent = l.A };
+            {   // textures
+                Diffuse = FillTextures(cache, numTexCoords, Parameters.HasTopDiffuse, CMaterialParams2.Diffuse, CMaterialParams2.FallbackDiffuse, true);
+                Normals = FillTextures(cache, numTexCoords, Parameters.HasTopNormals, CMaterialParams2.Normals, CMaterialParams2.FallbackNormals);
+                SpecularMasks = FillTextures(cache, numTexCoords, Parameters.HasTopSpecularMasks, CMaterialParams2.SpecularMasks, CMaterialParams2.FallbackSpecularMasks);
+                Emissive = FillTextures(cache, numTexCoords, true, CMaterialParams2.Emissive, CMaterialParams2.FallbackEmissive);
             }
 
-            if (Parameters.TryGetScalar(out var roughnessMin, "RoughnessMin", "SpecRoughnessMin") &&
-                Parameters.TryGetScalar(out var roughnessMax, "RoughnessMax", "SpecRoughnessMax"))
-                Roughness = (roughnessMin + roughnessMax) / 2f;
-            if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness"))
-                Roughness = roughness;
-
-            if (Parameters.TryGetScalar(out var specularMult, "SpecularMult"))
-                SpecularMult = specularMult;
-            if (Parameters.TryGetScalar(out var emissiveMult, "emissive mult", "Emissive_Mult"))
-                EmissiveMult = emissiveMult;
-
-            if (Parameters.TryGetScalar(out var uvScale, "UV Scale"))
-                UVScale = uvScale;
-
-            DiffuseColor = new Vector4[numTexCoords];
-            for (int i = 0; i < DiffuseColor.Length; i++)
-            {
-                if (Diffuse[i] == null) continue;
-
-                if (Parameters.TryGetLinearColor(out var color, "ColorMult", "Color_mul", "Color") && color is { A: > 0 })
-                {
-                    DiffuseColor[i] = new Vector4(color.R, color.G, color.B, color.A);
-                }
-                else DiffuseColor[i] = new Vector4(0.5f);
+            {   // colors
+                DiffuseColor = FillColors(numTexCoords, Diffuse, CMaterialParams2.DiffuseColors, new Vector4(0.5f));
+                EmissiveColor = FillColors(numTexCoords, Emissive, CMaterialParams2.EmissiveColors, Vector4.One);
             }
 
-            EmissiveColor = new Vector4[numTexCoords];
-            for (int i = 0; i < EmissiveColor.Length; i++)
-            {
-                if (Emissive[i] == null) continue;
-
-                string[] names = i == 0 ? new[] { "Emissive", "EmissiveColor", "Emissive Color" } : new[] { $"Emissive{i + 1}" };
-                if (Parameters.TryGetLinearColor(out var color, names) && color is { A: > 0 })
+            {   // scalars
+                if (Parameters.TryGetTexture2d(out var original, "M") && cache.TryGetCachedTexture(original, out var transformed))
                 {
-                    EmissiveColor[i] = new Vector4(color.R, color.G, color.B, color.A);
+                    M = new Mask { Texture = transformed, AmbientOcclusion = 0.7f };
+                    HasM = true;
+                    if (Parameters.TryGetLinearColor(out var l, "Skin Boost Color And Exponent"))
+                        M.SkinBoost = new Boost { Color = new Vector3(l.R, l.G, l.B), Exponent = l.A };
                 }
-                else EmissiveColor[i] = Vector4.One;
+
+                if (Parameters.TryGetScalar(out var roughnessMin, "RoughnessMin", "SpecRoughnessMin") &&
+                    Parameters.TryGetScalar(out var roughnessMax, "RoughnessMax", "SpecRoughnessMax"))
+                    Roughness = (roughnessMin + roughnessMax) / 2f;
+                if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness"))
+                    Roughness = roughness;
+
+                if (Parameters.TryGetScalar(out var specularMult, "SpecularMult"))
+                    SpecularMult = specularMult;
+                if (Parameters.TryGetScalar(out var emissiveMult, "emissive mult", "Emissive_Mult"))
+                    EmissiveMult = emissiveMult;
+
+                if (Parameters.TryGetScalar(out var uvScale, "UV Scale"))
+                    UVScale = uvScale;
             }
         }
     }
 
-    /// <param name="cache"></param>
-    /// <param name="numTexCoords"></param>
-    /// <param name="array"></param>
-    /// <param name="top">has at least 1 clearly defined texture</param>
-    /// <param name="triggers">list of texture parameter names</param>
-    /// <param name="fallback">fallback texture parameter name</param>
-    private void Fill(Cache cache, int numTexCoords, ref Texture[] array, bool top, IReadOnlyList<string[]> triggers, string fallback)
+    /// <param name="cache">just the cache object</param>
+    /// <param name="numTexCoords">number of item in the array</param>
+    /// <param name="top">has at least 1 clearly defined texture, else will go straight to fallback</param>
+    /// <param name="triggers">list of texture parameter names by uv channel</param>
+    /// <param name="fallback">fallback texture name to use if no top texture found</param>
+    /// <param name="first">if no top texture, no fallback texture, then use the first texture found</param>
+    private Texture[] FillTextures(Cache cache, int numTexCoords, bool top, IReadOnlyList<string[]> triggers, string fallback, bool first = false)
     {
-        array = new Texture[numTexCoords];
+        UTexture2D original;
+        Texture transformed;
+        var textures = new Texture[numTexCoords];
+
         if (top)
         {
-            for (int i = 0; i < array.Length; i++)
+            for (int i = 0; i < textures.Length; i++)
             {
-                if (Parameters.TryGetTexture2d(out var o, triggers[i]) && cache.TryGetCachedTexture(o, out var t))
-                    array[i] = t;
-                else if (i > 0 && array[i - 1] != null)
-                    array[i] = array[i - 1];
+                if (Parameters.TryGetTexture2d(out original, triggers[i]) && cache.TryGetCachedTexture(original, out transformed))
+                    textures[i] = transformed;
+                else if (i > 0 && textures[i - 1] != null)
+                    textures[i] = textures[i - 1];
             }
         }
-        else if (Parameters.Textures.TryGetValue(fallback, out var u) && u is UTexture2D o && cache.TryGetCachedTexture(o, out var t))
+        else if (Parameters.TryGetTexture2d(out original, fallback) && cache.TryGetCachedTexture(original, out transformed))
         {
-            for (int i = 0; i < array.Length; i++)
-                array[i] = t;
+            for (int i = 0; i < textures.Length; i++)
+                textures[i] = transformed;
         }
-        else if (Parameters.Textures.First() is { Value: UTexture2D d } && cache.TryGetCachedTexture(d, out var rip))
+        else if (first && Parameters.TryGetFirstTexture2d(out original) && cache.TryGetCachedTexture(original, out transformed))
         {
-            for (int i = 0; i < array.Length; i++)
-                array[i] = rip;
+            for (int i = 0; i < textures.Length; i++)
+                textures[i] = transformed;
         }
+        return textures;
+    }
+
+    /// <param name="numTexCoords">number of item in the array</param>
+    /// <param name="textures">reference array</param>
+    /// <param name="triggers">list of color parameter names by uv channel</param>
+    /// <param name="fallback">fallback color to use if no trigger was found</param>
+    private Vector4[] FillColors(int numTexCoords, IReadOnlyList<Texture> textures, IReadOnlyList<string[]> triggers, Vector4 fallback)
+    {
+        var colors = new Vector4[numTexCoords];
+        for (int i = 0; i < colors.Length; i++)
+        {
+            if (textures[i] == null) continue;
+
+            if (Parameters.TryGetLinearColor(out var color, triggers[i]) && color is { A: > 0 })
+            {
+                colors[i] = new Vector4(color.R, color.G, color.B, color.A);
+            }
+            else colors[i] = fallback;
+        }
+        return colors;
     }
 
     public void Render(Shader shader)

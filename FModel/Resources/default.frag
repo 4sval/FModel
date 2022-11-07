@@ -113,7 +113,7 @@ void main()
 
             if (subsurface > 0.0f && uParameters.M.SkinBoost.Exponent > 0.0f)
             {
-                vec3 color = pow(uParameters.M.SkinBoost.Exponent, 2) * uParameters.M.SkinBoost.Color;
+                vec3 color = uParameters.M.SkinBoost.Color * pow(uParameters.M.SkinBoost.Exponent, uParameters.M.SkinBoost.Exponent);
                 result *= clamp(color * m.b, 0.0f, 1.0f);
             }
 
