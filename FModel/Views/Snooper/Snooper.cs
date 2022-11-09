@@ -123,15 +123,6 @@ public class Snooper : GameWindow
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }
 
-    protected override void OnMouseWheel(MouseWheelEventArgs e)
-    {
-        base.OnMouseWheel(e);
-        if (!IsVisible)
-            return;
-
-        _gui.Controller.MouseScroll(e.Offset);
-    }
-
     protected override void OnTextInput(TextInputEventArgs e)
     {
         base.OnTextInput(e);

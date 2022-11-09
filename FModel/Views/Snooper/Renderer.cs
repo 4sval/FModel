@@ -169,7 +169,7 @@ public class Renderer : IDisposable
         cam = new Camera(
             new Vector3(position.X, position.Y, position.Z),
             new Vector3(direction.X, direction.Y, direction.Z),
-            0.01f, far * 25f, far / 10f);
+            0.01f, far * 25f, Math.Max(5f, far / 10f));
     }
 
     private void WorldMesh(UObject actor, Transform transform)

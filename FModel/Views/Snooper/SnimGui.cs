@@ -66,6 +66,7 @@ public class SnimGui
             }
             else NoMeshSelected();
             PopStyleCompact();
+            ImGui.End();
         }
         if (ImGui.Begin("Textures"))
         {
@@ -82,6 +83,33 @@ public class SnimGui
             }
             else NoMeshSelected();
             PopStyleCompact();
+            ImGui.End();
+        }
+        if (ImGui.Begin("Parameters"))
+        {
+            PushStyleCompact();
+            var guid = s.Renderer.Settings.SelectedModel;
+            if (s.Renderer.Cache.Models.TryGetValue(guid, out var model) &&
+                s.Renderer.Settings.TryGetSection(model, out var section))
+            {
+                const int width = 50;
+                var material = model.Materials[section.MaterialIndex];
+                ImGui.Checkbox("Show Section", ref section.Show);
+                ImGui.SetNextItemWidth(width); ImGui.DragFloat("Roughness", ref material.Roughness, .01f, 0f, 1f);
+                ImGui.SetNextItemWidth(width); ImGui.DragFloat("Specular Multiplier", ref material.SpecularMult, .01f, 0f);
+                ImGui.SetNextItemWidth(width); ImGui.DragFloat("Emissive Multiplier", ref material.EmissiveMult, .01f, 0f);
+                ImGui.SetNextItemWidth(width); ImGui.DragFloat("UV Scale", ref material.UVScale, .01f, 0f);
+                if (material.HasM)
+                {
+                    ImGui.ColorEdit3("Skin Boost Color", ref material.M.SkinBoost.Color, ImGuiColorEditFlags.NoInputs);
+                    ImGui.SetNextItemWidth(width); ImGui.DragFloat("Skin Boost Exponent", ref material.M.SkinBoost.Exponent, .01f, 0f);
+                    ImGui.SetNextItemWidth(width); ImGui.DragFloat("AmbientOcclusion", ref material.M.AmbientOcclusion, .01f, 0f, 1f);
+                    ImGui.SetNextItemWidth(width); ImGui.DragFloat("Cavity", ref material.M.Cavity, .01f, 0f, 1f);
+                }
+            }
+            else NoMeshSelected();
+            PopStyleCompact();
+            ImGui.End();
         }
 
         DrawUvChannels(s);
@@ -341,22 +369,6 @@ public class SnimGui
                         ImGui.EndTabItem();
                     }
                 }
-
-                if (ImGui.Begin("test") && s.Renderer.Settings.TryGetSection(model, out var sec))
-                {
-                    var material = model.Materials[sec.MaterialIndex];
-                    ImGui.DragFloat("Roughness", ref material.Roughness, .01f, 0f, 1f);
-                    ImGui.DragFloat("Specular Multiplier", ref material.SpecularMult, .01f, 0f);
-                    ImGui.DragFloat("Emissive Multiplier", ref material.EmissiveMult, .01f, 0f);
-                    ImGui.DragFloat("UV Scale", ref material.UVScale, .01f, 0f);
-                    if (material.HasM)
-                    {
-                        ImGui.ColorEdit3("Skin Boost Color", ref material.M.SkinBoost.Color);
-                        ImGui.DragFloat("Skin Boost Exponent", ref material.M.SkinBoost.Exponent, .01f, 0f);
-                        ImGui.DragFloat("AmbientOcclusion", ref material.M.AmbientOcclusion, .01f, 0f, 1f);
-                        ImGui.DragFloat("Cavity", ref material.M.Cavity, .01f, 0f, 1f);
-                    }
-                }
             }
             else NoMeshSelected();
             PopStyleCompact();
@@ -484,7 +496,7 @@ public class SnimGui
         // ImGui.SetNextWindowSize(_viewportSize, _firstUse);
         // ImGui.SetNextWindowPos(_viewportPosition, _firstUse);
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        ImGui.Begin("3D Viewport");
+        ImGui.Begin("3D Viewport", flags);
         ImGui.PopStyleVar();
 
         var largest = ImGui.GetContentRegionAvail();
@@ -614,9 +626,9 @@ public class SnimGui
         style.Colors[(int) ImGuiCol.Button]                 = new Vector4(0.05f, 0.05f, 0.05f, 0.54f);
         style.Colors[(int) ImGuiCol.ButtonHovered]          = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
         style.Colors[(int) ImGuiCol.ButtonActive]           = new Vector4(0.69f, 0.69f, 1.00f, 0.39f);
-        style.Colors[(int) ImGuiCol.Header]                 = new Vector4(0.16f, 0.16f, 0.21f, 1.00f);
-        style.Colors[(int) ImGuiCol.HeaderHovered]          = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
-        style.Colors[(int) ImGuiCol.HeaderActive]           = new Vector4(0.69f, 0.69f, 1.00f, 0.39f);
+        style.Colors[(int) ImGuiCol.Header]                 = new Vector4(0.05f, 0.26f, 0.56f, 1.00f);
+        style.Colors[(int) ImGuiCol.HeaderHovered]          = new Vector4(0.05f, 0.26f, 0.56f, 0.39f);
+        style.Colors[(int) ImGuiCol.HeaderActive]           = new Vector4(0.04f, 0.23f, 0.52f, 1.00f);
         style.Colors[(int) ImGuiCol.Separator]              = new Vector4(0.43f, 0.43f, 0.50f, 0.50f);
         style.Colors[(int) ImGuiCol.SeparatorHovered]       = new Vector4(0.10f, 0.40f, 0.75f, 0.78f);
         style.Colors[(int) ImGuiCol.SeparatorActive]        = new Vector4(0.10f, 0.40f, 0.75f, 1.00f);
