@@ -245,7 +245,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
 
         foreach (Keys key in Enum.GetValues(typeof(Keys)))
         {
-            if (key == Keys.Unknown) continue;
+            if (key == Keys.Unknown || io.KeyMap[(int) key] == -1) continue;
             io.AddKeyEvent((ImGuiKey) io.KeyMap[(int) key], kState.IsKeyDown(key));
         }
 
@@ -269,14 +269,14 @@ outputColor = color * texture(in_fontTexture, texCoord);
     private static void SetKeyMappings()
     {
         ImGuiIOPtr io = ImGui.GetIO();
-        io.KeyMap[(int)ImGuiKey.ModShift] = (int)Keys.LeftShift;
-        // io.KeyMap[(int)ImGuiKey.ModShift] = (int)Keys.RightShift;
-        io.KeyMap[(int)ImGuiKey.ModCtrl] = (int)Keys.LeftControl;
-        // io.KeyMap[(int)ImGuiKey.ModCtrl] = (int)Keys.RightControl;
-        io.KeyMap[(int)ImGuiKey.ModAlt] = (int)Keys.LeftAlt;
-        // io.KeyMap[(int)ImGuiKey.ModAlt] = (int)Keys.RightAlt;
-        io.KeyMap[(int)ImGuiKey.ModSuper] = (int)Keys.LeftSuper;
-        // io.KeyMap[(int)ImGuiKey.ModSuper] = (int)Keys.RightSuper;
+        io.KeyMap[(int)ImGuiKey.LeftShift] = (int)Keys.LeftShift;
+        io.KeyMap[(int)ImGuiKey.RightShift] = (int)Keys.RightShift;
+        io.KeyMap[(int)ImGuiKey.LeftCtrl] = (int)Keys.LeftControl;
+        io.KeyMap[(int)ImGuiKey.RightCtrl] = (int)Keys.RightControl;
+        io.KeyMap[(int)ImGuiKey.LeftAlt] = (int)Keys.LeftAlt;
+        io.KeyMap[(int)ImGuiKey.RightAlt] = (int)Keys.RightAlt;
+        io.KeyMap[(int)ImGuiKey.LeftSuper] = (int)Keys.LeftSuper;
+        io.KeyMap[(int)ImGuiKey.RightSuper] = (int)Keys.RightSuper;
         io.KeyMap[(int)ImGuiKey.Menu] = (int)Keys.Menu;
         io.KeyMap[(int)ImGuiKey.UpArrow] = (int)Keys.Up;
         io.KeyMap[(int)ImGuiKey.DownArrow] = (int)Keys.Down;
