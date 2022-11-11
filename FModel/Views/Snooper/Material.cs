@@ -29,8 +29,6 @@ public class Material : IDisposable
     public Mask M;
     public bool HasM;
 
-    public float Roughness;
-    public float SpecularMult = 1f;
     public float EmissiveMult = 1f;
 
     public float UVScale = 1f;
@@ -89,7 +87,7 @@ public class Material : IDisposable
             }
 
             {   // scalars
-                if (Parameters.TryGetTexture2d(out var original, "M") && cache.TryGetCachedTexture(original, out var transformed))
+                if (Parameters.TryGetTexture2d(out var original, "M", "AEM") && cache.TryGetCachedTexture(original, false, out var transformed))
                 {
                     M = new Mask { Texture = transformed, AmbientOcclusion = 0.7f };
                     HasM = true;
@@ -97,14 +95,6 @@ public class Material : IDisposable
                         M.SkinBoost = new Boost { Color = new Vector3(l.R, l.G, l.B), Exponent = l.A };
                 }
 
-                if (Parameters.TryGetScalar(out var roughnessMin, "RoughnessMin", "SpecRoughnessMin") &&
-                    Parameters.TryGetScalar(out var roughnessMax, "RoughnessMax", "SpecRoughnessMax"))
-                    Roughness = (roughnessMin + roughnessMax) / 2f;
-                if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness"))
-                    Roughness = roughness;
-
-                if (Parameters.TryGetScalar(out var specularMult, "SpecularMult"))
-                    SpecularMult = specularMult;
                 if (Parameters.TryGetScalar(out var emissiveMult, "emissive mult", "Emissive_Mult"))
                     EmissiveMult = emissiveMult;
 
@@ -124,24 +114,25 @@ public class Material : IDisposable
     {
         UTexture2D original;
         Texture transformed;
+        var fix = fallback == CMaterialParams2.FallbackSpecularMasks;
         var textures = new Texture[numTexCoords];
 
         if (top)
         {
             for (int i = 0; i < textures.Length; i++)
             {
-                if (Parameters.TryGetTexture2d(out original, triggers[i]) && cache.TryGetCachedTexture(original, out transformed))
+                if (Parameters.TryGetTexture2d(out original, triggers[i]) && cache.TryGetCachedTexture(original, fix, out transformed))
                     textures[i] = transformed;
                 else if (i > 0 && textures[i - 1] != null)
                     textures[i] = textures[i - 1];
             }
         }
-        else if (Parameters.TryGetTexture2d(out original, fallback) && cache.TryGetCachedTexture(original, out transformed))
+        else if (Parameters.TryGetTexture2d(out original, fallback) && cache.TryGetCachedTexture(original, fix, out transformed))
         {
             for (int i = 0; i < textures.Length; i++)
                 textures[i] = transformed;
         }
-        else if (first && Parameters.TryGetFirstTexture2d(out original) && cache.TryGetCachedTexture(original, out transformed))
+        else if (first && Parameters.TryGetFirstTexture2d(out original) && cache.TryGetCachedTexture(original, fix, out transformed))
         {
             for (int i = 0; i < textures.Length; i++)
                 textures[i] = transformed;
@@ -206,8 +197,6 @@ public class Material : IDisposable
         shader.SetUniform("uParameters.M.Cavity", M.Cavity);
         shader.SetUniform("uParameters.HasM", HasM);
 
-        shader.SetUniform("uParameters.Roughness", Roughness);
-        shader.SetUniform("uParameters.SpecularMult", SpecularMult);
         shader.SetUniform("uParameters.EmissiveMult", EmissiveMult);
 
         shader.SetUniform("uParameters.UVScale", UVScale);

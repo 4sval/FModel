@@ -15,12 +15,14 @@ public class Cache : IDisposable
     public readonly Dictionary<FGuid, Texture> Textures;
 
     private ETexturePlatform _platform;
+    private readonly FGame _game;
 
     public Cache()
     {
         Models = new Dictionary<FGuid, Model>();
         Textures = new Dictionary<FGuid, Texture>();
         _platform = UserSettings.Default.OverridedPlatform;
+        _game = Services.ApplicationService.ApplicationView.CUE4Parse.Game;
     }
 
     public bool TryGetCachedModel(UStaticMesh o, out Model model)
@@ -34,17 +36,28 @@ public class Cache : IDisposable
         return model != null;
     }
 
-    public bool TryGetCachedTexture(UTexture2D o, out Texture texture)
+    public bool TryGetCachedTexture(UTexture2D o, bool fix, out Texture texture)
     {
         var guid = o.LightingGuid;
         if (!Textures.TryGetValue(guid, out texture) && o.GetFirstMip() is { } mip)
         {
             TextureDecoder.DecodeTexture(mip, o.Format, o.isNormalMap, _platform, out var data, out _);
+            // if (fix) FixChannels(o, mip, ref data);
 
             texture = new Texture(data, mip.SizeX, mip.SizeY, o);
             Textures[guid] = texture;
         }
         return texture != null;
+    }
+
+    /// <summary>
+    /// Red : Specular
+    /// Blue : Roughness
+    /// Green : Metallic
+    /// </summary>
+    private void FixChannels(UTexture2D o, FTexture2DMipMap mip, ref byte[] data)
+    {
+        // only if it makes a big difference pls
     }
 
     public void Setup()

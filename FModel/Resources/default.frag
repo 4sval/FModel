@@ -1,4 +1,6 @@
 ﻿#version 330 core
+
+#define PI 3.1415926535897932384626433832795
 #define MAX_UV_COUNT 8
 
 in vec3 fPos;
@@ -39,8 +41,6 @@ struct Parameters
     Mask M;
     bool HasM;
 
-    float Roughness;
-    float SpecularMult;
     float EmissiveMult;
 
     float UVScale;
@@ -49,6 +49,8 @@ struct Parameters
 uniform Parameters uParameters;
 uniform int uNumTexCoords;
 uniform vec3 uViewPos;
+uniform vec3 uViewDir;
+uniform bool bDiffuseOnly;
 uniform bool bVertexColors;
 uniform bool bVertexNormals;
 uniform bool bVertexTangent;
@@ -78,6 +80,59 @@ vec3 ComputeNormals(int layer)
     return normalize(tbn * normal);
 }
 
+vec3 schlickFresnel(int layer, float vDotH)
+{
+    vec3 f0 = vec3(0.04f);
+    return f0 + (1.0f - f0) * pow(clamp(1.0f - vDotH, 0.0f, 1.0f), 5);
+}
+
+float ggxDistribution(float roughness, float nDoth)
+{
+    float alpha2 = roughness * roughness * roughness * roughness;
+    float d = nDoth * nDoth * (alpha2- 1.0f) + 1.0f;
+    return alpha2 / (PI * d * d);
+}
+
+float geomSmith(float roughness, float dp)
+{
+    float k = (roughness + 1.0f) * (roughness + 1.0f) / 8.0f;
+    float denom = dp * (1.0f - k) + k;
+    return dp / denom;
+}
+
+vec3 CalcPBRLight(int layer, vec3 normals)
+{
+    vec3 specular_masks = SamplerToVector(uParameters.SpecularMasks[layer].Sampler).rgb;
+    float roughness = max(0.0f, specular_masks.b);
+
+    vec3 intensity = vec3(1.0f) * 1.0f;
+    vec3 l = -uViewDir;
+
+    vec3 n = normals;
+    vec3 v = normalize(uViewPos - fPos);
+    vec3 h = normalize(v + l);
+
+    float nDotH = max(dot(n, h), 0.0f);
+    float vDotH = max(dot(v, h), 0.0f);
+    float nDotL = max(dot(n, l), 0.0f);
+    float nDotV = max(dot(n, v), 0.0f);
+
+    vec3 f = schlickFresnel(layer, vDotH);
+
+    vec3 kS = f;
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - max(0.0f, dot(v, reflect(-v, normals)) * specular_masks.g);
+
+    vec3 specBrdfNom = ggxDistribution(roughness, nDotH) * f * geomSmith(roughness, nDotL) * geomSmith(roughness, nDotV);
+    float specBrdfDenom = 4.0f * nDotV * nDotL + 0.0001f;
+    vec3 specBrdf = specBrdfNom / specBrdfDenom;
+
+    vec3 fLambert = SamplerToVector(uParameters.Diffuse[layer].Sampler).rgb * uParameters.Diffuse[layer].Color.rgb;
+
+    vec3 diffuseBrdf = kD * fLambert / PI;
+    return (diffuseBrdf + specBrdf) * intensity * nDotL;
+}
+
 void main()
 {
     if (bVertexColors)
@@ -99,12 +154,9 @@ void main()
     else
     {
         int layer = LayerToIndex();
+        vec3 normals = ComputeNormals(layer);
         vec4 diffuse = SamplerToVector(uParameters.Diffuse[layer].Sampler);
         vec3 result = uParameters.Diffuse[layer].Color.rgb * diffuse.rgb;
-
-        vec3 normals = ComputeNormals(layer);
-        vec3 light_direction = normalize(uViewPos - fPos);
-        result += max(dot(normals, light_direction), 0.0f) * result;
 
         if (uParameters.HasM)
         {
@@ -117,20 +169,19 @@ void main()
                 result *= clamp(color * m.b, 0.0f, 1.0f);
             }
 
-            result *= m.r * uParameters.M.AmbientOcclusion;
-            result += m.g * uParameters.M.Cavity;
+            if (m.r > 0.0f) result *= m.r * uParameters.M.AmbientOcclusion;
+            if (m.g > 0.0f) result += m.g * uParameters.M.Cavity;
         }
-
-        vec3 reflect_direction = reflect(-light_direction, normals);
-        vec3 specular_masks = SamplerToVector(uParameters.SpecularMasks[layer].Sampler).rgb;
-        float specular = uParameters.SpecularMult * max(0.0f, specular_masks.r);
-        float metallic = max(0.0f, dot(light_direction, reflect_direction) * specular_masks.g);
-        float roughness = max(0.0f, uParameters.Roughness * specular_masks.b);
-        result += metallic * roughness * specular;
 
         vec4 emissive = SamplerToVector(uParameters.Emissive[layer].Sampler);
         result += uParameters.Emissive[layer].Color.rgb * emissive.rgb * uParameters.EmissiveMult;
 
-        FragColor = vec4(result, 1.0f);
+        if (!bDiffuseOnly)
+        {
+            result += CalcPBRLight(layer, normals);
+        }
+
+        result = result / (result + vec3(1.0f));
+        FragColor = vec4(pow(result, vec3(1.0f / 2.2f)), 1.0f);
     }
 }

@@ -20,6 +20,8 @@ public class Renderer : IDisposable
     private Shader _shader;
     private Shader _outline;
 
+    public bool bDiffuseOnly;
+
     public PickingTexture Picking { get; }
     public Cache Cache { get; }
     public Options Settings { get; }
@@ -68,7 +70,8 @@ public class Renderer : IDisposable
         var projMatrix = cam.GetProjectionMatrix();
 
         // render pass
-        _shader.Render(viewMatrix, cam.Position, projMatrix);
+        _shader.Render(viewMatrix, cam.Position, cam.Direction, projMatrix);
+        _shader.SetUniform("bDiffuseOnly", bDiffuseOnly);
         foreach (var model in Cache.Models.Values)
         {
             if (!model.Show) continue;

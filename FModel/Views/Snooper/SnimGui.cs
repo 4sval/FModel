@@ -42,6 +42,7 @@ public class SnimGui
         ImGui.DragFloat("Far Plane", ref s.Camera.Far, 0.1f, 5f, s.Camera.Far * 2f, "%.2f m", ImGuiSliderFlags.AlwaysClamp);
         ImGui.End();
         ImGui.Begin("World");
+        ImGui.Checkbox("Diffuse Only", ref s.Renderer.bDiffuseOnly);
         ImGui.End();
         ImGui.Begin("Timeline");
         ImGui.End();
@@ -95,8 +96,6 @@ public class SnimGui
                 const int width = 50;
                 var material = model.Materials[section.MaterialIndex];
                 ImGui.Checkbox("Show Section", ref section.Show);
-                ImGui.SetNextItemWidth(width); ImGui.DragFloat("Roughness", ref material.Roughness, .01f, 0f, 1f);
-                ImGui.SetNextItemWidth(width); ImGui.DragFloat("Specular Multiplier", ref material.SpecularMult, .01f, 0f);
                 ImGui.SetNextItemWidth(width); ImGui.DragFloat("Emissive Multiplier", ref material.EmissiveMult, .01f, 0f);
                 ImGui.SetNextItemWidth(width); ImGui.DragFloat("UV Scale", ref material.UVScale, .01f, 0f);
                 if (material.HasM)

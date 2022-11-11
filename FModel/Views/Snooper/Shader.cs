@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using OpenTK.Graphics.OpenGL4;
@@ -10,8 +9,6 @@ namespace FModel.Views.Snooper;
 public class Shader : IDisposable
 {
     private readonly int _handle;
-    private readonly Dictionary<string, int> _uniformToLocation = new ();
-    private readonly Dictionary<string, int> _attribLocation = new ();
 
     public Shader() : this("default") {}
 
@@ -57,6 +54,11 @@ public class Shader : IDisposable
         GL.UseProgram(_handle);
     }
 
+    public void Render(Matrix4 viewMatrix, Vector3 viewPos, Vector3 viewDir, Matrix4 projMatrix)
+    {
+        Render(viewMatrix, viewPos, projMatrix);
+        SetUniform("uViewDir", viewDir);
+    }
     public void Render(Matrix4 viewMatrix, Vector3 viewPos, Matrix4 projMatrix)
     {
         Render(viewMatrix, projMatrix);
@@ -72,10 +74,7 @@ public class Shader : IDisposable
     public void SetUniform(string name, int value)
     {
         int location = GL.GetUniformLocation(_handle, name);
-        if (location == -1)
-        {
-            throw new Exception($"{name} uniform not found on shader.");
-        }
+        ThrowIfNotFound(location, name);
         GL.Uniform1(location, value);
     }
 
@@ -83,10 +82,7 @@ public class Shader : IDisposable
     {
         //A new overload has been created for setting a uniform so we can use the transform in our shader.
         int location = GL.GetUniformLocation(_handle, name);
-        if (location == -1)
-        {
-            throw new Exception($"{name} uniform not found on shader.");
-        }
+        ThrowIfNotFound(location, name);
         GL.UniformMatrix4(location, 1, false, (float*) &value);
     }
 
@@ -95,20 +91,14 @@ public class Shader : IDisposable
     public void SetUniform(string name, uint value)
     {
         int location = GL.GetUniformLocation(_handle, name);
-        if (location == -1)
-        {
-            throw new Exception($"{name} uniform not found on shader.");
-        }
+        ThrowIfNotFound(location, name);
         GL.Uniform1(location, value);
     }
 
     public void SetUniform(string name, float value)
     {
         int location = GL.GetUniformLocation(_handle, name);
-        if (location == -1)
-        {
-            throw new Exception($"{name} uniform not found on shader.");
-        }
+        ThrowIfNotFound(location, name);
         GL.Uniform1(location, value);
     }
 
@@ -117,10 +107,7 @@ public class Shader : IDisposable
     public void SetUniform3(string name, float x, float y, float z)
     {
         int location = GL.GetUniformLocation(_handle, name);
-        if (location == -1)
-        {
-            throw new Exception($"{name} uniform not found on shader.");
-        }
+        ThrowIfNotFound(location, name);
         GL.Uniform3(location, x, y, z);
     }
 
@@ -129,39 +116,16 @@ public class Shader : IDisposable
     public void SetUniform4(string name, float x, float y, float z, float w)
     {
         int location = GL.GetUniformLocation(_handle, name);
-        if (location == -1)
-        {
-            throw new Exception($"{name} uniform not found on shader.");
-        }
+        ThrowIfNotFound(location, name);
         GL.Uniform4(location, x, y, z, w);
     }
 
-    public int GetUniformLocation(string uniform)
+    private void ThrowIfNotFound(int location, string name)
     {
-        if (!_uniformToLocation.TryGetValue(uniform, out int location))
+        if (location == -1)
         {
-            location = GL.GetUniformLocation(_handle, uniform);
-            _uniformToLocation.Add(uniform, location);
-            if (location == -1)
-            {
-                Serilog.Log.Debug($"The uniform '{uniform}' does not exist in the shader!");
-            }
+            // throw new Exception($"{name} uniform not found on shader.");
         }
-        return location;
-    }
-
-    public int GetAttribLocation(string attrib)
-    {
-        if (!_attribLocation.TryGetValue(attrib, out int location))
-        {
-            location = GL.GetAttribLocation(_handle, attrib);
-            _attribLocation.Add(attrib, location);
-            if (location == -1)
-            {
-                Serilog.Log.Debug($"The attrib '{attrib}' does not exist in the shader!");
-            }
-        }
-        return location;
     }
 
     public void Dispose()

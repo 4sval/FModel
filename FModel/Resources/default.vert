@@ -24,10 +24,10 @@ out vec4 fColor;
 
 void main()
 {
-    vec3 pos = mix(vPos, vMorphTarget, uMorphTime);
-    gl_Position = uProjection * uView * vInstanceMatrix * vec4(pos, 1.0);
+    vec4 pos = vec4(mix(vPos, vMorphTarget, uMorphTime), 1.0);
+    gl_Position = uProjection * uView * vInstanceMatrix * pos;
 
-    fPos = vec3(vInstanceMatrix * vec4(pos, 1.0));
+    fPos = vec3(vInstanceMatrix * pos);
     fNormal = mat3(transpose(inverse(vInstanceMatrix))) * vNormal;
     fTangent = mat3(transpose(inverse(vInstanceMatrix))) * vTangent;
     fTexCoords = vTexCoords;
