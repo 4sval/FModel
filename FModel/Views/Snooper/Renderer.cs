@@ -2,8 +2,10 @@
 using System.Numerics;
 using System.Threading;
 using System.Windows;
+using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
@@ -53,6 +55,16 @@ public class Renderer : IDisposable
         model.Materials[section.MaterialIndex].SwapMaterial(unrealMaterial);
         Application.Current.Dispatcher.Invoke(() => model.Materials[section.MaterialIndex].Setup(Cache, model.NumTexCoords));
         Settings.SwapMaterial(false);
+    }
+
+    public void Animate(UAnimSequence animSequence)
+    {
+        if (!Cache.Models.TryGetValue(Settings.SelectedModel, out var model) || !model.Skeleton.IsLoaded ||
+            model.Skeleton?.RefSkel.ConvertAnims(animSequence) is not { } anim || anim.Sequences.Count == 0)
+            return;
+
+        model.Skeleton.Anim = new Animation(anim);
+        Settings.AnimateMesh(false);
     }
 
     public void Setup()
@@ -122,7 +134,7 @@ public class Renderer : IDisposable
         var guid = Guid.NewGuid();
         if (Cache.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return null;
 
-        Cache.Models[guid] = new Model(original.Name, original.ExportType, original.Materials, original.MorphTargets, mesh);
+        Cache.Models[guid] = new Model(original.Name, original.ExportType, original.Materials, original.Skeleton, original.MorphTargets, mesh);
         Settings.SelectModel(guid);
         return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }

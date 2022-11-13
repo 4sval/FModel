@@ -77,9 +77,15 @@ public partial class MainWindow
             _discordHandler.Initialize(_applicationView.CUE4Parse.Game);
 
 #if DEBUG
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "FortniteGame/Content/Athena/Artemis/Maps/Buildings/5x5/Artemis_5x5_Shop_AB.umap"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "FortniteGame/Content/Characters/Player/Female/Medium/Bodies/F_MED_RoseDust/Meshes/F_MED_RoseDust.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "fortnitegame/Content/Accessories/FORT_Backpacks/Backpack_M_MED_Despair/Meshes/M_MED_Despair_Pack.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "FortniteGame/Content/Animation/Game/MainPlayer/Emotes/Acrobatic_Superhero/Emote_AcrobaticSuperhero_CMM.uasset"));
 #endif
     }
 

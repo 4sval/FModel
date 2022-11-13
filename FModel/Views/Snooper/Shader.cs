@@ -78,12 +78,14 @@ public class Shader : IDisposable
         GL.Uniform1(location, value);
     }
 
-    public unsafe void SetUniform(string name, Matrix4 value)
+    public unsafe void SetUniform(string name, Matrix4 value) => UniformMatrix4(name, (float*) &value);
+    public unsafe void SetUniform(string name, System.Numerics.Matrix4x4 value) => UniformMatrix4(name, (float*) &value);
+    public unsafe void UniformMatrix4(string name, float* value)
     {
         //A new overload has been created for setting a uniform so we can use the transform in our shader.
         int location = GL.GetUniformLocation(_handle, name);
         ThrowIfNotFound(location, name);
-        GL.UniformMatrix4(location, 1, false, (float*) &value);
+        GL.UniformMatrix4(location, 1, false, value);
     }
 
     public void SetUniform(string name, bool value) => SetUniform(name, Convert.ToUInt32(value));
@@ -124,7 +126,7 @@ public class Shader : IDisposable
     {
         if (location == -1)
         {
-            // throw new Exception($"{name} uniform not found on shader.");
+            throw new Exception($"{name} uniform not found on shader.");
         }
     }
 

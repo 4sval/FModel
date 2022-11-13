@@ -194,6 +194,7 @@ outputColor = color * texture(in_fontTexture, texCoord);
             ImGui.Render();
             RenderImDrawData(ImGui.GetDrawData());
         }
+        CheckGLError("End of frame");
     }
 
     /// <summary>

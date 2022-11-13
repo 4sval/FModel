@@ -28,14 +28,15 @@ public class Model : IDisposable
     public readonly string Name;
     public readonly string Type;
     public readonly bool HasVertexColors;
-    public readonly bool HasBones;
     public readonly bool HasMorphTargets;
     public readonly int NumTexCoords;
     public uint[] Indices;
     public float[] Vertices;
     public Section[] Sections;
     public Material[] Materials;
-    public readonly List<CSkelMeshBone> Skeleton;
+
+    public bool HasSkeleton => Skeleton is { IsLoaded: true };
+    public readonly Skeleton Skeleton;
 
     public int TransformsCount;
     public readonly List<Transform> Transforms;
@@ -50,7 +51,6 @@ public class Model : IDisposable
     public bool bVertexNormals;
     public bool bVertexTangent;
     public bool bVertexTexCoords;
-    public bool DisplayBones;
     public int SelectedInstance;
     public float MorphTime;
 
@@ -63,10 +63,10 @@ public class Model : IDisposable
     }
 
     public Model(string name, string type, ResolvedObject[] materials, CStaticMesh staticMesh) : this(name, type, materials, staticMesh, Transform.Identity) {}
-    public Model(string name, string type, ResolvedObject[] materials, CStaticMesh staticMesh, Transform transform) : this(name, type, materials, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform) {}
-    public Model(string name, string type, ResolvedObject[] materials, CSkeletalMesh skeletalMesh) : this(name, type, materials, skeletalMesh, Transform.Identity) {}
-    public Model(string name, string type, ResolvedObject[] materials, CSkeletalMesh skeletalMesh, Transform transform) : this(name, type, materials, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform, skeletalMesh.RefSkeleton) {}
-    public Model(string name, string type, ResolvedObject[] materials, FPackageIndex[] morphTargets, CSkeletalMesh skeletalMesh) : this(name, type, materials, skeletalMesh)
+    public Model(string name, string type, ResolvedObject[] materials, CStaticMesh staticMesh, Transform transform) : this(name, type, materials, null, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform) {}
+    public Model(string name, string type, ResolvedObject[] materials, FPackageIndex skeleton, CSkeletalMesh skeletalMesh) : this(name, type, materials, skeleton, skeletalMesh, Transform.Identity) {}
+    public Model(string name, string type, ResolvedObject[] materials, FPackageIndex skeleton, CSkeletalMesh skeletalMesh, Transform transform) : this(name, type, materials, skeleton, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform) {}
+    public Model(string name, string type, ResolvedObject[] materials, FPackageIndex skeleton, FPackageIndex[] morphTargets, CSkeletalMesh skeletalMesh) : this(name, type, materials, skeleton, skeletalMesh)
     {
         if (morphTargets is not { Length: > 0 })
             return;
@@ -79,7 +79,7 @@ public class Model : IDisposable
         }
     }
 
-    private Model(string name, string type, ResolvedObject[] materials, CBaseMeshLod lod, CMeshVertex[] vertices, Transform transform, List<CSkelMeshBone> skeleton = null) : this(name, type)
+    private Model(string name, string type, ResolvedObject[] materials, FPackageIndex skeleton, CBaseMeshLod lod, CMeshVertex[] vertices, Transform transform = null) : this(name, type)
     {
         NumTexCoords = lod.NumTexCoords;
 
@@ -96,10 +96,9 @@ public class Model : IDisposable
             _vertexSize += 4; // + Color
         }
 
-        if (skeleton is { Count: > 0 })
+        if (skeleton != null)
         {
-            HasBones = true;
-            Skeleton = skeleton;
+            Skeleton = new Skeleton(skeleton);
             _vertexSize += 8; // + BoneIds + BoneWeights
         }
 
@@ -146,7 +145,7 @@ public class Model : IDisposable
                         Vertices[baseIndex + count++] = color.A;
                     }
 
-                    if (HasBones)
+                    if (HasSkeleton)
                     {
                         var skelVert = (CSkelMeshVertex) vert;
                         var weightsHash = skelVert.UnpackWeights();
@@ -165,7 +164,7 @@ public class Model : IDisposable
             }
         }
 
-        AddInstance(transform);
+        AddInstance(transform ?? Transform.Identity);
     }
 
     public void AddInstance(Transform transform)
@@ -212,7 +211,7 @@ public class Model : IDisposable
         _vao.VertexAttributePointer(4, 2, VertexAttribPointerType.Float, _vertexSize, 10); // uv
         _vao.VertexAttributePointer(5, 1, VertexAttribPointerType.Float, _vertexSize, 12); // texture index
         _vao.VertexAttributePointer(6, 4, VertexAttribPointerType.Float, _vertexSize, 13); // color
-        _vao.VertexAttributePointer(7, 4, VertexAttribPointerType.Int, _vertexSize, 17); // boneids
+        _vao.VertexAttributePointer(7, 4, VertexAttribPointerType.Float, _vertexSize, 17); // boneids
         _vao.VertexAttributePointer(8, 4, VertexAttribPointerType.Float, _vertexSize, 21); // boneweights
 
         SetupInstances(); // instanced models transform

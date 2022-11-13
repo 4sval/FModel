@@ -72,6 +72,13 @@ public class CUE4ParseViewModel : ViewModel
         set => SetProperty(ref _modelIsOverwritingMaterial, value);
     }
 
+    private bool _modelIsWaitingAnimation;
+    public bool ModelIsWaitingAnimation
+    {
+        get => _modelIsWaitingAnimation;
+        set => SetProperty(ref _modelIsWaitingAnimation, value);
+    }
+
     private Snooper _snooper;
     public Snooper SnooperViewer
     {
@@ -787,6 +794,12 @@ public class CUE4ParseViewModel : ViewModel
             case UMaterialInstance m when ModelIsOverwritingMaterial:
             {
                 SnooperViewer.Renderer.Swap(m);
+                SnooperViewer.Run();
+                return true;
+            }
+            case UAnimSequence a when ModelIsWaitingAnimation:
+            {
+                SnooperViewer.Renderer.Animate(a);
                 SnooperViewer.Run();
                 return true;
             }
