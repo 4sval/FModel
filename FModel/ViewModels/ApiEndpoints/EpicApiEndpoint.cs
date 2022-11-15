@@ -56,6 +56,9 @@ public class EpicApiEndpoint : AbstractApiProvider
     private bool IsExpired()
     {
         if (string.IsNullOrEmpty(UserSettings.Default.LastAuthResponse.AccessToken)) return true;
-        return DateTime.Now.Subtract(TimeSpan.FromHours(1)) >= UserSettings.Default.LastAuthResponse.ExpiresAt;
+        var request = new FRestRequest("https://account-public-service-prod.ol.epicgames.com/account/api/oauth/verify");
+        request.AddHeader("Authorization", $"bearer {UserSettings.Default.LastAuthResponse.AccessToken}");
+        var response = _client.Get(request);
+        return response.StatusCode != HttpStatusCode.OK;
     }
 }
