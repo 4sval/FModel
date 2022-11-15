@@ -25,9 +25,7 @@ public class BaseIcon : UCreator
     protected string CosmeticSource { get; set; }
     protected Dictionary<string, SKBitmap> UserFacingFlags { get; set; }
 
-    public BaseIcon(UObject uObject, EIconStyle style) : base(uObject, style)
-    {
-    }
+    public BaseIcon(UObject uObject, EIconStyle style) : base(uObject, style) { }
 
     public void ParseForReward(bool isUsingDisplayAsset)
     {
@@ -198,26 +196,39 @@ public class BaseIcon : UCreator
     protected string GetCosmeticSeason(string seasonNumber)
     {
         var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
-        var number = int.Parse(s);
+        var initial = int.Parse(s);
+        var number = initial;
 
-        switch (number)
+        var chapterIdx = 0;
+        var seasonIdx = 0;
+
+        while (number > 0)
         {
-            case 10:
-                s = "X";
-                break;
-            case > 18:
-                number += 2;
-                s = number.ToString();
-                break;
+            var seasonsInChapter = GetSeasonsInChapter(++chapterIdx);
+            if (number > seasonsInChapter)
+                number -= seasonsInChapter;
+            else
+            {
+                seasonIdx = number;
+                number = 0;
+            }
         }
+
+        static int GetSeasonsInChapter(int chapter) => chapter switch
+        {
+            1 => 10,
+            2 => 8,
+            3 => 4,
+            _ => 10
+        };
 
         var season = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "SeasonTextFormat", "Season {0}");
         var introduced = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_Season", "\nIntroduced in <SeasonText>{0}</>.");
-        if (number <= 10) return Utils.RemoveHtmlTags(string.Format(introduced, string.Format(season, s)));
+        if (initial <= 10) return Utils.RemoveHtmlTags(string.Format(introduced, string.Format(season, s)));
 
         var chapter = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "ChapterTextFormat", "Chapter {0}");
         var chapterFormat = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "ChapterSeasonTextFormat", "{0}, {1}");
-        var d = string.Format(chapterFormat, string.Format(chapter, number / 10 + 1), string.Format(season, s[^1..]));
+        var d = string.Format(chapterFormat, string.Format(chapter, chapterIdx), string.Format(season, seasonIdx));
         return Utils.RemoveHtmlTags(string.Format(introduced, d));
     }
 
