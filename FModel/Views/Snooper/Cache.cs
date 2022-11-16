@@ -13,6 +13,7 @@ public class Cache : IDisposable
 {
     public readonly Dictionary<FGuid, Model> Models;
     public readonly Dictionary<FGuid, Texture> Textures;
+    public readonly Dictionary<string, Texture> Icons;
 
     private ETexturePlatform _platform;
     private readonly FGame _game;
@@ -21,8 +22,11 @@ public class Cache : IDisposable
     {
         Models = new Dictionary<FGuid, Model>();
         Textures = new Dictionary<FGuid, Texture>();
+        Icons = new Dictionary<string, Texture>();
         _platform = UserSettings.Default.OverridedPlatform;
         _game = Services.ApplicationService.ApplicationView.CUE4Parse.Game;
+
+        Icons["material"] = new Texture("materialicon");
     }
 
     public bool TryGetCachedModel(UStaticMesh o, out Model model)
@@ -82,6 +86,11 @@ public class Cache : IDisposable
         {
             texture.Dispose();
         }
+
+        foreach (var texture in Icons.Values)
+        {
+            texture.Dispose();
+        }
     }
 
     public void Dispose()
@@ -91,5 +100,6 @@ public class Cache : IDisposable
 
         DisposeTextures();
         Textures.Clear();
+        Icons.Clear();
     }
 }

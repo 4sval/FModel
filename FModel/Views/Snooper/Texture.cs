@@ -113,19 +113,7 @@ public class Texture : IDisposable
 
         for (int t = 0; t < textures.Length; t++)
         {
-            var info = Application.GetResourceStream(new Uri($"/FModel;component/Resources/{textures[t]}.png", UriKind.Relative));
-            using var img = Image.Load<Rgba32>(info.Stream);
-            Width = img.Width; // we don't care anyway
-            Height = img.Height; // we don't care anyway
-            GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + t, 0, PixelInternalFormat.Rgba8, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
-
-            img.ProcessPixelRows(accessor =>
-            {
-                for (int y = 0; y < accessor.Height; y++)
-                {
-                    GL.TexSubImage2D(TextureTarget.TextureCubeMapPositiveX + t, 0, 0, y, accessor.Width, 1, PixelFormat.Rgba, PixelType.UnsignedByte, accessor.GetRowSpan(y).ToArray());
-                }
-            });
+            ProcessPixels(textures[t], TextureTarget.TextureCubeMapPositiveX + t);
         }
 
         GL.TexParameter(_target, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Linear);
@@ -135,21 +123,33 @@ public class Texture : IDisposable
         GL.TexParameter(_target, TextureParameterName.TextureWrapT, (int) TextureWrapMode.ClampToEdge);
     }
 
-    public Texture(uint width, uint height, IntPtr data) : this(TextureType.Normal)
+    public Texture(string texture) : this(TextureType.Normal)
     {
-        Width = (int) width;
-        Height = (int) height;
-        Bind(_target);
+        Bind(TextureUnit.Texture0);
 
-        GL.TexStorage2D(TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba8, Width, Height);
-        GL.TexSubImage2D(_target, 0, 0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, data);
+        ProcessPixels(texture, _target);
 
-        var repeat = (int) TextureWrapMode.Repeat;
-        GL.TexParameterI(_target, TextureParameterName.TextureWrapS, ref repeat);
-        GL.TexParameterI(_target, TextureParameterName.TextureWrapT, ref repeat);
+        GL.TexParameter(_target, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Linear);
+        GL.TexParameter(_target, TextureParameterName.TextureMagFilter, (int) TextureMinFilter.Linear);
+        GL.TexParameter(_target, TextureParameterName.TextureWrapR, (int) TextureWrapMode.ClampToEdge);
+        GL.TexParameter(_target, TextureParameterName.TextureWrapS, (int) TextureWrapMode.ClampToEdge);
+        GL.TexParameter(_target, TextureParameterName.TextureWrapT, (int) TextureWrapMode.ClampToEdge);
+    }
 
-        var zero = 1 - 1;
-        GL.TexParameterI(_target, TextureParameterName.TextureMaxLevel, ref zero);
+    private void ProcessPixels(string texture, TextureTarget target)
+    {
+        var info = Application.GetResourceStream(new Uri($"/FModel;component/Resources/{texture}.png", UriKind.Relative));
+        using var img = Image.Load<Rgba32>(info.Stream);
+        Width = img.Width;
+        Height = img.Height;
+        GL.TexImage2D(target, 0, PixelInternalFormat.Rgba8, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+        img.ProcessPixelRows(accessor =>
+        {
+            for (int y = 0; y < accessor.Height; y++)
+            {
+                GL.TexSubImage2D(target, 0, 0, y, accessor.Width, 1, PixelFormat.Rgba, PixelType.UnsignedByte, accessor.GetRowSpan(y).ToArray());
+            }
+        });
     }
 
     public void Bind(TextureUnit textureSlot)

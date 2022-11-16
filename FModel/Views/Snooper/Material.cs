@@ -5,6 +5,7 @@ using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
@@ -30,7 +31,6 @@ public class Material : IDisposable
     public bool HasM;
 
     public float EmissiveMult = 1f;
-
     public float UVScale = 1f;
 
     public Material()
@@ -200,6 +200,77 @@ public class Material : IDisposable
         shader.SetUniform("uParameters.EmissiveMult", EmissiveMult);
 
         shader.SetUniform("uParameters.UVScale", UVScale);
+    }
+
+    private const string _mult = "x %.2f";
+    private const float _step = 0.01f;
+    private const float _zero = 0.000001f; // doesn't actually work if _infinite is used as max value /shrug
+    private const float _infinite = 0.0f;
+    private const ImGuiSliderFlags _clamp = ImGuiSliderFlags.AlwaysClamp;
+    public void ImGuiParameters()
+    {
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
+        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
+        if (ImGui.BeginTable("parameters", 2))
+        {
+            Layout("Emissive Multiplier");ImGui.PushID(1);
+            ImGui.DragFloat("", ref EmissiveMult, _step, _zero, _infinite, _mult, _clamp);
+            ImGui.PopID();Layout("UV Scale");ImGui.PushID(2);
+            ImGui.DragFloat("", ref UVScale, _step, _zero, _infinite, _mult, _clamp);
+            ImGui.PopID();
+
+            if (HasM)
+            {
+                Layout("Ambient Occlusion");ImGui.PushID(3);
+                ImGui.DragFloat("", ref M.AmbientOcclusion, _step, _zero, 1.0f, _mult, _clamp);
+                ImGui.PopID();Layout("Cavity");ImGui.PushID(4);
+                ImGui.DragFloat("", ref M.Cavity, _step, _zero, 1.0f, _mult, _clamp);
+                ImGui.PopID();Layout("Skin Boost Exponent");ImGui.PushID(5);
+                ImGui.DragFloat("", ref M.SkinBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
+                ImGui.PopID();Layout("Skin Boost Color");ImGui.PushID(6);
+                ImGui.ColorEdit3("", ref M.SkinBoost.Color);
+                ImGui.PopID();
+            }
+            ImGui.EndTable();
+        }
+        ImGui.PopStyleVar(2);
+    }
+
+    public void ImGuiDictionaries<T>(string id, Dictionary<string, T> dictionary, bool center = false, bool wrap = false)
+    {
+        if (ImGui.BeginTable(id, 2))
+        {
+            foreach ((string key, T value) in dictionary.Reverse())
+            {
+                Layout(key, true);
+                var text = $"{value:N}";
+                if (center) ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (ImGui.GetColumnWidth() - ImGui.CalcTextSize(text).X) / 2);
+                if (wrap) ImGui.TextWrapped(text); else ImGui.Text(text);
+                TooltipCopy(text);
+            }
+            ImGui.EndTable();
+        }
+    }
+
+    private void Layout(string name, bool tooltip = false)
+    {
+        ImGui.TableNextRow();
+        ImGui.TableSetColumnIndex(0);
+        ImGui.Spacing();ImGui.SameLine();ImGui.Text(name);
+        if (tooltip) TooltipCopy(name);
+        ImGui.TableSetColumnIndex(1);
+        ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
+    }
+
+    private void TooltipCopy(string name)
+    {
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text(name);
+            ImGui.EndTooltip();
+        }
+        if (ImGui.IsItemClicked()) ImGui.SetClipboardText(name);
     }
 
     public void Dispose()

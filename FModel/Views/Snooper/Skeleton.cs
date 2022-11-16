@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
+using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.UObject;
 
 namespace FModel.Views.Snooper;
@@ -26,11 +29,18 @@ public class Skeleton : IDisposable
                 !RefSkel.ReferenceSkeleton.FinalNameToIndexMap.TryGetValue(socket.BoneName.Text, out var boneIndex))
                 continue;
 
-            var t = RefSkel.ReferenceSkeleton.FinalRefBonePose[boneIndex];
             var transform = Transform.Identity;
-            transform.Position = t.Translation.ToMapVector() * Constants.SCALE_DOWN_RATIO;
-            transform.Rotation = t.Rotator();
-            transform.Scale = t.Scale3D.ToMapVector();
+            for (int j = 0; j <= boneIndex; j++)
+            {
+                var t = RefSkel.ReferenceSkeleton.FinalRefBonePose[j].Inverse();
+                (t.Translation.X, t.Translation.Z, t.Translation.Y) = (-t.Translation.Z, -t.Translation.Y, -t.Translation.X);
+                var matrix = Matrix4x4.CreateScale(t.Scale3D.ToMapVector());
+                // matrix *= Matrix4x4.CreateFromQuaternion(t.Rotation);
+                matrix *= Matrix4x4.CreateTranslation(t.Translation * Constants.SCALE_DOWN_RATIO);
+
+                // Console.WriteLine($@"{t.Translation}");
+                transform.Relation *= matrix;
+            }
 
             Sockets[i] = new Socket(socket, transform);
         }

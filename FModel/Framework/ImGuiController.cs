@@ -32,6 +32,9 @@ public class ImGuiController : IDisposable
     private int _windowWidth;
     private int _windowHeight;
 
+    private ImFontPtr _normal;
+    private ImFontPtr _semiBold;
+
     private readonly System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
     private static bool KHRDebugAvailable = false;
@@ -49,8 +52,8 @@ public class ImGuiController : IDisposable
         IntPtr context = ImGui.CreateContext();
         ImGui.SetCurrentContext(context);
         var io = ImGui.GetIO();
-        // io.Fonts.AddFontDefault();
-        io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 16);
+        _normal = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 16);
+        _semiBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\seguisb.ttf", 16);
 
         io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
         io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
@@ -65,6 +68,12 @@ public class ImGuiController : IDisposable
         ImGui.NewFrame();
         _frameBegun = true;
     }
+
+    public void SemiBold() => PushFont(_semiBold);
+    public void Normal() => PushFont(_normal);
+    public void PopFont() => ImGui.PopFont();
+
+    private void PushFont(ImFontPtr ptr) => ImGui.PushFont(ptr);
 
     public void WindowResized(int width, int height)
     {
