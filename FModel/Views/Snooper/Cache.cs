@@ -27,6 +27,7 @@ public class Cache : IDisposable
         _game = Services.ApplicationService.ApplicationView.CUE4Parse.Game;
 
         Icons["material"] = new Texture("materialicon");
+        Icons["noimage"] = new Texture("T_Placeholder_Item_Image");
     }
 
     public bool TryGetCachedModel(UStaticMesh o, out Model model)

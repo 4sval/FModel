@@ -47,10 +47,6 @@ public class Model : IDisposable
     public bool Wireframe;
     public bool IsSetup;
     public bool IsSelected;
-    public bool bVertexColors;
-    public bool bVertexNormals;
-    public bool bVertexTangent;
-    public bool bVertexTexCoords;
     public int SelectedInstance;
     public float MorphTime;
 
@@ -256,10 +252,6 @@ public class Model : IDisposable
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
         shader.SetUniform("uNumTexCoords", NumTexCoords);
-        shader.SetUniform("bVertexColors", bVertexColors);
-        shader.SetUniform("bVertexNormals", bVertexNormals);
-        shader.SetUniform("bVertexTangent", bVertexTangent);
-        shader.SetUniform("bVertexTexCoords", bVertexTexCoords);
 
         GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
         for (int section = 0; section < Sections.Length; section++)

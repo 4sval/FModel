@@ -1,5 +1,6 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;
 
@@ -78,7 +79,7 @@ public class Skybox : IDisposable
         _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 3, 0); // position
     }
 
-    public void Render(Camera camera)
+    public void Render(Matrix4 viewMatrix, Matrix4 projMatrix)
     {
         GL.DepthFunc(DepthFunction.Lequal);
 
@@ -87,12 +88,11 @@ public class Skybox : IDisposable
         _cubeMap.Bind(TextureUnit.Texture0);
         _shader.Use();
 
-        var view = camera.GetViewMatrix();
-        view.M41 = 0;
-        view.M42 = 0;
-        view.M43 = 0;
-        _shader.SetUniform("uView", view);
-        _shader.SetUniform("uProjection", camera.GetProjectionMatrix());
+        viewMatrix.M41 = 0;
+        viewMatrix.M42 = 0;
+        viewMatrix.M43 = 0;
+        _shader.SetUniform("uView", viewMatrix);
+        _shader.SetUniform("uProjection", projMatrix);
 
         _shader.SetUniform("cubemap", 0);
 

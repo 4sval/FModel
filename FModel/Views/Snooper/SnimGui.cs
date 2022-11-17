@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Framework;
 using ImGuiNET;
@@ -18,9 +16,9 @@ public class SnimGui
     private bool _viewportFocus;
     private bool _swapAwareness;
 
-    private readonly Vector4 _accentColor = new (32, 107, 212, 1f);
-    private readonly Vector4 _alertColor = new (212, 146, 32, 1f);
-    private readonly Vector4 _errorColor = new (194, 43, 43, 1f);
+    private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
+    private readonly Vector4 _alertColor = new (0.831f, 0.573f, 0.125f, 1.0f);
+    private readonly Vector4 _errorColor = new (0.761f, 0.169f, 0.169f, 1.0f);
 
     private const ImGuiCond _firstUse = ImGuiCond.FirstUseEver; // switch to FirstUseEver once the docking branch will not be useful anymore...
     private const uint _dockspaceId = 1337;
@@ -38,15 +36,9 @@ public class SnimGui
         DrawNavbar();
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
-        SectionWindow("UV Channels", s.Renderer, DrawUvChannels);
 
         Window("Timeline", () => {});
-        Window("Camera", () =>
-        {
-            ImGui.DragFloat("Speed", ref s.Camera.Speed, 0.01f, 0.05f);
-            ImGui.DragFloat("Far Plane", ref s.Camera.Far, 0.1f, 5f, s.Camera.Far * 2f, "%.2f m", ImGuiSliderFlags.AlwaysClamp);
-        });
-        Window("World", () => ImGui.Checkbox("Diffuse Only", ref s.Renderer.bDiffuseOnly));
+        Window("World", () => DrawWorld(s), false);
         Window("Sockets", () => DrawSockets(s));
 
         DrawOuliner(s);
@@ -56,6 +48,42 @@ public class SnimGui
         // ImGui.ShowDemoWindow();
 
         Controller.Render();
+    }
+
+    private void DrawWorld(Snooper s)
+    {
+        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+        if (ImGui.CollapsingHeader("Editor"))
+        {
+            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
+            ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
+            if (ImGui.BeginTable("world_editor", 2))
+            {
+                Layout("Skybox");ImGui.PushID(1);
+                ImGui.Checkbox("", ref s.Renderer.ShowSkybox);
+                ImGui.PopID();Layout("Grid");ImGui.PushID(2);
+                ImGui.Checkbox("", ref s.Renderer.ShowGrid);
+                ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(3);
+                ImGui.Combo("vertex_colors", ref s.Renderer.VertexColor,
+                    "Default\0Diffuse Only\0Colors\0Normals\0Tangent\0Texture Coordinates\0");
+                ImGui.PopID();
+
+                ImGui.EndTable();
+            }
+            ImGui.PopStyleVar(2);
+        }
+
+        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+        if (ImGui.CollapsingHeader("Camera"))
+        {
+            s.Camera.ImGuiCamera();
+        }
+
+        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+        if (ImGui.CollapsingHeader("Lights"))
+        {
+
+        }
     }
 
     private void DrawDockSpace(Vector2i size)
@@ -137,6 +165,9 @@ public class SnimGui
                     if (ImGui.BeginPopupContextItem())
                     {
                         s.Renderer.Settings.SelectModel(guid);
+                        if (ImGui.MenuItem("Show", null, model.Show)) model.Show = !model.Show;
+                        if (ImGui.MenuItem("Wireframe", null, model.Wireframe)) model.Wireframe = !model.Wireframe;
+                        ImGui.Separator();
                         if (ImGui.Selectable("Save"))
                         {
 
@@ -148,7 +179,6 @@ public class SnimGui
                             s.WindowShouldClose(true, false);
                         }
                         ImGui.EndDisabled();
-                        ImGui.Separator();
                         if (ImGui.Selectable("Delete")) s.Renderer.Cache.Models.Remove(guid);
                         if (ImGui.Selectable("Deselect")) s.Renderer.Settings.SelectModel(Guid.Empty);
                         ImGui.Separator();
@@ -205,20 +235,11 @@ public class SnimGui
             ImGui.Text($"Entity: ({model.Type}) {model.Name}");
             ImGui.Text($"Guid: {s.Renderer.Settings.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
             ImGui.Spacing();
-            ImGui.Columns(3, "Actions", false);
             if (ImGui.Button("Go To"))
             {
                 var instancePos = model.Transforms[model.SelectedInstance].Position;
                 s.Camera.Position = new Vector3(instancePos.X, instancePos.Y, instancePos.Z);
             }
-            ImGui.NextColumn(); ImGui.Checkbox("Show", ref model.Show);
-            ImGui.NextColumn(); ImGui.BeginDisabled(!model.Show); ImGui.Checkbox("Wire", ref model.Wireframe); ImGui.EndDisabled();
-            ImGui.Columns(4);
-            ImGui.NextColumn(); ImGui.BeginDisabled(!model.HasVertexColors); ImGui.Checkbox("Colors", ref model.bVertexColors); ImGui.EndDisabled();
-            ImGui.NextColumn(); ImGui.Checkbox("Normals", ref model.bVertexNormals);
-            ImGui.NextColumn(); ImGui.Checkbox("Tangent", ref model.bVertexTangent);
-            ImGui.NextColumn(); ImGui.Checkbox("Coords", ref model.bVertexTexCoords);
-            ImGui.Columns(1);
             ImGui.Spacing();
             if (ImGui.BeginTabBar("tabbar_details", ImGuiTabBarFlags.None))
             {
@@ -402,32 +423,6 @@ public class SnimGui
         ImGui.PopStyleVar();
     }
 
-    private void DrawUvChannels(Dictionary<string, Texture> icons, Model model, Section section)
-    {
-        var width = ImGui.GetContentRegionAvail().X;
-        var material = model.Materials[section.MaterialIndex];
-
-        ImGui.PushID(0); ImGui.BeginDisabled(model.NumTexCoords < 2);
-        ImGui.SetNextItemWidth(width);
-        ImGui.SliderInt("", ref material.SelectedChannel, 0, model.NumTexCoords - 1, "Channel %i", ImGuiSliderFlags.AlwaysClamp);
-        ImGui.EndDisabled(); ImGui.PopID();
-
-        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.TreeNode("Textures"))
-        {
-            if (material.Diffuse.Length > 0)
-            {
-                var size = new Vector2(ImGui.GetContentRegionAvail().X / 5.75f);
-                DrawSquareTexture(material.Diffuse[material.SelectedChannel], size); ImGui.SameLine();
-                DrawSquareTexture(material.Normals[material.SelectedChannel], size); ImGui.SameLine();
-                DrawSquareTexture(material.SpecularMasks[material.SelectedChannel], size); ImGui.SameLine();
-                DrawSquareTexture(material.M.Texture, size); ImGui.SameLine();
-                DrawSquareTexture(material.Emissive[material.SelectedChannel], size); ImGui.SameLine();
-            }
-            else CenteredTextColored(_errorColor, "no texture in material section");
-        }
-    }
-
     private void DrawMaterialInspector(Dictionary<string, Texture> icons, Model model, Section section)
     {
         var material = model.Materials[section.MaterialIndex];
@@ -441,6 +436,27 @@ public class SnimGui
         if (ImGui.CollapsingHeader("Parameters"))
         {
             material.ImGuiParameters();
+        }
+
+        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+        if (ImGui.CollapsingHeader("Textures"))
+        {
+            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
+            ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
+            if (ImGui.BeginTable("material_textures", 2))
+            {
+                Layout("Channel");ImGui.PushID(1); ImGui.BeginDisabled(model.NumTexCoords < 2);
+                ImGui.DragInt("", ref material.SelectedChannel, 1, 0, model.NumTexCoords - 1, "UV %i", ImGuiSliderFlags.AlwaysClamp);
+                ImGui.EndDisabled();ImGui.PopID();Layout("Type");ImGui.PushID(2);
+                ImGui.Combo("texture_type", ref material.SelectedTexture,
+                    "Diffuse\0Normals\0Specular\0Mask\0Emissive\0");
+                ImGui.PopID();
+                ImGui.EndTable();
+            }
+            ImGui.PopStyleVar(2);
+
+            ImGui.Image(material.GetSelectedTexture() ?? icons["noimage"].GetPointer(), new Vector2(ImGui.GetContentRegionAvail().X), Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
+            ImGui.Spacing();
         }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
@@ -458,7 +474,7 @@ public class SnimGui
                 material.ImGuiDictionaries("colors", material.Parameters.Colors, true);
                 ImGui.TreePop();
             }
-            if (ImGui.TreeNode("Textures"))
+            if (ImGui.TreeNode("Referenced Textures"))
             {
                 material.ImGuiDictionaries("textures", material.Parameters.Textures);
                 ImGui.TreePop();
@@ -521,7 +537,7 @@ public class SnimGui
     {
         if (ImGui.Begin(name))
         {
-            Controller.Normal();
+            Controller.PopFont();
             if (styled) PushStyleCompact();
             content();
             if (styled) PopStyleCompact();
@@ -555,8 +571,8 @@ public class SnimGui
         ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, style.ItemSpacing with { Y = style.ItemSpacing.Y * 0.6f });
     }
 
-    private void NoMeshSelected() => CenteredTextColored(_errorColor, "no mesh selected");
-    private void NoSectionSelected() => CenteredTextColored(_errorColor, "no section selected");
+    private void NoMeshSelected() => CenteredTextColored(_errorColor, "No Mesh Selected");
+    private void NoSectionSelected() => CenteredTextColored(_errorColor, "No Section Selected");
     private void CenteredTextColored(Vector4 color, string text)
     {
         var region = ImGui.GetContentRegionAvail();
@@ -564,7 +580,30 @@ public class SnimGui
         ImGui.SetCursorPos(new Vector2(
                 ImGui.GetCursorPosX() + (region.X - size.X) / 2,
                 ImGui.GetCursorPosY() + (region.Y - size.Y) / 2));
+        Controller.Bold();
         ImGui.TextColored(color, text);
+        Controller.PopFont();
+    }
+
+    public static void Layout(string name, bool tooltip = false)
+    {
+        ImGui.TableNextRow();
+        ImGui.TableSetColumnIndex(0);
+        ImGui.Spacing();ImGui.SameLine();ImGui.Text(name);
+        if (tooltip) TooltipCopy(name);
+        ImGui.TableSetColumnIndex(1);
+        ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
+    }
+
+    public static void TooltipCopy(string name)
+    {
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text(name);
+            ImGui.EndTooltip();
+        }
+        if (ImGui.IsItemClicked()) ImGui.SetClipboardText(name);
     }
 
     private void DrawSquareTexture(Texture texture, Vector2 size)

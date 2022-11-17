@@ -13,16 +13,21 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
+using FModel.Settings;
 using Vector3 = OpenTK.Mathematics.Vector3;
 
 namespace FModel.Views.Snooper;
 
 public class Renderer : IDisposable
 {
+    private readonly Skybox _skybox;
+    private readonly Grid _grid;
     private Shader _shader;
     private Shader _outline;
 
-    public bool bDiffuseOnly;
+    public bool ShowSkybox;
+    public bool ShowGrid;
+    public int VertexColor;
 
     public PickingTexture Picking { get; }
     public Cache Cache { get; }
@@ -30,9 +35,16 @@ public class Renderer : IDisposable
 
     public Renderer(int width, int height)
     {
+        _skybox = new Skybox();
+        _grid = new Grid();
+
         Picking = new PickingTexture(width, height);
         Cache = new Cache();
         Settings = new Options();
+
+        ShowSkybox = UserSettings.Default.ShowSkybox;
+        ShowGrid = UserSettings.Default.ShowGrid;
+        VertexColor = 0; // default
     }
 
     public Camera Load(CancellationToken cancellationToken, UObject export)
@@ -69,6 +81,9 @@ public class Renderer : IDisposable
 
     public void Setup()
     {
+        _skybox.Setup();
+        _grid.Setup();
+
         _shader = new Shader();
         _outline = new Shader("outline");
 
@@ -81,9 +96,16 @@ public class Renderer : IDisposable
         var viewMatrix = cam.GetViewMatrix();
         var projMatrix = cam.GetProjectionMatrix();
 
-        // render pass
+        if (ShowSkybox) _skybox.Render(viewMatrix, projMatrix);
+        if (ShowGrid) _grid.Render(viewMatrix, projMatrix, cam.Near, cam.Far);
+
         _shader.Render(viewMatrix, cam.Position, cam.Direction, projMatrix);
-        _shader.SetUniform("bDiffuseOnly", bDiffuseOnly);
+        for (int i = 0; i < 6; i++)
+        {
+            _shader.SetUniform($"bVertexColors[{i}]", i == VertexColor);
+        }
+
+        // render pass
         foreach (var model in Cache.Models.Values)
         {
             if (!model.Show) continue;
@@ -276,6 +298,11 @@ public class Renderer : IDisposable
 
     public void Dispose()
     {
+        UserSettings.Default.ShowSkybox = ShowSkybox;
+        UserSettings.Default.ShowGrid = ShowGrid;
+
+        _skybox?.Dispose();
+        _grid?.Dispose();
         _shader.Dispose();
         _outline.Dispose();
         Picking.Dispose();

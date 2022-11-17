@@ -17,6 +17,7 @@ public class Material : IDisposable
     public readonly CMaterialParams2 Parameters;
     public string Name;
     public int SelectedChannel;
+    public int SelectedTexture;
     public bool IsUsed;
 
     public Texture[] Diffuse;
@@ -213,21 +214,21 @@ public class Material : IDisposable
         ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
         if (ImGui.BeginTable("parameters", 2))
         {
-            Layout("Emissive Multiplier");ImGui.PushID(1);
+            SnimGui.Layout("Emissive Multiplier");ImGui.PushID(1);
             ImGui.DragFloat("", ref EmissiveMult, _step, _zero, _infinite, _mult, _clamp);
-            ImGui.PopID();Layout("UV Scale");ImGui.PushID(2);
+            ImGui.PopID();SnimGui.Layout("UV Scale");ImGui.PushID(2);
             ImGui.DragFloat("", ref UVScale, _step, _zero, _infinite, _mult, _clamp);
             ImGui.PopID();
 
             if (HasM)
             {
-                Layout("Ambient Occlusion");ImGui.PushID(3);
+                SnimGui.Layout("Ambient Occlusion");ImGui.PushID(3);
                 ImGui.DragFloat("", ref M.AmbientOcclusion, _step, _zero, 1.0f, _mult, _clamp);
-                ImGui.PopID();Layout("Cavity");ImGui.PushID(4);
+                ImGui.PopID();SnimGui.Layout("Cavity");ImGui.PushID(4);
                 ImGui.DragFloat("", ref M.Cavity, _step, _zero, 1.0f, _mult, _clamp);
-                ImGui.PopID();Layout("Skin Boost Exponent");ImGui.PushID(5);
+                ImGui.PopID();SnimGui.Layout("Skin Boost Exponent");ImGui.PushID(5);
                 ImGui.DragFloat("", ref M.SkinBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
-                ImGui.PopID();Layout("Skin Boost Color");ImGui.PushID(6);
+                ImGui.PopID();SnimGui.Layout("Skin Boost Color");ImGui.PushID(6);
                 ImGui.ColorEdit3("", ref M.SkinBoost.Color);
                 ImGui.PopID();
             }
@@ -242,35 +243,27 @@ public class Material : IDisposable
         {
             foreach ((string key, T value) in dictionary.Reverse())
             {
-                Layout(key, true);
+                SnimGui.Layout(key, true);
                 var text = $"{value:N}";
                 if (center) ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (ImGui.GetColumnWidth() - ImGui.CalcTextSize(text).X) / 2);
                 if (wrap) ImGui.TextWrapped(text); else ImGui.Text(text);
-                TooltipCopy(text);
+                SnimGui.TooltipCopy(text);
             }
             ImGui.EndTable();
         }
     }
 
-    private void Layout(string name, bool tooltip = false)
+    public IntPtr? GetSelectedTexture()
     {
-        ImGui.TableNextRow();
-        ImGui.TableSetColumnIndex(0);
-        ImGui.Spacing();ImGui.SameLine();ImGui.Text(name);
-        if (tooltip) TooltipCopy(name);
-        ImGui.TableSetColumnIndex(1);
-        ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-    }
-
-    private void TooltipCopy(string name)
-    {
-        if (ImGui.IsItemHovered())
+        return SelectedTexture switch
         {
-            ImGui.BeginTooltip();
-            ImGui.Text(name);
-            ImGui.EndTooltip();
-        }
-        if (ImGui.IsItemClicked()) ImGui.SetClipboardText(name);
+            0 => Diffuse[SelectedChannel]?.GetPointer(),
+            1 => Normals[SelectedChannel]?.GetPointer(),
+            2 => SpecularMasks[SelectedChannel]?.GetPointer(),
+            3 => M.Texture?.GetPointer(),
+            4 => Emissive[SelectedChannel]?.GetPointer(),
+            _ => null
+        };
     }
 
     public void Dispose()

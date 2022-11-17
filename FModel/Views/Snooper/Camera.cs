@@ -1,4 +1,5 @@
 ﻿using System;
+using ImGuiNET;
 using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;
@@ -102,5 +103,26 @@ public class Camera
         result.M43 = nearPlaneDistance * negFarRange;
 
         return result;
+    }
+
+    private const float _step = 0.01f;
+    private const float _zero = 0.000001f; // doesn't actually work if _infinite is used as max value /shrug
+    private const float _infinite = 0.0f;
+    private const ImGuiSliderFlags _clamp = ImGuiSliderFlags.AlwaysClamp;
+    public void ImGuiCamera()
+    {
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new System.Numerics.Vector2(8, 3));
+        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new System.Numerics.Vector2(0, 1));
+        if (ImGui.BeginTable("camera_editor", 2))
+        {
+            SnimGui.Layout("Speed");ImGui.PushID(1);
+            ImGui.DragFloat("", ref Speed, _step, _zero, _infinite, "%.2f s/m", _clamp);
+            ImGui.PopID();SnimGui.Layout("Far Plane");ImGui.PushID(2);
+            ImGui.DragFloat("", ref Far, 0.1f, 0.1f, Far * 2f, "%.2f m", _clamp);
+            ImGui.PopID();
+
+            ImGui.EndTable();
+        }
+        ImGui.PopStyleVar(2);
     }
 }

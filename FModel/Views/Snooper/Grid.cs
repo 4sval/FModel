@@ -1,5 +1,6 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;
 
@@ -38,17 +39,17 @@ public class Grid : IDisposable
         _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 3, 0); // position
     }
 
-    public void Render(Camera camera)
+    public void Render(Matrix4 viewMatrix, Matrix4 projMatrix, float near, float far)
     {
         GL.Disable(EnableCap.DepthTest);
         _vao.Bind();
 
         _shader.Use();
 
-        _shader.SetUniform("view", camera.GetViewMatrix());
-        _shader.SetUniform("proj", camera.GetProjectionMatrix());
-        _shader.SetUniform("uNear", camera.Near);
-        _shader.SetUniform("uFar", camera.Far);
+        _shader.SetUniform("view", viewMatrix);
+        _shader.SetUniform("proj", projMatrix);
+        _shader.SetUniform("uNear", near);
+        _shader.SetUniform("uFar", far);
 
         GL.DrawArrays(PrimitiveType.Triangles, 0, Indices.Length);
         GL.Enable(EnableCap.DepthTest);

@@ -621,6 +621,20 @@ namespace FModel.Settings
             set => SetProperty(ref _lodExportFormat, value);
         }
 
+        private bool _showSkybox = true;
+        public bool ShowSkybox
+        {
+            get => _showSkybox;
+            set => SetProperty(ref _showSkybox, value);
+        }
+
+        private bool _showGrid = true;
+        public bool ShowGrid
+        {
+            get => _showGrid;
+            set => SetProperty(ref _showGrid, value);
+        }
+
         private bool _previewStaticMeshes = true;
         public bool PreviewStaticMeshes
         {

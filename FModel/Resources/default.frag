@@ -50,11 +50,7 @@ uniform Parameters uParameters;
 uniform int uNumTexCoords;
 uniform vec3 uViewPos;
 uniform vec3 uViewDir;
-uniform bool bDiffuseOnly;
-uniform bool bVertexColors;
-uniform bool bVertexNormals;
-uniform bool bVertexTangent;
-uniform bool bVertexTexCoords;
+uniform bool bVertexColors[6];
 
 out vec4 FragColor;
 
@@ -121,7 +117,7 @@ vec3 CalcPBRLight(int layer, vec3 normals)
 
     vec3 kS = f;
     vec3 kD = 1.0 - kS;
-    kD *= 1.0 - max(0.0f, dot(v, reflect(-v, normals)) * specular_masks.g);
+    kD *= max(0.0f, dot(v, reflect(-v, normals)) * specular_masks.g);
 
     vec3 specBrdfNom = ggxDistribution(roughness, nDotH) * f * geomSmith(roughness, nDotL) * geomSmith(roughness, nDotV);
     float specBrdfDenom = 4.0f * nDotV * nDotL + 0.0001f;
@@ -135,19 +131,19 @@ vec3 CalcPBRLight(int layer, vec3 normals)
 
 void main()
 {
-    if (bVertexColors)
+    if (bVertexColors[2])
     {
         FragColor = fColor;
     }
-    else if (bVertexNormals)
+    else if (bVertexColors[3])
     {
         FragColor = vec4(fNormal, 1);
     }
-    else if (bVertexTangent)
+    else if (bVertexColors[4])
     {
         FragColor = vec4(fTangent, 1);
     }
-    else if (bVertexTexCoords)
+    else if (bVertexColors[5])
     {
         FragColor = vec4(fTexCoords, 0, 1);
     }
@@ -176,7 +172,7 @@ void main()
         vec4 emissive = SamplerToVector(uParameters.Emissive[layer].Sampler);
         result += uParameters.Emissive[layer].Color.rgb * emissive.rgb * uParameters.EmissiveMult;
 
-        if (!bDiffuseOnly)
+        if (!bVertexColors[1])
         {
             result += CalcPBRLight(layer, normals);
         }

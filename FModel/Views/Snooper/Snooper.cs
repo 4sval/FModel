@@ -16,8 +16,6 @@ public class Snooper : GameWindow
     public readonly FramebufferObject Framebuffer;
     public readonly Renderer Renderer;
 
-    private readonly Skybox _skybox;
-    private readonly Grid _grid;
     private readonly SnimGui _gui;
 
     private float _previousSpeed;
@@ -29,10 +27,7 @@ public class Snooper : GameWindow
         Framebuffer = new FramebufferObject(ClientSize);
         Renderer = new Renderer(ClientSize.X, ClientSize.Y);
 
-        _skybox = new Skybox();
-        _grid = new Grid();
         _gui = new SnimGui(ClientSize.X, ClientSize.Y);
-
         _init = false;
     }
 
@@ -79,7 +74,7 @@ public class Snooper : GameWindow
         base.OnLoad();
         CenterWindow();
 
-        GL.ClearColor(Color4.Red);
+        GL.ClearColor(Color4.Black);
         GL.Enable(EnableCap.Blend);
         GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.Multisample);
@@ -88,9 +83,6 @@ public class Snooper : GameWindow
 
         Framebuffer.Setup();
         Renderer.Setup();
-
-        _skybox.Setup();
-        _grid.Setup();
         _init = true;
     }
 
@@ -107,8 +99,6 @@ public class Snooper : GameWindow
         Framebuffer.Bind(); // switch to viewport background
         ClearWhatHasBeenDrawn(); // clear viewport background
 
-        _skybox.Render(Camera);
-        _grid.Render(Camera);
         Renderer.Render(Camera);
 
         Framebuffer.BindMsaa();
@@ -183,8 +173,6 @@ public class Snooper : GameWindow
         Framebuffer?.Dispose();
         Renderer?.Dispose();
 
-        _skybox?.Dispose();
-        _grid?.Dispose();
         _gui?.Controller.Dispose();
     }
 }
