@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
@@ -24,6 +25,7 @@ public class Snooper : GameWindow
 
     public Snooper(GameWindowSettings gwSettings, NativeWindowSettings nwSettings) : base(gwSettings, nwSettings)
     {
+        Camera = new Camera();
         Framebuffer = new FramebufferObject(ClientSize);
         Renderer = new Renderer(ClientSize.X, ClientSize.Y);
 
@@ -31,23 +33,26 @@ public class Snooper : GameWindow
         _init = false;
     }
 
-    public void LoadExport(CancellationToken cancellationToken, UObject export)
+    public bool TryLoadExport(CancellationToken cancellationToken, UObject export)
     {
-        var newCamera = Renderer.Load(cancellationToken, export);
-        if (newCamera == null || !(newCamera.Speed > _previousSpeed)) return;
-
-        Camera = newCamera;
-        _previousSpeed = Camera.Speed;
+        var newCamera = Renderer.Load(cancellationToken, export) ?? new Camera();
+        if (newCamera.Speed > _previousSpeed)
+        {
+            Camera = newCamera;
+            _previousSpeed = Camera.Speed;
+        }
+        return Renderer.Cache.Models.Count > 0;
     }
 
     public unsafe void WindowShouldClose(bool value, bool clear)
     {
         if (clear)
         {
+            _previousSpeed = 0f;
             Renderer.Cache.DisposeModels();
             Renderer.Cache.Models.Clear();
             Renderer.Settings.Reset();
-            _previousSpeed = 0f;
+            Renderer.Save();
         }
 
         GLFW.SetWindowShouldClose(WindowPtr, value); // start / stop game loop
@@ -147,7 +152,7 @@ public class Snooper : GameWindow
         if (KeyboardState.IsKeyDown(Keys.C))
             Camera.ModifyZoom(+.5f);
 
-        if (KeyboardState.IsKeyPressed(Keys.R))
+        if (KeyboardState.IsKeyPressed(Keys.H))
             WindowShouldClose(true, false);
         if (KeyboardState.IsKeyPressed(Keys.Escape))
             WindowShouldClose(true, true);
@@ -166,13 +171,9 @@ public class Snooper : GameWindow
         _gui.Controller.WindowResized(e.Width, e.Height);
     }
 
-    protected override void Dispose(bool disposing)
+    protected override void OnClosing(CancelEventArgs e)
     {
-        base.Dispose(disposing);
-
-        Framebuffer?.Dispose();
-        Renderer?.Dispose();
-
-        _gui?.Controller.Dispose();
+        base.OnClosing(e);
+        WindowShouldClose(true, true);
     }
 }

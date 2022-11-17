@@ -337,22 +337,14 @@ public class GameSelectorViewModel : ViewModel
                 dic[key] = val;
             }
 
-            if (dic.Keys.Count <= 0) return null;
-            AppInfo appInfo = new();
-            var appId = dic["appid"];
-            var name = dic["name"];
-            var installDir = dic["installDir"];
+            if (!dic.TryGetValue("appid", out var appId) ||
+                !dic.TryGetValue("name", out var name) ||
+                !dic.TryGetValue("installDir", out var installDir)) return null;
 
             var path = Path.GetDirectoryName(appMetaFile);
             var libGameRoot = Path.Combine(path, "common", installDir);
 
-            if (!Directory.Exists(libGameRoot)) return null;
-
-            appInfo.Id = appId;
-            appInfo.Name = name;
-            appInfo.GameRoot = libGameRoot;
-
-            return appInfo;
+            return !Directory.Exists(libGameRoot) ? null : new AppInfo { Id = appId, Name = name, GameRoot = libGameRoot };
         }
 
         private static List<string> GetSteamLibs()

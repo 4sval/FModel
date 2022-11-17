@@ -115,11 +115,11 @@ public class FramebufferObject : IDisposable
 
     public void Dispose()
     {
-        _vao.Dispose();
-        _shader.Dispose();
-        _framebufferTexture.Dispose();
-        _postProcessingTexture.Dispose();
-        _renderbuffer.Dispose();
+        _vao?.Dispose();
+        _shader?.Dispose();
+        _framebufferTexture?.Dispose();
+        _postProcessingTexture?.Dispose();
+        _renderbuffer?.Dispose();
         GL.DeleteFramebuffer(_framebufferHandle);
         GL.DeleteFramebuffer(_postProcessingHandle);
     }

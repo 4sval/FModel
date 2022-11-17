@@ -94,6 +94,8 @@ public class CUE4ParseViewModel : ViewModel
                             Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85)),
                         NumberOfSamples = Constants.SAMPLES_COUNT,
                         WindowBorder = WindowBorder.Resizable,
+                        Flags = ContextFlags.ForwardCompatible,
+                        Profile = ContextProfile.Core,
                         StartVisible = false,
                         StartFocused = false,
                         Title = "3D Viewer"
@@ -779,7 +781,7 @@ public class CUE4ParseViewModel : ViewModel
                 SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                 return false;
             }
-            case UWorld:
+            case UWorld when UserSettings.Default.PreviewWorlds:
             case UStaticMesh when UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when UserSettings.Default.PreviewSkeletalMeshes:
             case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
@@ -787,8 +789,8 @@ public class CUE4ParseViewModel : ViewModel
                                                                                                  export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                                                                  export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
-                SnooperViewer.LoadExport(cancellationToken, export);
-                SnooperViewer.Run();
+                if (SnooperViewer.TryLoadExport(cancellationToken, export))
+                    SnooperViewer.Run();
                 return true;
             }
             case UMaterialInstance m when ModelIsOverwritingMaterial:

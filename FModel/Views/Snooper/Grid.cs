@@ -57,10 +57,10 @@ public class Grid : IDisposable
 
     public void Dispose()
     {
-        _ebo.Dispose();
-        _vbo.Dispose();
-        _vao.Dispose();
-        _shader.Dispose();
+        _ebo?.Dispose();
+        _vbo?.Dispose();
+        _vao?.Dispose();
+        _shader?.Dispose();
         GL.DeleteProgram(_handle);
     }
 }

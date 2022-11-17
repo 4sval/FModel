@@ -296,16 +296,19 @@ public class Renderer : IDisposable
                 LoadWorld(cancellationToken, w, transform);
     }
 
-    public void Dispose()
+    public void Save()
     {
         UserSettings.Default.ShowSkybox = ShowSkybox;
         UserSettings.Default.ShowGrid = ShowGrid;
+    }
 
+    public void Dispose()
+    {
         _skybox?.Dispose();
         _grid?.Dispose();
-        _shader.Dispose();
-        _outline.Dispose();
-        Picking.Dispose();
-        Cache.Dispose();
+        _shader?.Dispose();
+        _outline?.Dispose();
+        Picking?.Dispose();
+        Cache?.Dispose();
     }
 }

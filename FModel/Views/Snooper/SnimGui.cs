@@ -108,7 +108,7 @@ public class SnimGui
 
         if (ImGui.BeginMenu("Window"))
         {
-            ImGui.MenuItem("Append", "R");
+            ImGui.MenuItem("Hide", "H");
             ImGui.MenuItem("Close", "ESC");
             ImGui.EndMenu();
         }
@@ -449,7 +449,7 @@ public class SnimGui
                 ImGui.DragInt("", ref material.SelectedChannel, 1, 0, model.NumTexCoords - 1, "UV %i", ImGuiSliderFlags.AlwaysClamp);
                 ImGui.EndDisabled();ImGui.PopID();Layout("Type");ImGui.PushID(2);
                 ImGui.Combo("texture_type", ref material.SelectedTexture,
-                    "Diffuse\0Normals\0Specular\0Mask\0Emissive\0");
+                    "Diffuse\0Normals\0Specular\0Ambient Occlusion\0Emissive\0");
                 ImGui.PopID();
                 ImGui.EndTable();
             }
@@ -604,29 +604,6 @@ public class SnimGui
             ImGui.EndTooltip();
         }
         if (ImGui.IsItemClicked()) ImGui.SetClipboardText(name);
-    }
-
-    private void DrawSquareTexture(Texture texture, Vector2 size)
-    {
-        ImGui.Image(texture?.GetPointer() ?? IntPtr.Zero, size, Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1, 1, 1, .5f));
-        if (texture == null) return;
-
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-            ImGui.Text($"Type: ({texture.Format}) {texture.Type}:{texture.Name}");
-            ImGui.Text($"Texture: {texture.Path}");
-            ImGui.Text($"Imported: {texture.ImportedWidth}x{texture.ImportedHeight}");
-            ImGui.Text($"Mip Used: {texture.Width}x{texture.Height}");
-            ImGui.Spacing();
-            ImGui.TextDisabled(texture.Label);
-            ImGui.EndTooltip();
-        }
-        if (ImGui.IsItemClicked())
-        {
-            ImGui.SetClipboardText(Creator.Utils.FixPath(texture.Path));
-            texture.Label = "(?) Path Copied to Clipboard";
-        }
     }
 
     private void Theme()

@@ -635,6 +635,13 @@ namespace FModel.Settings
             set => SetProperty(ref _showGrid, value);
         }
 
+        private bool _previewWorlds = true;
+        public bool PreviewWorlds
+        {
+            get => _previewWorlds;
+            set => SetProperty(ref _previewWorlds, value);
+        }
+
         private bool _previewStaticMeshes = true;
         public bool PreviewStaticMeshes
         {

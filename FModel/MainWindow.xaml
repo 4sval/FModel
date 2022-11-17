@@ -159,6 +159,15 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Views">
+                <MenuItem Header="3D Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource MeshIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Audio Player" Command="{Binding MenuCommand}" CommandParameter="Views_AudioPlayer">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
