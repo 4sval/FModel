@@ -63,7 +63,9 @@ public class SnimGui
                 ImGui.Checkbox("", ref s.Renderer.ShowSkybox);
                 ImGui.PopID();Layout("Grid");ImGui.PushID(2);
                 ImGui.Checkbox("", ref s.Renderer.ShowGrid);
-                ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(3);
+                ImGui.PopID();Layout("Lights");ImGui.PushID(3);
+                ImGui.Checkbox("", ref s.Renderer.ShowLights);
+                ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(4);
                 ImGui.Combo("vertex_colors", ref s.Renderer.VertexColor,
                     "Default\0Diffuse Only\0Colors\0Normals\0Tangent\0Texture Coordinates\0");
                 ImGui.PopID();
@@ -441,22 +443,7 @@ public class SnimGui
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.CollapsingHeader("Textures"))
         {
-            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
-            ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
-            if (ImGui.BeginTable("material_textures", 2))
-            {
-                Layout("Channel");ImGui.PushID(1); ImGui.BeginDisabled(model.NumTexCoords < 2);
-                ImGui.DragInt("", ref material.SelectedChannel, 1, 0, model.NumTexCoords - 1, "UV %i", ImGuiSliderFlags.AlwaysClamp);
-                ImGui.EndDisabled();ImGui.PopID();Layout("Type");ImGui.PushID(2);
-                ImGui.Combo("texture_type", ref material.SelectedTexture,
-                    "Diffuse\0Normals\0Specular\0Ambient Occlusion\0Emissive\0");
-                ImGui.PopID();
-                ImGui.EndTable();
-            }
-            ImGui.PopStyleVar(2);
-
-            ImGui.Image(material.GetSelectedTexture() ?? icons["noimage"].GetPointer(), new Vector2(ImGui.GetContentRegionAvail().X), Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
-            ImGui.Spacing();
+            material.ImGuiTextures(icons, model);
         }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);

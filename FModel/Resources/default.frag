@@ -2,6 +2,7 @@
 
 #define PI 3.1415926535897932384626433832795
 #define MAX_UV_COUNT 8
+#define MAX_LIGHT_COUNT 100
 
 in vec3 fPos;
 in vec3 fNormal;
@@ -46,7 +47,19 @@ struct Parameters
     float UVScale;
 };
 
+struct Light {
+    vec4 Color;
+    vec3 Position;
+    float Intensity;
+
+    float Constant;
+    float Linear;
+    float Quadratic;
+};
+
 uniform Parameters uParameters;
+uniform Light uLights[MAX_LIGHT_COUNT];
+uniform int uNumLights;
 uniform int uNumTexCoords;
 uniform vec3 uViewPos;
 uniform vec3 uViewDir;
@@ -175,6 +188,27 @@ void main()
         if (!bVertexColors[1])
         {
             result += CalcPBRLight(layer, normals);
+
+            vec3 lights = vec3(uNumLights > 0 ? 0 : 1);
+            for (int i = 0; i < uNumLights; i++)
+            {
+                float distance    = length(uLights[i].Position - fPos);
+                float attenuation = 1.0 / (1.0 + uLights[i].Linear * distance + uLights[i].Quadratic * (distance * distance));
+                vec3 intensity = uLights[i].Color.rgb * uLights[i].Intensity;
+                lights += result * intensity * attenuation;
+
+//                float attenuation = 0.0;
+//                float theta = dot(normalize(uLights[i].Position - fPos), normalize(-uLights[i].Direction));
+//                if(theta > uLights[i].ConeAngle)
+//                {
+//                    float distanceToLight = length(uLights[i].Position - fPos);
+//                    attenuation = 1.0 / (1.0 + uLights[i].Attenuation * pow(distanceToLight, 2));
+//                }
+//
+//                vec3 intensity = uLights[i].Color.rgb * uLights[i].Intensity;
+//                lights += result * intensity * attenuation;
+            }
+            result *= lights; // use * to darken the scene, + to lighten it
         }
 
         result = result / (result + vec3(1.0f));

@@ -105,6 +105,8 @@
     <None Remove="Resources\outline.vert" />
     <None Remove="Resources\picking.frag" />
     <None Remove="Resources\picking.vert" />
+    <None Remove="Resources\light.frag" />
+    <None Remove="Resources\light.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -126,6 +128,8 @@
     <EmbeddedResource Include="Resources\outline.vert" />
     <EmbeddedResource Include="Resources\picking.frag" />
     <EmbeddedResource Include="Resources\picking.vert" />
+    <EmbeddedResource Include="Resources\light.frag" />
+    <EmbeddedResource Include="Resources\light.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -222,6 +226,8 @@
     <Resource Include="Resources\px.png" />
     <Resource Include="Resources\py.png" />
     <Resource Include="Resources\pz.png" />
+    <Resource Include="Resources\pointlight.png" />
+    <Resource Include="Resources\spotlight.png" />
   </ItemGroup>
 
   <ItemGroup>

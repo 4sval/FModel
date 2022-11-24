@@ -13,6 +13,8 @@ public class Cache : IDisposable
 {
     public readonly Dictionary<FGuid, Model> Models;
     public readonly Dictionary<FGuid, Texture> Textures;
+    public readonly List<Light> Lights;
+
     public readonly Dictionary<string, Texture> Icons;
 
     private ETexturePlatform _platform;
@@ -22,12 +24,18 @@ public class Cache : IDisposable
     {
         Models = new Dictionary<FGuid, Model>();
         Textures = new Dictionary<FGuid, Texture>();
-        Icons = new Dictionary<string, Texture>();
+        Lights = new List<Light>();
+
+        Icons = new Dictionary<string, Texture>
+        {
+            ["material"] = new ("materialicon"),
+            ["noimage"] = new ("T_Placeholder_Item_Image"),
+            ["pointlight"] = new ("pointlight"),
+            ["spotlight"] = new ("spotlight"),
+        };
+
         _platform = UserSettings.Default.OverridedPlatform;
         _game = Services.ApplicationService.ApplicationView.CUE4Parse.Game;
-
-        Icons["material"] = new Texture("materialicon");
-        Icons["noimage"] = new Texture("T_Placeholder_Item_Image");
     }
 
     public bool TryGetCachedModel(UStaticMesh o, out Model model)
@@ -72,6 +80,11 @@ public class Cache : IDisposable
             if (model.IsSetup) continue;
             model.Setup(this);
         }
+
+        foreach (var light in Lights)
+        {
+            light.Setup();
+        }
     }
 
     public void DisposeModels()
@@ -94,10 +107,16 @@ public class Cache : IDisposable
         }
     }
 
-    public void Dispose()
+    public void Reset()
     {
         DisposeModels();
         Models.Clear();
+        Lights.Clear();
+    }
+
+    public void Dispose()
+    {
+        Reset();
 
         DisposeTextures();
         Textures.Clear();

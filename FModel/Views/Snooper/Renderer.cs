@@ -24,9 +24,11 @@ public class Renderer : IDisposable
     private readonly Grid _grid;
     private Shader _shader;
     private Shader _outline;
+    private Shader _light;
 
     public bool ShowSkybox;
     public bool ShowGrid;
+    public bool ShowLights;
     public int VertexColor;
 
     public PickingTexture Picking { get; }
@@ -49,6 +51,7 @@ public class Renderer : IDisposable
 
     public Camera Load(CancellationToken cancellationToken, UObject export)
     {
+        ShowLights = false;
         return export switch
         {
             UStaticMesh st => LoadStaticMesh(st),
@@ -86,6 +89,7 @@ public class Renderer : IDisposable
 
         _shader = new Shader();
         _outline = new Shader("outline");
+        _light = new Shader("light");
 
         Picking.Setup();
         Cache.Setup();
@@ -101,15 +105,26 @@ public class Renderer : IDisposable
 
         _shader.Render(viewMatrix, cam.Position, cam.Direction, projMatrix);
         for (int i = 0; i < 6; i++)
-        {
             _shader.SetUniform($"bVertexColors[{i}]", i == VertexColor);
-        }
 
-        // render pass
+        // render model pass
         foreach (var model in Cache.Models.Values)
         {
             if (!model.Show) continue;
             model.Render(_shader);
+        }
+
+        {   // light pass
+            var uNumLights = Cache.Lights.Count;
+            _shader.SetUniform("uNumLights", ShowLights ? uNumLights : 0);
+
+            if (ShowLights)
+                for (int i = 0; i < uNumLights; i++)
+                    Cache.Lights[i].Render(i, _shader);
+
+            _light.Render(viewMatrix, projMatrix);
+            for (int i = 0; i < uNumLights; i++)
+                Cache.Lights[i].Render(_light);
         }
 
         // outline pass
@@ -188,6 +203,7 @@ public class Renderer : IDisposable
 
             Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {i}/{length}");
             WorldCamera(actor, ref cam);
+            // WorldLight(actor);
             WorldMesh(actor, transform);
             AdditionalWorlds(actor, transform.Matrix, cancellationToken);
         }
@@ -207,6 +223,14 @@ public class Renderer : IDisposable
             new Vector3(position.X, position.Y, position.Z),
             new Vector3(direction.X, direction.Y, direction.Z),
             0.01f, far * 25f, Math.Max(5f, far / 10f));
+    }
+
+    private void WorldLight(UObject actor)
+    {
+        if (!actor.TryGetValue(out FPackageIndex lightComponent, "LightComponent") ||
+            lightComponent.Load() is not { } lightObject) return;
+
+        Cache.Lights.Add(new PointLight(Cache.Icons["pointlight"], lightObject, FVector.ZeroVector));
     }
 
     private void WorldMesh(UObject actor, Transform transform)
@@ -274,6 +298,17 @@ public class Renderer : IDisposable
             }
             Cache.Models[guid] = model;
         }
+
+        if (actor.TryGetValue(out FPackageIndex treasureLight, "TreasureLight", "PointLight") &&
+            treasureLight.TryLoad(out var tl) && tl.Template.TryLoad(out tl))
+        {
+            Cache.Lights.Add(new PointLight(Cache.Icons["pointlight"], tl, t.Position));
+        }
+        if (actor.TryGetValue(out FPackageIndex spotLight, "SpotLight") &&
+            spotLight.TryLoad(out var sl) && sl.Template.TryLoad(out sl))
+        {
+            Cache.Lights.Add(new SpotLight(Cache.Icons["spotlight"], sl, t.Position));
+        }
     }
 
     private void AdditionalWorlds(UObject actor, Matrix4x4 relation, CancellationToken cancellationToken)
@@ -308,6 +343,7 @@ public class Renderer : IDisposable
         _grid?.Dispose();
         _shader?.Dispose();
         _outline?.Dispose();
+        _light?.Dispose();
         Picking?.Dispose();
         Cache?.Dispose();
     }

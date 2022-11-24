@@ -129,7 +129,7 @@ public class Camera
         if (ImGui.BeginTable("camera_editor", 2))
         {
             SnimGui.Layout("Speed");ImGui.PushID(1);
-            ImGui.DragFloat("", ref Speed, _step, _zero, _infinite, "%.2f s/m", _clamp);
+            ImGui.DragFloat("", ref Speed, _step, _zero, _infinite, "%.2f m/s", _clamp);
             ImGui.PopID();SnimGui.Layout("Far Plane");ImGui.PushID(2);
             ImGui.DragFloat("", ref Far, 0.1f, 0.1f, Far * 2f, "%.2f m", _clamp);
             ImGui.PopID();

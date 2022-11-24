@@ -83,7 +83,7 @@ public class Material : IDisposable
             }
 
             {   // colors
-                DiffuseColor = FillColors(numTexCoords, Diffuse, CMaterialParams2.DiffuseColors, new Vector4(0.5f));
+                DiffuseColor = FillColors(numTexCoords, Diffuse, CMaterialParams2.DiffuseColors, Vector4.One);
                 EmissiveColor = FillColors(numTexCoords, Emissive, CMaterialParams2.EmissiveColors, Vector4.One);
             }
 
@@ -208,10 +208,15 @@ public class Material : IDisposable
     private const float _zero = 0.000001f; // doesn't actually work if _infinite is used as max value /shrug
     private const float _infinite = 0.0f;
     private const ImGuiSliderFlags _clamp = ImGuiSliderFlags.AlwaysClamp;
-    public void ImGuiParameters()
+    private void PushStyle()
     {
         ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
         ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
+    }
+
+    public void ImGuiParameters()
+    {
+        PushStyle();
         if (ImGui.BeginTable("parameters", 2))
         {
             SnimGui.Layout("Emissive Multiplier");ImGui.PushID(1);
@@ -253,7 +258,40 @@ public class Material : IDisposable
         }
     }
 
-    public IntPtr? GetSelectedTexture()
+    public void ImGuiTextures(Dictionary<string, Texture> icons, Model model)
+    {
+        PushStyle();
+        if (ImGui.BeginTable("material_textures", 2))
+        {
+            SnimGui.Layout("Channel");ImGui.PushID(1); ImGui.BeginDisabled(model.NumTexCoords < 2);
+            ImGui.DragInt("", ref SelectedChannel, _step, 0, model.NumTexCoords - 1, "UV %i", ImGuiSliderFlags.AlwaysClamp);
+            ImGui.EndDisabled();ImGui.PopID();SnimGui.Layout("Type");ImGui.PushID(2);
+            ImGui.Combo("texture_type", ref SelectedTexture, "Diffuse\0Normals\0Specular\0Ambient Occlusion\0Emissive\0");
+            ImGui.PopID();
+
+            switch (SelectedTexture)
+            {
+                case 0:
+                    SnimGui.Layout("Color");ImGui.PushID(3);
+                    ImGui.ColorEdit4("", ref DiffuseColor[SelectedChannel], ImGuiColorEditFlags.NoAlpha);
+                    ImGui.PopID();
+                    break;
+                case 4:
+                    SnimGui.Layout("Color");ImGui.PushID(3);
+                    ImGui.ColorEdit4("", ref EmissiveColor[SelectedChannel], ImGuiColorEditFlags.NoAlpha);
+                    ImGui.PopID();
+                    break;
+            }
+
+            ImGui.EndTable();
+        }
+        ImGui.PopStyleVar(2);
+
+        ImGui.Image(GetSelectedTexture() ?? icons["noimage"].GetPointer(), new Vector2(ImGui.GetContentRegionAvail().X), Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
+        ImGui.Spacing();
+    }
+
+    private IntPtr? GetSelectedTexture()
     {
         return SelectedTexture switch
         {

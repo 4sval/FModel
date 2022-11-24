@@ -36,6 +36,11 @@ public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVer
         GL.BindVertexArray(_handle);
     }
 
+    public void Unbind()
+    {
+        GL.BindVertexArray(0);
+    }
+
     public unsafe void BindInstancing()
     {
         Bind();
@@ -56,11 +61,6 @@ public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVer
         GL.VertexAttribDivisor(12, 1);
 
         Unbind();
-    }
-
-    public void Unbind()
-    {
-        GL.BindVertexArray(0);
     }
 
     public void Dispose()
