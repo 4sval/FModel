@@ -1,6 +1,5 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;
 
@@ -33,7 +32,7 @@ public class FramebufferObject : IDisposable
         -1.0f,  1.0f,  0.0f, 1.0f
     };
 
-    public FramebufferObject(Vector2i size)
+    public FramebufferObject(OpenTK.Mathematics.Vector2i size)
     {
         _width = size.X;
         _height = size.Y;

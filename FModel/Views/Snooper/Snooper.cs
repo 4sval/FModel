@@ -1,10 +1,10 @@
 using System.ComponentModel;
+using System.Numerics;
 using System.Threading;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -78,7 +78,7 @@ public class Snooper : GameWindow
         base.OnLoad();
         CenterWindow();
 
-        GL.ClearColor(Color4.Black);
+        GL.ClearColor(OpenTK.Mathematics.Color4.Black);
         GL.Enable(EnableCap.Blend);
         GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.Multisample);

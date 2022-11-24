@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Numerics;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;
 
@@ -79,7 +79,7 @@ public class Skybox : IDisposable
         _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 3, 0); // position
     }
 
-    public void Render(Matrix4 viewMatrix, Matrix4 projMatrix)
+    public void Render(Matrix4x4 viewMatrix, Matrix4x4 projMatrix)
     {
         GL.DepthFunc(DepthFunction.Lequal);
 

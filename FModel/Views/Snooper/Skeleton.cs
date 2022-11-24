@@ -30,17 +30,23 @@ public class Skeleton : IDisposable
                 continue;
 
             var transform = Transform.Identity;
-            for (int j = 0; j <= boneIndex; j++)
+            while (boneIndex > -1)
             {
-                var t = RefSkel.ReferenceSkeleton.FinalRefBonePose[j].Inverse();
-                (t.Translation.X, t.Translation.Z, t.Translation.Y) = (-t.Translation.Z, -t.Translation.Y, -t.Translation.X);
-                var matrix = Matrix4x4.CreateScale(t.Scale3D.ToMapVector());
-                // matrix *= Matrix4x4.CreateFromQuaternion(t.Rotation);
-                matrix *= Matrix4x4.CreateTranslation(t.Translation * Constants.SCALE_DOWN_RATIO);
+                var t = RefSkel.ReferenceSkeleton.FinalRefBonePose[boneIndex];
+                transform.Position += t.Rotation.RotateVector(t.Translation.ToMapVector()) * Constants.SCALE_DOWN_RATIO;
 
-                // Console.WriteLine($@"{t.Translation}");
-                transform.Relation *= matrix;
+                boneIndex = RefSkel.ReferenceSkeleton.FinalRefBoneInfo[boneIndex].ParentIndex;
             }
+            // for (int j = 0; j <= 3; j++)
+            // {
+            //     var t = RefSkel.ReferenceSkeleton.FinalRefBonePose[j];
+            //     // var matrix = Matrix4x4.CreateScale(t.Scale3D.ToMapVector());
+            //     // matrix *= Matrix4x4.CreateFromQuaternion(t.Rotation);
+            //     transform.Position += t.Rotation.UnrotateVector(t.Translation.ToMapVector()) * Constants.SCALE_DOWN_RATIO;
+            //
+            //     // Console.WriteLine($@"{t.Translation}");
+            //     // transform.Relation *= matrix;
+            // }
 
             Sockets[i] = new Socket(socket, transform);
         }

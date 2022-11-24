@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Numerics;
 using ImGuiNET;
-using OpenTK.Mathematics;
 
 namespace FModel.Views.Snooper;
 
@@ -68,54 +68,14 @@ public class Camera
         Direction = Vector3.Normalize(direction);
     }
 
-    public Matrix4 GetViewMatrix()
+    public Matrix4x4 GetViewMatrix()
     {
-        return Matrix4.LookAt(Position, Position + Direction, Up);
+        return Matrix4x4.CreateLookAt(Position, Position + Direction, Up);
     }
 
-    public Matrix4 GetProjectionMatrix()
+    public Matrix4x4 GetProjectionMatrix()
     {
-        return CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, Near, Far);
-    }
-
-    /// <summary>
-    /// OpenTK function causes a gap between the faded out grid & the skybox
-    /// so we use the System.Numerics function instead with OpenTK types
-    /// </summary>
-    private Matrix4 CreatePerspectiveFieldOfView(float fieldOfView, float aspectRatio, float nearPlaneDistance, float farPlaneDistance)
-    {
-        if (fieldOfView is <= 0.0f or >= MathF.PI)
-            throw new ArgumentOutOfRangeException(nameof(fieldOfView));
-
-        if (nearPlaneDistance <= 0.0f)
-            throw new ArgumentOutOfRangeException(nameof(nearPlaneDistance));
-
-        if (farPlaneDistance <= 0.0f)
-            throw new ArgumentOutOfRangeException(nameof(farPlaneDistance));
-
-        if (nearPlaneDistance >= farPlaneDistance)
-            throw new ArgumentOutOfRangeException(nameof(nearPlaneDistance));
-
-        float yScale = 1.0f / MathF.Tan(fieldOfView * 0.5f);
-        float xScale = yScale / aspectRatio;
-
-        Matrix4 result = Matrix4.Zero;
-
-        result.M11 = xScale;
-        result.M12 = result.M13 = result.M14 = 0.0f;
-
-        result.M22 = yScale;
-        result.M21 = result.M23 = result.M24 = 0.0f;
-
-        result.M31 = result.M32 = 0.0f;
-        float negFarRange = float.IsPositiveInfinity(farPlaneDistance) ? -1.0f : farPlaneDistance / (nearPlaneDistance - farPlaneDistance);
-        result.M33 = negFarRange;
-        result.M34 = -1.0f;
-
-        result.M41 = result.M42 = result.M44 = 0.0f;
-        result.M43 = nearPlaneDistance * negFarRange;
-
-        return result;
+        return Matrix4x4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, Near, Far);
     }
 
     private const float _step = 0.01f;

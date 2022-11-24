@@ -14,7 +14,6 @@ using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Settings;
-using Vector3 = OpenTK.Mathematics.Vector3;
 
 namespace FModel.Views.Snooper;
 

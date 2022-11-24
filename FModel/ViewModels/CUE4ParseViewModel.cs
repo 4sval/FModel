@@ -41,7 +41,6 @@ using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
 using Newtonsoft.Json;
-using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
@@ -89,7 +88,7 @@ public class CUE4ParseViewModel : ViewModel
                 return _snooper ??= new Snooper(GameWindowSettings.Default,
                     new NativeWindowSettings
                     {
-                        Size = new Vector2i(
+                        Size = new OpenTK.Mathematics.Vector2i(
                             Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75),
                             Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85)),
                         NumberOfSamples = Constants.SAMPLES_COUNT,

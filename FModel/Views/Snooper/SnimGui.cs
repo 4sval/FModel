@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Framework;
 using ImGuiNET;
-using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using Vector2 = System.Numerics.Vector2;
-using Vector4 = System.Numerics.Vector4;
+using System.Numerics;
 
 namespace FModel.Views.Snooper;
 
@@ -88,7 +86,7 @@ public class SnimGui
         }
     }
 
-    private void DrawDockSpace(Vector2i size)
+    private void DrawDockSpace(OpenTK.Mathematics.Vector2i size)
     {
         const ImGuiWindowFlags flags =
             ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking |

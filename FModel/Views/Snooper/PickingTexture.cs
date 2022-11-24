@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using Vector2 = System.Numerics.Vector2;
+using System.Numerics;
 
 namespace FModel.Views.Snooper;
 
@@ -53,7 +52,7 @@ public class PickingTexture : IDisposable
         Bind(0);
     }
 
-    public void Render(Matrix4 viewMatrix, Matrix4 projMatrix, IDictionary<FGuid,Model> models)
+    public void Render(Matrix4x4 viewMatrix, Matrix4x4 projMatrix, IDictionary<FGuid,Model> models)
     {
         Bind();
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);

@@ -13,11 +13,10 @@ public class Socket : IDisposable
     {
         Name = socket.SocketName.Text;
         Bone = socket.BoneName.Text;
-        Transform = Transform.Identity;
-        Transform.Relation = transform.Matrix;
-        Transform.Position = socket.RelativeLocation.ToMapVector() * Constants.SCALE_DOWN_RATIO;
-        Transform.Rotation = socket.RelativeRotation;
-        Transform.Scale = socket.RelativeScale.ToMapVector();
+        Transform = transform;
+        // Transform.Relation = transform.Matrix;
+        // Transform.Position = socket.RelativeRotation.RotateVector(socket.RelativeLocation.ToMapVector()) * Constants.SCALE_DOWN_RATIO;
+        // Transform.Scale = socket.RelativeScale.ToMapVector();
     }
 
     public void Dispose()
