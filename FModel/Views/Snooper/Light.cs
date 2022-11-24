@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -29,8 +29,6 @@ public abstract class Light : IDisposable
 
     public readonly Vector4 Color;
     public readonly float Intensity;
-    public readonly float Linear;
-    public readonly float Quadratic;
 
     public Light(Texture icon, UObject light, FVector position)
     {
@@ -45,10 +43,6 @@ public abstract class Light : IDisposable
 
         Color = light.GetOrDefault("LightColor", new FColor(0xFF, 0xFF, 0xFF, 0xFF));
         Intensity = light.GetOrDefault("Intensity", 1.0f);
-
-        var radius = light.GetOrDefault("AttenuationRadius", 0.0f) * Constants.SCALE_DOWN_RATIO;
-        Linear = 4.5f / radius;
-        Quadratic = 75.0f / MathF.Pow(radius, 2);
     }
 
     public void SetupInstances()

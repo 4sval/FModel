@@ -52,9 +52,14 @@ struct Light {
     vec3 Position;
     float Intensity;
 
-    float Constant;
+    vec3 Direction;
+    float ConeAngle;
+    float Attenuation;
+
     float Linear;
     float Quadratic;
+
+    int Type; // 0 Point, 1 Spot
 };
 
 uniform Parameters uParameters;
@@ -192,21 +197,24 @@ void main()
             vec3 lights = vec3(uNumLights > 0 ? 0 : 1);
             for (int i = 0; i < uNumLights; i++)
             {
-                float distance    = length(uLights[i].Position - fPos);
-                float attenuation = 1.0 / (1.0 + uLights[i].Linear * distance + uLights[i].Quadratic * (distance * distance));
+                float distanceToLight    = length(uLights[i].Position - fPos);
+
+                float attenuation = 0.0;
+                if (uLights[i].Type == 0)
+                {
+                    attenuation = 1.0 / (1.0 + uLights[i].Linear * distanceToLight + uLights[i].Quadratic * pow(distanceToLight, 2));
+                }
+                else if (uLights[i].Type == 1)
+                {
+                    float theta = dot(normalize(uLights[i].Position - fPos), normalize(-uLights[i].Direction));
+                    if(theta > uLights[i].ConeAngle)
+                    {
+                        attenuation = 1.0 / (1.0 + uLights[i].Attenuation * pow(distanceToLight, 2));
+                    }
+                }
+
                 vec3 intensity = uLights[i].Color.rgb * uLights[i].Intensity;
                 lights += result * intensity * attenuation;
-
-//                float attenuation = 0.0;
-//                float theta = dot(normalize(uLights[i].Position - fPos), normalize(-uLights[i].Direction));
-//                if(theta > uLights[i].ConeAngle)
-//                {
-//                    float distanceToLight = length(uLights[i].Position - fPos);
-//                    attenuation = 1.0 / (1.0 + uLights[i].Attenuation * pow(distanceToLight, 2));
-//                }
-//
-//                vec3 intensity = uLights[i].Color.rgb * uLights[i].Intensity;
-//                lights += result * intensity * attenuation;
             }
             result *= lights; // use * to darken the scene, + to lighten it
         }
