@@ -308,7 +308,7 @@ namespace FModel.Settings
             {FGame.Indiana, EGame.GAME_UE4_LATEST},
             {FGame.RogueCompany, EGame.GAME_RogueCompany},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
-            {FGame.Platform, EGame.GAME_UE4_25},
+            {FGame.Platform, EGame.GAME_UE4_26},
             {FGame.BendGame, EGame.GAME_UE4_11},
             {FGame.TslGame, EGame.GAME_PlayerUnknownsBattlegrounds},
             {FGame.PortalWars, EGame.GAME_UE4_LATEST},
