@@ -94,7 +94,9 @@ public enum FGame
     [Description("Your Beloved ™ Panda")]
     PandaGame,
     [Description("Tower of Fantasy")]
-    Hotta
+    Hotta,
+    [Description("eFootball 2023")]
+    eFootball
 }
 
 public enum ELoadingMode

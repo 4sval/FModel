@@ -284,7 +284,8 @@ namespace FModel.Settings
             {FGame.Gameface, Constants._NO_PRESET_TRIGGER},
             {FGame.Athena, Constants._NO_PRESET_TRIGGER},
             {FGame.PandaGame, Constants._NO_PRESET_TRIGGER},
-            {FGame.Hotta, Constants._NO_PRESET_TRIGGER}
+            {FGame.Hotta, Constants._NO_PRESET_TRIGGER},
+            {FGame.eFootball, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -314,7 +315,8 @@ namespace FModel.Settings
             {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition},
             {FGame.Athena, EGame.GAME_SeaOfThieves},
             {FGame.PandaGame, EGame.GAME_UE4_26},
-            {FGame.Hotta, EGame.GAME_TowerOfFantasy}
+            {FGame.Hotta, EGame.GAME_TowerOfFantasy},
+            {FGame.eFootball, EGame.GAME_UE4_26}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -344,7 +346,8 @@ namespace FModel.Settings
             {FGame.Gameface, null},
             {FGame.Athena, null},
             {FGame.PandaGame, null},
-            {FGame.Hotta, null}
+            {FGame.Hotta, null},
+            {FGame.eFootball, null}
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
@@ -374,7 +377,8 @@ namespace FModel.Settings
             {FGame.Gameface, null},
             {FGame.Athena, null},
             {FGame.PandaGame, null},
-            {FGame.Hotta, null}
+            {FGame.Hotta, null},
+            {FGame.eFootball, null}
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
@@ -410,7 +414,8 @@ namespace FModel.Settings
             {FGame.Gameface, new FEndpoint[]{new (), new ()}},
             {FGame.Athena, new FEndpoint[]{new (), new ()}},
             {FGame.PandaGame, new FEndpoint[]{new (), new ()}},
-            {FGame.Hotta, new FEndpoint[]{new (), new ()}}
+            {FGame.Hotta, new FEndpoint[]{new (), new ()}},
+            {FGame.eFootball, new FEndpoint[]{new (), new ()}}
         };
         public IDictionary<FGame, FEndpoint[]> CustomEndpoints
         {
@@ -487,7 +492,8 @@ namespace FModel.Settings
             {FGame.Gameface, new List<CustomDirectory>()},
             {FGame.Athena, new List<CustomDirectory>()},
             {FGame.PandaGame, new List<CustomDirectory>()},
-            {FGame.Hotta, new List<CustomDirectory>()}
+            {FGame.Hotta, new List<CustomDirectory>()},
+            {FGame.eFootball, new List<CustomDirectory>()}
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {

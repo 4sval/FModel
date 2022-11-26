@@ -117,6 +117,7 @@ public class GameSelectorViewModel : ViewModel
         yield return GetSteamGame(578080, "\\TslGame\\Content\\Paks"); // PUBG
         yield return GetSteamGame(677620, "\\PortalWars\\Content\\Paks"); // Splitgate
         yield return GetSteamGame(1172620, "\\Athena\\Content\\Paks"); // Sea of Thieves
+        yield return GetSteamGame(1665460, "\\pak"); // eFootball 2023
         yield return GetRockstarGamesGame("GTA III - Definitive Edition", "\\Gameface\\Content\\Paks");
         yield return GetRockstarGamesGame("GTA San Andreas - Definitive Edition", "\\Gameface\\Content\\Paks");
         yield return GetRockstarGamesGame("GTA Vice City - Definitive Edition", "\\Gameface\\Content\\Paks");

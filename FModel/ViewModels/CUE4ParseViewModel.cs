@@ -139,6 +139,7 @@ public class CUE4ParseViewModel : ViewModel
             default:
             {
                 var parent = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\");
+                if (gameDirectory.Contains("eFootball")) parent = gameDirectory.SubstringBeforeLast("\\pak").SubstringAfterLast("\\");
                 Game = Helper.IAmThePanda(parent) ? FGame.PandaGame : parent.ToEnum(FGame.Unknown);
                 var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                     customVersions: UserSettings.Default.OverridedCustomVersions[Game],
@@ -160,6 +161,13 @@ public class CUE4ParseViewModel : ViewModel
                         Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
                             {
                                 new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FortniteGame\\Saved\\PersistentDownloadDir\\InstalledBundles"),
+                            },
+                            SearchOption.AllDirectories, true, versions);
+                        break;
+                    case FGame.eFootball:
+                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
+                            {
+                                new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
                             },
                             SearchOption.AllDirectories, true, versions);
                         break;
