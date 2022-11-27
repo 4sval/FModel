@@ -30,10 +30,10 @@ public abstract class Light : IDisposable
     public readonly Vector4 Color;
     public readonly float Intensity;
 
-    public Light(Texture icon, UObject light, FVector position)
+    public Light(Texture icon, UObject parent, UObject light, FVector position)
     {
-        var p = light.GetOrDefault("RelativeLocation", FVector.ZeroVector);
-        var r = light.GetOrDefault("RelativeRotation", FRotator.ZeroRotator);
+        var p = light.GetOrDefault("RelativeLocation", parent.GetOrDefault("RelativeLocation", FVector.ZeroVector));
+        var r = light.GetOrDefault("RelativeRotation", parent.GetOrDefault("RelativeRotation", FRotator.ZeroRotator));
 
         Transform = Transform.Identity;
         Transform.Scale = new FVector(0.25f);
@@ -41,8 +41,8 @@ public abstract class Light : IDisposable
 
         Icon = icon;
 
-        Color = light.GetOrDefault("LightColor", new FColor(0xFF, 0xFF, 0xFF, 0xFF));
-        Intensity = light.GetOrDefault("Intensity", 1.0f);
+        Color = light.GetOrDefault("LightColor", parent.GetOrDefault("LightColor", new FColor(0xFF, 0xFF, 0xFF, 0xFF)));
+        Intensity = light.GetOrDefault("Intensity", parent.GetOrDefault("Intensity", 1.0f));
     }
 
     public void SetupInstances()

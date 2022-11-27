@@ -9,11 +9,14 @@ public class PointLight : Light
     public readonly float Linear;
     public readonly float Quadratic;
 
-    public PointLight(Texture icon, UObject point, FVector position) : base(icon, point, position)
+    public PointLight(Texture icon, UObject parent, UObject point, FVector position) : base(icon, parent, point, position)
     {
-        var radius = point.GetOrDefault("AttenuationRadius", 0.0f) * Constants.SCALE_DOWN_RATIO;
+        if (!point.TryGetValue(out float radius, "AttenuationRadius", "SourceRadius"))
+            radius = 1.0f;
+
+        radius *= Constants.SCALE_DOWN_RATIO;
         Linear = 4.5f / radius;
-        Quadratic = 75.0f / MathF.Pow(radius, 2);
+        Quadratic = 75.0f / MathF.Pow(radius, 2.0f);
     }
 
     public override void Render(int i, Shader shader)

@@ -226,15 +226,15 @@ public class Renderer : IDisposable
 
     private void WorldLight(UObject actor)
     {
-        if (!actor.TryGetValue(out FPackageIndex lightComponent, "LightComponent") ||
-            lightComponent.Load() is not { } lightObject) return;
-
-        Cache.Lights.Add(new PointLight(Cache.Icons["pointlight"], lightObject, FVector.ZeroVector));
+        // if (!actor.TryGetValue(out FPackageIndex lightComponent, "LightComponent") ||
+        //     lightComponent.Load() is not { } lightObject) return;
+        //
+        // Cache.Lights.Add(new PointLight(Cache.Icons["pointlight"], lightObject, FVector.ZeroVector));
     }
 
     private void WorldMesh(UObject actor, Transform transform)
     {
-        if (!actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "Mesh") ||
+        if (!actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "Mesh", "LightMesh") ||
             staticMeshComponent.Load() is not { } staticMeshComp) return;
 
         if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)
@@ -242,7 +242,7 @@ public class Renderer : IDisposable
                 if (actorExp.TryGetValue(out staticMesh, "StaticMesh"))
                     break;
 
-        if (staticMesh?.Load() is not UStaticMesh m)
+        if (staticMesh?.Load() is not UStaticMesh m || m.Materials.Length < 1)
             return;
 
         var guid = m.LightingGuid;
@@ -299,14 +299,14 @@ public class Renderer : IDisposable
         }
 
         if (actor.TryGetValue(out FPackageIndex treasureLight, "TreasureLight", "PointLight") &&
-            treasureLight.TryLoad(out var tl) && tl.Template.TryLoad(out tl))
+            treasureLight.TryLoad(out var tl1) && tl1.Template.TryLoad(out var tl2))
         {
-            Cache.Lights.Add(new PointLight(Cache.Icons["pointlight"], tl, t.Position));
+            Cache.Lights.Add(new PointLight(Cache.Icons["pointlight"], tl1, tl2, t.Position));
         }
         if (actor.TryGetValue(out FPackageIndex spotLight, "SpotLight") &&
-            spotLight.TryLoad(out var sl) && sl.Template.TryLoad(out sl))
+            spotLight.TryLoad(out var sl1) && sl1.Template.TryLoad(out var sl2))
         {
-            Cache.Lights.Add(new SpotLight(Cache.Icons["spotlight"], sl, t.Position));
+            Cache.Lights.Add(new SpotLight(Cache.Icons["spotlight"], sl1, sl2, t.Position));
         }
     }
 

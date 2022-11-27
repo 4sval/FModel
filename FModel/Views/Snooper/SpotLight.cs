@@ -11,12 +11,15 @@ public class SpotLight : Light
     public float Attenuation;
     public float ConeAngle;
 
-    public SpotLight(Texture icon, UObject spot, FVector position) : base(icon, spot, position)
+    public SpotLight(Texture icon, UObject parent, UObject spot, FVector position) : base(icon, parent, spot, position)
     {
+        if (!spot.TryGetValue(out Attenuation, "AttenuationRadius", "SourceRadius"))
+            Attenuation = 1.0f;
+
+        Attenuation *= Constants.SCALE_DOWN_RATIO;
         Direction = Vector3.Zero;
-        Attenuation = spot.GetOrDefault("AttenuationRadius", 0.0f) * Constants.SCALE_DOWN_RATIO;
         Direction.Y -= Attenuation;
-        ConeAngle = (spot.GetOrDefault("InnerConeAngle", 50f) + spot.GetOrDefault("OuterConeAngle", 60f)) / 2f;
+        ConeAngle = (spot.GetOrDefault("InnerConeAngle", 50.0f) + spot.GetOrDefault("OuterConeAngle", 60.0f)) / 2.0f;
         ConeAngle = MathF.Cos(Helper.DegreesToRadians(ConeAngle));
     }
 
