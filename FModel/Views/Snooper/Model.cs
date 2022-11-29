@@ -192,7 +192,7 @@ public class Model : IDisposable
         _vao.BindInstancing(); // VertexAttributePointer
     }
 
-    public void Setup(Cache cache)
+    public void Setup(Options options)
     {
         _handle = GL.CreateProgram();
 
@@ -216,7 +216,7 @@ public class Model : IDisposable
         for (var i = 0; i < Materials.Length; i++)
         {
             if (!Materials[i].IsUsed) continue;
-            Materials[i].Setup(cache, NumTexCoords);
+            Materials[i].Setup(options, NumTexCoords);
         }
 
         if (HasMorphTargets)

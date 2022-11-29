@@ -2,6 +2,8 @@ using System;
 using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.Core.Misc;
+using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
@@ -24,13 +26,15 @@ public abstract class Light : IDisposable
         1f,  1f, 0f,
         1f, -1f, 0
     };
-    public Texture Icon;
+    public readonly FGuid Model;
+    public readonly Texture Icon;
     public readonly Transform Transform;
 
-    public readonly Vector4 Color;
-    public readonly float Intensity;
+    public Vector4 Color;
+    public float Intensity;
+    public bool IsSetup;
 
-    public Light(Texture icon, UObject parent, UObject light, FVector position)
+    public Light(FGuid model, Texture icon, UObject parent, UObject light, FVector position)
     {
         var p = light.GetOrDefault("RelativeLocation", parent.GetOrDefault("RelativeLocation", FVector.ZeroVector));
         var r = light.GetOrDefault("RelativeRotation", parent.GetOrDefault("RelativeRotation", FRotator.ZeroRotator));
@@ -39,6 +43,7 @@ public abstract class Light : IDisposable
         Transform.Scale = new FVector(0.25f);
         Transform.Position = position + r.RotateVector(p.ToMapVector()) * Constants.SCALE_DOWN_RATIO;
 
+        Model = model;
         Icon = icon;
 
         Color = light.GetOrDefault("LightColor", parent.GetOrDefault("LightColor", new FColor(0xFF, 0xFF, 0xFF, 0xFF)));
@@ -62,13 +67,12 @@ public abstract class Light : IDisposable
 
         _vao.VertexAttributePointer(0, 3, VertexAttribPointerType.Float, 3, 0); // position
         SetupInstances();
-    }
 
-    public abstract void Render(int i, Shader shader);
+        IsSetup = true;
+    }
 
     public void Render(Shader shader)
     {
-        // GL.Disable(EnableCap.DepthTest);
         _vao.Bind();
 
         Icon?.Bind(TextureUnit.Texture0);
@@ -76,7 +80,21 @@ public abstract class Light : IDisposable
         shader.SetUniform("uColor", Color);
 
         GL.DrawArrays(PrimitiveType.Triangles, 0, Indices.Length);
-        // GL.Enable(EnableCap.DepthTest);
+    }
+
+    public virtual void Render(int i, Shader shader)
+    {
+        shader.SetUniform($"uLights[{i}].Color", Color);
+        shader.SetUniform($"uLights[{i}].Position", Transform.Position);
+        shader.SetUniform($"uLights[{i}].Intensity", Intensity);
+    }
+
+    public virtual void ImGuiLight()
+    {
+        SnimGui.Layout("Color");ImGui.PushID(1);
+        ImGui.ColorEdit4("", ref Color, ImGuiColorEditFlags.NoAlpha);
+        ImGui.PopID();SnimGui.Layout("Intensity");ImGui.PushID(2);
+        ImGui.DragFloat("", ref Intensity, 0.1f);ImGui.PopID();
     }
 
     public void Dispose()

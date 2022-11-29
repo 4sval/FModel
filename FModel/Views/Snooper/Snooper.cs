@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Numerics;
 using System.Threading;
@@ -41,7 +42,7 @@ public class Snooper : GameWindow
             Camera = newCamera;
             _previousSpeed = Camera.Speed;
         }
-        return Renderer.Cache.Models.Count > 0;
+        return Renderer.Options.Models.Count > 0;
     }
 
     public unsafe void WindowShouldClose(bool value, bool clear)
@@ -49,8 +50,8 @@ public class Snooper : GameWindow
         if (clear)
         {
             _previousSpeed = 0f;
-            Renderer.Cache.Reset();
-            Renderer.Settings.Reset();
+            Renderer.Options.ResetModelsAndLights();
+            Renderer.Options.SelectModel(Guid.Empty);
             Renderer.Save();
         }
 
@@ -71,7 +72,7 @@ public class Snooper : GameWindow
     {
         if (_init)
         {
-            Renderer.Cache.Setup();
+            Renderer.Options.SetupModelsAndLights();
             return;
         }
 

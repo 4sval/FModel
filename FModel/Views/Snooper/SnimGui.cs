@@ -82,7 +82,17 @@ public class SnimGui
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.CollapsingHeader("Lights"))
         {
-
+            for (int i = 0; i < s.Renderer.Options.Lights.Count; i++)
+            {
+                var id = $"[{i}] {s.Renderer.Options.Models[s.Renderer.Options.Lights[i].Model].Name}";
+                if (ImGui.TreeNode(id) && ImGui.BeginTable(id, 2))
+                {
+                    s.Renderer.Options.SelectModel(s.Renderer.Options.Lights[i].Model);
+                    s.Renderer.Options.Lights[i].ImGuiLight();
+                    ImGui.EndTable();
+                    ImGui.TreePop();
+                }
+            }
         }
     }
 
@@ -143,7 +153,7 @@ public class SnimGui
                 ImGui.TableHeadersRow();
 
                 var i = 0;
-                foreach ((FGuid guid, Model model) in s.Renderer.Cache.Models)
+                foreach ((FGuid guid, Model model) in s.Renderer.Options.Models)
                 {
                     ImGui.PushID(i);
                     ImGui.TableNextRow();
@@ -157,14 +167,13 @@ public class SnimGui
                     ImGui.TableNextColumn();
                     ImGui.Text(model.NumTexCoords.ToString("D"));
                     ImGui.TableNextColumn();
-                    model.IsSelected = s.Renderer.Settings.SelectedModel == guid;
-                    if (ImGui.Selectable(model.Name, model.IsSelected, ImGuiSelectableFlags.SpanAllColumns))
+                    if (ImGui.Selectable(model.Name, s.Renderer.Options.SelectedModel == guid, ImGuiSelectableFlags.SpanAllColumns))
                     {
-                        s.Renderer.Settings.SelectModel(guid);
+                        s.Renderer.Options.SelectModel(guid);
                     }
                     if (ImGui.BeginPopupContextItem())
                     {
-                        s.Renderer.Settings.SelectModel(guid);
+                        s.Renderer.Options.SelectModel(guid);
                         if (ImGui.MenuItem("Show", null, model.Show)) model.Show = !model.Show;
                         if (ImGui.MenuItem("Wireframe", null, model.Wireframe)) model.Wireframe = !model.Wireframe;
                         ImGui.Separator();
@@ -175,12 +184,12 @@ public class SnimGui
                         ImGui.BeginDisabled(!model.HasSkeleton);
                         if (ImGui.Selectable("Animate"))
                         {
-                            s.Renderer.Settings.AnimateMesh(true);
+                            s.Renderer.Options.AnimateMesh(true);
                             s.WindowShouldClose(true, false);
                         }
                         ImGui.EndDisabled();
-                        if (ImGui.Selectable("Delete")) s.Renderer.Cache.Models.Remove(guid);
-                        if (ImGui.Selectable("Deselect")) s.Renderer.Settings.SelectModel(Guid.Empty);
+                        if (ImGui.Selectable("Delete")) s.Renderer.Options.Models.Remove(guid);
+                        if (ImGui.Selectable("Deselect")) s.Renderer.Options.SelectModel(Guid.Empty);
                         ImGui.Separator();
                         if (ImGui.Selectable("Copy Name to Clipboard")) ImGui.SetClipboardText(model.Name);
                         ImGui.EndPopup();
@@ -197,7 +206,7 @@ public class SnimGui
 
     private void DrawSockets(Snooper s)
     {
-        foreach (var model in s.Renderer.Cache.Models.Values)
+        foreach (var model in s.Renderer.Options.Models.Values)
         {
             if (!model.HasSkeleton || model.IsSelected) return;
             if (ImGui.TreeNode($"{model.Name} [{model.Skeleton.Sockets.Length}]"))
@@ -210,14 +219,10 @@ public class SnimGui
                     ImGui.Text($"P: {socket.Transform.Matrix.M41} | {socket.Transform.Matrix.M42} | {socket.Transform.Matrix.M43}");
                     // ImGui.Text($"R: {socket.Transform.Rotation}");
                     // ImGui.Text($"S: {socket.Transform.Scale}");
-                    if (ImGui.Button("Attach"))
+                    if (ImGui.Button("Attach") && s.Renderer.Options.TryGetModel(out var selected))
                     {
-                        var guid = s.Renderer.Settings.SelectedModel;
-                        if (s.Renderer.Cache.Models.TryGetValue(guid, out var selected))
-                        {
-                            selected.Transforms[selected.SelectedInstance] = socket.Transform;
-                            selected.UpdateMatrix(selected.SelectedInstance);
-                        }
+                        selected.Transforms[selected.SelectedInstance] = socket.Transform;
+                        selected.UpdateMatrix(selected.SelectedInstance);
                     }
                     ImGui.PopID();
                     i++;
@@ -233,7 +238,7 @@ public class SnimGui
         MeshWindow("Details", s.Renderer, (icons, model) =>
         {
             ImGui.Text($"Entity: ({model.Type}) {model.Name}");
-            ImGui.Text($"Guid: {s.Renderer.Settings.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
+            ImGui.Text($"Guid: {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
             ImGui.Spacing();
             if (ImGui.Button("Go To"))
             {
@@ -265,19 +270,19 @@ public class SnimGui
 
                         ImGui.Text(section.MaterialIndex.ToString("D"));
                         ImGui.TableNextColumn();
-                        if (ImGui.Selectable(material.Name, s.Renderer.Settings.SelectedSection == i, ImGuiSelectableFlags.SpanAllColumns))
+                        if (ImGui.Selectable(material.Name, s.Renderer.Options.SelectedSection == i, ImGuiSelectableFlags.SpanAllColumns))
                         {
-                            s.Renderer.Settings.SelectSection(i);
+                            s.Renderer.Options.SelectSection(i);
                         }
                         if (ImGui.BeginPopupContextItem())
                         {
-                            s.Renderer.Settings.SelectSection(i);
+                            s.Renderer.Options.SelectSection(i);
                             if (ImGui.MenuItem("Show", null, section.Show)) section.Show = !section.Show;
                             if (ImGui.Selectable("Swap"))
                             {
                                 if (_swapAwareness)
                                 {
-                                    s.Renderer.Settings.SwapMaterial(true);
+                                    s.Renderer.Options.SwapMaterial(true);
                                     s.WindowShouldClose(true, false);
                                 }
                                 else swap = true;
@@ -306,7 +311,7 @@ public class SnimGui
                         if (ImGui.Button("OK", size))
                         {
                             ImGui.CloseCurrentPopup();
-                            s.Renderer.Settings.SwapMaterial(true);
+                            s.Renderer.Options.SwapMaterial(true);
                             s.WindowShouldClose(true, false);
                         }
 
@@ -399,9 +404,9 @@ public class SnimGui
                             for (int i = 0; i < model.Morphs.Length; i++)
                             {
                                 ImGui.PushID(i);
-                                if (ImGui.Selectable(model.Morphs[i].Name, s.Renderer.Settings.SelectedMorph == i))
+                                if (ImGui.Selectable(model.Morphs[i].Name, s.Renderer.Options.SelectedMorph == i))
                                 {
-                                    s.Renderer.Settings.SelectMorph(i, model);
+                                    s.Renderer.Options.SelectMorph(i, model);
                                 }
                                 ImGui.PopID();
                             }
@@ -491,7 +496,7 @@ public class SnimGui
                 if (ImGui.IsMouseClicked(ImGuiMouseButton.Right))
                 {
                     var guid = s.Renderer.Picking.ReadPixel(ImGui.GetMousePos(), ImGui.GetCursorScreenPos(), size);
-                    s.Renderer.Settings.SelectModel(guid);
+                    s.Renderer.Options.SelectModel(guid);
                     ImGui.SetWindowFocus("Outliner");
                 }
             }
@@ -534,7 +539,7 @@ public class SnimGui
     {
         Window(name, () =>
         {
-            if (renderer.Cache.Models.TryGetValue(renderer.Settings.SelectedModel, out var model)) content(renderer.Cache.Icons, model);
+            if (renderer.Options.TryGetModel(out var model)) content(renderer.Options.Icons, model);
             else NoMeshSelected();
         }, styled);
     }
@@ -543,7 +548,7 @@ public class SnimGui
     {
         MeshWindow(name, renderer, (icons, model) =>
         {
-            if (renderer.Settings.TryGetSection(model, out var section)) content(icons, model, section);
+            if (renderer.Options.TryGetSection(model, out var section)) content(icons, model, section);
             else NoSectionSelected();
         }, styled);
     }

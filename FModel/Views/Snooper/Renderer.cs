@@ -31,8 +31,7 @@ public class Renderer : IDisposable
     public int VertexColor;
 
     public PickingTexture Picking { get; }
-    public Cache Cache { get; }
-    public Options Settings { get; }
+    public Options Options { get; }
 
     public Renderer(int width, int height)
     {
@@ -40,8 +39,7 @@ public class Renderer : IDisposable
         _grid = new Grid();
 
         Picking = new PickingTexture(width, height);
-        Cache = new Cache();
-        Settings = new Options();
+        Options = new Options();
 
         ShowSkybox = UserSettings.Default.ShowSkybox;
         ShowGrid = UserSettings.Default.ShowGrid;
@@ -63,22 +61,21 @@ public class Renderer : IDisposable
 
     public void Swap(UMaterialInstance unrealMaterial)
     {
-        if (!Cache.Models.TryGetValue(Settings.SelectedModel, out var model) ||
-            !Settings.TryGetSection(model, out var section)) return;
+        if (!Options.TryGetModel(out var model) || !Options.TryGetSection(model, out var section)) return;
 
         model.Materials[section.MaterialIndex].SwapMaterial(unrealMaterial);
-        Application.Current.Dispatcher.Invoke(() => model.Materials[section.MaterialIndex].Setup(Cache, model.NumTexCoords));
-        Settings.SwapMaterial(false);
+        Application.Current.Dispatcher.Invoke(() => model.Materials[section.MaterialIndex].Setup(Options, model.NumTexCoords));
+        Options.SwapMaterial(false);
     }
 
     public void Animate(UAnimSequence animSequence)
     {
-        if (!Cache.Models.TryGetValue(Settings.SelectedModel, out var model) || !model.Skeleton.IsLoaded ||
+        if (!Options.TryGetModel(out var model) || !model.Skeleton.IsLoaded ||
             model.Skeleton?.RefSkel.ConvertAnims(animSequence) is not { } anim || anim.Sequences.Count == 0)
             return;
 
         model.Skeleton.Anim = new Animation(anim);
-        Settings.AnimateMesh(false);
+        Options.AnimateMesh(false);
     }
 
     public void Setup()
@@ -91,7 +88,7 @@ public class Renderer : IDisposable
         _light = new Shader("light");
 
         Picking.Setup();
-        Cache.Setup();
+        Options.SetupModelsAndLights();
     }
 
     public void Render(Camera cam)
@@ -107,34 +104,34 @@ public class Renderer : IDisposable
             _shader.SetUniform($"bVertexColors[{i}]", i == VertexColor);
 
         // render model pass
-        foreach (var model in Cache.Models.Values)
+        foreach (var model in Options.Models.Values)
         {
             if (!model.Show) continue;
             model.Render(_shader);
         }
 
         {   // light pass
-            var uNumLights = Cache.Lights.Count;
+            var uNumLights = Math.Min(Options.Lights.Count, 100);
             _shader.SetUniform("uNumLights", ShowLights ? uNumLights : 0);
 
             if (ShowLights)
                 for (int i = 0; i < uNumLights; i++)
-                    Cache.Lights[i].Render(i, _shader);
+                    Options.Lights[i].Render(i, _shader);
 
             _light.Render(viewMatrix, projMatrix);
             for (int i = 0; i < uNumLights; i++)
-                Cache.Lights[i].Render(_light);
+                Options.Lights[i].Render(_light);
         }
 
         // outline pass
-        if (Cache.Models.TryGetValue(Settings.SelectedModel, out var selected) && selected.Show)
+        if (Options.TryGetModel(out var selected) && selected.Show)
         {
             _outline.Render(viewMatrix, cam.Position, projMatrix);
             selected.Outline(_outline);
         }
 
         // picking pass (dedicated FBO, binding to 0 afterward)
-        Picking.Render(viewMatrix, projMatrix, Cache.Models);
+        Picking.Render(viewMatrix, projMatrix, Options.Models);
     }
 
     private Camera SetupCamera(FBox box)
@@ -150,7 +147,7 @@ public class Renderer : IDisposable
     private Camera LoadStaticMesh(UStaticMesh original)
     {
         var guid = original.LightingGuid;
-        if (Cache.Models.TryGetValue(guid, out var model))
+        if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
             Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
@@ -160,28 +157,28 @@ public class Renderer : IDisposable
         if (!original.TryConvert(out var mesh))
             return null;
 
-        Cache.Models[guid] = new Model(original.Name, original.ExportType, original.Materials, mesh);
-        Settings.SelectModel(guid);
+        Options.Models[guid] = new Model(original.Name, original.ExportType, original.Materials, mesh);
+        Options.SelectModel(guid);
         return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }
 
     private Camera LoadSkeletalMesh(USkeletalMesh original)
     {
         var guid = Guid.NewGuid();
-        if (Cache.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return null;
+        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return null;
 
-        Cache.Models[guid] = new Model(original.Name, original.ExportType, original.Materials, original.Skeleton, original.MorphTargets, mesh);
-        Settings.SelectModel(guid);
+        Options.Models[guid] = new Model(original.Name, original.ExportType, original.Materials, original.Skeleton, original.MorphTargets, mesh);
+        Options.SelectModel(guid);
         return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }
 
     private Camera LoadMaterialInstance(UMaterialInstance original)
     {
         var guid = Guid.NewGuid();
-        if (Cache.Models.ContainsKey(guid)) return null;
+        if (Options.Models.ContainsKey(guid)) return null;
 
-        Cache.Models[guid] = new Cube(original);
-        Settings.SelectModel(guid);
+        Options.Models[guid] = new Cube(original);
+        Options.SelectModel(guid);
         return SetupCamera(new FBox(new FVector(-.65f), new FVector(.65f)));
     }
 
@@ -254,7 +251,7 @@ public class Renderer : IDisposable
             Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector).ToMapVector()
         };
 
-        if (Cache.Models.TryGetValue(guid, out var model))
+        if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(t);
         }
@@ -295,18 +292,18 @@ public class Renderer : IDisposable
                     model.Materials[model.Sections[j].MaterialIndex].SwapMaterial(unrealMaterial);
                 }
             }
-            Cache.Models[guid] = model;
+            Options.Models[guid] = model;
         }
 
-        if (actor.TryGetValue(out FPackageIndex treasureLight, "TreasureLight", "PointLight") &&
-            treasureLight.TryLoad(out var tl1) && tl1.Template.TryLoad(out var tl2))
+        if (actor.TryGetValue(out FPackageIndex treasureLight, "PointLight", "TreasureLight") &&
+            treasureLight.TryLoad(out var pl1) && pl1.Template.TryLoad(out var pl2))
         {
-            Cache.Lights.Add(new PointLight(Cache.Icons["pointlight"], tl1, tl2, t.Position));
+            Options.Lights.Add(new PointLight(guid, Options.Icons["pointlight"], pl1, pl2, t.Position));
         }
         if (actor.TryGetValue(out FPackageIndex spotLight, "SpotLight") &&
             spotLight.TryLoad(out var sl1) && sl1.Template.TryLoad(out var sl2))
         {
-            Cache.Lights.Add(new SpotLight(Cache.Icons["spotlight"], sl1, sl2, t.Position));
+            Options.Lights.Add(new SpotLight(guid, Options.Icons["spotlight"], sl1, sl2, t.Position));
         }
     }
 
@@ -344,6 +341,6 @@ public class Renderer : IDisposable
         _outline?.Dispose();
         _light?.Dispose();
         Picking?.Dispose();
-        Cache?.Dispose();
+        Options?.Dispose();
     }
 }

@@ -42,8 +42,8 @@ struct Parameters
     Mask M;
     bool HasM;
 
+    float Roughness;
     float EmissiveMult;
-
     float UVScale;
 };
 
@@ -52,7 +52,7 @@ struct Light {
     vec3 Position;
     float Intensity;
 
-    vec3 Direction;
+    vec2 Direction;
     float ConeAngle;
     float Attenuation;
 
@@ -114,10 +114,10 @@ float geomSmith(float roughness, float dp)
     return dp / denom;
 }
 
-vec3 CalcPBRLight(int layer, vec3 normals)
+vec3 CalcCameraLight(int layer, vec3 normals)
 {
     vec3 specular_masks = SamplerToVector(uParameters.SpecularMasks[layer].Sampler).rgb;
-    float roughness = max(0.0f, specular_masks.b);
+    float roughness = max(0.0f, mix(specular_masks.r, specular_masks.b, uParameters.Roughness));
 
     vec3 intensity = vec3(1.0f) * 1.0f;
     vec3 l = -uViewDir;
@@ -192,21 +192,21 @@ void main()
 
         if (!bVertexColors[1])
         {
-            result += CalcPBRLight(layer, normals);
+            result += CalcCameraLight(layer, normals);
 
             vec3 lights = vec3(uNumLights > 0 ? 0 : 1);
             for (int i = 0; i < uNumLights; i++)
             {
-                float distanceToLight    = length(uLights[i].Position - fPos);
-
                 float attenuation = 0.0;
+                float distanceToLight = length(uLights[i].Position - fPos);
+
                 if (uLights[i].Type == 0)
                 {
                     attenuation = 1.0 / (1.0 + uLights[i].Linear * distanceToLight + uLights[i].Quadratic * pow(distanceToLight, 2));
                 }
                 else if (uLights[i].Type == 1)
                 {
-                    float theta = dot(normalize(uLights[i].Position - fPos), normalize(-uLights[i].Direction));
+                    float theta = dot(normalize(uLights[i].Position - fPos), normalize(-vec3(uLights[i].Direction.x, -uLights[i].Attenuation, uLights[i].Direction.y)));
                     if(theta > uLights[i].ConeAngle)
                     {
                         attenuation = 1.0 / (1.0 + uLights[i].Attenuation * pow(distanceToLight, 2));

@@ -31,6 +31,7 @@ public class Material : IDisposable
     public Mask M;
     public bool HasM;
 
+    public float Roughness = 0.5f;
     public float EmissiveMult = 1f;
     public float UVScale = 1f;
 
@@ -60,7 +61,7 @@ public class Material : IDisposable
         unrealMaterial.GetParams(Parameters);
     }
 
-    public void Setup(Cache cache, int numTexCoords)
+    public void Setup(Options options, int numTexCoords)
     {
         _handle = GL.CreateProgram();
 
@@ -76,10 +77,10 @@ public class Material : IDisposable
         else
         {
             {   // textures
-                Diffuse = FillTextures(cache, numTexCoords, Parameters.HasTopDiffuse, CMaterialParams2.Diffuse, CMaterialParams2.FallbackDiffuse, true);
-                Normals = FillTextures(cache, numTexCoords, Parameters.HasTopNormals, CMaterialParams2.Normals, CMaterialParams2.FallbackNormals);
-                SpecularMasks = FillTextures(cache, numTexCoords, Parameters.HasTopSpecularMasks, CMaterialParams2.SpecularMasks, CMaterialParams2.FallbackSpecularMasks);
-                Emissive = FillTextures(cache, numTexCoords, true, CMaterialParams2.Emissive, CMaterialParams2.FallbackEmissive);
+                Diffuse = FillTextures(options, numTexCoords, Parameters.HasTopDiffuse, CMaterialParams2.Diffuse, CMaterialParams2.FallbackDiffuse, true);
+                Normals = FillTextures(options, numTexCoords, Parameters.HasTopNormals, CMaterialParams2.Normals, CMaterialParams2.FallbackNormals);
+                SpecularMasks = FillTextures(options, numTexCoords, Parameters.HasTopSpecularMasks, CMaterialParams2.SpecularMasks, CMaterialParams2.FallbackSpecularMasks);
+                Emissive = FillTextures(options, numTexCoords, true, CMaterialParams2.Emissive, CMaterialParams2.FallbackEmissive);
             }
 
             {   // colors
@@ -88,13 +89,19 @@ public class Material : IDisposable
             }
 
             {   // scalars
-                if (Parameters.TryGetTexture2d(out var original, "M", "AEM") && cache.TryGetCachedTexture(original, false, out var transformed))
+                if (Parameters.TryGetTexture2d(out var original, "M", "AEM") && options.TryGetTexture(original, false, out var transformed))
                 {
                     M = new Mask { Texture = transformed, AmbientOcclusion = 0.7f };
                     HasM = true;
                     if (Parameters.TryGetLinearColor(out var l, "Skin Boost Color And Exponent"))
                         M.SkinBoost = new Boost { Color = new Vector3(l.R, l.G, l.B), Exponent = l.A };
                 }
+
+                if (Parameters.TryGetScalar(out var roughnessMin, "RoughnessMin", "SpecRoughnessMin") &&
+                    Parameters.TryGetScalar(out var roughnessMax, "RoughnessMax", "SpecRoughnessMax"))
+                    Roughness = (roughnessMin + roughnessMax) / 2f;
+                if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness"))
+                    Roughness = roughness;
 
                 if (Parameters.TryGetScalar(out var emissiveMult, "emissive mult", "Emissive_Mult"))
                     EmissiveMult = emissiveMult;
@@ -105,13 +112,13 @@ public class Material : IDisposable
         }
     }
 
-    /// <param name="cache">just the cache object</param>
+    /// <param name="options">just the cache object</param>
     /// <param name="numTexCoords">number of item in the array</param>
     /// <param name="top">has at least 1 clearly defined texture, else will go straight to fallback</param>
     /// <param name="triggers">list of texture parameter names by uv channel</param>
     /// <param name="fallback">fallback texture name to use if no top texture found</param>
     /// <param name="first">if no top texture, no fallback texture, then use the first texture found</param>
-    private Texture[] FillTextures(Cache cache, int numTexCoords, bool top, IReadOnlyList<string[]> triggers, string fallback, bool first = false)
+    private Texture[] FillTextures(Options options, int numTexCoords, bool top, IReadOnlyList<string[]> triggers, string fallback, bool first = false)
     {
         UTexture2D original;
         Texture transformed;
@@ -122,18 +129,18 @@ public class Material : IDisposable
         {
             for (int i = 0; i < textures.Length; i++)
             {
-                if (Parameters.TryGetTexture2d(out original, triggers[i]) && cache.TryGetCachedTexture(original, fix, out transformed))
+                if (Parameters.TryGetTexture2d(out original, triggers[i]) && options.TryGetTexture(original, fix, out transformed))
                     textures[i] = transformed;
                 else if (i > 0 && textures[i - 1] != null)
                     textures[i] = textures[i - 1];
             }
         }
-        else if (Parameters.TryGetTexture2d(out original, fallback) && cache.TryGetCachedTexture(original, fix, out transformed))
+        else if (Parameters.TryGetTexture2d(out original, fallback) && options.TryGetTexture(original, fix, out transformed))
         {
             for (int i = 0; i < textures.Length; i++)
                 textures[i] = transformed;
         }
-        else if (first && Parameters.TryGetFirstTexture2d(out original) && cache.TryGetCachedTexture(original, fix, out transformed))
+        else if (first && Parameters.TryGetFirstTexture2d(out original) && options.TryGetTexture(original, fix, out transformed))
         {
             for (int i = 0; i < textures.Length; i++)
                 textures[i] = transformed;
@@ -198,8 +205,8 @@ public class Material : IDisposable
         shader.SetUniform("uParameters.M.Cavity", M.Cavity);
         shader.SetUniform("uParameters.HasM", HasM);
 
+        shader.SetUniform("uParameters.Roughness", Roughness);
         shader.SetUniform("uParameters.EmissiveMult", EmissiveMult);
-
         shader.SetUniform("uParameters.UVScale", UVScale);
     }
 
@@ -219,21 +226,23 @@ public class Material : IDisposable
         PushStyle();
         if (ImGui.BeginTable("parameters", 2))
         {
-            SnimGui.Layout("Emissive Multiplier");ImGui.PushID(1);
+            SnimGui.Layout("Roughness");ImGui.PushID(1);
+            ImGui.DragFloat("", ref Roughness, _step, _zero, 1.0f, _mult, _clamp);
+            SnimGui.Layout("Emissive Multiplier");ImGui.PushID(2);
             ImGui.DragFloat("", ref EmissiveMult, _step, _zero, _infinite, _mult, _clamp);
-            ImGui.PopID();SnimGui.Layout("UV Scale");ImGui.PushID(2);
+            ImGui.PopID();SnimGui.Layout("UV Scale");ImGui.PushID(3);
             ImGui.DragFloat("", ref UVScale, _step, _zero, _infinite, _mult, _clamp);
             ImGui.PopID();
 
             if (HasM)
             {
-                SnimGui.Layout("Ambient Occlusion");ImGui.PushID(3);
+                SnimGui.Layout("Ambient Occlusion");ImGui.PushID(4);
                 ImGui.DragFloat("", ref M.AmbientOcclusion, _step, _zero, 1.0f, _mult, _clamp);
-                ImGui.PopID();SnimGui.Layout("Cavity");ImGui.PushID(4);
+                ImGui.PopID();SnimGui.Layout("Cavity");ImGui.PushID(5);
                 ImGui.DragFloat("", ref M.Cavity, _step, _zero, 1.0f, _mult, _clamp);
-                ImGui.PopID();SnimGui.Layout("Skin Boost Exponent");ImGui.PushID(5);
+                ImGui.PopID();SnimGui.Layout("Skin Boost Exponent");ImGui.PushID(6);
                 ImGui.DragFloat("", ref M.SkinBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
-                ImGui.PopID();SnimGui.Layout("Skin Boost Color");ImGui.PushID(6);
+                ImGui.PopID();SnimGui.Layout("Skin Boost Color");ImGui.PushID(7);
                 ImGui.ColorEdit3("", ref M.SkinBoost.Color);
                 ImGui.PopID();
             }
