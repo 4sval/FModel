@@ -202,7 +202,7 @@ public class Material : IDisposable
         shader.SetUniform("uParameters.M.SkinBoost.Color", M.SkinBoost.Color);
         shader.SetUniform("uParameters.M.SkinBoost.Exponent", M.SkinBoost.Exponent);
         shader.SetUniform("uParameters.M.AmbientOcclusion", M.AmbientOcclusion);
-        shader.SetUniform("uParameters.M.Cavity", M.Cavity);
+        shader.SetUniform("uParameters.M.Curvature", M.Curvature);
         shader.SetUniform("uParameters.HasM", HasM);
 
         shader.SetUniform("uParameters.Roughness", Roughness);
@@ -238,12 +238,12 @@ public class Material : IDisposable
             {
                 SnimGui.Layout("Ambient Occlusion");ImGui.PushID(4);
                 ImGui.DragFloat("", ref M.AmbientOcclusion, _step, _zero, 1.0f, _mult, _clamp);
-                ImGui.PopID();SnimGui.Layout("Cavity");ImGui.PushID(5);
-                ImGui.DragFloat("", ref M.Cavity, _step, _zero, 1.0f, _mult, _clamp);
-                ImGui.PopID();SnimGui.Layout("Skin Boost Exponent");ImGui.PushID(6);
-                ImGui.DragFloat("", ref M.SkinBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
-                ImGui.PopID();SnimGui.Layout("Skin Boost Color");ImGui.PushID(7);
+                ImGui.PopID();SnimGui.Layout("Curvature");ImGui.PushID(5);
+                ImGui.DragFloat("", ref M.Curvature, _step, _zero, 1.0f, _mult, _clamp);
+                ImGui.PopID();SnimGui.Layout("Color Boost");ImGui.PushID(6);
                 ImGui.ColorEdit3("", ref M.SkinBoost.Color);
+                ImGui.PopID();SnimGui.Layout("Color Boost Exponent");ImGui.PushID(7);
+                ImGui.DragFloat("", ref M.SkinBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
                 ImGui.PopID();
             }
             ImGui.EndTable();
@@ -342,7 +342,7 @@ public struct Mask
     public Boost SkinBoost;
 
     public float AmbientOcclusion;
-    public float Cavity;
+    public float Curvature;
 }
 
 public struct Boost

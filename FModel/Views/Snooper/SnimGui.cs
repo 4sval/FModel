@@ -188,6 +188,11 @@ public class SnimGui
                             s.WindowShouldClose(true, false);
                         }
                         ImGui.EndDisabled();
+                        if (ImGui.Selectable("Teleport To"))
+                        {
+                            var instancePos = model.Transforms[model.SelectedInstance].Position;
+                            s.Camera.Position = new Vector3(instancePos.X, instancePos.Y, instancePos.Z);
+                        }
                         if (ImGui.Selectable("Delete")) s.Renderer.Options.Models.Remove(guid);
                         if (ImGui.Selectable("Deselect")) s.Renderer.Options.SelectModel(Guid.Empty);
                         ImGui.Separator();
@@ -237,15 +242,22 @@ public class SnimGui
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
         MeshWindow("Details", s.Renderer, (icons, model) =>
         {
-            ImGui.Text($"Entity: ({model.Type}) {model.Name}");
-            ImGui.Text($"Guid: {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
-            ImGui.Spacing();
-            if (ImGui.Button("Go To"))
+            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
+            ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
+            if (ImGui.BeginTable("model_details", 2, ImGuiTableFlags.SizingStretchProp))
             {
-                var instancePos = model.Transforms[model.SelectedInstance].Position;
-                s.Camera.Position = new Vector3(instancePos.X, instancePos.Y, instancePos.Z);
+                Layout("Entity");ImGui.Text($" :  ({model.Type}) {model.Name}");
+                Layout("Guid");ImGui.Text($" :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
+                if (model.HasSkeleton)
+                {
+                    Layout("Skeleton");ImGui.Text($" :  {model.Skeleton.RefSkel.Name}");
+                    Layout("Bones");ImGui.Text($" :  x{model.Skeleton.RefSkel.BoneTree.Length}");
+                    Layout("Sockets");ImGui.Text($" :  x{model.Skeleton.Sockets.Length}");
+                }
+
+                ImGui.EndTable();
             }
-            ImGui.Spacing();
+            ImGui.PopStyleVar(2);
             if (ImGui.BeginTabBar("tabbar_details", ImGuiTabBarFlags.None))
             {
                 if (ImGui.BeginTabItem("Sections") && ImGui.BeginTable("table_sections", 2, ImGuiTableFlags.Resizable | ImGuiTableFlags.BordersOuterV, ImGui.GetContentRegionAvail()))

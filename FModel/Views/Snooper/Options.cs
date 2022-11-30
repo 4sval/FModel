@@ -20,7 +20,7 @@ public class Options
     public readonly Dictionary<string, Texture> Icons;
 
     private ETexturePlatform _platform;
-    private readonly FGame _game;
+    private readonly string _game;
 
     public Options()
     {
@@ -37,7 +37,7 @@ public class Options
         };
 
         _platform = UserSettings.Default.OverridedPlatform;
-        _game = Services.ApplicationService.ApplicationView.CUE4Parse.Game;
+        _game = Services.ApplicationService.ApplicationView.CUE4Parse.Provider.GameName;
 
         SelectModel(Guid.Empty);
     }
@@ -93,7 +93,7 @@ public class Options
         if (!Textures.TryGetValue(guid, out texture) && o.GetFirstMip() is { } mip)
         {
             TextureDecoder.DecodeTexture(mip, o.Format, o.isNormalMap, _platform, out var data, out _);
-            // if (fix) FixChannels(o, mip, ref data);
+            if (fix) FixChannels(o, mip, ref data);
 
             texture = new Texture(data, mip.SizeX, mip.SizeY, o);
             Textures[guid] = texture;
@@ -109,6 +109,25 @@ public class Options
     private void FixChannels(UTexture2D o, FTexture2DMipMap mip, ref byte[] data)
     {
         // only if it makes a big difference pls
+        switch (_game)
+        {
+            case "hk_project":
+            {
+                unsafe
+                {
+                    var offset = 0;
+                    fixed (byte* d = data)
+                    {
+                        for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                        {
+                            (d[offset + 1], d[offset + 2]) = (d[offset + 2], d[offset + 1]); // swap G and B
+                            offset += 4;
+                        }
+                    }
+                }
+                break;
+            }
+        }
     }
 
     public bool TryGetModel(out Model model) => Models.TryGetValue(SelectedModel, out model);

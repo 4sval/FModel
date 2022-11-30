@@ -29,7 +29,7 @@ struct Mask
     Boost SkinBoost;
 
     float AmbientOcclusion;
-    float Cavity;
+    float Curvature;
 };
 
 struct Parameters
@@ -175,16 +175,16 @@ void main()
         if (uParameters.HasM)
         {
             vec3 m = SamplerToVector(uParameters.M.Sampler).rgb;
-            float subsurface = clamp(m.b * .04f, 0.0f, 1.0f);
 
+            float subsurface = clamp(1.0f, 0.0f, m.b * .04f);
             if (subsurface > 0.0f && uParameters.M.SkinBoost.Exponent > 0.0f)
             {
-                vec3 color = uParameters.M.SkinBoost.Color * pow(uParameters.M.SkinBoost.Exponent, uParameters.M.SkinBoost.Exponent);
-                result *= clamp(color * m.b, 0.0f, 1.0f);
+                vec3 color = uParameters.M.SkinBoost.Color * uParameters.M.SkinBoost.Exponent;
+                result *= clamp(vec3(1.0f), vec3(0.0f), color * m.b);
             }
 
             if (m.r > 0.0f) result *= m.r * uParameters.M.AmbientOcclusion;
-            if (m.g > 0.0f) result += m.g * uParameters.M.Cavity;
+            if (m.g > 0.0f) result += m.g * uParameters.M.Curvature;
         }
 
         vec4 emissive = SamplerToVector(uParameters.Emissive[layer].Sampler);
