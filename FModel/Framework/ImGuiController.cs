@@ -31,12 +31,13 @@ public class ImGuiController : IDisposable
 
     private int _windowWidth;
     private int _windowHeight;
+    // private string _iniPath;
 
     private ImFontPtr _normal;
     private ImFontPtr _bold;
     private ImFontPtr _semiBold;
 
-    private readonly System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
+    private readonly Vector2 _scaleFactor = Vector2.One;
 
     private static bool KHRDebugAvailable = false;
 
@@ -44,6 +45,7 @@ public class ImGuiController : IDisposable
     {
         _windowWidth = width;
         _windowHeight = height;
+        // _iniPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "imgui.ini");
 
         int major = GL.GetInteger(GetPName.MajorVersion);
         int minor = GL.GetInteger(GetPName.MinorVersion);
@@ -52,6 +54,8 @@ public class ImGuiController : IDisposable
 
         IntPtr context = ImGui.CreateContext();
         ImGui.SetCurrentContext(context);
+        // ImGui.LoadIniSettingsFromDisk(_iniPath);
+
         var io = ImGui.GetIO();
         _normal = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 16);
         _bold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeuib.ttf", 16);
@@ -237,7 +241,8 @@ outputColor = color * texture(in_fontTexture, texCoord);
     private void SetPerFrameImGuiData(float deltaSeconds)
     {
         ImGuiIOPtr io = ImGui.GetIO();
-        io.DisplaySize = new System.Numerics.Vector2(
+        // if (io.WantSaveIniSettings) ImGui.SaveIniSettingsToDisk(_iniPath);
+        io.DisplaySize = new Vector2(
             _windowWidth / _scaleFactor.X,
             _windowHeight / _scaleFactor.Y);
         io.DisplayFramebufferScale = _scaleFactor;

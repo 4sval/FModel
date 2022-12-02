@@ -67,12 +67,16 @@ public class Model : IDisposable
         if (morphTargets is not { Length: > 0 })
             return;
 
+        var length = morphTargets.Length;
+
         HasMorphTargets = true;
-        Morphs = new Morph[morphTargets.Length];
+        Morphs = new Morph[length];
         for (var i = 0; i < Morphs.Length; i++)
         {
             Morphs[i] = new Morph(Vertices, _vertexSize, morphTargets[i].Load<UMorphTarget>());
+            Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{Morphs[i].Name} ... {i}/{length}");
         }
+        Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel("");
     }
 
     private Model(string name, string type, ResolvedObject[] materials, FPackageIndex skeleton, CBaseMeshLod lod, CMeshVertex[] vertices, Transform transform = null) : this(name, type)

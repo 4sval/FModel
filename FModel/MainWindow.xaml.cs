@@ -70,6 +70,7 @@ public partial class MainWindow
         await _applicationView.CUE4Parse.InitInformation();
 #endif
         await _applicationView.CUE4Parse.InitMappings();
+        await _applicationView.InitImGuiSettings();
         await _applicationView.InitVgmStream();
         await _applicationView.InitOodle();
 

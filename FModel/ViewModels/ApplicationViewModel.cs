@@ -185,4 +185,17 @@ public class ApplicationViewModel : ViewModel
                     (OodleLZ_FuzzSafe) a, (OodleLZ_CheckCRC) b, (OodleLZ_Verbosity) c, d, e, f, g, h, i, (OodleLZ_Decode_ThreadPhase) threadModule);
         }
     }
+
+    public async Task InitImGuiSettings()
+    {
+        var imgui = Path.Combine(/*UserSettings.Default.OutputDirectory, ".data", */"imgui.ini");
+        if (File.Exists(imgui)) return;
+
+        await ApplicationService.ApiEndpointView.DownloadFileAsync("https://cdn.fmodel.app/d/configurations/imgui.ini", imgui);
+        if (new FileInfo(imgui).Length == 0)
+        {
+            FLogger.AppendError();
+            FLogger.AppendText("Could not download ImGui settings", Constants.WHITE, true);
+        }
+    }
 }

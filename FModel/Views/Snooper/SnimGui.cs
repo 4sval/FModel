@@ -35,7 +35,7 @@ public class SnimGui
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
 
-        Window("Timeline", () => {});
+        // Window("Timeline", () => {});
         Window("World", () => DrawWorld(s), false);
         Window("Sockets", () => DrawSockets(s));
 
@@ -53,8 +53,6 @@ public class SnimGui
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.CollapsingHeader("Editor"))
         {
-            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
-            ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
             if (ImGui.BeginTable("world_editor", 2))
             {
                 Layout("Skybox");ImGui.PushID(1);
@@ -70,7 +68,6 @@ public class SnimGui
 
                 ImGui.EndTable();
             }
-            ImGui.PopStyleVar(2);
         }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
@@ -242,8 +239,6 @@ public class SnimGui
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
         MeshWindow("Details", s.Renderer, (icons, model) =>
         {
-            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
-            ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
             if (ImGui.BeginTable("model_details", 2, ImGuiTableFlags.SizingStretchProp))
             {
                 Layout("Entity");ImGui.Text($" :  ({model.Type}) {model.Name}");
@@ -257,7 +252,6 @@ public class SnimGui
 
                 ImGui.EndTable();
             }
-            ImGui.PopStyleVar(2);
             if (ImGui.BeginTabBar("tabbar_details", ImGuiTabBarFlags.None))
             {
                 if (ImGui.BeginTabItem("Sections") && ImGui.BeginTable("table_sections", 2, ImGuiTableFlags.Resizable | ImGuiTableFlags.BordersOuterV, ImGui.GetContentRegionAvail()))
@@ -471,6 +465,12 @@ public class SnimGui
                 ImGui.TreePop();
             }
             ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+            if (ImGui.TreeNode("Switchs"))
+            {
+                material.ImGuiDictionaries("switchs", material.Parameters.Switchs, true);
+                ImGui.TreePop();
+            }
+            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
             if (ImGui.TreeNode("Colors"))
             {
                 material.ImGuiDictionaries("colors", material.Parameters.Colors, true);
@@ -537,7 +537,7 @@ public class SnimGui
 
     private void Window(string name, Action content, bool styled = true)
     {
-        if (ImGui.Begin(name))
+        if (ImGui.Begin(name, ImGuiWindowFlags.NoScrollbar))
         {
             Controller.PopFont();
             if (styled) PushStyleCompact();
@@ -568,9 +568,8 @@ public class SnimGui
     private void PopStyleCompact() => ImGui.PopStyleVar(2);
     private void PushStyleCompact()
     {
-        var style = ImGui.GetStyle();
-        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, style.FramePadding with { Y = style.FramePadding.Y * 0.6f });
-        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, style.ItemSpacing with { Y = style.ItemSpacing.Y * 0.6f });
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
+        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
     }
 
     private void NoMeshSelected() => CenteredTextColored(_errorColor, "No Mesh Selected");

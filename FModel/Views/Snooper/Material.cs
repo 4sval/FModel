@@ -215,15 +215,8 @@ public class Material : IDisposable
     private const float _zero = 0.000001f; // doesn't actually work if _infinite is used as max value /shrug
     private const float _infinite = 0.0f;
     private const ImGuiSliderFlags _clamp = ImGuiSliderFlags.AlwaysClamp;
-    private void PushStyle()
-    {
-        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
-        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
-    }
-
     public void ImGuiParameters()
     {
-        PushStyle();
         if (ImGui.BeginTable("parameters", 2))
         {
             SnimGui.Layout("Roughness");ImGui.PushID(1);
@@ -248,7 +241,6 @@ public class Material : IDisposable
             }
             ImGui.EndTable();
         }
-        ImGui.PopStyleVar(2);
     }
 
     public void ImGuiDictionaries<T>(string id, Dictionary<string, T> dictionary, bool center = false, bool wrap = false)
@@ -269,7 +261,6 @@ public class Material : IDisposable
 
     public void ImGuiTextures(Dictionary<string, Texture> icons, Model model)
     {
-        PushStyle();
         if (ImGui.BeginTable("material_textures", 2))
         {
             SnimGui.Layout("Channel");ImGui.PushID(1); ImGui.BeginDisabled(model.NumTexCoords < 2);
@@ -294,7 +285,6 @@ public class Material : IDisposable
 
             ImGui.EndTable();
         }
-        ImGui.PopStyleVar(2);
 
         ImGui.Image(GetSelectedTexture() ?? icons["noimage"].GetPointer(), new Vector2(ImGui.GetContentRegionAvail().X), Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
         ImGui.Spacing();
