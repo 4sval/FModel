@@ -259,6 +259,15 @@ public class Material : IDisposable
         }
     }
 
+    public void ImGuiColors(Dictionary<string, FLinearColor> colors)
+    {
+        foreach ((string key, FLinearColor value) in colors.Reverse())
+        {
+            ImGui.ColorButton(key, new Vector4(value.R, value.G, value.B, value.A), ImGuiColorEditFlags.None, new Vector2(16));
+            ImGui.SameLine();ImGui.Text(key);SnimGui.TooltipCopy(key);
+        }
+    }
+
     public void ImGuiTextures(Dictionary<string, Texture> icons, Model model)
     {
         if (ImGui.BeginTable("material_textures", 2))
@@ -286,7 +295,9 @@ public class Material : IDisposable
             ImGui.EndTable();
         }
 
-        ImGui.Image(GetSelectedTexture() ?? icons["noimage"].GetPointer(), new Vector2(ImGui.GetContentRegionAvail().X), Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
+        ImGui.Image(GetSelectedTexture() ?? icons["noimage"].GetPointer(),
+            new Vector2(ImGui.GetContentRegionAvail().X - ImGui.GetScrollX()),
+            Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
         ImGui.Spacing();
     }
 

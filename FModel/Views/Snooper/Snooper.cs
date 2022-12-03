@@ -59,6 +59,12 @@ public class Snooper : GameWindow
         IsVisible = !value;
     }
 
+    public unsafe void WindowShouldFreeze(bool value)
+    {
+        GLFW.SetWindowShouldClose(WindowPtr, value); // start / stop game loop
+        IsVisible = true;
+    }
+
     public override void Run()
     {
         Application.Current.Dispatcher.Invoke(delegate

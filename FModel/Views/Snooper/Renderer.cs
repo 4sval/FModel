@@ -157,7 +157,7 @@ public class Renderer : IDisposable
         if (!original.TryConvert(out var mesh))
             return null;
 
-        Options.Models[guid] = new Model(original.Name, original.ExportType, original.Materials, mesh);
+        Options.Models[guid] = new Model(original, mesh);
         Options.SelectModel(guid);
         return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }
@@ -167,7 +167,7 @@ public class Renderer : IDisposable
         var guid = Guid.NewGuid();
         if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return null;
 
-        Options.Models[guid] = new Model(original.Name, original.ExportType, original.Materials, original.Skeleton, original.MorphTargets, mesh);
+        Options.Models[guid] = new Model(original, mesh);
         Options.SelectModel(guid);
         return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
     }
@@ -231,7 +231,7 @@ public class Renderer : IDisposable
 
     private void WorldMesh(UObject actor, Transform transform)
     {
-        if (!actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "Mesh", "LightMesh") ||
+        if (!actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "StaticMesh", "Mesh", "LightMesh") ||
             staticMeshComponent.Load() is not { } staticMeshComp) return;
 
         if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)
@@ -257,7 +257,7 @@ public class Renderer : IDisposable
         }
         else if (m.TryConvert(out var mesh))
         {
-            model = new Model(m.Name, m.ExportType, m.Materials, mesh, t);
+            model = new Model(m, mesh, t);
             if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
             {
                 for (int j = 0; j < textureData.Length; j++)

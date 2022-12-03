@@ -873,11 +873,11 @@ public class CUE4ParseViewModel : ViewModel
         };
         var toSave = new Exporter(export, exportOptions);
         var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
-        if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
+        if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
         {
-            Log.Information("Successfully saved {FileName}", savedFileName);
+            Log.Information("Successfully saved {FilePath}", savedFilePath);
             FLogger.AppendInformation();
-            FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+            FLogger.AppendText($"Successfully saved {label}", Constants.WHITE, true);
         }
         else
         {

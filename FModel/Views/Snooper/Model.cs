@@ -1,12 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
+using CUE4Parse_Conversion;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
+using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using FModel.Extensions;
+using FModel.Services;
+using FModel.Settings;
 using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
@@ -21,10 +29,12 @@ public class Model : IDisposable
     private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
+    private readonly UObject _export;
     private readonly int _vertexSize = 13; // VertexIndex + Position + Normal + Tangent + UV + TextureLayer
     private readonly uint[] _facesIndex = { 1, 0, 2 };
     private const int _faceSize = 3; // just so we don't have to do .Length
 
+    public readonly string Path;
     public readonly string Name;
     public readonly string Type;
     public readonly bool HasVertexColors;
@@ -50,20 +60,22 @@ public class Model : IDisposable
     public int SelectedInstance;
     public float MorphTime;
 
-    protected Model(string name, string type)
+    protected Model(UObject export)
     {
-        Name = name;
-        Type = type;
+        _export = export;
+        Path = _export.GetPathName();
+        Name = Path.SubstringAfterLast('/').SubstringBefore('.');
+        Type = export.ExportType;
         NumTexCoords = 1;
         Transforms = new List<Transform>();
     }
 
-    public Model(string name, string type, ResolvedObject[] materials, CStaticMesh staticMesh) : this(name, type, materials, staticMesh, Transform.Identity) {}
-    public Model(string name, string type, ResolvedObject[] materials, CStaticMesh staticMesh, Transform transform) : this(name, type, materials, null, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform) {}
-    public Model(string name, string type, ResolvedObject[] materials, FPackageIndex skeleton, CSkeletalMesh skeletalMesh) : this(name, type, materials, skeleton, skeletalMesh, Transform.Identity) {}
-    public Model(string name, string type, ResolvedObject[] materials, FPackageIndex skeleton, CSkeletalMesh skeletalMesh, Transform transform) : this(name, type, materials, skeleton, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform) {}
-    public Model(string name, string type, ResolvedObject[] materials, FPackageIndex skeleton, FPackageIndex[] morphTargets, CSkeletalMesh skeletalMesh) : this(name, type, materials, skeleton, skeletalMesh)
+    public Model(UStaticMesh export, CStaticMesh staticMesh) : this(export, staticMesh, Transform.Identity) {}
+    public Model(UStaticMesh export, CStaticMesh staticMesh, Transform transform) : this(export, export.Materials, null, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform) {}
+    private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, export.Skeleton, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform) {}
+    public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh) : this(export, skeletalMesh, Transform.Identity)
     {
+        var morphTargets = export.MorphTargets;
         if (morphTargets is not { Length: > 0 })
             return;
 
@@ -74,12 +86,12 @@ public class Model : IDisposable
         for (var i = 0; i < Morphs.Length; i++)
         {
             Morphs[i] = new Morph(Vertices, _vertexSize, morphTargets[i].Load<UMorphTarget>());
-            Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{Morphs[i].Name} ... {i}/{length}");
+            ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{Morphs[i].Name} ... {i}/{length}");
         }
-        Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel("");
+        ApplicationService.ApplicationView.Status.UpdateStatusLabel("");
     }
 
-    private Model(string name, string type, ResolvedObject[] materials, FPackageIndex skeleton, CBaseMeshLod lod, CMeshVertex[] vertices, Transform transform = null) : this(name, type)
+    private Model(UObject export, ResolvedObject[] materials, FPackageIndex skeleton, CBaseMeshLod lod, CMeshVertex[] vertices, Transform transform = null) : this(export)
     {
         NumTexCoords = lod.NumTexCoords;
 
@@ -303,6 +315,20 @@ public class Model : IDisposable
         GL.StencilFunc(StencilFunction.Always, 0, 0xFF);
         GL.Enable(EnableCap.DepthTest);
         GL.Disable(EnableCap.StencilTest);
+    }
+
+    public bool TrySave(out string label, out string savedFilePath)
+    {
+        var exportOptions = new ExporterOptions
+        {
+            TextureFormat = UserSettings.Default.TextureExportFormat,
+            LodFormat = UserSettings.Default.LodExportFormat,
+            MeshFormat = UserSettings.Default.MeshExportFormat,
+            Platform = UserSettings.Default.OverridedPlatform,
+            ExportMorphTargets = UserSettings.Default.SaveMorphTargets
+        };
+        var toSave = new Exporter(_export, exportOptions);
+        return toSave.TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out label, out savedFilePath);
     }
 
     public void Dispose()

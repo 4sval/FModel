@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Framework;
 using ImGuiNET;
@@ -8,17 +9,42 @@ using System.Numerics;
 
 namespace FModel.Views.Snooper;
 
+public class Swap
+{
+    public bool Value;
+    public bool IsAware;
+
+    public void Reset()
+    {
+        Value = false;
+    }
+}
+
+public class Save
+{
+    public bool Value;
+    public string Label;
+    public string Path;
+
+    public void Reset()
+    {
+        Value = false;
+        Label = string.Empty;
+        Path = string.Empty;
+    }
+}
+
 public class SnimGui
 {
     public readonly ImGuiController Controller;
     private bool _viewportFocus;
-    private bool _swapAwareness;
+    private readonly Swap _swapper = new ();
+    private readonly Save _saver = new ();
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
     private readonly Vector4 _alertColor = new (0.831f, 0.573f, 0.125f, 1.0f);
     private readonly Vector4 _errorColor = new (0.761f, 0.169f, 0.169f, 1.0f);
 
-    private const ImGuiCond _firstUse = ImGuiCond.FirstUseEver; // switch to FirstUseEver once the docking branch will not be useful anymore...
     private const uint _dockspaceId = 1337;
 
     public SnimGui(int width, int height)
@@ -132,7 +158,7 @@ public class SnimGui
 
         const string text = "Press ESC to Exit...";
         ImGui.SetCursorPosX(ImGui.GetWindowViewport().WorkSize.X - ImGui.CalcTextSize(text).X - 5);
-        ImGui.TextColored(new Vector4(0.36f, 0.42f, 0.47f, 1.00f), text); // ImGuiCol.TextDisabled
+        ImGui.TextColored(new Vector4(0.36f, 0.42f, 0.47f, 1.00f), text);
 
         ImGui.EndMainMenuBar();
     }
@@ -176,9 +202,12 @@ public class SnimGui
                         ImGui.Separator();
                         if (ImGui.Selectable("Save"))
                         {
-
+                            s.WindowShouldFreeze(true);
+                            _saver.Value = model.TrySave(out _saver.Label, out _saver.Path);
+                            s.WindowShouldFreeze(false);
                         }
-                        ImGui.BeginDisabled(!model.HasSkeleton);
+                        ImGui.BeginDisabled(true);
+                        // ImGui.BeginDisabled(!model.HasSkeleton);
                         if (ImGui.Selectable("Animate"))
                         {
                             s.Renderer.Options.AnimateMesh(true);
@@ -199,6 +228,30 @@ public class SnimGui
                     ImGui.PopID();
                     i++;
                 }
+
+                Popup("Saved", _saver.Value, () =>
+                {
+                    ImGui.TextWrapped($"Successfully saved {_saver.Label}");
+                    ImGui.Separator();
+
+                    var size = new Vector2(120, 0);
+                    if (ImGui.Button("OK", size))
+                    {
+                        _saver.Reset();
+                        ImGui.CloseCurrentPopup();
+                    }
+
+                    ImGui.SetItemDefaultFocus();
+                    ImGui.SameLine();
+
+                    if (ImGui.Button("Show In Explorer", size))
+                    {
+                        Process.Start("explorer.exe", $"/select, \"{_saver.Path.Replace('/', '\\')}\"");
+
+                        _saver.Reset();
+                        ImGui.CloseCurrentPopup();
+                    }
+                });
 
                 ImGui.EndTable();
             }
@@ -260,7 +313,6 @@ public class SnimGui
                     ImGui.TableSetupColumn("Material");
                     ImGui.TableHeadersRow();
 
-                    var swap = false;
                     for (var i = 0; i < model.Sections.Length; i++)
                     {
                         var section = model.Sections[i];
@@ -286,12 +338,12 @@ public class SnimGui
                             if (ImGui.MenuItem("Show", null, section.Show)) section.Show = !section.Show;
                             if (ImGui.Selectable("Swap"))
                             {
-                                if (_swapAwareness)
+                                if (_swapper.IsAware)
                                 {
                                     s.Renderer.Options.SwapMaterial(true);
                                     s.WindowShouldClose(true, false);
                                 }
-                                else swap = true;
+                                else _swapper.Value = true;
                             }
                             ImGui.Separator();
                             if (ImGui.Selectable("Copy Name to Clipboard")) ImGui.SetClipboardText(material.Name);
@@ -301,23 +353,21 @@ public class SnimGui
                     }
                     ImGui.EndTable();
 
-                    var p_open = true;
-                    if (swap) ImGui.OpenPopup("Swap?");
-                    ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Vector2(.5f));
-                    if (ImGui.BeginPopupModal("Swap?", ref p_open, ImGuiWindowFlags.AlwaysAutoResize))
+                    Popup("Swap?", _swapper.Value, () =>
                     {
                         ImGui.TextWrapped("You're about to swap a material.\nThe window will close for you to extract a material!\n\n");
                         ImGui.Separator();
 
                         ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, Vector2.Zero);
-                        ImGui.Checkbox("Got it! Don't show me again", ref _swapAwareness);
+                        ImGui.Checkbox("Got it! Don't show me again", ref _swapper.IsAware);
                         ImGui.PopStyleVar();
 
                         var size = new Vector2(120, 0);
                         if (ImGui.Button("OK", size))
                         {
-                            ImGui.CloseCurrentPopup();
+                            _swapper.Reset();
                             s.Renderer.Options.SwapMaterial(true);
+                            ImGui.CloseCurrentPopup();
                             s.WindowShouldClose(true, false);
                         }
 
@@ -326,14 +376,14 @@ public class SnimGui
 
                         if (ImGui.Button("Cancel", size))
                         {
+                            _swapper.Reset();
                             ImGui.CloseCurrentPopup();
                         }
-
-                        ImGui.EndPopup();
-                    }
+                    });
 
                     ImGui.EndTabItem();
                 }
+
                 if (ImGui.BeginTabItem("Transform"))
                 {
                     const int width = 100;
@@ -397,6 +447,7 @@ public class SnimGui
                     model.UpdateMatrix(model.SelectedInstance);
                     ImGui.EndTabItem();
                 }
+
                 if (ImGui.BeginTabItem("Morph Targets"))
                 {
                     if (model.HasMorphTargets)
@@ -426,7 +477,7 @@ public class SnimGui
                             ImGui.Text($"Time: {model.MorphTime:P}%");
                         }
                     }
-                    else ImGui.TextColored(_errorColor, "mesh has no morph targets");
+                    else CenteredTextColored(_errorColor, "Selected Mesh Has No Morph Targets");
                     ImGui.EndTabItem();
                 }
             }
@@ -473,7 +524,7 @@ public class SnimGui
             ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
             if (ImGui.TreeNode("Colors"))
             {
-                material.ImGuiDictionaries("colors", material.Parameters.Colors, true);
+                material.ImGuiColors(material.Parameters.Colors);
                 ImGui.TreePop();
             }
             if (ImGui.TreeNode("Referenced Textures"))
@@ -533,6 +584,18 @@ public class SnimGui
             ImGui.Text($"FPS: {framerate:0} ({1000.0f / framerate:0.##} ms)");
         }, false);
         ImGui.PopStyleVar();
+    }
+
+    private void Popup(string title, bool condition, Action content)
+    {
+        var pOpen = true;
+        if (condition) ImGui.OpenPopup(title);
+        ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Vector2(.5f));
+        if (ImGui.BeginPopupModal(title, ref pOpen, ImGuiWindowFlags.AlwaysAutoResize))
+        {
+            content();
+            ImGui.EndPopup();
+        }
     }
 
     private void Window(string name, Action content, bool styled = true)
@@ -682,7 +745,7 @@ public class SnimGui
         style.Colors[(int) ImGuiCol.TabHovered]             = new Vector4(0.35f, 0.35f, 0.41f, 0.80f);
         style.Colors[(int) ImGuiCol.TabActive]              = new Vector4(0.23f, 0.24f, 0.29f, 1.00f);
         style.Colors[(int) ImGuiCol.TabUnfocused]           = new Vector4(0.15f, 0.15f, 0.15f, 1.00f);
-        style.Colors[(int) ImGuiCol.TabUnfocusedActive]     = new Vector4(0.15f, 0.15f, 0.15f, 1.00f);
+        style.Colors[(int) ImGuiCol.TabUnfocusedActive]     = new Vector4(0.23f, 0.24f, 0.29f, 1.00f);
         style.Colors[(int) ImGuiCol.DockingPreview]         = new Vector4(0.26f, 0.59f, 0.98f, 0.70f);
         style.Colors[(int) ImGuiCol.DockingEmptyBg]         = new Vector4(0.20f, 0.20f, 0.20f, 1.00f);
         style.Colors[(int) ImGuiCol.PlotLines]              = new Vector4(0.61f, 0.61f, 0.61f, 1.00f);
