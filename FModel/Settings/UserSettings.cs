@@ -285,6 +285,7 @@ namespace FModel.Settings
             {FGame.Athena, Constants._NO_PRESET_TRIGGER},
             {FGame.PandaGame, Constants._NO_PRESET_TRIGGER},
             {FGame.Hotta, Constants._NO_PRESET_TRIGGER},
+            {FGame.eFootball, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -295,7 +296,7 @@ namespace FModel.Settings
         private IDictionary<FGame, EGame> _overridedGame = new Dictionary<FGame, EGame>
         {
             {FGame.Unknown, EGame.GAME_UE4_LATEST},
-            {FGame.FortniteGame, EGame.GAME_UE5_1},
+            {FGame.FortniteGame, EGame.GAME_UE5_2},
             {FGame.ShooterGame, EGame.GAME_Valorant},
             {FGame.DeadByDaylight, EGame.GAME_UE4_LATEST},
             {FGame.OakGame, EGame.GAME_Borderlands3},
@@ -307,14 +308,15 @@ namespace FModel.Settings
             {FGame.Indiana, EGame.GAME_UE4_LATEST},
             {FGame.RogueCompany, EGame.GAME_RogueCompany},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
-            {FGame.Platform, EGame.GAME_UE4_25},
+            {FGame.Platform, EGame.GAME_UE4_26},
             {FGame.BendGame, EGame.GAME_UE4_11},
             {FGame.TslGame, EGame.GAME_PlayerUnknownsBattlegrounds},
             {FGame.PortalWars, EGame.GAME_UE4_LATEST},
             {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition},
             {FGame.Athena, EGame.GAME_SeaOfThieves},
             {FGame.PandaGame, EGame.GAME_UE4_26},
-            {FGame.Hotta, EGame.GAME_TowerOfFantasy}
+            {FGame.Hotta, EGame.GAME_TowerOfFantasy},
+            {FGame.eFootball, EGame.GAME_UE4_26}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -345,6 +347,7 @@ namespace FModel.Settings
             {FGame.Athena, null},
             {FGame.PandaGame, null},
             {FGame.Hotta, null},
+            {FGame.eFootball, null}
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
@@ -375,6 +378,7 @@ namespace FModel.Settings
             {FGame.Athena, null},
             {FGame.PandaGame, null},
             {FGame.Hotta, null},
+            {FGame.eFootball, null}
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
@@ -411,6 +415,7 @@ namespace FModel.Settings
             {FGame.Athena, new FEndpoint[]{new (), new ()}},
             {FGame.PandaGame, new FEndpoint[]{new (), new ()}},
             {FGame.Hotta, new FEndpoint[]{new (), new ()}},
+            {FGame.eFootball, new FEndpoint[]{new (), new ()}}
         };
         public IDictionary<FGame, FEndpoint[]> CustomEndpoints
         {
@@ -488,6 +493,7 @@ namespace FModel.Settings
             {FGame.Athena, new List<CustomDirectory>()},
             {FGame.PandaGame, new List<CustomDirectory>()},
             {FGame.Hotta, new List<CustomDirectory>()},
+            {FGame.eFootball, new List<CustomDirectory>()}
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {
@@ -619,6 +625,27 @@ namespace FModel.Settings
         {
             get => _lodExportFormat;
             set => SetProperty(ref _lodExportFormat, value);
+        }
+
+        private bool _showSkybox = true;
+        public bool ShowSkybox
+        {
+            get => _showSkybox;
+            set => SetProperty(ref _showSkybox, value);
+        }
+
+        private bool _showGrid = true;
+        public bool ShowGrid
+        {
+            get => _showGrid;
+            set => SetProperty(ref _showGrid, value);
+        }
+
+        private bool _previewWorlds = true;
+        public bool PreviewWorlds
+        {
+            get => _previewWorlds;
+            set => SetProperty(ref _previewWorlds, value);
         }
 
         private bool _previewStaticMeshes = true;

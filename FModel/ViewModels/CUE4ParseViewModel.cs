@@ -23,6 +23,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Shaders;
@@ -38,7 +39,10 @@ using FModel.Services;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
+using FModel.Views.Snooper;
 using Newtonsoft.Json;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 using Serilog;
 using SkiaSharp;
 
@@ -54,7 +58,6 @@ public class CUE4ParseViewModel : ViewModel
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private FGame _game;
-
     public FGame Game
     {
         get => _game;
@@ -66,6 +69,38 @@ public class CUE4ParseViewModel : ViewModel
     {
         get => _modelIsOverwritingMaterial;
         set => SetProperty(ref _modelIsOverwritingMaterial, value);
+    }
+
+    private bool _modelIsWaitingAnimation;
+    public bool ModelIsWaitingAnimation
+    {
+        get => _modelIsWaitingAnimation;
+        set => SetProperty(ref _modelIsWaitingAnimation, value);
+    }
+
+    private Snooper _snooper;
+    public Snooper SnooperViewer
+    {
+        get
+        {
+            return Application.Current.Dispatcher.Invoke(delegate
+            {
+                return _snooper ??= new Snooper(GameWindowSettings.Default,
+                    new NativeWindowSettings
+                    {
+                        Size = new OpenTK.Mathematics.Vector2i(
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75),
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85)),
+                        NumberOfSamples = Constants.SAMPLES_COUNT,
+                        WindowBorder = WindowBorder.Resizable,
+                        Flags = ContextFlags.ForwardCompatible,
+                        Profile = ContextProfile.Core,
+                        StartVisible = false,
+                        StartFocused = false,
+                        Title = "3D Viewer"
+                    });
+            });
+        }
     }
 
     public AbstractVfsFileProvider Provider { get; }
@@ -104,6 +139,7 @@ public class CUE4ParseViewModel : ViewModel
             default:
             {
                 var parent = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\");
+                if (gameDirectory.Contains("eFootball")) parent = gameDirectory.SubstringBeforeLast("\\pak").SubstringAfterLast("\\");
                 Game = Helper.IAmThePanda(parent) ? FGame.PandaGame : parent.ToEnum(FGame.Unknown);
                 var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                     customVersions: UserSettings.Default.OverridedCustomVersions[Game],
@@ -125,6 +161,13 @@ public class CUE4ParseViewModel : ViewModel
                         Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
                             {
                                 new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FortniteGame\\Saved\\PersistentDownloadDir\\InstalledBundles"),
+                            },
+                            SearchOption.AllDirectories, true, versions);
+                        break;
+                    case FGame.eFootball:
+                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
+                            {
+                                new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
                             },
                             SearchOption.AllDirectories, true, versions);
                         break;
@@ -453,7 +496,7 @@ public class CUE4ParseViewModel : ViewModel
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                Extract(asset.FullPath, TabControl.HasNoTabs);
+                Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs);
             }
             catch
             {
@@ -484,7 +527,7 @@ public class CUE4ParseViewModel : ViewModel
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                Extract(asset.FullPath, TabControl.HasNoTabs, true);
+                Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, true);
             }
             catch
             {
@@ -501,11 +544,11 @@ public class CUE4ParseViewModel : ViewModel
         {
             Thread.Sleep(10);
             cancellationToken.ThrowIfCancellationRequested();
-            Extract(asset.FullPath, TabControl.HasNoTabs);
+            Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs);
         }
     }
 
-    public void Extract(string fullPath, bool addNewTab = false, bool bulkSave = false)
+    public void Extract(CancellationToken cancellationToken, string fullPath, bool addNewTab = false, bool bulkSave = false)
     {
         Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", fullPath);
 
@@ -532,13 +575,13 @@ public class CUE4ParseViewModel : ViewModel
             case "uasset":
             case "umap":
             {
-                var exports = Provider.LoadObjectExports(fullPath);
+                var exports = Provider.LoadObjectExports(fullPath); // cancellationToken
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), bulkSave);
                 if (bulkSave) break;
 
                 foreach (var e in exports)
                 {
-                    if (CheckExport(e))
+                    if (CheckExport(cancellationToken, e))
                         break;
                 }
 
@@ -699,24 +742,24 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    public void ExtractAndScroll(string fullPath, string objectName)
+    public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName)
     {
         Log.Information("User CTRL-CLICKED to extract '{FullPath}'", fullPath);
         TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'));
         TabControl.SelectedTab.ScrollTrigger = objectName;
 
-        var exports = Provider.LoadObjectExports(fullPath);
+        var exports = Provider.LoadObjectExports(fullPath); // cancellationToken
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), false);
 
         foreach (var e in exports)
         {
-            if (CheckExport(e))
+            if (CheckExport(cancellationToken, e))
                 break;
         }
     }
 
-    private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
+    private bool CheckExport(CancellationToken cancellationToken, UObject export) // return true once you wanna stop searching for exports
     {
         switch (export)
         {
@@ -745,6 +788,7 @@ public class CUE4ParseViewModel : ViewModel
                 SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                 return false;
             }
+            case UWorld when UserSettings.Default.PreviewWorlds:
             case UStaticMesh when UserSettings.Default.PreviewStaticMeshes:
             case USkeletalMesh when UserSettings.Default.PreviewSkeletalMeshes:
             case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
@@ -752,20 +796,20 @@ public class CUE4ParseViewModel : ViewModel
                                                                                                  export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                                                                  export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
-                Application.Current.Dispatcher.Invoke(delegate
-                {
-                    var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                    modelViewer.Load(export);
-                });
+                if (SnooperViewer.TryLoadExport(cancellationToken, export))
+                    SnooperViewer.Run();
                 return true;
             }
             case UMaterialInstance m when ModelIsOverwritingMaterial:
             {
-                Application.Current.Dispatcher.Invoke(delegate
-                {
-                    var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                    modelViewer.Overwrite(m);
-                });
+                SnooperViewer.Renderer.Swap(m);
+                SnooperViewer.Run();
+                return true;
+            }
+            case UAnimSequence a when ModelIsWaitingAnimation:
+            {
+                SnooperViewer.Renderer.Animate(a);
+                SnooperViewer.Run();
                 return true;
             }
             case UStaticMesh when UserSettings.Default.SaveStaticMeshes:
@@ -829,11 +873,11 @@ public class CUE4ParseViewModel : ViewModel
         };
         var toSave = new Exporter(export, exportOptions);
         var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
-        if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
+        if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
         {
-            Log.Information("Successfully saved {FileName}", savedFileName);
+            Log.Information("Successfully saved {FilePath}", savedFilePath);
             FLogger.AppendInformation();
-            FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+            FLogger.AppendText($"Successfully saved {label}", Constants.WHITE, true);
         }
         else
         {

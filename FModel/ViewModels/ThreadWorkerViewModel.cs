@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FModel.Framework;
@@ -53,7 +52,7 @@ public class ThreadWorkerViewModel : ViewModel
 
     public async Task Begin(Action<CancellationToken> action)
     {
-        if (!_applicationView.IsReady)
+        if (!_applicationView.Status.IsReady)
         {
             SignalOperationInProgress();
             return;
@@ -79,7 +78,7 @@ public class ThreadWorkerViewModel : ViewModel
     {
         if (_jobs.Count > 0)
         {
-            _applicationView.Status = EStatusKind.Loading;
+            _applicationView.Status.SetStatus(EStatusKind.Loading);
             await foreach (var job in _jobs)
             {
                 try
@@ -89,7 +88,7 @@ public class ThreadWorkerViewModel : ViewModel
                 }
                 catch (OperationCanceledException)
                 {
-                    _applicationView.Status = EStatusKind.Stopped;
+                    _applicationView.Status.SetStatus(EStatusKind.Stopped);
                     CurrentCancellationTokenSource = null; // kill token
                     OperationCancelled = true;
                     OperationCancelled = false;
@@ -97,7 +96,7 @@ public class ThreadWorkerViewModel : ViewModel
                 }
                 catch (Exception e)
                 {
-                    _applicationView.Status = EStatusKind.Failed;
+                    _applicationView.Status.SetStatus(EStatusKind.Failed);
                     CurrentCancellationTokenSource = null; // kill token
 
                     Log.Error("{Exception}", e);
@@ -134,7 +133,7 @@ public class ThreadWorkerViewModel : ViewModel
                 }
             }
 
-            _applicationView.Status = EStatusKind.Completed;
+            _applicationView.Status.SetStatus(EStatusKind.Completed);
             CurrentCancellationTokenSource = null; // kill token
         }
     }

@@ -175,7 +175,7 @@ public class MapViewerViewModel : ViewModel
     }
 
     private const int _widthHeight = 2048;
-    private const int _brRadius = 131000;
+    private const int _brRadius = 141000;
     private const int _prRadius = 51000;
     private int _mapIndex;
     public int MapIndex // 0 is BR, 1 is PR
@@ -368,8 +368,9 @@ public class MapViewerViewModel : ViewModel
 
     private FVector2D GetMapPosition(FVector vector, int mapRadius)
     {
-        var nx = (vector.Y + mapRadius) / (mapRadius * 2) * _widthHeight;
-        var ny = (1 - (vector.X + mapRadius) / (mapRadius * 2)) * _widthHeight;
+        const int wh = 2048 + 128 + 32;
+        var nx = (vector.Y + mapRadius) / (mapRadius * 2) * wh;
+        var ny = (1 - (vector.X + mapRadius) / (mapRadius * 2)) * wh;
         return new FVector2D(nx, ny);
     }
 

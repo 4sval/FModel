@@ -5,9 +5,9 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
-    <Version>4.3.2</Version>
-    <AssemblyVersion>4.3.2.1</AssemblyVersion>
-    <FileVersion>4.3.2.1</FileVersion>
+    <Version>4.4.0</Version>
+    <AssemblyVersion>4.4.0.0</AssemblyVersion>
+    <FileVersion>4.4.0.0</FileVersion>
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -93,6 +93,20 @@
     <None Remove="Resources\edit.png" />
     <None Remove="Resources\go_to_directory.png" />
     <None Remove="Resources\npcleftside.png" />
+    <None Remove="Resources\default.frag" />
+    <None Remove="Resources\default.vert" />
+    <None Remove="Resources\grid.frag" />
+    <None Remove="Resources\grid.vert" />
+    <None Remove="Resources\skybox.frag" />
+    <None Remove="Resources\skybox.vert" />
+    <None Remove="Resources\framebuffer.frag" />
+    <None Remove="Resources\framebuffer.vert" />
+    <None Remove="Resources\outline.frag" />
+    <None Remove="Resources\outline.vert" />
+    <None Remove="Resources\picking.frag" />
+    <None Remove="Resources\picking.vert" />
+    <None Remove="Resources\light.frag" />
+    <None Remove="Resources\light.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -102,6 +116,20 @@
     <EmbeddedResource Include="Resources\Xml.xshd" />
     <EmbeddedResource Include="Resources\Cpp.xshd" />
     <EmbeddedResource Include="Resources\Changelog.xshd" />
+    <EmbeddedResource Include="Resources\default.frag" />
+    <EmbeddedResource Include="Resources\default.vert" />
+    <EmbeddedResource Include="Resources\grid.frag" />
+    <EmbeddedResource Include="Resources\grid.vert" />
+    <EmbeddedResource Include="Resources\skybox.frag" />
+    <EmbeddedResource Include="Resources\skybox.vert" />
+    <EmbeddedResource Include="Resources\framebuffer.frag" />
+    <EmbeddedResource Include="Resources\framebuffer.vert" />
+    <EmbeddedResource Include="Resources\outline.frag" />
+    <EmbeddedResource Include="Resources\outline.vert" />
+    <EmbeddedResource Include="Resources\picking.frag" />
+    <EmbeddedResource Include="Resources\picking.vert" />
+    <EmbeddedResource Include="Resources\light.frag" />
+    <EmbeddedResource Include="Resources\light.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -111,15 +139,17 @@
     <PackageReference Include="AvalonEdit" Version="6.1.3.50" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.175" />
-    <PackageReference Include="HelixToolkit.SharpDX.Core.Wpf" Version="2.21.0" />
+    <PackageReference Include="ImGui.NET" Version="1.88.0" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.16" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NVorbis" Version="0.10.4" />
     <PackageReference Include="Oodle.NET" Version="1.0.1" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
+    <PackageReference Include="OpenTK" Version="4.7.5" />
     <PackageReference Include="RestSharp" Version="108.0.1" />
     <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
     <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.88.0" />
     <PackageReference Include="SkiaSharp.Svg" Version="1.60.0" />
   </ItemGroup>
@@ -190,6 +220,14 @@
     <Resource Include="Resources\go_to_directory.png" />
     <Resource Include="Resources\approaching_storm_cubemap.dds" />
     <Resource Include="Resources\npcleftside.png" />
+    <Resource Include="Resources\nx.png" />
+    <Resource Include="Resources\ny.png" />
+    <Resource Include="Resources\nz.png" />
+    <Resource Include="Resources\px.png" />
+    <Resource Include="Resources\py.png" />
+    <Resource Include="Resources\pz.png" />
+    <Resource Include="Resources\pointlight.png" />
+    <Resource Include="Resources\spotlight.png" />
   </ItemGroup>
 
   <ItemGroup>

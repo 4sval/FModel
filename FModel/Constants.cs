@@ -9,6 +9,9 @@ public static class Constants
     public const string ZERO_64_CHAR = "0000000000000000000000000000000000000000000000000000000000000000";
     public static readonly FGuid ZERO_GUID = new(0U);
 
+    public const float SCALE_DOWN_RATIO = 0.01F;
+    public const int SAMPLES_COUNT = 4;
+
     public const string WHITE = "#DAE5F2";
     public const string GRAY = "#BBBBBB";
     public const string RED = "#E06C75";

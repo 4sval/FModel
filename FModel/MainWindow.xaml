@@ -46,7 +46,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="AES" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding IsReady}">
+                <MenuItem Header="AES" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -55,7 +55,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Backup" Command="{Binding MenuCommand}" CommandParameter="Directory_Backup" IsEnabled="{Binding IsReady}">
+                <MenuItem Header="Backup" Command="{Binding MenuCommand}" CommandParameter="Directory_Backup" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -64,7 +64,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Archives Info" Command="{Binding MenuCommand}" CommandParameter="Directory_ArchivesInfo" IsEnabled="{Binding IsReady}">
+                <MenuItem Header="Archives Info" Command="{Binding MenuCommand}" CommandParameter="Directory_ArchivesInfo" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -75,7 +75,7 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Packages">
-                <MenuItem Header="Search" IsEnabled="{Binding IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
+                <MenuItem Header="Search" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -84,7 +84,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Directories" ItemsSource="{Binding CustomDirectories.Directories}" IsEnabled="{Binding IsReady}">
+                <MenuItem Header="Directories" ItemsSource="{Binding CustomDirectories.Directories}" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -159,6 +159,15 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Views">
+                <MenuItem Header="3D Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource MeshIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Audio Player" Command="{Binding MenuCommand}" CommandParameter="Views_AudioPlayer">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
@@ -168,7 +177,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Map Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_MapViewer" IsEnabled="{Binding IsReady}">
+                <MenuItem Header="Map Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_MapViewer" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -272,7 +281,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Loading Mode" VerticalAlignment="Center" />
-                                <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding IsReady}"
+                                <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding Status.IsReady}"
                                           SelectedItem="{Binding LoadingMode, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
@@ -281,7 +290,7 @@
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
                                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Load"
-                                        Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding IsReady}"
+                                        Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding Status.IsReady}"
                                         CommandParameter="{Binding SelectedItems, ElementName=DirectoryFilesListBox}" />
                             </Grid>
                             <Grid DockPanel.Dock="Top">
@@ -703,27 +712,27 @@
                 <Style TargetType="{x:Type StatusBar}" BasedOn="{StaticResource {x:Type StatusBar}}">
                     <Style.Triggers>
                         <!--don't mind me, MultiDataTrigger just sucks-->
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Ready}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Ready}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Completed}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Completed}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Loading}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Stopping}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Stopping}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Stopped}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Stopped}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Failed}">
+                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Failed}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             <Setter Property="Foreground" Value="White" />
                         </DataTrigger>
@@ -766,17 +775,17 @@
                 <TextBlock>
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Text" Value="{Binding Status}" />
+                            <Setter Property="Text" Value="{Binding Status.Label}" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Loading}">
-                                    <Setter Property="Text" Value="{Binding Status, StringFormat='{}{0} …'}" />
+                                <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}">
+                                    <Setter Property="Text" Value="{Binding Status.Label, StringFormat='{}{0} …'}" />
                                 </DataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding CanBeCanceled, Source={x:Static local:Services.ApplicationService.ThreadWorkerView}}" Value="True" />
-                                        <Condition Binding="{Binding Status}" Value="{x:Static local:EStatusKind.Loading}" />
+                                        <Condition Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}" />
                                     </MultiDataTrigger.Conditions>
-                                    <Setter Property="Text" Value="{Binding Status, StringFormat='{}{0} …    ESC to Cancel'}" />
+                                    <Setter Property="Text" Value="{Binding Status.Label, StringFormat='{}{0} …    ESC to Cancel'}" />
                                 </MultiDataTrigger>
                             </Style.Triggers>
                         </Style>

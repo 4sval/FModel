@@ -70,11 +70,24 @@ public partial class MainWindow
         await _applicationView.CUE4Parse.InitInformation();
 #endif
         await _applicationView.CUE4Parse.InitMappings();
+        await _applicationView.InitImGuiSettings();
         await _applicationView.InitVgmStream();
         await _applicationView.InitOodle();
 
         if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
             _discordHandler.Initialize(_applicationView.CUE4Parse.Game);
+
+#if DEBUG
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "FortniteGame/Content/Characters/Player/Female/Medium/Bodies/F_MED_RoseDust/Meshes/F_MED_RoseDust.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "fortnitegame/Content/Accessories/FORT_Backpacks/Backpack_M_MED_Despair/Meshes/M_MED_Despair_Pack.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "FortniteGame/Content/Animation/Game/MainPlayer/Emotes/Acrobatic_Superhero/Emote_AcrobaticSuperhero_CMM.uasset"));
+#endif
     }
 
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)
@@ -89,10 +102,10 @@ public partial class MainWindow
 
         if (_threadWorkerView.CanBeCanceled && e.Key == Key.Escape)
         {
-            _applicationView.Status = EStatusKind.Stopping;
+            _applicationView.Status.SetStatus(EStatusKind.Stopping);
             _threadWorkerView.Cancel();
         }
-        else if (_applicationView.IsReady && e.Key == Key.F && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+        else if (_applicationView.Status.IsReady && e.Key == Key.F && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
             OnSearchViewClick(null, null);
         else if (e.Key == Key.Left && _applicationView.CUE4Parse.TabControl.SelectedTab.HasImage)
             _applicationView.CUE4Parse.TabControl.SelectedTab.GoPreviousImage();
@@ -224,14 +237,14 @@ public partial class MainWindow
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (!_applicationView.IsReady || sender is not ListBox listBox) return;
+        if (!_applicationView.Status.IsReady || sender is not ListBox listBox) return;
         UserSettings.Default.LoadingMode = ELoadingMode.Multiple;
         _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
     }
 
     private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (!_applicationView.IsReady || sender is not ListBox listBox) return;
+        if (!_applicationView.Status.IsReady || sender is not ListBox listBox) return;
 
         switch (e.Key)
         {

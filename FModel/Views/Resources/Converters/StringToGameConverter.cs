@@ -31,6 +31,7 @@ public class StringToGameConverter : IValueConverter
             578080 => FGame.TslGame,
             677620 => FGame.PortalWars,
             1172620 => FGame.Athena,
+            1665460 => FGame.eFootball,
             _ => FGame.Unknown
         };
         return ret == FGame.Unknown ? value : ret.GetDescription();

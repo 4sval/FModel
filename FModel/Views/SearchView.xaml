@@ -100,10 +100,10 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Width="225" Header="Package" adonisExtensions:GridViewSortExtension.PropertyName="Package">
+                            <GridViewColumn Width="225" Header="Archive" adonisExtensions:GridViewSortExtension.PropertyName="Archive">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Package}" />
+                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Archive}" />
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

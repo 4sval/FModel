@@ -95,6 +95,8 @@ public enum FGame
     PandaGame,
     [Description("Tower of Fantasy")]
     Hotta,
+    [Description("eFootball 2023")]
+    eFootball
 }
 
 public enum ELoadingMode

@@ -22,7 +22,6 @@ namespace FModel.ViewModels;
 public class ApplicationViewModel : ViewModel
 {
     private EBuildKind _build;
-
     public EBuildKind Build
     {
         get => _build;
@@ -33,24 +32,11 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    private bool _isReady;
-
-    public bool IsReady
-    {
-        get => _isReady;
-        private set => SetProperty(ref _isReady, value);
-    }
-
-    private EStatusKind _status;
-
-    public EStatusKind Status
+    private FStatus _status;
+    public FStatus Status
     {
         get => _status;
-        set
-        {
-            SetProperty(ref _status, value);
-            IsReady = Status != EStatusKind.Loading && Status != EStatusKind.Stopping;
-        }
+        set => SetProperty(ref _status, value);
     }
 
     public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);
@@ -72,12 +58,11 @@ public class ApplicationViewModel : ViewModel
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
     public MapViewerViewModel MapViewer { get; }
-    public ModelViewerViewModel ModelViewer { get; }
     private OodleCompressor _oodle;
 
     public ApplicationViewModel()
     {
-        Status = EStatusKind.Loading;
+        Status = new FStatus();
 #if DEBUG
         Build = EBuildKind.Debug;
 #elif RELEASE
@@ -94,8 +79,7 @@ public class ApplicationViewModel : ViewModel
         AesManager = new AesManagerViewModel(CUE4Parse);
         MapViewer = new MapViewerViewModel(CUE4Parse);
         AudioPlayer = new AudioPlayerViewModel();
-        ModelViewer = new ModelViewerViewModel(CUE4Parse.Game);
-        Status = EStatusKind.Ready;
+        Status.SetStatus(EStatusKind.Ready);
     }
 
     public void AvoidEmptyGameDirectoryAndSetEGame(bool bAlreadyLaunched)
@@ -199,6 +183,19 @@ public class ApplicationViewModel : ViewModel
             OodleCUE4.DecompressFunc = (bufferPtr, bufferSize, outputPtr, outputSize, a, b, c, d, e, f, g, h, i, threadModule) =>
                 _oodle.Decompress(new IntPtr(bufferPtr), bufferSize, new IntPtr(outputPtr), outputSize,
                     (OodleLZ_FuzzSafe) a, (OodleLZ_CheckCRC) b, (OodleLZ_Verbosity) c, d, e, f, g, h, i, (OodleLZ_Decode_ThreadPhase) threadModule);
+        }
+    }
+
+    public async Task InitImGuiSettings()
+    {
+        var imgui = Path.Combine(/*UserSettings.Default.OutputDirectory, ".data", */"imgui.ini");
+        if (File.Exists(imgui)) return;
+
+        await ApplicationService.ApiEndpointView.DownloadFileAsync("https://cdn.fmodel.app/d/configurations/imgui.ini", imgui);
+        if (new FileInfo(imgui).Length == 0)
+        {
+            FLogger.AppendError();
+            FLogger.AppendText("Could not download ImGui settings", Constants.WHITE, true);
         }
     }
 }

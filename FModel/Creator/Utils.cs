@@ -204,6 +204,9 @@ public static class Utils
         return string.Empty;
     }
 
+    public static string FixPath(string weirdPath) =>
+        _applicationView.CUE4Parse.Provider.FixPath(weirdPath, StringComparison.Ordinal);
+
     public static void DrawCenteredMultilineText(SKCanvas c, string text, int maxCount, int size, int margin, SKTextAlign side, SKRect area, SKPaint paint)
     {
         var lineHeight = paint.TextSize * 1.2f;
