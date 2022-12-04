@@ -6,6 +6,8 @@ using FModel.Framework;
 using ImGuiNET;
 using OpenTK.Windowing.Common;
 using System.Numerics;
+using FModel.Settings;
+using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
 
@@ -37,9 +39,11 @@ public class Save
 public class SnimGui
 {
     public readonly ImGuiController Controller;
-    private bool _viewportFocus;
     private readonly Swap _swapper = new ();
     private readonly Save _saver = new ();
+    private readonly string _renderer;
+    private readonly string _version;
+    private bool _viewportFocus;
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
     private readonly Vector4 _alertColor = new (0.831f, 0.573f, 0.125f, 1.0f);
@@ -49,6 +53,8 @@ public class SnimGui
 
     public SnimGui(int width, int height)
     {
+        _renderer = GL.GetString(StringName.Renderer);
+        _version = "OpenGL " + GL.GetString(StringName.Version);
         Controller = new ImGuiController(width, height);
         Theme();
     }
@@ -76,6 +82,46 @@ public class SnimGui
 
     private void DrawWorld(Snooper s)
     {
+        if (ImGui.BeginTable("world_details", 2, ImGuiTableFlags.SizingStretchProp))
+        {
+            var length = s.Renderer.Options.Models.Count;
+            Layout("Renderer");ImGui.Text($" :  {_renderer}");
+            Layout("Version");ImGui.Text($" :  {_version}");
+            Layout("Loaded Models");ImGui.Text($" :  x{length}");ImGui.SameLine();
+
+            var b = false;
+            if (ImGui.SmallButton("Save All"))
+            {
+                foreach (var model in s.Renderer.Options.Models.Values)
+                {
+                    b |= model.TrySave(out _, out _);
+                }
+            }
+
+            Modal("Saved", b, () =>
+            {
+                ImGui.TextWrapped($"Successfully saved {length} models");
+                ImGui.Separator();
+
+                var size = new Vector2(120, 0);
+                if (ImGui.Button("OK", size))
+                {
+                    ImGui.CloseCurrentPopup();
+                }
+
+                ImGui.SetItemDefaultFocus();
+                ImGui.SameLine();
+
+                if (ImGui.Button("Show In Explorer", size))
+                {
+                    Process.Start("explorer.exe", $"/select, \"{UserSettings.Default.ModelDirectory.Replace('/', '\\')}\"");
+                    ImGui.CloseCurrentPopup();
+                }
+            });
+
+            ImGui.EndTable();
+        }
+
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.CollapsingHeader("Editor"))
         {
@@ -194,7 +240,8 @@ public class SnimGui
                     {
                         s.Renderer.Options.SelectModel(guid);
                     }
-                    if (ImGui.BeginPopupContextItem())
+
+                    Popup(() =>
                     {
                         s.Renderer.Options.SelectModel(guid);
                         if (ImGui.MenuItem("Show", null, model.Show)) model.Show = !model.Show;
@@ -206,6 +253,7 @@ public class SnimGui
                             _saver.Value = model.TrySave(out _saver.Label, out _saver.Path);
                             s.WindowShouldFreeze(false);
                         }
+
                         ImGui.BeginDisabled(true);
                         // ImGui.BeginDisabled(!model.HasSkeleton);
                         if (ImGui.Selectable("Animate"))
@@ -213,23 +261,24 @@ public class SnimGui
                             s.Renderer.Options.AnimateMesh(true);
                             s.WindowShouldClose(true, false);
                         }
+
                         ImGui.EndDisabled();
                         if (ImGui.Selectable("Teleport To"))
                         {
                             var instancePos = model.Transforms[model.SelectedInstance].Position;
                             s.Camera.Position = new Vector3(instancePos.X, instancePos.Y, instancePos.Z);
                         }
+
                         if (ImGui.Selectable("Delete")) s.Renderer.Options.Models.Remove(guid);
                         if (ImGui.Selectable("Deselect")) s.Renderer.Options.SelectModel(Guid.Empty);
                         ImGui.Separator();
                         if (ImGui.Selectable("Copy Name to Clipboard")) ImGui.SetClipboardText(model.Name);
-                        ImGui.EndPopup();
-                    }
+                    });
                     ImGui.PopID();
                     i++;
                 }
 
-                Popup("Saved", _saver.Value, () =>
+                Modal("Saved", _saver.Value, () =>
                 {
                     ImGui.TextWrapped($"Successfully saved {_saver.Label}");
                     ImGui.Separator();
@@ -332,7 +381,7 @@ public class SnimGui
                         {
                             s.Renderer.Options.SelectSection(i);
                         }
-                        if (ImGui.BeginPopupContextItem())
+                        Popup(() =>
                         {
                             s.Renderer.Options.SelectSection(i);
                             if (ImGui.MenuItem("Show", null, section.Show)) section.Show = !section.Show;
@@ -347,13 +396,12 @@ public class SnimGui
                             }
                             ImGui.Separator();
                             if (ImGui.Selectable("Copy Name to Clipboard")) ImGui.SetClipboardText(material.Name);
-                            ImGui.EndPopup();
-                        }
+                        });
                         ImGui.PopID();
                     }
                     ImGui.EndTable();
 
-                    Popup("Swap?", _swapper.Value, () =>
+                    Modal("Swap?", _swapper.Value, () =>
                     {
                         ImGui.TextWrapped("You're about to swap a material.\nThe window will close for you to extract a material!\n\n");
                         ImGui.Separator();
@@ -386,64 +434,12 @@ public class SnimGui
 
                 if (ImGui.BeginTabItem("Transform"))
                 {
-                    const int width = 100;
-                    var speed = s.Camera.Speed / 100f;
-
                     ImGui.PushID(0); ImGui.BeginDisabled(model.TransformsCount < 2);
                     ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
                     ImGui.SliderInt("", ref model.SelectedInstance, 0, model.TransformsCount - 1, "Instance %i", ImGuiSliderFlags.AlwaysClamp);
                     ImGui.EndDisabled(); ImGui.PopID();
 
-                    ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                    if (ImGui.TreeNode("Location"))
-                    {
-                        ImGui.PushID(1);
-                        ImGui.SetNextItemWidth(width);
-                        ImGui.DragFloat("X", ref model.Transforms[model.SelectedInstance].Position.X, speed, 0f, 0f, "%.2f m");
-
-                        ImGui.SetNextItemWidth(width);
-                        ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Position.Z, speed, 0f, 0f, "%.2f m");
-
-                        ImGui.SetNextItemWidth(width);
-                        ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Position.Y, speed, 0f, 0f, "%.2f m");
-
-                        ImGui.PopID();
-                        ImGui.TreePop();
-                    }
-
-                    ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                    if (ImGui.TreeNode("Rotation"))
-                    {
-                        ImGui.PushID(2);
-                        ImGui.SetNextItemWidth(width);
-                        ImGui.DragFloat("X", ref model.Transforms[model.SelectedInstance].Rotation.Roll, .5f, 0f, 0f, "%.1f°");
-
-                        ImGui.SetNextItemWidth(width);
-                        ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Rotation.Pitch, .5f, 0f, 0f, "%.1f°");
-
-                        ImGui.SetNextItemWidth(width);
-                        ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Rotation.Yaw, .5f, 0f, 0f, "%.1f°");
-
-                        ImGui.PopID();
-                        ImGui.TreePop();
-                    }
-
-                    if (ImGui.TreeNode("Scale"))
-                    {
-                        ImGui.PushID(3);
-                        ImGui.SetNextItemWidth(width);
-                        ImGui.DragFloat("X", ref model.Transforms[model.SelectedInstance].Scale.X, speed, 0f, 0f, "%.3f");
-
-                        ImGui.SetNextItemWidth(width);
-                        ImGui.DragFloat("Y", ref model.Transforms[model.SelectedInstance].Scale.Z, speed, 0f, 0f, "%.3f");
-
-                        ImGui.SetNextItemWidth(width);
-                        ImGui.DragFloat("Z", ref model.Transforms[model.SelectedInstance].Scale.Y, speed, 0f, 0f, "%.3f");
-
-                        ImGui.PopID();
-                        ImGui.TreePop();
-                    }
-
+                    model.Transforms[model.SelectedInstance].ImGuiTransform(s.Camera.Speed / 100f);
                     model.UpdateMatrix(model.SelectedInstance);
                     ImGui.EndTabItem();
                 }
@@ -586,8 +582,20 @@ public class SnimGui
         ImGui.PopStyleVar();
     }
 
-    private void Popup(string title, bool condition, Action content)
+    private void Popup(Action content)
     {
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(4f));
+        if (ImGui.BeginPopupContextItem())
+        {
+            content();
+            ImGui.EndPopup();
+        }
+        ImGui.PopStyleVar();
+    }
+
+    private void Modal(string title, bool condition, Action content)
+    {
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(4f));
         var pOpen = true;
         if (condition) ImGui.OpenPopup(title);
         ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Vector2(.5f));
@@ -596,6 +604,7 @@ public class SnimGui
             content();
             ImGui.EndPopup();
         }
+        ImGui.PopStyleVar();
     }
 
     private void Window(string name, Action content, bool styled = true)

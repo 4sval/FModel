@@ -28,8 +28,8 @@ public class Material : IDisposable
     public Vector4[] DiffuseColor;
     public Vector4[] EmissiveColor;
 
-    public Mask M;
-    public bool HasM;
+    public AoParams Ao;
+    public bool HasAo;
 
     public float Roughness = 0.5f;
     public float EmissiveMult = 1f;
@@ -89,12 +89,16 @@ public class Material : IDisposable
             }
 
             {   // scalars
-                if (Parameters.TryGetTexture2d(out var original, "M", "AEM") && options.TryGetTexture(original, false, out var transformed))
+                if (Parameters.TryGetTexture2d(out var original, "M", "PackedTexture", "AEM") &&
+                    !original.Name.Equals("T_BlackMask") && options.TryGetTexture(original, false, out var transformed))
                 {
-                    M = new Mask { Texture = transformed, AmbientOcclusion = 0.7f };
-                    HasM = true;
+                    HasAo = true;
+                    Ao = new AoParams { Texture = transformed, AmbientOcclusion = 0.7f };
                     if (Parameters.TryGetLinearColor(out var l, "Skin Boost Color And Exponent"))
-                        M.SkinBoost = new Boost { Color = new Vector3(l.R, l.G, l.B), Exponent = l.A };
+                    {
+                        Ao.HasColorBoost = true;
+                        Ao.ColorBoost = new Boost { Color = new Vector3(l.R, l.G, l.B), Exponent = l.A };
+                    }
                 }
 
                 if (Parameters.TryGetScalar(out var roughnessMin, "RoughnessMin", "SpecRoughnessMin") &&
@@ -197,13 +201,13 @@ public class Material : IDisposable
             Emissive[i]?.Bind(TextureUnit.Texture0 + unit++);
         }
 
-        M.Texture?.Bind(TextureUnit.Texture31);
-        shader.SetUniform("uParameters.M.Sampler", 31);
-        shader.SetUniform("uParameters.M.SkinBoost.Color", M.SkinBoost.Color);
-        shader.SetUniform("uParameters.M.SkinBoost.Exponent", M.SkinBoost.Exponent);
-        shader.SetUniform("uParameters.M.AmbientOcclusion", M.AmbientOcclusion);
-        shader.SetUniform("uParameters.M.Curvature", M.Curvature);
-        shader.SetUniform("uParameters.HasM", HasM);
+        Ao.Texture?.Bind(TextureUnit.Texture31);
+        shader.SetUniform("uParameters.Ao.Sampler", 31);
+        shader.SetUniform("uParameters.Ao.HasColorBoost", Ao.HasColorBoost);
+        shader.SetUniform("uParameters.Ao.ColorBoost.Color", Ao.ColorBoost.Color);
+        shader.SetUniform("uParameters.Ao.ColorBoost.Exponent", Ao.ColorBoost.Exponent);
+        shader.SetUniform("uParameters.Ao.AmbientOcclusion", Ao.AmbientOcclusion);
+        shader.SetUniform("uParameters.HasAo", HasAo);
 
         shader.SetUniform("uParameters.Roughness", Roughness);
         shader.SetUniform("uParameters.EmissiveMult", EmissiveMult);
@@ -227,17 +231,18 @@ public class Material : IDisposable
             ImGui.DragFloat("", ref UVScale, _step, _zero, _infinite, _mult, _clamp);
             ImGui.PopID();
 
-            if (HasM)
+            if (HasAo)
             {
                 SnimGui.Layout("Ambient Occlusion");ImGui.PushID(4);
-                ImGui.DragFloat("", ref M.AmbientOcclusion, _step, _zero, 1.0f, _mult, _clamp);
-                ImGui.PopID();SnimGui.Layout("Curvature");ImGui.PushID(5);
-                ImGui.DragFloat("", ref M.Curvature, _step, _zero, 1.0f, _mult, _clamp);
-                ImGui.PopID();SnimGui.Layout("Color Boost");ImGui.PushID(6);
-                ImGui.ColorEdit3("", ref M.SkinBoost.Color);
-                ImGui.PopID();SnimGui.Layout("Color Boost Exponent");ImGui.PushID(7);
-                ImGui.DragFloat("", ref M.SkinBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
-                ImGui.PopID();
+                ImGui.DragFloat("", ref Ao.AmbientOcclusion, _step, _zero, 1.0f, _mult, _clamp);ImGui.PopID();
+                if (Ao.HasColorBoost)
+                {
+                    SnimGui.Layout("Color Boost");ImGui.PushID(5);
+                    ImGui.ColorEdit3("", ref Ao.ColorBoost.Color);ImGui.PopID();
+                    SnimGui.Layout("Color Boost Exponent");ImGui.PushID(6);
+                    ImGui.DragFloat("", ref Ao.ColorBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
+                    ImGui.PopID();
+                }
             }
             ImGui.EndTable();
         }
@@ -308,7 +313,7 @@ public class Material : IDisposable
             0 => Diffuse[SelectedChannel]?.GetPointer(),
             1 => Normals[SelectedChannel]?.GetPointer(),
             2 => SpecularMasks[SelectedChannel]?.GetPointer(),
-            3 => M.Texture?.GetPointer(),
+            3 => Ao.Texture?.GetPointer(),
             4 => Emissive[SelectedChannel]?.GetPointer(),
             _ => null
         };
@@ -332,18 +337,18 @@ public class Material : IDisposable
         {
             Emissive[i]?.Dispose();
         }
-        M.Texture?.Dispose();
+        Ao.Texture?.Dispose();
         GL.DeleteProgram(_handle);
     }
 }
 
-public struct Mask
+public struct AoParams
 {
     public Texture Texture;
-    public Boost SkinBoost;
-
     public float AmbientOcclusion;
-    public float Curvature;
+
+    public Boost ColorBoost;
+    public bool HasColorBoost;
 }
 
 public struct Boost

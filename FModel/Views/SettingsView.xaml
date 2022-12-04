@@ -372,7 +372,7 @@
                                   IsChecked="{Binding SaveMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
                     </UniformGrid>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Preview Static Meshes From Levels (.umap)" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Preview Levels (.umap)" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewWorlds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>

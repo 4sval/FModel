@@ -1,4 +1,4 @@
-﻿#version 330 core
+#version 330 core
 
 #define PI 3.1415926535897932384626433832795
 #define MAX_UV_COUNT 8
@@ -23,13 +23,13 @@ struct Boost
     float Exponent;
 };
 
-struct Mask
+struct AoParams
 {
     sampler2D Sampler;
-    Boost SkinBoost;
-
     float AmbientOcclusion;
-    float Curvature;
+
+    Boost ColorBoost;
+    bool HasColorBoost;
 };
 
 struct Parameters
@@ -39,8 +39,8 @@ struct Parameters
     Texture SpecularMasks[MAX_UV_COUNT];
     Texture Emissive[MAX_UV_COUNT];
 
-    Mask M;
-    bool HasM;
+    AoParams Ao;
+    bool HasAo;
 
     float Roughness;
     float EmissiveMult;
@@ -172,19 +172,15 @@ void main()
         vec4 diffuse = SamplerToVector(uParameters.Diffuse[layer].Sampler);
         vec3 result = uParameters.Diffuse[layer].Color.rgb * diffuse.rgb;
 
-        if (uParameters.HasM)
+        if (uParameters.HasAo)
         {
-            vec3 m = SamplerToVector(uParameters.M.Sampler).rgb;
-
-            float subsurface = clamp(1.0f, 0.0f, m.b * .04f);
-            if (subsurface > 0.0f && uParameters.M.SkinBoost.Exponent > 0.0f)
+            vec3 m = SamplerToVector(uParameters.Ao.Sampler).rgb;
+            if (uParameters.Ao.HasColorBoost)
             {
-                vec3 color = uParameters.M.SkinBoost.Color * uParameters.M.SkinBoost.Exponent;
-                result *= clamp(vec3(1.0f), vec3(0.0f), color * m.b);
+                vec3 color = uParameters.Ao.ColorBoost.Color * uParameters.Ao.ColorBoost.Exponent;
+                result = mix(result, result * color, m.b);
             }
-
-            if (m.r > 0.0f) result *= m.r * uParameters.M.AmbientOcclusion;
-            if (m.g > 0.0f) result += m.g * uParameters.M.Curvature;
+            result = mix(result * m.r * uParameters.Ao.AmbientOcclusion, result, m.g);
         }
 
         vec4 emissive = SamplerToVector(uParameters.Emissive[layer].Sampler);
