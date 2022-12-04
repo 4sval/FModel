@@ -35,7 +35,7 @@ jobs:
       - name: ZIP File
         uses: papeloto/action-zip@v1
         with:
-          files: ./FModel/bin/Publish/
+          files: ./FModel/bin/Publish/FModel.exe
           dest: FModel.zip # will end up in working directory not the Publish folder
 
       - name: GIT Release

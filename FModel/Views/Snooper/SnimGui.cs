@@ -186,15 +186,23 @@ public class SnimGui
         Modal("Commands", ImGui.MenuItem("Commands"), () =>
         {
             ImGui.TextWrapped(
-                @"Most commands should be pretty straightforward but just in case here is a non-exhaustive list of things you can do on this 3D viewer:
+                @"Most commands should be pretty straightforward but just in case here is a non-exhaustive list of things you can do in this 3D viewer:
 
-1. 3D Viewport
+1. UI / UX
+    - Press Shift while moving a window to dock it
+    - Ctrl Click in a box to input a new value
+    - Mouse Click + Drag in a box to modify the value without having to type
+    - Press H to hide the window and append the next mesh you extract
+
+2. Viewport
     - WASD to move around
+    - Shift to move faster
+    - XC to zoom
     - Left Mouse Button pressed to look around
     - Right Click to select a model in the world
 
-2. Outliner
-    2.1. Right Click Model
+3. Outliner
+    3.1. Right Click Model
         - Show / Hide the model
         - Show a skeletal representation of the model
         - Save to save the model as .psk / .pskx
@@ -204,18 +212,18 @@ public class SnimGui
         - Deselect
         - Copy Name to Clipboard
 
-3. World
+4. World
     - Save All to save all loaded models at once
       (no it's not dying it's just freezing while saving them all)
 
-4. Details
-    4.1. Right Click Section
+5. Details
+    5.1. Right Click Section
         - Show / Hide the section
         - Swap to change the material used by this section
         - Copy Name to Clipboard
-    4.2. Transform
+    5.2. Transform
         - Move / Rotate / Scale the model in the world
-    4.3. Morph Targets
+    5.3. Morph Targets
         - Modify the vertices position by a given amount to change the shape of the model
 ");
             ImGui.Separator();
