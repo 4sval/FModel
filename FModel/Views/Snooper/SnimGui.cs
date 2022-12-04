@@ -63,7 +63,6 @@ public class SnimGui
     {
         Controller.SemiBold();
         DrawDockSpace(s.Size);
-        DrawNavbar();
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
 
@@ -74,8 +73,7 @@ public class SnimGui
         DrawOuliner(s);
         DrawDetails(s);
         Draw3DViewport(s);
-
-        // ImGui.ShowDemoWindow();
+        DrawNavbar();
 
         Controller.Render();
     }
@@ -185,24 +183,77 @@ public class SnimGui
     {
         if (!ImGui.BeginMainMenuBar()) return;
 
-        if (ImGui.BeginMenu("Window"))
+        Modal("Commands", ImGui.MenuItem("Commands"), () =>
         {
-            ImGui.MenuItem("Hide", "H");
-            ImGui.MenuItem("Close", "ESC");
-            ImGui.EndMenu();
-        }
-        if (ImGui.BeginMenu("Edit"))
-        {
-            if (ImGui.MenuItem("Undo", "CTRL+Z")) {}
-            if (ImGui.MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-            ImGui.Separator();
-            if (ImGui.MenuItem("Cut", "CTRL+X")) {}
-            if (ImGui.MenuItem("Copy", "CTRL+C")) {}
-            if (ImGui.MenuItem("Paste", "CTRL+V")) {}
-            ImGui.EndMenu();
-        }
+            ImGui.TextWrapped(
+                @"Most commands should be pretty straightforward but just in case here is a non-exhaustive list of things you can do on this 3D viewer:
 
-        const string text = "Press ESC to Exit...";
+1. 3D Viewport
+    - WASD to move around
+    - Left Mouse Button pressed to look around
+    - Right Click to select a model in the world
+
+2. Outliner
+    2.1. Right Click Model
+        - Show / Hide the model
+        - Show a skeletal representation of the model
+        - Save to save the model as .psk / .pskx
+        - Animate to load an animation on the model
+        - Teleport to quickly move the camera to the position of the model
+        - Delete
+        - Deselect
+        - Copy Name to Clipboard
+
+3. World
+    - Save All to save all loaded models at once
+      (no it's not dying it's just freezing while saving them all)
+
+4. Details
+    4.1. Right Click Section
+        - Show / Hide the section
+        - Swap to change the material used by this section
+        - Copy Name to Clipboard
+    4.2. Transform
+        - Move / Rotate / Scale the model in the world
+    4.3. Morph Targets
+        - Modify the vertices position by a given amount to change the shape of the model
+");
+            ImGui.Separator();
+
+            var size = new Vector2(120, 0);
+            ImGui.InvisibleButton("", size * 3);
+            ImGui.SameLine();
+            ImGui.SetItemDefaultFocus();
+            if (ImGui.Button("OK", size))
+            {
+                ImGui.CloseCurrentPopup();
+            }
+        });
+
+        Modal("About Snooper", ImGui.MenuItem("About"), () =>
+        {
+            ImGui.TextWrapped(
+                @"WROTE AT 3AM FOR THE SAKE OF TESTING AN ABOUT MODAL
+
+Snooper, an ""OpenGL x ImGui"" based 3D viewer, is the result of months of work in order to improve our last one and open up the capabilities data-mining offers. For too long, softwares including FModel were only focused on a bare minimum level of detail showed to the end-user. This is the first step of a long and painful transition to make FModel a viable open-source tool to deep dive into Unreal Engine, its structure, and show how things work internally.
+
+Snooper aims to give an accurate preview of models, materials, animations, particles, levels, and sequences (oof) while keeping it compatible with most UE games. This is not an easy task AT ALL, in fact, I don't really know if everything will make out, but what I can say is that we have ideas and a vision for the future of FModel.
+
+hello world!
+");
+            ImGui.Separator();
+
+            var size = new Vector2(120, 0);
+            ImGui.InvisibleButton("", size * 4);
+            ImGui.SameLine();
+            ImGui.SetItemDefaultFocus();
+            if (ImGui.Button("OK", size))
+            {
+                ImGui.CloseCurrentPopup();
+            }
+        });
+
+        const string text = "Press H to Hide or ESC to Exit...";
         ImGui.SetCursorPosX(ImGui.GetWindowViewport().WorkSize.X - ImGui.CalcTextSize(text).X - 5);
         ImGui.TextColored(new Vector4(0.36f, 0.42f, 0.47f, 1.00f), text);
 
