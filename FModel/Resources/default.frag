@@ -74,7 +74,7 @@ out vec4 FragColor;
 
 int LayerToIndex()
 {
-    return min(int(fTexLayer), uNumTexCoords - 1);
+    return clamp(int(fTexLayer), 0, uNumTexCoords - 1);
 }
 
 vec4 SamplerToVector(sampler2D s)
