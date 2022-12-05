@@ -1,11 +1,15 @@
-﻿using System.Net;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+
 using EpicManifestParser.Objects;
+
 using FModel.Framework;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
+
 using RestSharp;
+
 using Serilog;
 
 namespace FModel.ViewModels.ApiEndpoints;
@@ -22,9 +26,9 @@ public class EpicApiEndpoint : AbstractApiProvider
 
     public async Task<ManifestInfo> GetManifestAsync(CancellationToken token)
     {
-        if (IsExpired())
+        if (await IsExpired().ConfigureAwait(false))
         {
-            var auth = await GetAuthAsync(token);
+            var auth = await GetAuthAsync(token).ConfigureAwait(false);
             if (auth != null)
             {
                 UserSettings.Default.LastAuthResponse = auth;
@@ -53,12 +57,12 @@ public class EpicApiEndpoint : AbstractApiProvider
         return response.Data;
     }
 
-    private bool IsExpired()
+    private async Task<bool> IsExpired()
     {
         if (string.IsNullOrEmpty(UserSettings.Default.LastAuthResponse.AccessToken)) return true;
         var request = new FRestRequest("https://account-public-service-prod.ol.epicgames.com/account/api/oauth/verify");
         request.AddHeader("Authorization", $"bearer {UserSettings.Default.LastAuthResponse.AccessToken}");
-        var response = _client.Get(request);
+        var response = await _client.ExecuteAsync(request).ConfigureAwait(false);
         return response.StatusCode != HttpStatusCode.OK;
     }
 }
