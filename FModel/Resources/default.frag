@@ -66,6 +66,7 @@ uniform Parameters uParameters;
 uniform Light uLights[MAX_LIGHT_COUNT];
 uniform int uNumLights;
 uniform int uNumTexCoords;
+uniform bool uHasVertexColors;
 uniform vec3 uViewPos;
 uniform vec3 uViewDir;
 uniform bool bVertexColors[6];
@@ -96,21 +97,21 @@ vec3 ComputeNormals(int layer)
 
 vec3 schlickFresnel(int layer, float vDotH)
 {
-    vec3 f0 = vec3(0.04f);
-    return f0 + (1.0f - f0) * pow(clamp(1.0f - vDotH, 0.0f, 1.0f), 5);
+    vec3 f0 = vec3(0.04);
+    return f0 + (1.0 - f0) * pow(clamp(1.0 - vDotH, 0.0, 1.0), 5);
 }
 
 float ggxDistribution(float roughness, float nDoth)
 {
     float alpha2 = roughness * roughness * roughness * roughness;
-    float d = nDoth * nDoth * (alpha2- 1.0f) + 1.0f;
+    float d = nDoth * nDoth * (alpha2- 1.0) + 1.0;
     return alpha2 / (PI * d * d);
 }
 
 float geomSmith(float roughness, float dp)
 {
-    float k = (roughness + 1.0f) * (roughness + 1.0f) / 8.0f;
-    float denom = dp * (1.0f - k) + k;
+    float k = (roughness + 1.0) * (roughness + 1.0) / 8.0;
+    float denom = dp * (1.0 - k) + k;
     return dp / denom;
 }
 
@@ -119,26 +120,26 @@ vec3 CalcCameraLight(int layer, vec3 normals)
     vec3 specular_masks = SamplerToVector(uParameters.SpecularMasks[layer].Sampler).rgb;
     float roughness = max(0.0f, mix(specular_masks.r, specular_masks.b, uParameters.Roughness));
 
-    vec3 intensity = vec3(1.0f) * 1.0f;
+    vec3 intensity = vec3(1.0f) * 1.0;
     vec3 l = -uViewDir;
 
     vec3 n = normals;
     vec3 v = normalize(uViewPos - fPos);
     vec3 h = normalize(v + l);
 
-    float nDotH = max(dot(n, h), 0.0f);
-    float vDotH = max(dot(v, h), 0.0f);
-    float nDotL = max(dot(n, l), 0.0f);
-    float nDotV = max(dot(n, v), 0.0f);
+    float nDotH = max(dot(n, h), 0.0);
+    float vDotH = max(dot(v, h), 0.0);
+    float nDotL = max(dot(n, l), 0.0);
+    float nDotV = max(dot(n, v), 0.0);
 
     vec3 f = schlickFresnel(layer, vDotH);
 
     vec3 kS = f;
     vec3 kD = 1.0 - kS;
-    kD *= max(0.0f, dot(v, reflect(-v, normals)) * specular_masks.g);
+    kD *= max(0.0, dot(v, reflect(-v, normals)) * specular_masks.g);
 
     vec3 specBrdfNom = ggxDistribution(roughness, nDotH) * f * geomSmith(roughness, nDotL) * geomSmith(roughness, nDotV);
-    float specBrdfDenom = 4.0f * nDotV * nDotL + 0.0001f;
+    float specBrdfDenom = 4.0 * nDotV * nDotL + 0.0001;
     vec3 specBrdf = specBrdfNom / specBrdfDenom;
 
     vec3 fLambert = SamplerToVector(uParameters.Diffuse[layer].Sampler).rgb * uParameters.Diffuse[layer].Color.rgb;
@@ -149,7 +150,7 @@ vec3 CalcCameraLight(int layer, vec3 normals)
 
 void main()
 {
-    if (bVertexColors[2])
+    if (bVertexColors[2] && uHasVertexColors)
     {
         FragColor = fColor;
     }
@@ -215,7 +216,7 @@ void main()
             result *= lights; // use * to darken the scene, + to lighten it
         }
 
-        result = result / (result + vec3(1.0f));
-        FragColor = vec4(pow(result, vec3(1.0f / 2.2f)), 1.0f);
+        result = result / (result + vec3(1.0));
+        FragColor = vec4(pow(result, vec3(1.0 / 2.2)), 1.0);
     }
 }
