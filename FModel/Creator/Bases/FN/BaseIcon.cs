@@ -219,7 +219,7 @@ public class BaseIcon : UCreator
             1 => 10,
             2 => 8,
             3 => 4,
-            _ => 10
+            4 => 10
         };
 
         var season = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "SeasonTextFormat", "Season {0}");
