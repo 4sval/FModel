@@ -101,20 +101,8 @@ public class BaseCommunity : BaseIcon
     {
         if (!bShort) return base.GetCosmeticSeason(seasonNumber);
         var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
-        var number = int.Parse(s);
-
-        switch (number)
-        {
-            case 10:
-                s = "X";
-                break;
-            case > 18:
-                number += 2;
-                s = number.ToString();
-                break;
-        }
-
-        return $"C{number / 10 + 1} S{s[^1..]}";
+        (int chapterIdx, int seasonIdx) = GetInternalSID(int.Parse(s));
+        return $"C{chapterIdx} S{seasonIdx}";
     }
 
     private new void DrawBackground(SKCanvas c)
