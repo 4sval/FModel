@@ -110,6 +110,7 @@ public class GameSelectorViewModel : ViewModel
         yield return GetUnrealEngineGame("a99769d95d8f400baad1f67ab5dfe508");
         yield return GetUnrealEngineGame("Nebula");
         yield return GetUnrealEngineGame("711c5e95dc094ca58e5f16bd48e751d6");
+        yield return GetUnrealEngineGame("9361c8c6d2f34b42b5f2f61093eedf48");
         yield return GetRiotGame("VALORANT", "ShooterGame\\Content\\Paks");
         yield return new DetectedGame { GameName = "Valorant [LIVE]", GameDirectory = Constants._VAL_LIVE_TRIGGER };
         yield return GetMojangGame("MinecraftDungeons", "\\dungeons\\dungeons\\Dungeons\\Content\\Paks");
