@@ -114,7 +114,7 @@
     <PackageReference Include="EpicManifestParser" Version="1.2.70-temp" />
     <PackageReference Include="HelixToolkit.SharpDX.Core.Wpf" Version="2.21.0" />
     <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.16" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="NVorbis" Version="0.10.4" />
     <PackageReference Include="Oodle.NET" Version="1.0.1" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
