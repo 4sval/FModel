@@ -282,16 +282,12 @@ public class TabItem : ViewModel
 
         if (!bulkTexture)
         {
-            var folderBrowser = new VistaFolderBrowserDialog { Description = "description ???", UseDescriptionForTitle = false };
+            var folderBrowser = new VistaFolderBrowserDialog();
             if (folderBrowser.ShowDialog() == true)
-            {
                 directory = folderBrowser.SelectedPath;
-            }
+            else return;
         }
-        else
-        {
-            System.IO.Directory.CreateDirectory(directory);
-        }
+        else System.IO.Directory.CreateDirectory(directory);
 
         foreach (var image in _images)
         {
@@ -322,10 +318,7 @@ public class TabItem : ViewModel
             if (!result.HasValue || !result.Value) return;
             path = saveFileDialog.FileName;
         }
-        else
-        {
-            System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
-        }
+        else System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
 
         SaveImage(image, path, fileName);
     }
