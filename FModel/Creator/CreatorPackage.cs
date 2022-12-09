@@ -90,6 +90,7 @@ public class CreatorPackage : IDisposable
             case "FortPlaysetPropItemDefinition":
             case "FortHomebaseNodeItemDefinition":
             case "FortNeverPersistItemDefinition":
+            case "FortPlayerAugmentItemDefinition":
             case "RadioContentSourceItemDefinition":
             case "FortPlaysetGrenadeItemDefinition":
             case "FortPersonalVehicleItemDefinition":

@@ -27,9 +27,6 @@ public partial class MainWindow
 
     public MainWindow()
     {
-        CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveProps", typeof(MainWindow), new InputGestureCollection { new KeyGesture(UserSettings.Default.AutoSaveProps.Key, UserSettings.Default.AutoSaveProps.Modifiers) }), OnAutoTriggerExecuted));
-        CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoSaveTextures", typeof(MainWindow), new InputGestureCollection { new KeyGesture(UserSettings.Default.AutoSaveTextures.Key, UserSettings.Default.AutoSaveTextures.Modifiers) }), OnAutoTriggerExecuted));
-        CommandBindings.Add(new CommandBinding(new RoutedCommand("AutoOpenSounds", typeof(MainWindow), new InputGestureCollection { new KeyGesture(UserSettings.Default.AutoOpenSounds.Key, UserSettings.Default.AutoOpenSounds.Modifiers) }), OnAutoTriggerExecuted));
         CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection { new KeyGesture(Key.F12) }), OnMappingsReload));
         CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (_, _) => OnOpenAvalonFinder()));
 
@@ -143,22 +140,6 @@ public partial class MainWindow
         await _applicationView.CUE4Parse.InitMappings();
     }
 
-    private void OnAutoTriggerExecuted(object sender, ExecutedRoutedEventArgs e)
-    {
-        switch ((e.Command as RoutedCommand)?.Name)
-        {
-            case "AutoSaveProps":
-                UserSettings.Default.IsAutoSaveProps = !UserSettings.Default.IsAutoSaveProps;
-                break;
-            case "AutoSaveTextures":
-                UserSettings.Default.IsAutoSaveTextures = !UserSettings.Default.IsAutoSaveTextures;
-                break;
-            case "AutoOpenSounds":
-                UserSettings.Default.IsAutoOpenSounds = !UserSettings.Default.IsAutoOpenSounds;
-                break;
-        }
-    }
-
     private void OnOpenAvalonFinder()
     {
         _applicationView.CUE4Parse.TabControl.SelectedTab.HasSearchOpen = true;
@@ -202,6 +183,14 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveFolder(cancellationToken, folder); });
+        }
+    }
+
+    private async void OnFolderTextureClick(object sender, RoutedEventArgs e)
+    {
+        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        {
+            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.TextureFolder(cancellationToken, folder); });
         }
     }
 
