@@ -95,10 +95,11 @@ vec3 ComputeNormals(int layer)
     return normalize(tbn * normal);
 }
 
-vec3 schlickFresnel(int layer, float vDotH)
+vec3 schlickFresnel(vec3 fLambert, float metallic, float hDotv)
 {
     vec3 f0 = vec3(0.04);
-    return f0 + (1.0 - f0) * pow(clamp(1.0 - vDotH, 0.0, 1.0), 5);
+    f0 = mix(f0, fLambert, metallic);
+    return f0 + (1.0 - f0) * pow(clamp(1.0 - hDotv, 0.0, 1.0), 5);
 }
 
 float ggxDistribution(float roughness, float nDoth)
@@ -117,8 +118,9 @@ float geomSmith(float roughness, float dp)
 
 vec3 CalcCameraLight(int layer, vec3 normals)
 {
+    vec3 fLambert = SamplerToVector(uParameters.Diffuse[layer].Sampler).rgb * uParameters.Diffuse[layer].Color.rgb;
     vec3 specular_masks = SamplerToVector(uParameters.SpecularMasks[layer].Sampler).rgb;
-    float roughness = max(0.0f, mix(specular_masks.r, specular_masks.b, uParameters.Roughness));
+    float roughness = max(0.0f, specular_masks.b * uParameters.Roughness);
 
     vec3 intensity = vec3(1.0f) * 1.0;
     vec3 l = -uViewDir;
@@ -128,21 +130,19 @@ vec3 CalcCameraLight(int layer, vec3 normals)
     vec3 h = normalize(v + l);
 
     float nDotH = max(dot(n, h), 0.0);
-    float vDotH = max(dot(v, h), 0.0);
+    float hDotv = max(dot(h, v), 0.0);
     float nDotL = max(dot(n, l), 0.0);
     float nDotV = max(dot(n, v), 0.0);
 
-    vec3 f = schlickFresnel(layer, vDotH);
+    vec3 f = schlickFresnel(fLambert, specular_masks.g, hDotv);
 
     vec3 kS = f;
     vec3 kD = 1.0 - kS;
-    kD *= max(0.0, dot(v, reflect(-v, normals)) * specular_masks.g);
+    kD *= 1.0 - specular_masks.g;
 
-    vec3 specBrdfNom = ggxDistribution(roughness, nDotH) * f * geomSmith(roughness, nDotL) * geomSmith(roughness, nDotV);
+    vec3 specBrdfNom = ggxDistribution(roughness, nDotH) * geomSmith(roughness, nDotL) * geomSmith(roughness, nDotV) * f;
     float specBrdfDenom = 4.0 * nDotV * nDotL + 0.0001;
-    vec3 specBrdf = specBrdfNom / specBrdfDenom;
-
-    vec3 fLambert = SamplerToVector(uParameters.Diffuse[layer].Sampler).rgb * uParameters.Diffuse[layer].Color.rgb;
+    vec3 specBrdf = specular_masks.r * specBrdfNom / specBrdfDenom;
 
     vec3 diffuseBrdf = kD * fLambert / PI;
     return (diffuseBrdf + specBrdf) * intensity * nDotL;

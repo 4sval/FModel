@@ -89,7 +89,7 @@ public class Material : IDisposable
             }
 
             {   // scalars
-                if (Parameters.TryGetTexture2d(out var original, "M", "PackedTexture", "AEM") &&
+                if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO") &&
                     !original.Name.Equals("T_BlackMask") && options.TryGetTexture(original, false, out var transformed))
                 {
                     HasAo = true;
@@ -109,7 +109,7 @@ public class Material : IDisposable
 
                 if (Parameters.TryGetScalar(out var emissiveMultScalar, "emissive mult", "Emissive_Mult"))
                     EmissiveMult = emissiveMultScalar;
-                else if (Parameters.TryGetLinearColor(out var emissiveMultColor, "Emissive Multiplier"))
+                else if (Parameters.TryGetLinearColor(out var emissiveMultColor, "Emissive Multiplier", "EmissiveMultiplier"))
                     EmissiveMult = emissiveMultColor.R;
 
                 if (Parameters.TryGetScalar(out var uvScale, "UV Scale"))

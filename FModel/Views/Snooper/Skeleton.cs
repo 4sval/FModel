@@ -30,25 +30,43 @@ public class Skeleton : IDisposable
                 continue;
 
             var transform = Transform.Identity;
+            var matrix = Matrix4x4.Identity;
             while (boneIndex > -1)
             {
-                var t = RefSkel.ReferenceSkeleton.FinalRefBonePose[boneIndex];
-                transform.Position += t.Rotation.RotateVector(t.Translation.ToMapVector()) * Constants.SCALE_DOWN_RATIO;
-
+                var bone = RefSkel.ReferenceSkeleton.FinalRefBonePose[boneIndex];
                 boneIndex = RefSkel.ReferenceSkeleton.FinalRefBoneInfo[boneIndex].ParentIndex;
+                var parentBone = RefSkel.ReferenceSkeleton.FinalRefBonePose[boneIndex < 0 ? 0 : boneIndex];
+
+                var orig_loc = bone.Translation;
+                parentBone.Rotation.Conjugate();
+                orig_loc = parentBone.Rotation.RotateVector(orig_loc);
+
+                var orig_quat = bone.Rotation;
+                orig_quat *= parentBone.Rotation;
+                orig_quat.Conjugate();
+
+                var p_rotated = orig_quat * orig_loc;
+                orig_quat.Conjugate();
+                p_rotated *= orig_quat;
+
+                matrix *=
+                    Matrix4x4.CreateFromQuaternion(orig_quat) *
+                    Matrix4x4.CreateTranslation(p_rotated);
+
+                // Console.WriteLine(matrix.Translation);
             }
-            // for (int j = 0; j <= 3; j++)
+            // for (int j = 0; j <= boneIndex; j++)
             // {
             //     var t = RefSkel.ReferenceSkeleton.FinalRefBonePose[j];
-            //     // var matrix = Matrix4x4.CreateScale(t.Scale3D.ToMapVector());
-            //     // matrix *= Matrix4x4.CreateFromQuaternion(t.Rotation);
-            //     transform.Position += t.Rotation.UnrotateVector(t.Translation.ToMapVector()) * Constants.SCALE_DOWN_RATIO;
+            //     var r = RefSkel.ReferenceSkeleton.FinalRefBonePose[j - (j == 0 ? 0 : 1)].Rotation;
+            //     r.Conjugate();
+            //     matrix *= Matrix4x4.CreateFromQuaternion(r) * Matrix4x4.CreateTranslation(t.Translation);
             //
-            //     // Console.WriteLine($@"{t.Translation}");
-            //     // transform.Relation *= matrix;
+            //     Console.WriteLine($@"{t.Translation}");
+            //     transform.Relation *= matrix;
             // }
 
-            Sockets[i] = new Socket(socket, transform);
+            Sockets[i] = new Socket(socket, matrix.Translation);
         }
     }
 

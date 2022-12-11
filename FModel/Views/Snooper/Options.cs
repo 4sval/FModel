@@ -112,6 +112,7 @@ public class Options
         switch (_game)
         {
             case "hk_project":
+            case "gameface":
             {
                 unsafe
                 {
