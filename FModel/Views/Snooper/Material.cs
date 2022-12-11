@@ -31,6 +31,7 @@ public class Material : IDisposable
     public AoParams Ao;
     public bool HasAo;
 
+    public float Specular = 1f;
     public float Roughness = 0.5f;
     public float EmissiveMult = 1f;
     public float UVScale = 1f;
@@ -101,10 +102,13 @@ public class Material : IDisposable
                     }
                 }
 
+                if (Parameters.TryGetScalar(out var specular, "Specular", "Specular Intensity", "Spec"))
+                    Specular = specular;
+
                 if (Parameters.TryGetScalar(out var roughnessMin, "RoughnessMin", "SpecRoughnessMin") &&
                     Parameters.TryGetScalar(out var roughnessMax, "RoughnessMax", "SpecRoughnessMax"))
                     Roughness = (roughnessMin + roughnessMax) / 2f;
-                if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness"))
+                if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness", "Ro Multiplier", "RO_mul", "Roughness_Mult"))
                     Roughness = roughness;
 
                 if (Parameters.TryGetScalar(out var emissiveMultScalar, "emissive mult", "Emissive_Mult"))
@@ -211,6 +215,7 @@ public class Material : IDisposable
         shader.SetUniform("uParameters.Ao.AmbientOcclusion", Ao.AmbientOcclusion);
         shader.SetUniform("uParameters.HasAo", HasAo);
 
+        shader.SetUniform("uParameters.Specular", Specular);
         shader.SetUniform("uParameters.Roughness", Roughness);
         shader.SetUniform("uParameters.EmissiveMult", EmissiveMult);
         shader.SetUniform("uParameters.UVScale", UVScale);
@@ -225,23 +230,25 @@ public class Material : IDisposable
     {
         if (ImGui.BeginTable("parameters", 2))
         {
-            SnimGui.Layout("Roughness");ImGui.PushID(1);
+            SnimGui.Layout("Specular");ImGui.PushID(1);
+            ImGui.DragFloat("", ref Specular, _step, _zero, 1.0f, _mult, _clamp);
+            ImGui.PopID();SnimGui.Layout("Roughness");ImGui.PushID(2);
             ImGui.DragFloat("", ref Roughness, _step, _zero, 1.0f, _mult, _clamp);
-            SnimGui.Layout("Emissive Multiplier");ImGui.PushID(2);
+            ImGui.PopID();SnimGui.Layout("Emissive Multiplier");ImGui.PushID(3);
             ImGui.DragFloat("", ref EmissiveMult, _step, _zero, _infinite, _mult, _clamp);
-            ImGui.PopID();SnimGui.Layout("UV Scale");ImGui.PushID(3);
+            ImGui.PopID();SnimGui.Layout("UV Scale");ImGui.PushID(4);
             ImGui.DragFloat("", ref UVScale, _step, _zero, _infinite, _mult, _clamp);
             ImGui.PopID();
 
             if (HasAo)
             {
-                SnimGui.Layout("Ambient Occlusion");ImGui.PushID(4);
+                SnimGui.Layout("Ambient Occlusion");ImGui.PushID(5);
                 ImGui.DragFloat("", ref Ao.AmbientOcclusion, _step, _zero, 1.0f, _mult, _clamp);ImGui.PopID();
                 if (Ao.HasColorBoost)
                 {
-                    SnimGui.Layout("Color Boost");ImGui.PushID(5);
+                    SnimGui.Layout("Color Boost");ImGui.PushID(6);
                     ImGui.ColorEdit3("", ref Ao.ColorBoost.Color);ImGui.PopID();
-                    SnimGui.Layout("Color Boost Exponent");ImGui.PushID(6);
+                    SnimGui.Layout("Color Boost Exponent");ImGui.PushID(7);
                     ImGui.DragFloat("", ref Ao.ColorBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
                     ImGui.PopID();
                 }

@@ -42,6 +42,7 @@ struct Parameters
     AoParams Ao;
     bool HasAo;
 
+    float Specular;
     float Roughness;
     float EmissiveMult;
     float UVScale;
@@ -142,7 +143,7 @@ vec3 CalcCameraLight(int layer, vec3 normals)
 
     vec3 specBrdfNom = ggxDistribution(roughness, nDotH) * geomSmith(roughness, nDotL) * geomSmith(roughness, nDotV) * f;
     float specBrdfDenom = 4.0 * nDotV * nDotL + 0.0001;
-    vec3 specBrdf = specular_masks.r * specBrdfNom / specBrdfDenom;
+    vec3 specBrdf = uParameters.Specular * specular_masks.r * specBrdfNom / specBrdfDenom;
 
     vec3 diffuseBrdf = kD * fLambert / PI;
     return (diffuseBrdf + specBrdf) * intensity * nDotL;

@@ -113,6 +113,7 @@ public class Options
         {
             case "hk_project":
             case "gameface":
+            case "divineknockout":
             {
                 unsafe
                 {
@@ -121,10 +122,50 @@ public class Options
                     {
                         for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
                         {
-                            (d[offset + 1], d[offset + 2]) = (d[offset + 2], d[offset + 1]); // swap G and B
+                            (d[offset + 1], d[offset + 2]) = (d[offset + 2], d[offset + 1]); // RBG
                             offset += 4;
                         }
                     }
+                }
+                break;
+            }
+            case "shootergame":
+            {
+                var packedPBRType = o.Name[(o.Name.LastIndexOf('_') + 1)..];
+                switch (packedPBRType)
+                {
+                    case "MRAE": // R: Metallic, G: Roughness, B: AO (0-127) & Emissive (128-255)   (Character PBR)
+                        unsafe
+                        {
+                            var offset = 0;
+                            fixed (byte* d = data)
+                            {
+                                for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                {
+                                    (d[offset], d[offset + 1]) = (d[offset + 1], d[offset]); // RMAE
+                                    // (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // AEMR
+                                    offset += 4;
+                                }
+                            }
+                        }
+                        break;
+                    case "MRAS": // R: Metallic, G: Roughness, B: AO, A: Specular   (Legacy PBR)
+                    case "MRA": // R: Metallic, G: Roughness, B: AO                (Environment PBR)
+                    case "MRS": // R: Metallic, G: Roughness, B: Specular          (Weapon PBR)
+                        unsafe
+                        {
+                            var offset = 0;
+                            fixed (byte* d = data)
+                            {
+                                for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                                {
+                                    (d[offset], d[offset + 2]) = (d[offset + 2], d[offset]); // SRM
+                                    (d[offset + 1], d[offset + 2]) = (d[offset + 2], d[offset + 1]); // SMR
+                                    offset += 4;
+                                }
+                            }
+                        }
+                        break;
                 }
                 break;
             }
