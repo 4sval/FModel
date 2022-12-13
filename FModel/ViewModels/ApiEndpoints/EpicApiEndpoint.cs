@@ -62,7 +62,7 @@ public class EpicApiEndpoint : AbstractApiProvider
         if (string.IsNullOrEmpty(UserSettings.Default.LastAuthResponse.AccessToken)) return true;
         var request = new FRestRequest("https://account-public-service-prod.ol.epicgames.com/account/api/oauth/verify");
         request.AddHeader("Authorization", $"bearer {UserSettings.Default.LastAuthResponse.AccessToken}");
-        var response = await _client.ExecuteAsync(request).ConfigureAwait(false);
-        return response.StatusCode != HttpStatusCode.OK;
+        var response = await _client.ExecuteGetAsync(request).ConfigureAwait(false);
+        return !response.IsSuccessful;
     }
 }
