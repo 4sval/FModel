@@ -6,6 +6,7 @@ using FModel.Framework;
 using ImGuiNET;
 using OpenTK.Windowing.Common;
 using System.Numerics;
+using System.Text;
 using FModel.Settings;
 using OpenTK.Graphics.OpenGL4;
 
@@ -230,6 +231,30 @@ public class SnimGui
 
             var size = new Vector2(120, 0);
             ImGui.InvisibleButton("", size * 3);
+            ImGui.SameLine();
+            ImGui.SetItemDefaultFocus();
+            if (ImGui.Button("OK", size))
+            {
+                ImGui.CloseCurrentPopup();
+            }
+        });
+
+        Modal("GPU OpenGL Info", ImGui.MenuItem("GPU Info"), () =>
+        {
+            var s = new StringBuilder();
+            s.AppendLine($"MaxTextureImageUnits: {GL.GetInteger(GetPName.MaxTextureImageUnits)}");
+            s.AppendLine($"MaxTextureUnits: {GL.GetInteger(GetPName.MaxTextureUnits)}");
+            s.AppendLine($"MaxVertexTextureImageUnits: {GL.GetInteger(GetPName.MaxVertexTextureImageUnits)}");
+            s.AppendLine($"MaxCombinedTextureImageUnits: {GL.GetInteger(GetPName.MaxCombinedTextureImageUnits)}");
+            s.AppendLine($"MaxGeometryTextureImageUnits: {GL.GetInteger(GetPName.MaxGeometryTextureImageUnits)}");
+            s.AppendLine($"MaxTextureCoords: {GL.GetInteger(GetPName.MaxTextureCoords)}");
+            s.AppendLine($"Renderer: {_renderer}");
+            s.AppendLine($"Version: {_version}");
+            ImGui.TextWrapped(s.ToString());
+            ImGui.Separator();
+
+            var size = new Vector2(120, 0);
+            ImGui.InvisibleButton("", size * 4);
             ImGui.SameLine();
             ImGui.SetItemDefaultFocus();
             if (ImGui.Button("OK", size))
