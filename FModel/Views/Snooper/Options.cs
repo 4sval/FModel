@@ -129,6 +129,23 @@ public class Options
                 }
                 break;
             }
+            case "ccff7r":
+            {
+                unsafe
+                {
+                    var offset = 0;
+                    fixed (byte* d = data)
+                    {
+                        for (var i = 0; i < mip.SizeX * mip.SizeY; i++)
+                        {
+                            (d[offset + 1], d[offset + 2]) = (d[offset + 2], d[offset + 1]); // RBG
+                            (d[offset], d[offset + 1]) = (d[offset + 1], d[offset]); // BRG
+                            offset += 4;
+                        }
+                    }
+                }
+                break;
+            }
             case "shootergame":
             {
                 var packedPBRType = o.Name[(o.Name.LastIndexOf('_') + 1)..];
