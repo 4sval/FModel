@@ -112,7 +112,7 @@ public class Material : IDisposable
                 if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness", "Ro Multiplier", "RO_mul", "Roughness_Mult"))
                     Roughness = roughness;
 
-                if (Parameters.TryGetScalar(out var emissiveMultScalar, "emissive mult", "Emissive_Mult"))
+                if (Parameters.TryGetScalar(out var emissiveMultScalar, "emissive mult", "Emissive_Mult", "EmissiveIntensity"))
                     EmissiveMult = emissiveMultScalar;
                 else if (Parameters.TryGetLinearColor(out var emissiveMultColor, "Emissive Multiplier", "EmissiveMultiplier"))
                     EmissiveMult = emissiveMultColor.R;

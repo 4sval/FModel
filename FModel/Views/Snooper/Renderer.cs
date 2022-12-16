@@ -267,25 +267,6 @@ public class Renderer : IDisposable
                 {
                     for (int j = 0; j < textureData.Length; j++)
                     {
-                        var diffuse_key = j switch
-                        {
-                            0 => "Diffuse",
-                            > 0 => $"Diffuse_Texture_{j + 1}",
-                            _ => CMaterialParams2.FallbackDiffuse
-                        };
-                        var normal_key = j switch
-                        {
-                            0 => "Normals",
-                            > 0 => $"Normals_Texture_{j + 1}",
-                            _ => CMaterialParams2.FallbackNormals
-                        };
-                        var specularmasks_key = j switch
-                        {
-                            0 => "SpecularMasks",
-                            > 0 => $"SpecularMasks_{j + 1}",
-                            _ => CMaterialParams2.FallbackNormals
-                        };
-
                         if (textureData[j]?.Load() is not { } textureDataIdx)
                             continue;
 
@@ -293,15 +274,24 @@ public class Renderer : IDisposable
                             overrideMaterial.TryLoad(out var oMaterial) && oMaterial is UMaterialInterface oUnrealMaterial)
                             material.SwapMaterial(oUnrealMaterial);
 
-                        if (textureDataIdx.TryGetValue(out FPackageIndex diffuse, "Diffuse") &&
-                            diffuse.Load() is UTexture2D diffuseTexture)
-                            material.Parameters.Textures[diffuse_key] = diffuseTexture;
-                        if (textureDataIdx.TryGetValue(out FPackageIndex normal, "Normal") &&
-                            normal.Load() is UTexture2D normalTexture)
-                            material.Parameters.Textures[normal_key] = normalTexture;
-                        if (textureDataIdx.TryGetValue(out FPackageIndex specular, "Specular") &&
-                            specular.Load() is UTexture2D specularTexture)
-                            material.Parameters.Textures[specularmasks_key] = specularTexture;
+                        WorldTextureData(material, textureDataIdx, "Diffuse", j switch
+                        {
+                            0 => "Diffuse",
+                            > 0 => $"Diffuse_Texture_{j + 1}",
+                            _ => CMaterialParams2.FallbackDiffuse
+                        });
+                        WorldTextureData(material, textureDataIdx, "Normal", j switch
+                        {
+                            0 => "Normals",
+                            > 0 => $"Normals_Texture_{j + 1}",
+                            _ => CMaterialParams2.FallbackNormals
+                        });
+                        WorldTextureData(material, textureDataIdx, "Specular", j switch
+                        {
+                            0 => "SpecularMasks",
+                            > 0 => $"SpecularMasks_{j + 1}",
+                            _ => CMaterialParams2.FallbackNormals
+                        });
                     }
                 }
             }
@@ -329,6 +319,12 @@ public class Renderer : IDisposable
         {
             Options.Lights.Add(new SpotLight(guid, Options.Icons["spotlight"], sl1, sl2, t.Position));
         }
+    }
+
+    private void WorldTextureData(Material material, UObject textureData, string name, string key)
+    {
+        if (textureData.TryGetValue(out FPackageIndex package, name) && package.Load() is UTexture2D texture)
+            material.Parameters.Textures[key] = texture;
     }
 
     private void AdditionalWorlds(UObject actor, Matrix4x4 relation, CancellationToken cancellationToken)
