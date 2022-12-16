@@ -6,6 +6,7 @@ using FModel.Framework;
 using ImGuiNET;
 using OpenTK.Windowing.Common;
 using System.Numerics;
+using System.Text;
 using FModel.Settings;
 using OpenTK.Graphics.OpenGL4;
 
@@ -43,6 +44,8 @@ public class SnimGui
     private readonly Save _saver = new ();
     private readonly string _renderer;
     private readonly string _version;
+    private bool _ti_open;
+    private bool _ti_overlayUv;
     private bool _viewportFocus;
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
@@ -75,6 +78,7 @@ public class SnimGui
         Draw3DViewport(s);
         DrawNavbar();
 
+        if (_ti_open) DrawTextureInspector(s);
         Controller.Render();
     }
 
@@ -230,6 +234,30 @@ public class SnimGui
 
             var size = new Vector2(120, 0);
             ImGui.InvisibleButton("", size * 3);
+            ImGui.SameLine();
+            ImGui.SetItemDefaultFocus();
+            if (ImGui.Button("OK", size))
+            {
+                ImGui.CloseCurrentPopup();
+            }
+        });
+
+        Modal("GPU OpenGL Info", ImGui.MenuItem("GPU Info"), () =>
+        {
+            var s = new StringBuilder();
+            s.AppendLine($"MaxTextureImageUnits: {GL.GetInteger(GetPName.MaxTextureImageUnits)}");
+            s.AppendLine($"MaxTextureUnits: {GL.GetInteger(GetPName.MaxTextureUnits)}");
+            s.AppendLine($"MaxVertexTextureImageUnits: {GL.GetInteger(GetPName.MaxVertexTextureImageUnits)}");
+            s.AppendLine($"MaxCombinedTextureImageUnits: {GL.GetInteger(GetPName.MaxCombinedTextureImageUnits)}");
+            s.AppendLine($"MaxGeometryTextureImageUnits: {GL.GetInteger(GetPName.MaxGeometryTextureImageUnits)}");
+            s.AppendLine($"MaxTextureCoords: {GL.GetInteger(GetPName.MaxTextureCoords)}");
+            s.AppendLine($"Renderer: {_renderer}");
+            s.AppendLine($"Version: {_version}");
+            ImGui.TextWrapped(s.ToString());
+            ImGui.Separator();
+
+            var size = new Vector2(120, 0);
+            ImGui.InvisibleButton("", size * 4);
             ImGui.SameLine();
             ImGui.SetItemDefaultFocus();
             if (ImGui.Button("OK", size))
@@ -556,9 +584,9 @@ hello world!
         }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Textures"))
+        if (ImGui.CollapsingHeader("Textures") && material.ImGuiTextures(icons, model))
         {
-            material.ImGuiTextures(icons, model);
+            _ti_open = true;
         }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
@@ -588,6 +616,32 @@ hello world!
                 ImGui.TreePop();
             }
         }
+    }
+
+    private void DrawTextureInspector(Snooper s)
+    {
+        if (ImGui.Begin("Texture Inspector", ref _ti_open, ImGuiWindowFlags.NoScrollbar) &&
+            s.Renderer.Options.TryGetModel(out var model) &&
+            s.Renderer.Options.TryGetSection(model, out var section))
+        {
+            var vectors = model.Materials[section.MaterialIndex].ImGuiTextureInspector(s.Renderer.Options.Icons["noimage"]);
+            if (_ti_overlayUv)
+            {
+                var size = vectors[0];
+                var drawList = ImGui.GetWindowDrawList();
+                drawList.PushClipRect(size, size, true);
+                ImGui.SetCursorPos(vectors[1]);
+                ImGui.InvisibleButton("canvas", size, ImGuiButtonFlags.MouseButtonLeft | ImGuiButtonFlags.MouseButtonRight);
+                drawList.AddLine(new Vector2(0, 0), size, 255, 2f);
+                drawList.PopClipRect();
+            }
+            Popup(() =>
+            {
+                if (ImGui.MenuItem("Overlay UVs", null, _ti_overlayUv))
+                    _ti_overlayUv = !_ti_overlayUv;
+            });
+        }
+        ImGui.End(); // if window is collapsed
     }
 
     private void Draw3DViewport(Snooper s)
@@ -727,15 +781,15 @@ hello world!
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
     }
 
-    public static void TooltipCopy(string name)
+    public static void TooltipCopy(string label, string text = null)
     {
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.Text(name);
+            ImGui.Text(label);
             ImGui.EndTooltip();
         }
-        if (ImGui.IsItemClicked()) ImGui.SetClipboardText(name);
+        if (ImGui.IsItemClicked()) ImGui.SetClipboardText(text ?? label);
     }
 
     private void Theme()

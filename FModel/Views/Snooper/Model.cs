@@ -211,6 +211,7 @@ public class Model : IDisposable
     public void Setup(Options options)
     {
         _handle = GL.CreateProgram();
+        var broken = GL.GetInteger(GetPName.MaxTextureUnits) == 0;
 
         _ebo = new BufferObject<uint>(Indices, BufferTarget.ElementArrayBuffer);
         _vbo = new BufferObject<float>(Vertices, BufferTarget.ArrayBuffer);
@@ -221,7 +222,7 @@ public class Model : IDisposable
         _vao.VertexAttributePointer(2, 3, VertexAttribPointerType.Float, _vertexSize, 4); // normal
         _vao.VertexAttributePointer(3, 3, VertexAttribPointerType.Float, _vertexSize, 7); // tangent
         _vao.VertexAttributePointer(4, 2, VertexAttribPointerType.Float, _vertexSize, 10); // uv
-        _vao.VertexAttributePointer(5, 1, VertexAttribPointerType.Float, _vertexSize, 12); // texture index
+        if (!broken) _vao.VertexAttributePointer(5, 1, VertexAttribPointerType.Float, _vertexSize, 12); // texture index
         _vao.VertexAttributePointer(6, 4, VertexAttribPointerType.Float, _vertexSize, 13); // color
         _vao.VertexAttributePointer(7, 4, VertexAttribPointerType.Float, _vertexSize, 17); // boneids
         _vao.VertexAttributePointer(8, 4, VertexAttribPointerType.Float, _vertexSize, 21); // boneweights
@@ -232,7 +233,7 @@ public class Model : IDisposable
         for (var i = 0; i < Materials.Length; i++)
         {
             if (!Materials[i].IsUsed) continue;
-            Materials[i].Setup(options, NumTexCoords);
+            Materials[i].Setup(options, broken ? 1 : NumTexCoords);
         }
 
         if (HasMorphTargets)
@@ -268,6 +269,7 @@ public class Model : IDisposable
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
         shader.SetUniform("uNumTexCoords", NumTexCoords);
+        shader.SetUniform("uHasVertexColors", HasVertexColors);
 
         GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
         for (int section = 0; section < Sections.Length; section++)

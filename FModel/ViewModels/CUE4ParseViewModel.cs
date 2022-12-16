@@ -488,56 +488,6 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
-    {
-        foreach (var asset in folder.AssetsList.Assets)
-        {
-            Thread.Sleep(10);
-            cancellationToken.ThrowIfCancellationRequested();
-            try
-            {
-                Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs);
-            }
-            catch
-            {
-                // ignore
-            }
-        }
-
-        foreach (var f in folder.Folders) ExtractFolder(cancellationToken, f);
-    }
-
-    public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
-    {
-        foreach (var asset in folder.AssetsList.Assets)
-        {
-            Thread.Sleep(10);
-            cancellationToken.ThrowIfCancellationRequested();
-            ExportData(asset.FullPath);
-        }
-
-        foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
-    }
-
-    public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
-    {
-        foreach (var asset in folder.AssetsList.Assets)
-        {
-            Thread.Sleep(10);
-            cancellationToken.ThrowIfCancellationRequested();
-            try
-            {
-                Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, true);
-            }
-            catch
-            {
-                // ignore
-            }
-        }
-
-        foreach (var f in folder.Folders) SaveFolder(cancellationToken, f);
-    }
-
     public void ExtractSelected(CancellationToken cancellationToken, IEnumerable<AssetItem> assetItems)
     {
         foreach (var asset in assetItems)
@@ -548,7 +498,41 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    public void Extract(CancellationToken cancellationToken, string fullPath, bool addNewTab = false, bool bulkSave = false)
+    private void BulkFolder(CancellationToken cancellationToken, TreeItem folder, Action<AssetItem> action)
+    {
+        foreach (var asset in folder.AssetsList.Assets)
+        {
+            Thread.Sleep(10);
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                action(asset);
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        foreach (var f in folder.Folders) BulkFolder(cancellationToken, f, action);
+    }
+
+    public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => ExportData(asset.FullPath));
+
+    public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs));
+
+    public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, true));
+
+    public void TextureFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset =>
+        {
+            Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, false, true);
+        });
+
+    public void Extract(CancellationToken cancellationToken, string fullPath, bool addNewTab = false, bool bulkSave = false, bool bulkTexture = false)
     {
         Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", fullPath);
 
@@ -581,7 +565,7 @@ public class CUE4ParseViewModel : ViewModel
 
                 foreach (var e in exports)
                 {
-                    if (CheckExport(cancellationToken, e))
+                    if (CheckExport(cancellationToken, e, bulkTexture))
                         break;
                 }
 
@@ -691,7 +675,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TrySaveAsset(fullPath, out var data))
                 {
                     using var stream = new MemoryStream(data) { Position = 0 };
-                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream));
+                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream), bulkTexture);
                 }
 
                 break;
@@ -711,7 +695,7 @@ public class CUE4ParseViewModel : ViewModel
                         canvas.DrawPicture(svg.Picture, paint);
                     }
 
-                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap);
+                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap, bulkTexture);
                 }
 
                 break;
@@ -759,11 +743,11 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    private bool CheckExport(CancellationToken cancellationToken, UObject export) // return true once you wanna stop searching for exports
+    private bool CheckExport(CancellationToken cancellationToken, UObject export, bool bulkTexture = false) // return true once you wanna stop searching for exports
     {
         switch (export)
         {
-            case USolarisDigest solarisDigest:
+            case USolarisDigest solarisDigest when !bulkTexture:
             {
                 if (!TabControl.CanAddTabs) return false;
 
@@ -774,11 +758,11 @@ public class CUE4ParseViewModel : ViewModel
             }
             case UTexture2D texture:
             {
-                TabControl.SelectedTab.AddImage(texture);
+                TabControl.SelectedTab.AddImage(texture, bulkTexture);
                 return false;
             }
-            case UAkMediaAssetData:
-            case USoundWave:
+            case UAkMediaAssetData when !bulkTexture:
+            case USoundWave when !bulkTexture:
             {
                 var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
                 export.Decode(shouldDecompress, out var audioFormat, out var data);
@@ -788,10 +772,10 @@ public class CUE4ParseViewModel : ViewModel
                 SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                 return false;
             }
-            case UWorld when UserSettings.Default.PreviewWorlds:
-            case UStaticMesh when UserSettings.Default.PreviewStaticMeshes:
-            case USkeletalMesh when UserSettings.Default.PreviewSkeletalMeshes:
-            case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
+            case UWorld when !bulkTexture && UserSettings.Default.PreviewWorlds:
+            case UStaticMesh when !bulkTexture && UserSettings.Default.PreviewStaticMeshes:
+            case USkeletalMesh when !bulkTexture && UserSettings.Default.PreviewSkeletalMeshes:
+            case UMaterialInstance when !bulkTexture && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
                                         !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                                                                  export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
                                                                                                  export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
@@ -800,23 +784,23 @@ public class CUE4ParseViewModel : ViewModel
                     SnooperViewer.Run();
                 return true;
             }
-            case UMaterialInstance m when ModelIsOverwritingMaterial:
+            case UMaterialInstance m when !bulkTexture && ModelIsOverwritingMaterial:
             {
                 SnooperViewer.Renderer.Swap(m);
                 SnooperViewer.Run();
                 return true;
             }
-            case UAnimSequence a when ModelIsWaitingAnimation:
+            case UAnimSequence a when !bulkTexture && ModelIsWaitingAnimation:
             {
                 SnooperViewer.Renderer.Animate(a);
                 SnooperViewer.Run();
                 return true;
             }
-            case UStaticMesh when UserSettings.Default.SaveStaticMeshes:
-            case USkeletalMesh when UserSettings.Default.SaveSkeletalMeshes:
-            case UMaterialInstance when UserSettings.Default.SaveMaterials:
-            case USkeleton when UserSettings.Default.SaveSkeletonAsMesh:
-            case UAnimSequence when UserSettings.Default.SaveAnimations:
+            case UStaticMesh when !bulkTexture && UserSettings.Default.SaveStaticMeshes:
+            case USkeletalMesh when !bulkTexture && UserSettings.Default.SaveSkeletalMeshes:
+            case UMaterialInstance when !bulkTexture && UserSettings.Default.SaveMaterials:
+            case USkeleton when !bulkTexture && UserSettings.Default.SaveSkeletonAsMesh:
+            case UAnimSequence when !bulkTexture && UserSettings.Default.SaveAnimations:
             {
                 SaveExport(export);
                 return true;
@@ -827,7 +811,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (!package.TryConstructCreator(out var creator)) return false;
 
                 creator.ParseForInfo();
-                TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw());
+                TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw(), bulkTexture);
                 return true;
             }
         }

@@ -50,12 +50,12 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     }
 
                     break;
-                case "Assets_Save_Texture":
+                case "Assets_Save_Textures":
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath);
-                        contextViewModel.CUE4Parse.TabControl.SelectedTab.SaveImage(false);
+                        contextViewModel.CUE4Parse.TabControl.SelectedTab.SaveImages(false);
                     }
 
                     break;

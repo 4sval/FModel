@@ -5,6 +5,7 @@ using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.Core.Misc;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 
@@ -31,6 +32,7 @@ public class Material : IDisposable
     public AoParams Ao;
     public bool HasAo;
 
+    public float Specular = 1f;
     public float Roughness = 0.5f;
     public float EmissiveMult = 1f;
     public float UVScale = 1f;
@@ -89,7 +91,7 @@ public class Material : IDisposable
             }
 
             {   // scalars
-                if (Parameters.TryGetTexture2d(out var original, "M", "PackedTexture", "AEM") &&
+                if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO") &&
                     !original.Name.Equals("T_BlackMask") && options.TryGetTexture(original, false, out var transformed))
                 {
                     HasAo = true;
@@ -101,14 +103,19 @@ public class Material : IDisposable
                     }
                 }
 
+                if (Parameters.TryGetScalar(out var specular, "Specular", "Specular Intensity", "Spec"))
+                    Specular = specular;
+
                 if (Parameters.TryGetScalar(out var roughnessMin, "RoughnessMin", "SpecRoughnessMin") &&
                     Parameters.TryGetScalar(out var roughnessMax, "RoughnessMax", "SpecRoughnessMax"))
                     Roughness = (roughnessMin + roughnessMax) / 2f;
-                if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness"))
+                if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness", "Ro Multiplier", "RO_mul", "Roughness_Mult"))
                     Roughness = roughness;
 
-                if (Parameters.TryGetScalar(out var emissiveMult, "emissive mult", "Emissive_Mult"))
-                    EmissiveMult = emissiveMult;
+                if (Parameters.TryGetScalar(out var emissiveMultScalar, "emissive mult", "Emissive_Mult"))
+                    EmissiveMult = emissiveMultScalar;
+                else if (Parameters.TryGetLinearColor(out var emissiveMultColor, "Emissive Multiplier", "EmissiveMultiplier"))
+                    EmissiveMult = emissiveMultColor.R;
 
                 if (Parameters.TryGetScalar(out var uvScale, "UV Scale"))
                     UVScale = uvScale;
@@ -209,6 +216,7 @@ public class Material : IDisposable
         shader.SetUniform("uParameters.Ao.AmbientOcclusion", Ao.AmbientOcclusion);
         shader.SetUniform("uParameters.HasAo", HasAo);
 
+        shader.SetUniform("uParameters.Specular", Specular);
         shader.SetUniform("uParameters.Roughness", Roughness);
         shader.SetUniform("uParameters.EmissiveMult", EmissiveMult);
         shader.SetUniform("uParameters.UVScale", UVScale);
@@ -223,23 +231,25 @@ public class Material : IDisposable
     {
         if (ImGui.BeginTable("parameters", 2))
         {
-            SnimGui.Layout("Roughness");ImGui.PushID(1);
+            SnimGui.Layout("Specular");ImGui.PushID(1);
+            ImGui.DragFloat("", ref Specular, _step, _zero, 1.0f, _mult, _clamp);
+            ImGui.PopID();SnimGui.Layout("Roughness");ImGui.PushID(2);
             ImGui.DragFloat("", ref Roughness, _step, _zero, 1.0f, _mult, _clamp);
-            SnimGui.Layout("Emissive Multiplier");ImGui.PushID(2);
+            ImGui.PopID();SnimGui.Layout("Emissive Multiplier");ImGui.PushID(3);
             ImGui.DragFloat("", ref EmissiveMult, _step, _zero, _infinite, _mult, _clamp);
-            ImGui.PopID();SnimGui.Layout("UV Scale");ImGui.PushID(3);
+            ImGui.PopID();SnimGui.Layout("UV Scale");ImGui.PushID(4);
             ImGui.DragFloat("", ref UVScale, _step, _zero, _infinite, _mult, _clamp);
             ImGui.PopID();
 
             if (HasAo)
             {
-                SnimGui.Layout("Ambient Occlusion");ImGui.PushID(4);
+                SnimGui.Layout("Ambient Occlusion");ImGui.PushID(5);
                 ImGui.DragFloat("", ref Ao.AmbientOcclusion, _step, _zero, 1.0f, _mult, _clamp);ImGui.PopID();
                 if (Ao.HasColorBoost)
                 {
-                    SnimGui.Layout("Color Boost");ImGui.PushID(5);
+                    SnimGui.Layout("Color Boost");ImGui.PushID(6);
                     ImGui.ColorEdit3("", ref Ao.ColorBoost.Color);ImGui.PopID();
-                    SnimGui.Layout("Color Boost Exponent");ImGui.PushID(6);
+                    SnimGui.Layout("Color Boost Exponent");ImGui.PushID(7);
                     ImGui.DragFloat("", ref Ao.ColorBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
                     ImGui.PopID();
                 }
@@ -273,7 +283,7 @@ public class Material : IDisposable
         }
     }
 
-    public void ImGuiTextures(Dictionary<string, Texture> icons, Model model)
+    public bool ImGuiTextures(Dictionary<string, Texture> icons, Model model)
     {
         if (ImGui.BeginTable("material_textures", 2))
         {
@@ -300,21 +310,46 @@ public class Material : IDisposable
             ImGui.EndTable();
         }
 
-        ImGui.Image(GetSelectedTexture() ?? icons["noimage"].GetPointer(),
+        var texture = GetSelectedTexture() ?? icons["noimage"];
+        ImGui.Image(texture.GetPointer(),
             new Vector2(ImGui.GetContentRegionAvail().X - ImGui.GetScrollX()),
             Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
-        ImGui.Spacing();
+        return ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left);
     }
 
-    private IntPtr? GetSelectedTexture()
+    public Vector2[] ImGuiTextureInspector(Texture fallback)
+    {
+        var texture = GetSelectedTexture() ?? fallback;
+        if (ImGui.BeginTable("texture_inspector", 2, ImGuiTableFlags.SizingStretchProp))
+        {
+            SnimGui.Layout("Type");ImGui.Text($" :  ({texture.Format}) {texture.Name}");
+            SnimGui.TooltipCopy("(?) Click to Copy Path", texture.Path);
+            SnimGui.Layout("Guid");ImGui.Text($" :  {texture.Guid.ToString(EGuidFormats.UniqueObjectGuid)}");
+            SnimGui.Layout("Import");ImGui.Text($" :  {texture.ImportedWidth}x{texture.ImportedHeight}");
+            SnimGui.Layout("Export");ImGui.Text($" :  {texture.Width}x{texture.Height}");
+            ImGui.EndTable();
+        }
+
+        var largest = ImGui.GetContentRegionAvail();
+        largest.X -= ImGui.GetScrollX();
+        largest.Y -= ImGui.GetScrollY();
+
+        var ratio = Math.Min(largest.X / texture.Width, largest.Y / texture.Height);
+        var size = new Vector2(texture.Width * ratio, texture.Height * ratio);
+        var pos = ImGui.GetCursorPos();
+        ImGui.Image(texture.GetPointer(),size, Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
+        return new[] { size, pos };
+    }
+
+    private Texture GetSelectedTexture()
     {
         return SelectedTexture switch
         {
-            0 => Diffuse[SelectedChannel]?.GetPointer(),
-            1 => Normals[SelectedChannel]?.GetPointer(),
-            2 => SpecularMasks[SelectedChannel]?.GetPointer(),
-            3 => Ao.Texture?.GetPointer(),
-            4 => Emissive[SelectedChannel]?.GetPointer(),
+            0 => Diffuse[SelectedChannel],
+            1 => Normals[SelectedChannel],
+            2 => SpecularMasks[SelectedChannel],
+            3 => Ao.Texture,
+            4 => Emissive[SelectedChannel],
             _ => null
         };
     }

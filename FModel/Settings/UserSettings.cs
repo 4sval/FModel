@@ -112,20 +112,6 @@ namespace FModel.Settings
             set => SetProperty(ref _lastOpenedSettingTab, value);
         }
 
-        private bool _isAutoSaveProps;
-        public bool IsAutoSaveProps
-        {
-            get => _isAutoSaveProps;
-            set => SetProperty(ref _isAutoSaveProps, value);
-        }
-
-        private bool _isAutoSaveTextures;
-        public bool IsAutoSaveTextures
-        {
-            get => _isAutoSaveTextures;
-            set => SetProperty(ref _isAutoSaveTextures, value);
-        }
-
         private bool _isAutoOpenSounds = true;
         public bool IsAutoOpenSounds
         {
@@ -555,27 +541,6 @@ namespace FModel.Settings
         {
             get => _assetRemoveTab;
             set => SetProperty(ref _assetRemoveTab, value);
-        }
-
-        private Hotkey _autoSaveProps = new(Key.F1);
-        public Hotkey AutoSaveProps
-        {
-            get => _autoSaveProps;
-            set => SetProperty(ref _autoSaveProps, value);
-        }
-
-        private Hotkey _autoSaveTextures = new(Key.F2);
-        public Hotkey AutoSaveTextures
-        {
-            get => _autoSaveTextures;
-            set => SetProperty(ref _autoSaveTextures, value);
-        }
-
-        private Hotkey _autoOpenSounds = new(Key.F3);
-        public Hotkey AutoOpenSounds
-        {
-            get => _autoOpenSounds;
-            set => SetProperty(ref _autoOpenSounds, value);
         }
 
         private Hotkey _addAudio = new(Key.N, ModifierKeys.Control);

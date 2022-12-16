@@ -193,15 +193,18 @@ public class BaseIcon : UCreator
         return string.Format(format, name);
     }
 
-    protected string GetCosmeticSeason(string seasonNumber)
+    protected (int, int) GetInternalSID(int number)
     {
-        var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
-        var initial = int.Parse(s);
-        var number = initial;
+        static int GetSeasonsInChapter(int chapter) => chapter switch
+        {
+            1 => 10,
+            2 => 8,
+            3 => 4,
+            _ => 10
+        };
 
         var chapterIdx = 0;
         var seasonIdx = 0;
-
         while (number > 0)
         {
             var seasonsInChapter = GetSeasonsInChapter(++chapterIdx);
@@ -213,14 +216,14 @@ public class BaseIcon : UCreator
                 number = 0;
             }
         }
+        return (chapterIdx, seasonIdx);
+    }
 
-        static int GetSeasonsInChapter(int chapter) => chapter switch
-        {
-            1 => 10,
-            2 => 8,
-            3 => 4,
-            _ => 10
-        };
+    protected string GetCosmeticSeason(string seasonNumber)
+    {
+        var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
+        var initial = int.Parse(s);
+        (int chapterIdx, int seasonIdx) = GetInternalSID(initial);
 
         var season = Utils.GetLocalizedResource("AthenaSeasonItemDefinitionInternal", "SeasonTextFormat", "Season {0}");
         var introduced = Utils.GetLocalizedResource("Fort.Cosmetics", "CosmeticItemDescription_Season", "\nIntroduced in <SeasonText>{0}</>.");
