@@ -63,6 +63,12 @@ public class TabImage : ViewModel
 
     private void SetImage(SKBitmap bitmap)
     {
+        if (bitmap is null)
+        {
+            ImageBuffer = null;
+            Image = null;
+            return;
+        }
         _bmp = bitmap;
         using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
         using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
