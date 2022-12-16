@@ -44,8 +44,8 @@ public class SnimGui
     private readonly Save _saver = new ();
     private readonly string _renderer;
     private readonly string _version;
-    private bool _openTextureViewer;
-    private bool _overlayUvOverTexture;
+    private bool _ti_open;
+    private bool _ti_overlayUv;
     private bool _viewportFocus;
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
@@ -78,7 +78,7 @@ public class SnimGui
         Draw3DViewport(s);
         DrawNavbar();
 
-        if (_openTextureViewer) DrawTextureViewer(s);
+        if (_ti_open) DrawTextureInspector(s);
         Controller.Render();
     }
 
@@ -586,7 +586,7 @@ hello world!
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.CollapsingHeader("Textures") && material.ImGuiTextures(icons, model))
         {
-            _openTextureViewer = true;
+            _ti_open = true;
         }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
@@ -618,14 +618,14 @@ hello world!
         }
     }
 
-    private void DrawTextureViewer(Snooper s)
+    private void DrawTextureInspector(Snooper s)
     {
-        if (ImGui.Begin("Texture Viewer", ref _openTextureViewer, ImGuiWindowFlags.NoScrollbar) &&
+        if (ImGui.Begin("Texture Inspector", ref _ti_open, ImGuiWindowFlags.NoScrollbar) &&
             s.Renderer.Options.TryGetModel(out var model) &&
             s.Renderer.Options.TryGetSection(model, out var section))
         {
-            var vectors = model.Materials[section.MaterialIndex].ImGuiTextureViewer(s.Renderer.Options.Icons, model);
-            if (_overlayUvOverTexture)
+            var vectors = model.Materials[section.MaterialIndex].ImGuiTextureInspector(s.Renderer.Options.Icons["noimage"]);
+            if (_ti_overlayUv)
             {
                 var size = vectors[0];
                 var drawList = ImGui.GetWindowDrawList();
@@ -637,8 +637,8 @@ hello world!
             }
             Popup(() =>
             {
-                if (ImGui.MenuItem("Overlay UVs", null, _overlayUvOverTexture))
-                    _overlayUvOverTexture = !_overlayUvOverTexture;
+                if (ImGui.MenuItem("Overlay UVs", null, _ti_overlayUv))
+                    _ti_overlayUv = !_ti_overlayUv;
             });
         }
         ImGui.End(); // if window is collapsed

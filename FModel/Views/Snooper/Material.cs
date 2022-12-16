@@ -317,10 +317,10 @@ public class Material : IDisposable
         return ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left);
     }
 
-    public Vector2[] ImGuiTextureViewer(Dictionary<string, Texture> icons, Model model)
+    public Vector2[] ImGuiTextureInspector(Texture fallback)
     {
-        var texture = GetSelectedTexture() ?? icons["noimage"];
-        if (ImGui.BeginTable("texture_viewer_table", 2, ImGuiTableFlags.SizingStretchProp))
+        var texture = GetSelectedTexture() ?? fallback;
+        if (ImGui.BeginTable("texture_inspector", 2, ImGuiTableFlags.SizingStretchProp))
         {
             SnimGui.Layout("Type");ImGui.Text($" :  ({texture.Format}) {texture.Name}");
             SnimGui.TooltipCopy("(?) Click to Copy Path", texture.Path);

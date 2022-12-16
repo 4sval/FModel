@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Windows;
@@ -258,27 +259,50 @@ public class Renderer : IDisposable
         else if (m.TryConvert(out var mesh))
         {
             model = new Model(m, mesh, t);
-            if (actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
+            if (actor.TryGetValue(out FPackageIndex baseMaterial, "BaseMaterial") &&
+                actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
             {
-                for (int j = 0; j < textureData.Length; j++)
+                var material = model.Materials.FirstOrDefault(x => x.Name == baseMaterial.Name);
+                if (material is { IsUsed: true })
                 {
-                    if (!model.Materials[model.Sections[j].MaterialIndex].IsUsed ||
-                        textureData[j].Load() is not { } textureDataIdx)
-                        continue;
+                    for (int j = 0; j < textureData.Length; j++)
+                    {
+                        var diffuse_key = j switch
+                        {
+                            0 => "Diffuse",
+                            > 0 => $"Diffuse_Texture_{j + 1}",
+                            _ => CMaterialParams2.FallbackDiffuse
+                        };
+                        var normal_key = j switch
+                        {
+                            0 => "Normals",
+                            > 0 => $"Normals_Texture_{j + 1}",
+                            _ => CMaterialParams2.FallbackNormals
+                        };
+                        var specularmasks_key = j switch
+                        {
+                            0 => "SpecularMasks",
+                            > 0 => $"SpecularMasks_{j + 1}",
+                            _ => CMaterialParams2.FallbackNormals
+                        };
 
-                    if (textureDataIdx.TryGetValue(out FPackageIndex overrideMaterial, "OverrideMaterial") &&
-                        overrideMaterial.TryLoad(out var material) && material is UMaterialInterface unrealMaterial)
-                        model.Materials[model.Sections[j].MaterialIndex].SwapMaterial(unrealMaterial);
+                        if (textureData[j]?.Load() is not { } textureDataIdx)
+                            continue;
 
-                    if (textureDataIdx.TryGetValue(out FPackageIndex diffuse, "Diffuse") &&
-                        diffuse.Load() is UTexture2D diffuseTexture)
-                        model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures["Diffuse"] = diffuseTexture;
-                    if (textureDataIdx.TryGetValue(out FPackageIndex normal, "Normal") &&
-                        normal.Load() is UTexture2D normalTexture)
-                        model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures["Normals"] = normalTexture;
-                    if (textureDataIdx.TryGetValue(out FPackageIndex specular, "Specular") &&
-                        specular.Load() is UTexture2D specularTexture)
-                        model.Materials[model.Sections[j].MaterialIndex].Parameters.Textures["SpecularMasks"] = specularTexture;
+                        if (textureDataIdx.TryGetValue(out FPackageIndex overrideMaterial, "OverrideMaterial") &&
+                            overrideMaterial.TryLoad(out var oMaterial) && oMaterial is UMaterialInterface oUnrealMaterial)
+                            material.SwapMaterial(oUnrealMaterial);
+
+                        if (textureDataIdx.TryGetValue(out FPackageIndex diffuse, "Diffuse") &&
+                            diffuse.Load() is UTexture2D diffuseTexture)
+                            material.Parameters.Textures[diffuse_key] = diffuseTexture;
+                        if (textureDataIdx.TryGetValue(out FPackageIndex normal, "Normal") &&
+                            normal.Load() is UTexture2D normalTexture)
+                            material.Parameters.Textures[normal_key] = normalTexture;
+                        if (textureDataIdx.TryGetValue(out FPackageIndex specular, "Specular") &&
+                            specular.Load() is UTexture2D specularTexture)
+                            material.Parameters.Textures[specularmasks_key] = specularTexture;
+                    }
                 }
             }
             if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))
