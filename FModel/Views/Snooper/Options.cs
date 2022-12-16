@@ -102,7 +102,7 @@ public class Options
     }
 
     /// <summary>
-    /// Red : Specular
+    /// Red : Specular (if possible)
     /// Blue : Roughness
     /// Green : Metallic
     /// </summary>
@@ -129,6 +129,9 @@ public class Options
                 }
                 break;
             }
+            // R: Roughness
+            // G: Metallic
+            // B: Whatever (AO / S / E / ...)
             case "ccff7r":
             {
                 unsafe

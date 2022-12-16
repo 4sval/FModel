@@ -5,6 +5,7 @@ using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.Core.Misc;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 
@@ -282,7 +283,7 @@ public class Material : IDisposable
         }
     }
 
-    public void ImGuiTextures(Dictionary<string, Texture> icons, Model model)
+    public bool ImGuiTextures(Dictionary<string, Texture> icons, Model model)
     {
         if (ImGui.BeginTable("material_textures", 2))
         {
@@ -309,21 +310,46 @@ public class Material : IDisposable
             ImGui.EndTable();
         }
 
-        ImGui.Image(GetSelectedTexture() ?? icons["noimage"].GetPointer(),
+        var texture = GetSelectedTexture() ?? icons["noimage"];
+        ImGui.Image(texture.GetPointer(),
             new Vector2(ImGui.GetContentRegionAvail().X - ImGui.GetScrollX()),
             Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
-        ImGui.Spacing();
+        return ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left);
     }
 
-    private IntPtr? GetSelectedTexture()
+    public Vector2[] ImGuiTextureViewer(Dictionary<string, Texture> icons, Model model)
+    {
+        var texture = GetSelectedTexture() ?? icons["noimage"];
+        if (ImGui.BeginTable("texture_viewer_table", 2, ImGuiTableFlags.SizingStretchProp))
+        {
+            SnimGui.Layout("Type");ImGui.Text($" :  ({texture.Format}) {texture.Name}");
+            SnimGui.TooltipCopy("(?) Click to Copy Path", texture.Path);
+            SnimGui.Layout("Guid");ImGui.Text($" :  {texture.Guid.ToString(EGuidFormats.UniqueObjectGuid)}");
+            SnimGui.Layout("Import");ImGui.Text($" :  {texture.ImportedWidth}x{texture.ImportedHeight}");
+            SnimGui.Layout("Export");ImGui.Text($" :  {texture.Width}x{texture.Height}");
+            ImGui.EndTable();
+        }
+
+        var largest = ImGui.GetContentRegionAvail();
+        largest.X -= ImGui.GetScrollX();
+        largest.Y -= ImGui.GetScrollY();
+
+        var ratio = Math.Min(largest.X / texture.Width, largest.Y / texture.Height);
+        var size = new Vector2(texture.Width * ratio, texture.Height * ratio);
+        var pos = ImGui.GetCursorPos();
+        ImGui.Image(texture.GetPointer(),size, Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
+        return new[] { size, pos };
+    }
+
+    private Texture GetSelectedTexture()
     {
         return SelectedTexture switch
         {
-            0 => Diffuse[SelectedChannel]?.GetPointer(),
-            1 => Normals[SelectedChannel]?.GetPointer(),
-            2 => SpecularMasks[SelectedChannel]?.GetPointer(),
-            3 => Ao.Texture?.GetPointer(),
-            4 => Emissive[SelectedChannel]?.GetPointer(),
+            0 => Diffuse[SelectedChannel],
+            1 => Normals[SelectedChannel],
+            2 => SpecularMasks[SelectedChannel],
+            3 => Ao.Texture,
+            4 => Emissive[SelectedChannel],
             _ => null
         };
     }

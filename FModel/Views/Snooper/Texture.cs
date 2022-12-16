@@ -2,6 +2,7 @@ using System;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.Core.Misc;
 using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -15,6 +16,7 @@ public class Texture : IDisposable
     private readonly TextureTarget _target;
 
     public readonly string Type;
+    public readonly FGuid Guid;
     public readonly string Name;
     public readonly string Path;
     public readonly EPixelFormat Format;
@@ -22,7 +24,6 @@ public class Texture : IDisposable
     public readonly uint ImportedHeight;
     public int Width;
     public int Height;
-    public string Label;
 
     public Texture(TextureType type)
     {
@@ -34,7 +35,8 @@ public class Texture : IDisposable
             TextureType.MsaaFramebuffer => TextureTarget.Texture2DMultisample,
             _ => TextureTarget.Texture2D
         };
-        Label = "(?) Click to Copy Path";
+
+        Guid = new FGuid();
     }
 
     public Texture(uint width, uint height) : this(TextureType.MsaaFramebuffer)
@@ -72,8 +74,9 @@ public class Texture : IDisposable
     public Texture(byte[] data, int width, int height, UTexture2D texture2D) : this(TextureType.Normal)
     {
         Type = texture2D.ExportType;
+        Guid = texture2D.LightingGuid;
         Name = texture2D.Name;
-        Path = texture2D.Owner?.Name;
+        Path = texture2D.GetPathName();
         Format = texture2D.Format;
         ImportedWidth = texture2D.ImportedSize.X;
         ImportedHeight = texture2D.ImportedSize.Y;

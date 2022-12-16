@@ -44,6 +44,8 @@ public class SnimGui
     private readonly Save _saver = new ();
     private readonly string _renderer;
     private readonly string _version;
+    private bool _openTextureViewer;
+    private bool _overlayUvOverTexture;
     private bool _viewportFocus;
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
@@ -76,6 +78,7 @@ public class SnimGui
         Draw3DViewport(s);
         DrawNavbar();
 
+        if (_openTextureViewer) DrawTextureViewer(s);
         Controller.Render();
     }
 
@@ -581,9 +584,9 @@ hello world!
         }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-        if (ImGui.CollapsingHeader("Textures"))
+        if (ImGui.CollapsingHeader("Textures") && material.ImGuiTextures(icons, model))
         {
-            material.ImGuiTextures(icons, model);
+            _openTextureViewer = true;
         }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
@@ -613,6 +616,32 @@ hello world!
                 ImGui.TreePop();
             }
         }
+    }
+
+    private void DrawTextureViewer(Snooper s)
+    {
+        if (ImGui.Begin("Texture Viewer", ref _openTextureViewer, ImGuiWindowFlags.NoScrollbar) &&
+            s.Renderer.Options.TryGetModel(out var model) &&
+            s.Renderer.Options.TryGetSection(model, out var section))
+        {
+            var vectors = model.Materials[section.MaterialIndex].ImGuiTextureViewer(s.Renderer.Options.Icons, model);
+            if (_overlayUvOverTexture)
+            {
+                var size = vectors[0];
+                var drawList = ImGui.GetWindowDrawList();
+                drawList.PushClipRect(size, size, true);
+                ImGui.SetCursorPos(vectors[1]);
+                ImGui.InvisibleButton("canvas", size, ImGuiButtonFlags.MouseButtonLeft | ImGuiButtonFlags.MouseButtonRight);
+                drawList.AddLine(new Vector2(0, 0), size, 255, 2f);
+                drawList.PopClipRect();
+            }
+            Popup(() =>
+            {
+                if (ImGui.MenuItem("Overlay UVs", null, _overlayUvOverTexture))
+                    _overlayUvOverTexture = !_overlayUvOverTexture;
+            });
+        }
+        ImGui.End(); // if window is collapsed
     }
 
     private void Draw3DViewport(Snooper s)
@@ -752,15 +781,15 @@ hello world!
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
     }
 
-    public static void TooltipCopy(string name)
+    public static void TooltipCopy(string label, string text = null)
     {
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.Text(name);
+            ImGui.Text(label);
             ImGui.EndTooltip();
         }
-        if (ImGui.IsItemClicked()) ImGui.SetClipboardText(name);
+        if (ImGui.IsItemClicked()) ImGui.SetClipboardText(text ?? label);
     }
 
     private void Theme()
