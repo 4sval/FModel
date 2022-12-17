@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Numerics;
 using CUE4Parse_Conversion;
 using CUE4Parse.UE4.Assets.Exports.Animation;
@@ -31,8 +30,7 @@ public class Model : IDisposable
 
     private readonly UObject _export;
     private readonly int _vertexSize = 13; // VertexIndex + Position + Normal + Tangent + UV + TextureLayer
-    private readonly uint[] _facesIndex = { 1, 0, 2 };
-    private const int _faceSize = 3; // just so we don't have to do .Length
+    private const int _faceSize = 3;
 
     public readonly string Path;
     public readonly string Name;
@@ -114,66 +112,61 @@ public class Model : IDisposable
             _vertexSize += 8; // + BoneIds + BoneWeights
         }
 
-        var sections = lod.Sections.Value;
-        Sections = new Section[sections.Length];
-        Indices = new uint[sections.Sum(section => section.NumFaces * _faceSize)];
-        Vertices = new float[Indices.Length * _vertexSize];
-
-        for (var s = 0; s < sections.Length; s++)
+        Indices = new uint[lod.Indices.Value.Length];
+        for (int i = 0; i < Indices.Length; i++)
         {
-            var section = sections[s];
-            Sections[s] = new Section(section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex, Materials[section.MaterialIndex]);
-            for (uint face = 0; face < section.NumFaces; face++)
+            Indices[i] = (uint) lod.Indices.Value[i];
+        }
+
+        Vertices = new float[lod.NumVerts * _vertexSize];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            var count = 0;
+            var baseIndex = i * _vertexSize;
+            var vert = vertices[i];
+            Vertices[baseIndex + count++] = i;
+            Vertices[baseIndex + count++] = vert.Position.X * Constants.SCALE_DOWN_RATIO;
+            Vertices[baseIndex + count++] = vert.Position.Z * Constants.SCALE_DOWN_RATIO;
+            Vertices[baseIndex + count++] = vert.Position.Y * Constants.SCALE_DOWN_RATIO;
+            Vertices[baseIndex + count++] = vert.Normal.X;
+            Vertices[baseIndex + count++] = vert.Normal.Z;
+            Vertices[baseIndex + count++] = vert.Normal.Y;
+            Vertices[baseIndex + count++] = vert.Tangent.X;
+            Vertices[baseIndex + count++] = vert.Tangent.Z;
+            Vertices[baseIndex + count++] = vert.Tangent.Y;
+            Vertices[baseIndex + count++] = vert.UV.U;
+            Vertices[baseIndex + count++] = vert.UV.V;
+            Vertices[baseIndex + count++] = lod.ExtraUV.IsValueCreated ? lod.ExtraUV.Value[0][i].U : .5f;
+
+            if (HasVertexColors)
             {
-                foreach (var f in _facesIndex)
-                {
-                    var count = 0;
-                    var i = face * _faceSize + f;
-                    var index = section.FirstIndex + i;
-                    var baseIndex = index * _vertexSize;
-                    var indice = lod.Indices.Value[index];
-
-                    var vert = vertices[indice];
-                    Vertices[baseIndex + count++] = indice;
-                    Vertices[baseIndex + count++] = vert.Position.X * Constants.SCALE_DOWN_RATIO;
-                    Vertices[baseIndex + count++] = vert.Position.Z * Constants.SCALE_DOWN_RATIO;
-                    Vertices[baseIndex + count++] = vert.Position.Y * Constants.SCALE_DOWN_RATIO;
-                    Vertices[baseIndex + count++] = vert.Normal.X;
-                    Vertices[baseIndex + count++] = vert.Normal.Z;
-                    Vertices[baseIndex + count++] = vert.Normal.Y;
-                    Vertices[baseIndex + count++] = vert.Tangent.X;
-                    Vertices[baseIndex + count++] = vert.Tangent.Z;
-                    Vertices[baseIndex + count++] = vert.Tangent.Y;
-                    Vertices[baseIndex + count++] = vert.UV.U;
-                    Vertices[baseIndex + count++] = vert.UV.V;
-                    Vertices[baseIndex + count++] = lod.ExtraUV.IsValueCreated ? lod.ExtraUV.Value[0][indice].U : .5f;
-
-                    if (HasVertexColors)
-                    {
-                        var color = lod.VertexColors[indice];
-                        Vertices[baseIndex + count++] = color.R;
-                        Vertices[baseIndex + count++] = color.G;
-                        Vertices[baseIndex + count++] = color.B;
-                        Vertices[baseIndex + count++] = color.A;
-                    }
-
-                    if (HasSkeleton)
-                    {
-                        var skelVert = (CSkelMeshVertex) vert;
-                        var weightsHash = skelVert.UnpackWeights();
-                        Vertices[baseIndex + count++] = skelVert.Bone[0];
-                        Vertices[baseIndex + count++] = skelVert.Bone[1];
-                        Vertices[baseIndex + count++] = skelVert.Bone[2];
-                        Vertices[baseIndex + count++] = skelVert.Bone[3];
-                        Vertices[baseIndex + count++] = weightsHash[0];
-                        Vertices[baseIndex + count++] = weightsHash[1];
-                        Vertices[baseIndex + count++] = weightsHash[2];
-                        Vertices[baseIndex + count++] = weightsHash[3];
-                    }
-
-                    Indices[index] = i;
-                }
+                var color = lod.VertexColors[i];
+                Vertices[baseIndex + count++] = color.R;
+                Vertices[baseIndex + count++] = color.G;
+                Vertices[baseIndex + count++] = color.B;
+                Vertices[baseIndex + count++] = color.A;
             }
+
+            if (HasSkeleton)
+            {
+                var skelVert = (CSkelMeshVertex) vert;
+                var weightsHash = skelVert.UnpackWeights();
+                Vertices[baseIndex + count++] = skelVert.Bone[0];
+                Vertices[baseIndex + count++] = skelVert.Bone[1];
+                Vertices[baseIndex + count++] = skelVert.Bone[2];
+                Vertices[baseIndex + count++] = skelVert.Bone[3];
+                Vertices[baseIndex + count++] = weightsHash[0];
+                Vertices[baseIndex + count++] = weightsHash[1];
+                Vertices[baseIndex + count++] = weightsHash[2];
+                Vertices[baseIndex + count++] = weightsHash[3];
+            }
+        }
+
+        Sections = new Section[lod.Sections.Value.Length];
+        for (var s = 0; s < Sections.Length; s++)
+        {
+            var section = lod.Sections.Value[s];
+            Sections[s] = new Section(section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex, Materials[section.MaterialIndex]);
         }
 
         AddInstance(transform ?? Transform.Identity);
@@ -272,10 +265,11 @@ public class Model : IDisposable
         shader.SetUniform("uHasVertexColors", HasVertexColors);
 
         GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
-        for (int section = 0; section < Sections.Length; section++)
+        foreach (var section in Sections)
         {
-            Materials[Sections[section].MaterialIndex].Render(shader);
-            Sections[section].Render(TransformsCount);
+            if (!section.Show) continue;
+            Materials[section.MaterialIndex].Render(shader);
+            GL.DrawElementsInstanced(PrimitiveType.Triangles, section.FacesCount, DrawElementsType.UnsignedInt, section.FirstFaceIndexPtr, TransformsCount);
         }
         _vao.Unbind();
 
@@ -290,9 +284,10 @@ public class Model : IDisposable
     {
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        for (int section = 0; section < Sections.Length; section++)
+        foreach (var section in Sections)
         {
-            Sections[section].Render(TransformsCount);
+            if (!section.Show) continue;
+            GL.DrawElementsInstanced(PrimitiveType.Triangles, section.FacesCount, DrawElementsType.UnsignedInt, section.FirstFaceIndexPtr, TransformsCount);
         }
         _vao.Unbind();
     }
@@ -307,10 +302,10 @@ public class Model : IDisposable
         shader.SetUniform("uMorphTime", MorphTime);
 
         GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
-        for (int section = 0; section < Sections.Length; section++)
+        foreach (var section in Sections)
         {
-            if (!Sections[section].Show) continue;
-            GL.DrawArraysInstancedBaseInstance(PrimitiveType.Triangles, Sections[section].FirstFaceIndex, Sections[section].FacesCount, TransformsCount, SelectedInstance);
+            if (!section.Show) continue;
+            GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, section.FacesCount, DrawElementsType.UnsignedInt, section.FirstFaceIndexPtr, TransformsCount, SelectedInstance);
         }
         _vao.Unbind();
 

@@ -10,6 +10,7 @@ public class Section : IDisposable
     public readonly int MaterialIndex;
     public readonly int FacesCount;
     public readonly int FirstFaceIndex;
+    public readonly IntPtr FirstFaceIndexPtr;
 
     public bool Show;
 
@@ -18,6 +19,7 @@ public class Section : IDisposable
         MaterialIndex = index;
         FacesCount = facesCount;
         FirstFaceIndex = firstFaceIndex;
+        FirstFaceIndexPtr = new IntPtr(FirstFaceIndex * sizeof(uint));
         Show = true;
     }
 
@@ -30,11 +32,6 @@ public class Section : IDisposable
     public void Setup()
     {
         _handle = GL.CreateProgram();
-    }
-
-    public void Render(int instanceCount)
-    {
-        if (Show) GL.DrawArraysInstanced(PrimitiveType.Triangles, FirstFaceIndex, FacesCount, instanceCount);
     }
 
     public void Dispose()
