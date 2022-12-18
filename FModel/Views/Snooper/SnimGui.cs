@@ -587,6 +587,7 @@ hello world!
         if (ImGui.CollapsingHeader("Textures") && material.ImGuiTextures(icons, model))
         {
             _ti_open = true;
+            ImGui.SetWindowFocus("Texture Inspector");
         }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);

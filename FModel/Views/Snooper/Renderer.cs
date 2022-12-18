@@ -100,7 +100,7 @@ public class Renderer : IDisposable
         if (ShowSkybox) _skybox.Render(viewMatrix, projMatrix);
         if (ShowGrid) _grid.Render(viewMatrix, projMatrix, cam.Near, cam.Far);
 
-        _shader.Render(viewMatrix, cam.Position, cam.Direction, projMatrix);
+        _shader.Render(viewMatrix, cam.Position, projMatrix);
         for (int i = 0; i < 6; i++)
             _shader.SetUniform($"bVertexColors[{i}]", i == VertexColor);
 

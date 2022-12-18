@@ -40,7 +40,7 @@ public abstract class Light : IDisposable
         var r = light.GetOrDefault("RelativeRotation", parent.GetOrDefault("RelativeRotation", FRotator.ZeroRotator));
 
         Transform = Transform.Identity;
-        Transform.Scale = new FVector(0.25f);
+        Transform.Scale = new FVector(0.2f);
         Transform.Position = position + r.RotateVector(p.ToMapVector()) * Constants.SCALE_DOWN_RATIO;
 
         Model = model;
@@ -84,9 +84,9 @@ public abstract class Light : IDisposable
 
     public virtual void Render(int i, Shader shader)
     {
-        shader.SetUniform($"uLights[{i}].Color", Color);
-        shader.SetUniform($"uLights[{i}].Position", Transform.Position);
-        shader.SetUniform($"uLights[{i}].Intensity", Intensity);
+        shader.SetUniform($"uLights[{i}].Base.Color", Color);
+        shader.SetUniform($"uLights[{i}].Base.Position", Transform.Position);
+        shader.SetUniform($"uLights[{i}].Base.Intensity", Intensity);
     }
 
     public virtual void ImGuiLight()

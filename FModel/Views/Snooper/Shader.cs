@@ -56,11 +56,6 @@ public class Shader : IDisposable
         GL.UseProgram(_handle);
     }
 
-    public void Render(Matrix4x4 viewMatrix, Vector3 viewPos, Vector3 viewDir, Matrix4x4 projMatrix)
-    {
-        Render(viewMatrix, viewPos, projMatrix);
-        SetUniform("uViewDir", viewDir);
-    }
     public void Render(Matrix4x4 viewMatrix, Vector3 viewPos, Matrix4x4 projMatrix)
     {
         Render(viewMatrix, projMatrix);
