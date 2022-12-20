@@ -121,7 +121,7 @@ public class ImGuiController : IDisposable
 
         RecreateFontDeviceTexture();
 
-        string VertexSource = @"#version 330 core
+        string VertexSource = @"#version 460 core
 uniform mat4 projection_matrix;
 layout(location = 0) in vec2 in_position;
 layout(location = 1) in vec2 in_texCoord;
@@ -134,7 +134,7 @@ gl_Position = projection_matrix * vec4(in_position, 0, 1);
 color = in_color;
 texCoord = in_texCoord;
 }";
-        string FragmentSource = @"#version 330 core
+        string FragmentSource = @"#version 460 core
 uniform sampler2D in_fontTexture;
 in vec4 color;
 in vec2 texCoord;

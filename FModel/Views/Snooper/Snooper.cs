@@ -39,6 +39,7 @@ public class Snooper : GameWindow
         var newCamera = Renderer.Load(cancellationToken, export) ?? new Camera();
         if (newCamera.Speed > _previousSpeed)
         {
+            newCamera.Zoom = Camera.Zoom;
             Camera = newCamera;
             _previousSpeed = Camera.Speed;
         }

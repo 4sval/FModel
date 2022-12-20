@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 
 #define PI 3.1415926535897932384626433832795
 #define MAX_UV_COUNT 8

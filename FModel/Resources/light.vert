@@ -1,4 +1,4 @@
-﻿#version 330 core
+﻿#version 460 core
 
 layout (location = 0) in vec3 vPos;
 layout (location = 9) in mat4 vInstanceMatrix;

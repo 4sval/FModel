@@ -1,4 +1,4 @@
-﻿#version 330
+﻿#version 460 core
 
 uniform sampler2D uIcon;
 uniform vec4 uColor;

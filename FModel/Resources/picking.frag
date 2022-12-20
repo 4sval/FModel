@@ -1,4 +1,4 @@
-﻿#version 330
+﻿#version 460 core
 
 uniform uint uA;
 uniform uint uB;

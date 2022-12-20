@@ -95,6 +95,7 @@ public class CUE4ParseViewModel : ViewModel
                         WindowBorder = WindowBorder.Resizable,
                         Flags = ContextFlags.ForwardCompatible,
                         Profile = ContextProfile.Core,
+                        APIVersion = new Version(4, 6),
                         StartVisible = false,
                         StartFocused = false,
                         Title = "3D Viewer"

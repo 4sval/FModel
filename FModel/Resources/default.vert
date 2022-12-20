@@ -1,4 +1,4 @@
-﻿#version 330 core
+﻿#version 460 core
 
 layout (location = 1) in vec3 vPos;
 layout (location = 2) in vec3 vNormal;
