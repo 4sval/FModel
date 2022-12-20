@@ -42,6 +42,7 @@ struct Parameters
     AoParams Ao;
     bool HasAo;
 
+    vec4 EmissiveRegion;
     float Specular;
     float Roughness;
     float EmissiveMult;
@@ -100,9 +101,19 @@ int LayerToIndex()
     return clamp(int(fTexLayer), 0, uNumTexCoords - 1);
 }
 
+vec2 ScaledTexCoords()
+{
+    return fTexCoords * uParameters.UVScale;
+}
+
+vec4 SamplerToVector(sampler2D s, vec2 coords)
+{
+    return texture(s, coords);
+}
+
 vec4 SamplerToVector(sampler2D s)
 {
-    return texture(s, fTexCoords * uParameters.UVScale);
+    return SamplerToVector(s, ScaledTexCoords());
 }
 
 vec3 ComputeNormals(int layer)
@@ -196,7 +207,7 @@ vec3 CalcSpotLight(int layer, vec3 normals, Light light)
 
     if(theta > outer)
     {
-        return CalcBaseLight(layer, normals, light.Base, attenuation, false);
+        return CalcBaseLight(layer, normals, light.Base, attenuation, true);
     }
     else
     {
@@ -240,8 +251,19 @@ void main()
             result = mix(result * m.r * uParameters.Ao.AmbientOcclusion, result, m.g);
         }
 
-        vec4 emissive = SamplerToVector(uParameters.Emissive[layer].Sampler);
-        result += uParameters.Emissive[layer].Color.rgb * emissive.rgb * uParameters.EmissiveMult;
+        vec2 coords = ScaledTexCoords();
+        if (coords.x > uParameters.EmissiveRegion.x &&
+            coords.y > uParameters.EmissiveRegion.y &&
+            coords.x < uParameters.EmissiveRegion.z &&
+            coords.y < uParameters.EmissiveRegion.w)
+        {
+            coords.x -= uParameters.EmissiveRegion.x;
+            coords.y -= uParameters.EmissiveRegion.y;
+            coords.x *= 1.0 / (uParameters.EmissiveRegion.z - uParameters.EmissiveRegion.x);
+            coords.y *= 1.0 / (uParameters.EmissiveRegion.w - uParameters.EmissiveRegion.y);
+            vec4 emissive = SamplerToVector(uParameters.Emissive[layer].Sampler, coords);
+            result += uParameters.Emissive[layer].Color.rgb * emissive.rgb * uParameters.EmissiveMult;
+        }
 
         if (!bVertexColors[1])
         {

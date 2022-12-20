@@ -28,6 +28,7 @@ public class Material : IDisposable
 
     public Vector4[] DiffuseColor;
     public Vector4[] EmissiveColor;
+    public Vector4 EmissiveRegion;
 
     public AoParams Ao;
     public bool HasAo;
@@ -50,6 +51,7 @@ public class Material : IDisposable
 
         DiffuseColor = Array.Empty<Vector4>();
         EmissiveColor = Array.Empty<Vector4>();
+        EmissiveRegion = new Vector4(0, 0, 1, 1);
     }
 
     public Material(UMaterialInterface unrealMaterial) : this()
@@ -112,10 +114,17 @@ public class Material : IDisposable
                 if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness", "Ro Multiplier", "RO_mul", "Roughness_Mult"))
                     Roughness = roughness;
 
-                if (Parameters.TryGetScalar(out var emissiveMultScalar, "emissive mult", "Emissive_Mult", "EmissiveIntensity"))
+                if (Parameters.TryGetScalar(out var emissiveMultScalar, "emissive mult", "Emissive_Mult", "EmissiveIntensity", "EmissionIntensity"))
                     EmissiveMult = emissiveMultScalar;
                 else if (Parameters.TryGetLinearColor(out var emissiveMultColor, "Emissive Multiplier", "EmissiveMultiplier"))
                     EmissiveMult = emissiveMultColor.R;
+
+                if (Parameters.TryGetLinearColor(out var EmissiveUVs,
+                        "EmissiveUVs_RG_UpperLeftCorner_BA_LowerRightCorner",
+                        "Emissive Texture UVs RG_TopLeft BA_BottomRight",
+                        "Emissive 2 UV Positioning (RG)UpperLeft (BA)LowerRight",
+                        "EmissiveUVPositioning (RG)UpperLeft (BA)LowerRight"))
+                    EmissiveRegion = new Vector4(EmissiveUVs.R, EmissiveUVs.G, EmissiveUVs.B, EmissiveUVs.A);
 
                 if (Parameters.TryGetScalar(out var uvScale, "UV Scale"))
                     UVScale = uvScale;
@@ -216,6 +225,7 @@ public class Material : IDisposable
         shader.SetUniform("uParameters.Ao.AmbientOcclusion", Ao.AmbientOcclusion);
         shader.SetUniform("uParameters.HasAo", HasAo);
 
+        shader.SetUniform("uParameters.EmissiveRegion", EmissiveRegion);
         shader.SetUniform("uParameters.Specular", Specular);
         shader.SetUniform("uParameters.Roughness", Roughness);
         shader.SetUniform("uParameters.EmissiveMult", EmissiveMult);
@@ -303,6 +313,8 @@ public class Material : IDisposable
                 case 4:
                     SnimGui.Layout("Color");ImGui.PushID(3);
                     ImGui.ColorEdit4("", ref EmissiveColor[SelectedChannel], ImGuiColorEditFlags.NoAlpha);
+                    ImGui.PopID();SnimGui.Layout("Region");ImGui.PushID(4);
+                    ImGui.DragFloat4("", ref EmissiveRegion, _step, _zero, 1.0f, "%.2f", _clamp);
                     ImGui.PopID();
                     break;
             }
