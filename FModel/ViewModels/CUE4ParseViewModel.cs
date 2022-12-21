@@ -41,6 +41,7 @@ using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
 using Newtonsoft.Json;
+using Ookii.Dialogs.Wpf;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
@@ -525,15 +526,18 @@ public class CUE4ParseViewModel : ViewModel
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs));
 
     public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
-        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, true));
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Properties | EBulkType.Auto));
 
     public void TextureFolder(CancellationToken cancellationToken, TreeItem folder)
-        => BulkFolder(cancellationToken, folder, asset =>
-        {
-            Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, false, true);
-        });
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Textures | EBulkType.Auto));
 
-    public void Extract(CancellationToken cancellationToken, string fullPath, bool addNewTab = false, bool bulkSave = false, bool bulkTexture = false)
+    public void ModelFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Meshes | EBulkType.Auto));
+
+    public void AnimationFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Animations | EBulkType.Auto));
+
+    public void Extract(CancellationToken cancellationToken, string fullPath, bool addNewTab = false, EBulkType bulk = EBulkType.None)
     {
         Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", fullPath);
 
@@ -551,6 +555,8 @@ public class CUE4ParseViewModel : ViewModel
             TabControl.SelectedTab.Directory = directory;
         }
 
+        var autoProperties = bulk == (EBulkType.Properties | EBulkType.Auto);
+        var autoTextures = bulk == (EBulkType.Textures | EBulkType.Auto);
         TabControl.SelectedTab.ClearImages();
         TabControl.SelectedTab.ResetDocumentText();
         TabControl.SelectedTab.ScrollTrigger = null;
@@ -561,12 +567,12 @@ public class CUE4ParseViewModel : ViewModel
             case "umap":
             {
                 var exports = Provider.LoadObjectExports(fullPath); // cancellationToken
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), bulkSave);
-                if (bulkSave) break;
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), autoProperties);
+                if (HasFlag(bulk, EBulkType.Properties)) break; // do not search for viewable exports if we are dealing with jsons
 
                 foreach (var e in exports)
                 {
-                    if (CheckExport(cancellationToken, e, bulkTexture))
+                    if (CheckExport(cancellationToken, e, bulk))
                         break;
                 }
 
@@ -602,7 +608,7 @@ public class CUE4ParseViewModel : ViewModel
                     using var stream = new MemoryStream(data) { Position = 0 };
                     using var reader = new StreamReader(stream);
 
-                    TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), autoProperties);
                 }
 
                 break;
@@ -612,7 +618,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var metadata = new FTextLocalizationMetaDataResource(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), autoProperties);
                 }
 
                 break;
@@ -622,7 +628,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var locres = new FTextLocalizationResource(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), autoProperties);
                 }
 
                 break;
@@ -632,7 +638,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var registry = new FAssetRegistryState(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), autoProperties);
                 }
 
                 break;
@@ -643,7 +649,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var wwise = new WwiseReader(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), autoProperties);
                     foreach (var (name, data) in wwise.WwiseEncodedMedias)
                     {
                         SaveAndPlaySound(fullPath.SubstringBeforeWithLast("/") + name, "WEM", data);
@@ -664,7 +670,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var header = new FOodleDictionaryArchive(archive).Header;
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), autoProperties);
                 }
 
                 break;
@@ -676,7 +682,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TrySaveAsset(fullPath, out var data))
                 {
                     using var stream = new MemoryStream(data) { Position = 0 };
-                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream), bulkTexture);
+                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream), autoTextures);
                 }
 
                 break;
@@ -696,7 +702,7 @@ public class CUE4ParseViewModel : ViewModel
                         canvas.DrawPicture(svg.Picture, paint);
                     }
 
-                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap, bulkTexture);
+                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap, autoTextures);
                 }
 
                 break;
@@ -713,7 +719,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var ar = new FShaderCodeArchive(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), autoProperties);
                 }
 
                 break;
@@ -744,11 +750,13 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    private bool CheckExport(CancellationToken cancellationToken, UObject export, bool bulkTexture = false) // return true once you wanna stop searching for exports
+    private bool CheckExport(CancellationToken cancellationToken, UObject export, EBulkType bulk = EBulkType.None) // return true once you wanna stop searching for exports
     {
+        var isNone = bulk == EBulkType.None;
+        var loadTextures = isNone || HasFlag(bulk, EBulkType.Textures);
         switch (export)
         {
-            case USolarisDigest solarisDigest when !bulkTexture:
+            case USolarisDigest solarisDigest when isNone:
             {
                 if (!TabControl.CanAddTabs) return false;
 
@@ -757,13 +765,13 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.SetDocumentText(solarisDigest.ReadableCode, false);
                 return true;
             }
-            case UTexture2D texture:
+            case UTexture2D texture when loadTextures:
             {
-                TabControl.SelectedTab.AddImage(texture, bulkTexture);
+                TabControl.SelectedTab.AddImage(texture, HasFlag(bulk, EBulkType.Auto));
                 return false;
             }
-            case UAkMediaAssetData when !bulkTexture:
-            case USoundWave when !bulkTexture:
+            case UAkMediaAssetData when isNone:
+            case USoundWave when isNone:
             {
                 var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
                 export.Decode(shouldDecompress, out var audioFormat, out var data);
@@ -773,46 +781,50 @@ public class CUE4ParseViewModel : ViewModel
                 SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                 return false;
             }
-            case UWorld when !bulkTexture && UserSettings.Default.PreviewWorlds:
-            case UStaticMesh when !bulkTexture && UserSettings.Default.PreviewStaticMeshes:
-            case USkeletalMesh when !bulkTexture && UserSettings.Default.PreviewSkeletalMeshes:
-            case UMaterialInstance when !bulkTexture && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
+            case UWorld when isNone && UserSettings.Default.PreviewWorlds:
+            case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
+            case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
                                         !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
-                                                                                                 export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
-                                                                                                 export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
+                                            export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                            export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
                 if (SnooperViewer.TryLoadExport(cancellationToken, export))
                     SnooperViewer.Run();
                 return true;
             }
-            case UMaterialInstance m when !bulkTexture && ModelIsOverwritingMaterial:
+            case UMaterialInstance m when isNone && ModelIsOverwritingMaterial:
             {
                 SnooperViewer.Renderer.Swap(m);
                 SnooperViewer.Run();
                 return true;
             }
-            case UAnimSequence a when !bulkTexture && ModelIsWaitingAnimation:
+            case UAnimSequence a when isNone && ModelIsWaitingAnimation:
             {
                 SnooperViewer.Renderer.Animate(a);
                 SnooperViewer.Run();
                 return true;
             }
-            case UStaticMesh when !bulkTexture && UserSettings.Default.SaveStaticMeshes:
-            case USkeletalMesh when !bulkTexture && UserSettings.Default.SaveSkeletalMeshes:
-            case UMaterialInstance when !bulkTexture && UserSettings.Default.SaveMaterials:
-            case USkeleton when !bulkTexture && UserSettings.Default.SaveSkeletonAsMesh:
-            case UAnimSequence when !bulkTexture && UserSettings.Default.SaveAnimations:
+            case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
+            case USkeletalMesh when HasFlag(bulk, EBulkType.Meshes):
+            case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
+            // case UMaterialInstance when HasFlag(bulk, EBulkType.Materials): // read the fucking json
+            case UAnimSequence when HasFlag(bulk, EBulkType.Animations):
             {
-                SaveExport(export);
+                SaveExport(export, HasFlag(bulk, EBulkType.Auto));
                 return true;
             }
             default:
             {
+                if (!loadTextures)
+                    return false;
+
                 using var package = new CreatorPackage(export, UserSettings.Default.CosmeticStyle);
-                if (!package.TryConstructCreator(out var creator)) return false;
+                if (!package.TryConstructCreator(out var creator))
+                    return false;
 
                 creator.ParseForInfo();
-                TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw(), bulkTexture);
+                TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw(), HasFlag(bulk, EBulkType.Auto));
                 return true;
             }
         }
@@ -845,7 +857,7 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    private void SaveExport(UObject export)
+    private void SaveExport(UObject export, bool auto)
     {
         var exportOptions = new ExporterOptions
         {
@@ -857,7 +869,18 @@ public class CUE4ParseViewModel : ViewModel
             ExportMorphTargets = UserSettings.Default.SaveMorphTargets
         };
         var toSave = new Exporter(export, exportOptions);
-        var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
+
+        string dir;
+        if (!auto)
+        {
+            var folderBrowser = new VistaFolderBrowserDialog();
+            if (folderBrowser.ShowDialog() == true)
+                dir = folderBrowser.SelectedPath;
+            else return;
+        }
+        else dir = UserSettings.Default.ModelDirectory;
+
+        var toSaveDirectory = new DirectoryInfo(dir);
         if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
         {
             Log.Information("Successfully saved {FilePath}", savedFilePath);
@@ -894,5 +917,10 @@ public class CUE4ParseViewModel : ViewModel
             FLogger.AppendError();
             FLogger.AppendText($"Could not export '{fileName}'", Constants.WHITE, true);
         }
+    }
+
+    private static bool HasFlag(EBulkType a, EBulkType b)
+    {
+        return (a & b) == b;
     }
 }

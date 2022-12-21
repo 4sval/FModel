@@ -277,29 +277,31 @@ public class TabItem : ViewModel
 
     public void SaveImages(bool bulkTexture)
     {
-        if (_images.Count == 1)
+        switch (_images.Count)
         {
-            SaveImage(bulkTexture);
-            return;
-        }
+            case 1:
+                SaveImage(bulkTexture);
+                break;
+            case > 1:
+                var directory = Path.Combine(UserSettings.Default.TextureDirectory,
+                    UserSettings.Default.KeepDirectoryStructure ? Directory : "").Replace('\\', '/');
 
-        var directory = Path.Combine(UserSettings.Default.TextureDirectory,
-            UserSettings.Default.KeepDirectoryStructure ? Directory : "").Replace('\\', '/');
+                if (!bulkTexture)
+                {
+                    var folderBrowser = new VistaFolderBrowserDialog();
+                    if (folderBrowser.ShowDialog() == true)
+                        directory = folderBrowser.SelectedPath;
+                    else return;
+                }
+                else System.IO.Directory.CreateDirectory(directory);
 
-        if (!bulkTexture)
-        {
-            var folderBrowser = new VistaFolderBrowserDialog();
-            if (folderBrowser.ShowDialog() == true)
-                directory = folderBrowser.SelectedPath;
-            else return;
-        }
-        else System.IO.Directory.CreateDirectory(directory);
-
-        foreach (var image in _images)
-        {
-            if (image == null) return;
-            var fileName = $"{image.ExportName}.png";
-            SaveImage(image, Path.Combine(directory, fileName), fileName);
+                foreach (var image in _images)
+                {
+                    if (image == null) return;
+                    var fileName = $"{image.ExportName}.png";
+                    SaveImage(image, Path.Combine(directory, fileName), fileName);
+                }
+                break;
         }
     }
 

@@ -241,13 +241,6 @@ namespace FModel.Settings
             set => SetProperty(ref _overridedPlatform, value);
         }
 
-        private bool _saveMorphTargets = true;
-        public bool SaveMorphTargets
-        {
-            get => _saveMorphTargets;
-            set => SetProperty(ref _saveMorphTargets, value);
-        }
-
         private IDictionary<FGame, string> _presets = new Dictionary<FGame, string>
         {
             {FGame.Unknown, Constants._NO_PRESET_TRIGGER},
@@ -606,6 +599,27 @@ namespace FModel.Settings
             set => SetProperty(ref _showGrid, value);
         }
 
+        private bool _previewStaticMeshes = true;
+        public bool PreviewStaticMeshes
+        {
+            get => _previewStaticMeshes;
+            set => SetProperty(ref _previewStaticMeshes, value);
+        }
+
+        private bool _previewSkeletalMeshes = true;
+        public bool PreviewSkeletalMeshes
+        {
+            get => _previewSkeletalMeshes;
+            set => SetProperty(ref _previewSkeletalMeshes, value);
+        }
+
+        private bool _previewMaterials = true;
+        public bool PreviewMaterials
+        {
+            get => _previewMaterials;
+            set => SetProperty(ref _previewMaterials, value);
+        }
+
         private bool _previewWorlds = true;
         public bool PreviewWorlds
         {
@@ -613,83 +627,11 @@ namespace FModel.Settings
             set => SetProperty(ref _previewWorlds, value);
         }
 
-        private bool _previewStaticMeshes = true;
-        public bool PreviewStaticMeshes
+        private bool _saveMorphTargets = true;
+        public bool SaveMorphTargets
         {
-            get => _previewStaticMeshes;
-            set
-            {
-                SetProperty(ref _previewStaticMeshes, value);
-                if (_previewStaticMeshes && SaveStaticMeshes)
-                    SaveStaticMeshes = false;
-            }
-        }
-
-        private bool _previewSkeletalMeshes = true;
-        public bool PreviewSkeletalMeshes
-        {
-            get => _previewSkeletalMeshes;
-            set
-            {
-                SetProperty(ref _previewSkeletalMeshes, value);
-                if (_previewSkeletalMeshes && SaveSkeletalMeshes)
-                    SaveSkeletalMeshes = false;
-            }
-        }
-
-        private bool _previewMaterials = true;
-        public bool PreviewMaterials
-        {
-            get => _previewMaterials;
-            set
-            {
-                SetProperty(ref _previewMaterials, value);
-                if (_previewMaterials && SaveMaterials)
-                    SaveMaterials = false;
-            }
-        }
-
-        private bool _saveStaticMeshes;
-        public bool SaveStaticMeshes
-        {
-            get => _saveStaticMeshes;
-            set
-            {
-                SetProperty(ref _saveStaticMeshes, value);
-                if (_saveStaticMeshes && PreviewStaticMeshes)
-                    PreviewStaticMeshes = false;
-            }
-        }
-
-        private bool _saveSkeletalMeshes;
-        public bool SaveSkeletalMeshes
-        {
-            get => _saveSkeletalMeshes;
-            set
-            {
-                SetProperty(ref _saveSkeletalMeshes, value);
-                if (_saveSkeletalMeshes && PreviewSkeletalMeshes)
-                    PreviewSkeletalMeshes = false;
-            }
-        }
-
-        private bool _saveMaterials;
-        public bool SaveMaterials
-        {
-            get => _saveMaterials;
-            set
-            {
-                SetProperty(ref _saveMaterials, value);
-                if (_saveMaterials && PreviewMaterials)
-                    PreviewMaterials = false;
-            }
-        }
-
-        private bool _saveAnimations = true;
-        public bool SaveAnimations
-        {
-            get => _saveAnimations;
-            set => SetProperty(ref _saveAnimations, value);
+            get => _saveMorphTargets;
+            set => SetProperty(ref _saveMorphTargets, value);
         }
 
         private bool _saveSkeletonAsMesh;

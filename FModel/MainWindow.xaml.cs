@@ -69,7 +69,6 @@ public partial class MainWindow
         await _applicationView.CUE4Parse.InitMappings();
         await _applicationView.InitImGuiSettings();
         await _applicationView.InitVgmStream();
-        await _applicationView.InitOodle();
 
         if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
             _discordHandler.Initialize(_applicationView.CUE4Parse.Game);
@@ -191,6 +190,22 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.TextureFolder(cancellationToken, folder); });
+        }
+    }
+
+    private async void OnFolderModelClick(object sender, RoutedEventArgs e)
+    {
+        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        {
+            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ModelFolder(cancellationToken, folder); });
+        }
+    }
+
+    private async void OnFolderAnimationClick(object sender, RoutedEventArgs e)
+    {
+        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        {
+            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AnimationFolder(cancellationToken, folder); });
         }
     }
 
