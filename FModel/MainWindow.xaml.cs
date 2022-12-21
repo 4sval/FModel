@@ -69,6 +69,7 @@ public partial class MainWindow
         await _applicationView.CUE4Parse.InitMappings();
         await _applicationView.InitImGuiSettings();
         await _applicationView.InitVgmStream();
+        await _applicationView.InitOodle();
 
         if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
             _discordHandler.Initialize(_applicationView.CUE4Parse.Game);

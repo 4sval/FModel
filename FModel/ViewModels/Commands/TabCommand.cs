@@ -32,30 +32,30 @@ public class TabCommand : ViewModelCommand<TabItem>
             case "Close_Other_Tabs":
                 _applicationView.CUE4Parse.TabControl.RemoveOtherTabs(contextViewModel);
                 break;
-            case "Assets_Export_Data":
+            case "Asset_Export_Data":
                 await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.ExportData(fullPath));
                 break;
-            case "Assets_Save_Properties":
+            case "Asset_Save_Properties":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     _applicationView.CUE4Parse.Extract(cancellationToken, fullPath, false, EBulkType.Properties);
                     _applicationView.CUE4Parse.TabControl.SelectedTab.SaveProperty(false);
                 });
                 break;
-            case "Assets_Save_Textures":
+            case "Asset_Save_Textures":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     _applicationView.CUE4Parse.Extract(cancellationToken, fullPath, false, EBulkType.Textures);
                     _applicationView.CUE4Parse.TabControl.SelectedTab.SaveImages(false);
                 });
                 break;
-            case "Assets_Save_Models":
+            case "Asset_Save_Models":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     _applicationView.CUE4Parse.Extract(cancellationToken, fullPath, false, EBulkType.Meshes);
                 });
                 break;
-            case "Assets_Save_Animations":
+            case "Asset_Save_Animations":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     _applicationView.CUE4Parse.Extract(cancellationToken, fullPath, false, EBulkType.Animations);
