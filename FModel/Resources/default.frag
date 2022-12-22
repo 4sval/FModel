@@ -89,7 +89,7 @@ struct Light {
 uniform Parameters uParameters;
 uniform Light uLights[MAX_LIGHT_COUNT];
 uniform int uNumLights;
-uniform int uNumTexCoords;
+uniform int uUvCount;
 uniform bool uHasVertexColors;
 uniform bool bVertexColors[6];
 uniform vec3 uViewPos;
@@ -98,7 +98,7 @@ out vec4 FragColor;
 
 int LayerToIndex()
 {
-    return clamp(int(fTexLayer), 0, uNumTexCoords - 1);
+    return clamp(int(fTexLayer), 0, uUvCount - 1);
 }
 
 vec2 ScaledTexCoords()

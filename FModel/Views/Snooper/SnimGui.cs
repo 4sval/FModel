@@ -321,7 +321,7 @@ hello world!
 
                     ImGui.Text(model.TransformsCount.ToString("D"));
                     ImGui.TableNextColumn();
-                    ImGui.Text(model.NumTexCoords.ToString("D"));
+                    ImGui.Text(model.UvCount.ToString("D"));
                     ImGui.TableNextColumn();
                     if (ImGui.Selectable(model.Name, s.Renderer.Options.SelectedModel == guid, ImGuiSelectableFlags.SpanAllColumns))
                     {

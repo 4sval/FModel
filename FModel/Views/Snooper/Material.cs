@@ -65,11 +65,11 @@ public class Material : IDisposable
         unrealMaterial.GetParams(Parameters);
     }
 
-    public void Setup(Options options, int numTexCoords)
+    public void Setup(Options options, int uvCount)
     {
         _handle = GL.CreateProgram();
 
-        if (numTexCoords < 1 || Parameters.IsNull)
+        if (uvCount < 1 || Parameters.IsNull)
         {
             Diffuse = new[] { new Texture(new FLinearColor(1f, 0f, 0f, 1f)) };
             Normals = new[] { new Texture(new FLinearColor(0.498f, 0.498f, 0.996f, 1f))};
@@ -81,15 +81,15 @@ public class Material : IDisposable
         else
         {
             {   // textures
-                Diffuse = FillTextures(options, numTexCoords, Parameters.HasTopDiffuse, CMaterialParams2.Diffuse, CMaterialParams2.FallbackDiffuse, true);
-                Normals = FillTextures(options, numTexCoords, Parameters.HasTopNormals, CMaterialParams2.Normals, CMaterialParams2.FallbackNormals);
-                SpecularMasks = FillTextures(options, numTexCoords, Parameters.HasTopSpecularMasks, CMaterialParams2.SpecularMasks, CMaterialParams2.FallbackSpecularMasks);
-                Emissive = FillTextures(options, numTexCoords, true, CMaterialParams2.Emissive, CMaterialParams2.FallbackEmissive);
+                Diffuse = FillTextures(options, uvCount, Parameters.HasTopDiffuse, CMaterialParams2.Diffuse, CMaterialParams2.FallbackDiffuse, true);
+                Normals = FillTextures(options, uvCount, Parameters.HasTopNormals, CMaterialParams2.Normals, CMaterialParams2.FallbackNormals);
+                SpecularMasks = FillTextures(options, uvCount, Parameters.HasTopSpecularMasks, CMaterialParams2.SpecularMasks, CMaterialParams2.FallbackSpecularMasks);
+                Emissive = FillTextures(options, uvCount, true, CMaterialParams2.Emissive, CMaterialParams2.FallbackEmissive);
             }
 
             {   // colors
-                DiffuseColor = FillColors(numTexCoords, Diffuse, CMaterialParams2.DiffuseColors, Vector4.One);
-                EmissiveColor = FillColors(numTexCoords, Emissive, CMaterialParams2.EmissiveColors, Vector4.One);
+                DiffuseColor = FillColors(uvCount, Diffuse, CMaterialParams2.DiffuseColors, Vector4.One);
+                EmissiveColor = FillColors(uvCount, Emissive, CMaterialParams2.EmissiveColors, Vector4.One);
             }
 
             {   // scalars
@@ -133,17 +133,17 @@ public class Material : IDisposable
     }
 
     /// <param name="options">just the cache object</param>
-    /// <param name="numTexCoords">number of item in the array</param>
+    /// <param name="uvCount">number of item in the array</param>
     /// <param name="top">has at least 1 clearly defined texture, else will go straight to fallback</param>
     /// <param name="triggers">list of texture parameter names by uv channel</param>
     /// <param name="fallback">fallback texture name to use if no top texture found</param>
     /// <param name="first">if no top texture, no fallback texture, then use the first texture found</param>
-    private Texture[] FillTextures(Options options, int numTexCoords, bool top, IReadOnlyList<string[]> triggers, string fallback, bool first = false)
+    private Texture[] FillTextures(Options options, int uvCount, bool top, IReadOnlyList<string[]> triggers, string fallback, bool first = false)
     {
         UTexture2D original;
         Texture transformed;
         var fix = fallback == CMaterialParams2.FallbackSpecularMasks;
-        var textures = new Texture[numTexCoords];
+        var textures = new Texture[uvCount];
 
         if (top)
         {
@@ -168,13 +168,13 @@ public class Material : IDisposable
         return textures;
     }
 
-    /// <param name="numTexCoords">number of item in the array</param>
+    /// <param name="uvCount">number of item in the array</param>
     /// <param name="textures">reference array</param>
     /// <param name="triggers">list of color parameter names by uv channel</param>
     /// <param name="fallback">fallback color to use if no trigger was found</param>
-    private Vector4[] FillColors(int numTexCoords, IReadOnlyList<Texture> textures, IReadOnlyList<string[]> triggers, Vector4 fallback)
+    private Vector4[] FillColors(int uvCount, IReadOnlyList<Texture> textures, IReadOnlyList<string[]> triggers, Vector4 fallback)
     {
-        var colors = new Vector4[numTexCoords];
+        var colors = new Vector4[uvCount];
         for (int i = 0; i < colors.Length; i++)
         {
             if (textures[i] == null) continue;
@@ -297,8 +297,8 @@ public class Material : IDisposable
     {
         if (ImGui.BeginTable("material_textures", 2))
         {
-            SnimGui.Layout("Channel");ImGui.PushID(1); ImGui.BeginDisabled(model.NumTexCoords < 2);
-            ImGui.DragInt("", ref SelectedChannel, _step, 0, model.NumTexCoords - 1, "UV %i", ImGuiSliderFlags.AlwaysClamp);
+            SnimGui.Layout("Channel");ImGui.PushID(1); ImGui.BeginDisabled(model.UvCount < 2);
+            ImGui.DragInt("", ref SelectedChannel, _step, 0, model.UvCount - 1, "UV %i", ImGuiSliderFlags.AlwaysClamp);
             ImGui.EndDisabled();ImGui.PopID();SnimGui.Layout("Type");ImGui.PushID(2);
             ImGui.Combo("texture_type", ref SelectedTexture, "Diffuse\0Normals\0Specular\0Ambient Occlusion\0Emissive\0");
             ImGui.PopID();

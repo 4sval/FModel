@@ -37,7 +37,7 @@ public class Model : IDisposable
     public readonly string Type;
     public readonly bool HasVertexColors;
     public readonly bool HasMorphTargets;
-    public readonly int NumTexCoords;
+    public readonly int UvCount;
     public uint[] Indices;
     public float[] Vertices;
     public Section[] Sections;
@@ -64,13 +64,13 @@ public class Model : IDisposable
         Path = _export.GetPathName();
         Name = Path.SubstringAfterLast('/').SubstringBefore('.');
         Type = export.ExportType;
-        NumTexCoords = 1;
+        UvCount = 1;
         Transforms = new List<Transform>();
     }
 
     public Model(UStaticMesh export, CStaticMesh staticMesh) : this(export, staticMesh, Transform.Identity) {}
-    public Model(UStaticMesh export, CStaticMesh staticMesh, Transform transform) : this(export, export.Materials, null, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform) {}
-    private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, export.Skeleton, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform) {}
+    public Model(UStaticMesh export, CStaticMesh staticMesh, Transform transform) : this(export, export.Materials, null, staticMesh.LODs.Count, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform) {}
+    private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, export.Skeleton, skeletalMesh.LODs.Count, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform) {}
     public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh) : this(export, skeletalMesh, Transform.Identity)
     {
         var morphTargets = export.MorphTargets;
@@ -89,9 +89,10 @@ public class Model : IDisposable
         ApplicationService.ApplicationView.Status.UpdateStatusLabel("");
     }
 
-    private Model(UObject export, ResolvedObject[] materials, FPackageIndex skeleton, CBaseMeshLod lod, CMeshVertex[] vertices, Transform transform = null) : this(export)
+    private Model(UObject export, ResolvedObject[] materials, FPackageIndex skeleton, int numLods, CBaseMeshLod lod, CMeshVertex[] vertices, Transform transform = null) : this(export)
     {
-        NumTexCoords = lod.NumTexCoords;
+        var hasCustomUvs = lod.ExtraUV.IsValueCreated;
+        UvCount = hasCustomUvs ? Math.Max(lod.NumTexCoords, numLods) : lod.NumTexCoords;
 
         Materials = new Material[materials.Length];
         for (int m = 0; m < Materials.Length; m++)
@@ -136,7 +137,7 @@ public class Model : IDisposable
             Vertices[baseIndex + count++] = vert.Tangent.Y;
             Vertices[baseIndex + count++] = vert.UV.U;
             Vertices[baseIndex + count++] = vert.UV.V;
-            Vertices[baseIndex + count++] = lod.ExtraUV.IsValueCreated ? lod.ExtraUV.Value[0][i].U : .5f;
+            Vertices[baseIndex + count++] = hasCustomUvs ? lod.ExtraUV.Value[0][i].U : .5f;
 
             if (HasVertexColors)
             {
@@ -226,7 +227,7 @@ public class Model : IDisposable
         for (var i = 0; i < Materials.Length; i++)
         {
             if (!Materials[i].IsUsed) continue;
-            Materials[i].Setup(options, broken ? 1 : NumTexCoords);
+            Materials[i].Setup(options, broken ? 1 : UvCount);
         }
 
         if (HasMorphTargets)
@@ -261,7 +262,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        shader.SetUniform("uNumTexCoords", NumTexCoords);
+        shader.SetUniform("uUvCount", UvCount);
         shader.SetUniform("uHasVertexColors", HasVertexColors);
 
         GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
