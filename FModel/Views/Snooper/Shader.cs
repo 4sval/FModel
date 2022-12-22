@@ -40,7 +40,12 @@ public class Shader : IDisposable
         using var stream = executingAssembly.GetManifestResourceStream($"{executingAssembly.GetName().Name}.Resources.{file}");
         using var reader = new StreamReader(stream);
         var handle = GL.CreateShader(type);
-        GL.ShaderSource(handle, reader.ReadToEnd());
+
+        var content = reader.ReadToEnd();
+        if (file.Equals("default.frag") && GL.GetInteger(GetPName.MaxTextureUnits) == 0)
+            content = content.Replace("#define MAX_UV_COUNT 8", "#define MAX_UV_COUNT 1");
+
+        GL.ShaderSource(handle, content);
         GL.CompileShader(handle);
         string infoLog = GL.GetShaderInfoLog(handle);
         if (!string.IsNullOrWhiteSpace(infoLog))
