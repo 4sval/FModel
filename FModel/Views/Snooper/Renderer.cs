@@ -15,6 +15,11 @@ using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Settings;
+using FModel.Views.Snooper.Buffers;
+using FModel.Views.Snooper.Lights;
+using FModel.Views.Snooper.Models;
+using FModel.Views.Snooper.Models.Animations;
+using FModel.Views.Snooper.Shading;
 
 namespace FModel.Views.Snooper;
 

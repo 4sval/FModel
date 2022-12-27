@@ -1,7 +1,7 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Buffers;
 
 public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
 {

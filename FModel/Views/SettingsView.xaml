@@ -309,6 +309,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -387,8 +388,18 @@
 
                     <Separator Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Material Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.MaterialExportFormats}" SelectedItem="{Binding SettingsView.SelectedMaterialExportFormat, Mode=TwoWay}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="13" Grid.Column="0" Text="Texture Format" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>

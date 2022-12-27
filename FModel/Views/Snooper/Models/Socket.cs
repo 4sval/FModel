@@ -3,7 +3,7 @@ using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Models;
 
 public class Socket : IDisposable
 {

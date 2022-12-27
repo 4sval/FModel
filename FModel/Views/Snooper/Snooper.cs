@@ -1,14 +1,19 @@
 using System;
 using System.ComponentModel;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
+using FModel.Views.Snooper.Buffers;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace FModel.Views.Snooper;
 
@@ -75,6 +80,22 @@ public class Snooper : GameWindow
         });
     }
 
+    private unsafe void LoadWindowIcon()
+    {
+        var info = Application.GetResourceStream(new Uri($"/FModel;component/Resources/engine.png", UriKind.Relative));
+        using var img = SixLabors.ImageSharp.Image.Load<Rgba32>(info.Stream);
+        var memoryGroup = img.GetPixelMemoryGroup();
+        Memory<byte> array = new byte[memoryGroup.TotalLength * sizeof(Rgba32)];
+        var block = MemoryMarshal.Cast<byte, Rgba32>(array.Span);
+        foreach (var memory in memoryGroup)
+        {
+            memory.Span.CopyTo(block);
+            block = block[memory.Length..];
+        }
+
+        Icon = new WindowIcon(new OpenTK.Windowing.Common.Input.Image(img.Width, img.Height, array.ToArray()));
+    }
+
     protected override void OnLoad()
     {
         if (_init)
@@ -85,6 +106,7 @@ public class Snooper : GameWindow
 
         base.OnLoad();
         CenterWindow();
+        LoadWindowIcon();
 
         GL.ClearColor(OpenTK.Mathematics.Color4.Black);
         GL.Enable(EnableCap.Blend);

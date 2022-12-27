@@ -3,7 +3,7 @@ using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Objects.Core.Math;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Models.Animations;
 
 public class Animation : IDisposable
 {

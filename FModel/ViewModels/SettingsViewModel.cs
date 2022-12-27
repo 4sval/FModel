@@ -8,6 +8,7 @@ using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -145,6 +146,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedLodExportFormat, value);
     }
 
+    private EMaterialFormat _selectedMaterialExportFormat;
+    public EMaterialFormat SelectedMaterialExportFormat
+    {
+        get => _selectedMaterialExportFormat;
+        set => SetProperty(ref _selectedMaterialExportFormat, value);
+    }
+
     private ETextureFormat _selectedTextureExportFormat;
     public ETextureFormat SelectedTextureExportFormat
     {
@@ -163,6 +171,7 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<EMeshFormat> MeshExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ESocketFormat> SocketExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ELodFormat> LodExportFormats { get; private set; }
+    public ReadOnlyObservableCollection<EMaterialFormat> MaterialExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETexturePlatform> Platforms { get; private set; }
 
@@ -189,6 +198,7 @@ public class SettingsViewModel : ViewModel
     private EMeshFormat _meshExportFormatSnapshot;
     private ESocketFormat _socketExportFormatSnapshot;
     private ELodFormat _lodExportFormatSnapshot;
+    private EMaterialFormat _materialExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
 
     private bool _mappingsUpdate = false;
@@ -240,6 +250,7 @@ public class SettingsViewModel : ViewModel
         _meshExportFormatSnapshot = UserSettings.Default.MeshExportFormat;
         _socketExportFormatSnapshot = UserSettings.Default.SocketExportFormat;
         _lodExportFormatSnapshot = UserSettings.Default.LodExportFormat;
+        _materialExportFormatSnapshot = UserSettings.Default.MaterialExportFormat;
         _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
 
         SelectedUpdateMode = _updateModeSnapshot;
@@ -254,6 +265,7 @@ public class SettingsViewModel : ViewModel
         SelectedMeshExportFormat = _meshExportFormatSnapshot;
         SelectedSocketExportFormat = _socketExportFormatSnapshot;
         SelectedLodExportFormat = _lodExportFormatSnapshot;
+        SelectedMaterialExportFormat = _materialExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
@@ -269,6 +281,7 @@ public class SettingsViewModel : ViewModel
         MeshExportFormats = new ReadOnlyObservableCollection<EMeshFormat>(new ObservableCollection<EMeshFormat>(EnumerateMeshExportFormat()));
         SocketExportFormats = new ReadOnlyObservableCollection<ESocketFormat>(new ObservableCollection<ESocketFormat>(EnumerateSocketExportFormat()));
         LodExportFormats = new ReadOnlyObservableCollection<ELodFormat>(new ObservableCollection<ELodFormat>(EnumerateLodExportFormat()));
+        MaterialExportFormats = new ReadOnlyObservableCollection<EMaterialFormat>(new ObservableCollection<EMaterialFormat>(EnumerateMaterialExportFormat()));
         TextureExportFormats = new ReadOnlyObservableCollection<ETextureFormat>(new ObservableCollection<ETextureFormat>(EnumerateTextureExportFormat()));
         Platforms = new ReadOnlyObservableCollection<ETexturePlatform>(new ObservableCollection<ETexturePlatform>(EnumerateUePlatforms()));
     }
@@ -358,6 +371,7 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.MeshExportFormat = SelectedMeshExportFormat;
         UserSettings.Default.SocketExportFormat = SelectedSocketExportFormat;
         UserSettings.Default.LodExportFormat = SelectedLodExportFormat;
+        UserSettings.Default.MaterialExportFormat = SelectedMaterialExportFormat;
         UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
         UserSettings.Default.AesReload = SelectedAesReload;
         UserSettings.Default.DiscordRpc = SelectedDiscordRpc;
@@ -382,6 +396,7 @@ public class SettingsViewModel : ViewModel
     private IEnumerable<EMeshFormat> EnumerateMeshExportFormat() => Enum.GetValues<EMeshFormat>();
     private IEnumerable<ESocketFormat> EnumerateSocketExportFormat() => Enum.GetValues<ESocketFormat>();
     private IEnumerable<ELodFormat> EnumerateLodExportFormat() => Enum.GetValues<ELodFormat>();
+    private IEnumerable<EMaterialFormat> EnumerateMaterialExportFormat() => Enum.GetValues<EMaterialFormat>();
     private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
     private IEnumerable<ETexturePlatform> EnumerateUePlatforms() => Enum.GetValues<ETexturePlatform>();
 }

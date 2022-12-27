@@ -7,7 +7,7 @@ using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Shading;
 
 public class Texture : IDisposable
 {

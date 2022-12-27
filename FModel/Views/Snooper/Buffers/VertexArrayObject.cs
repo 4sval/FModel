@@ -2,7 +2,7 @@
 using System.Numerics;
 using OpenTK.Graphics.OpenGL4;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Buffers;
 
 public class VertexArrayObject<TVertexType, TIndexType> : IDisposable where TVertexType : unmanaged where TIndexType : unmanaged
 {

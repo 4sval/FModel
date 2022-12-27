@@ -5,8 +5,9 @@ using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.UObject;
+using FModel.Views.Snooper.Shading;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Models.Animations;
 
 public class Skeleton : IDisposable
 {

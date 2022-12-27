@@ -1,9 +1,10 @@
 ﻿using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
+using FModel.Views.Snooper.Shading;
 using ImGuiNET;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Lights;
 
 public class SpotLight : Light
 {

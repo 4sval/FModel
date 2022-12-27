@@ -3,7 +3,7 @@ using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.Core.Math;
 using OpenTK.Graphics.OpenGL4;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Models;
 
 public class Morph : IDisposable
 {

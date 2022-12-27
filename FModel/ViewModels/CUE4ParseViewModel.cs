@@ -369,7 +369,10 @@ public class CUE4ParseViewModel : ViewModel
     public async Task InitMappings()
     {
         if (!UserSettings.IsEndpointValid(Game, EEndpointType.Mapping, out var endpoint))
+        {
+            Provider.MappingsContainer = null;
             return;
+        }
 
         await _threadWorkerView.Begin(cancellationToken =>
         {
@@ -861,9 +864,10 @@ public class CUE4ParseViewModel : ViewModel
     {
         var exportOptions = new ExporterOptions
         {
-            TextureFormat = UserSettings.Default.TextureExportFormat,
             LodFormat = UserSettings.Default.LodExportFormat,
             MeshFormat = UserSettings.Default.MeshExportFormat,
+            MaterialFormat = UserSettings.Default.MaterialExportFormat,
+            TextureFormat = UserSettings.Default.TextureExportFormat,
             SocketFormat = UserSettings.Default.SocketExportFormat,
             Platform = UserSettings.Default.OverridedPlatform,
             ExportMorphTargets = UserSettings.Default.SaveMorphTargets

@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Reflection;
 using OpenTK.Graphics.OpenGL4;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Shading;
 
 public class Shader : IDisposable
 {

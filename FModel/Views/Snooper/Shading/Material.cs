@@ -6,10 +6,11 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
+using FModel.Views.Snooper.Models;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Shading;
 
 public class Material : IDisposable
 {
@@ -62,7 +63,7 @@ public class Material : IDisposable
     public void SwapMaterial(UMaterialInterface unrealMaterial)
     {
         Name = unrealMaterial.Name;
-        unrealMaterial.GetParams(Parameters);
+        unrealMaterial.GetParams(Parameters, EMaterialFormat.AllLayers);
     }
 
     public void Setup(Options options, int uvCount)
@@ -92,7 +93,7 @@ public class Material : IDisposable
                 EmissiveColor = FillColors(uvCount, Emissive, CMaterialParams2.EmissiveColors, Vector4.One);
             }
 
-            {   // scalars
+            {   // ambient occlusion + color boost
                 if (Parameters.TryGetTexture2d(out var original, "M", "AEM", "AO") &&
                     !original.Name.Equals("T_BlackMask") && options.TryGetTexture(original, false, out var transformed))
                 {
@@ -105,6 +106,7 @@ public class Material : IDisposable
                     }
                 }
 
+                // scalars
                 if (Parameters.TryGetScalar(out var specular, "Specular", "Specular Intensity", "Spec"))
                     Specular = specular;
 
@@ -119,15 +121,15 @@ public class Material : IDisposable
                 else if (Parameters.TryGetLinearColor(out var emissiveMultColor, "Emissive Multiplier", "EmissiveMultiplier"))
                     EmissiveMult = emissiveMultColor.R;
 
+                if (Parameters.TryGetScalar(out var uvScale, "UV Scale"))
+                    UVScale = uvScale;
+
                 if (Parameters.TryGetLinearColor(out var EmissiveUVs,
                         "EmissiveUVs_RG_UpperLeftCorner_BA_LowerRightCorner",
                         "Emissive Texture UVs RG_TopLeft BA_BottomRight",
                         "Emissive 2 UV Positioning (RG)UpperLeft (BA)LowerRight",
                         "EmissiveUVPositioning (RG)UpperLeft (BA)LowerRight"))
                     EmissiveRegion = new Vector4(EmissiveUVs.R, EmissiveUVs.G, EmissiveUVs.B, EmissiveUVs.A);
-
-                if (Parameters.TryGetScalar(out var uvScale, "UV Scale"))
-                    UVScale = uvScale;
             }
         }
     }

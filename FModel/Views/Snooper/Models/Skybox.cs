@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Numerics;
+using FModel.Views.Snooper.Buffers;
+using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Models;
 
 public class Skybox : IDisposable
 {

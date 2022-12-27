@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using OpenTK.Graphics.OpenGL4;
 using System.Numerics;
+using FModel.Views.Snooper.Models;
+using FModel.Views.Snooper.Shading;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Buffers;
 
 public class PickingTexture : IDisposable
 {

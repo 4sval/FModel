@@ -8,6 +8,8 @@ using OpenTK.Windowing.Common;
 using System.Numerics;
 using System.Text;
 using FModel.Settings;
+using FModel.Views.Snooper.Models;
+using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper;
@@ -269,13 +271,9 @@ public class SnimGui
         Modal("About Snooper", ImGui.MenuItem("About"), () =>
         {
             ImGui.TextWrapped(
-                @"WROTE AT 3AM FOR THE SAKE OF TESTING AN ABOUT MODAL
+                @"Snooper, an ""OpenGL x ImGui"" based 3D viewer, is the result of months of work in order to improve our last one and open up the capabilities data-mining offers. For too long, softwares including FModel were only focused on a bare minimum level of detail showed to the end-user. This is the first step of a long and painful transition to make FModel a viable open-source tool to deep dive into Unreal Engine, its structure, and show how things work internally.
 
-Snooper, an ""OpenGL x ImGui"" based 3D viewer, is the result of months of work in order to improve our last one and open up the capabilities data-mining offers. For too long, softwares including FModel were only focused on a bare minimum level of detail showed to the end-user. This is the first step of a long and painful transition to make FModel a viable open-source tool to deep dive into Unreal Engine, its structure, and show how things work internally.
-
-Snooper aims to give an accurate preview of models, materials, animations, particles, levels, and sequences (oof) while keeping it compatible with most UE games. This is not an easy task AT ALL, in fact, I don't really know if everything will make out, but what I can say is that we have ideas and a vision for the future of FModel.
-
-hello world!
+Snooper aims to give an accurate preview of models, materials, skeletal animations, particles, levels, and level animations (oof) while keeping it compatible with most UE games. This is not an easy task AT ALL, in fact, I don't really know if everything will make out, but what I can say is that we have ideas and a vision for the future of FModel.
 ");
             ImGui.Separator();
 

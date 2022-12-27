@@ -8,6 +8,7 @@ using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -571,6 +572,20 @@ namespace FModel.Settings
             set => SetProperty(ref _meshExportFormat, value);
         }
 
+        private EMaterialFormat _materialExportFormat = EMaterialFormat.FirstLayer;
+        public EMaterialFormat MaterialExportFormat
+        {
+            get => _materialExportFormat;
+            set => SetProperty(ref _materialExportFormat, value);
+        }
+
+        private ETextureFormat _textureExportFormat = ETextureFormat.Png;
+        public ETextureFormat TextureExportFormat
+        {
+            get => _textureExportFormat;
+            set => SetProperty(ref _textureExportFormat, value);
+        }
+
         private ESocketFormat _socketExportFormat = ESocketFormat.Bone;
         public ESocketFormat SocketExportFormat
         {
@@ -639,13 +654,6 @@ namespace FModel.Settings
         {
             get => _saveSkeletonAsMesh;
             set => SetProperty(ref _saveSkeletonAsMesh, value);
-        }
-
-        private ETextureFormat _textureExportFormat = ETextureFormat.Png;
-        public ETextureFormat TextureExportFormat
-        {
-            get => _textureExportFormat;
-            set => SetProperty(ref _textureExportFormat, value);
         }
     }
 }

@@ -14,9 +14,12 @@ using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
+using FModel.Views.Snooper.Buffers;
+using FModel.Views.Snooper.Models.Animations;
+using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
 
-namespace FModel.Views.Snooper;
+namespace FModel.Views.Snooper.Models;
 
 public class Model : IDisposable
 {
@@ -319,9 +322,11 @@ public class Model : IDisposable
     {
         var exportOptions = new ExporterOptions
         {
-            TextureFormat = UserSettings.Default.TextureExportFormat,
             LodFormat = UserSettings.Default.LodExportFormat,
             MeshFormat = UserSettings.Default.MeshExportFormat,
+            MaterialFormat = UserSettings.Default.MaterialExportFormat,
+            TextureFormat = UserSettings.Default.TextureExportFormat,
+            SocketFormat = UserSettings.Default.SocketExportFormat,
             Platform = UserSettings.Default.OverridedPlatform,
             ExportMorphTargets = UserSettings.Default.SaveMorphTargets
         };
