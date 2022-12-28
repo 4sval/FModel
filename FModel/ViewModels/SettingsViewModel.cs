@@ -237,10 +237,10 @@ public class SettingsViewModel : ViewModel
         {
             AesEndpoint = endpoints[0];
             MappingEndpoint = endpoints[1];
-            MappingEndpoint.PropertyChanged += (sender, args) =>
+            MappingEndpoint.PropertyChanged += (_, args) =>
             {
-                if (sender is FEndpoint endpoint && !_mappingsUpdate)
-                    _mappingsUpdate = args.PropertyName is "Overwrite" or "FilePath" && endpoint.IsValid;
+                if (!_mappingsUpdate)
+                    _mappingsUpdate = args.PropertyName is "Overwrite" or "FilePath";
             };
         }
 

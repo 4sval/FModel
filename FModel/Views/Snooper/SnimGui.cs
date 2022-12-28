@@ -636,7 +636,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             }
             Popup(() =>
             {
-                if (ImGui.MenuItem("Overlay UVs", null, _ti_overlayUv))
+                if (ImGui.MenuItem("Overlay UVs", null, _ti_overlayUv, false))
                     _ti_overlayUv = !_ti_overlayUv;
             });
         }
