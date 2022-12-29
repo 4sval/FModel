@@ -523,7 +523,15 @@ public class CUE4ParseViewModel : ViewModel
     }
 
     public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
-        => BulkFolder(cancellationToken, folder, asset => ExportData(asset.FullPath));
+    {
+        Parallel.ForEach(folder.AssetsList.Assets, asset =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ExportData(asset.FullPath, false);
+        });
+
+        foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
+    }
 
     public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs));
@@ -899,23 +907,27 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    public void ExportData(string fullPath)
+    public void ExportData(string fullPath, bool updateUi = true)
     {
         var fileName = fullPath.SubstringAfterLast('/');
         if (Provider.TrySavePackage(fullPath, out var assets))
         {
-            foreach (var kvp in assets)
+            Parallel.ForEach(assets, kvp =>
             {
                 var path = Path.Combine(UserSettings.Default.RawDataDirectory, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
                 Directory.CreateDirectory(path.SubstringBeforeLast('/'));
                 File.WriteAllBytes(path, kvp.Value);
-            }
+            });
 
-            Log.Information("{FileName} successfully exported", fileName);
-            FLogger.AppendInformation();
-            FLogger.AppendText($"Successfully exported '{fileName}'", Constants.WHITE, true);
+            if (updateUi)
+            {
+                Log.Information("{FileName} successfully exported", fileName);
+                FLogger.AppendInformation();
+                FLogger.AppendText($"Successfully exported '{fileName}'", Constants.WHITE, true);
+            }
+            else ApplicationService.ApplicationView.Status.UpdateStatusLabel($"Raw Data for {fullPath.SubstringAfterLast('/')}");
         }
-        else
+        else if (updateUi)
         {
             Log.Error("{FileName} could not be exported", fileName);
             FLogger.AppendError();
