@@ -58,7 +58,7 @@ public partial class SearchView
             return;
 
         WindowState = WindowState.Minimized;
-        await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.Extract(assetItem.FullPath, true));
+        await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.Extract(cancellationToken, assetItem.FullPath, true));
 
         MainWindow.YesWeCats.Activate();
     }

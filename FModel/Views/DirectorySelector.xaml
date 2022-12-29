@@ -28,7 +28,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
-            <TextBlock Text="What to do?" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="Instruction" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
             <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center"
                        Text="We like to make things as simple as possible. Choose between the detected games or manually add your own. FModel will use this information to automatically find archives to load and decrypt if needed. Make sure to not skip this step!" />
         </StackPanel>

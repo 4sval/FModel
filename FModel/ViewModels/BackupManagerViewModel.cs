@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -93,7 +93,7 @@ public class BackupManagerViewModel : ViewModel
         await _threadWorkerView.Begin(_ =>
         {
             var fullPath = Path.Combine(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"), SelectedBackup.FileName);
-            _apiEndpointView.BenbotApi.DownloadFile(SelectedBackup.DownloadUrl, fullPath);
+            _apiEndpointView.DownloadFile(SelectedBackup.DownloadUrl, fullPath);
             SaveCheck(fullPath, SelectedBackup.FileName, "downloaded", "download");
         });
     }

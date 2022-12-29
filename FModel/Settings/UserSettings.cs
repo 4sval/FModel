@@ -8,6 +8,7 @@ using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -37,6 +38,16 @@ namespace FModel.Settings
         public static void Delete()
         {
             if (File.Exists(FilePath)) File.Delete(FilePath);
+        }
+
+        public static bool IsEndpointValid(FGame game, EEndpointType type, out FEndpoint endpoint)
+        {
+            endpoint = null;
+            if (!Default.CustomEndpoints.TryGetValue(game, out var endpoints))
+                return false;
+
+            endpoint = endpoints[(int) type];
+            return endpoint.Overwrite || endpoint.IsValid;
         }
 
         private bool _showChangelog = true;
@@ -95,39 +106,11 @@ namespace FModel.Settings
             set => SetProperty(ref _gameDirectory, value);
         }
 
-        private bool _overwriteMapping;
-        public bool OverwriteMapping
-        {
-            get => _overwriteMapping;
-            set => SetProperty(ref _overwriteMapping, value);
-        }
-
-        private string _mappingFilePath;
-        public string MappingFilePath
-        {
-            get => _mappingFilePath;
-            set => SetProperty(ref _mappingFilePath, value);
-        }
-
         private int _lastOpenedSettingTab;
         public int LastOpenedSettingTab
         {
             get => _lastOpenedSettingTab;
             set => SetProperty(ref _lastOpenedSettingTab, value);
-        }
-
-        private bool _isAutoSaveProps;
-        public bool IsAutoSaveProps
-        {
-            get => _isAutoSaveProps;
-            set => SetProperty(ref _isAutoSaveProps, value);
-        }
-
-        private bool _isAutoSaveTextures;
-        public bool IsAutoSaveTextures
-        {
-            get => _isAutoSaveTextures;
-            set => SetProperty(ref _isAutoSaveTextures, value);
         }
 
         private bool _isAutoOpenSounds = true;
@@ -144,7 +127,7 @@ namespace FModel.Settings
             set => SetProperty(ref _isLoggerExpanded, value);
         }
 
-        private GridLength _avalonImageSize = GridLength.Auto;
+        private GridLength _avalonImageSize = new (200);
         public GridLength AvalonImageSize
         {
             get => _avalonImageSize;
@@ -259,13 +242,6 @@ namespace FModel.Settings
             set => SetProperty(ref _overridedPlatform, value);
         }
 
-        private bool _saveMorphTargets = true;
-        public bool SaveMorphTargets
-        {
-            get => _saveMorphTargets;
-            set => SetProperty(ref _saveMorphTargets, value);
-        }
-
         private IDictionary<FGame, string> _presets = new Dictionary<FGame, string>
         {
             {FGame.Unknown, Constants._NO_PRESET_TRIGGER},
@@ -286,7 +262,10 @@ namespace FModel.Settings
             {FGame.TslGame, Constants._NO_PRESET_TRIGGER},
             {FGame.PortalWars, Constants._NO_PRESET_TRIGGER},
             {FGame.Gameface, Constants._NO_PRESET_TRIGGER},
-            {FGame.Athena, Constants._NO_PRESET_TRIGGER}
+            {FGame.Athena, Constants._NO_PRESET_TRIGGER},
+            {FGame.PandaGame, Constants._NO_PRESET_TRIGGER},
+            {FGame.Hotta, Constants._NO_PRESET_TRIGGER},
+            {FGame.eFootball, Constants._NO_PRESET_TRIGGER}
         };
         public IDictionary<FGame, string> Presets
         {
@@ -297,24 +276,27 @@ namespace FModel.Settings
         private IDictionary<FGame, EGame> _overridedGame = new Dictionary<FGame, EGame>
         {
             {FGame.Unknown, EGame.GAME_UE4_LATEST},
-            {FGame.FortniteGame, EGame.GAME_UE5_LATEST},
+            {FGame.FortniteGame, EGame.GAME_UE5_2},
             {FGame.ShooterGame, EGame.GAME_Valorant},
-            {FGame.DeadByDaylight, EGame.GAME_UE4_LATEST},
+            {FGame.DeadByDaylight, EGame.GAME_UE4_27},
             {FGame.OakGame, EGame.GAME_Borderlands3},
-            {FGame.Dungeons, EGame.GAME_UE4_LATEST},
-            {FGame.WorldExplorers, EGame.GAME_UE4_LATEST},
+            {FGame.Dungeons, EGame.GAME_UE4_22},
+            {FGame.WorldExplorers, EGame.GAME_UE4_24},
             {FGame.g3, EGame.GAME_UE4_22},
             {FGame.StateOfDecay2, EGame.GAME_StateOfDecay2},
-            {FGame.Prospect, EGame.GAME_UE4_LATEST},
-            {FGame.Indiana, EGame.GAME_UE4_LATEST},
+            {FGame.Prospect, EGame.GAME_Splitgate},
+            {FGame.Indiana, EGame.GAME_UE4_21},
             {FGame.RogueCompany, EGame.GAME_RogueCompany},
             {FGame.SwGame, EGame.GAME_UE4_LATEST},
-            {FGame.Platform, EGame.GAME_UE4_25},
+            {FGame.Platform, EGame.GAME_UE4_26},
             {FGame.BendGame, EGame.GAME_UE4_11},
             {FGame.TslGame, EGame.GAME_PlayerUnknownsBattlegrounds},
-            {FGame.PortalWars, EGame.GAME_UE4_LATEST},
+            {FGame.PortalWars, EGame.GAME_UE4_27},
             {FGame.Gameface, EGame.GAME_GTATheTrilogyDefinitiveEdition},
-            {FGame.Athena, EGame.GAME_SeaOfThieves}
+            {FGame.Athena, EGame.GAME_SeaOfThieves},
+            {FGame.PandaGame, EGame.GAME_UE4_26},
+            {FGame.Hotta, EGame.GAME_TowerOfFantasy},
+            {FGame.eFootball, EGame.GAME_UE4_26}
         };
         public IDictionary<FGame, EGame> OverridedGame
         {
@@ -342,7 +324,10 @@ namespace FModel.Settings
             {FGame.TslGame, null},
             {FGame.PortalWars, null},
             {FGame.Gameface, null},
-            {FGame.Athena, null}
+            {FGame.Athena, null},
+            {FGame.PandaGame, null},
+            {FGame.Hotta, null},
+            {FGame.eFootball, null}
         };
         public IDictionary<FGame, List<FCustomVersion>> OverridedCustomVersions
         {
@@ -370,12 +355,52 @@ namespace FModel.Settings
             {FGame.TslGame, null},
             {FGame.PortalWars, null},
             {FGame.Gameface, null},
-            {FGame.Athena, null}
+            {FGame.Athena, null},
+            {FGame.PandaGame, null},
+            {FGame.Hotta, null},
+            {FGame.eFootball, null}
         };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
             get => _overridedOptions;
             set => SetProperty(ref _overridedOptions, value);
+        }
+
+        private IDictionary<FGame, FEndpoint[]> _customEndpoints = new Dictionary<FGame, FEndpoint[]>
+        {
+            {FGame.Unknown, new FEndpoint[]{new (), new ()}},
+            {
+                FGame.FortniteGame, new []
+                {
+                    new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/aes", "$.['mainKey','dynamicKeys']"),
+                    new FEndpoint("https://fortnitecentral.gmatrixgames.ga/api/v1/mappings", "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") //  && @.meta.platform=='Windows'
+                }
+            },
+            {FGame.ShooterGame, new FEndpoint[]{new (), new ()}},
+            {FGame.DeadByDaylight, new FEndpoint[]{new (), new ()}},
+            {FGame.OakGame, new FEndpoint[]{new (), new ()}},
+            {FGame.Dungeons, new FEndpoint[]{new (), new ()}},
+            {FGame.WorldExplorers, new FEndpoint[]{new (), new ()}},
+            {FGame.g3, new FEndpoint[]{new (), new ()}},
+            {FGame.StateOfDecay2, new FEndpoint[]{new (), new ()}},
+            {FGame.Prospect, new FEndpoint[]{new (), new ()}},
+            {FGame.Indiana, new FEndpoint[]{new (), new ()}},
+            {FGame.RogueCompany, new FEndpoint[]{new (), new ()}},
+            {FGame.SwGame, new FEndpoint[]{new (), new ()}},
+            {FGame.Platform, new FEndpoint[]{new (), new ()}},
+            {FGame.BendGame, new FEndpoint[]{new (), new ()}},
+            {FGame.TslGame, new FEndpoint[]{new (), new ()}},
+            {FGame.PortalWars, new FEndpoint[]{new (), new ()}},
+            {FGame.Gameface, new FEndpoint[]{new (), new ()}},
+            {FGame.Athena, new FEndpoint[]{new (), new ()}},
+            {FGame.PandaGame, new FEndpoint[]{new (), new ()}},
+            {FGame.Hotta, new FEndpoint[]{new (), new ()}},
+            {FGame.eFootball, new FEndpoint[]{new (), new ()}}
+        };
+        public IDictionary<FGame, FEndpoint[]> CustomEndpoints
+        {
+            get => _customEndpoints;
+            set => SetProperty(ref _customEndpoints, value);
         }
 
         private IDictionary<FGame, IList<CustomDirectory>> _customDirectories = new Dictionary<FGame, IList<CustomDirectory>>
@@ -445,7 +470,10 @@ namespace FModel.Settings
             {FGame.TslGame, new List<CustomDirectory>()},
             {FGame.PortalWars, new List<CustomDirectory>()},
             {FGame.Gameface, new List<CustomDirectory>()},
-            {FGame.Athena, new List<CustomDirectory>()}
+            {FGame.Athena, new List<CustomDirectory>()},
+            {FGame.PandaGame, new List<CustomDirectory>()},
+            {FGame.Hotta, new List<CustomDirectory>()},
+            {FGame.eFootball, new List<CustomDirectory>()}
         };
         public IDictionary<FGame, IList<CustomDirectory>> CustomDirectories
         {
@@ -509,27 +537,6 @@ namespace FModel.Settings
             set => SetProperty(ref _assetRemoveTab, value);
         }
 
-        private Hotkey _autoSaveProps = new(Key.F1);
-        public Hotkey AutoSaveProps
-        {
-            get => _autoSaveProps;
-            set => SetProperty(ref _autoSaveProps, value);
-        }
-
-        private Hotkey _autoSaveTextures = new(Key.F2);
-        public Hotkey AutoSaveTextures
-        {
-            get => _autoSaveTextures;
-            set => SetProperty(ref _autoSaveTextures, value);
-        }
-
-        private Hotkey _autoOpenSounds = new(Key.F3);
-        public Hotkey AutoOpenSounds
-        {
-            get => _autoOpenSounds;
-            set => SetProperty(ref _autoOpenSounds, value);
-        }
-
         private Hotkey _addAudio = new(Key.N, ModifierKeys.Control);
         public Hotkey AddAudio
         {
@@ -565,97 +572,11 @@ namespace FModel.Settings
             set => SetProperty(ref _meshExportFormat, value);
         }
 
-        private ELodFormat _lodExportFormat = ELodFormat.FirstLod;
-        public ELodFormat LodExportFormat
+        private EMaterialFormat _materialExportFormat = EMaterialFormat.FirstLayer;
+        public EMaterialFormat MaterialExportFormat
         {
-            get => _lodExportFormat;
-            set => SetProperty(ref _lodExportFormat, value);
-        }
-
-        private bool _previewStaticMeshes = true;
-        public bool PreviewStaticMeshes
-        {
-            get => _previewStaticMeshes;
-            set
-            {
-                SetProperty(ref _previewStaticMeshes, value);
-                if (_previewStaticMeshes && SaveStaticMeshes)
-                    SaveStaticMeshes = false;
-            }
-        }
-
-        private bool _previewSkeletalMeshes = true;
-        public bool PreviewSkeletalMeshes
-        {
-            get => _previewSkeletalMeshes;
-            set
-            {
-                SetProperty(ref _previewSkeletalMeshes, value);
-                if (_previewSkeletalMeshes && SaveSkeletalMeshes)
-                    SaveSkeletalMeshes = false;
-            }
-        }
-
-        private bool _previewMaterials = true;
-        public bool PreviewMaterials
-        {
-            get => _previewMaterials;
-            set
-            {
-                SetProperty(ref _previewMaterials, value);
-                if (_previewMaterials && SaveMaterials)
-                    SaveMaterials = false;
-            }
-        }
-
-        private bool _saveStaticMeshes;
-        public bool SaveStaticMeshes
-        {
-            get => _saveStaticMeshes;
-            set
-            {
-                SetProperty(ref _saveStaticMeshes, value);
-                if (_saveStaticMeshes && PreviewStaticMeshes)
-                    PreviewStaticMeshes = false;
-            }
-        }
-
-        private bool _saveSkeletalMeshes;
-        public bool SaveSkeletalMeshes
-        {
-            get => _saveSkeletalMeshes;
-            set
-            {
-                SetProperty(ref _saveSkeletalMeshes, value);
-                if (_saveSkeletalMeshes && PreviewSkeletalMeshes)
-                    PreviewSkeletalMeshes = false;
-            }
-        }
-
-        private bool _saveMaterials;
-        public bool SaveMaterials
-        {
-            get => _saveMaterials;
-            set
-            {
-                SetProperty(ref _saveMaterials, value);
-                if (_saveMaterials && PreviewMaterials)
-                    PreviewMaterials = false;
-            }
-        }
-
-        private bool _saveAnimations;
-        public bool SaveAnimations
-        {
-            get => _saveAnimations;
-            set => SetProperty(ref _saveAnimations, value);
-        }
-
-        private bool _saveSkeletonAsMesh;
-        public bool SaveSkeletonAsMesh
-        {
-            get => _saveSkeletonAsMesh;
-            set => SetProperty(ref _saveSkeletonAsMesh, value);
+            get => _materialExportFormat;
+            set => SetProperty(ref _materialExportFormat, value);
         }
 
         private ETextureFormat _textureExportFormat = ETextureFormat.Png;
@@ -663,6 +584,76 @@ namespace FModel.Settings
         {
             get => _textureExportFormat;
             set => SetProperty(ref _textureExportFormat, value);
+        }
+
+        private ESocketFormat _socketExportFormat = ESocketFormat.Bone;
+        public ESocketFormat SocketExportFormat
+        {
+            get => _socketExportFormat;
+            set => SetProperty(ref _socketExportFormat, value);
+        }
+
+        private ELodFormat _lodExportFormat = ELodFormat.FirstLod;
+        public ELodFormat LodExportFormat
+        {
+            get => _lodExportFormat;
+            set => SetProperty(ref _lodExportFormat, value);
+        }
+
+        private bool _showSkybox = true;
+        public bool ShowSkybox
+        {
+            get => _showSkybox;
+            set => SetProperty(ref _showSkybox, value);
+        }
+
+        private bool _showGrid = true;
+        public bool ShowGrid
+        {
+            get => _showGrid;
+            set => SetProperty(ref _showGrid, value);
+        }
+
+        private bool _previewStaticMeshes = true;
+        public bool PreviewStaticMeshes
+        {
+            get => _previewStaticMeshes;
+            set => SetProperty(ref _previewStaticMeshes, value);
+        }
+
+        private bool _previewSkeletalMeshes = true;
+        public bool PreviewSkeletalMeshes
+        {
+            get => _previewSkeletalMeshes;
+            set => SetProperty(ref _previewSkeletalMeshes, value);
+        }
+
+        private bool _previewMaterials = true;
+        public bool PreviewMaterials
+        {
+            get => _previewMaterials;
+            set => SetProperty(ref _previewMaterials, value);
+        }
+
+        private bool _previewWorlds = true;
+        public bool PreviewWorlds
+        {
+            get => _previewWorlds;
+            set => SetProperty(ref _previewWorlds, value);
+        }
+
+        private bool _saveMorphTargets = true;
+        public bool SaveMorphTargets
+        {
+            get => _saveMorphTargets;
+            set => SetProperty(ref _saveMorphTargets, value);
+        }
+
+        private bool _saveSkeletonAsMesh;
+        public bool SaveSkeletonAsMesh
+        {
+            get => _saveSkeletonAsMesh;
+            set => SetProperty(ref _saveSkeletonAsMesh, value);
         }
     }
 }

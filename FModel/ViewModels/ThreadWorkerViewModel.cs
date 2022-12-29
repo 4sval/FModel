@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Views.Resources.Controls;
@@ -41,6 +40,10 @@ public class ThreadWorkerViewModel : ViewModel
 
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private readonly AsyncQueue<Action<CancellationToken>> _jobs;
+    private const string _at = "   at ";
+    private const char _dot = '.';
+    private const char _colon = ':';
+    private const string _gray = "#999";
 
     public ThreadWorkerViewModel()
     {
@@ -49,7 +52,7 @@ public class ThreadWorkerViewModel : ViewModel
 
     public async Task Begin(Action<CancellationToken> action)
     {
-        if (!_applicationView.IsReady)
+        if (!_applicationView.Status.IsReady)
         {
             SignalOperationInProgress();
             return;
@@ -75,7 +78,7 @@ public class ThreadWorkerViewModel : ViewModel
     {
         if (_jobs.Count > 0)
         {
-            _applicationView.Status = EStatusKind.Loading;
+            _applicationView.Status.SetStatus(EStatusKind.Loading);
             await foreach (var job in _jobs)
             {
                 try
@@ -85,7 +88,7 @@ public class ThreadWorkerViewModel : ViewModel
                 }
                 catch (OperationCanceledException)
                 {
-                    _applicationView.Status = EStatusKind.Stopped;
+                    _applicationView.Status.SetStatus(EStatusKind.Stopped);
                     CurrentCancellationTokenSource = null; // kill token
                     OperationCancelled = true;
                     OperationCancelled = false;
@@ -93,19 +96,44 @@ public class ThreadWorkerViewModel : ViewModel
                 }
                 catch (Exception e)
                 {
-                    _applicationView.Status = EStatusKind.Failed;
+                    _applicationView.Status.SetStatus(EStatusKind.Failed);
                     CurrentCancellationTokenSource = null; // kill token
 
                     Log.Error("{Exception}", e);
 
                     FLogger.AppendError();
-                    FLogger.AppendText(e.Message, Constants.WHITE, true);
-                    FLogger.AppendText("      " + e.StackTrace.SubstringBefore('\n').Trim(), Constants.WHITE, true);
+                    if ((e.InnerException ?? e) is { TargetSite.DeclaringType: not null } exception)
+                    {
+                        if (exception.TargetSite.ToString() == "CUE4Parse.FileProvider.GameFile get_Item(System.String)")
+                        {
+                            FLogger.AppendText(e.Message, Constants.WHITE, true);
+                        }
+                        else
+                        {
+                            var t = exception.GetType();
+                            FLogger.AppendText(t.Namespace + _dot, Constants.GRAY);
+                            FLogger.AppendText(t.Name, Constants.WHITE);
+                            FLogger.AppendText(_colon + " ", Constants.GRAY);
+                            FLogger.AppendText(exception.Message, Constants.RED, true);
+
+                            FLogger.AppendText(_at, _gray);
+                            FLogger.AppendText(exception.TargetSite.DeclaringType.FullName + _dot, Constants.GRAY);
+                            FLogger.AppendText(exception.TargetSite.Name, Constants.YELLOW);
+
+                            var p = exception.TargetSite.GetParameters();
+                            var parameters = new string[p.Length];
+                            for (int i = 0; i < parameters.Length; i++)
+                            {
+                                parameters[i] = p[i].ParameterType.Name + " " + p[i].Name;
+                            }
+                            FLogger.AppendText("(" + string.Join(", ", parameters) + ")", Constants.GRAY, true);
+                        }
+                    }
                     return;
                 }
             }
 
-            _applicationView.Status = EStatusKind.Completed;
+            _applicationView.Status.SetStatus(EStatusKind.Completed);
             CurrentCancellationTokenSource = null; // kill token
         }
     }

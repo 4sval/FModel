@@ -64,12 +64,14 @@ public partial class DictionaryEditor
             {
                 case "Versioning Configuration (Custom Versions)":
                     CustomVersions = JsonConvert.DeserializeObject<List<FCustomVersion>>(MyAvalonEditor.Document.Text);
-                    DialogResult = !CustomVersions.SequenceEqual(_defaultCustomVersions);
+                    // DialogResult = !CustomVersions.SequenceEqual(_defaultCustomVersions);
+                    DialogResult = true;
                     Close();
                     break;
                 case "Versioning Configuration (Options)":
                     Options = JsonConvert.DeserializeObject<Dictionary<string, bool>>(MyAvalonEditor.Document.Text);
-                    DialogResult = !Options.SequenceEqual(_defaultOptions);
+                    // DialogResult = !Options.SequenceEqual(_defaultOptions);
+                    DialogResult = true;
                     Close();
                     break;
                 default:
@@ -78,8 +80,27 @@ public partial class DictionaryEditor
         }
         catch
         {
-            HeBrokeIt.Text = "GG YOU BROKE THE FORMAT, FIX THE JSON OR CANCEL THE CHANGES!";
+            HeBrokeIt.Text = "GG YOU BROKE THE FORMAT, FIX THE JSON OR RESET THE CHANGES!";
             HeBrokeIt.Foreground = new SolidColorBrush((Color) ColorConverter.ConvertFromString(Constants.RED));
         }
+    }
+
+    private void OnReset(object sender, RoutedEventArgs e)
+    {
+        if (!_enableElements)
+            return;
+
+        MyAvalonEditor.Document = Title switch
+        {
+            "Versioning Configuration (Custom Versions)" => new TextDocument
+            {
+                Text = JsonConvert.SerializeObject(_defaultCustomVersions, Formatting.Indented)
+            },
+            "Versioning Configuration (Options)" => new TextDocument
+            {
+                Text = JsonConvert.SerializeObject(_defaultOptions, Formatting.Indented)
+            },
+            _ => throw new NotImplementedException()
+        };
     }
 }

@@ -1,8 +1,8 @@
+using CUE4Parse.GameTypes.FN.Enums;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
-using CUE4Parse_Fortnite.Enums;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -101,20 +101,8 @@ public class BaseCommunity : BaseIcon
     {
         if (!bShort) return base.GetCosmeticSeason(seasonNumber);
         var s = seasonNumber["Cosmetics.Filter.Season.".Length..];
-        var number = int.Parse(s);
-
-        switch (number)
-        {
-            case 10:
-                s = "X";
-                break;
-            case > 18:
-                number += 2;
-                s = number.ToString();
-                break;
-        }
-
-        return $"C{number / 10 + 1} S{s[^1..]}";
+        (int chapterIdx, int seasonIdx) = GetInternalSID(int.Parse(s));
+        return $"C{chapterIdx} S{seasonIdx}";
     }
 
     private new void DrawBackground(SKCanvas c)

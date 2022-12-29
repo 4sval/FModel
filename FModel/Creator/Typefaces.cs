@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 using CUE4Parse.UE4.Versions;
@@ -41,6 +41,14 @@ public class Typefaces
     private const string _BURBANK_SMALL_BLACK = "burbanksmall-black";
     private const string _BURBANK_SMALL_BOLD = "burbanksmall-bold";
 
+    // PandaGame
+    private const string _PANDAGAME_BASE_PATH = "/Game/Panda_Main/UI/Fonts/";
+    private const string _NORMS_STD_CONDENSED_EXTRABOLD_ITALIC = "Norms/TT_Norms_Std_Condensed_ExtraBold_Italic";
+    private const string _NORMS_PRO_EXTRABOLD_ITALIC = "Norms/TT_Norms_Pro_ExtraBold_Italic";
+    private const string _NORMS_STD_CONDENSED_MEDIUM = "Norms/TT_Norms_Std_Condensed_Medium";
+    private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
+    private const string _XIANGHEHEI_SC_PRO_HEAVY = "XiangHeHei_SC/MXiangHeHeiSCPro-Heavy";
+
     // Spellbreak
     private const string _SPELLBREAK_BASE_PATH = "/Game/UI/Fonts/";
     private const string _MONTSERRAT_SEMIBOLD = "Montserrat-Semibold";
@@ -72,206 +80,166 @@ public class Typefaces
 
     public Typefaces(CUE4ParseViewModel viewModel)
     {
-        byte[] data;
         _viewModel = viewModel;
         var language = UserSettings.Default.AssetLanguage;
+
         Default = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
 
         switch (viewModel.Game)
         {
             case FGame.FortniteGame:
             {
-                var namePath = _FORTNITE_BASE_PATH +
-                               language switch
-                               {
-                                   ELanguage.Korean => _ASIA_ERINM,
-                                   ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                   ELanguage.Japanese => _NIS_JYAU,
-                                   ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
-                                   ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
-                                   ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
-                                   _ => string.Empty
-                               };
-                if (viewModel.Provider.TrySaveAsset(namePath + _EXT, out data))
-                {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    DisplayName = SKTypeface.FromStream(m);
-                }
-                else DisplayName = Default;
+                DisplayName = OnTheFly(_FORTNITE_BASE_PATH +
+                                       language switch
+                                       {
+                                           ELanguage.Korean => _ASIA_ERINM,
+                                           ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
+                                           ELanguage.Japanese => _NIS_JYAU,
+                                           ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                           ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                           ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                           _ => string.Empty
+                                       } + _EXT);
 
-                var descriptionPath = _FORTNITE_BASE_PATH +
-                                      language switch
-                                      {
-                                          ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
-                                          ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
-                                          ELanguage.Arabic => _NOTO_SANS_ARABIC_REGULAR,
-                                          ELanguage.TraditionalChinese => _NOTO_SANS_TC_REGULAR,
-                                          ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
-                                          _ => _NOTO_SANS_REGULAR
-                                      };
-                if (viewModel.Provider.TrySaveAsset(descriptionPath + _EXT, out data))
-                {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    Description = SKTypeface.FromStream(m);
-                }
-                else Description = Default;
+                Description = OnTheFly(_FORTNITE_BASE_PATH +
+                                       language switch
+                                       {
+                                           ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
+                                           ELanguage.Japanese => _NOTO_SANS_JP_BOLD,
+                                           ELanguage.Arabic => _NOTO_SANS_ARABIC_REGULAR,
+                                           ELanguage.TraditionalChinese => _NOTO_SANS_TC_REGULAR,
+                                           ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
+                                           _ => _NOTO_SANS_REGULAR
+                                       } + _EXT);
 
-                var bottomPath = _FORTNITE_BASE_PATH +
-                                 language switch
-                                 {
-                                     ELanguage.Korean => string.Empty,
-                                     ELanguage.Japanese => string.Empty,
-                                     ELanguage.Arabic => string.Empty,
-                                     ELanguage.TraditionalChinese => string.Empty,
-                                     ELanguage.Chinese => string.Empty,
-                                     _ => _BURBANK_SMALL_BOLD
-                                 };
-                if (viewModel.Provider.TrySaveAsset(bottomPath + _EXT, out data))
-                {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    Bottom = SKTypeface.FromStream(m);
-                }
-                // else keep it null
+                Bottom = OnTheFly(_FORTNITE_BASE_PATH +
+                                  language switch
+                                  {
+                                      ELanguage.Korean => string.Empty,
+                                      ELanguage.Japanese => string.Empty,
+                                      ELanguage.Arabic => string.Empty,
+                                      ELanguage.TraditionalChinese => string.Empty,
+                                      ELanguage.Chinese => string.Empty,
+                                      _ => _BURBANK_SMALL_BOLD
+                                  } + _EXT, true);
 
-                if (viewModel.Provider.TrySaveAsset(_FORTNITE_BASE_PATH + _BURBANK_BIG_CONDENSED_BLACK + _EXT, out data))
-                {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    BundleNumber = SKTypeface.FromStream(m);
-                }
-                else BundleNumber = Default;
+                BundleNumber = OnTheFly(_FORTNITE_BASE_PATH + _BURBANK_BIG_CONDENSED_BLACK + _EXT);
 
-                var bundleNamePath = _FORTNITE_BASE_PATH +
-                                     language switch
-                                     {
-                                         ELanguage.Korean => _ASIA_ERINM,
-                                         ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                         ELanguage.Japanese => _NIS_JYAU,
-                                         ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
-                                         ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
-                                         ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
-                                         _ => string.Empty
-                                     };
-                if (viewModel.Provider.TrySaveAsset(bundleNamePath + _EXT, out data))
-                {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    Bundle = SKTypeface.FromStream(m);
-                }
-                else Bundle = BundleNumber;
+                Bundle = OnTheFly(_FORTNITE_BASE_PATH +
+                                  language switch
+                                  {
+                                      ELanguage.Korean => _ASIA_ERINM,
+                                      ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
+                                      ELanguage.Japanese => _NIS_JYAU,
+                                      ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                      ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                      ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                      _ => string.Empty
+                                  } + _EXT, true) ?? BundleNumber;
 
-                var tandemDisplayNamePath = _FORTNITE_BASE_PATH +
-                                            language switch
-                                            {
-                                                ELanguage.Korean => _ASIA_ERINM,
-                                                ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
-                                                ELanguage.Japanese => _NIS_JYAU,
-                                                ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
-                                                ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
-                                                ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
-                                                _ => _BURBANK_BIG_REGULAR_BLACK
-                                            };
-                if (viewModel.Provider.TrySaveAsset(tandemDisplayNamePath + _EXT, out data))
-                {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    TandemDisplayName = SKTypeface.FromStream(m);
-                }
-                else TandemDisplayName = Default;
+                TandemDisplayName = OnTheFly(_FORTNITE_BASE_PATH +
+                                             language switch
+                                             {
+                                                 ELanguage.Korean => _ASIA_ERINM,
+                                                 ELanguage.Russian => _BURBANK_BIG_CONDENSED_BLACK,
+                                                 ELanguage.Japanese => _NIS_JYAU,
+                                                 ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                                 ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                                 ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                                 _ => _BURBANK_BIG_REGULAR_BLACK
+                                             } + _EXT);
 
-                var tandemGeneralDescPath = _FORTNITE_BASE_PATH +
-                                            language switch
-                                            {
-                                                ELanguage.Korean => _ASIA_ERINM,
-                                                ELanguage.Japanese => _NIS_JYAU,
-                                                ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
-                                                ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
-                                                ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
-                                                _ => _BURBANK_SMALL_BLACK
-                                            };
-                if (viewModel.Provider.TrySaveAsset(tandemGeneralDescPath + _EXT, out data))
-                {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    TandemGenDescription = SKTypeface.FromStream(m);
-                }
-                else TandemGenDescription = Default;
+                TandemGenDescription = OnTheFly(_FORTNITE_BASE_PATH +
+                                                language switch
+                                                {
+                                                    ELanguage.Korean => _ASIA_ERINM,
+                                                    ELanguage.Japanese => _NIS_JYAU,
+                                                    ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                                    ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                                    ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                                    _ => _BURBANK_SMALL_BLACK
+                                                } + _EXT);
 
-                var tandemAdditionalDescPath = _FORTNITE_BASE_PATH +
-                                               language switch
-                                               {
-                                                   ELanguage.Korean => _ASIA_ERINM,
-                                                   ELanguage.Japanese => _NIS_JYAU,
-                                                   ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
-                                                   ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
-                                                   ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
-                                                   _ => _BURBANK_SMALL_BOLD
-                                               };
-                if (viewModel.Provider.TrySaveAsset(tandemAdditionalDescPath + _EXT, out data))
-                {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    TandemAddDescription = SKTypeface.FromStream(m);
-                }
-                else TandemAddDescription = Default;
-
+                TandemAddDescription = OnTheFly(_FORTNITE_BASE_PATH +
+                                                language switch
+                                                {
+                                                    ELanguage.Korean => _ASIA_ERINM,
+                                                    ELanguage.Japanese => _NIS_JYAU,
+                                                    ELanguage.Arabic => _NOTO_SANS_ARABIC_BLACK,
+                                                    ELanguage.TraditionalChinese => _NOTO_SANS_TC_BLACK,
+                                                    ELanguage.Chinese => _NOTO_SANS_SC_BLACK,
+                                                    _ => _BURBANK_SMALL_BOLD
+                                                } + _EXT);
                 break;
             }
             case FGame.WorldExplorers:
             {
-                var namePath = _BATTLE_BREAKERS_BASE_PATH +
-                               language switch
-                               {
-                                   ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
-                                   ELanguage.Russian => _LATO_BLACK,
-                                   ELanguage.Japanese => _NOTO_SANS_JP_REGULAR,
-                                   ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
-                                   _ => _HEMIHEAD426
-                               };
-                if (viewModel.Provider.TrySaveAsset(namePath + _EXT, out data))
-                {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    DisplayName = SKTypeface.FromStream(m);
-                }
-                else DisplayName = Default;
+                DisplayName = OnTheFly(_BATTLE_BREAKERS_BASE_PATH +
+                                       language switch
+                                       {
+                                           ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
+                                           ELanguage.Russian => _LATO_BLACK,
+                                           ELanguage.Japanese => _NOTO_SANS_JP_REGULAR,
+                                           ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
+                                           _ => _HEMIHEAD426
+                                       } + _EXT);
 
-                var descriptionPath = _BATTLE_BREAKERS_BASE_PATH +
-                                      language switch
-                                      {
-                                          ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
-                                          ELanguage.Russian => _LATO_BLACK,
-                                          ELanguage.Japanese => _NOTO_SANS_JP_REGULAR,
-                                          ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
-                                          _ => _HEMIHEAD426
-                                      };
-                if (viewModel.Provider.TrySaveAsset(descriptionPath + _EXT, out data))
-                {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    Description = SKTypeface.FromStream(m);
-                }
-                else Description = Default;
-
+                Description = OnTheFly(_BATTLE_BREAKERS_BASE_PATH +
+                                       language switch
+                                       {
+                                           ELanguage.Korean => _NOTO_SANS_KR_REGULAR,
+                                           ELanguage.Russian => _LATO_BLACK,
+                                           ELanguage.Japanese => _NOTO_SANS_JP_REGULAR,
+                                           ELanguage.Chinese => _NOTO_SANS_SC_REGULAR,
+                                           _ => _HEMIHEAD426
+                                       } + _EXT);
                 break;
             }
             case FGame.g3:
             {
-                if (viewModel.Provider.TrySaveAsset(_SPELLBREAK_BASE_PATH + _QUADRAT_BOLD + _EXT, out data))
+                DisplayName = OnTheFly(_SPELLBREAK_BASE_PATH + _QUADRAT_BOLD + _EXT);
+                Description = OnTheFly(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD + _EXT);
+                break;
+            }
+            case FGame.PandaGame:
+            {
+                DisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
                 {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    DisplayName = SKTypeface.FromStream(m);
-                }
-                else DisplayName = Default;
+                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
+                    _ => _NORMS_PRO_EXTRABOLD_ITALIC
+                } + _EXT);
 
-                if (viewModel.Provider.TrySaveAsset(_SPELLBREAK_BASE_PATH + _MONTSERRAT_SEMIBOLD + _EXT, out data))
+                Description = OnTheFly(_PANDAGAME_BASE_PATH + language switch
                 {
-                    var m = new MemoryStream(data) { Position = 0 };
-                    Description = SKTypeface.FromStream(m);
-                }
-                else Description = Default;
+                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_BLACK,
+                    _ => _NORMS_STD_CONDENSED_MEDIUM
+                } + _EXT);
 
+                TandemDisplayName = OnTheFly(_PANDAGAME_BASE_PATH + language switch
+                {
+                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_BLACK,
+                    _ => _NORMS_STD_CONDENSED_EXTRABOLD_ITALIC
+                } + _EXT);
+
+                TandemGenDescription = OnTheFly(_PANDAGAME_BASE_PATH + language switch
+                {
+                    ELanguage.Chinese => _XIANGHEHEI_SC_PRO_HEAVY,
+                    _ => _NORMS_STD_CONDENSED_MEDIUM
+                } + _EXT);
+                break;
+            }
+            default:
+            {
+                DisplayName = Default;
+                Description = Default;
                 break;
             }
         }
     }
 
-    public SKTypeface OnTheFly(string path)
+    public SKTypeface OnTheFly(string path, bool fallback = false)
     {
-        if (!_viewModel.Provider.TrySaveAsset(path, out var data)) return Default;
+        if (!_viewModel.Provider.TrySaveAsset(path, out var data)) return fallback ? null : Default;
         var m = new MemoryStream(data) { Position = 0 };
         return SKTypeface.FromStream(m);
     }

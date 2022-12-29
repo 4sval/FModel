@@ -163,6 +163,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     private TimeSpan _length => _waveSource?.GetLength() ?? TimeSpan.Zero;
     private TimeSpan _position => _waveSource?.GetPosition() ?? TimeSpan.Zero;
     private PlaybackState _playbackState => _soundOut?.PlaybackState ?? PlaybackState.Stopped;
+    private bool _hideToggle = false;
 
     public SpectrumProvider Spectrum { get; private set; }
     public float[] FftData { get; private set; }
@@ -407,6 +408,13 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     {
         if (_soundOut == null || IsStopped) return;
         _soundOut.Stop();
+    }
+
+    public void HideToggle()
+    {
+        if (!IsPlaying) return;
+        _hideToggle = !_hideToggle;
+        RaiseSourcePropertyChangedEvent(ESourceProperty.HideToggle, _hideToggle);
     }
 
     public void SkipTo(double percentage)

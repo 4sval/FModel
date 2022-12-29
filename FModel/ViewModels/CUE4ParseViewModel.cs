@@ -23,6 +23,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Shaders;
@@ -38,7 +39,11 @@ using FModel.Services;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
+using FModel.Views.Snooper;
 using Newtonsoft.Json;
+using Ookii.Dialogs.Wpf;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 using Serilog;
 using SkiaSharp;
 
@@ -54,7 +59,6 @@ public class CUE4ParseViewModel : ViewModel
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private FGame _game;
-
     public FGame Game
     {
         get => _game;
@@ -66,6 +70,39 @@ public class CUE4ParseViewModel : ViewModel
     {
         get => _modelIsOverwritingMaterial;
         set => SetProperty(ref _modelIsOverwritingMaterial, value);
+    }
+
+    private bool _modelIsWaitingAnimation;
+    public bool ModelIsWaitingAnimation
+    {
+        get => _modelIsWaitingAnimation;
+        set => SetProperty(ref _modelIsWaitingAnimation, value);
+    }
+
+    private Snooper _snooper;
+    public Snooper SnooperViewer
+    {
+        get
+        {
+            return Application.Current.Dispatcher.Invoke(delegate
+            {
+                return _snooper ??= new Snooper(GameWindowSettings.Default,
+                    new NativeWindowSettings
+                    {
+                        Size = new OpenTK.Mathematics.Vector2i(
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75),
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85)),
+                        NumberOfSamples = Constants.SAMPLES_COUNT,
+                        WindowBorder = WindowBorder.Resizable,
+                        Flags = ContextFlags.ForwardCompatible,
+                        Profile = ContextProfile.Core,
+                        APIVersion = new Version(4, 6),
+                        StartVisible = false,
+                        StartFocused = false,
+                        Title = "3D Viewer"
+                    });
+            });
+        }
     }
 
     public AbstractVfsFileProvider Provider { get; }
@@ -103,7 +140,9 @@ public class CUE4ParseViewModel : ViewModel
             }
             default:
             {
-                Game = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\").ToEnum(FGame.Unknown);
+                var parent = gameDirectory.SubstringBeforeLast("\\Content").SubstringAfterLast("\\");
+                if (gameDirectory.Contains("eFootball")) parent = gameDirectory.SubstringBeforeLast("\\pak").SubstringAfterLast("\\");
+                Game = Helper.IAmThePanda(parent) ? FGame.PandaGame : parent.ToEnum(FGame.Unknown);
                 var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                     customVersions: UserSettings.Default.OverridedCustomVersions[Game],
                     optionOverrides: UserSettings.Default.OverridedOptions[Game]);
@@ -124,6 +163,13 @@ public class CUE4ParseViewModel : ViewModel
                         Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
                             {
                                 new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\FortniteGame\\Saved\\PersistentDownloadDir\\InstalledBundles"),
+                            },
+                            SearchOption.AllDirectories, true, versions);
+                        break;
+                    case FGame.eFootball:
+                        Provider = new DefaultFileProvider(new DirectoryInfo(gameDirectory), new List<DirectoryInfo>
+                            {
+                                new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
                             },
                             SearchOption.AllDirectories, true, versions);
                         break;
@@ -275,7 +321,7 @@ public class CUE4ParseViewModel : ViewModel
                 file.FileCount = vfs.FileCount;
             }
 
-            Game = Provider.GameName.ToEnum(Game);
+            Game = Helper.IAmThePanda(Provider.GameName) ? FGame.PandaGame : Provider.GameName.ToEnum(Game);
         });
     }
 
@@ -292,16 +338,18 @@ public class CUE4ParseViewModel : ViewModel
 
     public async Task RefreshAes()
     {
-        if (Game == FGame.FortniteGame) // game directory dependent, we don't have the provider game name yet since we don't have aes keys
-        {
-            await _threadWorkerView.Begin(cancellationToken =>
-            {
-                var aes = _apiEndpointView.BenbotApi.GetAesKeys(cancellationToken);
-                if (aes?.MainKey == null && aes?.DynamicKeys == null && aes?.Version == null) return;
+        // game directory dependent, we don't have the provider game name yet since we don't have aes keys
+        // except when this comes from the AES Manager
+        if (!UserSettings.IsEndpointValid(Game, EEndpointType.Aes, out var endpoint))
+            return;
 
-                UserSettings.Default.AesKeys[Game] = aes;
-            });
-        }
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            var aes = _apiEndpointView.DynamicApi.GetAesKeys(cancellationToken, endpoint.Url, endpoint.Path);
+            if (aes is not { IsValid: true }) return;
+
+            UserSettings.Default.AesKeys[Game] = aes;
+        });
     }
 
     public async Task InitInformation()
@@ -318,32 +366,36 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    public async Task InitBenMappings()
+    public async Task InitMappings()
     {
-        if (Game != FGame.FortniteGame) return;
+        if (!UserSettings.IsEndpointValid(Game, EEndpointType.Mapping, out var endpoint))
+        {
+            Provider.MappingsContainer = null;
+            return;
+        }
 
         await _threadWorkerView.Begin(cancellationToken =>
         {
-            if (UserSettings.Default.OverwriteMapping && File.Exists(UserSettings.Default.MappingFilePath))
+            if (endpoint.Overwrite && File.Exists(endpoint.FilePath))
             {
-                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(UserSettings.Default.MappingFilePath);
+                Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(endpoint.FilePath);
                 FLogger.AppendInformation();
-                FLogger.AppendText($"Mappings pulled from '{UserSettings.Default.MappingFilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
+                FLogger.AppendText($"Mappings pulled from '{endpoint.FilePath.SubstringAfterLast("\\")}'", Constants.WHITE, true);
             }
-            else
+            else if (endpoint.IsValid)
             {
                 var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                var mappings = _apiEndpointView.BenbotApi.GetMappings(cancellationToken);
+                var mappings = _apiEndpointView.DynamicApi.GetMappings(cancellationToken, endpoint.Url, endpoint.Path);
                 if (mappings is { Length: > 0 })
                 {
                     foreach (var mapping in mappings)
                     {
-                        if (mapping.Meta.CompressionMethod != "Oodle") continue;
+                        if (!mapping.IsValid) continue;
 
                         var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
                         if (!File.Exists(mappingPath))
                         {
-                            _apiEndpointView.BenbotApi.DownloadFile(mapping.Url, mappingPath);
+                            _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
                         }
 
                         Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
@@ -352,10 +404,11 @@ public class CUE4ParseViewModel : ViewModel
                         break;
                     }
                 }
-                else
+
+                if (Provider.MappingsContainer == null)
                 {
                     var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
-                    if (Provider.MappingsContainer != null || latestUsmaps.Length <= 0) return;
+                    if (latestUsmaps.Length <= 0) return;
 
                     var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
                     Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
@@ -370,6 +423,7 @@ public class CUE4ParseViewModel : ViewModel
     {
         await LoadGameLocalizedResources();
         await LoadHotfixedLocalizedResources();
+        await _threadWorkerView.Begin(_ => Utils.Typefaces = new Typefaces(this));
         if (LocalizedResourcesCount > 0)
         {
             FLogger.AppendInformation();
@@ -388,7 +442,6 @@ public class CUE4ParseViewModel : ViewModel
         await _threadWorkerView.Begin(cancellationToken =>
         {
             LocalizedResourcesCount = Provider.LoadLocalization(UserSettings.Default.AssetLanguage, cancellationToken);
-            Utils.Typefaces = new Typefaces(this);
         });
     }
 
@@ -401,7 +454,7 @@ public class CUE4ParseViewModel : ViewModel
         if (Game != FGame.FortniteGame || HotfixedResourcesDone) return;
         await _threadWorkerView.Begin(cancellationToken =>
         {
-            var hotfixes = ApplicationService.ApiEndpointView.BenbotApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
+            var hotfixes = ApplicationService.ApiEndpointView.CentralApi.GetHotfixes(cancellationToken, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
             if (hotfixes == null) return;
 
             HotfixedResourcesDone = true;
@@ -440,67 +493,54 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
-    {
-        foreach (var asset in folder.AssetsList.Assets)
-        {
-            Thread.Sleep(10);
-            cancellationToken.ThrowIfCancellationRequested();
-            try
-            {
-                Extract(asset.FullPath, TabControl.HasNoTabs);
-            }
-            catch
-            {
-                // ignore
-            }
-        }
-
-        foreach (var f in folder.Folders) ExtractFolder(cancellationToken, f);
-    }
-
-    public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
-    {
-        foreach (var asset in folder.AssetsList.Assets)
-        {
-            Thread.Sleep(10);
-            cancellationToken.ThrowIfCancellationRequested();
-            ExportData(asset.FullPath);
-        }
-
-        foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
-    }
-
-    public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
-    {
-        foreach (var asset in folder.AssetsList.Assets)
-        {
-            Thread.Sleep(10);
-            cancellationToken.ThrowIfCancellationRequested();
-            try
-            {
-                Extract(asset.FullPath, TabControl.HasNoTabs, true);
-            }
-            catch
-            {
-                // ignore
-            }
-        }
-
-        foreach (var f in folder.Folders) SaveFolder(cancellationToken, f);
-    }
-
     public void ExtractSelected(CancellationToken cancellationToken, IEnumerable<AssetItem> assetItems)
     {
         foreach (var asset in assetItems)
         {
             Thread.Sleep(10);
             cancellationToken.ThrowIfCancellationRequested();
-            Extract(asset.FullPath, TabControl.HasNoTabs);
+            Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs);
         }
     }
 
-    public void Extract(string fullPath, bool addNewTab = false, bool bulkSave = false)
+    private void BulkFolder(CancellationToken cancellationToken, TreeItem folder, Action<AssetItem> action)
+    {
+        foreach (var asset in folder.AssetsList.Assets)
+        {
+            Thread.Sleep(10);
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                action(asset);
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        foreach (var f in folder.Folders) BulkFolder(cancellationToken, f, action);
+    }
+
+    public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => ExportData(asset.FullPath));
+
+    public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs));
+
+    public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Properties | EBulkType.Auto));
+
+    public void TextureFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Textures | EBulkType.Auto));
+
+    public void ModelFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Meshes | EBulkType.Auto));
+
+    public void AnimationFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Animations | EBulkType.Auto));
+
+    public void Extract(CancellationToken cancellationToken, string fullPath, bool addNewTab = false, EBulkType bulk = EBulkType.None)
     {
         Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", fullPath);
 
@@ -518,6 +558,8 @@ public class CUE4ParseViewModel : ViewModel
             TabControl.SelectedTab.Directory = directory;
         }
 
+        var autoProperties = bulk == (EBulkType.Properties | EBulkType.Auto);
+        var autoTextures = bulk == (EBulkType.Textures | EBulkType.Auto);
         TabControl.SelectedTab.ClearImages();
         TabControl.SelectedTab.ResetDocumentText();
         TabControl.SelectedTab.ScrollTrigger = null;
@@ -527,13 +569,13 @@ public class CUE4ParseViewModel : ViewModel
             case "uasset":
             case "umap":
             {
-                var exports = Provider.LoadObjectExports(fullPath);
-                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), bulkSave);
-                if (bulkSave) break;
+                var exports = Provider.LoadObjectExports(fullPath); // cancellationToken
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), autoProperties);
+                if (HasFlag(bulk, EBulkType.Properties)) break; // do not search for viewable exports if we are dealing with jsons
 
                 foreach (var e in exports)
                 {
-                    if (CheckExport(e))
+                    if (CheckExport(cancellationToken, e, bulk))
                         break;
                 }
 
@@ -558,6 +600,8 @@ public class CUE4ParseViewModel : ViewModel
             case "xml":
             case "css":
             case "csv":
+            case "pem":
+            case "tps":
             case "js":
             case "po":
             case "h":
@@ -567,7 +611,7 @@ public class CUE4ParseViewModel : ViewModel
                     using var stream = new MemoryStream(data) { Position = 0 };
                     using var reader = new StreamReader(stream);
 
-                    TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), autoProperties);
                 }
 
                 break;
@@ -577,7 +621,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var metadata = new FTextLocalizationMetaDataResource(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), autoProperties);
                 }
 
                 break;
@@ -587,7 +631,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var locres = new FTextLocalizationResource(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), autoProperties);
                 }
 
                 break;
@@ -597,7 +641,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var registry = new FAssetRegistryState(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), autoProperties);
                 }
 
                 break;
@@ -608,7 +652,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var wwise = new WwiseReader(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), autoProperties);
                     foreach (var (name, data) in wwise.WwiseEncodedMedias)
                     {
                         SaveAndPlaySound(fullPath.SubstringBeforeWithLast("/") + name, "WEM", data);
@@ -629,7 +673,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var header = new FOodleDictionaryArchive(archive).Header;
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), autoProperties);
                 }
 
                 break;
@@ -641,7 +685,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TrySaveAsset(fullPath, out var data))
                 {
                     using var stream = new MemoryStream(data) { Position = 0 };
-                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream));
+                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, SKBitmap.Decode(stream), autoTextures);
                 }
 
                 break;
@@ -661,7 +705,7 @@ public class CUE4ParseViewModel : ViewModel
                         canvas.DrawPicture(svg.Picture, paint);
                     }
 
-                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap);
+                    TabControl.SelectedTab.AddImage(fileName.SubstringBeforeLast("."), false, bitmap, autoTextures);
                 }
 
                 break;
@@ -678,7 +722,7 @@ public class CUE4ParseViewModel : ViewModel
                 if (Provider.TryCreateReader(fullPath, out var archive))
                 {
                     var ar = new FShaderCodeArchive(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), bulkSave);
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), autoProperties);
                 }
 
                 break;
@@ -692,28 +736,30 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
-    public void ExtractAndScroll(string fullPath, string objectName)
+    public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName)
     {
         Log.Information("User CTRL-CLICKED to extract '{FullPath}'", fullPath);
         TabControl.AddTab(fullPath.SubstringAfterLast('/'), fullPath.SubstringBeforeLast('/'));
         TabControl.SelectedTab.ScrollTrigger = objectName;
 
-        var exports = Provider.LoadObjectExports(fullPath);
+        var exports = Provider.LoadObjectExports(fullPath); // cancellationToken
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(exports, Formatting.Indented), false);
 
         foreach (var e in exports)
         {
-            if (CheckExport(e))
+            if (CheckExport(cancellationToken, e))
                 break;
         }
     }
 
-    private bool CheckExport(UObject export) // return true once you wanna stop searching for exports
+    private bool CheckExport(CancellationToken cancellationToken, UObject export, EBulkType bulk = EBulkType.None) // return true once you wanna stop searching for exports
     {
+        var isNone = bulk == EBulkType.None;
+        var loadTextures = isNone || HasFlag(bulk, EBulkType.Textures);
         switch (export)
         {
-            case USolarisDigest solarisDigest:
+            case USolarisDigest solarisDigest when isNone:
             {
                 if (!TabControl.CanAddTabs) return false;
 
@@ -722,13 +768,13 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.SetDocumentText(solarisDigest.ReadableCode, false);
                 return true;
             }
-            case UTexture2D texture:
+            case UTexture2D texture when loadTextures:
             {
-                TabControl.SelectedTab.AddImage(texture);
+                TabControl.SelectedTab.AddImage(texture, HasFlag(bulk, EBulkType.Auto));
                 return false;
             }
-            case UAkMediaAssetData:
-            case USoundWave:
+            case UAkMediaAssetData when isNone:
+            case USoundWave when isNone:
             {
                 var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
                 export.Decode(shouldDecompress, out var audioFormat, out var data);
@@ -738,45 +784,50 @@ public class CUE4ParseViewModel : ViewModel
                 SaveAndPlaySound(Path.Combine(TabControl.SelectedTab.Directory, TabControl.SelectedTab.Header.SubstringBeforeLast('.')).Replace('\\', '/'), audioFormat, data);
                 return false;
             }
-            case UStaticMesh when UserSettings.Default.PreviewStaticMeshes:
-            case USkeletalMesh when UserSettings.Default.PreviewSkeletalMeshes:
-            case UMaterialInstance when UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
+            case UWorld when isNone && UserSettings.Default.PreviewWorlds:
+            case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case USkeletalMesh when isNone && UserSettings.Default.PreviewSkeletalMeshes:
+            case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
                                         !(Game == FGame.FortniteGame && export.Owner != null && (export.Owner.Name.EndsWith($"/MI_OfferImages/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
-                                                                                                 export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
-                                                                                                 export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
+                                            export.Owner.Name.EndsWith($"/RenderSwitch_Materials/{export.Name}", StringComparison.OrdinalIgnoreCase) ||
+                                            export.Owner.Name.EndsWith($"/MI_BPTile/{export.Name}", StringComparison.OrdinalIgnoreCase))):
             {
-                Application.Current.Dispatcher.Invoke(delegate
-                {
-                    var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                    modelViewer.Load(export);
-                });
+                if (SnooperViewer.TryLoadExport(cancellationToken, export))
+                    SnooperViewer.Run();
                 return true;
             }
-            case UMaterialInstance m when ModelIsOverwritingMaterial:
+            case UMaterialInstance m when isNone && ModelIsOverwritingMaterial:
             {
-                Application.Current.Dispatcher.Invoke(delegate
-                {
-                    var modelViewer = Helper.GetWindow<ModelViewer>("Model Viewer", () => new ModelViewer().Show());
-                    modelViewer.Overwrite(m);
-                });
+                SnooperViewer.Renderer.Swap(m);
+                SnooperViewer.Run();
                 return true;
             }
-            case UStaticMesh when UserSettings.Default.SaveStaticMeshes:
-            case USkeletalMesh when UserSettings.Default.SaveSkeletalMeshes:
-            case UMaterialInstance when UserSettings.Default.SaveMaterials:
-            case USkeleton when UserSettings.Default.SaveSkeletonAsMesh:
-            case UAnimSequence when UserSettings.Default.SaveAnimations:
+            case UAnimSequence a when isNone && ModelIsWaitingAnimation:
             {
-                SaveExport(export);
+                SnooperViewer.Renderer.Animate(a);
+                SnooperViewer.Run();
+                return true;
+            }
+            case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
+            case USkeletalMesh when HasFlag(bulk, EBulkType.Meshes):
+            case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
+            // case UMaterialInstance when HasFlag(bulk, EBulkType.Materials): // read the fucking json
+            case UAnimSequence when HasFlag(bulk, EBulkType.Animations):
+            {
+                SaveExport(export, HasFlag(bulk, EBulkType.Auto));
                 return true;
             }
             default:
             {
+                if (!loadTextures)
+                    return false;
+
                 using var package = new CreatorPackage(export, UserSettings.Default.CosmeticStyle);
-                if (!package.TryConstructCreator(out var creator)) return false;
+                if (!package.TryConstructCreator(out var creator))
+                    return false;
 
                 creator.ParseForInfo();
-                TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw());
+                TabControl.SelectedTab.AddImage(export.Name, false, creator.Draw(), HasFlag(bulk, EBulkType.Auto));
                 return true;
             }
         }
@@ -809,23 +860,36 @@ public class CUE4ParseViewModel : ViewModel
         });
     }
 
-    private void SaveExport(UObject export)
+    private void SaveExport(UObject export, bool auto)
     {
         var exportOptions = new ExporterOptions
         {
-            TextureFormat = UserSettings.Default.TextureExportFormat,
             LodFormat = UserSettings.Default.LodExportFormat,
             MeshFormat = UserSettings.Default.MeshExportFormat,
+            MaterialFormat = UserSettings.Default.MaterialExportFormat,
+            TextureFormat = UserSettings.Default.TextureExportFormat,
+            SocketFormat = UserSettings.Default.SocketExportFormat,
             Platform = UserSettings.Default.OverridedPlatform,
             ExportMorphTargets = UserSettings.Default.SaveMorphTargets
         };
         var toSave = new Exporter(export, exportOptions);
-        var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
-        if (toSave.TryWriteToDir(toSaveDirectory, out var savedFileName))
+
+        string dir;
+        if (!auto)
         {
-            Log.Information("Successfully saved {FileName}", savedFileName);
+            var folderBrowser = new VistaFolderBrowserDialog();
+            if (folderBrowser.ShowDialog() == true)
+                dir = folderBrowser.SelectedPath;
+            else return;
+        }
+        else dir = UserSettings.Default.ModelDirectory;
+
+        var toSaveDirectory = new DirectoryInfo(dir);
+        if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
+        {
+            Log.Information("Successfully saved {FilePath}", savedFilePath);
             FLogger.AppendInformation();
-            FLogger.AppendText($"Successfully saved {savedFileName}", Constants.WHITE, true);
+            FLogger.AppendText($"Successfully saved {label}", Constants.WHITE, true);
         }
         else
         {
@@ -857,5 +921,10 @@ public class CUE4ParseViewModel : ViewModel
             FLogger.AppendError();
             FLogger.AppendText($"Could not export '{fileName}'", Constants.WHITE, true);
         }
+    }
+
+    private static bool HasFlag(EBulkType a, EBulkType b)
+    {
+        return (a & b) == b;
     }
 }

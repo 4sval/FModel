@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FModel", "FModel.csproj", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CUE4Parse", "..\CUE4Parse\CUE4Parse\CUE4Parse.csproj", "{C4620341-BBB7-4384-AC7D-5082D3E0386E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CUE4Parse-Fortnite", "..\CUE4Parse\CUE4Parse-Fortnite\CUE4Parse-Fortnite.csproj", "{7765FB4C-B54D-427B-ABB6-1073687E56BD}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CUE4Parse-Conversion", "..\CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj", "{D0E1E8F7-F56D-469A-8E24-C2439B9FFD83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpicManifestParser", "..\EpicManifestParser\src\EpicManifestParser\EpicManifestParser.csproj", "{D4958A8B-815B-421D-A988-2A4E8E2B582D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{C4620341-BBB7-4384-AC7D-5082D3E0386E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4620341-BBB7-4384-AC7D-5082D3E0386E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4620341-BBB7-4384-AC7D-5082D3E0386E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7765FB4C-B54D-427B-ABB6-1073687E56BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7765FB4C-B54D-427B-ABB6-1073687E56BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7765FB4C-B54D-427B-ABB6-1073687E56BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7765FB4C-B54D-427B-ABB6-1073687E56BD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D0E1E8F7-F56D-469A-8E24-C2439B9FFD83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D0E1E8F7-F56D-469A-8E24-C2439B9FFD83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0E1E8F7-F56D-469A-8E24-C2439B9FFD83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0E1E8F7-F56D-469A-8E24-C2439B9FFD83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4958A8B-815B-421D-A988-2A4E8E2B582D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4958A8B-815B-421D-A988-2A4E8E2B582D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4958A8B-815B-421D-A988-2A4E8E2B582D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4958A8B-815B-421D-A988-2A4E8E2B582D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

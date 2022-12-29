@@ -322,7 +322,15 @@ public sealed class Timeclock : UserControl
         }
         else
         {
-            Dispatcher.BeginInvoke((Action) delegate { _timeText.Text = TimeSpan.Zero.ToString(TimeFormat); });
+            ZeroTime();
         }
+    }
+
+    private void ZeroTime()
+    {
+        Dispatcher.BeginInvoke((Action) delegate
+        {
+            _timeText.Text = TimeSpan.Zero.ToString(TimeFormat);
+        });
     }
 }

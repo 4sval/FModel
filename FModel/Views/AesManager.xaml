@@ -29,7 +29,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
-            <TextBlock Text="What to do?" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="Instruction" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
             <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" MaxWidth="576"
                        Text="In order to decipher archives' information, an AES key, in most cases, is needed. Here you can set the key for your static and dynamic archives. If you don't know what key to use for your set game, simply Google it. Keys must start with &quot;0x&quot; and contains 64 more characters." />
         </StackPanel>
@@ -81,16 +81,13 @@
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="False"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Refresh" Click="OnRefreshAes">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding CUE4Parse.Game}" Value="{x:Static local:FGame.FortniteGame}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
+                    <Button.Visibility>
+                        <!-- if aes custom endpoint is enabled, make this visible  -->
+                        <MultiBinding Converter="{x:Static converters:EndpointToTypeConverter.Instance}">
+                            <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:Views.AesManager}}" Path="DataContext" />
+                            <Binding Source="{x:Static local:EEndpointType.Aes}" />
+                        </MultiBinding>
+                    </Button.Visibility>
                 </Button>
             </Grid>
         </Border>

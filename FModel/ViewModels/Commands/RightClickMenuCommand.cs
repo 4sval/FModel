@@ -29,9 +29,8 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(asset.FullPath, true);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, true);
                     }
-
                     break;
                 case "Assets_Export_Data":
                     foreach (var asset in assetItems)
@@ -39,25 +38,36 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.ExportData(asset.FullPath);
                     }
-
                     break;
                 case "Assets_Save_Properties":
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(asset.FullPath);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Properties);
                         contextViewModel.CUE4Parse.TabControl.SelectedTab.SaveProperty(false);
                     }
-
                     break;
-                case "Assets_Save_Texture":
+                case "Assets_Save_Textures":
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(asset.FullPath);
-                        contextViewModel.CUE4Parse.TabControl.SelectedTab.SaveImage(false);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Textures);
+                        contextViewModel.CUE4Parse.TabControl.SelectedTab.SaveImages(false);
                     }
-
+                    break;
+                case "Assets_Save_Models":
+                    foreach (var asset in assetItems)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Meshes);
+                    }
+                    break;
+                case "Assets_Save_Animations":
+                    foreach (var asset in assetItems)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Animations);
+                    }
                     break;
             }
         });

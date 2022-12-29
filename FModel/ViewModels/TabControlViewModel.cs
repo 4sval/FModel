@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Textures;
+using Ookii.Dialogs.Wpf;
 
 namespace FModel.ViewModels;
 
@@ -63,6 +64,12 @@ public class TabImage : ViewModel
 
     private void SetImage(SKBitmap bitmap)
     {
+        if (bitmap is null)
+        {
+            ImageBuffer = null;
+            Image = null;
+            return;
+        }
         _bmp = bitmap;
         using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
         using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
@@ -94,6 +101,8 @@ public class TabItem : ViewModel
         get => _directory;
         set => SetProperty(ref _directory, value);
     }
+
+    public string FullPath => this.Directory + "/" + this.Header;
 
     private bool _hasSearchOpen;
     public bool HasSearchOpen
@@ -221,19 +230,20 @@ public class TabItem : ViewModel
         });
     }
 
-    public void AddImage(UTexture2D texture) => AddImage(texture.Name, texture.bRenderNearestNeighbor, texture.Decode(UserSettings.Default.OverridedPlatform));
+    public void AddImage(UTexture2D texture, bool bulkTexture)
+        => AddImage(texture.Name, texture.bRenderNearestNeighbor, texture.Decode(UserSettings.Default.OverridedPlatform), bulkTexture);
 
-    public void AddImage(string name, bool rnn, SKBitmap[] img)
+    public void AddImage(string name, bool rnn, SKBitmap[] img, bool bulkTexture)
     {
-        foreach (var i in img) AddImage(name, rnn, i);
+        foreach (var i in img) AddImage(name, rnn, i, bulkTexture);
     }
 
-    public void AddImage(string name, bool rnn, SKBitmap img)
+    public void AddImage(string name, bool rnn, SKBitmap img, bool bulkTexture)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
             var t = new TabImage(name, rnn, img);
-            if (UserSettings.Default.IsAutoSaveTextures)
+            if (bulkTexture)
                 SaveImage(t, true);
 
             _images.Add(t);
@@ -253,7 +263,7 @@ public class TabItem : ViewModel
             Document ??= new TextDocument();
             Document.Text = text;
 
-            if (UserSettings.Default.IsAutoSaveProps || bulkSave)
+            if (bulkSave)
                 SaveProperty(true);
         });
     }
@@ -267,16 +277,45 @@ public class TabItem : ViewModel
         });
     }
 
-    public void SaveImage(bool autoSave) => SaveImage(SelectedImage, autoSave);
+    public void SaveImages(bool bulkTexture)
+    {
+        switch (_images.Count)
+        {
+            case 1:
+                SaveImage(bulkTexture);
+                break;
+            case > 1:
+                var directory = Path.Combine(UserSettings.Default.TextureDirectory,
+                    UserSettings.Default.KeepDirectoryStructure ? Directory : "").Replace('\\', '/');
 
-    private void SaveImage(TabImage image, bool autoSave)
+                if (!bulkTexture)
+                {
+                    var folderBrowser = new VistaFolderBrowserDialog();
+                    if (folderBrowser.ShowDialog() == true)
+                        directory = folderBrowser.SelectedPath;
+                    else return;
+                }
+                else System.IO.Directory.CreateDirectory(directory);
+
+                foreach (var image in _images)
+                {
+                    if (image == null) return;
+                    var fileName = $"{image.ExportName}.png";
+                    SaveImage(image, Path.Combine(directory, fileName), fileName);
+                }
+                break;
+        }
+    }
+
+    public void SaveImage(bool bulkTexture) => SaveImage(SelectedImage, bulkTexture);
+    private void SaveImage(TabImage image, bool bulkTexture)
     {
         if (image == null) return;
         var fileName = $"{image.ExportName}.png";
-        var directory = Path.Combine(UserSettings.Default.TextureDirectory,
+        var path = Path.Combine(UserSettings.Default.TextureDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
 
-        if (!autoSave)
+        if (!bulkTexture)
         {
             var saveFileDialog = new SaveFileDialog
             {
@@ -287,19 +326,23 @@ public class TabItem : ViewModel
             };
             var result = saveFileDialog.ShowDialog();
             if (!result.HasValue || !result.Value) return;
-            directory = saveFileDialog.FileName;
+            path = saveFileDialog.FileName;
         }
-        else
-        {
-            System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
-        }
+        else System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
 
-        using (var fs = new FileStream(directory, FileMode.Create, FileAccess.Write, FileShare.Read))
-        {
-            fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
-        }
+        SaveImage(image, path, fileName);
+    }
 
-        SaveCheck(directory, fileName);
+    private void SaveImage(TabImage image, string path, string fileName)
+    {
+        SaveImage(image, path);
+        SaveCheck(path, fileName);
+    }
+
+    private void SaveImage(TabImage image, string path)
+    {
+        using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
+        fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
     }
 
     public void SaveProperty(bool autoSave)

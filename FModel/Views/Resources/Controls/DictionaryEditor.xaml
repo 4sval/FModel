@@ -21,7 +21,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <avalonEdit:TextEditor x:Name="MyAvalonEditor" Grid.Row="0" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
                                FontFamily="Consolas" FontSize="8pt" IsReadOnly="True" ShowLineNumbers="True" Foreground="#DAE5F2" />
 
@@ -33,15 +33,18 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock x:Name="HeBrokeIt" Grid.Column="0" Text="IF YOU DON'T KNOW WHAT THIS DOES, DON'T TOUCH IT, EVER!"
+                <TextBlock x:Name="HeBrokeIt" Grid.Column="0" Text="IF YOU DON'T KNOW WHAT THIS DOES, DON'T TOUCH IT!"
                            HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" Margin="0 0 10 0" FontWeight="DemiBold"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
-                
+
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
-                <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="True"
+                <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Reset" Click="OnReset" />
+                <Button Grid.Column="3" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="True"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Cancel" />
             </Grid>
         </Border>
