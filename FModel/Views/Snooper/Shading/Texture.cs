@@ -119,11 +119,13 @@ public class Texture : IDisposable
             ProcessPixels(textures[t], TextureTarget.TextureCubeMapPositiveX + t);
         }
 
-        GL.TexParameter(_target, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Linear);
+        GL.TexParameter(_target, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.LinearMipmapLinear);
         GL.TexParameter(_target, TextureParameterName.TextureMagFilter, (int) TextureMinFilter.Linear);
         GL.TexParameter(_target, TextureParameterName.TextureWrapR, (int) TextureWrapMode.ClampToEdge);
         GL.TexParameter(_target, TextureParameterName.TextureWrapS, (int) TextureWrapMode.ClampToEdge);
         GL.TexParameter(_target, TextureParameterName.TextureWrapT, (int) TextureWrapMode.ClampToEdge);
+
+        GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMap);
     }
 
     public Texture(string texture) : this(TextureType.Normal)

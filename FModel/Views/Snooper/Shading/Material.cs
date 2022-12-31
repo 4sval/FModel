@@ -34,10 +34,9 @@ public class Material : IDisposable
     public AoParams Ao;
     public bool HasAo;
 
-    public float Specular = 1f;
-    public float Roughness = 0.5f;
+    public float RoughnessMin = 0f;
+    public float RoughnessMax = 1f;
     public float EmissiveMult = 1f;
-    public float UVScale = 1f;
 
     public Material()
     {
@@ -106,23 +105,21 @@ public class Material : IDisposable
                     }
                 }
 
-                // scalars
-                if (Parameters.TryGetScalar(out var specular, "Specular", "Specular Intensity", "Spec"))
-                    Specular = specular;
-
-                if (Parameters.TryGetScalar(out var roughnessMin, "RoughnessMin", "SpecRoughnessMin") &&
-                    Parameters.TryGetScalar(out var roughnessMax, "RoughnessMax", "SpecRoughnessMax"))
-                    Roughness = (roughnessMin + roughnessMax) / 2f;
+                if (Parameters.TryGetScalar(out var roughnessMin, "RoughnessMin", "SpecRoughnessMin"))
+                    RoughnessMin = roughnessMin;
+                if (Parameters.TryGetScalar(out var roughnessMax, "RoughnessMax", "SpecRoughnessMax"))
+                    RoughnessMax = roughnessMax;
                 if (Parameters.TryGetScalar(out var roughness, "Rough", "Roughness", "Ro Multiplier", "RO_mul", "Roughness_Mult"))
-                    Roughness = roughness;
+                {
+                    var d = roughness / 2;
+                    RoughnessMin = roughness - d;
+                    RoughnessMax = roughness + d;
+                }
 
                 if (Parameters.TryGetScalar(out var emissiveMultScalar, "emissive mult", "Emissive_Mult", "EmissiveIntensity", "EmissionIntensity"))
                     EmissiveMult = emissiveMultScalar;
                 else if (Parameters.TryGetLinearColor(out var emissiveMultColor, "Emissive Multiplier", "EmissiveMultiplier"))
                     EmissiveMult = emissiveMultColor.R;
-
-                if (Parameters.TryGetScalar(out var uvScale, "UV Scale"))
-                    UVScale = uvScale;
 
                 if (Parameters.TryGetLinearColor(out var EmissiveUVs,
                         "EmissiveUVs_RG_UpperLeftCorner_BA_LowerRightCorner",
@@ -228,10 +225,9 @@ public class Material : IDisposable
         shader.SetUniform("uParameters.HasAo", HasAo);
 
         shader.SetUniform("uParameters.EmissiveRegion", EmissiveRegion);
-        shader.SetUniform("uParameters.Specular", Specular);
-        shader.SetUniform("uParameters.Roughness", Roughness);
+        shader.SetUniform("uParameters.RoughnessMin", RoughnessMin);
+        shader.SetUniform("uParameters.RoughnessMax", RoughnessMax);
         shader.SetUniform("uParameters.EmissiveMult", EmissiveMult);
-        shader.SetUniform("uParameters.UVScale", UVScale);
     }
 
     private const string _mult = "x %.2f";
@@ -244,14 +240,12 @@ public class Material : IDisposable
         if (ImGui.BeginTable("parameters", 2))
         {
             var id = 1;
-            SnimGui.Layout("Specular");ImGui.PushID(id++);
-            ImGui.DragFloat("", ref Specular, _step, _zero, 1.0f, _mult, _clamp);
-            ImGui.PopID();SnimGui.Layout("Roughness");ImGui.PushID(id++);
-            ImGui.DragFloat("", ref Roughness, _step, _zero, 1.0f, _mult, _clamp);
+            SnimGui.Layout("Roughness Min");ImGui.PushID(id++);
+            ImGui.DragFloat("", ref RoughnessMin, _step, _zero, 1.0f, _mult, _clamp);
+            ImGui.PopID();SnimGui.Layout("Roughness Max");ImGui.PushID(id++);
+            ImGui.DragFloat("", ref RoughnessMax, _step, _zero, 1.0f, _mult, _clamp);
             ImGui.PopID();SnimGui.Layout("Emissive Multiplier");ImGui.PushID(id++);
             ImGui.DragFloat("", ref EmissiveMult, _step, _zero, _infinite, _mult, _clamp);
-            ImGui.PopID();SnimGui.Layout("UV Scale");ImGui.PushID(id++);
-            ImGui.DragFloat("", ref UVScale, _step, _zero, _infinite, _mult, _clamp);
             ImGui.PopID();
 
             if (HasAo)

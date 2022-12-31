@@ -106,7 +106,7 @@ public class Renderer : IDisposable
         if (ShowGrid) _grid.Render(viewMatrix, projMatrix, cam.Near, cam.Far);
 
         _shader.Render(viewMatrix, cam.Position, projMatrix);
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 5; i++)
             _shader.SetUniform($"bVertexColors[{i}]", i == VertexColor);
 
         // render model pass

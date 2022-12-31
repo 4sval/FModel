@@ -139,7 +139,7 @@ public class SnimGui
                 ImGui.Checkbox("", ref s.Renderer.ShowLights);
                 ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(4);
                 ImGui.Combo("vertex_colors", ref s.Renderer.VertexColor,
-                    "Default\0Diffuse Only\0Colors\0Normals\0Tangent\0Texture Coordinates\0");
+                    "Default\0Diffuse Only\0Colors\0Normals\0Texture Coordinates\0");
                 ImGui.PopID();
 
                 ImGui.EndTable();
