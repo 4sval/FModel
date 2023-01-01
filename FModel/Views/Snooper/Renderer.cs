@@ -14,6 +14,8 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
+using FModel.Creator;
+using FModel.Extensions;
 using FModel.Settings;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Lights;
@@ -36,6 +38,7 @@ public class Renderer : IDisposable
     public bool ShowLights;
     public int VertexColor;
 
+    public Camera CameraOp { get; }
     public PickingTexture Picking { get; }
     public Options Options { get; }
 
@@ -44,6 +47,7 @@ public class Renderer : IDisposable
         _skybox = new Skybox();
         _grid = new Grid();
 
+        CameraOp = new Camera();
         Picking = new PickingTexture(width, height);
         Options = new Options();
 
@@ -52,17 +56,25 @@ public class Renderer : IDisposable
         VertexColor = 0; // default
     }
 
-    public Camera Load(CancellationToken cancellationToken, UObject export)
+    public void Load(CancellationToken cancellationToken, UObject export)
     {
         ShowLights = false;
-        return export switch
+        switch (export)
         {
-            UStaticMesh st => LoadStaticMesh(st),
-            USkeletalMesh sk => LoadSkeletalMesh(sk),
-            UMaterialInstance mi => LoadMaterialInstance(mi),
-            UWorld wd => LoadWorld(cancellationToken, wd, Transform.Identity),
-            _ => throw new ArgumentOutOfRangeException(nameof(export))
-        };
+            case UStaticMesh st:
+                LoadStaticMesh(st);
+                break;
+            case USkeletalMesh sk:
+                LoadSkeletalMesh(sk);
+                break;
+            case UMaterialInstance mi:
+                LoadMaterialInstance(mi);
+                break;
+            case UWorld wd:
+                LoadWorld(cancellationToken, wd, Transform.Identity);
+                CameraOp.Mode = Camera.WorldMode.FlyCam;
+                break;
+        }
     }
 
     public void Swap(UMaterialInstance unrealMaterial)
@@ -97,15 +109,15 @@ public class Renderer : IDisposable
         Options.SetupModelsAndLights();
     }
 
-    public void Render(Camera cam)
+    public void Render()
     {
-        var viewMatrix = cam.GetViewMatrix();
-        var projMatrix = cam.GetProjectionMatrix();
+        var viewMatrix = CameraOp.GetViewMatrix();
+        var projMatrix = CameraOp.GetProjectionMatrix();
 
         if (ShowSkybox) _skybox.Render(viewMatrix, projMatrix);
-        if (ShowGrid) _grid.Render(viewMatrix, projMatrix, cam.Near, cam.Far);
+        if (ShowGrid) _grid.Render(viewMatrix, projMatrix, CameraOp.Near, CameraOp.Far);
 
-        _shader.Render(viewMatrix, cam.Position, projMatrix);
+        _shader.Render(viewMatrix, CameraOp.Position, projMatrix);
         for (int i = 0; i < 5; i++)
             _shader.SetUniform($"bVertexColors[{i}]", i == VertexColor);
 
@@ -132,7 +144,7 @@ public class Renderer : IDisposable
         // outline pass
         if (Options.TryGetModel(out var selected) && selected.Show)
         {
-            _outline.Render(viewMatrix, cam.Position, projMatrix);
+            _outline.Render(viewMatrix, CameraOp.Position, projMatrix);
             selected.Outline(_outline);
         }
 
@@ -140,55 +152,73 @@ public class Renderer : IDisposable
         Picking.Render(viewMatrix, projMatrix, Options.Models);
     }
 
-    private Camera SetupCamera(FBox box)
-    {
-        var far = box.Max.AbsMax();
-        return new Camera(box, far * 50f);
-    }
-
-    private Camera LoadStaticMesh(UStaticMesh original)
+    private void LoadStaticMesh(UStaticMesh original)
     {
         var guid = original.LightingGuid;
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
             Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
-            return null;
+            return;
         }
 
         if (!original.TryConvert(out var mesh))
-            return null;
+            return;
 
         Options.Models[guid] = new Model(original, mesh);
         Options.SelectModel(guid);
-        return SetupCamera(Options.Models[guid].Box);
+        SetupCamera(Options.Models[guid].Box);
     }
 
-    private Camera LoadSkeletalMesh(USkeletalMesh original)
+    private void LoadSkeletalMesh(USkeletalMesh original)
     {
         var guid = Guid.NewGuid();
-        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return null;
+        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
 
         Options.Models[guid] = new Model(original, mesh);
         Options.SelectModel(guid);
-        return SetupCamera(Options.Models[guid].Box);
+        SetupCamera(Options.Models[guid].Box);
     }
 
-    private Camera LoadMaterialInstance(UMaterialInstance original)
+    private void LoadMaterialInstance(UMaterialInstance original)
     {
-        var guid = Guid.NewGuid();
-        if (Options.Models.ContainsKey(guid)) return null;
+        if (!Utils.TryLoadObject("Engine/Content/EditorMeshes/EditorCube.EditorCube", out UStaticMesh editorCube))
+            return;
 
-        Options.Models[guid] = new Cube(original);
+        var guid = editorCube.LightingGuid;
+        if (Options.TryGetModel(guid, out var model))
+        {
+            model.Materials[0].SwapMaterial(original);
+            Application.Current.Dispatcher.Invoke(() => model.Materials[0].Setup(Options, model.UvCount));
+            return;
+        }
+
+        if (!editorCube.TryConvert(out var mesh))
+            return;
+
+        Options.Models[guid] = new Cube(mesh, original);
         Options.SelectModel(guid);
-        return SetupCamera(Options.Models[guid].Box);
+        SetupCamera(Options.Models[guid].Box);
     }
 
-    private Camera LoadWorld(CancellationToken cancellationToken, UWorld original, Transform transform)
+    private void SetupCamera(FBox box) => CameraOp.Setup(box);
+
+    private void LoadWorld(CancellationToken cancellationToken, UWorld original, Transform transform)
     {
-        var cam = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 1000f, 5f);
+        CameraOp.Setup(new FBox(FVector.ZeroVector, new FVector(0, 10, 10)));
         if (original.PersistentLevel.Load<ULevel>() is not { } persistentLevel)
-            return cam;
+            return;
+
+        if (persistentLevel.TryGetValue(out FSoftObjectPath runtimeCell, "WorldPartitionRuntimeCell") &&
+            Utils.TryLoadObject(runtimeCell.AssetPathName.Text.SubstringBeforeWithLast(".") + runtimeCell.SubPathString.SubstringAfterLast("."), out UObject worldPartition))
+        {
+            var ratio = MathF.Pow(Constants.SCALE_DOWN_RATIO, 2);
+            var position = worldPartition.GetOrDefault("Position", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO;
+            var box = worldPartition.GetOrDefault("ContentBounds", new FBox(FVector.ZeroVector, FVector.OneVector));
+            box.Min *= ratio;box.Max *= ratio;
+
+            CameraOp.Teleport(position, box, true);
+        }
 
         var length = persistentLevel.Actors.Length;
         for (var i = 0; i < length; i++)
@@ -200,27 +230,22 @@ public class Renderer : IDisposable
                 continue;
 
             Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {i}/{length}");
-            WorldCamera(actor, ref cam);
+            WorldCamera(actor);
             // WorldLight(actor);
             WorldMesh(actor, transform);
             AdditionalWorlds(actor, transform.Matrix, cancellationToken);
         }
         Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {length}/{length}");
-        return cam;
     }
 
-    private void WorldCamera(UObject actor, ref Camera cam)
+    private void WorldCamera(UObject actor)
     {
         if (actor.ExportType != "LevelBounds" || !actor.TryGetValue(out FPackageIndex boxComponent, "BoxComponent") ||
             boxComponent.Load() is not { } boxObject) return;
 
         var direction = boxObject.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO;
         var position = boxObject.GetOrDefault("RelativeScale3D", FVector.OneVector).ToMapVector() / 2f * Constants.SCALE_DOWN_RATIO;
-        var far = position.AbsMax();
-        cam = new Camera(
-            new Vector3(position.X, position.Y, position.Z),
-            new Vector3(direction.X, direction.Y, direction.Z),
-            far * 25f, Math.Max(5f, far / 10f));
+        CameraOp.Setup(new FBox(direction, position));
     }
 
     private void WorldLight(UObject actor)
@@ -344,12 +369,19 @@ public class Renderer : IDisposable
         };
 
         for (int j = 0; j < additionalWorlds.Length; j++)
-            if (Creator.Utils.TryLoadObject(additionalWorlds[j].AssetPathName.Text, out UWorld w))
+            if (Utils.TryLoadObject(additionalWorlds[j].AssetPathName.Text, out UWorld w))
                 LoadWorld(cancellationToken, w, transform);
+    }
+
+    public void WindowResized(int width, int height)
+    {
+        CameraOp.AspectRatio = width / (float) height;
+        Picking.WindowResized(width, height);
     }
 
     public void Save()
     {
+        UserSettings.Default.CameraMode = CameraOp.Mode;
         UserSettings.Default.ShowSkybox = ShowSkybox;
         UserSettings.Default.ShowGrid = ShowGrid;
     }

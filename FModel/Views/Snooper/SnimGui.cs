@@ -149,7 +149,7 @@ public class SnimGui
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.CollapsingHeader("Camera"))
         {
-            s.Camera.ImGuiCamera();
+            s.Renderer.CameraOp.ImGuiCamera();
         }
 
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
@@ -351,7 +351,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         if (ImGui.Selectable("Teleport To"))
                         {
                             var instancePos = model.Transforms[model.SelectedInstance].Position;
-                            s.Camera.Teleport(instancePos, model.Box);
+                            s.Renderer.CameraOp.Teleport(instancePos, model.Box);
                         }
 
                         if (ImGui.Selectable("Delete")) s.Renderer.Options.Models.Remove(guid);
@@ -524,7 +524,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     ImGui.SliderInt("", ref model.SelectedInstance, 0, model.TransformsCount - 1, "Instance %i", ImGuiSliderFlags.AlwaysClamp);
                     ImGui.EndDisabled(); ImGui.PopID();
 
-                    model.Transforms[model.SelectedInstance].ImGuiTransform(s.Camera.Speed / 100f);
+                    model.Transforms[model.SelectedInstance].ImGuiTransform(s.Renderer.CameraOp.Speed / 100f);
                     model.UpdateMatrix(model.SelectedInstance);
                     ImGui.EndTabItem();
                 }
@@ -653,7 +653,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             largest.Y -= ImGui.GetScrollY();
 
             var size = new Vector2(largest.X, largest.Y);
-            s.Camera.AspectRatio = size.X / size.Y;
+            s.Renderer.CameraOp.AspectRatio = size.X / size.Y;
             ImGui.ImageButton(s.Framebuffer.GetPointer(), size, new Vector2(0, 1), new Vector2(1, 0), 0);
 
             if (ImGui.IsItemHovered())
@@ -674,7 +674,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
             if (ImGui.IsMouseDragging(ImGuiMouseButton.Left) && _viewportFocus)
             {
-                s.Camera.Modify(ImGui.GetIO().MouseDelta);
+                s.Renderer.CameraOp.Modify(ImGui.GetIO().MouseDelta);
             }
 
             // if left button up and mouse was in viewport

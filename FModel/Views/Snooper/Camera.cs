@@ -17,12 +17,11 @@ public class Camera
 
     public Vector3 Position;
     public Vector3 Direction;
-    public Vector3 Focus => Position - Direction;
-    public Vector3 Up = Vector3.UnitY;
-    public WorldMode Mode = UserSettings.Default.CameraMode;
+    public WorldMode Mode;
+    public Vector3 PositionArc => Position - Direction;
+    public Vector3 DirectionArc => Direction - Position;
+    public Vector3 Up => Vector3.UnitY;
 
-    public float Yaw = -90f;
-    public float Pitch = 0f;
     public float Zoom = 60f;
     public float Speed = 1f;
     public float Far = 100f;
@@ -33,27 +32,11 @@ public class Camera
     {
         Position = new Vector3(0, 1, 1);
         Direction = Vector3.Zero;
-
-        InitDirection();
+        Mode = UserSettings.Default.CameraMode;
     }
 
-    public Camera(FBox box, float far)
-    {
-        Far = far;
-        Teleport(FVector.ZeroVector, box, true);
-    }
-
-    public Camera(Vector3 position, Vector3 direction, float far, float speed)
-    {
-        Position = position;
-        Direction = direction;
-        Far = far;
-        Speed = speed;
-
-        InitDirection();
-    }
-
-    public void Teleport(FVector instancePos, FBox box, bool updateSpeed = false)
+    public void Setup(FBox box) => Teleport(FVector.ZeroVector, box, true);
+    public void Teleport(FVector instancePos, FBox box, bool updateAll = false)
     {
         box.GetCenterAndExtents(out var center, out var extents);
         center = center.ToMapVector();
@@ -62,58 +45,42 @@ public class Camera
 
         Position = new Vector3(instancePos.X, center.Y, instancePos.Z + distance * 2);
         Direction = new Vector3(center.X, center.Y, center.Z);
-        if (updateSpeed) Speed = distance;
-
-        InitDirection();
-    }
-
-    private void InitDirection()
-    {
-        // trigonometric math to calculate the cam's yaw/pitch based on position and direction to look
-        var yaw = MathF.Atan((-Position.X - Direction.X) / (Position.Z - Direction.Z));
-        var pitch = MathF.Atan((Position.Y - Direction.Y) / (Position.Z - Direction.Z));
-        Modify(Helper.RadiansToDegrees(yaw), Helper.RadiansToDegrees(pitch));
+        if (updateAll)
+        {
+            Far = Math.Max(Far, box.Max.AbsMax() * 50f);
+            Speed = Math.Max(Speed, distance);
+        }
     }
 
     public void Modify(Vector2 mouseDelta)
     {
         var lookSensitivity = Mode switch
         {
-            WorldMode.FlyCam => 0.1f,
-            WorldMode.Arcball => 0.01f,
+            WorldMode.FlyCam => 0.002f,
+            WorldMode.Arcball => 0.003f,
             _ => throw new ArgumentOutOfRangeException()
         };
         mouseDelta *= lookSensitivity;
-        Modify(mouseDelta.X, mouseDelta.Y);
-    }
-    private void Modify(float xOffset, float yOffset)
-    {
+
+        var rotationX = Matrix4x4.CreateFromAxisAngle(-Up, mouseDelta.X);
         switch (Mode)
         {
             case WorldMode.FlyCam:
             {
-                Yaw += xOffset;
-                Pitch -= yOffset;
-                Pitch = Math.Clamp(Pitch, -89f, 89f);
+                Direction = Vector3.Transform(DirectionArc, rotationX) + Position;
 
-                var direction = Vector3.Zero;
-                var yaw = Helper.DegreesToRadians(Yaw);
-                var pitch = Helper.DegreesToRadians(Pitch);
-                direction.X = MathF.Cos(yaw) * MathF.Cos(pitch);
-                direction.Y = MathF.Sin(pitch);
-                direction.Z = MathF.Sin(yaw) * MathF.Cos(pitch);
-                Direction = Vector3.Normalize(direction);
+                var right = Vector3.Normalize(Vector3.Cross(Up, DirectionArc));
+                var rotationY = Matrix4x4.CreateFromAxisAngle(right, mouseDelta.Y);
+                Direction = Vector3.Transform(DirectionArc, rotationY) + Position;
                 break;
             }
             case WorldMode.Arcball:
             {
-                var up = -Up;
-                var rotationX = Matrix4x4.CreateFromAxisAngle(up, xOffset);
-                Position = Vector3.Transform(Focus, rotationX) + Direction;
+                Position = Vector3.Transform(PositionArc, rotationX) + Direction;
 
-                var right = Vector3.Normalize(Vector3.Cross(up, Focus));
-                var rotationY = Matrix4x4.CreateFromAxisAngle(right, yOffset);
-                Position = Vector3.Transform(Focus, rotationY) + Direction;
+                var right = Vector3.Normalize(Vector3.Cross(-Up, PositionArc));
+                var rotationY = Matrix4x4.CreateFromAxisAngle(right, mouseDelta.Y);
+                Position = Vector3.Transform(PositionArc, rotationY) + Direction;
                 break;
             }
             default:
@@ -123,71 +90,71 @@ public class Camera
 
     public void Modify(KeyboardState keyboard, float time)
     {
+        if (!keyboard.IsAnyKeyDown) return;
         var multiplier = keyboard.IsKeyDown(Keys.LeftShift) ? 2f : 1f;
         var moveSpeed = Speed * multiplier * time;
-
-        var focus = Mode switch
-        {
-            WorldMode.FlyCam => Direction,
-            WorldMode.Arcball => -Focus,
-            _ => throw new ArgumentOutOfRangeException()
-        };
-
-        if (keyboard.IsKeyDown(Keys.W))
-            Position += moveSpeed * focus;
-        if (keyboard.IsKeyDown(Keys.S))
-            Position -= moveSpeed * focus;
+        var moveAxis = Vector3.Normalize(-PositionArc);
+        var panAxis = Vector3.Normalize(Vector3.Cross(moveAxis, Up));
 
         switch (Mode)
         {
             case WorldMode.FlyCam:
             {
-                if (keyboard.IsKeyDown(Keys.A))
-                    Position -= Vector3.Normalize(Vector3.Cross(focus, Up)) * moveSpeed;
-                if (keyboard.IsKeyDown(Keys.D))
-                    Position += Vector3.Normalize(Vector3.Cross(focus, Up)) * moveSpeed;
-                if (keyboard.IsKeyDown(Keys.E))
-                    Position += moveSpeed * Up;
-                if (keyboard.IsKeyDown(Keys.Q))
-                    Position -= moveSpeed * Up;
+                if (keyboard.IsKeyDown(Keys.W)) // forward
+                {
+                    var d = moveSpeed * moveAxis;
+                    Position += d;
+                    Direction += d;
+                }
+                if (keyboard.IsKeyDown(Keys.S)) // backward
+                {
+                    var d = moveSpeed * moveAxis;
+                    Position -= d;
+                    Direction -= d;
+                }
                 break;
             }
             case WorldMode.Arcball:
             {
-                if (keyboard.IsKeyDown(Keys.A))
-                {
-                    var d = Vector3.Normalize(Vector3.Cross(focus, Up)) * moveSpeed;
-                    Position -= d;
-                    Direction -= d;
-                }
-                if (keyboard.IsKeyDown(Keys.D))
-                {
-                    var d = Vector3.Normalize(Vector3.Cross(focus, Up)) * moveSpeed;
-                    Position += d;
-                    Direction += d;
-                }
-                if (keyboard.IsKeyDown(Keys.E))
-                {
-                    var d = moveSpeed * Up;
-                    Position += d;
-                    Direction += d;
-                }
-                if (keyboard.IsKeyDown(Keys.Q))
-                {
-                    var d = moveSpeed * Up;
-                    Position -= d;
-                    Direction -= d;
-                }
+                if (keyboard.IsKeyDown(Keys.W)) // forward
+                    Position += moveSpeed * moveAxis;
+                if (keyboard.IsKeyDown(Keys.S)) // backward
+                    Position -= moveSpeed * moveAxis;
                 break;
             }
             default:
                 throw new ArgumentOutOfRangeException();
         }
 
-        if (keyboard.IsKeyDown(Keys.X))
-            ModifyZoom(-.5f);
-        if (keyboard.IsKeyDown(Keys.C))
+        if (keyboard.IsKeyDown(Keys.A)) // left
+        {
+            var d = panAxis * moveSpeed;
+            Position -= d;
+            Direction -= d;
+        }
+        if (keyboard.IsKeyDown(Keys.D)) // right
+        {
+            var d = panAxis * moveSpeed;
+            Position += d;
+            Direction += d;
+        }
+        if (keyboard.IsKeyDown(Keys.E)) // up
+        {
+            var d = moveSpeed * Up;
+            Position += d;
+            Direction += d;
+        }
+        if (keyboard.IsKeyDown(Keys.Q)) // down
+        {
+            var d = moveSpeed * Up;
+            Position -= d;
+            Direction -= d;
+        }
+
+        if (keyboard.IsKeyDown(Keys.C)) // zoom in
             ModifyZoom(+.5f);
+        if (keyboard.IsKeyDown(Keys.X)) // zoom out
+            ModifyZoom(-.5f);
     }
 
     private void ModifyZoom(float zoomAmount)
@@ -196,20 +163,9 @@ public class Camera
         Zoom = Math.Clamp(Zoom - zoomAmount, 1.0f, 89f);
     }
 
-    public Matrix4x4 GetViewMatrix()
-    {
-        return Mode switch
-        {
-            WorldMode.FlyCam => Matrix4x4.CreateLookAt(Position, Position + Direction, Up),
-            WorldMode.Arcball => Matrix4x4.CreateLookAt(Position, Direction, Up),
-            _ => throw new ArgumentOutOfRangeException()
-        };
-    }
-
+    public Matrix4x4 GetViewMatrix() => Matrix4x4.CreateLookAt(Position, Direction, Up);
     public Matrix4x4 GetProjectionMatrix()
-    {
-        return Matrix4x4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, Near, Far);
-    }
+        => Matrix4x4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, Near, Far);
 
     private const float _step = 0.01f;
     private const float _zero = 0.000001f; // doesn't actually work if _infinite is used as max value /shrug

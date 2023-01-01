@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
-using FModel.Settings;
 using FModel.Views.Snooper.Buffers;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
@@ -19,19 +18,15 @@ namespace FModel.Views.Snooper;
 
 public class Snooper : GameWindow
 {
-    public Camera Camera;
     public readonly FramebufferObject Framebuffer;
     public readonly Renderer Renderer;
 
     private readonly SnimGui _gui;
 
-    private float _previousSpeed;
-
     private bool _init;
 
     public Snooper(GameWindowSettings gwSettings, NativeWindowSettings nwSettings) : base(gwSettings, nwSettings)
     {
-        Camera = new Camera();
         Framebuffer = new FramebufferObject(ClientSize);
         Renderer = new Renderer(ClientSize.X, ClientSize.Y);
 
@@ -41,13 +36,7 @@ public class Snooper : GameWindow
 
     public bool TryLoadExport(CancellationToken cancellationToken, UObject export)
     {
-        var newCamera = Renderer.Load(cancellationToken, export) ?? new Camera();
-        if (newCamera.Speed > _previousSpeed)
-        {
-            newCamera.Zoom = Camera.Zoom;
-            Camera = newCamera;
-            _previousSpeed = Camera.Speed;
-        }
+        Renderer.Load(cancellationToken, export);
         return Renderer.Options.Models.Count > 0;
     }
 
@@ -55,13 +44,12 @@ public class Snooper : GameWindow
     {
         if (clear)
         {
-            _previousSpeed = 0f;
+            Renderer.CameraOp.Speed = 0;
             Renderer.Options.ResetModelsAndLights();
             Renderer.Options.SelectModel(Guid.Empty);
             Renderer.Save();
         }
 
-        UserSettings.Default.CameraMode = Camera.Mode;
         GLFW.SetWindowShouldClose(WindowPtr, value); // start / stop game loop
         IsVisible = !value;
     }
@@ -134,7 +122,7 @@ public class Snooper : GameWindow
         Framebuffer.Bind(); // switch to viewport background
         ClearWhatHasBeenDrawn(); // clear viewport background
 
-        Renderer.Render(Camera);
+        Renderer.Render();
 
         Framebuffer.BindMsaa();
         Framebuffer.Bind(0); // switch to window background
@@ -163,7 +151,7 @@ public class Snooper : GameWindow
         if (!IsVisible || ImGui.GetIO().WantTextInput)
             return;
 
-        Camera.Modify(KeyboardState, (float) e.Time);
+        Renderer.CameraOp.Modify(KeyboardState, (float) e.Time);
 
         if (KeyboardState.IsKeyPressed(Keys.H))
             WindowShouldClose(true, false);
@@ -177,9 +165,8 @@ public class Snooper : GameWindow
 
         GL.Viewport(0, 0, e.Width, e.Height);
 
-        Camera.AspectRatio = e.Width / (float) e.Height;
         Framebuffer.WindowResized(e.Width, e.Height);
-        Renderer.Picking.WindowResized(e.Width, e.Height);
+        Renderer.WindowResized(e.Width, e.Height);
 
         _gui.Controller.WindowResized(e.Width, e.Height);
     }
