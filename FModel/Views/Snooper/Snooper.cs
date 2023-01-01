@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
+using FModel.Settings;
 using FModel.Views.Snooper.Buffers;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
@@ -61,6 +61,7 @@ public class Snooper : GameWindow
             Renderer.Save();
         }
 
+        UserSettings.Default.CameraMode = Camera.Mode;
         GLFW.SetWindowShouldClose(WindowPtr, value); // start / stop game loop
         IsVisible = !value;
     }
@@ -82,7 +83,7 @@ public class Snooper : GameWindow
 
     private unsafe void LoadWindowIcon()
     {
-        var info = Application.GetResourceStream(new Uri($"/FModel;component/Resources/engine.png", UriKind.Relative));
+        var info = Application.GetResourceStream(new Uri("/FModel;component/Resources/engine.png", UriKind.Relative));
         using var img = SixLabors.ImageSharp.Image.Load<Rgba32>(info.Stream);
         var memoryGroup = img.GetPixelMemoryGroup();
         Memory<byte> array = new byte[memoryGroup.TotalLength * sizeof(Rgba32)];
@@ -162,24 +163,7 @@ public class Snooper : GameWindow
         if (!IsVisible || ImGui.GetIO().WantTextInput)
             return;
 
-        var multiplier = KeyboardState.IsKeyDown(Keys.LeftShift) ? 2f : 1f;
-        var moveSpeed = Camera.Speed * multiplier * (float) e.Time;
-        if (KeyboardState.IsKeyDown(Keys.W))
-            Camera.Position += moveSpeed * Camera.Direction;
-        if (KeyboardState.IsKeyDown(Keys.S))
-            Camera.Position -= moveSpeed * Camera.Direction;
-        if (KeyboardState.IsKeyDown(Keys.A))
-            Camera.Position -= Vector3.Normalize(Vector3.Cross(Camera.Direction, Camera.Up)) * moveSpeed;
-        if (KeyboardState.IsKeyDown(Keys.D))
-            Camera.Position += Vector3.Normalize(Vector3.Cross(Camera.Direction, Camera.Up)) * moveSpeed;
-        if (KeyboardState.IsKeyDown(Keys.E))
-            Camera.Position += moveSpeed * Camera.Up;
-        if (KeyboardState.IsKeyDown(Keys.Q))
-            Camera.Position -= moveSpeed * Camera.Up;
-        if (KeyboardState.IsKeyDown(Keys.X))
-            Camera.ModifyZoom(-.5f);
-        if (KeyboardState.IsKeyDown(Keys.C))
-            Camera.ModifyZoom(+.5f);
+        Camera.Modify(KeyboardState, (float) e.Time);
 
         if (KeyboardState.IsKeyPressed(Keys.H))
             WindowShouldClose(true, false);

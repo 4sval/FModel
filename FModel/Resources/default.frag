@@ -241,7 +241,6 @@ void main()
                 result = mix(result, result * color, m.b);
             }
             result = vec3(uParameters.Ao.AmbientOcclusion) * result * m.r;
-            result += CalcLight(layer, normals, vec3(0.0), vec3(0.25), m.g, false);
         }
 
         vec2 coords = fTexCoords;

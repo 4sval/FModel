@@ -11,6 +11,7 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse.UE4.Objects.Core.Math;
 using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
@@ -41,6 +42,7 @@ public class Model : IDisposable
     public readonly bool HasVertexColors;
     public readonly bool HasMorphTargets;
     public readonly int UvCount;
+    public readonly FBox Box;
     public uint[] Indices;
     public float[] Vertices;
     public Section[] Sections;
@@ -68,12 +70,20 @@ public class Model : IDisposable
         Name = Path.SubstringAfterLast('/').SubstringBefore('.');
         Type = export.ExportType;
         UvCount = 1;
+        Box = new FBox(new FVector(-.65f), new FVector(.65f));
         Transforms = new List<Transform>();
     }
 
     public Model(UStaticMesh export, CStaticMesh staticMesh) : this(export, staticMesh, Transform.Identity) {}
-    public Model(UStaticMesh export, CStaticMesh staticMesh, Transform transform) : this(export, export.Materials, null, staticMesh.LODs.Count, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform) {}
-    private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, export.Skeleton, skeletalMesh.LODs.Count, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform) {}
+
+    public Model(UStaticMesh export, CStaticMesh staticMesh, Transform transform) : this(export, export.Materials, null, staticMesh.LODs.Count, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform)
+    {
+        Box = staticMesh.BoundingBox *= Constants.SCALE_DOWN_RATIO;
+    }
+    private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, export.Skeleton, skeletalMesh.LODs.Count, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform)
+    {
+        Box = skeletalMesh.BoundingBox *= Constants.SCALE_DOWN_RATIO;
+    }
     public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh) : this(export, skeletalMesh, Transform.Identity)
     {
         var morphTargets = export.MorphTargets;

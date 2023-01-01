@@ -351,7 +351,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         if (ImGui.Selectable("Teleport To"))
                         {
                             var instancePos = model.Transforms[model.SelectedInstance].Position;
-                            s.Camera.Position = new Vector3(instancePos.X, instancePos.Y, instancePos.Z);
+                            s.Camera.Teleport(instancePos, model.Box);
                         }
 
                         if (ImGui.Selectable("Delete")) s.Renderer.Options.Models.Remove(guid);
@@ -672,12 +672,9 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 }
             }
 
-            const float lookSensitivity = 0.1f;
-            if (ImGui.IsMouseDragging(ImGuiMouseButton.Left, lookSensitivity) && _viewportFocus)
+            if (ImGui.IsMouseDragging(ImGuiMouseButton.Left) && _viewportFocus)
             {
-                var io = ImGui.GetIO();
-                var delta = io.MouseDelta * lookSensitivity;
-                s.Camera.ModifyDirection(delta.X, delta.Y);
+                s.Camera.Modify(ImGui.GetIO().MouseDelta);
             }
 
             // if left button up and mouse was in viewport

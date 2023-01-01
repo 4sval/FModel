@@ -143,11 +143,7 @@ public class Renderer : IDisposable
     private Camera SetupCamera(FBox box)
     {
         var far = box.Max.AbsMax();
-        var center = box.GetCenter();
-        return new Camera(
-            new Vector3(0f, center.Z, box.Max.Y * 3),
-            new Vector3(center.X, center.Z, center.Y),
-            0.01f, far * 50f, far / 1.5f);
+        return new Camera(box, far * 50f);
     }
 
     private Camera LoadStaticMesh(UStaticMesh original)
@@ -165,7 +161,7 @@ public class Renderer : IDisposable
 
         Options.Models[guid] = new Model(original, mesh);
         Options.SelectModel(guid);
-        return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+        return SetupCamera(Options.Models[guid].Box);
     }
 
     private Camera LoadSkeletalMesh(USkeletalMesh original)
@@ -175,7 +171,7 @@ public class Renderer : IDisposable
 
         Options.Models[guid] = new Model(original, mesh);
         Options.SelectModel(guid);
-        return SetupCamera(mesh.BoundingBox *= Constants.SCALE_DOWN_RATIO);
+        return SetupCamera(Options.Models[guid].Box);
     }
 
     private Camera LoadMaterialInstance(UMaterialInstance original)
@@ -185,12 +181,12 @@ public class Renderer : IDisposable
 
         Options.Models[guid] = new Cube(original);
         Options.SelectModel(guid);
-        return SetupCamera(new FBox(new FVector(-.65f), new FVector(.65f)));
+        return SetupCamera(Options.Models[guid].Box);
     }
 
     private Camera LoadWorld(CancellationToken cancellationToken, UWorld original, Transform transform)
     {
-        var cam = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 0.01f, 1000f, 5f);
+        var cam = new Camera(new Vector3(0f, 5f, 5f), Vector3.Zero, 1000f, 5f);
         if (original.PersistentLevel.Load<ULevel>() is not { } persistentLevel)
             return cam;
 
@@ -224,7 +220,7 @@ public class Renderer : IDisposable
         cam = new Camera(
             new Vector3(position.X, position.Y, position.Z),
             new Vector3(direction.X, direction.Y, direction.Z),
-            0.01f, far * 25f, Math.Max(5f, far / 10f));
+            far * 25f, Math.Max(5f, far / 10f));
     }
 
     private void WorldLight(UObject actor)

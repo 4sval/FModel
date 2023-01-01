@@ -12,6 +12,7 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
+using FModel.Views.Snooper;
 using Newtonsoft.Json;
 
 namespace FModel.Settings
@@ -612,6 +613,13 @@ namespace FModel.Settings
         {
             get => _showGrid;
             set => SetProperty(ref _showGrid, value);
+        }
+
+        private Camera.WorldMode _cameraMode = Camera.WorldMode.Arcball;
+        public Camera.WorldMode CameraMode
+        {
+            get => _cameraMode;
+            set => SetProperty(ref _cameraMode, value);
         }
 
         private bool _previewStaticMeshes = true;
