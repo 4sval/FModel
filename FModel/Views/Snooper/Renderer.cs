@@ -285,6 +285,7 @@ public class Renderer : IDisposable
         else if (m.TryConvert(out var mesh))
         {
             model = new Model(m, mesh, t);
+            model.bMirrored = actor.GetOrDefault("bMirrored", model.bMirrored);
             if (actor.TryGetValue(out FPackageIndex baseMaterial, "BaseMaterial") &&
                 actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
             {

@@ -6,6 +6,7 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
+using FModel.Extensions;
 using FModel.Views.Snooper.Models;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
@@ -265,17 +266,23 @@ public class Material : IDisposable
         }
     }
 
+    public void ImGuiBaseProperties(string id)
+    {
+        if (ImGui.BeginTable(id, 2, ImGuiTableFlags.SizingStretchProp))
+        {
+            Layout("Blend", Parameters.BlendMode.GetDescription(), true, true);
+            Layout("Shading", Parameters.ShadingModel.GetDescription(), true, true);
+            ImGui.EndTable();
+        }
+    }
+
     public void ImGuiDictionaries<T>(string id, Dictionary<string, T> dictionary, bool center = false, bool wrap = false)
     {
         if (ImGui.BeginTable(id, 2))
         {
             foreach ((string key, T value) in dictionary.Reverse())
             {
-                SnimGui.Layout(key, true);
-                var text = $"{value:N}";
-                if (center) ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (ImGui.GetColumnWidth() - ImGui.CalcTextSize(text).X) / 2);
-                if (wrap) ImGui.TextWrapped(text); else ImGui.Text(text);
-                SnimGui.TooltipCopy(text);
+                Layout(key, value, center, wrap);
             }
             ImGui.EndTable();
         }
@@ -361,6 +368,15 @@ public class Material : IDisposable
             4 => Emissive[SelectedChannel],
             _ => null
         };
+    }
+
+    private void Layout<T>(string key, T value, bool center = false, bool wrap = false)
+    {
+        SnimGui.Layout(key, true);
+        var text = $"{value:N}";
+        if (center) ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (ImGui.GetColumnWidth() - ImGui.CalcTextSize(text).X) / 2);
+        if (wrap) ImGui.TextWrapped(text); else ImGui.Text(text);
+        SnimGui.TooltipCopy(text);
     }
 
     public void Dispose()

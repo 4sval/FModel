@@ -47,6 +47,7 @@ public class Model : IDisposable
     public float[] Vertices;
     public Section[] Sections;
     public Material[] Materials;
+    public bool bMirrored;
 
     public bool HasSkeleton => Skeleton is { IsLoaded: true };
     public readonly Skeleton Skeleton;
@@ -106,6 +107,7 @@ public class Model : IDisposable
     {
         var hasCustomUvs = lod.ExtraUV.IsValueCreated;
         UvCount = hasCustomUvs ? Math.Max(lod.NumTexCoords, numLods) : lod.NumTexCoords;
+        bMirrored = lod.IsMirrored;
 
         Materials = new Material[materials.Length];
         for (int m = 0; m < Materials.Length; m++)
@@ -252,7 +254,8 @@ public class Model : IDisposable
                     _morphVbo = new BufferObject<float>(Morphs[morph].Vertices, BufferTarget.ArrayBuffer);
             }
             _vao.Bind();
-            _vao.VertexAttributePointer(13, 3, VertexAttribPointerType.Float, 3, 0); // morph position
+            _vao.VertexAttributePointer(13, 3, VertexAttribPointerType.Float, Morph.VertexSize, 0); // morph position
+            _vao.VertexAttributePointer(14, 3, VertexAttribPointerType.Float, Morph.VertexSize, 0); // morph tangent
             _vao.Unbind();
         }
 
@@ -267,6 +270,7 @@ public class Model : IDisposable
 
     public void Render(Shader shader)
     {
+        if (bMirrored) GL.Disable(EnableCap.CullFace);
         if (IsSelected)
         {
             GL.Enable(EnableCap.StencilTest);
@@ -292,6 +296,7 @@ public class Model : IDisposable
             GL.StencilFunc(StencilFunction.Always, 0, 0xFF);
             GL.Disable(EnableCap.StencilTest);
         }
+        if (bMirrored) GL.Enable(EnableCap.CullFace);
     }
 
     public void SimpleRender(Shader shader)

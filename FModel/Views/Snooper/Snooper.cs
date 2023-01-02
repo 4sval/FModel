@@ -99,6 +99,7 @@ public class Snooper : GameWindow
 
         GL.ClearColor(OpenTK.Mathematics.Color4.Black);
         GL.Enable(EnableCap.Blend);
+        GL.Enable(EnableCap.CullFace);
         GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.Multisample);
         GL.StencilOp(StencilOp.Keep, StencilOp.Replace, StencilOp.Replace);

@@ -430,6 +430,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             {
                 Layout("Entity");ImGui.Text($" :  ({model.Type}) {model.Name}");
                 Layout("Guid");ImGui.Text($" :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
+                Layout("Mirrored");ImGui.Text($" :  {model.bMirrored}");
                 if (model.HasSkeleton)
                 {
                     Layout("Skeleton");ImGui.Text($" :  {model.Skeleton.RefSkel.Name}");
@@ -591,6 +592,13 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.CollapsingHeader("Properties"))
         {
+            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+            if (ImGui.TreeNode("Base"))
+            {
+                material.ImGuiBaseProperties("base");
+                ImGui.TreePop();
+            }
+
             ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
             if (ImGui.TreeNode("Scalars"))
             {

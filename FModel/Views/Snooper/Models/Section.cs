@@ -27,7 +27,7 @@ public class Section : IDisposable
     public Section(int index, int facesCount, int firstFaceIndex, Material material) : this(index, facesCount, firstFaceIndex)
     {
         material.IsUsed = true;
-        Show = !material.Parameters.IsNull && !material.Parameters.IsTransparent;
+        Show = !material.Parameters.IsNull && !material.Parameters.IsTranslucent;
     }
 
     public void Setup()
