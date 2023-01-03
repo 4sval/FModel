@@ -47,7 +47,7 @@ public class Model : IDisposable
     public float[] Vertices;
     public Section[] Sections;
     public Material[] Materials;
-    public bool bMirrored;
+    public bool TwoSided;
 
     public bool HasSkeleton => Skeleton is { IsLoaded: true };
     public readonly Skeleton Skeleton;
@@ -107,7 +107,7 @@ public class Model : IDisposable
     {
         var hasCustomUvs = lod.ExtraUV.IsValueCreated;
         UvCount = hasCustomUvs ? Math.Max(lod.NumTexCoords, numLods) : lod.NumTexCoords;
-        bMirrored = lod.IsMirrored;
+        TwoSided = lod.IsTwoSided;
 
         Materials = new Material[materials.Length];
         for (int m = 0; m < Materials.Length; m++)
@@ -182,7 +182,8 @@ public class Model : IDisposable
         for (var s = 0; s < Sections.Length; s++)
         {
             var section = lod.Sections.Value[s];
-            Sections[s] = new Section(section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex, Materials[section.MaterialIndex]);
+            Sections[s] = new Section(section.MaterialIndex, section.NumFaces * _faceSize, section.FirstIndex);
+            if (section.IsValid) Sections[s].SetupMaterial(Materials[section.MaterialIndex]);
         }
 
         AddInstance(transform ?? Transform.Identity);
@@ -262,31 +263,34 @@ public class Model : IDisposable
         for (int section = 0; section < Sections.Length; section++)
         {
             if (!Show) Show = Sections[section].Show;
-            Sections[section].Setup();
         }
 
         IsSetup = true;
     }
 
-    public void Render(Shader shader)
+    public void Render(Shader shader, bool outline = false)
     {
-        if (bMirrored) GL.Disable(EnableCap.CullFace);
+        if (outline) GL.Disable(EnableCap.DepthTest);
+        if (TwoSided) GL.Disable(EnableCap.CullFace);
         if (IsSelected)
         {
             GL.Enable(EnableCap.StencilTest);
-            GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+            GL.StencilFunc(outline ? StencilFunction.Notequal : StencilFunction.Always, 1, 0xFF);
         }
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        shader.SetUniform("uUvCount", UvCount);
-        shader.SetUniform("uHasVertexColors", HasVertexColors);
+        if (!outline)
+        {
+            shader.SetUniform("uUvCount", UvCount);
+            shader.SetUniform("uHasVertexColors", HasVertexColors);
+        }
 
         GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
         foreach (var section in Sections)
         {
             if (!section.Show) continue;
-            Materials[section.MaterialIndex].Render(shader);
+            if (!outline) Materials[section.MaterialIndex].Render(shader);
             GL.DrawElementsInstanced(PrimitiveType.Triangles, section.FacesCount, DrawElementsType.UnsignedInt, section.FirstFaceIndexPtr, TransformsCount);
         }
         _vao.Unbind();
@@ -296,11 +300,14 @@ public class Model : IDisposable
             GL.StencilFunc(StencilFunction.Always, 0, 0xFF);
             GL.Disable(EnableCap.StencilTest);
         }
-        if (bMirrored) GL.Enable(EnableCap.CullFace);
+        if (TwoSided) GL.Enable(EnableCap.CullFace);
+        if (outline) GL.Enable(EnableCap.DepthTest);
     }
 
     public void SimpleRender(Shader shader)
     {
+        if (TwoSided) GL.Disable(EnableCap.CullFace);
+
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
         foreach (var section in Sections)
@@ -309,28 +316,8 @@ public class Model : IDisposable
             GL.DrawElementsInstanced(PrimitiveType.Triangles, section.FacesCount, DrawElementsType.UnsignedInt, section.FirstFaceIndexPtr, TransformsCount);
         }
         _vao.Unbind();
-    }
 
-    public void Outline(Shader shader)
-    {
-        GL.Enable(EnableCap.StencilTest);
-        GL.Disable(EnableCap.DepthTest);
-        GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
-
-        _vao.Bind();
-        shader.SetUniform("uMorphTime", MorphTime);
-
-        GL.PolygonMode(MaterialFace.FrontAndBack, Wireframe ? PolygonMode.Line : PolygonMode.Fill);
-        foreach (var section in Sections)
-        {
-            if (!section.Show) continue;
-            GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, section.FacesCount, DrawElementsType.UnsignedInt, section.FirstFaceIndexPtr, TransformsCount, SelectedInstance);
-        }
-        _vao.Unbind();
-
-        GL.StencilFunc(StencilFunction.Always, 0, 0xFF);
-        GL.Enable(EnableCap.DepthTest);
-        GL.Disable(EnableCap.StencilTest);
+        if (TwoSided) GL.Enable(EnableCap.CullFace);
     }
 
     public bool TrySave(out string label, out string savedFilePath)
@@ -362,11 +349,6 @@ public class Model : IDisposable
             {
                 Morphs[morph].Dispose();
             }
-        }
-
-        for (int section = 0; section < Sections.Length; section++)
-        {
-            Sections[section].Dispose();
         }
 
         GL.DeleteProgram(_handle);

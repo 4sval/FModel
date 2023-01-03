@@ -75,6 +75,8 @@ public abstract class Light : IDisposable
 
     public void Render(Shader shader)
     {
+        GL.Disable(EnableCap.CullFace);
+
         _vao.Bind();
 
         Icon?.Bind(TextureUnit.Texture0);
@@ -82,6 +84,8 @@ public abstract class Light : IDisposable
         shader.SetUniform("uColor", Color);
 
         GL.DrawArrays(PrimitiveType.Triangles, 0, Indices.Length);
+
+        GL.Enable(EnableCap.CullFace);
     }
 
     public virtual void Render(int i, Shader shader)

@@ -1,13 +1,10 @@
 using System;
 using FModel.Views.Snooper.Shading;
-using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper.Models;
 
-public class Section : IDisposable
+public class Section
 {
-    private int _handle;
-
     public readonly int MaterialIndex;
     public readonly int FacesCount;
     public readonly int FirstFaceIndex;
@@ -24,19 +21,9 @@ public class Section : IDisposable
         Show = true;
     }
 
-    public Section(int index, int facesCount, int firstFaceIndex, Material material) : this(index, facesCount, firstFaceIndex)
+    public void SetupMaterial(Material material)
     {
         material.IsUsed = true;
         Show = !material.Parameters.IsNull && !material.Parameters.IsTranslucent;
-    }
-
-    public void Setup()
-    {
-        _handle = GL.CreateProgram();
-    }
-
-    public void Dispose()
-    {
-        GL.DeleteProgram(_handle);
     }
 }

@@ -145,7 +145,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(out var selected) && selected.Show)
         {
             _outline.Render(viewMatrix, CameraOp.Position, projMatrix);
-            selected.Outline(_outline);
+            selected.Render(_outline, true);
         }
 
         // picking pass (dedicated FBO, binding to 0 afterward)
@@ -285,7 +285,8 @@ public class Renderer : IDisposable
         else if (m.TryConvert(out var mesh))
         {
             model = new Model(m, mesh, t);
-            model.bMirrored = actor.GetOrDefault("bMirrored", model.bMirrored);
+            model.TwoSided = actor.GetOrDefault("bMirrored", staticMeshComp.GetOrDefault("bDisallowMeshPaintPerInstance", model.TwoSided));
+
             if (actor.TryGetValue(out FPackageIndex baseMaterial, "BaseMaterial") &&
                 actor.TryGetAllValues(out FPackageIndex[] textureData, "TextureData"))
             {
@@ -322,6 +323,7 @@ public class Renderer : IDisposable
                     }
                 }
             }
+
             if (staticMeshComp.TryGetValue(out FPackageIndex[] overrideMaterials, "OverrideMaterials"))
             {
                 var max = model.Sections.Length - 1;
@@ -333,6 +335,7 @@ public class Renderer : IDisposable
                     model.Materials[model.Sections[j].MaterialIndex].SwapMaterial(unrealMaterial);
                 }
             }
+
             Options.Models[guid] = model;
         }
 

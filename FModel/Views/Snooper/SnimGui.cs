@@ -430,12 +430,15 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             {
                 Layout("Entity");ImGui.Text($" :  ({model.Type}) {model.Name}");
                 Layout("Guid");ImGui.Text($" :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
-                Layout("Mirrored");ImGui.Text($" :  {model.bMirrored}");
                 if (model.HasSkeleton)
                 {
                     Layout("Skeleton");ImGui.Text($" :  {model.Skeleton.RefSkel.Name}");
                     Layout("Bones");ImGui.Text($" :  x{model.Skeleton.RefSkel.BoneTree.Length}");
                     Layout("Sockets");ImGui.Text($" :  x{model.Skeleton.Sockets.Length}");
+                }
+                else
+                {
+                    Layout("Two Sided");ImGui.Text($" :  {model.TwoSided}");
                 }
 
                 ImGui.EndTable();
