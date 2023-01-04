@@ -1367,6 +1367,7 @@
     <Style x:Key="CustomRichTextBox" TargetType="RichTextBox">
         <Setter Property="Height" Value="175" />
         <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="IsDocumentEnabled" Value="True" />
         <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>

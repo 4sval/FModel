@@ -897,7 +897,8 @@ public class CUE4ParseViewModel : ViewModel
         {
             Log.Information("Successfully saved {FilePath}", savedFilePath);
             FLogger.AppendInformation();
-            FLogger.AppendText($"Successfully saved {label}", Constants.WHITE, true);
+            FLogger.AppendText("Successfully saved ", Constants.WHITE);
+            FLogger.AppendLink(label, savedFilePath, true);
         }
         else
         {
@@ -912,9 +913,10 @@ public class CUE4ParseViewModel : ViewModel
         var fileName = fullPath.SubstringAfterLast('/');
         if (Provider.TrySavePackage(fullPath, out var assets))
         {
+            string path = UserSettings.Default.RawDataDirectory;
             Parallel.ForEach(assets, kvp =>
             {
-                var path = Path.Combine(UserSettings.Default.RawDataDirectory, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
+                path = Path.Combine(path, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
                 Directory.CreateDirectory(path.SubstringBeforeLast('/'));
                 File.WriteAllBytes(path, kvp.Value);
             });
@@ -923,9 +925,9 @@ public class CUE4ParseViewModel : ViewModel
             {
                 Log.Information("{FileName} successfully exported", fileName);
                 FLogger.AppendInformation();
-                FLogger.AppendText($"Successfully exported '{fileName}'", Constants.WHITE, true);
+                FLogger.AppendText("Successfully exported ", Constants.WHITE);
+                FLogger.AppendLink(fileName, path, true);
             }
-            else ApplicationService.ApplicationView.Status.UpdateStatusLabel($"Raw Data for {fullPath.SubstringAfterLast('/')}");
         }
         else if (updateUi)
         {

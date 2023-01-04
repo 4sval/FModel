@@ -329,7 +329,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         {
             Log.Information("{FileName} successfully saved", fileToSave.FileName);
             FLogger.AppendInformation();
-            FLogger.AppendText($"Successfully saved '{fileToSave.FileName}'", Constants.WHITE, true);
+            FLogger.AppendText("Successfully saved ", Constants.WHITE);
+            FLogger.AppendLink(fileToSave.FileName, path, true);
         }
         else
         {

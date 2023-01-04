@@ -104,7 +104,8 @@ public class BackupManagerViewModel : ViewModel
         {
             Log.Information("{FileName} successfully {Type}", fileName, type1);
             FLogger.AppendInformation();
-            FLogger.AppendText($"Successfully {type1} '{fileName}'", Constants.WHITE, true);
+            FLogger.AppendText($"Successfully {type1} ", Constants.WHITE);
+            FLogger.AppendLink(fileName, fullPath, true);
         }
         else
         {

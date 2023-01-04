@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace FModel.Views.Resources.Controls;
@@ -38,6 +40,33 @@ public class FLogger : ITextFormatter
             try
             {
                 textRange.ApplyPropertyValue(TextElement.ForegroundProperty, _brushConverter.ConvertFromString(color));
+            }
+            finally
+            {
+                Logger.ScrollToEnd();
+            }
+        });
+    }
+
+    public static void AppendLink(string message, string url, bool newLine = false)
+    {
+        Application.Current.Dispatcher.Invoke(delegate
+        {
+            var link = new Hyperlink(new Run(newLine ? $"{message}{Environment.NewLine}" : message), Logger.Document.ContentEnd)
+            {
+                NavigateUri = new Uri(url),
+                OverridesDefaultStyle = true,
+                Style = new Style(typeof(Hyperlink)) { Setters =
+                {
+                    new Setter(FrameworkContentElement.CursorProperty, Cursors.Hand),
+                    new Setter(TextBlock.TextDecorationsProperty, TextDecorations.Underline),
+                    new Setter(TextElement.ForegroundProperty, Brushes.Cornsilk)
+                }}
+            };
+
+            try
+            {
+                link.Click += (sender, _) => Process.Start("explorer.exe", $"/select, \"{((Hyperlink)sender).NavigateUri.AbsoluteUri}\"");
             }
             finally
             {
