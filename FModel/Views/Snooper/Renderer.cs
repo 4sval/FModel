@@ -262,9 +262,18 @@ public class Renderer : IDisposable
             staticMeshComponent.Load() is not { } staticMeshComp) return;
 
         if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)
+        {
             foreach (var actorExp in actor.Class.Owner.GetExports())
                 if (actorExp.TryGetValue(out staticMesh, "StaticMesh"))
                     break;
+            var super = actor.Class.SuperStruct.Load<UBlueprintGeneratedClass>();
+            if (staticMesh == null && super != null) { // look in parent struct if not found
+                foreach (var actorExp in super.Owner.GetExports()) {
+                    if (actorExp.TryGetValue(out staticMesh, "StaticMesh"))
+                        break;
+                }
+            }
+        }
 
         if (staticMesh?.Load() is not UStaticMesh m || m.Materials.Length < 1)
             return;
