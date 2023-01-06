@@ -15,7 +15,7 @@ public class FortniteCentralApiEndpoint : AbstractApiProvider
 
     public async Task<Dictionary<string, Dictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en")
     {
-        var request = new FRestRequest("https://fortnitecentral.gmatrixgames.ga/api/v1/hotfixes")
+        var request = new FRestRequest("https://fortnitecentral.genxgames.gg/api/v1/hotfixes")
         {
             OnBeforeDeserialization = resp => { resp.ContentType = "application/json; charset=utf-8"; }
         };
