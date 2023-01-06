@@ -89,10 +89,10 @@ public class Renderer : IDisposable
     public void Animate(UAnimSequence animSequence)
     {
         if (!Options.TryGetModel(out var model) || !model.Skeleton.IsLoaded ||
-            model.Skeleton?.RefSkel.ConvertAnims(animSequence) is not { } anim || anim.Sequences.Count == 0)
+            model.Skeleton?.UnrealSkeleton.ConvertAnims(animSequence) is not { } anim || anim.Sequences.Count == 0)
             return;
 
-        model.Skeleton.Anim = new Animation(anim);
+        model.Skeleton.SetAnimation(anim);
         Options.AnimateMesh(false);
     }
 

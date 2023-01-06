@@ -23,7 +23,7 @@ public class Socket : IDisposable
     {
         Name = socket.SocketName.Text;
         Bone = socket.BoneName.Text;
-        Transform = transform;
+        Transform = Transform.Identity;
         Transform.Relation = transform.Matrix;
         Transform.Rotation = socket.RelativeRotation.Quaternion();
         Transform.Position = socket.RelativeLocation * Constants.SCALE_DOWN_RATIO;

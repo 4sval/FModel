@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -10,17 +11,24 @@ public class Animation : IDisposable
     public float CurrentTime;
     public float DeltaTime;
     public CAnimSet CurrentAnimation;
-    public Matrix4x4[] FinalBonesMatrix;
+    public Transform[] FinalBonesMatrix;
 
-    public Animation(CAnimSet anim)
+    public Animation(CAnimSet anim, Dictionary<string, int> nameToIndex, Dictionary<int, Transform> indexToTransform)
     {
         CurrentTime = 0f;
         CurrentAnimation = anim;
 
-        FinalBonesMatrix = new Matrix4x4[anim.TrackBoneNames.Length];
+        FinalBonesMatrix = new Transform[anim.TrackBoneNames.Length];
         for (int i = 0; i < FinalBonesMatrix.Length; i++)
         {
-            FinalBonesMatrix[i] = Matrix4x4.Identity;
+            if (!nameToIndex.TryGetValue(anim.TrackBoneNames[i].Text, out var boneIndex) ||
+                !indexToTransform.TryGetValue(boneIndex, out var boneTransform))
+            {
+                boneTransform = Transform.Identity;
+            }
+
+            FinalBonesMatrix[i] = Transform.Identity;
+            FinalBonesMatrix[i].Relation = boneTransform.Matrix;
         }
     }
 
@@ -29,7 +37,7 @@ public class Animation : IDisposable
         DeltaTime = deltaTime;
         if (CurrentAnimation != null)
         {
-            CurrentTime = deltaTime;
+            // CurrentTime = deltaTime;
             CalculateBoneTransform();
         }
     }
@@ -43,17 +51,8 @@ public class Animation : IDisposable
             var bonePosition = FVector.ZeroVector;
             sequence.Tracks[boneIndex].GetBonePosition(CurrentTime, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
 
-            boneOrientation *= CurrentAnimation.BonePositions[boneIndex].Orientation;
-            bonePosition = boneOrientation.RotateVector(bonePosition);
-            bonePosition *= Constants.SCALE_DOWN_RATIO;
-            if (CurrentAnimation.TrackBoneNames[boneIndex].Text == "pelvis")
-            {
-
-            }
-
-            FinalBonesMatrix[boneIndex] =
-                Matrix4x4.CreateFromQuaternion(boneOrientation) *
-                Matrix4x4.CreateTranslation(bonePosition);
+            FinalBonesMatrix[boneIndex].Rotation = boneOrientation;
+            FinalBonesMatrix[boneIndex].Position = bonePosition * Constants.SCALE_DOWN_RATIO;
         }
     }
 

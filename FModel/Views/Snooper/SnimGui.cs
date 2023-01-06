@@ -338,7 +338,6 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             _saver.Value = model.TrySave(out _saver.Label, out _saver.Path);
                             s.WindowShouldFreeze(false);
                         }
-
                         ImGui.BeginDisabled(true);
                         // ImGui.BeginDisabled(!model.HasSkeleton);
                         if (ImGui.Selectable("Animate"))
@@ -346,7 +345,6 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             s.Renderer.Options.AnimateMesh(true);
                             s.WindowShouldClose(true, false);
                         }
-
                         ImGui.EndDisabled();
                         if (ImGui.Selectable("Teleport To"))
                         {
@@ -432,8 +430,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 Layout("Guid");ImGui.Text($" :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
                 if (model.HasSkeleton)
                 {
-                    Layout("Skeleton");ImGui.Text($" :  {model.Skeleton.RefSkel.Name}");
-                    Layout("Bones");ImGui.Text($" :  x{model.Skeleton.RefSkel.BoneTree.Length}");
+                    Layout("Skeleton");ImGui.Text($" :  {model.Skeleton.UnrealSkeleton.Name}");
+                    Layout("Bones");ImGui.Text($" :  x{model.Skeleton.UnrealSkeleton.BoneTree.Length}");
                     Layout("Sockets");ImGui.Text($" :  x{model.Skeleton.Sockets.Length}");
                 }
                 else
