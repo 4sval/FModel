@@ -908,6 +908,7 @@ public class CUE4ParseViewModel : ViewModel
         }
     }
 
+    private readonly object _rawData = new ();
     public void ExportData(string fullPath, bool updateUi = true)
     {
         var fileName = fullPath.SubstringAfterLast('/');
@@ -916,9 +917,12 @@ public class CUE4ParseViewModel : ViewModel
             string path = UserSettings.Default.RawDataDirectory;
             Parallel.ForEach(assets, kvp =>
             {
-                path = Path.Combine(path, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
-                Directory.CreateDirectory(path.SubstringBeforeLast('/'));
-                File.WriteAllBytes(path, kvp.Value);
+                lock (_rawData)
+                {
+                    path = Path.Combine(UserSettings.Default.RawDataDirectory, UserSettings.Default.KeepDirectoryStructure ? kvp.Key : kvp.Key.SubstringAfterLast('/')).Replace('\\', '/');
+                    Directory.CreateDirectory(path.SubstringBeforeLast('/'));
+                    File.WriteAllBytes(path, kvp.Value);
+                }
             });
 
             if (updateUi)
