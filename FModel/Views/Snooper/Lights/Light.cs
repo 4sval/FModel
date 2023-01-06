@@ -36,14 +36,15 @@ public abstract class Light : IDisposable
     public float Intensity;
     public bool IsSetup;
 
-    public Light(FGuid model, Texture icon, UObject parent, UObject light, FVector position)
+    public Light(FGuid model, Texture icon, UObject parent, UObject light, Transform transform)
     {
-        var p = light.GetOrDefault("RelativeLocation", parent.GetOrDefault("RelativeLocation", FVector.ZeroVector));
-        var r = light.GetOrDefault("RelativeRotation", parent.GetOrDefault("RelativeRotation", FRotator.ZeroRotator));
-
-        Transform = Transform.Identity;
-        Transform.Scale = new FVector(0.2f);
-        Transform.Position = position + r.RotateVector(p.ToMapVector()) * Constants.SCALE_DOWN_RATIO;
+        Transform = new Transform
+        {
+            Relation = transform.Matrix,
+            Position = light.GetOrDefault("RelativeLocation", parent.GetOrDefault("RelativeLocation", FVector.ZeroVector)) * Constants.SCALE_DOWN_RATIO,
+            Rotation = light.GetOrDefault("RelativeRotation", parent.GetOrDefault("RelativeRotation", FRotator.ZeroRotator)).Quaternion(),
+            Scale = light.GetOrDefault("RelativeScale3D", parent.GetOrDefault("RelativeScale3D", FVector.OneVector))
+        };
 
         Model = model;
         Icon = icon;
@@ -91,7 +92,7 @@ public abstract class Light : IDisposable
     public virtual void Render(int i, Shader shader)
     {
         shader.SetUniform($"uLights[{i}].Base.Color", Color);
-        shader.SetUniform($"uLights[{i}].Base.Position", Transform.Position);
+        shader.SetUniform($"uLights[{i}].Base.Position", Transform.Matrix.Translation);
         shader.SetUniform($"uLights[{i}].Base.Intensity", Intensity);
     }
 

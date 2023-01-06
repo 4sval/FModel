@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
-using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Views.Snooper.Shading;
 
@@ -26,48 +24,35 @@ public class Skeleton : IDisposable
         Sockets = new Socket[RefSkel.Sockets.Length];
         for (int i = 0; i < Sockets.Length; i++)
         {
-            if (RefSkel.Sockets[i].Load<USkeletalMeshSocket>() is not { } socket ||
-                !RefSkel.ReferenceSkeleton.FinalNameToIndexMap.TryGetValue(socket.BoneName.Text, out var boneIndex))
-                continue;
+            if (RefSkel.Sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
 
-            var transform = Transform.Identity;
-            var matrix = Matrix4x4.Identity;
-            while (boneIndex > -1)
+            if (!RefSkel.ReferenceSkeleton.FinalNameToIndexMap.TryGetValue(socket.BoneName.Text, out var boneIndex))
             {
-                var bone = RefSkel.ReferenceSkeleton.FinalRefBonePose[boneIndex];
-                boneIndex = RefSkel.ReferenceSkeleton.FinalRefBoneInfo[boneIndex].ParentIndex;
-                var parentBone = RefSkel.ReferenceSkeleton.FinalRefBonePose[boneIndex < 0 ? 0 : boneIndex];
-
-                var orig_loc = bone.Translation;
-                parentBone.Rotation.Conjugate();
-                orig_loc = parentBone.Rotation.RotateVector(orig_loc);
-
-                var orig_quat = bone.Rotation;
-                orig_quat *= parentBone.Rotation;
-                orig_quat.Conjugate();
-
-                var p_rotated = orig_quat * orig_loc;
-                orig_quat.Conjugate();
-                p_rotated *= orig_quat;
-
-                matrix *=
-                    Matrix4x4.CreateFromQuaternion(orig_quat) *
-                    Matrix4x4.CreateTranslation(p_rotated);
-
-                // Console.WriteLine(matrix.Translation);
+                Sockets[i] = new Socket(socket);
             }
-            // for (int j = 0; j <= boneIndex; j++)
-            // {
-            //     var t = RefSkel.ReferenceSkeleton.FinalRefBonePose[j];
-            //     var r = RefSkel.ReferenceSkeleton.FinalRefBonePose[j - (j == 0 ? 0 : 1)].Rotation;
-            //     r.Conjugate();
-            //     matrix *= Matrix4x4.CreateFromQuaternion(r) * Matrix4x4.CreateTranslation(t.Translation);
-            //
-            //     Console.WriteLine($@"{t.Translation}");
-            //     transform.Relation *= matrix;
-            // }
+            else
+            {
+                var transforms = new List<Transform>();
+                while (boneIndex > -1)
+                {
+                    var bone = RefSkel.ReferenceSkeleton.FinalRefBonePose[boneIndex];
+                    boneIndex = RefSkel.ReferenceSkeleton.FinalRefBoneInfo[boneIndex].ParentIndex;
 
-            Sockets[i] = new Socket(socket, matrix.Translation);
+                    transforms.Add(new Transform
+                    {
+                        Rotation = bone.Rotation,
+                        Position = bone.Translation * Constants.SCALE_DOWN_RATIO,
+                        Scale = bone.Scale3D
+                    });
+                }
+
+                for (int j = transforms.Count - 2; j > -1; j--)
+                {
+                    transforms[j].Relation *= transforms[j + 1].Matrix;
+                }
+
+                Sockets[i] = new Socket(socket, transforms[0]);
+            }
         }
     }
 

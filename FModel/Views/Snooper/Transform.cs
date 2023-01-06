@@ -12,17 +12,15 @@ public class Transform
     }
 
     public Matrix4x4 Relation = Matrix4x4.Identity;
-    public FVector Position = FVector.ZeroVector.ToMapVector();
-    public FRotator Rotation = new (0f);
-    public FVector Scale = FVector.OneVector.ToMapVector();
+    public FVector Position = FVector.ZeroVector;
+    public FQuat Rotation = new (0f);
+    public FVector Scale = FVector.OneVector;
 
     public Matrix4x4 Matrix =>
-        Matrix4x4.CreateScale(Scale) *
-        Matrix4x4.CreateRotationX(Helper.DegreesToRadians(Rotation.Roll)) *
-        Matrix4x4.CreateRotationY(Helper.DegreesToRadians(-Rotation.Yaw)) *
-        Matrix4x4.CreateRotationZ(Helper.DegreesToRadians(Rotation.Pitch)) *
-        Matrix4x4.CreateTranslation(Position) *
-        Relation;
+        Matrix4x4.CreateScale(Scale.X, Scale.Z, Scale.Y) *
+        Matrix4x4.CreateFromQuaternion(new Quaternion(Rotation.X, Rotation.Z, Rotation.Y, -Rotation.W)) *
+        Matrix4x4.CreateTranslation(Position.X, Position.Z, Position.Y)
+        * Relation;
 
     public void ImGuiTransform(float speed)
     {
@@ -50,13 +48,16 @@ public class Transform
         {
             ImGui.PushID(2);
             ImGui.SetNextItemWidth(width);
-            ImGui.DragFloat("X", ref Rotation.Roll, .5f, 0f, 0f, "%.1f°");
+            ImGui.DragFloat("X", ref Rotation.X, .5f, 0f, 0f, "%.1f°");
 
             ImGui.SetNextItemWidth(width);
-            ImGui.DragFloat("Y", ref Rotation.Pitch, .5f, 0f, 0f, "%.1f°");
+            ImGui.DragFloat("Y", ref Rotation.Z, .5f, 0f, 0f, "%.1f°");
 
             ImGui.SetNextItemWidth(width);
-            ImGui.DragFloat("Z", ref Rotation.Yaw, .5f, 0f, 0f, "%.1f°");
+            ImGui.DragFloat("Z", ref Rotation.Y, .5f, 0f, 0f, "%.1f°");
+
+            ImGui.SetNextItemWidth(width);
+            ImGui.DragFloat("W", ref Rotation.W, .5f, 0f, 0f, "%.1f°");
 
             ImGui.PopID();
             ImGui.TreePop();

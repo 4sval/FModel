@@ -212,11 +212,9 @@ public class Renderer : IDisposable
         if (persistentLevel.TryGetValue(out FSoftObjectPath runtimeCell, "WorldPartitionRuntimeCell") &&
             Utils.TryLoadObject(runtimeCell.AssetPathName.Text.SubstringBeforeWithLast(".") + runtimeCell.SubPathString.SubstringAfterLast("."), out UObject worldPartition))
         {
-            var ratio = MathF.Pow(Constants.SCALE_DOWN_RATIO, 2);
-            var position = worldPartition.GetOrDefault("Position", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO;
+            var position = worldPartition.GetOrDefault("Position", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO;
             var box = worldPartition.GetOrDefault("ContentBounds", new FBox(FVector.ZeroVector, FVector.OneVector));
-            box.Min *= ratio;box.Max *= ratio;
-
+            box *= MathF.Pow(Constants.SCALE_DOWN_RATIO, 2);
             CameraOp.Teleport(position, box, true);
         }
 
@@ -243,8 +241,8 @@ public class Renderer : IDisposable
         if (actor.ExportType != "LevelBounds" || !actor.TryGetValue(out FPackageIndex boxComponent, "BoxComponent") ||
             boxComponent.Load() is not { } boxObject) return;
 
-        var direction = boxObject.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO;
-        var position = boxObject.GetOrDefault("RelativeScale3D", FVector.OneVector).ToMapVector() / 2f * Constants.SCALE_DOWN_RATIO;
+        var direction = boxObject.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO;
+        var position = boxObject.GetOrDefault("RelativeScale3D", FVector.OneVector) / 2f * Constants.SCALE_DOWN_RATIO;
         CameraOp.Setup(new FBox(direction, position));
     }
 
@@ -282,9 +280,9 @@ public class Renderer : IDisposable
         var t = new Transform
         {
             Relation = transform.Matrix,
-            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO,
-            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
-            Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector).ToMapVector()
+            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
+            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion(),
+            Scale = staticMeshComp.GetOrDefault("RelativeScale3D", FVector.OneVector)
         };
 
         if (Options.TryGetModel(guid, out var model))
@@ -351,12 +349,12 @@ public class Renderer : IDisposable
         if (actor.TryGetValue(out FPackageIndex treasureLight, "PointLight", "TreasureLight") &&
             treasureLight.TryLoad(out var pl1) && pl1.Template.TryLoad(out var pl2))
         {
-            Options.Lights.Add(new PointLight(guid, Options.Icons["pointlight"], pl1, pl2, t.Position));
+            Options.Lights.Add(new PointLight(guid, Options.Icons["pointlight"], pl1, pl2, t));
         }
         if (actor.TryGetValue(out FPackageIndex spotLight, "SpotLight") &&
             spotLight.TryLoad(out var sl1) && sl1.Template.TryLoad(out var sl2))
         {
-            Options.Lights.Add(new SpotLight(guid, Options.Icons["spotlight"], sl1, sl2, t.Position));
+            Options.Lights.Add(new SpotLight(guid, Options.Icons["spotlight"], sl1, sl2, t));
         }
     }
 
@@ -376,9 +374,8 @@ public class Renderer : IDisposable
         var transform = new Transform
         {
             Relation = relation,
-            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector).ToMapVector() * Constants.SCALE_DOWN_RATIO,
-            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator),
-            Scale = FVector.OneVector.ToMapVector()
+            Position = staticMeshComp.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
+            Rotation = staticMeshComp.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion()
         };
 
         for (int j = 0; j < additionalWorlds.Length; j++)

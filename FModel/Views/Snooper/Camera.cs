@@ -39,12 +39,11 @@ public class Camera
     public void Teleport(FVector instancePos, FBox box, bool updateAll = false)
     {
         box.GetCenterAndExtents(out var center, out var extents);
-        center = center.ToMapVector();
         center += instancePos;
         var distance = extents.AbsMax();
 
-        Position = new Vector3(instancePos.X, center.Y, instancePos.Z + distance * 2);
-        Direction = new Vector3(center.X, center.Y, center.Z);
+        Position = new Vector3(instancePos.X, center.Z, instancePos.Y + distance * 2);
+        Direction = new Vector3(center.X, center.Z, center.Y);
         if (updateAll)
         {
             Far = Math.Max(Far, box.Max.AbsMax() * 50f);

@@ -79,11 +79,11 @@ public class Model : IDisposable
 
     public Model(UStaticMesh export, CStaticMesh staticMesh, Transform transform) : this(export, export.Materials, null, staticMesh.LODs.Count, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform)
     {
-        Box = staticMesh.BoundingBox *= Constants.SCALE_DOWN_RATIO;
+        Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
     }
     private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, export.Skeleton, skeletalMesh.LODs.Count, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform)
     {
-        Box = skeletalMesh.BoundingBox *= Constants.SCALE_DOWN_RATIO;
+        Box = skeletalMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
     }
     public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh) : this(export, skeletalMesh, Transform.Identity)
     {

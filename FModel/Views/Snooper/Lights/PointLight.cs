@@ -12,7 +12,7 @@ public class PointLight : Light
     public float Linear;
     public float Quadratic;
 
-    public PointLight(FGuid model, Texture icon, UObject parent, UObject point, FVector position) : base(model, icon, parent, point, position)
+    public PointLight(FGuid model, Texture icon, UObject parent, UObject point, Transform transform) : base(model, icon, parent, point, transform)
     {
         if (!point.TryGetValue(out float radius, "AttenuationRadius", "SourceRadius"))
             radius = 1.0f;

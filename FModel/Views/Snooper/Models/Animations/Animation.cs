@@ -53,7 +53,7 @@ public class Animation : IDisposable
 
             FinalBonesMatrix[boneIndex] =
                 Matrix4x4.CreateFromQuaternion(boneOrientation) *
-                Matrix4x4.CreateTranslation(bonePosition.ToMapVector());
+                Matrix4x4.CreateTranslation(bonePosition);
         }
     }
 
