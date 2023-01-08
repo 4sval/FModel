@@ -105,6 +105,7 @@ public class Model : IDisposable
 
     private Model(UObject export, ResolvedObject[] materials, FPackageIndex skeleton, int numLods, CBaseMeshLod lod, CMeshVertex[] vertices, Transform transform = null) : this(export)
     {
+        var t = transform ?? Transform.Identity;
         var hasCustomUvs = lod.ExtraUV.IsValueCreated;
         UvCount = hasCustomUvs ? Math.Max(lod.NumTexCoords, numLods) : lod.NumTexCoords;
         TwoSided = lod.IsTwoSided;
@@ -124,7 +125,7 @@ public class Model : IDisposable
 
         if (skeleton != null)
         {
-            Skeleton = new Skeleton(skeleton);
+            Skeleton = new Skeleton(skeleton, t);
             VertexSize += 8; // + BoneIds + BoneWeights
         }
 
@@ -186,7 +187,7 @@ public class Model : IDisposable
             if (section.IsValid) Sections[s].SetupMaterial(Materials[section.MaterialIndex]);
         }
 
-        AddInstance(transform ?? Transform.Identity);
+        AddInstance(t);
     }
 
     public void AddInstance(Transform transform)
@@ -195,6 +196,13 @@ public class Model : IDisposable
         Transforms.Add(transform);
     }
 
+    public void UpdateMatrix() => UpdateMatrix(SelectedInstance);
+    public void UpdateMatrix(Transform transform) => UpdateMatrix(SelectedInstance, transform);
+    public void UpdateMatrix(int instance, Transform transform)
+    {
+        Transforms[instance] = transform;
+        UpdateMatrix(instance);
+    }
     public void UpdateMatrix(int instance)
     {
         _matrixVbo.Bind();
@@ -304,7 +312,7 @@ public class Model : IDisposable
         if (outline) GL.Enable(EnableCap.DepthTest);
     }
 
-    public void SimpleRender(Shader shader)
+    public void PickingRender(Shader shader)
     {
         if (TwoSided) GL.Disable(EnableCap.CullFace);
 

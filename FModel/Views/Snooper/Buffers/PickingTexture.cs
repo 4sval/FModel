@@ -68,7 +68,7 @@ public class PickingTexture : IDisposable
             _shader.SetUniform("uD", guid.D);
 
             if (!model.Show) continue;
-            model.SimpleRender(_shader);
+            model.PickingRender(_shader);
         }
 
         Bind(0);

@@ -1,5 +1,6 @@
 ﻿using System;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
+using CUE4Parse.UE4.Objects.Core.Misc;
 
 namespace FModel.Views.Snooper.Models;
 
@@ -8,6 +9,8 @@ public class Socket : IDisposable
     public readonly string Name;
     public readonly string Bone;
     public readonly Transform Transform;
+
+    public FGuid AttachedModel;
 
     public Socket(USkeletalMeshSocket socket)
     {

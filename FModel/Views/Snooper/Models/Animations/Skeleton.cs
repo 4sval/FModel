@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
+using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Views.Snooper.Shading;
+using Serilog;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
@@ -19,7 +22,9 @@ public class Skeleton : IDisposable
 
     public Animation Anim;
 
-    public Skeleton(FPackageIndex package)
+    private FVector _previousMatrix;
+
+    public Skeleton(FPackageIndex package, Transform transform)
     {
         UnrealSkeleton = package.Load<USkeleton>();
         if (UnrealSkeleton == null) return;
@@ -38,6 +43,7 @@ public class Skeleton : IDisposable
                     var bone = UnrealSkeleton.ReferenceSkeleton.FinalRefBonePose[parentBoneIndex];
                     boneTransform = new Transform
                     {
+                        Relation = transform.Matrix,
                         Rotation = bone.Rotation,
                         Position = bone.Translation * Constants.SCALE_DOWN_RATIO,
                         Scale = bone.Scale3D
@@ -79,6 +85,22 @@ public class Skeleton : IDisposable
     public void SetAnimation(CAnimSet anim)
     {
         Anim = new Animation(anim, BonesIndexByName, BonesTransformByIndex);
+    }
+
+    public void UpdateSocketsMatrix(Transform t)
+    {
+        var m = t.Position;
+        if (m == _previousMatrix) return;
+
+        var delta = _previousMatrix - m;
+        Log.Logger.Information("Update {0}", delta);
+
+        // BonesTransformByIndex[0].Relation.Translation += delta;
+        foreach (var socket in Sockets)
+        {
+            socket.Transform.Relation.Translation += delta;
+        }
+        _previousMatrix = m;
     }
 
     public void SetUniform(Shader shader)
