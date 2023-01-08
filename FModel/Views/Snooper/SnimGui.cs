@@ -7,6 +7,7 @@ using ImGuiNET;
 using OpenTK.Windowing.Common;
 using System.Numerics;
 using System.Text;
+using CUE4Parse.UE4.Objects.Core.Math;
 using FModel.Settings;
 using FModel.Views.Snooper.Models;
 using FModel.Views.Snooper.Shading;
@@ -402,14 +403,18 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 foreach (var socket in model.Skeleton.Sockets)
                 {
                     ImGui.PushID(i);
-                    ImGui.Text($"{socket.Name} attached to {socket.Bone}");
-                    ImGui.Text($"P: {socket.Transform.Matrix.M41} | {socket.Transform.Matrix.M42} | {socket.Transform.Matrix.M43}");
-                    // ImGui.Text($"R: {socket.Transform.Rotation}");
-                    // ImGui.Text($"S: {socket.Transform.Scale}");
+                    ImGui.Text($"'{socket.Name}' attached to '{socket.Bone}'");
+                    ImGui.Text($"P: {socket.Transform.Matrix.Translation.X} | {socket.Transform.Matrix.Translation.Y} | {socket.Transform.Matrix.Translation.Z}");
                     if (ImGui.Button("Attach") && s.Renderer.Options.TryGetModel(out var selected))
                     {
-                        selected.Transforms[selected.SelectedInstance] = socket.Transform;
-                        selected.UpdateMatrix(selected.SelectedInstance);
+                        socket.AttachedModel = s.Renderer.Options.SelectedModel;
+                        selected.UpdateMatrix(new Transform
+                        {
+                            Relation = socket.Transform.Matrix,
+                            Position = FVector.ZeroVector,
+                            Rotation = new FQuat(0),
+                            Scale = FVector.OneVector
+                        });
                     }
                     ImGui.PopID();
                     i++;
@@ -527,7 +532,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     ImGui.EndDisabled(); ImGui.PopID();
 
                     model.Transforms[model.SelectedInstance].ImGuiTransform(s.Renderer.CameraOp.Speed / 100f);
-                    model.UpdateMatrix(model.SelectedInstance);
+                    model.UpdateMatrix();
+
                     ImGui.EndTabItem();
                 }
 
