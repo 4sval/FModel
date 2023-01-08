@@ -69,7 +69,7 @@
     <None Remove="Resources\athena.png" />
     <None Remove="Resources\Json.xshd" />
     <None Remove="Resources\Ini.xshd" />
-    <None Remove="Resources\Ulang.xshd" />
+    <None Remove="Resources\Verse.xshd" />
     <None Remove="Resources\Xml.xshd" />
     <None Remove="Resources\Cpp.xshd" />
     <None Remove="Resources\Changelog.xshd" />
@@ -112,7 +112,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Json.xshd" />
     <EmbeddedResource Include="Resources\Ini.xshd" />
-    <EmbeddedResource Include="Resources\ULang.xshd" />
+    <EmbeddedResource Include="Resources\Verse.xshd" />
     <EmbeddedResource Include="Resources\Xml.xshd" />
     <EmbeddedResource Include="Resources\Cpp.xshd" />
     <EmbeddedResource Include="Resources\Changelog.xshd" />

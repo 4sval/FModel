@@ -1,5 +1,5 @@
-<SyntaxDefinition name="Ulang Visual Process Language" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"
-    extensions=".ulang">
+<SyntaxDefinition name="Verse Visual Process Language" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"
+    extensions=".verse">
 
     <Color name="Constant" foreground="#C792DD" />
     <Color name="Method" foreground="#FFCB6B" />

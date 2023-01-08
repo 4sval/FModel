@@ -771,8 +771,8 @@ public class CUE4ParseViewModel : ViewModel
             {
                 if (!TabControl.CanAddTabs) return false;
 
-                TabControl.AddTab($"{solarisDigest.ProjectName}.ulang");
-                TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("ulang");
+                TabControl.AddTab($"{solarisDigest.ProjectName}.verse");
+                TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
                 TabControl.SelectedTab.SetDocumentText(solarisDigest.ReadableCode, false);
                 return true;
             }
