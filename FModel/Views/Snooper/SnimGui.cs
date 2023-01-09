@@ -351,7 +351,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         ImGui.EndDisabled();
                         if (ImGui.Selectable("Teleport To"))
                         {
-                            var instancePos = model.Transforms[model.SelectedInstance].Position;
+                            var instancePos = model.Transforms[model.SelectedInstance].Matrix.Translation;
                             s.Renderer.CameraOp.Teleport(instancePos, model.Box);
                         }
 

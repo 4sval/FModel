@@ -36,13 +36,13 @@ public class Camera
     }
 
     public void Setup(FBox box) => Teleport(FVector.ZeroVector, box, true);
-    public void Teleport(FVector instancePos, FBox box, bool updateAll = false)
+    public void Teleport(Vector3 instancePos, FBox box, bool updateAll = false)
     {
         box.GetCenterAndExtents(out var center, out var extents);
-        center += instancePos;
+        center += new FVector(instancePos.X, instancePos.Z, instancePos.Y);
         var distance = extents.AbsMax();
 
-        Position = new Vector3(instancePos.X, center.Z, instancePos.Y + distance * 2);
+        Position = new Vector3(instancePos.X, center.Z, instancePos.Z + distance * 2);
         Direction = new Vector3(center.X, center.Z, center.Y);
         if (updateAll)
         {
