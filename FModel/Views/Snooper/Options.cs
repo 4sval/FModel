@@ -38,6 +38,7 @@ public class Options
             ["spotlight"] = new ("spotlight"),
             ["link_on"] = new ("link_on"),
             ["link_off"] = new ("link_off"),
+            ["link_has"] = new ("link_has"),
         };
 
         _platform = UserSettings.Default.OverridedPlatform;

@@ -229,6 +229,7 @@
     <Resource Include="Resources\spotlight.png" />
     <Resource Include="Resources\link_on.png" />
     <Resource Include="Resources\link_off.png" />
+    <Resource Include="Resources\link_has.png" />
   </ItemGroup>
 
   <ItemGroup>

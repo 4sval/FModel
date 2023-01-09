@@ -74,8 +74,8 @@ public class SnimGui
 
         // Window("Timeline", () => {});
         Window("World", () => DrawWorld(s), false);
-        Window("Sockets", () => DrawSockets(s));
 
+        DrawSockets(s);
         DrawOuliner(s);
         DrawDetails(s);
         Draw3DViewport(s);
@@ -316,7 +316,9 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     ImGui.TableNextColumn();
                     if (!model.Show)
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
-                    if (model.IsAttached)
+                    else if (model.IsAttachment)
+                        ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(0, .75f, 0, .5f)));
+                    else if (model.IsAttached)
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 1, 0, .5f)));
 
                     ImGui.Text(model.TransformsCount.ToString("D"));
@@ -360,8 +362,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     });
 
                     ImGui.TableNextColumn();
-                    ImGui.Image(s.Renderer.Options.Icons[model.IsAttached ? "link_on" : "link_off"].GetPointer(), new Vector2(_tableWidth));
-                    if (model.IsAttached) TooltipCopy($"Attached To {model.AttachedTo}");
+                    ImGui.Image(s.Renderer.Options.Icons[model.AttachIcon].GetPointer(), new Vector2(_tableWidth));
+                    TooltipCopy(model.AttachTooltip);
 
                     ImGui.PopID();
                     i++;
@@ -399,50 +401,36 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
     private void DrawSockets(Snooper s)
     {
-        var selectedGuid = s.Renderer.Options.SelectedModel;
-        if (!s.Renderer.Options.TryGetModel(out var selectedModel))
-            return;
-
-        foreach (var model in s.Renderer.Options.Models.Values)
+        MeshWindow("Sockets", s.Renderer, (icons, selectedModel) =>
         {
-            if (!model.HasSockets || model.IsSelected) continue;
-            if (ImGui.TreeNode($"{model.Name} [{model.Sockets.Length}]"))
+            var selectedGuid = s.Renderer.Options.SelectedModel;
+            foreach (var model in s.Renderer.Options.Models.Values)
             {
-                var i = 0;
-                foreach (var socket in model.Sockets)
+                if (!model.HasSockets || model.IsSelected) continue;
+                if (ImGui.TreeNode($"{model.Name} [{model.Sockets.Length}]"))
                 {
-                    ImGui.PushID(i);
-                    switch (socket.AttachedModels.Contains(selectedGuid))
+                    var i = 0;
+                    foreach (var socket in model.Sockets)
                     {
-                        case false when ImGui.Button($"Attach to '{socket.Name}'"):
-                            socket.AttachedModels.Add(selectedGuid);
-                            selectedModel.AttachModel(model, socket);
-                            break;
-                        case true when ImGui.Button($"Detach from '{socket.Name}'"):
-                            socket.AttachedModels.Remove(selectedGuid);
-                            selectedModel.DetachModel();
-                            break;
+                        ImGui.PushID(i);
+                        switch (socket.AttachedModels.Contains(selectedGuid))
+                        {
+                            case false when ImGui.Button($"Attach to '{socket.Name}'"):
+                                socket.AttachedModels.Add(selectedGuid);
+                                selectedModel.AttachModel(model, socket);
+                                break;
+                            case true when ImGui.Button($"Detach from '{socket.Name}'"):
+                                socket.AttachedModels.Remove(selectedGuid);
+                                selectedModel.DetachModel(model);
+                                break;
+                        }
+                        ImGui.PopID();
+                        i++;
                     }
-                    ImGui.PopID();
-                    i++;
+                    ImGui.TreePop();
                 }
-                ImGui.TreePop();
             }
-        }
-
-        // if (ImGui.BeginTable("socket_editor", 2))
-        // {
-        //     Layout("Models");
-        //     ImGui.PushID(1);
-        //     ImGui.Combo("", ref m, "Fly Cam\0Arcball\0");
-        //     ImGui.PopID();
-        //
-        //     Layout("Attach To");ImGui.PushID(2);
-        //     ImGui.Combo("world_mode", ref m, "Fly Cam\0Arcball\0");
-        //     ImGui.PopID();
-        //
-        //     ImGui.EndTable();
-        // }
+        });
     }
 
     private void DrawDetails(Snooper s)

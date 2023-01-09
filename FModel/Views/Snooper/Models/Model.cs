@@ -54,8 +54,13 @@ public class Model : IDisposable
 
     public bool HasSockets => Sockets.Length > 0;
     public readonly Socket[] Sockets;
-    public bool IsAttached { get; private set; }
-    public string AttachedTo { get; private set; }
+
+    private string _attachedTo = string.Empty;
+    private readonly List<string> _attachedFor = new ();
+    public bool IsAttached => _attachedTo.Length > 0;
+    public bool IsAttachment => _attachedFor.Count > 0;
+    public string AttachIcon => IsAttachment ? "link_has" : IsAttached ? "link_on" : "link_off";
+    public string AttachTooltip => IsAttachment ? $"Is Attachment For:\n{string.Join("\n", _attachedFor)}" : IsAttached ? $"Is Attached To {_attachedTo}" : "Not Attached To Any Socket Nor Attachment For Any Model";
 
     public int TransformsCount;
     public readonly List<Transform> Transforms;
@@ -271,18 +276,18 @@ public class Model : IDisposable
 
     public void AttachModel(Model attachedTo, Socket socket)
     {
-        IsAttached = true;
-        AttachedTo = $"'{socket.Name}' from '{attachedTo.Name}'{(socket.Bone.HasValue ? $" at '{socket.Bone}'" : "")}";
+        _attachedTo = $"'{socket.Name}' from '{attachedTo.Name}'{(socket.Bone.HasValue ? $" at '{socket.Bone}'" : "")}";
+        attachedTo._attachedFor.Add($"'{Name}'");
         // reset PRS to 0 so it's attached to the actual position (can be transformed relative to the socket later by the user)
         Transforms[SelectedInstance].Position = FVector.ZeroVector;
         Transforms[SelectedInstance].Rotation = FQuat.Identity;
         Transforms[SelectedInstance].Scale = FVector.OneVector;
     }
 
-    public void DetachModel()
+    public void DetachModel(Model attachedTo)
     {
-        IsAttached = false;
-        AttachedTo = null;
+        _attachedTo = string.Empty;
+        attachedTo._attachedFor.Remove($"'{Name}'");
         Transforms[SelectedInstance].Relation = _previousMatrix;
     }
 
