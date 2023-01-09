@@ -4,36 +4,28 @@ using System.Numerics;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Core.Misc;
+using CUE4Parse.UE4.Objects.UObject;
 
 namespace FModel.Views.Snooper.Models;
 
 public class Socket : IDisposable
 {
     public readonly string Name;
-    public readonly string Bone;
+    public readonly FName? Bone;
     public readonly Transform Transform;
 
     public readonly List<FGuid> AttachedModels;
 
     private Socket()
     {
-        Bone = "None";
         Transform = Transform.Identity;
         AttachedModels = new List<FGuid>();
     }
 
-    public Socket(UStaticMeshSocket socket) : this()
+    public Socket(UStaticMeshSocket socket, Transform transform) : this()
     {
         Name = socket.SocketName.Text;
-        Transform.Rotation = socket.RelativeRotation.Quaternion();
-        Transform.Position = socket.RelativeLocation * Constants.SCALE_DOWN_RATIO;
-        Transform.Scale = socket.RelativeScale;
-    }
-
-    public Socket(USkeletalMeshSocket socket) : this()
-    {
-        Name = socket.SocketName.Text;
-        Bone = socket.BoneName.Text;
+        Transform.Relation = transform.Matrix;
         Transform.Rotation = socket.RelativeRotation.Quaternion();
         Transform.Position = socket.RelativeLocation * Constants.SCALE_DOWN_RATIO;
         Transform.Scale = socket.RelativeScale;
@@ -42,7 +34,7 @@ public class Socket : IDisposable
     public Socket(USkeletalMeshSocket socket, Transform transform) : this()
     {
         Name = socket.SocketName.Text;
-        Bone = socket.BoneName.Text;
+        Bone = socket.BoneName;
         Transform.Relation = transform.Matrix;
         Transform.Rotation = socket.RelativeRotation.Quaternion();
         Transform.Position = socket.RelativeLocation * Constants.SCALE_DOWN_RATIO;

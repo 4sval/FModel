@@ -54,6 +54,8 @@ public class Model : IDisposable
 
     public bool HasSockets => Sockets.Length > 0;
     public readonly Socket[] Sockets;
+    public bool IsAttached { get; private set; }
+    public string AttachedTo { get; private set; }
 
     public int TransformsCount;
     public readonly List<Transform> Transforms;
@@ -63,7 +65,7 @@ public class Model : IDisposable
 
     public bool Show;
     public bool Wireframe;
-    public bool IsSetup;
+    public bool IsSetup { get; private set; }
     public bool IsSelected;
     public int SelectedInstance;
     public float MorphTime;
@@ -88,7 +90,7 @@ public class Model : IDisposable
         for (int i = 0; i < Sockets.Length; i++)
         {
             if (export.Sockets[i].Load<UStaticMeshSocket>() is not { } socket) continue;
-            Sockets[i] = new Socket(socket);
+            Sockets[i] = new Socket(socket, Transforms[0]);
         }
     }
     private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, export.Skeleton, skeletalMesh.LODs.Count, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform)
@@ -106,13 +108,9 @@ public class Model : IDisposable
 
             if (!Skeleton.BonesIndexByName.TryGetValue(socket.BoneName.Text, out var boneIndex) ||
                 !Skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
-            {
-                Sockets[i] = new Socket(socket);
-            }
-            else
-            {
-                Sockets[i] = new Socket(socket, boneTransform);
-            }
+                boneTransform = Transforms[0];
+
+            Sockets[i] = new Socket(socket, boneTransform);
         }
     }
     public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh) : this(export, skeletalMesh, Transform.Identity)
@@ -217,6 +215,7 @@ public class Model : IDisposable
             if (section.IsValid) Sections[s].SetupMaterial(Materials[section.MaterialIndex]);
         }
 
+        _previousMatrix = t.Matrix;
         AddInstance(t);
     }
 
@@ -224,13 +223,12 @@ public class Model : IDisposable
     {
         TransformsCount++;
         Transforms.Add(transform);
-        _previousMatrix = transform.Matrix;
     }
 
     public void UpdateMatrices(Options options)
     {
         UpdateMatrices();
-        if (!HasSkeleton)
+        if (!HasSockets)
             return;
 
         for (int s = 0; s < Sockets.Length; s++)
@@ -269,6 +267,23 @@ public class Model : IDisposable
         _morphVbo.Bind();
         _morphVbo.Update(Morphs[index].Vertices);
         _morphVbo.Unbind();
+    }
+
+    public void AttachModel(Model attachedTo, Socket socket)
+    {
+        IsAttached = true;
+        AttachedTo = $"'{socket.Name}' from '{attachedTo.Name}'{(socket.Bone.HasValue ? $" at '{socket.Bone}'" : "")}";
+        // reset PRS to 0 so it's attached to the actual position (can be transformed relative to the socket later by the user)
+        Transforms[SelectedInstance].Position = FVector.ZeroVector;
+        Transforms[SelectedInstance].Rotation = FQuat.Identity;
+        Transforms[SelectedInstance].Scale = FVector.OneVector;
+    }
+
+    public void DetachModel()
+    {
+        IsAttached = false;
+        AttachedTo = null;
+        Transforms[SelectedInstance].Relation = _previousMatrix;
     }
 
     public void SetupInstances()

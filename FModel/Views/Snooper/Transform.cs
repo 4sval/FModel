@@ -13,7 +13,7 @@ public class Transform
 
     public Matrix4x4 Relation = Matrix4x4.Identity;
     public FVector Position = FVector.ZeroVector;
-    public FQuat Rotation = new (0f);
+    public FQuat Rotation = FQuat.Identity;
     public FVector Scale = FVector.OneVector;
 
     public Matrix4x4 Matrix =>

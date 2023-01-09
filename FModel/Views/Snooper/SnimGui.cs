@@ -7,7 +7,6 @@ using ImGuiNET;
 using OpenTK.Windowing.Common;
 using System.Numerics;
 using System.Text;
-using CUE4Parse.UE4.Objects.Core.Math;
 using FModel.Settings;
 using FModel.Views.Snooper.Models;
 using FModel.Views.Snooper.Shading;
@@ -56,6 +55,7 @@ public class SnimGui
     private readonly Vector4 _errorColor = new (0.761f, 0.169f, 0.169f, 1.0f);
 
     private const uint _dockspaceId = 1337;
+    private const float _tableWidth = 17;
 
     public SnimGui(int width, int height)
     {
@@ -300,11 +300,12 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
         Window("Outliner", () =>
         {
-            if (ImGui.BeginTable("Items", 3, ImGuiTableFlags.Resizable | ImGuiTableFlags.BordersOuterV, ImGui.GetContentRegionAvail()))
+            if (ImGui.BeginTable("Items", 4, ImGuiTableFlags.Resizable | ImGuiTableFlags.BordersOuterV | ImGuiTableFlags.NoSavedSettings, ImGui.GetContentRegionAvail()))
             {
-                ImGui.TableSetupColumn("Instance", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed);
-                ImGui.TableSetupColumn("Channels", ImGuiTableColumnFlags.WidthFixed);
-                ImGui.TableSetupColumn("Name");
+                ImGui.TableSetupColumn("Instance", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
+                ImGui.TableSetupColumn("Channels", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
+                ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch);
+                ImGui.TableSetupColumn("", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
                 ImGui.TableHeadersRow();
 
                 var i = 0;
@@ -314,9 +315,9 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
                     if (!model.Show)
-                    {
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
-                    }
+                    if (model.IsAttached)
+                        ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 1, 0, .5f)));
 
                     ImGui.Text(model.TransformsCount.ToString("D"));
                     ImGui.TableNextColumn();
@@ -326,7 +327,6 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     {
                         s.Renderer.Options.SelectModel(guid);
                     }
-
                     Popup(() =>
                     {
                         s.Renderer.Options.SelectModel(guid);
@@ -358,6 +358,11 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         ImGui.Separator();
                         if (ImGui.Selectable("Copy Name to Clipboard")) ImGui.SetClipboardText(model.Name);
                     });
+
+                    ImGui.TableNextColumn();
+                    ImGui.Image(s.Renderer.Options.Icons[model.IsAttached ? "link_on" : "link_off"].GetPointer(), new Vector2(_tableWidth));
+                    if (model.IsAttached) TooltipCopy($"Attached To {model.AttachedTo}");
+
                     ImGui.PopID();
                     i++;
                 }
@@ -411,15 +416,11 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     {
                         case false when ImGui.Button($"Attach to '{socket.Name}'"):
                             socket.AttachedModels.Add(selectedGuid);
-                            // reset PRS to 0 so it's attached to the actual position (can be transformed relative to the socket later by the user)
-                            selectedModel.Transforms[selectedModel.SelectedInstance].Position = FVector.ZeroVector;
-                            selectedModel.Transforms[selectedModel.SelectedInstance].Rotation = FQuat.Identity;
-                            selectedModel.Transforms[selectedModel.SelectedInstance].Scale = FVector.OneVector;
+                            selectedModel.AttachModel(model, socket);
                             break;
                         case true when ImGui.Button($"Detach from '{socket.Name}'"):
                             socket.AttachedModels.Remove(selectedGuid);
-                            // reset PRS relation to O
-                            selectedModel.Transforms[selectedModel.SelectedInstance].Relation = Matrix4x4.Identity;
+                            selectedModel.DetachModel();
                             break;
                     }
                     ImGui.PopID();
@@ -451,26 +452,26 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         {
             if (ImGui.BeginTable("model_details", 2, ImGuiTableFlags.SizingStretchProp))
             {
-                Layout("Entity");ImGui.Text($" :  ({model.Type}) {model.Name}");
-                Layout("Guid");ImGui.Text($" :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
+                Layout("Entity");ImGui.Text($"  :  ({model.Type}) {model.Name}");
+                Layout("Guid");ImGui.Text($"  :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
                 if (model.HasSkeleton)
                 {
-                    Layout("Skeleton");ImGui.Text($" :  {model.Skeleton.UnrealSkeleton.Name}");
-                    Layout("Bones");ImGui.Text($" :  x{model.Skeleton.UnrealSkeleton.BoneTree.Length}");
+                    Layout("Skeleton");ImGui.Text($"  :  {model.Skeleton.UnrealSkeleton.Name}");
+                    Layout("Bones");ImGui.Text($"  :  x{model.Skeleton.UnrealSkeleton.BoneTree.Length}");
                 }
                 else
                 {
-                    Layout("Two Sided");ImGui.Text($" :  {model.TwoSided}");
+                    Layout("Two Sided");ImGui.Text($"  :  {model.TwoSided}");
                 }
-                Layout("Sockets");ImGui.Text($" :  x{model.Sockets.Length}");
+                Layout("Sockets");ImGui.Text($"  :  x{model.Sockets.Length}");
 
                 ImGui.EndTable();
             }
             if (ImGui.BeginTabBar("tabbar_details", ImGuiTabBarFlags.None))
             {
-                if (ImGui.BeginTabItem("Sections") && ImGui.BeginTable("table_sections", 2, ImGuiTableFlags.Resizable | ImGuiTableFlags.BordersOuterV, ImGui.GetContentRegionAvail()))
+                if (ImGui.BeginTabItem("Sections") && ImGui.BeginTable("table_sections", 2, ImGuiTableFlags.Resizable | ImGuiTableFlags.BordersOuterV | ImGuiTableFlags.NoSavedSettings, ImGui.GetContentRegionAvail()))
                 {
-                    ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.WidthFixed);
+                    ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
                     ImGui.TableSetupColumn("Material");
                     ImGui.TableHeadersRow();
 
