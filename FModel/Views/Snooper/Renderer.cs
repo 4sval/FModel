@@ -20,7 +20,6 @@ using FModel.Settings;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Lights;
 using FModel.Views.Snooper.Models;
-using FModel.Views.Snooper.Models.Animations;
 using FModel.Views.Snooper.Shading;
 
 namespace FModel.Views.Snooper;
@@ -32,6 +31,7 @@ public class Renderer : IDisposable
     private Shader _shader;
     private Shader _outline;
     private Shader _light;
+    private bool _saveCameraMode;
 
     public bool ShowSkybox;
     public bool ShowGrid;
@@ -59,6 +59,8 @@ public class Renderer : IDisposable
     public void Load(CancellationToken cancellationToken, UObject export)
     {
         ShowLights = false;
+        _saveCameraMode = export is not UWorld;
+        CameraOp.Mode = _saveCameraMode ? UserSettings.Default.CameraMode : Camera.WorldMode.FlyCam;
         switch (export)
         {
             case UStaticMesh st:
@@ -72,7 +74,6 @@ public class Renderer : IDisposable
                 break;
             case UWorld wd:
                 LoadWorld(cancellationToken, wd, Transform.Identity);
-                CameraOp.Mode = Camera.WorldMode.FlyCam;
                 break;
         }
     }
@@ -216,7 +217,7 @@ public class Renderer : IDisposable
             var position = worldPartition.GetOrDefault("Position", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO;
             var box = worldPartition.GetOrDefault("ContentBounds", new FBox(FVector.ZeroVector, FVector.OneVector));
             box *= MathF.Pow(Constants.SCALE_DOWN_RATIO, 2);
-            CameraOp.Teleport(position, box, true);
+            CameraOp.Teleport(new Vector3(position.X, position.Z, position.Y), box, true);
         }
 
         var length = persistentLevel.Actors.Length;
@@ -392,7 +393,7 @@ public class Renderer : IDisposable
 
     public void Save()
     {
-        UserSettings.Default.CameraMode = CameraOp.Mode;
+        if (_saveCameraMode) UserSettings.Default.CameraMode = CameraOp.Mode;
         UserSettings.Default.ShowSkybox = ShowSkybox;
         UserSettings.Default.ShowGrid = ShowGrid;
     }
