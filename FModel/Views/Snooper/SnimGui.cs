@@ -394,27 +394,33 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
     private void DrawSockets(Snooper s)
     {
+        var selectedGuid = s.Renderer.Options.SelectedModel;
+        if (!s.Renderer.Options.TryGetModel(out var selectedModel))
+            return;
+
         foreach (var model in s.Renderer.Options.Models.Values)
         {
-            if (!model.HasSkeleton || model.IsSelected) return;
-            if (ImGui.TreeNode($"{model.Name} [{model.Skeleton.Sockets.Length}]"))
+            if (!model.HasSockets || model.IsSelected) continue;
+            if (ImGui.TreeNode($"{model.Name} [{model.Sockets.Length}]"))
             {
                 var i = 0;
-                foreach (var socket in model.Skeleton.Sockets)
+                foreach (var socket in model.Sockets)
                 {
                     ImGui.PushID(i);
-                    ImGui.Text($"'{socket.Name}' attached to '{socket.Bone}'");
-                    ImGui.Text($"P: {socket.Transform.Matrix.Translation.X} | {socket.Transform.Matrix.Translation.Y} | {socket.Transform.Matrix.Translation.Z}");
-                    if (ImGui.Button("Attach") && s.Renderer.Options.TryGetModel(out var selected))
+                    switch (socket.AttachedModels.Contains(selectedGuid))
                     {
-                        socket.AttachedModel = s.Renderer.Options.SelectedModel;
-                        selected.UpdateMatrix(new Transform
-                        {
-                            Relation = socket.Transform.Matrix,
-                            Position = FVector.ZeroVector,
-                            Rotation = new FQuat(0),
-                            Scale = FVector.OneVector
-                        });
+                        case false when ImGui.Button($"Attach to '{socket.Name}'"):
+                            socket.AttachedModels.Add(selectedGuid);
+                            // reset PRS to 0 so it's attached to the actual position (can be transformed relative to the socket later by the user)
+                            selectedModel.Transforms[selectedModel.SelectedInstance].Position = FVector.ZeroVector;
+                            selectedModel.Transforms[selectedModel.SelectedInstance].Rotation = FQuat.Identity;
+                            selectedModel.Transforms[selectedModel.SelectedInstance].Scale = FVector.OneVector;
+                            break;
+                        case true when ImGui.Button($"Detach from '{socket.Name}'"):
+                            socket.AttachedModels.Remove(selectedGuid);
+                            // reset PRS relation to O
+                            selectedModel.Transforms[selectedModel.SelectedInstance].Relation = Matrix4x4.Identity;
+                            break;
                     }
                     ImGui.PopID();
                     i++;
@@ -422,6 +428,20 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 ImGui.TreePop();
             }
         }
+
+        // if (ImGui.BeginTable("socket_editor", 2))
+        // {
+        //     Layout("Models");
+        //     ImGui.PushID(1);
+        //     ImGui.Combo("", ref m, "Fly Cam\0Arcball\0");
+        //     ImGui.PopID();
+        //
+        //     Layout("Attach To");ImGui.PushID(2);
+        //     ImGui.Combo("world_mode", ref m, "Fly Cam\0Arcball\0");
+        //     ImGui.PopID();
+        //
+        //     ImGui.EndTable();
+        // }
     }
 
     private void DrawDetails(Snooper s)
@@ -437,12 +457,12 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 {
                     Layout("Skeleton");ImGui.Text($" :  {model.Skeleton.UnrealSkeleton.Name}");
                     Layout("Bones");ImGui.Text($" :  x{model.Skeleton.UnrealSkeleton.BoneTree.Length}");
-                    Layout("Sockets");ImGui.Text($" :  x{model.Skeleton.Sockets.Length}");
                 }
                 else
                 {
                     Layout("Two Sided");ImGui.Text($" :  {model.TwoSided}");
                 }
+                Layout("Sockets");ImGui.Text($" :  x{model.Sockets.Length}");
 
                 ImGui.EndTable();
             }
@@ -532,7 +552,6 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     ImGui.EndDisabled(); ImGui.PopID();
 
                     model.Transforms[model.SelectedInstance].ImGuiTransform(s.Renderer.CameraOp.Speed / 100f);
-                    model.UpdateMatrix();
 
                     ImGui.EndTabItem();
                 }

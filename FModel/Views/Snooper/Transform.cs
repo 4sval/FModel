@@ -59,6 +59,7 @@ public class Transform
             ImGui.TreePop();
         }
 
+        ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.TreeNode("Scale"))
         {
             ImGui.SetNextItemWidth(width);

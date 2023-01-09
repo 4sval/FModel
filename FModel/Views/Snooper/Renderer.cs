@@ -124,6 +124,7 @@ public class Renderer : IDisposable
         // render model pass
         foreach (var model in Options.Models.Values)
         {
+            model.UpdateMatrices(Options);
             if (!model.Show) continue;
             model.Render(_shader);
         }

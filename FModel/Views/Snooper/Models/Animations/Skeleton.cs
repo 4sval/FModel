@@ -18,13 +18,15 @@ public class Skeleton : IDisposable
     public readonly Dictionary<int, Transform> BonesTransformByIndex;
     public readonly bool IsLoaded;
 
-    public readonly Socket[] Sockets;
-
     public Animation Anim;
 
-    private FVector _previousMatrix;
+    public Skeleton()
+    {
+        BonesIndexByName = new Dictionary<string, int>();
+        BonesTransformByIndex = new Dictionary<int, Transform>();
+    }
 
-    public Skeleton(FPackageIndex package, Transform transform)
+    public Skeleton(FPackageIndex package, Transform transform) : this()
     {
         UnrealSkeleton = package.Load<USkeleton>();
         if (UnrealSkeleton == null) return;
@@ -64,22 +66,6 @@ public class Skeleton : IDisposable
             transforms.Clear();
         }
         IsLoaded = true;
-
-        Sockets = new Socket[UnrealSkeleton.Sockets.Length];
-        for (int i = 0; i < Sockets.Length; i++)
-        {
-            if (UnrealSkeleton.Sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
-
-            if (!BonesIndexByName.TryGetValue(socket.BoneName.Text, out var boneIndex) ||
-                !BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
-            {
-                Sockets[i] = new Socket(socket);
-            }
-            else
-            {
-                Sockets[i] = new Socket(socket, boneTransform);
-            }
-        }
     }
 
     public void SetAnimation(CAnimSet anim)
@@ -87,20 +73,13 @@ public class Skeleton : IDisposable
         Anim = new Animation(anim, BonesIndexByName, BonesTransformByIndex);
     }
 
-    public void UpdateSocketsMatrix(Transform t)
+    public void UpdateRootBoneMatrix(Matrix4x4 delta)
     {
-        var m = t.Position;
-        if (m == _previousMatrix) return;
+        // Matrix4x4.Decompose(delta, out var scale, out var rotation, out var position);
+        // Log.Logger.Information("Update");
 
-        var delta = _previousMatrix - m;
-        Log.Logger.Information("Update {0}", delta);
-
-        // BonesTransformByIndex[0].Relation.Translation += delta;
-        foreach (var socket in Sockets)
-        {
-            socket.Transform.Relation.Translation += delta;
-        }
-        _previousMatrix = m;
+        // TODO: support for rotation and scale
+        BonesTransformByIndex[0].Relation.Translation += delta.Translation;
     }
 
     public void SetUniform(Shader shader)

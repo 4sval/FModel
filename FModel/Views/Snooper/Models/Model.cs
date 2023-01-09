@@ -52,8 +52,12 @@ public class Model : IDisposable
     public bool HasSkeleton => Skeleton is { IsLoaded: true };
     public readonly Skeleton Skeleton;
 
+    public bool HasSockets => Sockets.Length > 0;
+    public readonly Socket[] Sockets;
+
     public int TransformsCount;
     public readonly List<Transform> Transforms;
+    private Matrix4x4 _previousMatrix;
 
     public readonly Morph[] Morphs;
 
@@ -76,14 +80,40 @@ public class Model : IDisposable
     }
 
     public Model(UStaticMesh export, CStaticMesh staticMesh) : this(export, staticMesh, Transform.Identity) {}
-
     public Model(UStaticMesh export, CStaticMesh staticMesh, Transform transform) : this(export, export.Materials, null, staticMesh.LODs.Count, staticMesh.LODs[0], staticMesh.LODs[0].Verts, transform)
     {
         Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
+
+        Sockets = new Socket[export.Sockets.Length];
+        for (int i = 0; i < Sockets.Length; i++)
+        {
+            if (export.Sockets[i].Load<UStaticMeshSocket>() is not { } socket) continue;
+            Sockets[i] = new Socket(socket);
+        }
     }
     private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, export.Skeleton, skeletalMesh.LODs.Count, skeletalMesh.LODs[0], skeletalMesh.LODs[0].Verts, transform)
     {
         Box = skeletalMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
+
+        var sockets = new List<FPackageIndex>();
+        sockets.AddRange(export.Sockets);
+        if (HasSkeleton) sockets.AddRange(Skeleton.UnrealSkeleton.Sockets);
+
+        Sockets = new Socket[sockets.Count];
+        for (int i = 0; i < Sockets.Length; i++)
+        {
+            if (sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
+
+            if (!Skeleton.BonesIndexByName.TryGetValue(socket.BoneName.Text, out var boneIndex) ||
+                !Skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
+            {
+                Sockets[i] = new Socket(socket);
+            }
+            else
+            {
+                Sockets[i] = new Socket(socket, boneTransform);
+            }
+        }
     }
     public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh) : this(export, skeletalMesh, Transform.Identity)
     {
@@ -194,20 +224,44 @@ public class Model : IDisposable
     {
         TransformsCount++;
         Transforms.Add(transform);
+        _previousMatrix = transform.Matrix;
     }
 
-    public void UpdateMatrix() => UpdateMatrix(SelectedInstance);
-    public void UpdateMatrix(Transform transform) => UpdateMatrix(SelectedInstance, transform);
-    public void UpdateMatrix(int instance, Transform transform)
+    public void UpdateMatrices(Options options)
     {
-        Transforms[instance] = transform;
-        UpdateMatrix(instance);
+        UpdateMatrices();
+        if (!HasSkeleton)
+            return;
+
+        for (int s = 0; s < Sockets.Length; s++)
+        {
+            for (int g = 0; g < Sockets[s].AttachedModels.Count; g++)
+            {
+                if (!options.TryGetModel(Sockets[s].AttachedModels[g], out var attachedModel))
+                    continue;
+
+                attachedModel.Transforms[attachedModel.SelectedInstance].Relation = Sockets[s].Transform.Matrix;
+                attachedModel.UpdateMatrices();
+            }
+        }
     }
-    public void UpdateMatrix(int instance)
+    private void UpdateMatrices()
     {
+        var matrix = Transforms[SelectedInstance].Matrix;
+        if (matrix == _previousMatrix) return;
+
         _matrixVbo.Bind();
-        _matrixVbo.Update(instance, Transforms[instance].Matrix);
+        _matrixVbo.Update(SelectedInstance, matrix);
         _matrixVbo.Unbind();
+
+        var delta = matrix - _previousMatrix;
+        foreach (var socket in Sockets)
+        {
+            socket.UpdateSocketMatrix(delta);
+        }
+        if (HasSkeleton) Skeleton.UpdateRootBoneMatrix(delta);
+
+        _previousMatrix = matrix;
     }
 
     public void UpdateMorph(int index)
