@@ -233,17 +233,14 @@ public class Model : IDisposable
     public void UpdateMatrices(Options options)
     {
         UpdateMatrices();
-        if (!HasSockets)
-            return;
-
-        for (int s = 0; s < Sockets.Length; s++)
+        foreach (var socket in Sockets)
         {
-            for (int g = 0; g < Sockets[s].AttachedModels.Count; g++)
+            foreach (var attached in socket.AttachedModels)
             {
-                if (!options.TryGetModel(Sockets[s].AttachedModels[g], out var attachedModel))
+                if (!options.TryGetModel(attached, out var attachedModel))
                     continue;
 
-                attachedModel.Transforms[attachedModel.SelectedInstance].Relation = Sockets[s].Transform.Matrix;
+                attachedModel.Transforms[attachedModel.SelectedInstance].Relation = socket.Transform.Matrix;
                 attachedModel.UpdateMatrices();
             }
         }
@@ -257,12 +254,16 @@ public class Model : IDisposable
         _matrixVbo.Update(SelectedInstance, matrix);
         _matrixVbo.Unbind();
 
-        var delta = matrix - _previousMatrix;
+        if (HasSkeleton) Skeleton.UpdateBoneMatrices(matrix);
         foreach (var socket in Sockets)
         {
-            socket.UpdateSocketMatrix(delta);
+            if (!HasSkeleton ||
+                !Skeleton.BonesIndexByName.TryGetValue(socket.BoneName.Text, out var boneIndex) ||
+                !Skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
+                boneTransform = Transforms[SelectedInstance];
+
+            socket.UpdateSocketMatrix(boneTransform.Matrix);
         }
-        if (HasSkeleton) Skeleton.UpdateRootBoneMatrix(delta);
 
         _previousMatrix = matrix;
     }
@@ -276,7 +277,7 @@ public class Model : IDisposable
 
     public void AttachModel(Model attachedTo, Socket socket)
     {
-        _attachedTo = $"'{socket.Name}' from '{attachedTo.Name}'{(socket.Bone.HasValue ? $" at '{socket.Bone}'" : "")}";
+        _attachedTo = $"'{socket.Name}' from '{attachedTo.Name}'{(!socket.BoneName.IsNone ? $" at '{socket.BoneName}'" : "")}";
         attachedTo._attachedFor.Add($"'{Name}'");
         // reset PRS to 0 so it's attached to the actual position (can be transformed relative to the socket later by the user)
         Transforms[SelectedInstance].Position = FVector.ZeroVector;

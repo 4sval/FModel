@@ -11,7 +11,7 @@ namespace FModel.Views.Snooper.Models;
 public class Socket : IDisposable
 {
     public readonly string Name;
-    public readonly FName? Bone;
+    public readonly FName BoneName;
     public readonly Transform Transform;
 
     public readonly List<FGuid> AttachedModels;
@@ -34,17 +34,16 @@ public class Socket : IDisposable
     public Socket(USkeletalMeshSocket socket, Transform transform) : this()
     {
         Name = socket.SocketName.Text;
-        Bone = socket.BoneName;
+        BoneName = socket.BoneName;
         Transform.Relation = transform.Matrix;
         Transform.Rotation = socket.RelativeRotation.Quaternion();
         Transform.Position = socket.RelativeLocation * Constants.SCALE_DOWN_RATIO;
         Transform.Scale = socket.RelativeScale;
     }
 
-    public void UpdateSocketMatrix(Matrix4x4 delta)
+    public void UpdateSocketMatrix(Matrix4x4 matrix)
     {
-        // TODO: support for rotation and scale
-        Transform.Relation.Translation += delta.Translation;
+        Transform.Relation = matrix;
     }
 
     public void Dispose()

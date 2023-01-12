@@ -692,6 +692,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     var guid = s.Renderer.Picking.ReadPixel(ImGui.GetMousePos(), ImGui.GetCursorScreenPos(), size);
                     s.Renderer.Options.SelectModel(guid);
                     ImGui.SetWindowFocus("Outliner");
+                    ImGui.SetWindowFocus("Details");
                 }
             }
 

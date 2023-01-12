@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Assets.Exports.Animation;
-using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
-using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Views.Snooper.Shading;
-using Serilog;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
@@ -33,38 +30,8 @@ public class Skeleton : IDisposable
 
         BonesIndexByName = UnrealSkeleton.ReferenceSkeleton.FinalNameToIndexMap;
         BonesTransformByIndex = new Dictionary<int, Transform>();
-        foreach ((_, int boneIndex) in BonesIndexByName)
-        {
-            var transforms = new List<Transform>();
-            var parentBoneIndex = boneIndex;
-            while (parentBoneIndex > -1)
-            {
-                var parentFound = BonesTransformByIndex.TryGetValue(parentBoneIndex, out var boneTransform);
-                if (!parentFound)
-                {
-                    var bone = UnrealSkeleton.ReferenceSkeleton.FinalRefBonePose[parentBoneIndex];
-                    boneTransform = new Transform
-                    {
-                        Relation = transform.Matrix,
-                        Rotation = bone.Rotation,
-                        Position = bone.Translation * Constants.SCALE_DOWN_RATIO,
-                        Scale = bone.Scale3D
-                    };
-                }
+        UpdateBoneMatrices(transform.Matrix);
 
-                parentBoneIndex = UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo[parentBoneIndex].ParentIndex;
-                transforms.Add(boneTransform);
-                if (parentFound) parentBoneIndex = -1; // the parent transform is already relative to all its parent so we can just skip
-            }
-
-            for (int j = transforms.Count - 2; j > -1; j--)
-            {
-                transforms[j].Relation *= transforms[j + 1].Matrix;
-            }
-
-            BonesTransformByIndex[boneIndex] = transforms[0];
-            transforms.Clear();
-        }
         IsLoaded = true;
     }
 
@@ -73,13 +40,29 @@ public class Skeleton : IDisposable
         Anim = new Animation(anim, BonesIndexByName, BonesTransformByIndex);
     }
 
-    public void UpdateRootBoneMatrix(Matrix4x4 delta)
+    public void UpdateBoneMatrices(Matrix4x4 matrix)
     {
-        // Matrix4x4.Decompose(delta, out var scale, out var rotation, out var position);
-        // Log.Logger.Information("Update");
+        foreach (var boneIndex in BonesIndexByName.Values)
+        {
+            var bone = UnrealSkeleton.ReferenceSkeleton.FinalRefBonePose[boneIndex];
+            var parentIndex = UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo[boneIndex].ParentIndex;
 
-        // TODO: support for rotation and scale
-        BonesTransformByIndex[0].Relation.Translation += delta.Translation;
+            if (!BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
+            {
+                boneTransform = new Transform
+                {
+                    Rotation = bone.Rotation,
+                    Position = bone.Translation * Constants.SCALE_DOWN_RATIO,
+                    Scale = bone.Scale3D
+                };
+            }
+
+            if (!BonesTransformByIndex.TryGetValue(parentIndex, out var parentTransform))
+                parentTransform = new Transform { Relation = matrix };
+
+            boneTransform.Relation = parentTransform.Matrix;
+            BonesTransformByIndex[boneIndex] = boneTransform;
+        }
     }
 
     public void SetUniform(Shader shader)
