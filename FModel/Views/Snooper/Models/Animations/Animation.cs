@@ -58,6 +58,6 @@ public class Animation : IDisposable
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+
     }
 }

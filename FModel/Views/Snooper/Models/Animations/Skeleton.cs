@@ -11,6 +11,7 @@ namespace FModel.Views.Snooper.Models.Animations;
 public class Skeleton : IDisposable
 {
     public readonly USkeleton UnrealSkeleton;
+    public readonly FReferenceSkeleton ReferenceSkeleton;
     public readonly Dictionary<string, int> BonesIndexByName;
     public readonly Dictionary<int, Transform> BonesTransformByIndex;
     public readonly bool IsLoaded;
@@ -23,15 +24,15 @@ public class Skeleton : IDisposable
         BonesTransformByIndex = new Dictionary<int, Transform>();
     }
 
-    public Skeleton(FPackageIndex package, Transform transform) : this()
+    public Skeleton(FPackageIndex package, FReferenceSkeleton referenceSkeleton, Transform transform) : this()
     {
         UnrealSkeleton = package.Load<USkeleton>();
         if (UnrealSkeleton == null) return;
 
-        BonesIndexByName = UnrealSkeleton.ReferenceSkeleton.FinalNameToIndexMap;
+        ReferenceSkeleton = referenceSkeleton ?? UnrealSkeleton.ReferenceSkeleton;
+        BonesIndexByName = ReferenceSkeleton.FinalNameToIndexMap;
         BonesTransformByIndex = new Dictionary<int, Transform>();
         UpdateBoneMatrices(transform.Matrix);
-
         IsLoaded = true;
     }
 
@@ -44,8 +45,8 @@ public class Skeleton : IDisposable
     {
         foreach (var boneIndex in BonesIndexByName.Values)
         {
-            var bone = UnrealSkeleton.ReferenceSkeleton.FinalRefBonePose[boneIndex];
-            var parentIndex = UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo[boneIndex].ParentIndex;
+            var bone = ReferenceSkeleton.FinalRefBonePose[boneIndex];
+            var parentIndex = ReferenceSkeleton.FinalRefBoneInfo[boneIndex].ParentIndex;
 
             if (!BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
             {
@@ -76,6 +77,8 @@ public class Skeleton : IDisposable
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        BonesIndexByName.Clear();
+        BonesTransformByIndex.Clear();
+        Anim?.Dispose();
     }
 }

@@ -48,6 +48,6 @@ public class Socket : IDisposable
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        AttachedModels.Clear();
     }
 }
