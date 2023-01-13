@@ -12,9 +12,19 @@ public class SpotLight : Light
     public float InnerConeAngle;
     public float OuterConeAngle;
 
+    public SpotLight(Texture icon, UObject spot) : base(icon, spot)
+    {
+        if (!spot.TryGetValue(out Attenuation, "SourceRadius", "AttenuationRadius"))
+            Attenuation = 1.0f;
+
+        Attenuation *= Constants.SCALE_DOWN_RATIO;
+        InnerConeAngle = spot.GetOrDefault("InnerConeAngle", 50.0f);
+        OuterConeAngle = spot.GetOrDefault("OuterConeAngle", 60.0f);
+    }
+
     public SpotLight(FGuid model, Texture icon, UObject parent, UObject spot, Transform transform) : base(model, icon, parent, spot, transform)
     {
-        if (!spot.TryGetValue(out Attenuation, "AttenuationRadius", "SourceRadius"))
+        if (!spot.TryGetValue(out Attenuation, "SourceRadius", "AttenuationRadius"))
             Attenuation = 1.0f;
 
         Attenuation *= Constants.SCALE_DOWN_RATIO;

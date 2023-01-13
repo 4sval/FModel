@@ -13,7 +13,7 @@ public class Skeleton : IDisposable
     public readonly USkeleton UnrealSkeleton;
     public readonly FReferenceSkeleton ReferenceSkeleton;
     public readonly Dictionary<string, int> BonesIndexByName;
-    public readonly Dictionary<int, Transform> BonesTransformByIndex;
+    public Dictionary<int, Transform> BonesTransformByIndex;
     public readonly bool IsLoaded;
 
     public Animation Anim;
@@ -27,22 +27,23 @@ public class Skeleton : IDisposable
     public Skeleton(FPackageIndex package, FReferenceSkeleton referenceSkeleton, Transform transform) : this()
     {
         UnrealSkeleton = package.Load<USkeleton>();
-        if (UnrealSkeleton == null) return;
+        IsLoaded = UnrealSkeleton != null;
+        if (!IsLoaded) return;
 
         ReferenceSkeleton = referenceSkeleton ?? UnrealSkeleton.ReferenceSkeleton;
         BonesIndexByName = ReferenceSkeleton.FinalNameToIndexMap;
         BonesTransformByIndex = new Dictionary<int, Transform>();
         UpdateBoneMatrices(transform.Matrix);
-        IsLoaded = true;
     }
 
     public void SetAnimation(CAnimSet anim)
     {
-        Anim = new Animation(anim, BonesIndexByName, BonesTransformByIndex);
+        Anim = new Animation(anim);
     }
 
     public void UpdateBoneMatrices(Matrix4x4 matrix)
     {
+        if (!IsLoaded) return;
         foreach (var boneIndex in BonesIndexByName.Values)
         {
             var bone = ReferenceSkeleton.FinalRefBonePose[boneIndex];
@@ -69,9 +70,10 @@ public class Skeleton : IDisposable
     public void SetUniform(Shader shader)
     {
         if (!IsLoaded) return;
-        for (var i = 0; i < Anim?.FinalBonesMatrix.Length; i++)
+        Anim?.UpdateAnimation(ReferenceSkeleton.FinalRefBoneInfo, ref BonesTransformByIndex);
+        foreach ((int boneIndex, Transform boneTransform) in BonesTransformByIndex)
         {
-            shader.SetUniform($"uFinalBonesMatrix[{i}]", Anim.FinalBonesMatrix[i].Matrix);
+            shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", boneTransform.Matrix);
         }
     }
 

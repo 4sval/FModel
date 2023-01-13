@@ -36,6 +36,22 @@ public abstract class Light : IDisposable
     public float Intensity;
     public bool IsSetup;
 
+    public Light(Texture icon, UObject light)
+    {
+        Transform = new Transform
+        {
+            Position = light.GetOrDefault("RelativeLocation", FVector.ZeroVector) * Constants.SCALE_DOWN_RATIO,
+            Rotation = light.GetOrDefault("RelativeRotation", FRotator.ZeroRotator).Quaternion(),
+            Scale = light.GetOrDefault("RelativeScale3D", FVector.OneVector)
+        };
+
+        Model = Guid.NewGuid();
+        Icon = icon;
+
+        Color = light.GetOrDefault("LightColor", new FColor(0xFF, 0xFF, 0xFF, 0xFF));
+        Intensity = light.GetOrDefault("Intensity", 1.0f);
+    }
+
     public Light(FGuid model, Texture icon, UObject parent, UObject light, Transform transform)
     {
         Transform = new Transform

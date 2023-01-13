@@ -2,57 +2,54 @@
 using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
+using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.Core.Math;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
 public class Animation : IDisposable
 {
-    public float CurrentTime;
+    public int CurrentTime;
     public float DeltaTime;
     public CAnimSet CurrentAnimation;
-    public Transform[] FinalBonesMatrix;
 
-    public Animation(CAnimSet anim, Dictionary<string, int> nameToIndex, Dictionary<int, Transform> indexToTransform)
+    public Animation(CAnimSet anim)
     {
-        CurrentTime = 0f;
+        CurrentTime = 0;
         CurrentAnimation = anim;
-
-        FinalBonesMatrix = new Transform[anim.TrackBoneNames.Length];
-        for (int i = 0; i < FinalBonesMatrix.Length; i++)
-        {
-            if (!nameToIndex.TryGetValue(anim.TrackBoneNames[i].Text, out var boneIndex) ||
-                !indexToTransform.TryGetValue(boneIndex, out var boneTransform))
-            {
-                boneTransform = Transform.Identity;
-            }
-
-            FinalBonesMatrix[i] = Transform.Identity;
-            FinalBonesMatrix[i].Relation = boneTransform.Matrix;
-        }
     }
 
-    public void UpdateAnimation(float deltaTime)
+    public void UpdateAnimation(FMeshBoneInfo[] boneInfos, ref Dictionary<int, Transform> bonesTransformByIndex)
     {
-        DeltaTime = deltaTime;
         if (CurrentAnimation != null)
         {
             // CurrentTime = deltaTime;
-            CalculateBoneTransform();
+            CalculateBoneTransform(boneInfos, ref bonesTransformByIndex);
         }
     }
 
-    public void CalculateBoneTransform()
+    public void CalculateBoneTransform(FMeshBoneInfo[] boneInfos, ref Dictionary<int, Transform> bonesTransformByIndex)
     {
         var sequence = CurrentAnimation.Sequences[0];
-        for (int boneIndex = 0; boneIndex < FinalBonesMatrix.Length; boneIndex++)
+        for (int boneIndex = 0; boneIndex < boneInfos.Length; boneIndex++)
         {
             var boneOrientation = FQuat.Identity;
             var bonePosition = FVector.ZeroVector;
+            var boneScale = FVector.OneVector;
             sequence.Tracks[boneIndex].GetBonePosition(CurrentTime, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
+            if (CurrentTime < sequence.Tracks[boneIndex].KeyScale.Length)
+                boneScale = sequence.Tracks[boneIndex].KeyScale[CurrentTime];
 
-            FinalBonesMatrix[boneIndex].Rotation = boneOrientation;
-            FinalBonesMatrix[boneIndex].Position = bonePosition * Constants.SCALE_DOWN_RATIO;
+            if (!bonesTransformByIndex.TryGetValue(boneInfos[boneIndex].ParentIndex, out var parentTransform))
+                parentTransform = new Transform { Relation = Matrix4x4.Identity };
+
+            bonesTransformByIndex[boneIndex] = new Transform
+            {
+                Relation = parentTransform.Matrix,
+                Rotation = boneOrientation,
+                Position = bonePosition * Constants.SCALE_DOWN_RATIO,
+                Scale = boneScale
+            };
         }
     }
 

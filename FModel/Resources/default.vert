@@ -1,4 +1,4 @@
-﻿#version 460 core
+#version 460 core
 
 layout (location = 1) in vec3 vPos;
 layout (location = 2) in vec3 vNormal;
@@ -12,8 +12,8 @@ layout (location = 9) in mat4 vInstanceMatrix;
 layout (location = 13) in vec3 vMorphTargetPos;
 layout (location = 14) in vec3 vMorphTargetTangent;
 
-//const int MAX_BONES = 0;
-//const int MAX_BONE_INFLUENCE = 0;
+//const int MAX_BONES = 140;
+//const int MAX_BONE_INFLUENCE = 4;
 
 uniform mat4 uView;
 uniform mat4 uProjection;
@@ -33,13 +33,14 @@ void main()
     vec3 tangent = mix(vTangent, vMorphTargetTangent, uMorphTime);
 //    for(int i = 0 ; i < MAX_BONE_INFLUENCE; i++)
 //    {
-//        if(vBoneIds[i] == -1) continue;
-//        if(vBoneIds[i] >= MAX_BONES)
+//        int boneIndex = int(vBoneIds[i]);
+//        if(boneIndex == -1) continue;
+//        if(boneIndex >= MAX_BONES)
 //        {
 //            break;
 //        }
 //
-//        vec4 localPos = uFinalBonesMatrix[int(vBoneIds[i])] * pos;
+//        vec4 localPos = uFinalBonesMatrix[boneIndex] * pos;
 //        pos += localPos * vBoneWeights[i];
 //    }
 

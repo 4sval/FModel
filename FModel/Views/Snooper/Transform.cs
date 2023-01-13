@@ -74,4 +74,6 @@ public class Transform
             ImGui.TreePop();
         }
     }
+
+    public override string ToString() => Matrix.Translation.ToString();
 }

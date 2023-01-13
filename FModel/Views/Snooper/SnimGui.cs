@@ -158,11 +158,14 @@ public class SnimGui
         {
             for (int i = 0; i < s.Renderer.Options.Lights.Count; i++)
             {
-                var id = $"[{i}] {s.Renderer.Options.Models[s.Renderer.Options.Lights[i].Model].Name}";
+                var light = s.Renderer.Options.Lights[i];
+                var id = s.Renderer.Options.TryGetModel(light.Model, out var lightModel) ? lightModel.Name : "None";
+
+                id += $"##{i}";
                 if (ImGui.TreeNode(id) && ImGui.BeginTable(id, 2))
                 {
-                    s.Renderer.Options.SelectModel(s.Renderer.Options.Lights[i].Model);
-                    s.Renderer.Options.Lights[i].ImGuiLight();
+                    s.Renderer.Options.SelectModel(light.Model);
+                    light.ImGuiLight();
                     ImGui.EndTable();
                     ImGui.TreePop();
                 }
@@ -341,8 +344,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             _saver.Value = model.TrySave(out _saver.Label, out _saver.Path);
                             s.WindowShouldFreeze(false);
                         }
-                        ImGui.BeginDisabled(true);
-                        // ImGui.BeginDisabled(!model.HasSkeleton);
+                        ImGui.BeginDisabled(!model.HasSkeleton);
                         if (ImGui.Selectable("Animate"))
                         {
                             s.Renderer.Options.AnimateMesh(true);
@@ -444,6 +446,10 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 Layout("Guid");ImGui.Text($"  :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
                 if (model.HasSkeleton)
                 {
+                    if (model.Skeleton.Anim != null)
+                    {
+                        ImGui.DragInt("Time", ref model.Skeleton.Anim.CurrentTime, 1, 0, 110);
+                    }
                     Layout("Skeleton");ImGui.Text($"  :  {model.Skeleton.UnrealSkeleton.Name}");
                     Layout("Bones");ImGui.Text($"  :  x{model.Skeleton.UnrealSkeleton.BoneTree.Length}");
                 }

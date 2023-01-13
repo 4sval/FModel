@@ -231,7 +231,7 @@ public class Renderer : IDisposable
 
             Services.ApplicationService.ApplicationView.Status.UpdateStatusLabel($"{original.Name} ... {i}/{length}");
             WorldCamera(actor);
-            // WorldLight(actor);
+            WorldLight(actor);
             WorldMesh(actor, transform);
             AdditionalWorlds(actor, transform.Matrix, cancellationToken);
         }
@@ -250,10 +250,22 @@ public class Renderer : IDisposable
 
     private void WorldLight(UObject actor)
     {
-        // if (!actor.TryGetValue(out FPackageIndex lightComponent, "LightComponent") ||
-        //     lightComponent.Load() is not { } lightObject) return;
-        //
-        // Cache.Lights.Add(new PointLight(Cache.Icons["pointlight"], lightObject, FVector.ZeroVector));
+        if (!actor.TryGetValue(out FPackageIndex lightComponent, "LightComponent") ||
+            lightComponent.Load() is not { } lightObject) return;
+
+        switch (actor.ExportType)
+        {
+            case "PointLight":
+                Options.Lights.Add(new PointLight(Options.Icons["pointlight"], lightObject));
+                break;
+            case "SpotLight":
+                Options.Lights.Add(new SpotLight(Options.Icons["spotlight"], lightObject));
+                break;
+            case "RectLight":
+            case "SkyLight":
+            case "DirectionalLight":
+                break;
+        }
     }
 
     private void WorldMesh(UObject actor, Transform transform)

@@ -362,6 +362,7 @@ public class Model : IDisposable
         shader.SetUniform("uMorphTime", MorphTime);
         if (!outline)
         {
+            // if (HasSkeleton) Skeleton.SetUniform(shader);
             shader.SetUniform("uUvCount", UvCount);
             shader.SetUniform("uHasVertexColors", HasVertexColors);
         }
