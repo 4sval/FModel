@@ -86,7 +86,8 @@ public class CUE4ParseViewModel : ViewModel
         {
             return Application.Current.Dispatcher.Invoke(delegate
             {
-                return _snooper ??= new Snooper(GameWindowSettings.Default,
+                return _snooper ??= new Snooper(
+                    new GameWindowSettings { RenderFrequency = 240 },
                     new NativeWindowSettings
                     {
                         Size = new OpenTK.Mathematics.Vector2i(

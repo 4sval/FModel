@@ -83,6 +83,8 @@ public class Model : IDisposable
         Type = export.ExportType;
         UvCount = 1;
         Box = new FBox(new FVector(-2f), new FVector(2f));
+        Sockets = Array.Empty<Socket>();
+        Morphs = Array.Empty<Morph>();
         Transforms = new List<Transform>();
     }
 
@@ -97,8 +99,6 @@ public class Model : IDisposable
             if (export.Sockets[i].Load<UStaticMeshSocket>() is not { } socket) continue;
             Sockets[i] = new Socket(socket, Transforms[0]);
         }
-
-        Morphs = Array.Empty<Morph>();
     }
 
     public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh) : this(export, skeletalMesh, Transform.Identity) {}
@@ -301,7 +301,7 @@ public class Model : IDisposable
     public void Setup(Options options)
     {
         _handle = GL.CreateProgram();
-        var broken = GL.GetInteger(GetPName.MaxTextureUnits) == 0;
+        var broken = GL.GetInteger(GetPName.MaxTextureCoords) == 0;
 
         _ebo = new BufferObject<uint>(Indices, BufferTarget.ElementArrayBuffer);
         _vbo = new BufferObject<float>(Vertices, BufferTarget.ArrayBuffer);
