@@ -14,6 +14,7 @@ public class Skeleton : IDisposable
     public readonly FReferenceSkeleton ReferenceSkeleton;
     public readonly Dictionary<string, int> BonesIndexByName;
     public Dictionary<int, Transform> BonesTransformByIndex;
+    public Dictionary<int, Transform> AnimBonesTransformByIndex;
     public readonly bool IsLoaded;
 
     public Animation Anim;
@@ -22,6 +23,7 @@ public class Skeleton : IDisposable
     {
         BonesIndexByName = new Dictionary<string, int>();
         BonesTransformByIndex = new Dictionary<int, Transform>();
+        AnimBonesTransformByIndex = new Dictionary<int, Transform>();
     }
 
     public Skeleton(FPackageIndex package, FReferenceSkeleton referenceSkeleton, Transform transform) : this()
@@ -32,7 +34,6 @@ public class Skeleton : IDisposable
 
         ReferenceSkeleton = referenceSkeleton ?? UnrealSkeleton.ReferenceSkeleton;
         BonesIndexByName = ReferenceSkeleton.FinalNameToIndexMap;
-        BonesTransformByIndex = new Dictionary<int, Transform>();
         UpdateBoneMatrices(transform.Matrix);
     }
 
@@ -63,15 +64,15 @@ public class Skeleton : IDisposable
                 parentTransform = new Transform { Relation = matrix };
 
             boneTransform.Relation = parentTransform.Matrix;
-            BonesTransformByIndex[boneIndex] = boneTransform;
+            BonesTransformByIndex[boneIndex] = AnimBonesTransformByIndex[boneIndex] = boneTransform;
         }
     }
 
     public void SetUniform(Shader shader)
     {
-        if (!IsLoaded) return;
-        Anim?.UpdateAnimation(ReferenceSkeleton.FinalRefBoneInfo, ref BonesTransformByIndex);
-        foreach ((int boneIndex, Transform boneTransform) in BonesTransformByIndex)
+        if (!IsLoaded || Anim == null) return;
+        AnimBonesTransformByIndex = Anim.CalculateBoneTransform(ReferenceSkeleton.FinalRefBoneInfo, BonesTransformByIndex);
+        foreach ((int boneIndex, Transform boneTransform) in AnimBonesTransformByIndex)
         {
             shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", boneTransform.Matrix);
         }

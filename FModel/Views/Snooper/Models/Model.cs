@@ -230,6 +230,12 @@ public class Model : IDisposable
     public void UpdateMatrices(Options options)
     {
         UpdateMatrices();
+        for (int i = 0; i < options.Lights.Count; i++)
+        {
+            options.Lights[i].Transform = Skeleton.AnimBonesTransformByIndex[i];
+            options.Lights[i].UpdateMatrices();
+        }
+
         foreach (var socket in Sockets)
         {
             foreach (var attached in socket.AttachedModels)
@@ -362,7 +368,7 @@ public class Model : IDisposable
         shader.SetUniform("uMorphTime", MorphTime);
         if (!outline)
         {
-            // if (HasSkeleton) Skeleton.SetUniform(shader);
+            if (HasSkeleton) Skeleton.SetUniform(shader);
             shader.SetUniform("uUvCount", UvCount);
             shader.SetUniform("uHasVertexColors", HasVertexColors);
         }

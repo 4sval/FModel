@@ -131,7 +131,7 @@ public class Renderer : IDisposable
         }
 
         {   // light pass
-            var uNumLights = Math.Min(Options.Lights.Count, 100);
+            var uNumLights = Math.Min(Options.Lights.Count, 150);
             _shader.SetUniform("uNumLights", ShowLights ? uNumLights : 0);
 
             if (ShowLights)
@@ -178,6 +178,11 @@ public class Renderer : IDisposable
         if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
 
         Options.Models[guid] = new Model(original, mesh);
+        foreach (var transform in Options.Models[guid].Skeleton.BonesTransformByIndex.Values)
+        {
+            Options.Lights.Add(
+                new PointLight(guid, Options.Icons["pointlight"], original, original, transform));
+        }
         Options.SelectModel(guid);
         SetupCamera(Options.Models[guid].Box);
     }

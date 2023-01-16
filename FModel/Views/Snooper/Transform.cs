@@ -16,11 +16,11 @@ public class Transform
     public FQuat Rotation = FQuat.Identity;
     public FVector Scale = FVector.OneVector;
 
-    public Matrix4x4 Matrix =>
+    public Matrix4x4 LocalMatrix =>
         Matrix4x4.CreateScale(Scale.X, Scale.Z, Scale.Y) *
         Matrix4x4.CreateFromQuaternion(Quaternion.Normalize(new Quaternion(Rotation.X, Rotation.Z, Rotation.Y, -Rotation.W))) *
-        Matrix4x4.CreateTranslation(Position.X, Position.Z, Position.Y)
-        * Relation;
+        Matrix4x4.CreateTranslation(Position.X, Position.Z, Position.Y);
+    public Matrix4x4 Matrix => LocalMatrix * Relation;
 
     public void ImGuiTransform(float speed)
     {

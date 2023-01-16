@@ -30,7 +30,7 @@ public abstract class Light : IDisposable
     };
     public readonly FGuid Model;
     public readonly Texture Icon;
-    public readonly Transform Transform;
+    public Transform Transform;
 
     public Vector4 Color;
     public float Intensity;
@@ -76,6 +76,13 @@ public abstract class Light : IDisposable
         _vao.BindInstancing(); // VertexAttributePointer
     }
 
+    public void UpdateMatrices()
+    {
+        _matrixVbo.Bind();
+        _matrixVbo.Update(0, Transform.Matrix);
+        _matrixVbo.Unbind();
+    }
+
     public void Setup()
     {
         _handle = GL.CreateProgram();
@@ -92,6 +99,7 @@ public abstract class Light : IDisposable
 
     public void Render(Shader shader)
     {
+        GL.Disable(EnableCap.DepthTest);
         GL.Disable(EnableCap.CullFace);
 
         _vao.Bind();
@@ -103,6 +111,7 @@ public abstract class Light : IDisposable
         GL.DrawArrays(PrimitiveType.Triangles, 0, Indices.Length);
 
         GL.Enable(EnableCap.CullFace);
+        GL.Enable(EnableCap.DepthTest);
     }
 
     public virtual void Render(int i, Shader shader)
@@ -114,6 +123,7 @@ public abstract class Light : IDisposable
 
     public virtual void ImGuiLight()
     {
+        SnimGui.Layout("Position");SnimGui.TooltipCopy(Transform.Matrix.Translation.ToString());
         SnimGui.Layout("Color");ImGui.PushID(1);
         ImGui.ColorEdit4("", ref Color, ImGuiColorEditFlags.NoAlpha);
         ImGui.PopID();SnimGui.Layout("Intensity");ImGui.PushID(2);

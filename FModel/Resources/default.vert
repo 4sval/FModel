@@ -12,13 +12,12 @@ layout (location = 9) in mat4 vInstanceMatrix;
 layout (location = 13) in vec3 vMorphTargetPos;
 layout (location = 14) in vec3 vMorphTargetTangent;
 
-//const int MAX_BONES = 140;
-//const int MAX_BONE_INFLUENCE = 4;
+const int MAX_BONES = 140;
 
 uniform mat4 uView;
 uniform mat4 uProjection;
 uniform float uMorphTime;
-//uniform mat4 uFinalBonesMatrix[MAX_BONES];
+uniform mat4 uFinalBonesMatrix[MAX_BONES];
 
 out vec3 fPos;
 out vec3 fNormal;
@@ -29,24 +28,22 @@ out vec4 fColor;
 
 void main()
 {
-    vec4 pos = vec4(mix(vPos, vMorphTargetPos, uMorphTime), 1.0);
+    vec4 bindPos = vec4(mix(vPos, vMorphTargetPos, uMorphTime), 1.0);
     vec3 tangent = mix(vTangent, vMorphTargetTangent, uMorphTime);
-//    for(int i = 0 ; i < MAX_BONE_INFLUENCE; i++)
-//    {
-//        int boneIndex = int(vBoneIds[i]);
-//        if(boneIndex == -1) continue;
-//        if(boneIndex >= MAX_BONES)
-//        {
-//            break;
-//        }
-//
-//        vec4 localPos = uFinalBonesMatrix[boneIndex] * pos;
-//        pos += localPos * vBoneWeights[i];
-//    }
 
-    gl_Position = uProjection * uView * vInstanceMatrix * pos;
+    vec4 finalPos = vec4(0.0);
+    vec4 weights = normalize(vBoneWeights);
+    for(int i = 0 ; i < 4; i++)
+    {
+        int boneIndex = int(vBoneIds[i]);
+        if(boneIndex < 0) break;
 
-    fPos = vec3(vInstanceMatrix * pos);
+        finalPos += inverse(uFinalBonesMatrix[boneIndex]) * bindPos * weights[i];
+    }
+
+    gl_Position = uProjection * uView * vInstanceMatrix * bindPos;
+
+    fPos = vec3(vInstanceMatrix * bindPos);
     fNormal = mat3(transpose(inverse(vInstanceMatrix))) * vNormal;
     fTangent = mat3(transpose(inverse(vInstanceMatrix))) * tangent;
     fTexCoords = vTexCoords;

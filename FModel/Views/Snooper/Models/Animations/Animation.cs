@@ -15,21 +15,13 @@ public class Animation : IDisposable
 
     public Animation(CAnimSet anim)
     {
-        CurrentTime = 0;
+        CurrentTime = 1;
         CurrentAnimation = anim;
     }
 
-    public void UpdateAnimation(FMeshBoneInfo[] boneInfos, ref Dictionary<int, Transform> bonesTransformByIndex)
+    public Dictionary<int, Transform> CalculateBoneTransform(FMeshBoneInfo[] boneInfos, Dictionary<int, Transform> bonesTransformByIndex)
     {
-        if (CurrentAnimation != null)
-        {
-            // CurrentTime = deltaTime;
-            CalculateBoneTransform(boneInfos, ref bonesTransformByIndex);
-        }
-    }
-
-    public void CalculateBoneTransform(FMeshBoneInfo[] boneInfos, ref Dictionary<int, Transform> bonesTransformByIndex)
-    {
+        var ret = new Dictionary<int, Transform>();
         var sequence = CurrentAnimation.Sequences[0];
         for (int boneIndex = 0; boneIndex < boneInfos.Length; boneIndex++)
         {
@@ -40,17 +32,31 @@ public class Animation : IDisposable
             if (CurrentTime < sequence.Tracks[boneIndex].KeyScale.Length)
                 boneScale = sequence.Tracks[boneIndex].KeyScale[CurrentTime];
 
-            if (!bonesTransformByIndex.TryGetValue(boneInfos[boneIndex].ParentIndex, out var parentTransform))
-                parentTransform = new Transform { Relation = Matrix4x4.Identity };
+            if (!bonesTransformByIndex.TryGetValue(boneIndex, out var originalTransform))
+                originalTransform = new Transform { Relation = Matrix4x4.Identity };
 
-            bonesTransformByIndex[boneIndex] = new Transform
+            if (!ret.TryGetValue(boneInfos[boneIndex].ParentIndex, out var parentTransform))
+                parentTransform = new Transform { Relation = Matrix4x4.Identity };
+            else boneOrientation.Conjugate();
+
+            var boneTransform = new Transform
             {
                 Relation = parentTransform.Matrix,
-                Rotation = boneOrientation,
+                Rotation = boneOrientation * originalTransform.Rotation * FQuat.Conjugate(boneOrientation),
                 Position = bonePosition * Constants.SCALE_DOWN_RATIO,
                 Scale = boneScale
             };
+
+            // boneTransform.Rotation = originalTransform.Rotation * FQuat.Conjugate(originalTransform.Rotation) * parentTransform.Rotation
+            boneTransform.Position -= boneTransform.Position - originalTransform.Position;
+
+            // boneTransform.Rotation = originalTransform.Rotation * (boneTransform.Rotation * FQuat.Conjugate(originalTransform.Rotation));
+            // boneTransform.Position = originalTransform.Position + (boneTransform.Position - originalTransform.Position);
+
+            ret[boneIndex] = boneTransform;
         }
+
+        return ret;
     }
 
     public void Dispose()

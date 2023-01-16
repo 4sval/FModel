@@ -10,7 +10,7 @@ out vec2 fTexCoords;
 
 void main()
 {
-    float scale = 0.075;
+    float scale = 0.0075;
     mat4 result;
     result[0] = vec4(scale, 0.0, 0.0, 0.0);
     result[1] = vec4(0.0, scale, 0.0, 0.0);
