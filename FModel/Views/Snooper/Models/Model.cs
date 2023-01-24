@@ -230,10 +230,13 @@ public class Model : IDisposable
     public void UpdateMatrices(Options options)
     {
         UpdateMatrices();
-        for (int i = 0; i < options.Lights.Count; i++)
+        if (HasSkeleton && Skeleton.Anim != null)
         {
-            options.Lights[i].Transform = Skeleton.AnimBonesTransformByIndex[i];
-            options.Lights[i].UpdateMatrices();
+            for (int i = 0; i < options.Lights.Count; i++)
+            {
+                options.Lights[i].Transform = Skeleton.Anim.BoneTransforms[i][Skeleton.Anim.CurrentTime];
+                options.Lights[i].UpdateMatrices();
+            }
         }
 
         foreach (var socket in Sockets)

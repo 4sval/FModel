@@ -178,10 +178,12 @@ public class Renderer : IDisposable
         if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
 
         Options.Models[guid] = new Model(original, mesh);
-        foreach (var transform in Options.Models[guid].Skeleton.BonesTransformByIndex.Values)
+        foreach ((var name, var index) in Options.Models[guid].Skeleton.BonesIndexByName)
         {
+            if (!Options.Models[guid].Skeleton.BonesTransformByIndex.TryGetValue(index, out var transform)) continue;
+
             Options.Lights.Add(
-                new PointLight(guid, Options.Icons["pointlight"], original, original, transform));
+                new PointLight(guid, Options.Icons["pointlight"], original, original, transform) { Name = name});
         }
         Options.SelectModel(guid);
         SetupCamera(Options.Models[guid].Box);

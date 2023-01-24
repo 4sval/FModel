@@ -13,8 +13,7 @@ public class Skeleton : IDisposable
     public readonly USkeleton UnrealSkeleton;
     public readonly FReferenceSkeleton ReferenceSkeleton;
     public readonly Dictionary<string, int> BonesIndexByName;
-    public Dictionary<int, Transform> BonesTransformByIndex;
-    public Dictionary<int, Transform> AnimBonesTransformByIndex;
+    public readonly Dictionary<int, Transform> BonesTransformByIndex;
     public readonly bool IsLoaded;
 
     public Animation Anim;
@@ -23,7 +22,6 @@ public class Skeleton : IDisposable
     {
         BonesIndexByName = new Dictionary<string, int>();
         BonesTransformByIndex = new Dictionary<int, Transform>();
-        AnimBonesTransformByIndex = new Dictionary<int, Transform>();
     }
 
     public Skeleton(FPackageIndex package, FReferenceSkeleton referenceSkeleton, Transform transform) : this()
@@ -32,14 +30,21 @@ public class Skeleton : IDisposable
         IsLoaded = UnrealSkeleton != null;
         if (!IsLoaded) return;
 
-        ReferenceSkeleton = referenceSkeleton ?? UnrealSkeleton.ReferenceSkeleton;
+        ReferenceSkeleton = UnrealSkeleton.ReferenceSkeleton;
+        foreach ((var name, var boneIndex) in ReferenceSkeleton.FinalNameToIndexMap)
+        {
+            if (!referenceSkeleton.FinalNameToIndexMap.TryGetValue(name, out var newBoneIndex))
+                continue;
+
+            ReferenceSkeleton.FinalRefBonePose[boneIndex] = referenceSkeleton.FinalRefBonePose[newBoneIndex];
+        }
         BonesIndexByName = ReferenceSkeleton.FinalNameToIndexMap;
         UpdateBoneMatrices(transform.Matrix);
     }
 
     public void SetAnimation(CAnimSet anim)
     {
-        Anim = new Animation(anim);
+        Anim = new Animation(this, anim);
     }
 
     public void UpdateBoneMatrices(Matrix4x4 matrix)
@@ -64,17 +69,16 @@ public class Skeleton : IDisposable
                 parentTransform = new Transform { Relation = matrix };
 
             boneTransform.Relation = parentTransform.Matrix;
-            BonesTransformByIndex[boneIndex] = AnimBonesTransformByIndex[boneIndex] = boneTransform;
+            BonesTransformByIndex[boneIndex] = boneTransform;
         }
     }
 
     public void SetUniform(Shader shader)
     {
         if (!IsLoaded || Anim == null) return;
-        AnimBonesTransformByIndex = Anim.CalculateBoneTransform(ReferenceSkeleton.FinalRefBoneInfo, BonesTransformByIndex);
-        foreach ((int boneIndex, Transform boneTransform) in AnimBonesTransformByIndex)
+        for (int boneIndex = 0; boneIndex < Anim.BoneTransforms.Length; boneIndex++)
         {
-            shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", boneTransform.Matrix);
+            shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", Anim.BoneTransforms[boneIndex][Anim.CurrentTime].Matrix);
         }
     }
 

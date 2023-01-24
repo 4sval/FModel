@@ -159,9 +159,7 @@ public class SnimGui
             for (int i = 0; i < s.Renderer.Options.Lights.Count; i++)
             {
                 var light = s.Renderer.Options.Lights[i];
-                var id = s.Renderer.Options.TryGetModel(light.Model, out var lightModel) ? lightModel.Name : "None";
-
-                id += $"##{i}";
+                var id = $"{light.Name}##{i}";
                 if (ImGui.TreeNode(id) && ImGui.BeginTable(id, 2))
                 {
                     s.Renderer.Options.SelectModel(light.Model);
@@ -448,7 +446,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 {
                     if (model.Skeleton.Anim != null)
                     {
-                        ImGui.DragInt("Time", ref model.Skeleton.Anim.CurrentTime, 1, 0, 110);
+                        ImGui.DragInt("Time", ref model.Skeleton.Anim.CurrentTime, 1, 0, model.Skeleton.Anim.MaxTime);
                     }
                     Layout("Skeleton");ImGui.Text($"  :  {model.Skeleton.UnrealSkeleton.Name}");
                     Layout("Bones");ImGui.Text($"  :  x{model.Skeleton.UnrealSkeleton.BoneTree.Length}");

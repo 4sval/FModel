@@ -12,12 +12,12 @@ layout (location = 9) in mat4 vInstanceMatrix;
 layout (location = 13) in vec3 vMorphTargetPos;
 layout (location = 14) in vec3 vMorphTargetTangent;
 
-const int MAX_BONES = 140;
+//const int MAX_BONES = 140;
 
 uniform mat4 uView;
 uniform mat4 uProjection;
 uniform float uMorphTime;
-uniform mat4 uFinalBonesMatrix[MAX_BONES];
+//uniform mat4 uFinalBonesMatrix[MAX_BONES];
 
 out vec3 fPos;
 out vec3 fNormal;
@@ -29,23 +29,28 @@ out vec4 fColor;
 void main()
 {
     vec4 bindPos = vec4(mix(vPos, vMorphTargetPos, uMorphTime), 1.0);
-    vec3 tangent = mix(vTangent, vMorphTargetTangent, uMorphTime);
+    vec4 bindNormal = vec4(vNormal, 1.0);
+    vec4 bindTangent = vec4(mix(vTangent, vMorphTargetTangent, uMorphTime), 1.0);
 
-    vec4 finalPos = vec4(0.0);
-    vec4 weights = normalize(vBoneWeights);
-    for(int i = 0 ; i < 4; i++)
-    {
-        int boneIndex = int(vBoneIds[i]);
-        if(boneIndex < 0) break;
-
-        finalPos += inverse(uFinalBonesMatrix[boneIndex]) * bindPos * weights[i];
-    }
+//    vec4 finalPos = vec4(0.0);
+//    vec4 finalNormal = vec4(0.0);
+//    vec4 finalTangent = vec4(0.0);
+//    vec4 weights = normalize(vBoneWeights);
+//    for(int i = 0 ; i < 4; i++)
+//    {
+//        int boneIndex = int(vBoneIds[i]);
+//        if(boneIndex < 0) break;
+//
+//        finalPos += uFinalBonesMatrix[boneIndex] * bindPos * weights[i];
+//        finalNormal += uFinalBonesMatrix[boneIndex] * bindNormal * weights[i];
+//        finalTangent += uFinalBonesMatrix[boneIndex] * bindTangent * weights[i];
+//    }
 
     gl_Position = uProjection * uView * vInstanceMatrix * bindPos;
 
     fPos = vec3(vInstanceMatrix * bindPos);
-    fNormal = mat3(transpose(inverse(vInstanceMatrix))) * vNormal;
-    fTangent = mat3(transpose(inverse(vInstanceMatrix))) * tangent;
+    fNormal = vec3(transpose(inverse(vInstanceMatrix)) * bindNormal);
+    fTangent = vec3(transpose(inverse(vInstanceMatrix)) * bindTangent);
     fTexCoords = vTexCoords;
     fTexLayer = vTexLayer;
     fColor = vColor;

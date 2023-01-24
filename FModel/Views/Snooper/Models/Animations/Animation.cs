@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
-using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.Core.Math;
 
 namespace FModel.Views.Snooper.Models.Animations;
@@ -10,53 +8,45 @@ namespace FModel.Views.Snooper.Models.Animations;
 public class Animation : IDisposable
 {
     public int CurrentTime;
-    public float DeltaTime;
-    public CAnimSet CurrentAnimation;
+    public readonly int MaxTime;
+    public readonly Transform[][] BoneTransforms;
 
-    public Animation(CAnimSet anim)
+    public Animation(Skeleton skeleton, CAnimSet anim)
     {
-        CurrentTime = 1;
-        CurrentAnimation = anim;
-    }
+        CurrentTime = 0;
 
-    public Dictionary<int, Transform> CalculateBoneTransform(FMeshBoneInfo[] boneInfos, Dictionary<int, Transform> bonesTransformByIndex)
-    {
-        var ret = new Dictionary<int, Transform>();
-        var sequence = CurrentAnimation.Sequences[0];
-        for (int boneIndex = 0; boneIndex < boneInfos.Length; boneIndex++)
+        var sequence = anim.Sequences[0];
+        MaxTime = sequence.NumFrames - 1;
+        BoneTransforms = new Transform[skeleton.BonesTransformByIndex.Count][];
+        for (var boneIndex = 0; boneIndex < BoneTransforms.Length; boneIndex++)
         {
-            var boneOrientation = FQuat.Identity;
-            var bonePosition = FVector.ZeroVector;
-            var boneScale = FVector.OneVector;
-            sequence.Tracks[boneIndex].GetBonePosition(CurrentTime, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
-            if (CurrentTime < sequence.Tracks[boneIndex].KeyScale.Length)
-                boneScale = sequence.Tracks[boneIndex].KeyScale[CurrentTime];
+            var parentIndex = skeleton.ReferenceSkeleton.FinalRefBoneInfo[boneIndex].ParentIndex;
+            if (!skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var originalTransform))
+                throw new ArgumentNullException("no transform for bone " + boneIndex);
 
-            if (!bonesTransformByIndex.TryGetValue(boneIndex, out var originalTransform))
-                originalTransform = new Transform { Relation = Matrix4x4.Identity };
+            var boneOrientation = originalTransform.Rotation;
+            var bonePosition = originalTransform.Position;
+            var boneScale = originalTransform.Scale;
 
-            if (!ret.TryGetValue(boneInfos[boneIndex].ParentIndex, out var parentTransform))
-                parentTransform = new Transform { Relation = Matrix4x4.Identity };
-            else boneOrientation.Conjugate();
-
-            var boneTransform = new Transform
+            BoneTransforms[boneIndex] = new Transform[sequence.NumFrames];
+            for (var frame = 0; frame < BoneTransforms[boneIndex].Length; frame++)
             {
-                Relation = parentTransform.Matrix,
-                Rotation = boneOrientation * originalTransform.Rotation * FQuat.Conjugate(boneOrientation),
-                Position = bonePosition * Constants.SCALE_DOWN_RATIO,
-                Scale = boneScale
-            };
+                sequence.Tracks[boneIndex].GetBonePosition(frame, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
+                if (CurrentTime < sequence.Tracks[boneIndex].KeyScale.Length)
+                    boneScale = sequence.Tracks[boneIndex].KeyScale[CurrentTime];
 
-            // boneTransform.Rotation = originalTransform.Rotation * FQuat.Conjugate(originalTransform.Rotation) * parentTransform.Rotation
-            boneTransform.Position -= boneTransform.Position - originalTransform.Position;
+                boneOrientation.W *= -1;
+                bonePosition *= Constants.SCALE_DOWN_RATIO;
 
-            // boneTransform.Rotation = originalTransform.Rotation * (boneTransform.Rotation * FQuat.Conjugate(originalTransform.Rotation));
-            // boneTransform.Position = originalTransform.Position + (boneTransform.Position - originalTransform.Position);
-
-            ret[boneIndex] = boneTransform;
+                BoneTransforms[boneIndex][frame] = new Transform
+                {
+                    Relation = parentIndex >= 0 ? BoneTransforms[parentIndex][frame].Matrix : originalTransform.Relation,
+                    Rotation = boneOrientation,
+                    Position = bonePosition,
+                    Scale = boneScale
+                };
+            }
         }
-
-        return ret;
     }
 
     public void Dispose()

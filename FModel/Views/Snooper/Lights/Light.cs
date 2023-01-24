@@ -28,6 +28,7 @@ public abstract class Light : IDisposable
         1f,  1f, 0f,
         1f, -1f, 0
     };
+    public string Name;
     public readonly FGuid Model;
     public readonly Texture Icon;
     public Transform Transform;
