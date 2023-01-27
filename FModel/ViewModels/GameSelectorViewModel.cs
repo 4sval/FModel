@@ -29,6 +29,7 @@ public class GameSelectorViewModel : ViewModel
         public EGame OverridedGame { get; set; }
         public List<FCustomVersion> OverridedCustomVersions { get; set; }
         public Dictionary<string, bool> OverridedOptions { get; set; }
+        public Dictionary<string, KeyValuePair<string, string>> OverridedMapStructTypes { get; set; }
         public IList<CustomDirectory> CustomDirectories { get; set; }
     }
 
@@ -74,6 +75,7 @@ public class GameSelectorViewModel : ViewModel
             OverridedGame = EGame.GAME_UE4_LATEST,
             OverridedCustomVersions = null,
             OverridedOptions = null,
+            OverridedMapStructTypes = null,
             CustomDirectories = new List<CustomDirectory>()
         };
 

@@ -146,7 +146,8 @@ public class CUE4ParseViewModel : ViewModel
                 Game = Helper.IAmThePanda(parent) ? FGame.PandaGame : parent.ToEnum(FGame.Unknown);
                 var versions = new VersionContainer(UserSettings.Default.OverridedGame[Game], UserSettings.Default.OverridedPlatform,
                     customVersions: UserSettings.Default.OverridedCustomVersions[Game],
-                    optionOverrides: UserSettings.Default.OverridedOptions[Game]);
+                    optionOverrides: UserSettings.Default.OverridedOptions[Game],
+                    mapStructTypesOverrides: UserSettings.Default.OverridedMapStructTypes[Game]);
 
                 switch (Game)
                 {
@@ -178,7 +179,8 @@ public class CUE4ParseViewModel : ViewModel
                     {
                         versions = new VersionContainer(settings.OverridedGame, UserSettings.Default.OverridedPlatform,
                             customVersions: settings.OverridedCustomVersions,
-                            optionOverrides: settings.OverridedOptions);
+                            optionOverrides: settings.OverridedOptions,
+                            mapStructTypesOverrides: settings.OverridedMapStructTypes);
                         goto default;
                     }
                     default:

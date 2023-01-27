@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -16,15 +16,18 @@ public partial class DictionaryEditor
     private readonly bool _enableElements;
     private readonly List<FCustomVersion> _defaultCustomVersions;
     private readonly Dictionary<string, bool> _defaultOptions;
+    private readonly Dictionary<string, KeyValuePair<string, string>> _defaultMapStructTypes;
 
     public List<FCustomVersion> CustomVersions { get; private set; }
     public Dictionary<string, bool> Options { get; private set; }
+    public Dictionary<string, KeyValuePair<string, string>> MapStructTypes { get; private set; }
 
     public DictionaryEditor(string title, bool enableElements)
     {
         _enableElements = enableElements;
         _defaultCustomVersions = new List<FCustomVersion> { new() { Key = new FGuid(), Version = 0 } };
         _defaultOptions = new Dictionary<string, bool> { { "key1", true }, { "key2", false } };
+        _defaultMapStructTypes = new Dictionary<string, KeyValuePair<string, string>> { { "MapName", new KeyValuePair<string, string>("KeyType", "ValueType") } };
 
         InitializeComponent();
 
@@ -49,6 +52,14 @@ public partial class DictionaryEditor
         };
     }
 
+    public DictionaryEditor(Dictionary<string, KeyValuePair<string, string>> options, string title, bool enableElements) : this(title, enableElements)
+    {
+        MyAvalonEditor.Document = new TextDocument
+        {
+            Text = JsonConvert.SerializeObject(options ?? _defaultMapStructTypes, Formatting.Indented)
+        };
+    }
+
     private void OnClick(object sender, RoutedEventArgs e)
     {
         if (!_enableElements)
@@ -70,6 +81,12 @@ public partial class DictionaryEditor
                     break;
                 case "Versioning Configuration (Options)":
                     Options = JsonConvert.DeserializeObject<Dictionary<string, bool>>(MyAvalonEditor.Document.Text);
+                    // DialogResult = !Options.SequenceEqual(_defaultOptions);
+                    DialogResult = true;
+                    Close();
+                    break;
+                case "MapStructTypes":
+                    MapStructTypes = JsonConvert.DeserializeObject<Dictionary<string, KeyValuePair<string, string>>>(MyAvalonEditor.Document.Text);
                     // DialogResult = !Options.SequenceEqual(_defaultOptions);
                     DialogResult = true;
                     Close();
@@ -99,6 +116,10 @@ public partial class DictionaryEditor
             "Versioning Configuration (Options)" => new TextDocument
             {
                 Text = JsonConvert.SerializeObject(_defaultOptions, Formatting.Indented)
+            },
+            "MapStructTypes" => new TextDocument
+            {
+                Text = JsonConvert.SerializeObject(_defaultMapStructTypes, Formatting.Indented)
             },
             _ => throw new NotImplementedException()
         };
