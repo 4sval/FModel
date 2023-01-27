@@ -152,10 +152,13 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
                         <Button Grid.Column="0" Content="Custom Versions" Click="OpenCustomVersions" />
                         <Button Grid.Column="2" Content="Options" Click="OpenOptions" />
+                        <Button Grid.Column="4" Content="MapStructTypes" Click="OpenMapStructTypes" />
                     </Grid>
 
                     <TextBlock Grid.Row="10" Grid.Column="0" Text="Texture Platform *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the game's platform to ensure texture compatibility" />
@@ -186,13 +189,10 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
                         <Button Grid.Column="0" Content="AES" Click="OpenAesEndpoint" />
                         <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint" />
-                        <Button Grid.Column="4" Content="MapStructTypes" Click="OpenMapStructTypes" />
                     </Grid>
 
                     <TextBlock Grid.Row="13" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"
