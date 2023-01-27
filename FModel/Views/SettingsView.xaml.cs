@@ -183,6 +183,19 @@ public partial class SettingsView
         _applicationView.SettingsView.SelectedOptions = editor.Options;
     }
 
+    private void OpenMapStructTypes(object sender, RoutedEventArgs e)
+    {
+        var editor = new DictionaryEditor(
+            _applicationView.SettingsView.SelectedMapStructTypes,
+            "MapStructTypes",
+            _applicationView.SettingsView.EnableElements);
+        var result = editor.ShowDialog();
+        if (!result.HasValue || !result.Value)
+            return;
+
+        _applicationView.SettingsView.SelectedMapStructTypes = editor.MapStructTypes;
+    }
+
     private void OpenAesEndpoint(object sender, RoutedEventArgs e)
     {
         var editor = new EndpointEditor(

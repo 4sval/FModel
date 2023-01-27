@@ -186,10 +186,13 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
                         <Button Grid.Column="0" Content="AES" Click="OpenAesEndpoint" />
                         <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint" />
+                        <Button Grid.Column="4" Content="MapStructTypes" Click="OpenMapStructTypes" />
                     </Grid>
 
                     <TextBlock Grid.Row="13" Grid.Column="0" Text="AES Reload at Launch" VerticalAlignment="Center" Margin="0 0 0 5"

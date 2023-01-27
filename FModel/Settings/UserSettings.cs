@@ -361,10 +361,42 @@ namespace FModel.Settings
             {FGame.Hotta, null},
             {FGame.eFootball, null}
         };
+
+        private IDictionary<FGame, Dictionary<string, KeyValuePair<string, string>>> _overridedMapStructTypes = new Dictionary<FGame, Dictionary<string, KeyValuePair<string, string>>>
+        {
+            {FGame.Unknown, null},
+            {FGame.FortniteGame, null},
+            {FGame.ShooterGame, null},
+            {FGame.DeadByDaylight, null},
+            {FGame.OakGame, null},
+            {FGame.Dungeons, null},
+            {FGame.WorldExplorers, null},
+            {FGame.g3, null},
+            {FGame.StateOfDecay2, null},
+            {FGame.Prospect, null},
+            {FGame.Indiana, null},
+            {FGame.RogueCompany, null},
+            {FGame.SwGame, null},
+            {FGame.Platform, null},
+            {FGame.BendGame, null},
+            {FGame.TslGame, null},
+            {FGame.PortalWars, null},
+            {FGame.Gameface, null},
+            {FGame.Athena, null},
+            {FGame.PandaGame, null},
+            {FGame.Hotta, null},
+            {FGame.eFootball, null}
+        };
         public IDictionary<FGame, Dictionary<string, bool>> OverridedOptions
         {
             get => _overridedOptions;
             set => SetProperty(ref _overridedOptions, value);
+        }
+
+        public IDictionary<FGame, Dictionary<string, KeyValuePair<string, string>>> OverridedMapStructTypes
+        {
+            get => _overridedMapStructTypes;
+            set => SetProperty(ref _overridedMapStructTypes, value);
         }
 
         private IDictionary<FGame, FEndpoint[]> _customEndpoints = new Dictionary<FGame, FEndpoint[]>
