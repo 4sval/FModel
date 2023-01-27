@@ -107,6 +107,7 @@ public class CreatorPackage : IDisposable
             case "FortChallengeBundleScheduleDefinition":
             case "FortWeaponMeleeDualWieldItemDefinition":
             case "FortDailyRewardScheduleTokenDefinition":
+            case "FortCreativeWeaponRangedItemDefinition":
             case "FortCreativeRealEstatePlotItemDefinition":
             case "AthenaDanceItemDefinition_AdHocSquadsJoin_C":
                 creator = _style switch

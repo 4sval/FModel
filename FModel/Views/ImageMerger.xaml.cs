@@ -84,6 +84,8 @@ public partial class ImageMerger
             {
                 maxWidth = curW + image.Width + margin;
                 curH += lineMaxHeight + margin;
+                if (curH > maxHeight)
+                    maxHeight = curH;
 
                 curW = 0;
                 lineMaxHeight = 0;

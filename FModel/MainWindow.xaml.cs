@@ -85,14 +85,6 @@ public partial class MainWindow
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
         //         "FortniteGame/Content/Animation/Game/MainPlayer/Emotes/Acrobatic_Superhero/Emote_AcrobaticSuperhero_CMM.uasset"));
 #endif
-#if DEBUG
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "Hk_project/Content/Character/Drone/Mesh/SKM_Drone.uasset"));
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "Hk_project/Content/Animation/DRONE/B12_TestSpin360.uasset"));
-#endif
     }
 
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)

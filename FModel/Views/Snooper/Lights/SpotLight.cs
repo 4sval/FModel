@@ -23,7 +23,7 @@ public class SpotLight : Light
 
     public SpotLight(FGuid model, Texture icon, UObject parent, UObject spot, Transform transform) : base(model, icon, parent, spot, transform)
     {
-        if (!spot.TryGetValue(out Attenuation, "SourceRadius", "AttenuationRadius"))
+        if (!spot.TryGetValue(out Attenuation, "AttenuationRadius", "SourceRadius"))
             Attenuation = 1.0f;
 
         Attenuation *= Constants.SCALE_DOWN_RATIO;

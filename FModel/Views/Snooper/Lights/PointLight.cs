@@ -23,7 +23,7 @@ public class PointLight : Light
 
     public PointLight(FGuid model, Texture icon, UObject parent, UObject point, Transform transform) : base(model, icon, parent, point, transform)
     {
-        if (!point.TryGetValue(out float radius, "SourceRadius", "AttenuationRadius"))
+        if (!point.TryGetValue(out float radius, "AttenuationRadius", "SourceRadius"))
             radius = 1.0f;
 
         radius *= Constants.SCALE_DOWN_RATIO;

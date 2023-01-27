@@ -339,6 +339,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
+                                        <Separator />
                                         <MenuItem Header="Export Folder's Packages Raw Data (.uasset)" Click="OnFolderExportClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
@@ -494,6 +495,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
+                                            <Separator />
                                             <MenuItem Header="Export Raw Data (.uasset)" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
