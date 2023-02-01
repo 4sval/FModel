@@ -19,6 +19,7 @@ public class Material : IDisposable
 
     public readonly CMaterialParams2 Parameters;
     public string Name;
+    public string Path;
     public int SelectedChannel;
     public int SelectedTexture;
     public bool IsUsed;
@@ -43,6 +44,7 @@ public class Material : IDisposable
     {
         Parameters = new CMaterialParams2();
         Name = "";
+        Path = "None";
         IsUsed = false;
 
         Diffuse = Array.Empty<Texture>();
@@ -63,6 +65,7 @@ public class Material : IDisposable
     public void SwapMaterial(UMaterialInterface unrealMaterial)
     {
         Name = unrealMaterial.Name;
+        Path = unrealMaterial.GetPathName();
         unrealMaterial.GetParams(Parameters, EMaterialFormat.AllLayers);
     }
 

@@ -18,7 +18,9 @@ public class SpotLight : Light
 
         Attenuation *= Constants.SCALE_DOWN_RATIO;
         InnerConeAngle = spot.GetOrDefault("InnerConeAngle", 50.0f);
-        OuterConeAngle = spot.GetOrDefault("OuterConeAngle", 60.0f);
+        OuterConeAngle = spot.GetOrDefault("OuterConeAngle", InnerConeAngle + 10);
+        if (OuterConeAngle < InnerConeAngle)
+            InnerConeAngle = OuterConeAngle - 10;
     }
 
     public SpotLight(FGuid model, Texture icon, UObject parent, UObject spot, Transform transform) : base(model, icon, parent, spot, transform)
@@ -28,7 +30,9 @@ public class SpotLight : Light
 
         Attenuation *= Constants.SCALE_DOWN_RATIO;
         InnerConeAngle = spot.GetOrDefault("InnerConeAngle", 50.0f);
-        OuterConeAngle = spot.GetOrDefault("OuterConeAngle", 60.0f);
+        OuterConeAngle = spot.GetOrDefault("OuterConeAngle", InnerConeAngle + 10);
+        if (OuterConeAngle < InnerConeAngle)
+            InnerConeAngle = OuterConeAngle - 10;
     }
 
     public override void Render(int i, Shader shader)

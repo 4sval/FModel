@@ -52,7 +52,9 @@ public class ThreadWorkerViewModel : ViewModel
 
     public async Task Begin(Action<CancellationToken> action)
     {
-        if (!_applicationView.Status.IsReady)
+        if (_applicationView.CUE4Parse.IsSnooperOpen)
+            _applicationView.CUE4Parse.SnooperViewer.Close();
+        else if (!_applicationView.Status.IsReady)
         {
             SignalOperationInProgress();
             return;
@@ -89,6 +91,8 @@ public class ThreadWorkerViewModel : ViewModel
                 catch (OperationCanceledException)
                 {
                     _applicationView.Status.SetStatus(EStatusKind.Stopped);
+                    if (_applicationView.CUE4Parse.IsSnooperOpen)
+                        _applicationView.CUE4Parse.SnooperViewer.Close();
                     CurrentCancellationTokenSource = null; // kill token
                     OperationCancelled = true;
                     OperationCancelled = false;

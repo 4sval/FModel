@@ -503,7 +503,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                                 else _swapper.Value = true;
                             }
                             ImGui.Separator();
-                            if (ImGui.Selectable("Copy Name to Clipboard")) ImGui.SetClipboardText(material.Name);
+                            if (ImGui.Selectable("Copy Path to Clipboard")) ImGui.SetClipboardText(material.Path);
                         });
                         ImGui.PopID();
                     }
@@ -639,7 +639,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 material.ImGuiColors(material.Parameters.Colors);
                 ImGui.TreePop();
             }
-            if (ImGui.TreeNode("Referenced Textures"))
+            if (ImGui.TreeNode("All Textures"))
             {
                 material.ImGuiDictionaries("textures", material.Parameters.Textures);
                 ImGui.TreePop();

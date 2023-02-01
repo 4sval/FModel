@@ -37,6 +37,8 @@ public static class TextureHelper
             // B: Whatever (AO / S / E / ...)
             case "shootergame":
             case "divineknockout":
+            case "moonman":
+            case "marsman":
             {
                 unsafe
                 {

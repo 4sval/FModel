@@ -79,6 +79,7 @@ public class CUE4ParseViewModel : ViewModel
         set => SetProperty(ref _modelIsWaitingAnimation, value);
     }
 
+    public bool IsSnooperOpen => _snooper is { Exists: true, IsVisible: true };
     private Snooper _snooper;
     public Snooper SnooperViewer
     {
