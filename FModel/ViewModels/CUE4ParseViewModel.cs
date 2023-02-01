@@ -597,6 +597,8 @@ public class CUE4ParseViewModel : ViewModel
             case "manifest":
             case "uplugin":
             case "archive":
+            case "vmodule":
+            case "verse":
             case "html":
             case "json":
             case "ini":
