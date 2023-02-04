@@ -12,16 +12,18 @@ public class Skeleton : IDisposable
 {
     public readonly USkeleton UnrealSkeleton;
     public readonly FReferenceSkeleton ReferenceSkeleton;
-    public readonly Dictionary<string, int> BonesIndexByName;
+    public readonly Dictionary<string, int> BonesIndexByLoweredName;
     public readonly Dictionary<int, Transform> BonesTransformByIndex;
+    public readonly Dictionary<int, Matrix4x4> InvertedBonesMatrixByIndex;
     public readonly bool IsLoaded;
 
     public Animation Anim;
 
     public Skeleton()
     {
-        BonesIndexByName = new Dictionary<string, int>();
+        BonesIndexByLoweredName = new Dictionary<string, int>();
         BonesTransformByIndex = new Dictionary<int, Transform>();
+        InvertedBonesMatrixByIndex = new Dictionary<int, Matrix4x4>();
     }
 
     public Skeleton(FPackageIndex package, FReferenceSkeleton referenceSkeleton, Transform transform) : this()
@@ -30,15 +32,10 @@ public class Skeleton : IDisposable
         IsLoaded = UnrealSkeleton != null;
         if (!IsLoaded) return;
 
-        ReferenceSkeleton = UnrealSkeleton.ReferenceSkeleton;
-        foreach ((var name, var boneIndex) in ReferenceSkeleton.FinalNameToIndexMap)
-        {
-            if (!referenceSkeleton.FinalNameToIndexMap.TryGetValue(name, out var newBoneIndex))
-                continue;
+        ReferenceSkeleton = referenceSkeleton;
+        foreach ((var name, var boneIndex) in referenceSkeleton.FinalNameToIndexMap)
+            BonesIndexByLoweredName[name.ToLower()] = boneIndex;
 
-            ReferenceSkeleton.FinalRefBonePose[boneIndex] = referenceSkeleton.FinalRefBonePose[newBoneIndex];
-        }
-        BonesIndexByName = ReferenceSkeleton.FinalNameToIndexMap;
         UpdateBoneMatrices(transform.Matrix);
     }
 
@@ -50,7 +47,7 @@ public class Skeleton : IDisposable
     public void UpdateBoneMatrices(Matrix4x4 matrix)
     {
         if (!IsLoaded) return;
-        foreach (var boneIndex in BonesIndexByName.Values)
+        foreach (var boneIndex in BonesIndexByLoweredName.Values)
         {
             var bone = ReferenceSkeleton.FinalRefBonePose[boneIndex];
             var parentIndex = ReferenceSkeleton.FinalRefBoneInfo[boneIndex].ParentIndex;
@@ -69,22 +66,44 @@ public class Skeleton : IDisposable
                 parentTransform = new Transform { Relation = matrix };
 
             boneTransform.Relation = parentTransform.Matrix;
+            Matrix4x4.Invert(boneTransform.Matrix, out var inverted);
+
             BonesTransformByIndex[boneIndex] = boneTransform;
+            InvertedBonesMatrixByIndex[boneIndex] = inverted;
+        }
+    }
+
+    public void SetPoseUniform(Shader shader)
+    {
+        if (!IsLoaded) return;
+        foreach ((var boneIndex, var transform) in BonesTransformByIndex)
+        {
+            if (boneIndex >= Constants.MAX_BONE_UNIFORM)
+                break;
+            shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", InvertedBonesMatrixByIndex[boneIndex] * transform.Matrix);
         }
     }
 
     public void SetUniform(Shader shader)
     {
-        if (!IsLoaded || Anim == null) return;
-        for (int boneIndex = 0; boneIndex < Anim.BoneTransforms.Length; boneIndex++)
+        if (!IsLoaded) return;
+        if (Anim == null) SetPoseUniform(shader);
+        else foreach ((var boneName, var trackIndex) in UnrealSkeleton.ReferenceSkeleton.FinalNameToIndexMap)
         {
-            shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", Anim.BoneTransforms[boneIndex][Anim.CurrentTime].Matrix);
+            if (!BonesIndexByLoweredName.TryGetValue(boneName.ToLower(), out var boneIndex))
+                continue;
+            if (!InvertedBonesMatrixByIndex.TryGetValue(boneIndex, out var invertMatrix))
+                throw new ArgumentNullException($"no inverse matrix for bone '{boneIndex}'");
+            if (boneIndex >= Constants.MAX_BONE_UNIFORM)
+                break;
+
+            shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", invertMatrix * Anim.BoneTransforms[trackIndex][Anim.CurrentTime].Matrix);
         }
     }
 
     public void Dispose()
     {
-        BonesIndexByName.Clear();
+        BonesIndexByLoweredName.Clear();
         BonesTransformByIndex.Clear();
         Anim?.Dispose();
     }

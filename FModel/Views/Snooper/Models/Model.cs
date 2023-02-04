@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using CUE4Parse_Conversion;
 using CUE4Parse.UE4.Assets.Exports.Animation;
@@ -21,6 +22,25 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper.Models;
 
+public class VertexAttribute
+{
+    public int Size;
+    public bool Enabled;
+}
+
+public enum EAttribute
+{
+    Index,
+    Position,
+    Normals,
+    Tangent,
+    UVs,
+    Layer,
+    Colors,
+    BonesId,
+    BonesWeight
+}
+
 public class Model : IDisposable
 {
     private int _handle;
@@ -32,14 +52,26 @@ public class Model : IDisposable
     private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
-    private readonly UObject _export;
-    protected readonly int VertexSize = 13; // VertexIndex + Position + Normal + Tangent + UV + TextureLayer
+    protected int VertexSize => _vertexAttributes.Where(x => x.Enabled).Sum(x => x.Size);
+    protected bool HasVertexColors => _vertexAttributes[(int) EAttribute.Colors].Enabled;
+    private readonly List<VertexAttribute> _vertexAttributes = new()
+    {
+        new VertexAttribute { Size = 1, Enabled = true },   // VertexIndex
+        new VertexAttribute { Size = 3, Enabled = true },   // Position
+        new VertexAttribute { Size = 3, Enabled = true },   // Normal
+        new VertexAttribute { Size = 3, Enabled = true },   // Tangent
+        new VertexAttribute { Size = 2, Enabled = true },   // UV
+        new VertexAttribute { Size = 1, Enabled = true },   // TextureLayer
+        new VertexAttribute { Size = 4, Enabled = false },  // Colors
+        new VertexAttribute { Size = 4, Enabled = false },  // BoneIds
+        new VertexAttribute { Size = 4, Enabled = false }   // BoneWeights
+    };
     private const int _faceSize = 3;
 
+    private readonly UObject _export;
     public readonly string Path;
     public readonly string Name;
     public readonly string Type;
-    public readonly bool HasVertexColors;
     public readonly int UvCount;
     public readonly FBox Box;
     public uint[] Indices;
@@ -117,7 +149,7 @@ public class Model : IDisposable
         {
             if (sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
 
-            if (!Skeleton.BonesIndexByName.TryGetValue(socket.BoneName.Text, out var boneIndex) ||
+            if (!Skeleton.BonesIndexByLoweredName.TryGetValue(socket.BoneName.Text, out var boneIndex) ||
                 !Skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
                 boneTransform = t;
 
@@ -148,16 +180,9 @@ public class Model : IDisposable
                 Materials[m] = new Material(unrealMaterial); else Materials[m] = new Material();
         }
 
-        if (lod.VertexColors is { Length: > 0})
-        {
-            HasVertexColors = true;
-            VertexSize += 4; // + Color
-        }
-
-        if (vertices is CSkelMeshVertex[])
-        {
-            VertexSize += 8; // + BoneIds + BoneWeights
-        }
+        _vertexAttributes[(int) EAttribute.Colors].Enabled = lod.VertexColors is { Length: > 0};
+        _vertexAttributes[(int) EAttribute.BonesId].Enabled =
+            _vertexAttributes[(int) EAttribute.BonesWeight].Enabled = vertices is CSkelMeshVertex[];
 
         Indices = new uint[lod.Indices.Value.Length];
         for (int i = 0; i < Indices.Length; i++)
@@ -255,7 +280,7 @@ public class Model : IDisposable
         foreach (var socket in Sockets)
         {
             if (!HasSkeleton ||
-                !Skeleton.BonesIndexByName.TryGetValue(socket.BoneName.Text, out var boneIndex) ||
+                !Skeleton.BonesIndexByLoweredName.TryGetValue(socket.BoneName.Text, out var boneIndex) ||
                 !Skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
                 boneTransform = Transforms[SelectedInstance];
 
@@ -307,15 +332,18 @@ public class Model : IDisposable
         _vbo = new BufferObject<float>(Vertices, BufferTarget.ArrayBuffer);
         _vao = new VertexArrayObject<float, uint>(_vbo, _ebo);
 
-        _vao.VertexAttributePointer(0, 1, VertexAttribPointerType.Int, VertexSize, 0); // vertex index
-        _vao.VertexAttributePointer(1, 3, VertexAttribPointerType.Float, VertexSize, 1); // position
-        _vao.VertexAttributePointer(2, 3, VertexAttribPointerType.Float, VertexSize, 4); // normal
-        _vao.VertexAttributePointer(3, 3, VertexAttribPointerType.Float, VertexSize, 7); // tangent
-        _vao.VertexAttributePointer(4, 2, VertexAttribPointerType.Float, VertexSize, 10); // uv
-        if (!broken) _vao.VertexAttributePointer(5, 1, VertexAttribPointerType.Float, VertexSize, 12); // texture index
-        _vao.VertexAttributePointer(6, 4, VertexAttribPointerType.Float, VertexSize, 13); // color
-        _vao.VertexAttributePointer(7, 4, VertexAttribPointerType.Float, VertexSize, 17); // boneids
-        _vao.VertexAttributePointer(8, 4, VertexAttribPointerType.Float, VertexSize, 21); // boneweights
+        var offset = 0;
+        for (int i = 0; i < _vertexAttributes.Count; i++)
+        {
+            var attribute = _vertexAttributes[i];
+            if (!attribute.Enabled) continue;
+
+            if (i != 5 || !broken)
+            {
+                _vao.VertexAttributePointer((uint) i, attribute.Size, i == 0 ? VertexAttribPointerType.Int : VertexAttribPointerType.Float, VertexSize, offset);
+            }
+            offset += attribute.Size;
+        }
 
         SetupInstances(); // instanced models transform
 
@@ -360,6 +388,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
+        if (HasSkeleton) Skeleton.SetUniform(shader);
         if (!outline)
         {
             shader.SetUniform("uUvCount", UvCount);

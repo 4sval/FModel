@@ -16,7 +16,11 @@ public static class TextureHelper
         // only if it makes a big difference pls
         switch (_game)
         {
+            // R: Whatever (AO / S / E / ...)
+            // G: Roughness
+            // B: Metallic
             case "hk_project":
+            case "cosmicshake":
             {
                 unsafe
                 {

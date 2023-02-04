@@ -344,8 +344,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             _saver.Value = model.TrySave(out _saver.Label, out _saver.Path);
                             s.WindowShouldFreeze(false);
                         }
-                        ImGui.BeginDisabled(true);
-                        // ImGui.BeginDisabled(!model.HasSkeleton);
+                        ImGui.BeginDisabled(!model.HasSkeleton);
                         if (ImGui.Selectable("Animate"))
                         {
                             s.Renderer.Options.AnimateMesh(true);
@@ -449,7 +448,9 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 {
                     if (model.Skeleton.Anim != null)
                     {
+                        ImGui.BeginDisabled(model.Skeleton.Anim.MaxTime == 0);
                         ImGui.DragInt("Time", ref model.Skeleton.Anim.CurrentTime, 1, 0, model.Skeleton.Anim.MaxTime);
+                        ImGui.EndDisabled();
                     }
                     Layout("Skeleton");ImGui.Text($"  :  {model.Skeleton.UnrealSkeleton.Name}");
                     Layout("Bones");ImGui.Text($"  :  x{model.Skeleton.UnrealSkeleton.BoneTree.Length}");

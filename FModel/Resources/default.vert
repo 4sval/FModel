@@ -12,12 +12,10 @@ layout (location = 9) in mat4 vInstanceMatrix;
 layout (location = 13) in vec3 vMorphTargetPos;
 layout (location = 14) in vec3 vMorphTargetTangent;
 
-//const int MAX_BONES = 140;
-
 uniform mat4 uView;
 uniform mat4 uProjection;
 uniform float uMorphTime;
-//uniform mat4 uFinalBonesMatrix[MAX_BONES];
+uniform mat4 uFinalBonesMatrix[250];
 
 out vec3 fPos;
 out vec3 fNormal;
@@ -32,25 +30,27 @@ void main()
     vec4 bindNormal = vec4(vNormal, 1.0);
     vec4 bindTangent = vec4(mix(vTangent, vMorphTargetTangent, uMorphTime), 1.0);
 
-//    vec4 finalPos = vec4(0.0);
-//    vec4 finalNormal = vec4(0.0);
-//    vec4 finalTangent = vec4(0.0);
-//    vec4 weights = normalize(vBoneWeights);
-//    for(int i = 0 ; i < 4; i++)
-//    {
-//        int boneIndex = int(vBoneIds[i]);
-//        if(boneIndex < 0) break;
-//
-//        finalPos += uFinalBonesMatrix[boneIndex] * bindPos * weights[i];
-//        finalNormal += uFinalBonesMatrix[boneIndex] * bindNormal * weights[i];
-//        finalTangent += uFinalBonesMatrix[boneIndex] * bindTangent * weights[i];
-//    }
+    vec4 finalPos = vec4(0.0);
+    vec4 finalNormal = vec4(0.0);
+    vec4 finalTangent = vec4(0.0);
+    for(int i = 0 ; i < 4; i++)
+    {
+        int boneIndex = int(vBoneIds[i]);
+        if(boneIndex < 0) break;
 
-    gl_Position = uProjection * uView * vInstanceMatrix * bindPos;
+        mat4 boneMatrix = uFinalBonesMatrix[boneIndex];
+        float weight = vBoneWeights[i];
 
-    fPos = vec3(vInstanceMatrix * bindPos);
-    fNormal = vec3(transpose(inverse(vInstanceMatrix)) * bindNormal);
-    fTangent = vec3(transpose(inverse(vInstanceMatrix)) * bindTangent);
+        finalPos += boneMatrix * bindPos * weight;
+        finalNormal += boneMatrix * bindNormal * weight;
+        finalTangent += boneMatrix * bindTangent * weight;
+    }
+
+    gl_Position = uProjection * uView * vInstanceMatrix * finalPos;
+
+    fPos = vec3(vInstanceMatrix * finalPos);
+    fNormal = vec3(transpose(inverse(vInstanceMatrix)) * finalNormal);
+    fTangent = vec3(transpose(inverse(vInstanceMatrix)) * finalTangent);
     fTexCoords = vTexCoords;
     fTexLayer = vTexLayer;
     fColor = vColor;
