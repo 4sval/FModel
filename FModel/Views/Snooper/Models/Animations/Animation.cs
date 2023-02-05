@@ -54,6 +54,18 @@ public class Animation : IDisposable
 
                 bonePosition *= Constants.SCALE_DOWN_RATIO;
 
+                switch (anim.BoneModes[trackIndex])
+                {
+                    case EBoneRetargetingMode.Animation:
+                    case EBoneRetargetingMode.Mesh:
+                    case EBoneRetargetingMode.AnimationScaled:
+                    case EBoneRetargetingMode.AnimationRelative:
+                    case EBoneRetargetingMode.OrientAndScale:
+                    case EBoneRetargetingMode.Count:
+                    default:
+                        break;
+                }
+
                 BoneTransforms[trackIndex][frame] = new Transform
                 {
                     Relation = bone.ParentIndex >= 0 ? BoneTransforms[bone.ParentIndex][frame].Matrix : originalTransform.Relation,

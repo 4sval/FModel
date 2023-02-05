@@ -77,22 +77,21 @@ public class Skeleton : IDisposable
             shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", Matrix4x4.Identity);
         }
     }
-
-    public void SetUniform(float deltaSeconds, bool outline, Shader shader)
+    public void SetUniform(Shader shader, float deltaSeconds = 0f, bool updateElapsedTime = false)
     {
         if (!IsLoaded) return;
         if (Anim == null) SetPoseUniform(shader);
         else
         {
-            if (!outline) Anim.ElapsedTime += deltaSeconds / Anim.TimePerFrame;
-            foreach ((var boneName, var trackIndex) in UnrealSkeleton.ReferenceSkeleton.FinalNameToIndexMap)
+            if (!updateElapsedTime) Anim.ElapsedTime += deltaSeconds / Anim.TimePerFrame;
+            foreach (var boneIndex in BonesTransformByIndex.Keys)
             {
-                if (!BonesIndexByLoweredName.TryGetValue(boneName.ToLower(), out var boneIndex))
-                    continue;
-                if (!InvertedBonesMatrixByIndex.TryGetValue(boneIndex, out var invertMatrix))
-                    throw new ArgumentNullException($"no inverse matrix for bone '{boneIndex}'");
                 if (boneIndex >= Constants.MAX_BONE_UNIFORM)
                     break;
+                if (!InvertedBonesMatrixByIndex.TryGetValue(boneIndex, out var invertMatrix))
+                    throw new ArgumentNullException($"no inverse matrix for bone '{boneIndex}'");
+                if (!Anim.TrackIndexByBoneIndex.TryGetValue(boneIndex, out var trackIndex))
+                    throw new ArgumentNullException($"no track index for bone '{boneIndex}'");
 
                 shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", invertMatrix * Anim.InterpolateBoneTransform(trackIndex));
             }

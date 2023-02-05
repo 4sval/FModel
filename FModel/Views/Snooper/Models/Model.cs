@@ -266,7 +266,7 @@ public class Model : IDisposable
                 if (!options.TryGetModel(attached, out var attachedModel))
                     continue;
 
-                attachedModel.Transforms[attachedModel.SelectedInstance].Relation = socket.Transform.Matrix * socketRelation;
+                attachedModel.Transforms[attachedModel.SelectedInstance].Relation = socket.Transform.LocalMatrix * socketRelation;
                 attachedModel.UpdateMatrices(options);
             }
         }
@@ -382,7 +382,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        if (HasSkeleton) Skeleton.SetUniform(deltaSeconds, outline, shader);
+        if (HasSkeleton) Skeleton.SetUniform(shader, deltaSeconds, outline);
         if (!outline)
         {
             shader.SetUniform("uUvCount", UvCount);
@@ -413,6 +413,8 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
+        if (HasSkeleton) Skeleton.SetUniform(shader);
+
         foreach (var section in Sections)
         {
             if (!section.Show) continue;

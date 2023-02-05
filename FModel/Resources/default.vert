@@ -33,17 +33,26 @@ void main()
     vec4 finalPos = vec4(0.0);
     vec4 finalNormal = vec4(0.0);
     vec4 finalTangent = vec4(0.0);
-    for(int i = 0 ; i < 4; i++)
+    if (vBoneIds != vBoneWeights)
     {
-        int boneIndex = int(vBoneIds[i]);
-        if(boneIndex < 0) break;
+        for(int i = 0 ; i < 4; i++)
+        {
+            int boneIndex = int(vBoneIds[i]);
+            if(boneIndex < 0) break;
 
-        mat4 boneMatrix = uFinalBonesMatrix[boneIndex];
-        float weight = vBoneWeights[i];
+            mat4 boneMatrix = uFinalBonesMatrix[boneIndex];
+            float weight = vBoneWeights[i];
 
-        finalPos += boneMatrix * bindPos * weight;
-        finalNormal += boneMatrix * bindNormal * weight;
-        finalTangent += boneMatrix * bindTangent * weight;
+            finalPos += boneMatrix * bindPos * weight;
+            finalNormal += boneMatrix * bindNormal * weight;
+            finalTangent += boneMatrix * bindTangent * weight;
+        }
+    }
+    else
+    {
+        finalPos = bindPos;
+        finalNormal = bindNormal;
+        finalTangent = bindTangent;
     }
 
     gl_Position = uProjection * uView * vInstanceMatrix * finalPos;
