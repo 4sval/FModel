@@ -9,6 +9,7 @@ using System.Numerics;
 using System.Text;
 using FModel.Settings;
 using FModel.Views.Snooper.Models;
+using FModel.Views.Snooper.Models.Animations;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
 
@@ -71,8 +72,8 @@ public class SnimGui
         DrawDockSpace(s.Size);
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
+        AnimationWindow("Timeline", s.Renderer, (icons, skeleton) => skeleton.Anim.ImGuiTimeline());
 
-        // Window("Timeline", () => {});
         Window("World", () => DrawWorld(s), false);
 
         DrawSockets(s);
@@ -138,7 +139,9 @@ public class SnimGui
                 ImGui.Checkbox("", ref s.Renderer.ShowGrid);
                 ImGui.PopID();Layout("Lights");ImGui.PushID(3);
                 ImGui.Checkbox("", ref s.Renderer.ShowLights);
-                ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(4);
+                ImGui.PopID();Layout("Animate With Rotation Only");ImGui.PushID(4);
+                ImGui.Checkbox("", ref s.Renderer.AnimateWithRotationOnly);
+                ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(5);
                 ImGui.Combo("vertex_colors", ref s.Renderer.VertexColor,
                     "Default\0Diffuse Only\0Colors\0Normals\0Texture Coordinates\0");
                 ImGui.PopID();
@@ -442,20 +445,23 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         {
             if (ImGui.BeginTable("model_details", 2, ImGuiTableFlags.SizingStretchProp))
             {
-                Layout("Entity");ImGui.Text($"  :  ({model.Type}) {model.Name}");
-                Layout("Guid");ImGui.Text($"  :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
-                if (model.HasSkeleton)
+                NoFramePaddingOnY(() =>
                 {
-                    Layout("Skeleton");ImGui.Text($"  :  {model.Skeleton.UnrealSkeleton.Name}");
-                    Layout("Bones");ImGui.Text($"  :  x{model.Skeleton.UnrealSkeleton.BoneTree.Length}");
-                }
-                else
-                {
-                    Layout("Two Sided");ImGui.Text($"  :  {model.TwoSided}");
-                }
-                Layout("Sockets");ImGui.Text($"  :  x{model.Sockets.Length}");
+                    Layout("Entity");ImGui.Text($"  :  ({model.Type}) {model.Name}");
+                    Layout("Guid");ImGui.Text($"  :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
+                    if (model.HasSkeleton)
+                    {
+                        Layout("Skeleton");ImGui.Text($"  :  {model.Skeleton.UnrealSkeleton.Name}");
+                        Layout("Bones");ImGui.Text($"  :  x{model.Skeleton.UnrealSkeleton.BoneTree.Length}");
+                    }
+                    else
+                    {
+                        Layout("Two Sided");ImGui.Text($"  :  {model.TwoSided}");
+                    }
+                    Layout("Sockets");ImGui.Text($"  :  x{model.Sockets.Length}");
 
-                ImGui.EndTable();
+                    ImGui.EndTable();
+                });
             }
             if (ImGui.BeginTabBar("tabbar_details", ImGuiTabBarFlags.None))
             {
@@ -609,36 +615,39 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
         if (ImGui.CollapsingHeader("Properties"))
         {
-            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-            if (ImGui.TreeNode("Base"))
+            NoFramePaddingOnY(() =>
             {
-                material.ImGuiBaseProperties("base");
-                ImGui.TreePop();
-            }
+                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+                if (ImGui.TreeNode("Base"))
+                {
+                    material.ImGuiBaseProperties("base");
+                    ImGui.TreePop();
+                }
 
-            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-            if (ImGui.TreeNode("Scalars"))
-            {
-                material.ImGuiDictionaries("scalars", material.Parameters.Scalars, true);
-                ImGui.TreePop();
-            }
-            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-            if (ImGui.TreeNode("Switchs"))
-            {
-                material.ImGuiDictionaries("switchs", material.Parameters.Switchs, true);
-                ImGui.TreePop();
-            }
-            ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-            if (ImGui.TreeNode("Colors"))
-            {
-                material.ImGuiColors(material.Parameters.Colors);
-                ImGui.TreePop();
-            }
-            if (ImGui.TreeNode("All Textures"))
-            {
-                material.ImGuiDictionaries("textures", material.Parameters.Textures);
-                ImGui.TreePop();
-            }
+                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+                if (ImGui.TreeNode("Scalars"))
+                {
+                    material.ImGuiDictionaries("scalars", material.Parameters.Scalars, true);
+                    ImGui.TreePop();
+                }
+                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+                if (ImGui.TreeNode("Switchs"))
+                {
+                    material.ImGuiDictionaries("switchs", material.Parameters.Switchs, true);
+                    ImGui.TreePop();
+                }
+                ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
+                if (ImGui.TreeNode("Colors"))
+                {
+                    material.ImGuiColors(material.Parameters.Colors);
+                    ImGui.TreePop();
+                }
+                if (ImGui.TreeNode("All Textures"))
+                {
+                    material.ImGuiDictionaries("textures", material.Parameters.Textures);
+                    ImGui.TreePop();
+                }
+            });
         }
     }
 
@@ -772,11 +781,28 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         }, styled);
     }
 
+    private void AnimationWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, Skeleton> content, bool styled = true)
+    {
+        MeshWindow(name, renderer, (icons, model) =>
+        {
+            if (!model.HasSkeleton) CenteredTextColored(_errorColor, "No Skeleton To Animate");
+            else if (!model.Skeleton.HasAnim) CenteredTextColored(_errorColor, "Mesh Not Animated");
+            else content(icons, model.Skeleton);
+        }, styled);
+    }
+
     private void PopStyleCompact() => ImGui.PopStyleVar(2);
     private void PushStyleCompact()
     {
         ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 3));
         ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
+    }
+
+    public static void NoFramePaddingOnY(Action content)
+    {
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 0));
+        content();
+        ImGui.PopStyleVar();
     }
 
     private void NoMeshSelected() => CenteredTextColored(_errorColor, "No Mesh Selected");
@@ -797,6 +823,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     {
         ImGui.TableNextRow();
         ImGui.TableSetColumnIndex(0);
+        ImGui.AlignTextToFramePadding();
         ImGui.Spacing();ImGui.SameLine();ImGui.Text(name);
         if (tooltip) TooltipCopy(name);
         ImGui.TableSetColumnIndex(1);

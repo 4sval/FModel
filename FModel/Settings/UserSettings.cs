@@ -647,6 +647,13 @@ namespace FModel.Settings
             set => SetProperty(ref _showGrid, value);
         }
 
+        private bool _animateWithRotationOnly;
+        public bool AnimateWithRotationOnly
+        {
+            get => _animateWithRotationOnly;
+            set => SetProperty(ref _animateWithRotationOnly, value);
+        }
+
         private Camera.WorldMode _cameraMode = Camera.WorldMode.Arcball;
         public Camera.WorldMode CameraMode
         {

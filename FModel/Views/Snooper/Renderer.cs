@@ -36,6 +36,7 @@ public class Renderer : IDisposable
     public bool ShowSkybox;
     public bool ShowGrid;
     public bool ShowLights;
+    public bool AnimateWithRotationOnly;
     public int VertexColor;
 
     public Camera CameraOp { get; }
@@ -53,6 +54,7 @@ public class Renderer : IDisposable
 
         ShowSkybox = UserSettings.Default.ShowSkybox;
         ShowGrid = UserSettings.Default.ShowGrid;
+        AnimateWithRotationOnly = UserSettings.Default.AnimateWithRotationOnly;
         VertexColor = 0; // default
     }
 
@@ -93,7 +95,7 @@ public class Renderer : IDisposable
             model.Skeleton?.UnrealSkeleton.ConvertAnims(animSequence) is not { } anim || anim.Sequences.Count == 0)
             return;
 
-        model.Skeleton.SetAnimation(anim);
+        model.Skeleton.SetAnimation(anim, AnimateWithRotationOnly);
         Options.AnimateMesh(false);
     }
 
@@ -408,6 +410,7 @@ public class Renderer : IDisposable
         if (_saveCameraMode) UserSettings.Default.CameraMode = CameraOp.Mode;
         UserSettings.Default.ShowSkybox = ShowSkybox;
         UserSettings.Default.ShowGrid = ShowGrid;
+        UserSettings.Default.AnimateWithRotationOnly = AnimateWithRotationOnly;
     }
 
     public void Dispose()

@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.Utils;
+using ImGuiNET;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
@@ -15,9 +16,9 @@ public class Animation : IDisposable
     public readonly Dictionary<int, int> TrackIndexByBoneIndex;
     public readonly Transform[][] BoneTransforms;
 
-    public float TimePerFrame => 1.0f / FramesPerSecond;
+    private float TimePerFrame => 1.0f / FramesPerSecond;
 
-    public Animation(Skeleton skeleton, CAnimSet anim)
+    public Animation(Skeleton skeleton, CAnimSet anim, bool rotationOnly)
     {
         Frame = 0;
         ElapsedTime = 0;
@@ -39,12 +40,13 @@ public class Animation : IDisposable
                 throw new ArgumentNullException($"no transform for bone '{boneIndex}'");
 
             TrackIndexByBoneIndex[boneIndex] = trackIndex;
-            var boneOrientation = originalTransform.Rotation;
-            var bonePosition = originalTransform.Position;
-            var boneScale = originalTransform.Scale;
 
             for (var frame = 0; frame < BoneTransforms[trackIndex].Length; frame++)
             {
+                var boneOrientation = originalTransform.Rotation;
+                var bonePosition = originalTransform.Position;
+                var boneScale = originalTransform.Scale;
+
                 sequence.Tracks[trackIndex].GetBonePosition(frame, MaxFrame, false, ref bonePosition, ref boneOrientation);
                 if (frame < sequence.Tracks[trackIndex].KeyScale.Length)
                     boneScale = sequence.Tracks[trackIndex].KeyScale[frame];
@@ -70,17 +72,29 @@ public class Animation : IDisposable
                 {
                     Relation = bone.ParentIndex >= 0 ? BoneTransforms[bone.ParentIndex][frame].Matrix : originalTransform.Relation,
                     Rotation = boneOrientation,
-                    Position = bonePosition,
+                    Position = rotationOnly ? originalTransform.Position : bonePosition,
                     Scale = boneScale
                 };
             }
         }
     }
 
+    public void Update(float deltaSeconds)
+    {
+        ElapsedTime += deltaSeconds / TimePerFrame;
+        Frame = ElapsedTime.FloorToInt() % MaxFrame;
+    }
+
     public Matrix4x4 InterpolateBoneTransform(int trackIndex)
     {
-        Frame = ElapsedTime.FloorToInt() % MaxFrame; // interpolate here
+        // interpolate here
         return BoneTransforms[trackIndex][Frame].Matrix;
+    }
+
+    public void ImGuiTimeline()
+    {
+        ImGui.Text($"Frame: {Frame}/{MaxFrame}");
+        ImGui.Text($"FPS: {FramesPerSecond}");
     }
 
     public void Dispose()

@@ -18,6 +18,7 @@ public class Skeleton : IDisposable
     public readonly bool IsLoaded;
 
     public Animation Anim;
+    public bool HasAnim => Anim != null;
 
     public Skeleton()
     {
@@ -62,9 +63,9 @@ public class Skeleton : IDisposable
         }
     }
 
-    public void SetAnimation(CAnimSet anim)
+    public void SetAnimation(CAnimSet anim, bool rotationOnly)
     {
-        Anim = new Animation(this, anim);
+        Anim = new Animation(this, anim, rotationOnly);
     }
 
     public void SetPoseUniform(Shader shader)
@@ -77,13 +78,14 @@ public class Skeleton : IDisposable
             shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", Matrix4x4.Identity);
         }
     }
-    public void SetUniform(Shader shader, float deltaSeconds = 0f, bool updateElapsedTime = false)
+
+    public void SetUniform(Shader shader, float deltaSeconds = 0f, bool update = false)
     {
         if (!IsLoaded) return;
-        if (Anim == null) SetPoseUniform(shader);
+        if (!HasAnim) SetPoseUniform(shader);
         else
         {
-            if (!updateElapsedTime) Anim.ElapsedTime += deltaSeconds / Anim.TimePerFrame;
+            if (update) Anim.Update(deltaSeconds);
             foreach (var boneIndex in BonesTransformByIndex.Keys)
             {
                 if (boneIndex >= Constants.MAX_BONE_UNIFORM)

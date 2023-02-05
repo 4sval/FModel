@@ -341,12 +341,15 @@ public class Material : IDisposable
         var texture = GetSelectedTexture() ?? fallback;
         if (ImGui.BeginTable("texture_inspector", 2, ImGuiTableFlags.SizingStretchProp))
         {
-            SnimGui.Layout("Type");ImGui.Text($" :  ({texture.Format}) {texture.Name}");
-            SnimGui.TooltipCopy("(?) Click to Copy Path", texture.Path);
-            SnimGui.Layout("Guid");ImGui.Text($" :  {texture.Guid.ToString(EGuidFormats.UniqueObjectGuid)}");
-            SnimGui.Layout("Import");ImGui.Text($" :  {texture.ImportedWidth}x{texture.ImportedHeight}");
-            SnimGui.Layout("Export");ImGui.Text($" :  {texture.Width}x{texture.Height}");
-            ImGui.EndTable();
+            SnimGui.NoFramePaddingOnY(() =>
+            {
+                SnimGui.Layout("Type");ImGui.Text($" :  ({texture.Format}) {texture.Name}");
+                SnimGui.TooltipCopy("(?) Click to Copy Path", texture.Path);
+                SnimGui.Layout("Guid");ImGui.Text($" :  {texture.Guid.ToString(EGuidFormats.UniqueObjectGuid)}");
+                SnimGui.Layout("Import");ImGui.Text($" :  {texture.ImportedWidth}x{texture.ImportedHeight}");
+                SnimGui.Layout("Export");ImGui.Text($" :  {texture.Width}x{texture.Height}");
+                ImGui.EndTable();
+            });
         }
 
         var largest = ImGui.GetContentRegionAvail();

@@ -382,7 +382,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        if (HasSkeleton) Skeleton.SetUniform(shader, deltaSeconds, outline);
+        if (HasSkeleton) Skeleton.SetUniform(shader, deltaSeconds, !outline);
         if (!outline)
         {
             shader.SetUniform("uUvCount", UvCount);
