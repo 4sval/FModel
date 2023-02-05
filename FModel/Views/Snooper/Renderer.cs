@@ -110,7 +110,7 @@ public class Renderer : IDisposable
         Options.SetupModelsAndLights();
     }
 
-    public void Render()
+    public void Render(float deltaSeconds)
     {
         var viewMatrix = CameraOp.GetViewMatrix();
         var projMatrix = CameraOp.GetProjectionMatrix();
@@ -127,7 +127,7 @@ public class Renderer : IDisposable
         {
             model.UpdateMatrices(Options);
             if (!model.Show) continue;
-            model.Render(_shader);
+            model.Render(deltaSeconds, _shader);
         }
 
         {   // light pass
@@ -147,7 +147,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(out var selected) && selected.Show)
         {
             _outline.Render(viewMatrix, CameraOp.Position, projMatrix);
-            selected.Render(_outline, true);
+            selected.Render(deltaSeconds, _outline, true);
         }
 
         // picking pass (dedicated FBO, binding to 0 afterward)

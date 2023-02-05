@@ -116,14 +116,16 @@ public class Snooper : GameWindow
         if (!IsVisible)
             return;
 
+        var delta = (float) args.Time;
+
         ClearWhatHasBeenDrawn(); // clear window background
-        _gui.Controller.Update(this, (float)args.Time);
+        _gui.Controller.Update(this, delta);
         _gui.Render(this);
 
         Framebuffer.Bind(); // switch to viewport background
         ClearWhatHasBeenDrawn(); // clear viewport background
 
-        Renderer.Render();
+        Renderer.Render(delta);
 
         Framebuffer.BindMsaa();
         Framebuffer.Bind(0); // switch to window background

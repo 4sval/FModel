@@ -129,16 +129,15 @@ public class Model : IDisposable
         for (int i = 0; i < Sockets.Length; i++)
         {
             if (export.Sockets[i].Load<UStaticMeshSocket>() is not { } socket) continue;
-            Sockets[i] = new Socket(socket, Transforms[0]);
+            Sockets[i] = new Socket(socket);
         }
     }
 
     public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh) : this(export, skeletalMesh, Transform.Identity) {}
     private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, skeletalMesh.LODs, transform)
     {
-        var t = Transforms[0];
         Box = skeletalMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
-        Skeleton = new Skeleton(export.Skeleton, export.ReferenceSkeleton, t);
+        Skeleton = new Skeleton(export.Skeleton, export.ReferenceSkeleton);
 
         var sockets = new List<FPackageIndex>();
         sockets.AddRange(export.Sockets);
@@ -148,12 +147,7 @@ public class Model : IDisposable
         for (int i = 0; i < Sockets.Length; i++)
         {
             if (sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
-
-            if (!Skeleton.BonesIndexByLoweredName.TryGetValue(socket.BoneName.Text, out var boneIndex) ||
-                !Skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
-                boneTransform = t;
-
-            Sockets[i] = new Socket(socket, boneTransform);
+            Sockets[i] = new Socket(socket);
         }
 
         Morphs = new Morph[export.MorphTargets.Length];
@@ -254,40 +248,40 @@ public class Model : IDisposable
 
     public void UpdateMatrices(Options options)
     {
-        UpdateMatrices();
+        var worldMatrix = UpdateMatrices();
         foreach (var socket in Sockets)
         {
+            var boneMatrix = Matrix4x4.Identity;
+            if (HasSkeleton && Skeleton.BonesIndexByLoweredName.TryGetValue(socket.BoneName.Text.ToLower(), out var boneIndex))
+            {
+                if (Skeleton.Anim?.TrackIndexByBoneIndex.TryGetValue(boneIndex, out var trackIndex) ?? false)
+                    boneMatrix = Skeleton.Anim.InterpolateBoneTransform(trackIndex);
+                else if (Skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
+                    boneMatrix = boneTransform.Matrix;
+            }
+
+            var socketRelation = boneMatrix * worldMatrix;
             foreach (var attached in socket.AttachedModels)
             {
                 if (!options.TryGetModel(attached, out var attachedModel))
                     continue;
 
-                attachedModel.Transforms[attachedModel.SelectedInstance].Relation = socket.Transform.Matrix;
-                attachedModel.UpdateMatrices();
+                attachedModel.Transforms[attachedModel.SelectedInstance].Relation = socket.Transform.Matrix * socketRelation;
+                attachedModel.UpdateMatrices(options);
             }
         }
     }
-    private void UpdateMatrices()
+    private Matrix4x4 UpdateMatrices()
     {
         var matrix = Transforms[SelectedInstance].Matrix;
-        if (matrix == _previousMatrix) return;
+        if (matrix == _previousMatrix) return matrix;
 
         _matrixVbo.Bind();
         _matrixVbo.Update(SelectedInstance, matrix);
         _matrixVbo.Unbind();
 
-        if (HasSkeleton) Skeleton.UpdateBoneMatrices(matrix);
-        foreach (var socket in Sockets)
-        {
-            if (!HasSkeleton ||
-                !Skeleton.BonesIndexByLoweredName.TryGetValue(socket.BoneName.Text, out var boneIndex) ||
-                !Skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
-                boneTransform = Transforms[SelectedInstance];
-
-            socket.UpdateSocketMatrix(boneTransform.Matrix);
-        }
-
         _previousMatrix = matrix;
+        return matrix;
     }
 
     public void UpdateMorph(int index)
@@ -376,7 +370,7 @@ public class Model : IDisposable
         IsSetup = true;
     }
 
-    public void Render(Shader shader, bool outline = false)
+    public void Render(float deltaSeconds, Shader shader, bool outline = false)
     {
         if (outline) GL.Disable(EnableCap.DepthTest);
         if (TwoSided) GL.Disable(EnableCap.CullFace);
@@ -388,7 +382,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        if (HasSkeleton) Skeleton.SetUniform(shader);
+        if (HasSkeleton) Skeleton.SetUniform(deltaSeconds, outline, shader);
         if (!outline)
         {
             shader.SetUniform("uUvCount", UvCount);

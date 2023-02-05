@@ -446,12 +446,6 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 Layout("Guid");ImGui.Text($"  :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
                 if (model.HasSkeleton)
                 {
-                    if (model.Skeleton.Anim != null)
-                    {
-                        ImGui.BeginDisabled(model.Skeleton.Anim.MaxTime == 0);
-                        ImGui.DragInt("Time", ref model.Skeleton.Anim.CurrentTime, 1, 0, model.Skeleton.Anim.MaxTime);
-                        ImGui.EndDisabled();
-                    }
                     Layout("Skeleton");ImGui.Text($"  :  {model.Skeleton.UnrealSkeleton.Name}");
                     Layout("Bones");ImGui.Text($"  :  x{model.Skeleton.UnrealSkeleton.BoneTree.Length}");
                 }

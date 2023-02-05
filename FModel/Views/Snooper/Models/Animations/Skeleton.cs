@@ -26,7 +26,7 @@ public class Skeleton : IDisposable
         InvertedBonesMatrixByIndex = new Dictionary<int, Matrix4x4>();
     }
 
-    public Skeleton(FPackageIndex package, FReferenceSkeleton referenceSkeleton, Transform transform) : this()
+    public Skeleton(FPackageIndex package, FReferenceSkeleton referenceSkeleton) : this()
     {
         UnrealSkeleton = package.Load<USkeleton>();
         IsLoaded = UnrealSkeleton != null;
@@ -36,17 +36,6 @@ public class Skeleton : IDisposable
         foreach ((var name, var boneIndex) in referenceSkeleton.FinalNameToIndexMap)
             BonesIndexByLoweredName[name.ToLower()] = boneIndex;
 
-        UpdateBoneMatrices(transform.Matrix);
-    }
-
-    public void SetAnimation(CAnimSet anim)
-    {
-        Anim = new Animation(this, anim);
-    }
-
-    public void UpdateBoneMatrices(Matrix4x4 matrix)
-    {
-        if (!IsLoaded) return;
         foreach (var boneIndex in BonesIndexByLoweredName.Values)
         {
             var bone = ReferenceSkeleton.FinalRefBonePose[boneIndex];
@@ -63,7 +52,7 @@ public class Skeleton : IDisposable
             }
 
             if (!BonesTransformByIndex.TryGetValue(parentIndex, out var parentTransform))
-                parentTransform = new Transform { Relation = matrix };
+                parentTransform = new Transform { Relation = Matrix4x4.Identity };
 
             boneTransform.Relation = parentTransform.Matrix;
             Matrix4x4.Invert(boneTransform.Matrix, out var inverted);
@@ -73,31 +62,40 @@ public class Skeleton : IDisposable
         }
     }
 
+    public void SetAnimation(CAnimSet anim)
+    {
+        Anim = new Animation(this, anim);
+    }
+
     public void SetPoseUniform(Shader shader)
     {
         if (!IsLoaded) return;
-        foreach ((var boneIndex, var transform) in BonesTransformByIndex)
+        foreach (var boneIndex in BonesTransformByIndex.Keys)
         {
             if (boneIndex >= Constants.MAX_BONE_UNIFORM)
                 break;
-            shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", InvertedBonesMatrixByIndex[boneIndex] * transform.Matrix);
+            shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", Matrix4x4.Identity);
         }
     }
 
-    public void SetUniform(Shader shader)
+    public void SetUniform(float deltaSeconds, bool outline, Shader shader)
     {
         if (!IsLoaded) return;
         if (Anim == null) SetPoseUniform(shader);
-        else foreach ((var boneName, var trackIndex) in UnrealSkeleton.ReferenceSkeleton.FinalNameToIndexMap)
+        else
         {
-            if (!BonesIndexByLoweredName.TryGetValue(boneName.ToLower(), out var boneIndex))
-                continue;
-            if (!InvertedBonesMatrixByIndex.TryGetValue(boneIndex, out var invertMatrix))
-                throw new ArgumentNullException($"no inverse matrix for bone '{boneIndex}'");
-            if (boneIndex >= Constants.MAX_BONE_UNIFORM)
-                break;
+            if (!outline) Anim.ElapsedTime += deltaSeconds / Anim.TimePerFrame;
+            foreach ((var boneName, var trackIndex) in UnrealSkeleton.ReferenceSkeleton.FinalNameToIndexMap)
+            {
+                if (!BonesIndexByLoweredName.TryGetValue(boneName.ToLower(), out var boneIndex))
+                    continue;
+                if (!InvertedBonesMatrixByIndex.TryGetValue(boneIndex, out var invertMatrix))
+                    throw new ArgumentNullException($"no inverse matrix for bone '{boneIndex}'");
+                if (boneIndex >= Constants.MAX_BONE_UNIFORM)
+                    break;
 
-            shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", invertMatrix * Anim.BoneTransforms[trackIndex][Anim.CurrentTime].Matrix);
+                shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", invertMatrix * Anim.InterpolateBoneTransform(trackIndex));
+            }
         }
     }
 

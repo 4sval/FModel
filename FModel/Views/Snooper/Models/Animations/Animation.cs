@@ -1,44 +1,53 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
-using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.Utils;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
 public class Animation : IDisposable
 {
-    public int CurrentTime;
-    public readonly int MaxTime;
+    public int Frame;
+    public float ElapsedTime;
+    public readonly int MaxFrame;
+    public readonly float FramesPerSecond;
+    public readonly Dictionary<int, int> TrackIndexByBoneIndex;
     public readonly Transform[][] BoneTransforms;
+
+    public float TimePerFrame => 1.0f / FramesPerSecond;
 
     public Animation(Skeleton skeleton, CAnimSet anim)
     {
-        CurrentTime = 0;
+        Frame = 0;
+        ElapsedTime = 0;
+        TrackIndexByBoneIndex = new Dictionary<int, int>();
 
         var sequence = anim.Sequences[0];
-        MaxTime = sequence.NumFrames - 1;
+        MaxFrame = sequence.NumFrames;
+        FramesPerSecond = sequence.Rate;
+
         BoneTransforms = new Transform[skeleton.UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length][];
         for (var trackIndex = 0; trackIndex < BoneTransforms.Length; trackIndex++)
         {
+            BoneTransforms[trackIndex] = new Transform[MaxFrame];
+
             var bone = skeleton.UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo[trackIndex];
             if (!skeleton.BonesIndexByLoweredName.TryGetValue(bone.Name.Text.ToLower(), out var boneIndex))
-            {
-                BoneTransforms[trackIndex] = new Transform[sequence.NumFrames];
                 continue;
-            }
             if (!skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var originalTransform))
                 throw new ArgumentNullException($"no transform for bone '{boneIndex}'");
 
+            TrackIndexByBoneIndex[boneIndex] = trackIndex;
             var boneOrientation = originalTransform.Rotation;
             var bonePosition = originalTransform.Position;
             var boneScale = originalTransform.Scale;
 
-            BoneTransforms[trackIndex] = new Transform[sequence.NumFrames];
             for (var frame = 0; frame < BoneTransforms[trackIndex].Length; frame++)
             {
-                sequence.Tracks[trackIndex].GetBonePosition(frame, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
-                if (CurrentTime < sequence.Tracks[trackIndex].KeyScale.Length)
-                    boneScale = sequence.Tracks[trackIndex].KeyScale[CurrentTime];
+                sequence.Tracks[trackIndex].GetBonePosition(frame, MaxFrame, false, ref bonePosition, ref boneOrientation);
+                if (frame < sequence.Tracks[trackIndex].KeyScale.Length)
+                    boneScale = sequence.Tracks[trackIndex].KeyScale[frame];
 
                 // revert FixRotationKeys
                 if (trackIndex > 0) boneOrientation.Conjugate();
@@ -56,8 +65,14 @@ public class Animation : IDisposable
         }
     }
 
+    public Matrix4x4 InterpolateBoneTransform(int trackIndex)
+    {
+        Frame = ElapsedTime.FloorToInt() % MaxFrame; // interpolate here
+        return BoneTransforms[trackIndex][Frame].Matrix;
+    }
+
     public void Dispose()
     {
-
+        TrackIndexByBoneIndex.Clear();
     }
 }

@@ -32,10 +32,9 @@ void main()
         finalNormal += boneMatrix * bindNormal * weight;
     }
 
-    vec3 pos = vec3(vInstanceMatrix * finalPos);
-    vec3 nor = vec3(transpose(inverse(vInstanceMatrix)) * finalNormal);
+    float scaleFactor = distance(vec3(finalPos), uViewPos) * 0.0025;
+    vec4 nor = transpose(inverse(vInstanceMatrix)) * finalNormal * scaleFactor;
+    finalPos.xyz += nor.xyz;
 
-    float scaleFactor = distance(pos, uViewPos) * 0.0025;
-    vec3 scaleVertex = pos + nor * scaleFactor;
-    gl_Position = uProjection * uView * vec4(scaleVertex, 1.0);
+    gl_Position = uProjection * uView * vInstanceMatrix * finalPos;
 }
