@@ -43,30 +43,28 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Properties);
-                        contextViewModel.CUE4Parse.TabControl.SelectedTab.SaveProperty(false);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Properties | EBulkType.Auto);
                     }
                     break;
                 case "Assets_Save_Textures":
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Textures);
-                        contextViewModel.CUE4Parse.TabControl.SelectedTab.SaveImages(false);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Textures | EBulkType.Auto);
                     }
                     break;
                 case "Assets_Save_Models":
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Meshes);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Meshes | EBulkType.Auto);
                     }
                     break;
                 case "Assets_Save_Animations":
                     foreach (var asset in assetItems)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Animations);
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Animations | EBulkType.Auto);
                     }
                     break;
             }

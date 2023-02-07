@@ -41,7 +41,7 @@ public class ImageCommand : ViewModelCommand<TabItem>
                 ClipboardExtensions.SetImage(contextViewModel.SelectedImage.ImageBuffer, $"{contextViewModel.SelectedImage.ExportName}.png");
                 break;
             case "Save":
-                contextViewModel.SaveImage(false);
+                contextViewModel.SaveImage();
                 break;
         }
     }

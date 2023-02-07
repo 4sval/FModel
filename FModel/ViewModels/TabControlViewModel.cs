@@ -244,7 +244,7 @@ public class TabItem : ViewModel
         {
             var t = new TabImage(name, rnn, img);
             if (bulkTexture)
-                SaveImage(t, true);
+                SaveImage(t);
 
             _images.Add(t);
             SelectedImage ??= t;
@@ -264,7 +264,7 @@ public class TabItem : ViewModel
             Document.Text = text;
 
             if (bulkSave)
-                SaveProperty(true);
+                SaveProperty();
         });
     }
 
@@ -277,25 +277,17 @@ public class TabItem : ViewModel
         });
     }
 
-    public void SaveImages(bool bulkTexture)
+    public void SaveImages()
     {
         switch (_images.Count)
         {
             case 1:
-                SaveImage(bulkTexture);
+                SaveImage();
                 break;
             case > 1:
                 var directory = Path.Combine(UserSettings.Default.TextureDirectory,
                     UserSettings.Default.KeepDirectoryStructure ? Directory : "").Replace('\\', '/');
-
-                if (!bulkTexture)
-                {
-                    var folderBrowser = new VistaFolderBrowserDialog();
-                    if (folderBrowser.ShowDialog() == true)
-                        directory = folderBrowser.SelectedPath;
-                    else return;
-                }
-                else System.IO.Directory.CreateDirectory(directory);
+                System.IO.Directory.CreateDirectory(directory);
 
                 foreach (var image in _images)
                 {
@@ -307,28 +299,15 @@ public class TabItem : ViewModel
         }
     }
 
-    public void SaveImage(bool bulkTexture) => SaveImage(SelectedImage, bulkTexture);
-    private void SaveImage(TabImage image, bool bulkTexture)
+    public void SaveImage() => SaveImage(SelectedImage);
+    private void SaveImage(TabImage image)
     {
         if (image == null) return;
         var fileName = $"{image.ExportName}.png";
         var path = Path.Combine(UserSettings.Default.TextureDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName!).Replace('\\', '/');
 
-        if (!bulkTexture)
-        {
-            var saveFileDialog = new SaveFileDialog
-            {
-                Title = "Save Texture",
-                FileName = fileName,
-                InitialDirectory = UserSettings.Default.TextureDirectory,
-                Filter = "PNG Files (*.png)|*.png|All Files (*.*)|*.*"
-            };
-            var result = saveFileDialog.ShowDialog();
-            if (!result.HasValue || !result.Value) return;
-            path = saveFileDialog.FileName;
-        }
-        else System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
+        System.IO.Directory.CreateDirectory(path.SubstringBeforeLast('/'));
 
         SaveImage(image, path, fileName);
     }
@@ -345,29 +324,13 @@ public class TabItem : ViewModel
         fs.Write(image.ImageBuffer, 0, image.ImageBuffer.Length);
     }
 
-    public void SaveProperty(bool autoSave)
+    public void SaveProperty()
     {
         var fileName = Path.ChangeExtension(Header, ".json");
         var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Directory : "", fileName).Replace('\\', '/');
 
-        if (!autoSave)
-        {
-            var saveFileDialog = new SaveFileDialog
-            {
-                Title = "Save Property",
-                FileName = fileName,
-                InitialDirectory = UserSettings.Default.PropertiesDirectory,
-                Filter = "JSON Files (*.json)|*.json|INI Files (*.ini)|*.ini|XML Files (*.xml)|*.xml|All Files (*.*)|*.*"
-            };
-            var result = saveFileDialog.ShowDialog();
-            if (!result.HasValue || !result.Value) return;
-            directory = saveFileDialog.FileName;
-        }
-        else
-        {
-            System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
-        }
+        System.IO.Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
 
         Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
         SaveCheck(directory, fileName);

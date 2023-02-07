@@ -45,7 +45,7 @@ public abstract class Light : IDisposable
             Scale = light.GetOrDefault("RelativeScale3D", FVector.OneVector)
         };
 
-        Model = Guid.NewGuid();
+        Model = new FGuid((uint) light.GetFullName().GetHashCode());
         Icon = icon;
 
         Color = light.GetOrDefault("LightColor", new FColor(0xFF, 0xFF, 0xFF, 0xFF));

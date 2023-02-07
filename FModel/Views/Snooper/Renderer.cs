@@ -12,6 +12,7 @@ using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Creator;
@@ -176,7 +177,7 @@ public class Renderer : IDisposable
 
     private void LoadSkeletalMesh(USkeletalMesh original)
     {
-        var guid = Guid.NewGuid();
+        var guid = new FGuid((uint) original.GetFullName().GetHashCode());
         if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
 
         Options.Models[guid] = new Model(original, mesh);
