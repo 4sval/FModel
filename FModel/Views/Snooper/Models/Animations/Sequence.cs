@@ -1,25 +1,37 @@
 ﻿using System;
 using CUE4Parse_Conversion.Animations;
+using CUE4Parse.Utils;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
 public class Sequence : IDisposable
 {
     public int Frame;
+    public float ElapsedTime;
     public readonly string Name;
     public readonly int MaxFrame;
     public readonly float FramesPerSecond;
+    public readonly float StartPos;
+    public readonly float AnimStartTime;
+    public readonly float AnimEndTime;
+    public readonly int LoopingCount;
 
     public float TimePerFrame => 1.0f / FramesPerSecond;
+    public float EndPos => AnimEndTime / TimePerFrame;
 
     public readonly Transform[][] BonesTransform;
 
     public Sequence(CAnimSequence sequence, Skeleton skeleton, bool rotationOnly)
     {
         Frame = 0;
+        ElapsedTime = 0.0f;
         Name = sequence.Name;
-        MaxFrame = sequence.NumFrames;
+        MaxFrame = sequence.NumFrames - 1;
         FramesPerSecond = sequence.Rate;
+        StartPos = sequence.StartPos;
+        AnimStartTime = sequence.AnimStartTime;
+        AnimEndTime = sequence.AnimEndTime;
+        LoopingCount = sequence.LoopingCount;
 
         BonesTransform = new Transform[skeleton.BonesTransformByIndex.Count][];
         for (int trackIndex = 0; trackIndex < skeleton.UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length; trackIndex++)
@@ -30,14 +42,14 @@ public class Sequence : IDisposable
 
             var originalTransform = skeleton.BonesTransformByIndex[boneIndices.Index];
 
-            BonesTransform[boneIndices.Index] = new Transform[MaxFrame];
+            BonesTransform[boneIndices.Index] = new Transform[sequence.NumFrames];
             for (int frame = 0; frame < BonesTransform[boneIndices.Index].Length; frame++)
             {
                 var boneOrientation = originalTransform.Rotation;
                 var bonePosition = originalTransform.Position;
                 var boneScale = originalTransform.Scale;
 
-                sequence.Tracks[trackIndex].GetBonePosition(frame, MaxFrame, false, ref bonePosition, ref boneOrientation);
+                sequence.Tracks[trackIndex].GetBonePosition(frame, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
                 if (frame < sequence.Tracks[trackIndex].KeyScale.Length)
                     boneScale = sequence.Tracks[trackIndex].KeyScale[frame];
 
@@ -67,6 +79,12 @@ public class Sequence : IDisposable
                 };
             }
         }
+    }
+
+    public void Update(float deltaSeconds)
+    {
+        ElapsedTime += deltaSeconds / TimePerFrame;
+        Frame = Math.Min(ElapsedTime.FloorToInt(), MaxFrame);
     }
 
     public void Dispose()

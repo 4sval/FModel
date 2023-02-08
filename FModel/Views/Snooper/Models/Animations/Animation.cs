@@ -1,22 +1,18 @@
 using System;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
-using CUE4Parse.Utils;
 using ImGuiNET;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
 public class Animation : IDisposable
 {
-    public float ElapsedTime;
-
     public int CurrentSequence;
     public readonly Sequence[] Sequences;
     public int SequencesCount => Sequences.Length;
 
     public Animation()
     {
-        ElapsedTime = 0;
         Sequences = Array.Empty<Sequence>();
     }
 
@@ -31,8 +27,7 @@ public class Animation : IDisposable
 
     public void Update(float deltaSeconds)
     {
-        ElapsedTime += deltaSeconds / Sequences[CurrentSequence].TimePerFrame;
-        Sequences[CurrentSequence].Frame = ElapsedTime.FloorToInt() % Sequences[CurrentSequence].MaxFrame;
+        Sequences[CurrentSequence].Update(deltaSeconds);
     }
 
     public Matrix4x4 InterpolateBoneTransform(int trackIndex)
@@ -41,11 +36,24 @@ public class Animation : IDisposable
         return Sequences[CurrentSequence].BonesTransform[trackIndex][Sequences[CurrentSequence].Frame].Matrix;
     }
 
+    public void CheckForNextSequence()
+    {
+        if (Sequences[CurrentSequence].ElapsedTime > Sequences[CurrentSequence].EndPos)
+        {
+            Sequences[CurrentSequence].ElapsedTime = 0;
+            Sequences[CurrentSequence].Frame = 0;
+            CurrentSequence++;
+        }
+
+        if (CurrentSequence >= SequencesCount)
+        {
+            CurrentSequence = 0;
+        }
+    }
+
     public void ImGuiTimeline()
     {
-        ImGui.BeginDisabled(SequencesCount < 2);
-        ImGui.DragInt("Sequence", ref CurrentSequence, 1, 0, Sequences.Length - 1, Sequences[CurrentSequence].Name);
-        ImGui.EndDisabled();
+        ImGui.Text($"{Sequences[CurrentSequence].Name} > {(CurrentSequence < SequencesCount - 1 ? Sequences[CurrentSequence + 1].Name : Sequences[0].Name)}");
         ImGui.Text($"Frame: {Sequences[CurrentSequence].Frame}/{Sequences[CurrentSequence].MaxFrame}");
         ImGui.Text($"FPS: {Sequences[CurrentSequence].FramesPerSecond}");
     }

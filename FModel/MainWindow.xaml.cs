@@ -81,9 +81,9 @@ public partial class MainWindow
         await _threadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.Extract(cancellationToken,
                 "MoonMan/Content/DeliverUsTheMoon/Characters/Astronaut/AM_ControllingASE.uasset"));
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "Hk_project/Content/Animation/CAT/Jump/CAT_JUMP_L050_H-050.uasset"));
+        await _threadWorkerView.Begin(cancellationToken =>
+            _applicationView.CUE4Parse.Extract(cancellationToken,
+                "MoonMan/Content/DeliverUsTheMoon/Characters/Astronaut/AM_OxygenHub_Enter.uasset"));
 #endif
     }
 

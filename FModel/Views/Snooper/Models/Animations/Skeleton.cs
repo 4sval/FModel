@@ -108,6 +108,7 @@ public class Skeleton : IDisposable
 
                 shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", invertMatrix * Anim.InterpolateBoneTransform(boneIndex));
             }
+            if (update) Anim.CheckForNextSequence();
         }
     }
 
