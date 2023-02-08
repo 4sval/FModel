@@ -90,13 +90,20 @@ public class Renderer : IDisposable
         Options.SwapMaterial(false);
     }
 
-    public void Animate(UAnimSequence animSequence)
+    public void Animate(UObject anim)
     {
-        if (!Options.TryGetModel(out var model) || !model.Skeleton.IsLoaded ||
-            model.Skeleton?.UnrealSkeleton.ConvertAnims(animSequence) is not { } anim || anim.Sequences.Count == 0)
+        if (!Options.TryGetModel(out var model) || !model.Skeleton.IsLoaded)
             return;
 
-        model.Skeleton.SetAnimation(anim, AnimateWithRotationOnly);
+        switch (anim)
+        {
+            case UAnimSequence animSequence:
+                model.Skeleton.SetAnimation(model.Skeleton.UnrealSkeleton.ConvertAnims(animSequence), AnimateWithRotationOnly);
+                break;
+            case UAnimMontage animMontage:
+                model.Skeleton.SetAnimation(model.Skeleton.UnrealSkeleton.ConvertAnims(animMontage), AnimateWithRotationOnly);
+                break;
+        }
         Options.AnimateMesh(false);
     }
 

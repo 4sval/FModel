@@ -816,9 +816,10 @@ public class CUE4ParseViewModel : ViewModel
                 SnooperViewer.Run();
                 return true;
             }
-            case UAnimSequence a when isNone && ModelIsWaitingAnimation:
+            case UAnimSequence when isNone && ModelIsWaitingAnimation:
+            case UAnimMontage when isNone && ModelIsWaitingAnimation:
             {
-                SnooperViewer.Renderer.Animate(a);
+                SnooperViewer.Renderer.Animate(export);
                 SnooperViewer.Run();
                 return true;
             }

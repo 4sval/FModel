@@ -75,15 +75,15 @@ public partial class MainWindow
             _discordHandler.Initialize(_applicationView.CUE4Parse.Game);
 
 #if DEBUG
+        await _threadWorkerView.Begin(cancellationToken =>
+            _applicationView.CUE4Parse.Extract(cancellationToken,
+                "MoonMan/Content/DeliverUsTheMoon/Characters/Astronaut/SK_Astronaut.uasset"));
+        await _threadWorkerView.Begin(cancellationToken =>
+            _applicationView.CUE4Parse.Extract(cancellationToken,
+                "MoonMan/Content/DeliverUsTheMoon/Characters/Astronaut/AM_ControllingASE.uasset"));
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "FortniteGame/Content/Characters/Player/Female/Medium/Bodies/F_MED_RoseDust/Meshes/F_MED_RoseDust.uasset"));
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "fortnitegame/Content/Accessories/FORT_Backpacks/Backpack_M_MED_Despair/Meshes/M_MED_Despair_Pack.uasset"));
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "FortniteGame/Content/Animation/Game/MainPlayer/Emotes/Acrobatic_Superhero/Emote_AcrobaticSuperhero_CMM.uasset"));
+        //         "Hk_project/Content/Animation/CAT/Jump/CAT_JUMP_L050_H-050.uasset"));
 #endif
     }
 

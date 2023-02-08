@@ -252,11 +252,11 @@ public class Model : IDisposable
         foreach (var socket in Sockets)
         {
             var boneMatrix = Matrix4x4.Identity;
-            if (HasSkeleton && Skeleton.BonesIndexByLoweredName.TryGetValue(socket.BoneName.Text.ToLower(), out var boneIndex))
+            if (HasSkeleton && Skeleton.BonesIndicesByLoweredName.TryGetValue(socket.BoneName.Text.ToLower(), out var boneIndices))
             {
-                if (Skeleton.Anim?.TrackIndexByBoneIndex.TryGetValue(boneIndex, out var trackIndex) ?? false)
-                    boneMatrix = Skeleton.Anim.InterpolateBoneTransform(trackIndex);
-                else if (Skeleton.BonesTransformByIndex.TryGetValue(boneIndex, out var boneTransform))
+                if (Skeleton.HasAnim)
+                    boneMatrix = Skeleton.Anim.InterpolateBoneTransform(boneIndices.Index);
+                else if (Skeleton.BonesTransformByIndex.TryGetValue(boneIndices.Index, out var boneTransform))
                     boneMatrix = boneTransform.Matrix;
             }
 
