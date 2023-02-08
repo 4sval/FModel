@@ -7,14 +7,15 @@ layout (location = 8) in vec4 vBoneWeights;
 layout (location = 9) in mat4 vInstanceMatrix;
 layout (location = 13) in vec3 vMorphTargetPos;
 
+layout(std430, binding = 1) buffer BoneMatrices
+{
+    mat4 uFinalBonesMatrix[];
+};
+
 uniform mat4 uView;
 uniform vec3 uViewPos;
 uniform mat4 uProjection;
 uniform float uMorphTime;
-layout(std430, binding = 1) buffer layoutName
-{
-    mat4 uFinalBonesMatrix[];
-};
 
 void main()
 {
@@ -34,7 +35,7 @@ void main()
             float weight = vBoneWeights[i];
 
             finalPos += boneMatrix * bindPos * weight;
-            finalNormal += boneMatrix * bindNormal * weight;
+            finalNormal += transpose(inverse(boneMatrix)) * bindNormal * weight;
         }
     }
     else
@@ -43,9 +44,10 @@ void main()
         finalNormal = bindNormal;
     }
 
+    finalPos = vInstanceMatrix * finalPos;
     float scaleFactor = distance(vec3(finalPos), uViewPos) * 0.0025;
     vec4 nor = transpose(inverse(vInstanceMatrix)) * finalNormal * scaleFactor;
     finalPos.xyz += nor.xyz;
 
-    gl_Position = uProjection * uView * vInstanceMatrix * finalPos;
+    gl_Position = uProjection * uView * finalPos;
 }

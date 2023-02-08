@@ -12,13 +12,14 @@ layout (location = 9) in mat4 vInstanceMatrix;
 layout (location = 13) in vec3 vMorphTargetPos;
 layout (location = 14) in vec3 vMorphTargetTangent;
 
-uniform mat4 uView;
-uniform mat4 uProjection;
-uniform float uMorphTime;
-layout(std430, binding = 1) buffer layoutName
+layout(std430, binding = 1) buffer BoneMatrices
 {
     mat4 uFinalBonesMatrix[];
 };
+
+uniform mat4 uView;
+uniform mat4 uProjection;
+uniform float uMorphTime;
 
 out vec3 fPos;
 out vec3 fNormal;
@@ -44,11 +45,12 @@ void main()
             if(boneIndex < 0) break;
 
             mat4 boneMatrix = uFinalBonesMatrix[boneIndex];
+            mat4 inverseBoneMatrix = transpose(inverse(boneMatrix));
             float weight = vBoneWeights[i];
 
             finalPos += boneMatrix * bindPos * weight;
-            finalNormal += boneMatrix * bindNormal * weight;
-            finalTangent += boneMatrix * bindTangent * weight;
+            finalNormal += inverseBoneMatrix * bindNormal * weight;
+            finalTangent += inverseBoneMatrix * bindTangent * weight;
         }
     }
     else

@@ -94,7 +94,7 @@ public class Skeleton : IDisposable
     public void Setup()
     {
         _handle = GL.CreateProgram();
-        _ssbo = new BufferObject<Matrix4x4>(InvertedBonesMatrixByIndex, BufferTarget.ShaderStorageBuffer);
+        _ssbo = new BufferObject<Matrix4x4>(InvertedBonesMatrixByIndex.Length, BufferTarget.ShaderStorageBuffer);
     }
 
     public void Render(float deltaSeconds = 0f, bool update = false)
@@ -105,7 +105,7 @@ public class Skeleton : IDisposable
 
         if (!HasAnim)
         {
-            foreach (var boneIndex in BonesTransformByIndex.Keys)
+            for (int boneIndex = 0; boneIndex < InvertedBonesMatrixByIndex.Length; boneIndex++)
             {
                 _ssbo.Update(boneIndex, Matrix4x4.Identity);
             }
@@ -113,7 +113,7 @@ public class Skeleton : IDisposable
         else
         {
             if (update) Anim.Update(deltaSeconds);
-            foreach (var boneIndex in BonesTransformByIndex.Keys)
+            for (int boneIndex = 0; boneIndex < InvertedBonesMatrixByIndex.Length; boneIndex++)
             {
                 _ssbo.Update(boneIndex, InvertedBonesMatrixByIndex[boneIndex] * Anim.InterpolateBoneTransform(boneIndex));
             }
@@ -129,6 +129,7 @@ public class Skeleton : IDisposable
         BonesTransformByIndex.Clear();
         Anim?.Dispose();
 
+        _ssbo?.Dispose();
         GL.DeleteProgram(_handle);
     }
 }

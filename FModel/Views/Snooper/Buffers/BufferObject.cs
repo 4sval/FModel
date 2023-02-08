@@ -21,6 +21,11 @@ public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
         GL.BufferData(bufferTarget, data.Length * sizeof(TDataType), data, BufferUsageHint.StaticDraw);
     }
 
+    public unsafe BufferObject(int length, BufferTarget bufferTarget) : this(bufferTarget)
+    {
+        GL.BufferData(bufferTarget, length * sizeof(TDataType), IntPtr.Zero, BufferUsageHint.StaticDraw);
+    }
+
     public unsafe void Update(int offset, TDataType data)
     {
         GL.BufferSubData(_bufferTarget,  (IntPtr) (offset * sizeof(TDataType)), sizeof(TDataType), ref data);

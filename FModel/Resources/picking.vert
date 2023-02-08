@@ -6,13 +6,14 @@ layout (location = 8) in vec4 vBoneWeights;
 layout (location = 9) in mat4 vInstanceMatrix;
 layout (location = 13) in vec3 vMorphTargetPos;
 
-uniform mat4 uView;
-uniform mat4 uProjection;
-uniform float uMorphTime;
-layout(std430, binding = 1) buffer layoutName
+layout(std430, binding = 1) buffer BoneMatrices
 {
     mat4 uFinalBonesMatrix[];
 };
+
+uniform mat4 uView;
+uniform mat4 uProjection;
+uniform float uMorphTime;
 
 void main()
 {
@@ -26,16 +27,10 @@ void main()
             int boneIndex = int(vBoneIds[i]);
             if(boneIndex < 0) break;
 
-            mat4 boneMatrix = uFinalBonesMatrix[boneIndex];
-            float weight = vBoneWeights[i];
-
-            finalPos += boneMatrix * bindPos * weight;
+            finalPos += uFinalBonesMatrix[boneIndex] * bindPos * vBoneWeights[i];
         }
     }
-    else
-    {
-        finalPos = bindPos;
-    }
+    else finalPos = bindPos;
 
     gl_Position = uProjection * uView * vInstanceMatrix * finalPos;
 }
