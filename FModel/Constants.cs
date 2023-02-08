@@ -11,7 +11,6 @@ public static class Constants
 
     public const float SCALE_DOWN_RATIO = 0.01F;
     public const int SAMPLES_COUNT = 4;
-    public const int MAX_BONE_UNIFORM = 250;
 
     public const string WHITE = "#DAE5F2";
     public const string GRAY = "#BBBBBB";

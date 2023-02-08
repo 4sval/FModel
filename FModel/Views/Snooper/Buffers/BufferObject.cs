@@ -36,6 +36,13 @@ public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
         GL.BindBuffer(_bufferTarget, _handle);
     }
 
+    public void BindBufferBase(int index)
+    {
+        if (_bufferTarget != BufferTarget.ShaderStorageBuffer)
+            throw new ArgumentException("BindBufferBase is not allowed for anything but Shader Storage Buffers");
+        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, index, _handle);
+    }
+
     public void Unbind()
     {
         GL.BindBuffer(_bufferTarget, 0);

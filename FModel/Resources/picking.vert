@@ -9,7 +9,10 @@ layout (location = 13) in vec3 vMorphTargetPos;
 uniform mat4 uView;
 uniform mat4 uProjection;
 uniform float uMorphTime;
-uniform mat4 uFinalBonesMatrix[250];
+layout(std430, binding = 1) buffer layoutName
+{
+    mat4 uFinalBonesMatrix[];
+};
 
 void main()
 {

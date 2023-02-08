@@ -348,6 +348,7 @@ public class Model : IDisposable
             Materials[i].Setup(options, broken ? 1 : UvCount);
         }
 
+        if (HasSkeleton) Skeleton.Setup();
         if (HasMorphTargets)
         {
             for (uint morph = 0; morph < Morphs.Length; morph++)
@@ -382,7 +383,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        if (HasSkeleton) Skeleton.SetUniform(shader, deltaSeconds, !outline);
+        if (HasSkeleton) Skeleton.Render(deltaSeconds, !outline);
         if (!outline)
         {
             shader.SetUniform("uUvCount", UvCount);
@@ -413,7 +414,7 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        if (HasSkeleton) Skeleton.SetUniform(shader);
+        if (HasSkeleton) Skeleton.Render();
 
         foreach (var section in Sections)
         {

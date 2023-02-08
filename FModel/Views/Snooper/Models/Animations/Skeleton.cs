@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.UObject;
+using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Shading;
+using OpenTK.Graphics.OpenGL4;
 using Serilog;
 
 namespace FModel.Views.Snooper.Models.Animations;
@@ -17,12 +20,15 @@ public struct BoneIndice
 
 public class Skeleton : IDisposable
 {
+    private int _handle;
+    private BufferObject<Matrix4x4> _ssbo;
+
     public readonly USkeleton UnrealSkeleton;
     public readonly bool IsLoaded;
 
     public readonly Dictionary<string, BoneIndice> BonesIndicesByLoweredName;
     public readonly Dictionary<int, Transform> BonesTransformByIndex;
-    public readonly Dictionary<int, Matrix4x4> InvertedBonesMatrixByIndex;
+    public readonly Matrix4x4[] InvertedBonesMatrixByIndex;
 
     public Animation Anim;
     public bool HasAnim => Anim != null;
@@ -31,7 +37,7 @@ public class Skeleton : IDisposable
     {
         BonesIndicesByLoweredName = new Dictionary<string, BoneIndice>();
         BonesTransformByIndex = new Dictionary<int, Transform>();
-        InvertedBonesMatrixByIndex = new Dictionary<int, Matrix4x4>();
+        InvertedBonesMatrixByIndex = Array.Empty<Matrix4x4>();
     }
 
     public Skeleton(FPackageIndex package, FReferenceSkeleton referenceSkeleton) : this()
@@ -55,6 +61,7 @@ public class Skeleton : IDisposable
         }
 #endif
 
+        InvertedBonesMatrixByIndex = new Matrix4x4[BonesIndicesByLoweredName.Count];
         foreach (var boneIndices in BonesIndicesByLoweredName.Values)
         {
             var bone = referenceSkeleton.FinalRefBonePose[boneIndices.Index];
@@ -84,16 +91,23 @@ public class Skeleton : IDisposable
         Anim = new Animation(this, anim, rotationOnly);
     }
 
-    public void SetUniform(Shader shader, float deltaSeconds = 0f, bool update = false)
+    public void Setup()
+    {
+        _handle = GL.CreateProgram();
+        _ssbo = new BufferObject<Matrix4x4>(InvertedBonesMatrixByIndex, BufferTarget.ShaderStorageBuffer);
+    }
+
+    public void Render(float deltaSeconds = 0f, bool update = false)
     {
         if (!IsLoaded) return;
+
+        _ssbo.BindBufferBase(1);
+
         if (!HasAnim)
         {
             foreach (var boneIndex in BonesTransformByIndex.Keys)
             {
-                if (boneIndex >= Constants.MAX_BONE_UNIFORM)
-                    break;
-                shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", Matrix4x4.Identity);
+                _ssbo.Update(boneIndex, Matrix4x4.Identity);
             }
         }
         else
@@ -101,22 +115,20 @@ public class Skeleton : IDisposable
             if (update) Anim.Update(deltaSeconds);
             foreach (var boneIndex in BonesTransformByIndex.Keys)
             {
-                if (boneIndex >= Constants.MAX_BONE_UNIFORM)
-                    break;
-                if (!InvertedBonesMatrixByIndex.TryGetValue(boneIndex, out var invertMatrix))
-                    throw new ArgumentNullException($"no inverse matrix for bone '{boneIndex}'");
-
-                shader.SetUniform($"uFinalBonesMatrix[{boneIndex}]", invertMatrix * Anim.InterpolateBoneTransform(boneIndex));
+                _ssbo.Update(boneIndex, InvertedBonesMatrixByIndex[boneIndex] * Anim.InterpolateBoneTransform(boneIndex));
             }
             if (update) Anim.CheckForNextSequence();
         }
+
+        _ssbo.Unbind();
     }
 
     public void Dispose()
     {
         BonesIndicesByLoweredName.Clear();
         BonesTransformByIndex.Clear();
-        InvertedBonesMatrixByIndex.Clear();
         Anim?.Dispose();
+
+        GL.DeleteProgram(_handle);
     }
 }
