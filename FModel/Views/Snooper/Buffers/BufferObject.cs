@@ -23,7 +23,7 @@ public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
 
     public unsafe BufferObject(int length, BufferTarget bufferTarget) : this(bufferTarget)
     {
-        GL.BufferData(bufferTarget, length * sizeof(TDataType), IntPtr.Zero, BufferUsageHint.StaticDraw);
+        GL.BufferData(bufferTarget, length * sizeof(TDataType), IntPtr.Zero, BufferUsageHint.DynamicDraw);
     }
 
     public unsafe void Update(int offset, TDataType data)

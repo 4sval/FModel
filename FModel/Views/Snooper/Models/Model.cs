@@ -254,10 +254,9 @@ public class Model : IDisposable
             var boneMatrix = Matrix4x4.Identity;
             if (HasSkeleton && Skeleton.BonesIndicesByLoweredName.TryGetValue(socket.BoneName.Text.ToLower(), out var boneIndices))
             {
-                if (Skeleton.HasAnim)
-                    boneMatrix = Skeleton.Anim.InterpolateBoneTransform(boneIndices.Index);
-                else if (Skeleton.BonesTransformByIndex.TryGetValue(boneIndices.Index, out var boneTransform))
-                    boneMatrix = boneTransform.Matrix;
+                boneMatrix = Skeleton.HasAnim
+                    ? Skeleton.Anim.InterpolateBoneTransform(boneIndices.Index)
+                    : Skeleton.BonesTransformByIndex[boneIndices.Index].Matrix;
             }
 
             var socketRelation = boneMatrix * worldMatrix;

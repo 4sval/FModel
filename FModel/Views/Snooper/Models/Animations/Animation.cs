@@ -30,10 +30,10 @@ public class Animation : IDisposable
         Sequences[CurrentSequence].Update(deltaSeconds);
     }
 
-    public Matrix4x4 InterpolateBoneTransform(int trackIndex)
+    public Matrix4x4 InterpolateBoneTransform(int boneIndex)
     {
         // interpolate here
-        return Sequences[CurrentSequence].BonesTransform[trackIndex][Sequences[CurrentSequence].Frame].Matrix;
+        return Sequences[CurrentSequence].BonesTransform[boneIndex][Sequences[CurrentSequence].Frame].Matrix;
     }
 
     public void CheckForNextSequence()

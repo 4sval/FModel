@@ -1,12 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Views.Snooper.Buffers;
-using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
 using Serilog;
 

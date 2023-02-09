@@ -415,6 +415,11 @@ public class Renderer : IDisposable
 
     public void Save()
     {
+        Options.ResetModelsAndLights();
+        Options.SelectModel(Guid.Empty);
+        Options.SwapMaterial(false);
+        Options.AnimateMesh(false);
+
         if (_saveCameraMode) UserSettings.Default.CameraMode = CameraOp.Mode;
         UserSettings.Default.ShowSkybox = ShowSkybox;
         UserSettings.Default.ShowGrid = ShowGrid;

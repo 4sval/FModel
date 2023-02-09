@@ -417,8 +417,10 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     var i = 0;
                     foreach (var socket in model.Sockets)
                     {
+                        var isAttached = socket.AttachedModels.Contains(selectedGuid);
                         ImGui.PushID(i);
-                        switch (socket.AttachedModels.Contains(selectedGuid))
+                        ImGui.BeginDisabled(selectedModel.IsAttached && !isAttached);
+                        switch (isAttached)
                         {
                             case false when ImGui.Button($"Attach to '{socket.Name}'"):
                                 socket.AttachedModels.Add(selectedGuid);
@@ -429,6 +431,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                                 selectedModel.DetachModel(model);
                                 break;
                         }
+                        ImGui.EndDisabled();
                         ImGui.PopID();
                         i++;
                     }
@@ -688,7 +691,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
             var size = new Vector2(largest.X, largest.Y);
             s.Renderer.CameraOp.AspectRatio = size.X / size.Y;
-            ImGui.ImageButton(s.Framebuffer.GetPointer(), size, new Vector2(0, 1), new Vector2(1, 0), 0);
+            ImGui.Image(s.Framebuffer.GetPointer(), size, new Vector2(0, 1), new Vector2(1, 0), Vector4.One);
 
             if (ImGui.IsItemHovered())
             {
