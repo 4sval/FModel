@@ -634,9 +634,9 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     ImGui.TreePop();
                 }
                 ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-                if (ImGui.TreeNode("Switchs"))
+                if (ImGui.TreeNode("Switches"))
                 {
-                    material.ImGuiDictionaries("switchs", material.Parameters.Switchs, true);
+                    material.ImGuiDictionaries("switches", material.Parameters.Switches, true);
                     ImGui.TreePop();
                 }
                 ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
