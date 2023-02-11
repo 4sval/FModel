@@ -336,7 +336,8 @@ public class Material : IDisposable
         return ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left);
     }
 
-    public Vector2[] ImGuiTextureInspector(Texture fallback)
+    private Vector3 _scrolling = new (0.0f, 0.0f, 1.0f);
+    public void ImGuiTextureInspector(Texture fallback)
     {
         var texture = GetSelectedTexture() ?? fallback;
         if (ImGui.BeginTable("texture_inspector", 2, ImGuiTableFlags.SizingStretchProp))
@@ -352,15 +353,54 @@ public class Material : IDisposable
             });
         }
 
-        var largest = ImGui.GetContentRegionAvail();
-        largest.X -= ImGui.GetScrollX();
-        largest.Y -= ImGui.GetScrollY();
+        var io = ImGui.GetIO();
+        var canvasP0 = ImGui.GetCursorScreenPos();
+        var canvasSize = ImGui.GetContentRegionAvail();
+        if (canvasSize.X < 50.0f) canvasSize.X = 50.0f;
+        if (canvasSize.Y < 50.0f) canvasSize.Y = 50.0f;
+        var canvasP1 = new Vector2(canvasP0.X + canvasSize.X, canvasP0.Y + canvasSize.Y);
+        var origin = new Vector2(canvasP0.X + _scrolling.X, canvasP0.Y + _scrolling.Y);
+        var absoluteMiddle = canvasSize / 2.0f;
 
-        var ratio = Math.Min(largest.X / texture.Width, largest.Y / texture.Height);
-        var size = new Vector2(texture.Width * ratio, texture.Height * ratio);
-        var pos = ImGui.GetCursorPos();
-        ImGui.Image(texture.GetPointer(),size, Vector2.Zero, Vector2.One, Vector4.One, new Vector4(1.0f, 1.0f, 1.0f, 0.25f));
-        return new[] { size, pos };
+        ImGui.InvisibleButton("canvas", canvasSize, ImGuiButtonFlags.MouseButtonLeft | ImGuiButtonFlags.MouseButtonRight);
+        if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
+        {
+            _scrolling.X += io.MouseDelta.X;
+            _scrolling.Y += io.MouseDelta.Y;
+        }
+        else if (ImGui.IsItemHovered() && io.MouseWheel != 0.0f)
+        {
+            var zoomFactor = 1.0f + io.MouseWheel * 0.1f;
+            var mousePosCanvas = io.MousePos - origin;
+
+            _scrolling.X -= (mousePosCanvas.X - absoluteMiddle.X) * (zoomFactor - 1);
+            _scrolling.Y -= (mousePosCanvas.Y - absoluteMiddle.Y) * (zoomFactor - 1);
+            _scrolling.Z *= zoomFactor;
+            origin = new Vector2(canvasP0.X + _scrolling.X, canvasP0.Y + _scrolling.Y);
+        }
+
+        var drawList = ImGui.GetWindowDrawList();
+        drawList.AddRectFilled(canvasP0, canvasP1, 0xFF242424);
+        drawList.PushClipRect(canvasP0, canvasP1, true);
+        {
+            var sensitivity = _scrolling.Z * 25.0f;
+            for (float x = _scrolling.X % sensitivity; x < canvasSize.X; x += sensitivity)
+                drawList.AddLine(canvasP0 with { X = canvasP0.X + x }, canvasP1 with { X = canvasP0.X + x }, 0x28C8C8C8);
+            for (float y = _scrolling.Y % sensitivity; y < canvasSize.Y; y += sensitivity)
+                drawList.AddLine(canvasP0 with { Y = canvasP0.Y + y }, canvasP1 with { Y = canvasP0.Y + y }, 0x28C8C8C8);
+        }
+        drawList.PopClipRect();
+
+        drawList.PushClipRect(canvasP0, canvasP1, true);
+        {
+            var relativeMiddle = origin + absoluteMiddle;
+            var ratio = Math.Min(canvasSize.X / texture.Width, canvasSize.Y / texture.Height) * 0.95f * _scrolling.Z;
+            var size = new Vector2(texture.Width, texture.Height) * ratio / 2f;
+
+            drawList.AddImage(texture.GetPointer(), relativeMiddle - size, relativeMiddle + size);
+            drawList.AddRect(relativeMiddle - size, relativeMiddle + size, 0xFFFFFFFF);
+        }
+        drawList.PopClipRect();
     }
 
     private Texture GetSelectedTexture()

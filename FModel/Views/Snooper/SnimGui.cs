@@ -48,7 +48,6 @@ public class SnimGui
     private readonly string _renderer;
     private readonly string _version;
     private bool _ti_open;
-    private bool _ti_overlayUv;
     private bool _viewportFocus;
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
@@ -660,22 +659,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             s.Renderer.Options.TryGetModel(out var model) &&
             s.Renderer.Options.TryGetSection(model, out var section))
         {
-            var vectors = model.Materials[section.MaterialIndex].ImGuiTextureInspector(s.Renderer.Options.Icons["noimage"]);
-            if (_ti_overlayUv)
-            {
-                var size = vectors[0];
-                var drawList = ImGui.GetWindowDrawList();
-                drawList.PushClipRect(size, size, true);
-                ImGui.SetCursorPos(vectors[1]);
-                ImGui.InvisibleButton("canvas", size, ImGuiButtonFlags.MouseButtonLeft | ImGuiButtonFlags.MouseButtonRight);
-                drawList.AddLine(new Vector2(0, 0), size, 255, 2f);
-                drawList.PopClipRect();
-            }
-            Popup(() =>
-            {
-                if (ImGui.MenuItem("Overlay UVs", null, _ti_overlayUv, false))
-                    _ti_overlayUv = !_ti_overlayUv;
-            });
+            model.Materials[section.MaterialIndex].ImGuiTextureInspector(s.Renderer.Options.Icons["noimage"]);
         }
         ImGui.End(); // if window is collapsed
     }
@@ -851,7 +835,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
         io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
-        io.ConfigDockingWithShift = true;
+        // io.ConfigDockingWithShift = true; doesn't work anymore??
 
         style.WindowPadding = new Vector2(4f);
         style.FramePadding = new Vector2(3f);

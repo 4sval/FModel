@@ -52,8 +52,6 @@ public class Model : IDisposable
     private BufferObject<Matrix4x4> _matrixVbo;
     private VertexArrayObject<float, uint> _vao;
 
-    protected int VertexSize => _vertexAttributes.Where(x => x.Enabled).Sum(x => x.Size);
-    protected bool HasVertexColors => _vertexAttributes[(int) EAttribute.Colors].Enabled;
     private readonly List<VertexAttribute> _vertexAttributes = new()
     {
         new VertexAttribute { Size = 1, Enabled = true },   // VertexIndex
@@ -66,6 +64,8 @@ public class Model : IDisposable
         new VertexAttribute { Size = 4, Enabled = false },  // BoneIds
         new VertexAttribute { Size = 4, Enabled = false }   // BoneWeights
     };
+    public int VertexSize => _vertexAttributes.Where(x => x.Enabled).Sum(x => x.Size);
+    public bool HasVertexColors => _vertexAttributes[(int) EAttribute.Colors].Enabled;
     private const int _faceSize = 3;
 
     private readonly UObject _export;
