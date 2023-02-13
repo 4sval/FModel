@@ -15,9 +15,13 @@ public enum AnimSeparatorType
 public class Animation : IDisposable
 {
     public float ElapsedTime;
+    public int Frame;
+    public int FrameInSequence;
+
     public bool IsPaused;
     public readonly int TotalFrames;
-    public readonly float TotalDuration;
+    public readonly int EndFrame;
+    public readonly float MaxElapsedTime;
 
     public int CurrentSequence;
     public readonly Sequence[] Sequences;
@@ -29,7 +33,8 @@ public class Animation : IDisposable
 
         IsPaused = false;
         TotalFrames = 0;
-        TotalDuration = 0.0f;
+        EndFrame = 0;
+        MaxElapsedTime = 0.0f;
         Sequences = Array.Empty<Sequence>();
     }
 
@@ -41,7 +46,8 @@ public class Animation : IDisposable
             Sequences[i] = new Sequence(anim.Sequences[i], skeleton, rotationOnly);
 
             TotalFrames += Sequences[i].MaxFrame;
-            TotalDuration += Sequences[i].Duration;
+            MaxElapsedTime += anim.Sequences[i].NumFrames * Sequences[i].TimePerFrame;
+            EndFrame += (Sequences[i].Duration / Sequences[i].TimePerFrame).FloorToInt();
         }
 
         if (Sequences.Length > 0)
@@ -51,27 +57,48 @@ public class Animation : IDisposable
     public void Update(float deltaSeconds)
     {
         if (IsPaused) return;
-        if (Sequences[CurrentSequence].IsComplete)
+
+        ElapsedTime += deltaSeconds;
+        TimeCalculation();
+    }
+
+    private void TimeCalculation()
+    {
+        CurrentSequence = SequencesCount;
+        for (int i = 0; i < Sequences.Length; i++)
         {
-            Sequences[CurrentSequence].Reset();
-            CurrentSequence++;
+            if (ElapsedTime < Sequences[i].EndTime)
+            {
+                CurrentSequence = i;
+                break;
+            }
         }
         if (CurrentSequence >= SequencesCount)
             Reset();
 
-        ElapsedTime += Sequences[CurrentSequence].Update(deltaSeconds);
+        Frame = Math.Min((ElapsedTime / Sequences[CurrentSequence].TimePerFrame).FloorToInt(), TotalFrames);
+
+        var baseFrame = 0;
+        for (int s = 0; s < CurrentSequence; s++)
+        {
+            baseFrame += Sequences[s].MaxFrame;
+        }
+        FrameInSequence = Math.Min(Frame - baseFrame, Sequences[CurrentSequence].MaxFrame);
     }
 
 
     public Matrix4x4 InterpolateBoneTransform(int boneIndex)
     {
         // interpolate here
-        return Sequences[CurrentSequence].BonesTransform[boneIndex][Sequences[CurrentSequence].Frame].Matrix;
+        return Sequences[CurrentSequence].BonesTransform[boneIndex][FrameInSequence].Matrix;
     }
 
     private void Reset()
     {
         ElapsedTime = 0.0f;
+        Frame = 0;
+        FrameInSequence = 0;
+
         CurrentSequence = 0;
     }
 
@@ -92,7 +119,8 @@ public class Animation : IDisposable
         if (IsPaused && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
         {
             var mousePosCanvas = io.MousePos - canvasP0;
-            ElapsedTime = Math.Clamp(mousePosCanvas.X / canvasSize.X * TotalDuration, 0, TotalDuration);
+            ElapsedTime = Math.Clamp(mousePosCanvas.X / canvasSize.X * MaxElapsedTime, 0, MaxElapsedTime);
+            TimeCalculation();
         }
 
         drawList.AddRectFilled(canvasP0, canvasP1 with { Y = canvasP0.Y + _timeBarHeight }, 0xFF181818);
@@ -108,11 +136,11 @@ public class Animation : IDisposable
 
         for (int i = 0; i < Sequences.Length; i++)
         {
-            Sequences[i].DrawSequence(drawList, canvasP0, ratio, i);
+            Sequences[i].DrawSequence(drawList, canvasP0.X, canvasP0.Y + _timeBarHeight, ratio, i);
         }
 
-        DrawSeparator(drawList, canvasP0, canvasP1, ElapsedTime * ratio.X, AnimSeparatorType.InBetween);
-        DrawSeparator(drawList, canvasP0, canvasP1, TotalDuration * ratio.X, AnimSeparatorType.End);
+        DrawSeparator(drawList, canvasP0, canvasP1, Frame * ratio.X, AnimSeparatorType.InBetween);
+        DrawSeparator(drawList, canvasP0, canvasP1, EndFrame * ratio.X, AnimSeparatorType.End);
 
         // ImGui.Text($"{Sequences[CurrentSequence].Name} > {(CurrentSequence < SequencesCount - 1 ? Sequences[CurrentSequence + 1].Name : Sequences[0].Name)}");
         // ImGui.Text($"Frame: {Sequences[CurrentSequence].Frame}/{Sequences[CurrentSequence].MaxFrame}");
