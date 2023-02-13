@@ -362,7 +362,7 @@ public class Material : IDisposable
         var origin = new Vector2(canvasP0.X + _scrolling.X, canvasP0.Y + _scrolling.Y);
         var absoluteMiddle = canvasSize / 2.0f;
 
-        ImGui.InvisibleButton("texture_inspector_canvas", canvasSize, ImGuiButtonFlags.MouseButtonLeft | ImGuiButtonFlags.MouseButtonRight);
+        ImGui.InvisibleButton("texture_inspector_canvas", canvasSize, ImGuiButtonFlags.MouseButtonLeft);
         if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
         {
             _scrolling.X += io.MouseDelta.X;

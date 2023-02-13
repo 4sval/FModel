@@ -95,29 +95,22 @@ public class Skeleton : IDisposable
         _ssbo = new BufferObject<Matrix4x4>(InvertedBonesMatrixByIndex.Length, BufferTarget.ShaderStorageBuffer);
     }
 
-    public void Render(float deltaSeconds = 0f, bool update = false)
+    public void UpdateMatrices(float deltaSeconds)
     {
         if (!IsLoaded) return;
 
         _ssbo.BindBufferBase(1);
-
         if (!HasAnim)
         {
             for (int boneIndex = 0; boneIndex < InvertedBonesMatrixByIndex.Length; boneIndex++)
-            {
                 _ssbo.Update(boneIndex, Matrix4x4.Identity);
-            }
         }
         else
         {
-            if (update) Anim.Update(deltaSeconds);
+            Anim.Update(deltaSeconds);
             for (int boneIndex = 0; boneIndex < InvertedBonesMatrixByIndex.Length; boneIndex++)
-            {
                 _ssbo.Update(boneIndex, InvertedBonesMatrixByIndex[boneIndex] * Anim.InterpolateBoneTransform(boneIndex));
-            }
-            if (update) Anim.CheckForNextSequence();
         }
-
         _ssbo.Unbind();
     }
 

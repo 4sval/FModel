@@ -71,7 +71,7 @@ public class SnimGui
         DrawDockSpace(s.Size);
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
-        AnimationWindow("Timeline", s.Renderer, (icons, skeleton) => skeleton.Anim.ImGuiTimeline());
+        AnimationWindow("Timeline", s.Renderer, (icons, skeleton) => skeleton.Anim.ImGuiTimeline(Controller.FontSemiBold));
 
         Window("World", () => DrawWorld(s), false);
 
@@ -770,12 +770,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
     private void AnimationWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, Skeleton> content, bool styled = true)
     {
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
         MeshWindow(name, renderer, (icons, model) =>
         {
             if (!model.HasSkeleton) CenteredTextColored(_errorColor, "No Skeleton To Animate");
             else if (!model.Skeleton.HasAnim) CenteredTextColored(_errorColor, "Mesh Not Animated");
             else content(icons, model.Skeleton);
         }, styled);
+        ImGui.PopStyleVar();
     }
 
     private void PopStyleCompact() => ImGui.PopStyleVar(2);

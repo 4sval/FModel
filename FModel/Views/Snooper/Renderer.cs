@@ -135,9 +135,9 @@ public class Renderer : IDisposable
         // render model pass
         foreach (var model in Options.Models.Values)
         {
-            model.UpdateMatrices(Options);
+            model.UpdateMatrices(Options, deltaSeconds, model.Show);
             if (!model.Show) continue;
-            model.Render(deltaSeconds, _shader);
+            model.Render(_shader);
         }
 
         {   // light pass
@@ -157,7 +157,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(out var selected) && selected.Show)
         {
             _outline.Render(viewMatrix, CameraOp.Position, projMatrix);
-            selected.Render(deltaSeconds, _outline, true);
+            selected.Render(_outline, true);
         }
 
         // picking pass (dedicated FBO, binding to 0 afterward)

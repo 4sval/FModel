@@ -80,7 +80,7 @@ public partial class MainWindow
                 "MoonMan/Content/DeliverUsTheMoon/Characters/Astronaut/SK_Astronaut.uasset"));
         await _threadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.Extract(cancellationToken,
-                "MoonMan/Content/DeliverUsTheMoon/Characters/Astronaut/AM_ControllingASE.uasset"));
+                "MoonMan/Content/DeliverUsTheMoon/Characters/Astronaut/cinematic/A_Astro_Space_Breach_Grab2_Success.uasset"));
         await _threadWorkerView.Begin(cancellationToken =>
             _applicationView.CUE4Parse.Extract(cancellationToken,
                 "MoonMan/Content/DeliverUsTheMoon/Characters/Astronaut/AM_OxygenHub_Enter.uasset"));

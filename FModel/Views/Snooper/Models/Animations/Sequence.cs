@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.Utils;
+using ImGuiNET;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
@@ -10,27 +12,27 @@ public class Sequence : IDisposable
     public float ElapsedTime;
     public readonly string Name;
     public readonly int MaxFrame;
-    public readonly float FramesPerSecond;
-    public readonly float StartPos;
-    public readonly float AnimStartTime;
-    public readonly float AnimEndTime;
+    public readonly float TimePerFrame;
+    public readonly float StartTime;
+    public readonly float Duration;
+    public readonly float EndTime;
     public readonly int LoopingCount;
-
-    public float TimePerFrame => 1.0f / FramesPerSecond;
-    public float EndPos => AnimEndTime / TimePerFrame;
 
     public readonly Transform[][] BonesTransform;
 
+    public bool IsComplete => ElapsedTime > Duration;
+    // public bool IsComplete => Frame >= MaxFrame;
+
     public Sequence(CAnimSequence sequence, Skeleton skeleton, bool rotationOnly)
     {
-        Frame = 0;
-        ElapsedTime = 0.0f;
+        Reset();
+
         Name = sequence.Name;
         MaxFrame = sequence.NumFrames - 1;
-        FramesPerSecond = sequence.Rate;
-        StartPos = sequence.StartPos;
-        AnimStartTime = sequence.AnimStartTime;
-        AnimEndTime = sequence.AnimEndTime;
+        TimePerFrame = 1.0f / sequence.Rate;
+        StartTime = sequence.StartPos / TimePerFrame;
+        Duration = sequence.AnimEndTime / TimePerFrame;
+        EndTime = StartTime + Duration;
         LoopingCount = sequence.LoopingCount;
 
         BonesTransform = new Transform[skeleton.BonesTransformByIndex.Count][];
@@ -81,10 +83,29 @@ public class Sequence : IDisposable
         }
     }
 
-    public void Update(float deltaSeconds)
+    public float Update(float deltaSeconds)
     {
-        ElapsedTime += deltaSeconds / TimePerFrame;
+        var delta = deltaSeconds / TimePerFrame;
+        ElapsedTime += delta;
         Frame = Math.Min(ElapsedTime.FloorToInt(), MaxFrame);
+        return delta;
+    }
+
+    public void Reset()
+    {
+        ElapsedTime = 0.0f;
+        Frame = 0;
+    }
+
+
+    private readonly float _height = 20.0f;
+    public void DrawSequence(ImDrawListPtr drawList, Vector2 origin, Vector2 ratio, int index)
+    {
+        var height = _height * (index % 2) + _height;
+        var p1 = new Vector2(origin.X + StartTime * ratio.X, origin.Y + height);
+        var p2 = new Vector2(origin.X + EndTime * ratio.X, origin.Y + height + _height);
+        drawList.AddRectFilled(p1, p2, 0xFF175F17);
+        drawList.AddText(p1 with { X = p1.X + 2.5f }, 0xFF000000, Name);
     }
 
     public void Dispose()

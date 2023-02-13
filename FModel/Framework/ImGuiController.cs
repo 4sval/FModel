@@ -33,9 +33,9 @@ public class ImGuiController : IDisposable
     private int _windowHeight;
     // private string _iniPath;
 
-    private ImFontPtr _normal;
-    private ImFontPtr _bold;
-    private ImFontPtr _semiBold;
+    public ImFontPtr FontNormal;
+    public ImFontPtr FontBold;
+    public ImFontPtr FontSemiBold;
 
     private readonly Vector2 _scaleFactor = Vector2.One;
 
@@ -57,9 +57,9 @@ public class ImGuiController : IDisposable
         // ImGui.LoadIniSettingsFromDisk(_iniPath);
 
         var io = ImGui.GetIO();
-        _normal = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 16);
-        _bold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeuib.ttf", 16);
-        _semiBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\seguisb.ttf", 16);
+        FontNormal = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 16);
+        FontBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeuib.ttf", 16);
+        FontSemiBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\seguisb.ttf", 16);
 
         io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
         io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
@@ -75,13 +75,13 @@ public class ImGuiController : IDisposable
         _frameBegun = true;
     }
 
-    public void Bold() => PushFont(_bold);
-    public void SemiBold() => PushFont(_semiBold);
+    public void Bold() => PushFont(FontBold);
+    public void SemiBold() => PushFont(FontSemiBold);
 
     public void PopFont()
     {
         ImGui.PopFont();
-        PushFont(_normal);
+        PushFont(FontNormal);
     }
 
     private void PushFont(ImFontPtr ptr) => ImGui.PushFont(ptr);

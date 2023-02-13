@@ -246,9 +246,10 @@ public class Model : IDisposable
         Transforms.Add(transform);
     }
 
-    public void UpdateMatrices(Options options)
+    public void UpdateMatrices(Options options, float deltaSeconds = 0f, bool update = false)
     {
         var worldMatrix = UpdateMatrices();
+        if (update && HasSkeleton) Skeleton.UpdateMatrices(deltaSeconds);
         foreach (var socket in Sockets)
         {
             var boneMatrix = Matrix4x4.Identity;
@@ -370,7 +371,7 @@ public class Model : IDisposable
         IsSetup = true;
     }
 
-    public void Render(float deltaSeconds, Shader shader, bool outline = false)
+    public void Render(Shader shader, bool outline = false)
     {
         if (outline) GL.Disable(EnableCap.DepthTest);
         if (TwoSided) GL.Disable(EnableCap.CullFace);
@@ -382,7 +383,6 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        if (HasSkeleton) Skeleton.Render(deltaSeconds, !outline);
         if (!outline)
         {
             shader.SetUniform("uUvCount", UvCount);
@@ -413,7 +413,6 @@ public class Model : IDisposable
 
         _vao.Bind();
         shader.SetUniform("uMorphTime", MorphTime);
-        if (HasSkeleton) Skeleton.Render();
 
         foreach (var section in Sections)
         {
