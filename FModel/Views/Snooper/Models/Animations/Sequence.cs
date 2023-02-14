@@ -34,16 +34,6 @@ public class Sequence : IDisposable
     public Sequence(Skeleton skeleton, CAnimSet anim, CAnimSequence sequence, bool rotationOnly) : this(sequence)
     {
         BonesTransform = new Transform[skeleton.BoneCount][];
-        for (int boneIndex = 0; boneIndex < BonesTransform.Length; boneIndex++)
-        {
-            BonesTransform[boneIndex] = new Transform[sequence.NumFrames];
-            for (int frame = 0; frame < BonesTransform[boneIndex].Length; frame++)
-            {
-                // calculate position for not animated bones based on the parent???
-                BonesTransform[boneIndex][frame] = skeleton.BonesTransformByIndex[boneIndex];
-            }
-        }
-
         for (int trackIndex = 0; trackIndex < anim.TrackBonesInfo.Length; trackIndex++)
         {
             var bone = anim.TrackBonesInfo[trackIndex];
@@ -120,6 +110,25 @@ public class Sequence : IDisposable
                     Rotation = boneOrientation,
                     Position = rotationOnly ? originalTransform.Position : bonePosition,
                     Scale = boneScale
+                };
+            }
+        }
+
+        foreach (var boneIndices in skeleton.BonesIndicesByLoweredName.Values)
+        {
+            if (BonesTransform[boneIndices.Index] != null) continue;
+
+            var old = skeleton.BonesTransformByIndex[boneIndices.Index];
+
+            BonesTransform[boneIndices.Index] = new Transform[sequence.NumFrames];
+            for (int frame = 0; frame < BonesTransform[boneIndices.Index].Length; frame++)
+            {
+                BonesTransform[boneIndices.Index][frame] = new Transform
+                {
+                    Relation = BonesTransform[boneIndices.ParentIndex][frame].Matrix,
+                    Rotation = old.Rotation,
+                    Position = old.Position,
+                    Scale = old.Scale
                 };
             }
         }
