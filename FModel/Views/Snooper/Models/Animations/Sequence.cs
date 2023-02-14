@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
+using CUE4Parse.Utils;
 using ImGuiNET;
 
 namespace FModel.Views.Snooper.Models.Animations;
@@ -13,10 +14,10 @@ public class Sequence : IDisposable
     public readonly float StartTime;
     public readonly float Duration;
     public readonly float EndTime;
+    public readonly int EndFrame;
     public readonly int LoopingCount;
 
-    private readonly float _start;
-    private readonly float _end;
+    public int UsableEndFrame => EndFrame - 1;
 
     public readonly Transform[][] BonesTransform;
 
@@ -28,10 +29,8 @@ public class Sequence : IDisposable
         StartTime = sequence.StartPos;
         Duration = sequence.AnimEndTime;
         EndTime = StartTime + Duration;
+        EndFrame = (Duration / TimePerFrame).FloorToInt();
         LoopingCount = sequence.LoopingCount;
-
-        _start = StartTime / TimePerFrame;
-        _end = EndTime / TimePerFrame;
 
         BonesTransform = new Transform[skeleton.BonesTransformByIndex.Count][];
         for (int trackIndex = 0; trackIndex < skeleton.UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length; trackIndex++)
@@ -83,13 +82,15 @@ public class Sequence : IDisposable
 
 
     private readonly float _height = 20.0f;
-    public void DrawSequence(ImDrawListPtr drawList, float x, float y, Vector2 ratio, int index)
+    public void DrawSequence(ImDrawListPtr drawList, float x, float y, Vector2 ratio, int index, uint col)
     {
         var height = _height * (index % 2);
-        var p1 = new Vector2(x + _start * ratio.X, y + height);
-        var p2 = new Vector2(x + _end * ratio.X, y + height + _height);
-        drawList.AddRectFilled(p1, p2, 0xFF175F17);
+        var p1 = new Vector2(x + StartTime * ratio.X, y + height);
+        var p2 = new Vector2(x + EndTime * ratio.X, y + height + _height);
+        drawList.PushClipRect(p1, p2, true);
+        drawList.AddRectFilled(p1, p2, col);
         drawList.AddText(p1 with { X = p1.X + 2.5f }, 0xFF000000, Name);
+        drawList.PopClipRect();
     }
 
     public void Dispose()

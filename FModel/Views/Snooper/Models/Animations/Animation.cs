@@ -8,20 +8,20 @@ namespace FModel.Views.Snooper.Models.Animations;
 
 public enum AnimSeparatorType
 {
+    Start,
+    Frame,
     InBetween,
     End
 }
 
 public class Animation : IDisposable
 {
-    public float ElapsedTime;
-    public int Frame;
-    public int FrameInSequence;
+    public float ElapsedTime;                       // Animation Elapsed Time
+    public int FrameInSequence;                     // Current Sequence's Frame to Display
 
     public bool IsPaused;
-    public readonly int TotalFrames;
-    public readonly int EndFrame;
-    public readonly float MaxElapsedTime;
+    public readonly float EndTime;                  // Animation End Time
+    public readonly float TotalElapsedTime;         // Animation Max Time
 
     public int CurrentSequence;
     public readonly Sequence[] Sequences;
@@ -32,9 +32,8 @@ public class Animation : IDisposable
         Reset();
 
         IsPaused = false;
-        TotalFrames = 0;
-        EndFrame = 0;
-        MaxElapsedTime = 0.0f;
+        EndTime = 0.0f;
+        TotalElapsedTime = 0.0f;
         Sequences = Array.Empty<Sequence>();
     }
 
@@ -45,9 +44,8 @@ public class Animation : IDisposable
         {
             Sequences[i] = new Sequence(anim.Sequences[i], skeleton, rotationOnly);
 
-            TotalFrames += Sequences[i].MaxFrame;
-            MaxElapsedTime += anim.Sequences[i].NumFrames * Sequences[i].TimePerFrame;
-            EndFrame += (Sequences[i].Duration / Sequences[i].TimePerFrame).FloorToInt();
+            TotalElapsedTime += anim.Sequences[i].NumFrames * Sequences[i].TimePerFrame;
+            EndTime = Sequences[i].EndTime;
         }
 
         if (Sequences.Length > 0)
@@ -62,43 +60,35 @@ public class Animation : IDisposable
         TimeCalculation();
     }
 
-    private void TimeCalculation()
-    {
-        CurrentSequence = SequencesCount;
-        for (int i = 0; i < Sequences.Length; i++)
-        {
-            if (ElapsedTime < Sequences[i].EndTime)
-            {
-                CurrentSequence = i;
-                break;
-            }
-        }
-        if (CurrentSequence >= SequencesCount)
-            Reset();
-
-        Frame = Math.Min((ElapsedTime / Sequences[CurrentSequence].TimePerFrame).FloorToInt(), TotalFrames);
-
-        var baseFrame = 0;
-        for (int s = 0; s < CurrentSequence; s++)
-        {
-            baseFrame += Sequences[s].MaxFrame;
-        }
-        FrameInSequence = Math.Min(Frame - baseFrame, Sequences[CurrentSequence].MaxFrame);
-    }
-
-
     public Matrix4x4 InterpolateBoneTransform(int boneIndex)
     {
         // interpolate here
         return Sequences[CurrentSequence].BonesTransform[boneIndex][FrameInSequence].Matrix;
     }
 
+    private void TimeCalculation()
+    {
+        for (int i = 0; i < Sequences.Length; i++)
+        {
+            if (ElapsedTime < Sequences[i].EndTime && ElapsedTime >= Sequences[i].StartTime)
+            {
+                CurrentSequence = i;
+                break;
+            }
+        }
+        if (ElapsedTime >= TotalElapsedTime) Reset();
+
+        var lastEndTime = 0.0f;
+        for (int s = 0; s < CurrentSequence; s++)
+            lastEndTime = Sequences[s].EndTime;
+
+        FrameInSequence = Math.Min(((ElapsedTime - lastEndTime) / Sequences[CurrentSequence].TimePerFrame).FloorToInt(), Sequences[CurrentSequence].UsableEndFrame);
+    }
+
     private void Reset()
     {
         ElapsedTime = 0.0f;
-        Frame = 0;
         FrameInSequence = 0;
-
         CurrentSequence = 0;
     }
 
@@ -110,7 +100,7 @@ public class Animation : IDisposable
         var canvasP0 = ImGui.GetCursorScreenPos();
         var canvasSize = ImGui.GetContentRegionAvail();
         var canvasP1 = new Vector2(canvasP0.X + canvasSize.X, canvasP0.Y + canvasSize.Y);
-        var ratio = canvasSize / TotalFrames;
+        var timeRatio = canvasSize / TotalElapsedTime;
 
         var drawList = ImGui.GetWindowDrawList();
 
@@ -119,33 +109,28 @@ public class Animation : IDisposable
         if (IsPaused && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
         {
             var mousePosCanvas = io.MousePos - canvasP0;
-            ElapsedTime = Math.Clamp(mousePosCanvas.X / canvasSize.X * MaxElapsedTime, 0, MaxElapsedTime);
+            ElapsedTime = Math.Clamp(mousePosCanvas.X / canvasSize.X * TotalElapsedTime, 0, TotalElapsedTime);
             TimeCalculation();
         }
 
         drawList.AddRectFilled(canvasP0, canvasP1 with { Y = canvasP0.Y + _timeBarHeight }, 0xFF181818);
         drawList.PushClipRect(canvasP0, canvasP1 with { Y = canvasP0.Y + _timeBarHeight }, true);
         {
-            for (float x = 0; x < canvasSize.X; x += ratio.X * 10f)
+            for (float x = 0; x < canvasSize.X; x += timeRatio.X * TotalElapsedTime / canvasSize.X * 50.0f)
             {
                 drawList.AddLine(new Vector2(canvasP0.X + x, canvasP0.Y + _timeHeight + 2.5f), canvasP1 with { X = canvasP0.X + x }, 0xA0FFFFFF);
-                drawList.AddText(fontPtr, 14, new Vector2(canvasP0.X + x + 4, canvasP0.Y + 7.5f), 0x50FFFFFF, (x / ratio.X).FloorToInt().ToString());
+                drawList.AddText(fontPtr, 14, new Vector2(canvasP0.X + x + 4, canvasP0.Y + 7.5f), 0x50FFFFFF, $"{x / timeRatio.X:F1}s");
             }
         }
         drawList.PopClipRect();
 
         for (int i = 0; i < Sequences.Length; i++)
         {
-            Sequences[i].DrawSequence(drawList, canvasP0.X, canvasP0.Y + _timeBarHeight, ratio, i);
+            Sequences[i].DrawSequence(drawList, canvasP0.X, canvasP0.Y + _timeBarHeight, timeRatio, i, i == CurrentSequence ? 0xFF0000FF : 0xFF175F17);
         }
 
-        DrawSeparator(drawList, canvasP0, canvasP1, Frame * ratio.X, AnimSeparatorType.InBetween);
-        DrawSeparator(drawList, canvasP0, canvasP1, EndFrame * ratio.X, AnimSeparatorType.End);
-
-        // ImGui.Text($"{Sequences[CurrentSequence].Name} > {(CurrentSequence < SequencesCount - 1 ? Sequences[CurrentSequence + 1].Name : Sequences[0].Name)}");
-        // ImGui.Text($"Frame: {Sequences[CurrentSequence].Frame}/{Sequences[CurrentSequence].MaxFrame}");
-        // ImGui.Text($"Frame: {Frame}/{TotalFrames}");
-        // ImGui.Text($"FPS: {Sequences[CurrentSequence].FramesPerSecond}");
+        DrawSeparator(drawList, canvasP0, canvasP1, ElapsedTime * timeRatio.X, AnimSeparatorType.Frame);
+        DrawSeparator(drawList, canvasP0, canvasP1, EndTime * timeRatio.X, AnimSeparatorType.End);
     }
 
     private void DrawSeparator(ImDrawListPtr drawList, Vector2 origin, Vector2 destination, float time, AnimSeparatorType separatorType)
@@ -154,7 +139,7 @@ public class Animation : IDisposable
 
         Vector2 p1 = separatorType switch
         {
-            AnimSeparatorType.InBetween => new Vector2(origin.X + time, origin.Y + _timeBarHeight),
+            AnimSeparatorType.Frame => new Vector2(origin.X + time, origin.Y + _timeBarHeight),
             AnimSeparatorType.End => origin with { X = origin.X + time },
             _ => throw new ArgumentOutOfRangeException(nameof(separatorType), separatorType, null)
         };
@@ -162,7 +147,7 @@ public class Animation : IDisposable
 
         uint color = separatorType switch
         {
-            AnimSeparatorType.InBetween => 0xFF6F6F6F,
+            AnimSeparatorType.Frame => 0xFF6F6F6F,
             AnimSeparatorType.End => 0xFF2E3E82,
             _ => throw new ArgumentOutOfRangeException(nameof(separatorType), separatorType, null)
         };
@@ -170,7 +155,7 @@ public class Animation : IDisposable
         drawList.AddLine(p1, p2, color, 1f);
         switch (separatorType)
         {
-            case AnimSeparatorType.InBetween:
+            case AnimSeparatorType.Frame:
                 color = 0xFF30478C;
                 var xl = p1.X - size;
                 var xr = p1.X + size;
