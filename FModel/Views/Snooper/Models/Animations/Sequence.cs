@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
+using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.Utils;
 using ImGuiNET;
 
@@ -9,7 +11,6 @@ namespace FModel.Views.Snooper.Models.Animations;
 public class Sequence : IDisposable
 {
     public readonly string Name;
-    public readonly int MaxFrame;
     public readonly float TimePerFrame;
     public readonly float StartTime;
     public readonly float Duration;
@@ -17,25 +18,35 @@ public class Sequence : IDisposable
     public readonly int EndFrame;
     public readonly int LoopingCount;
 
-    public int UsableEndFrame => EndFrame - 1;
-
     public readonly Transform[][] BonesTransform;
 
-    public Sequence(CAnimSequence sequence, Skeleton skeleton, bool rotationOnly)
+    private Sequence(CAnimSequence sequence)
     {
         Name = sequence.Name;
-        MaxFrame = sequence.NumFrames - 1;
         TimePerFrame = 1.0f / sequence.Rate;
         StartTime = sequence.StartPos;
         Duration = sequence.AnimEndTime;
         EndTime = StartTime + Duration;
-        EndFrame = (Duration / TimePerFrame).FloorToInt();
+        EndFrame = (Duration / TimePerFrame).FloorToInt() - 1;
         LoopingCount = sequence.LoopingCount;
+    }
 
-        BonesTransform = new Transform[skeleton.BonesTransformByIndex.Count][];
-        for (int trackIndex = 0; trackIndex < skeleton.UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length; trackIndex++)
+    public Sequence(Skeleton skeleton, CAnimSet anim, CAnimSequence sequence, bool rotationOnly) : this(sequence)
+    {
+        BonesTransform = new Transform[skeleton.BoneCount][];
+        for (int boneIndex = 0; boneIndex < BonesTransform.Length; boneIndex++)
         {
-            var bone = skeleton.UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo[trackIndex];
+            BonesTransform[boneIndex] = new Transform[sequence.NumFrames];
+            for (int frame = 0; frame < BonesTransform[boneIndex].Length; frame++)
+            {
+                // calculate position for not animated bones based on the parent???
+                BonesTransform[boneIndex][frame] = skeleton.BonesTransformByIndex[boneIndex];
+            }
+        }
+
+        for (int trackIndex = 0; trackIndex < anim.TrackBonesInfo.Length; trackIndex++)
+        {
+            var bone = anim.TrackBonesInfo[trackIndex];
             if (!skeleton.BonesIndicesByLoweredName.TryGetValue(bone.Name.Text.ToLower(), out var boneIndices))
                 continue;
 
@@ -52,22 +63,56 @@ public class Sequence : IDisposable
                 if (frame < sequence.Tracks[trackIndex].KeyScale.Length)
                     boneScale = sequence.Tracks[trackIndex].KeyScale[frame];
 
+                switch (anim.BoneModes[trackIndex])
+                {
+                    case EBoneTranslationRetargetingMode.Skeleton:
+                    {
+                        var targetTransform = sequence.RetargetBasePose?[trackIndex] ?? anim.BonePositions[trackIndex];
+                        bonePosition = targetTransform.Translation;
+                        break;
+                    }
+                    case EBoneTranslationRetargetingMode.AnimationScaled:
+                    {
+                        var sourceTranslationLength = (originalTransform.Position / Constants.SCALE_DOWN_RATIO).Size();
+                        if (sourceTranslationLength > UnrealMath.KindaSmallNumber)
+                        {
+                            var targetTranslationLength = sequence.RetargetBasePose?[trackIndex].Translation.Size() ?? anim.BonePositions[trackIndex].Translation.Size();
+                            bonePosition.Scale(targetTranslationLength / sourceTranslationLength);
+                        }
+                        break;
+                    }
+                    case EBoneTranslationRetargetingMode.AnimationRelative:
+                    {
+                        // https://github.com/EpicGames/UnrealEngine/blob/cdaec5b33ea5d332e51eee4e4866495c90442122/Engine/Source/Runtime/Engine/Private/Animation/AnimationRuntime.cpp#L2586
+                        var refPoseTransform  = sequence.RetargetBasePose?[trackIndex] ?? anim.BonePositions[trackIndex];
+                        break;
+                    }
+                    case EBoneTranslationRetargetingMode.OrientAndScale:
+                    {
+                        var sourceSkelTrans = originalTransform.Position / Constants.SCALE_DOWN_RATIO;
+                        var targetSkelTrans = sequence.RetargetBasePose?[trackIndex].Translation ?? anim.BonePositions[trackIndex].Translation;
+
+                        if (!sourceSkelTrans.Equals(targetSkelTrans))
+                        {
+                            var sourceSkelTransLength = sourceSkelTrans.Size();
+                            var targetSkelTransLength = targetSkelTrans.Size();
+                            if (!UnrealMath.IsNearlyZero(sourceSkelTransLength * targetSkelTransLength))
+                            {
+                                var sourceSkelTransDir = sourceSkelTrans / sourceSkelTransLength;
+                                var targetSkelTransDir = targetSkelTrans / targetSkelTransLength;
+
+                                var deltaRotation = FQuat.FindBetweenNormals(sourceSkelTransDir, targetSkelTransDir);
+                                var scale = targetSkelTransLength / sourceSkelTransLength;
+                                bonePosition = deltaRotation.RotateVector(bonePosition) * scale;
+                            }
+                        }
+                        break;
+                    }
+                }
+
                 // revert FixRotationKeys
                 if (trackIndex > 0) boneOrientation.Conjugate();
-
                 bonePosition *= Constants.SCALE_DOWN_RATIO;
-
-                // switch (boneModes[trackIndex])
-                // {
-                //     case EBoneRetargetingMode.Animation:
-                //     case EBoneRetargetingMode.Mesh:
-                //     case EBoneRetargetingMode.AnimationScaled:
-                //     case EBoneRetargetingMode.AnimationRelative:
-                //     case EBoneRetargetingMode.OrientAndScale:
-                //     case EBoneRetargetingMode.Count:
-                //     default:
-                //         break;
-                // }
 
                 BonesTransform[boneIndices.Index][frame] = new Transform
                 {
@@ -80,6 +125,10 @@ public class Sequence : IDisposable
         }
     }
 
+    public void Dispose()
+    {
+
+    }
 
     private readonly float _height = 20.0f;
     public void DrawSequence(ImDrawListPtr drawList, float x, float y, Vector2 ratio, int index, uint col)
@@ -91,10 +140,5 @@ public class Sequence : IDisposable
         drawList.AddRectFilled(p1, p2, col);
         drawList.AddText(p1 with { X = p1.X + 2.5f }, 0xFF000000, Name);
         drawList.PopClipRect();
-    }
-
-    public void Dispose()
-    {
-        throw new NotImplementedException();
     }
 }

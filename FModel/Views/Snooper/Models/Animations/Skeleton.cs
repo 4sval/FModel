@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Assets.Exports.Animation;
-using CUE4Parse.UE4.Objects.UObject;
 using FModel.Views.Snooper.Buffers;
 using OpenTK.Graphics.OpenGL4;
-using Serilog;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
@@ -21,12 +19,10 @@ public class Skeleton : IDisposable
     private int _handle;
     private BufferObject<Matrix4x4> _ssbo;
 
-    public readonly USkeleton UnrealSkeleton;
-    public readonly bool IsLoaded;
-
+    public string Name;
     public readonly Dictionary<string, BoneIndice> BonesIndicesByLoweredName;
     public readonly Dictionary<int, Transform> BonesTransformByIndex;
-    public readonly Matrix4x4[] InvertedBonesMatrixByIndex;
+    public readonly int BoneCount;
 
     public Animation Anim;
     public bool HasAnim => Anim != null;
@@ -35,31 +31,16 @@ public class Skeleton : IDisposable
     {
         BonesIndicesByLoweredName = new Dictionary<string, BoneIndice>();
         BonesTransformByIndex = new Dictionary<int, Transform>();
-        InvertedBonesMatrixByIndex = Array.Empty<Matrix4x4>();
     }
 
-    public Skeleton(FPackageIndex package, FReferenceSkeleton referenceSkeleton) : this()
+    public Skeleton(FReferenceSkeleton referenceSkeleton) : this()
     {
-        UnrealSkeleton = package.Load<USkeleton>();
-        IsLoaded = UnrealSkeleton != null;
-        if (!IsLoaded) return;
-
         for (int boneIndex = 0; boneIndex < referenceSkeleton.FinalRefBoneInfo.Length; boneIndex++)
         {
             var info = referenceSkeleton.FinalRefBoneInfo[boneIndex];
             BonesIndicesByLoweredName[info.Name.Text.ToLower()] = new BoneIndice { Index = boneIndex, ParentIndex = info.ParentIndex };
         }
 
-#if DEBUG
-        for (int trackIndex = 0; trackIndex < UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length; trackIndex++)
-        {
-            var bone = UnrealSkeleton.ReferenceSkeleton.FinalRefBoneInfo[trackIndex];
-            if (!BonesIndicesByLoweredName.TryGetValue(bone.Name.Text.ToLower(), out _))
-                Log.Warning($"Bone Mismatch: {bone.Name.Text} ({trackIndex}) is not present in the mesh's skeleton");
-        }
-#endif
-
-        InvertedBonesMatrixByIndex = new Matrix4x4[BonesIndicesByLoweredName.Count];
         foreach (var boneIndices in BonesIndicesByLoweredName.Values)
         {
             var bone = referenceSkeleton.FinalRefBonePose[boneIndices.Index];
@@ -77,11 +58,10 @@ public class Skeleton : IDisposable
                 parentTransform = new Transform { Relation = Matrix4x4.Identity };
 
             boneTransform.Relation = parentTransform.Matrix;
-            Matrix4x4.Invert(boneTransform.Matrix, out var inverted);
-
             BonesTransformByIndex[boneIndices.Index] = boneTransform;
-            InvertedBonesMatrixByIndex[boneIndices.Index] = inverted;
         }
+
+        BoneCount = BonesTransformByIndex.Count;
     }
 
     public void SetAnimation(CAnimSet anim, bool rotationOnly)
@@ -92,25 +72,23 @@ public class Skeleton : IDisposable
     public void Setup()
     {
         _handle = GL.CreateProgram();
-        _ssbo = new BufferObject<Matrix4x4>(InvertedBonesMatrixByIndex.Length, BufferTarget.ShaderStorageBuffer);
+
+        _ssbo = new BufferObject<Matrix4x4>(BoneCount, BufferTarget.ShaderStorageBuffer);
+        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
+            _ssbo.Update(boneIndex, Matrix4x4.Identity);
+        _ssbo.BindBufferBase(1);
     }
 
     public void UpdateMatrices(float deltaSeconds)
     {
-        if (!IsLoaded) return;
+        if (!HasAnim) return;
 
         _ssbo.BindBufferBase(1);
-        if (!HasAnim)
-        {
-            for (int boneIndex = 0; boneIndex < InvertedBonesMatrixByIndex.Length; boneIndex++)
-                _ssbo.Update(boneIndex, Matrix4x4.Identity);
-        }
-        else
-        {
-            Anim.Update(deltaSeconds);
-            for (int boneIndex = 0; boneIndex < InvertedBonesMatrixByIndex.Length; boneIndex++)
-                _ssbo.Update(boneIndex, InvertedBonesMatrixByIndex[boneIndex] * Anim.InterpolateBoneTransform(boneIndex));
-        }
+
+        Anim.Update(deltaSeconds);
+        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
+            _ssbo.Update(boneIndex, Anim.InterpolateBoneTransform(boneIndex));
+
         _ssbo.Unbind();
     }
 

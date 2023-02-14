@@ -3,6 +3,7 @@ using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.Utils;
 using ImGuiNET;
+using Serilog;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
@@ -27,6 +28,8 @@ public class Animation : IDisposable
     public readonly Sequence[] Sequences;
     public int SequencesCount => Sequences.Length;
 
+    public readonly Matrix4x4[] InvertedBonesMatrix;
+
     public Animation()
     {
         Reset();
@@ -35,14 +38,31 @@ public class Animation : IDisposable
         EndTime = 0.0f;
         TotalElapsedTime = 0.0f;
         Sequences = Array.Empty<Sequence>();
+        InvertedBonesMatrix = Array.Empty<Matrix4x4>();
     }
 
     public Animation(Skeleton skeleton, CAnimSet anim, bool rotationOnly) : this()
     {
+        InvertedBonesMatrix = new Matrix4x4[skeleton.BoneCount];
+        for (int boneIndex = 0; boneIndex < InvertedBonesMatrix.Length; boneIndex++)
+        {
+            Matrix4x4.Invert(skeleton.BonesTransformByIndex[boneIndex].Matrix, out var inverted);
+            InvertedBonesMatrix[boneIndex] = inverted;
+        }
+
+#if DEBUG
+        for (int trackIndex = 0; trackIndex < anim.TrackBonesInfo.Length; trackIndex++)
+        {
+            var bone = anim.TrackBonesInfo[trackIndex];
+            if (!skeleton.BonesIndicesByLoweredName.TryGetValue(bone.Name.Text.ToLower(), out _))
+                Log.Warning($"Bone Mismatch: {bone.Name.Text} ({trackIndex}) is not present in the mesh's reference skeleton");
+        }
+#endif
+
         Sequences = new Sequence[anim.Sequences.Count];
         for (int i = 0; i < Sequences.Length; i++)
         {
-            Sequences[i] = new Sequence(anim.Sequences[i], skeleton, rotationOnly);
+            Sequences[i] = new Sequence(skeleton, anim, anim.Sequences[i], rotationOnly);
 
             TotalElapsedTime += anim.Sequences[i].NumFrames * Sequences[i].TimePerFrame;
             EndTime = Sequences[i].EndTime;
@@ -63,7 +83,8 @@ public class Animation : IDisposable
     public Matrix4x4 InterpolateBoneTransform(int boneIndex)
     {
         // interpolate here
-        return Sequences[CurrentSequence].BonesTransform[boneIndex][FrameInSequence].Matrix;
+        return InvertedBonesMatrix[boneIndex] *
+               Sequences[CurrentSequence].BonesTransform[boneIndex][FrameInSequence].Matrix;
     }
 
     private void TimeCalculation()
@@ -82,7 +103,7 @@ public class Animation : IDisposable
         for (int s = 0; s < CurrentSequence; s++)
             lastEndTime = Sequences[s].EndTime;
 
-        FrameInSequence = Math.Min(((ElapsedTime - lastEndTime) / Sequences[CurrentSequence].TimePerFrame).FloorToInt(), Sequences[CurrentSequence].UsableEndFrame);
+        FrameInSequence = Math.Min(((ElapsedTime - lastEndTime) / Sequences[CurrentSequence].TimePerFrame).FloorToInt(), Sequences[CurrentSequence].EndFrame);
     }
 
     private void Reset()
@@ -90,6 +111,15 @@ public class Animation : IDisposable
         ElapsedTime = 0.0f;
         FrameInSequence = 0;
         CurrentSequence = 0;
+    }
+
+    public void Dispose()
+    {
+        Reset();
+        for (int i = 0; i < Sequences.Length; i++)
+        {
+            Sequences[i]?.Dispose();
+        }
     }
 
     private float _timeHeight = 10.0f;
@@ -170,10 +200,5 @@ public class Animation : IDisposable
             default:
                 throw new ArgumentOutOfRangeException(nameof(separatorType), separatorType, null);
         }
-    }
-
-    public void Dispose()
-    {
-
     }
 }

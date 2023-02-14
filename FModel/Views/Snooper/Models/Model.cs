@@ -80,7 +80,7 @@ public class Model : IDisposable
     public Material[] Materials;
     public bool TwoSided;
 
-    public bool HasSkeleton => Skeleton is { IsLoaded: true };
+    public bool HasSkeleton => Skeleton != null;
     public readonly Skeleton Skeleton;
 
     public bool HasSockets => Sockets.Length > 0;
@@ -137,11 +137,15 @@ public class Model : IDisposable
     private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, skeletalMesh.LODs, transform)
     {
         Box = skeletalMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
-        Skeleton = new Skeleton(export.Skeleton, export.ReferenceSkeleton);
+        Skeleton = new Skeleton(export.ReferenceSkeleton);
 
         var sockets = new List<FPackageIndex>();
         sockets.AddRange(export.Sockets);
-        if (HasSkeleton) sockets.AddRange(Skeleton.UnrealSkeleton.Sockets);
+        if (HasSkeleton && export.Skeleton.TryLoad(out USkeleton skeleton))
+        {
+            Skeleton.Name = skeleton.Name;
+            sockets.AddRange(skeleton.Sockets);
+        }
 
         Sockets = new Socket[sockets.Count];
         for (int i = 0; i < Sockets.Length; i++)

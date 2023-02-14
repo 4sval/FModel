@@ -92,16 +92,16 @@ public class Renderer : IDisposable
 
     public void Animate(UObject anim)
     {
-        if (!Options.TryGetModel(out var model) || !model.Skeleton.IsLoaded)
+        if (!Options.TryGetModel(out var model) || !model.HasSkeleton)
             return;
 
         switch (anim)
         {
-            case UAnimSequence animSequence:
-                model.Skeleton.SetAnimation(model.Skeleton.UnrealSkeleton.ConvertAnims(animSequence), AnimateWithRotationOnly);
+            case UAnimSequence animSequence when animSequence.Skeleton.TryLoad(out USkeleton skeleton):
+                model.Skeleton.SetAnimation(skeleton.ConvertAnims(animSequence), AnimateWithRotationOnly);
                 break;
-            case UAnimMontage animMontage:
-                model.Skeleton.SetAnimation(model.Skeleton.UnrealSkeleton.ConvertAnims(animMontage), AnimateWithRotationOnly);
+            case UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton):
+                model.Skeleton.SetAnimation(skeleton.ConvertAnims(animMontage), AnimateWithRotationOnly);
                 break;
         }
         Options.AnimateMesh(false);
