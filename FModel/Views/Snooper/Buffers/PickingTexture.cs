@@ -98,6 +98,8 @@ public class PickingTexture : IDisposable
         return pixel;
     }
 
+    public IntPtr GetPointer() => (IntPtr) _pickingTexture;
+
     public void WindowResized(int width, int height)
     {
         _width = width;

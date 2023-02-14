@@ -5,6 +5,7 @@ using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.Utils;
 using ImGuiNET;
+using Serilog;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
@@ -34,10 +35,10 @@ public class Sequence : IDisposable
     public Sequence(Skeleton skeleton, CAnimSet anim, CAnimSequence sequence, bool rotationOnly) : this(sequence)
     {
         BonesTransform = new Transform[skeleton.BoneCount][];
+
         for (int trackIndex = 0; trackIndex < anim.TrackBonesInfo.Length; trackIndex++)
         {
-            var bone = anim.TrackBonesInfo[trackIndex];
-            if (!skeleton.BonesIndicesByLoweredName.TryGetValue(bone.Name.Text.ToLower(), out var boneIndices))
+            if (!skeleton.BonesIndicesByLoweredName.TryGetValue(anim.TrackBonesInfo[trackIndex].Name.Text.ToLower(), out var boneIndices))
                 continue;
 
             var originalTransform = skeleton.BonesTransformByIndex[boneIndices.Index];
@@ -114,21 +115,26 @@ public class Sequence : IDisposable
             }
         }
 
-        foreach (var boneIndices in skeleton.BonesIndicesByLoweredName.Values)
+        // TODO: move this out of each fucking sequence
+        foreach ((var boneName, var boneIndices) in skeleton.BonesIndicesByLoweredName)
         {
-            if (BonesTransform[boneIndices.Index] != null) continue;
+            var boneIndex = boneIndices.Index;
+            if (BonesTransform[boneIndex] != null) continue;
+#if DEBUG
+            Log.Warning($"Bone Mismatch: {boneName} ({boneIndex}) was not present in {sequence.Name}'s target skeleton");
+#endif
 
-            var old = skeleton.BonesTransformByIndex[boneIndices.Index];
+            var originalTransform = skeleton.BonesTransformByIndex[boneIndex];
 
-            BonesTransform[boneIndices.Index] = new Transform[sequence.NumFrames];
-            for (int frame = 0; frame < BonesTransform[boneIndices.Index].Length; frame++)
+            BonesTransform[boneIndex] = new Transform[sequence.NumFrames];
+            for (int frame = 0; frame < BonesTransform[boneIndex].Length; frame++)
             {
-                BonesTransform[boneIndices.Index][frame] = new Transform
+                BonesTransform[boneIndex][frame] = new Transform
                 {
-                    Relation = BonesTransform[boneIndices.ParentIndex][frame].Matrix,
-                    Rotation = old.Rotation,
-                    Position = old.Position,
-                    Scale = old.Scale
+                    Relation = boneIndices.ParentIndex >= 0 ? BonesTransform[boneIndices.ParentIndex][frame].Matrix : originalTransform.Relation,
+                    Rotation = originalTransform.Rotation,
+                    Position = originalTransform.Position,
+                    Scale = originalTransform.Scale
                 };
             }
         }

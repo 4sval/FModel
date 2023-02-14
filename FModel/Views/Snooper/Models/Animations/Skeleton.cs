@@ -8,12 +8,6 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
-public struct BoneIndice
-{
-    public int Index;
-    public int ParentIndex;
-}
-
 public class Skeleton : IDisposable
 {
     private int _handle;
@@ -22,7 +16,8 @@ public class Skeleton : IDisposable
     public string Name;
     public readonly Dictionary<string, BoneIndice> BonesIndicesByLoweredName;
     public readonly Dictionary<int, Transform> BonesTransformByIndex;
-    public readonly int BoneCount;
+    public readonly Matrix4x4[] InvertedBonesMatrix;
+    public int BoneCount => InvertedBonesMatrix.Length;
 
     public Animation Anim;
     public bool HasAnim => Anim != null;
@@ -31,6 +26,7 @@ public class Skeleton : IDisposable
     {
         BonesIndicesByLoweredName = new Dictionary<string, BoneIndice>();
         BonesTransformByIndex = new Dictionary<int, Transform>();
+        InvertedBonesMatrix = Array.Empty<Matrix4x4>();
     }
 
     public Skeleton(FReferenceSkeleton referenceSkeleton) : this()
@@ -41,6 +37,7 @@ public class Skeleton : IDisposable
             BonesIndicesByLoweredName[info.Name.Text.ToLower()] = new BoneIndice { Index = boneIndex, ParentIndex = info.ParentIndex };
         }
 
+        InvertedBonesMatrix = new Matrix4x4[BonesIndicesByLoweredName.Count];
         foreach (var boneIndices in BonesIndicesByLoweredName.Values)
         {
             var bone = referenceSkeleton.FinalRefBonePose[boneIndices.Index];
@@ -58,10 +55,12 @@ public class Skeleton : IDisposable
                 parentTransform = new Transform { Relation = Matrix4x4.Identity };
 
             boneTransform.Relation = parentTransform.Matrix;
-            BonesTransformByIndex[boneIndices.Index] = boneTransform;
-        }
+            Matrix4x4.Invert(boneTransform.Matrix, out var inverted);
 
-        BoneCount = BonesTransformByIndex.Count;
+
+            BonesTransformByIndex[boneIndices.Index] = boneTransform;
+            InvertedBonesMatrix[boneIndices.Index] = inverted;
+        }
     }
 
     public void SetAnimation(CAnimSet anim, bool rotationOnly)
@@ -76,20 +75,26 @@ public class Skeleton : IDisposable
         _ssbo = new BufferObject<Matrix4x4>(BoneCount, BufferTarget.ShaderStorageBuffer);
         for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
             _ssbo.Update(boneIndex, Matrix4x4.Identity);
-        _ssbo.BindBufferBase(1);
     }
 
+    private int _previousFrame;
     public void UpdateMatrices(float deltaSeconds)
     {
         if (!HasAnim) return;
 
-        _ssbo.BindBufferBase(1);
-
         Anim.Update(deltaSeconds);
-        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
-            _ssbo.Update(boneIndex, Anim.InterpolateBoneTransform(boneIndex));
+        if (_previousFrame == Anim.FrameInSequence) return;
+        _previousFrame = Anim.FrameInSequence;
 
+        _ssbo.Bind();
+        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
+            _ssbo.Update(boneIndex, InvertedBonesMatrix[boneIndex] * Anim.InterpolateBoneTransform(boneIndex));
         _ssbo.Unbind();
+    }
+
+    public void Render()
+    {
+        _ssbo.BindBufferBase(1);
     }
 
     public void Dispose()
