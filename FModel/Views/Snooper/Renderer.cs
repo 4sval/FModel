@@ -103,6 +103,9 @@ public class Renderer : IDisposable
             case UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton):
                 model.Skeleton.SetAnimation(skeleton.ConvertAnims(animMontage), AnimateWithRotationOnly);
                 break;
+            case UAnimComposite animComposite when animComposite.Skeleton.TryLoad(out USkeleton skeleton):
+                model.Skeleton.SetAnimation(skeleton.ConvertAnims(animComposite), AnimateWithRotationOnly);
+                break;
         }
         Options.AnimateMesh(false);
     }

@@ -45,8 +45,8 @@ void main()
     }
 
     finalPos = vInstanceMatrix * finalPos;
-    float scaleFactor = distance(vec3(finalPos), uViewPos) * 0.0025;
-    vec4 nor = transpose(inverse(vInstanceMatrix)) * finalNormal * scaleFactor;
+    float scaleFactor = distance(vec3(finalPos), uViewPos) * 0.0035;
+    vec4 nor = transpose(inverse(vInstanceMatrix)) * normalize(finalNormal) * scaleFactor;
     finalPos.xyz += nor.xyz;
 
     gl_Position = uProjection * uView * finalPos;
