@@ -84,13 +84,16 @@ public class TimeTracker : IDisposable
         }
         drawList.PopClipRect();
 
-        // for (int i = 0; i < Sequences.Length; i++)
-        // {
-        //     Sequences[i].DrawSequence(drawList, canvasP0.X, canvasP0.Y + _timeBarHeight, timeRatio, i, i == CurrentSequence ? 0xFF0000FF : 0xFF175F17);
-        // }
+        foreach (var animation in animations)
+        {
+            for (int i = 0; i < animation.Sequences.Length; i++)
+            {
+                animation.Sequences[i].DrawSequence(drawList, canvasP0.X, canvasP0.Y + _timeBarHeight, timeRatio, i, i == animation.CurrentSequence ? 0xFF0000FF : 0xFF175F17);
+            }
+            DrawSeparator(drawList, canvasP0, canvasP1, animation.EndTime * timeRatio.X, ETrackerType.End);
+        }
 
         DrawSeparator(drawList, canvasP0, canvasP1, ElapsedTime * timeRatio.X, ETrackerType.Frame);
-        // DrawSeparator(drawList, canvasP0, canvasP1, EndTime * timeRatio.X, ETrackerType.End);
     }
 
     private void DrawSeparator(ImDrawListPtr drawList, Vector2 origin, Vector2 destination, float time, ETrackerType separatorType)
