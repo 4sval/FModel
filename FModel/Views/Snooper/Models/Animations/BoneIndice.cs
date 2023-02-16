@@ -11,6 +11,4 @@ public class BoneIndice
     public int ParentTrackIndex = -1; // bone index of the first tracked parent bone
     public bool HasTrack => TrackIndex > -1;
     public bool HasParentTrack => ParentTrackIndex > -1;
-
-    public override string ToString() => $"{ParentBoneIndex} -> {BoneIndex}{(HasTrack ? $" ({ParentTrackIndex} -> {TrackIndex})" : "")}";
 }

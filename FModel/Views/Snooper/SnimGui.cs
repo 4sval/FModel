@@ -411,7 +411,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             foreach (var model in s.Renderer.Options.Models.Values)
             {
                 if (!model.HasSockets || model.IsSelected) continue;
-                if (ImGui.TreeNode($"{model.Name} [{model.Sockets.Length}]"))
+                if (ImGui.TreeNode($"{model.Name} [{model.Sockets.Count}]"))
                 {
                     var i = 0;
                     foreach (var socket in model.Sockets)
@@ -460,7 +460,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     {
                         Layout("Two Sided");ImGui.Text($"  :  {model.TwoSided}");
                     }
-                    Layout("Sockets");ImGui.Text($"  :  x{model.Sockets.Length}");
+                    Layout("Sockets");ImGui.Text($"  :  x{model.Sockets.Count}");
 
                     ImGui.EndTable();
                 });

@@ -83,8 +83,8 @@ public class Model : IDisposable
     public bool HasSkeleton => Skeleton != null;
     public readonly Skeleton Skeleton;
 
-    public bool HasSockets => Sockets.Length > 0;
-    public readonly Socket[] Sockets;
+    public bool HasSockets => Sockets.Count > 0;
+    public readonly List<Socket> Sockets;
 
     public bool HasMorphTargets => Morphs.Length > 0;
     public readonly Morph[] Morphs;
@@ -115,7 +115,7 @@ public class Model : IDisposable
         Type = export.ExportType;
         UvCount = 1;
         Box = new FBox(new FVector(-2f), new FVector(2f));
-        Sockets = Array.Empty<Socket>();
+        Sockets = new List<Socket>();
         Morphs = Array.Empty<Morph>();
         Transforms = new List<Transform>();
     }
@@ -125,11 +125,10 @@ public class Model : IDisposable
     {
         Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
 
-        Sockets = new Socket[export.Sockets.Length];
-        for (int i = 0; i < Sockets.Length; i++)
+        for (int i = 0; i < export.Sockets.Length; i++)
         {
             if (export.Sockets[i].Load<UStaticMeshSocket>() is not { } socket) continue;
-            Sockets[i] = new Socket(socket);
+            Sockets.Add(new Socket(socket));
         }
     }
 
@@ -147,11 +146,10 @@ public class Model : IDisposable
             sockets.AddRange(skeleton.Sockets);
         }
 
-        Sockets = new Socket[sockets.Count];
-        for (int i = 0; i < Sockets.Length; i++)
+        for (int i = 0; i < sockets.Count; i++)
         {
             if (sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
-            Sockets[i] = new Socket(socket);
+            Sockets.Add(new Socket(socket));
         }
 
         Morphs = new Morph[export.MorphTargets.Length];
@@ -453,10 +451,11 @@ public class Model : IDisposable
         _matrixVbo.Dispose();
         _vao.Dispose();
         Skeleton?.Dispose();
-        for (int socket = 0; socket < Sockets.Length; socket++)
+        for (int socket = 0; socket < Sockets.Count; socket++)
         {
             Sockets[socket]?.Dispose();
         }
+        Sockets.Clear();
         if (HasMorphTargets) _morphVbo.Dispose();
         for (var morph = 0; morph < Morphs.Length; morph++)
         {

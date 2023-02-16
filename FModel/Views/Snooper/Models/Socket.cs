@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
@@ -19,6 +19,13 @@ public class Socket : IDisposable
     {
         Transform = Transform.Identity;
         AttachedModels = new List<FGuid>();
+    }
+
+    public Socket(string name, FName boneName, Transform transform) : this()
+    {
+        Name = name;
+        BoneName = boneName;
+        Transform = transform;
     }
 
     public Socket(UStaticMeshSocket socket) : this()
