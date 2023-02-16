@@ -5,6 +5,7 @@ using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using FModel.Views.Snooper.Buffers;
 using OpenTK.Graphics.OpenGL4;
+using Serilog;
 
 namespace FModel.Views.Snooper.Models.Animations;
 
@@ -34,14 +35,20 @@ public class Skeleton : IDisposable
         for (int boneIndex = 0; boneIndex < referenceSkeleton.FinalRefBoneInfo.Length; boneIndex++)
         {
             var info = referenceSkeleton.FinalRefBoneInfo[boneIndex];
-            BonesIndicesByLoweredName[info.Name.Text.ToLower()] = new BoneIndice { Index = boneIndex, ParentIndex = info.ParentIndex };
+
+            var boneIndices = new BoneIndice { BoneIndex = boneIndex, ParentBoneIndex = info.ParentIndex };
+            if (!boneIndices.IsRoot)
+                boneIndices.LoweredParentBoneName =
+                    referenceSkeleton.FinalRefBoneInfo[boneIndices.ParentBoneIndex].Name.Text.ToLower();
+
+            BonesIndicesByLoweredName[info.Name.Text.ToLower()] = boneIndices;
         }
 
         InvertedBonesMatrix = new Matrix4x4[BonesIndicesByLoweredName.Count];
         foreach (var boneIndices in BonesIndicesByLoweredName.Values)
         {
-            var bone = referenceSkeleton.FinalRefBonePose[boneIndices.Index];
-            if (!BonesTransformByIndex.TryGetValue(boneIndices.Index, out var boneTransform))
+            var bone = referenceSkeleton.FinalRefBonePose[boneIndices.BoneIndex];
+            if (!BonesTransformByIndex.TryGetValue(boneIndices.BoneIndex, out var boneTransform))
             {
                 boneTransform = new Transform
                 {
@@ -51,21 +58,71 @@ public class Skeleton : IDisposable
                 };
             }
 
-            if (!BonesTransformByIndex.TryGetValue(boneIndices.ParentIndex, out var parentTransform))
+            if (!BonesTransformByIndex.TryGetValue(boneIndices.ParentBoneIndex, out var parentTransform))
                 parentTransform = new Transform { Relation = Matrix4x4.Identity };
 
             boneTransform.Relation = parentTransform.Matrix;
             Matrix4x4.Invert(boneTransform.Matrix, out var inverted);
 
 
-            BonesTransformByIndex[boneIndices.Index] = boneTransform;
-            InvertedBonesMatrix[boneIndices.Index] = inverted;
+            BonesTransformByIndex[boneIndices.BoneIndex] = boneTransform;
+            InvertedBonesMatrix[boneIndices.BoneIndex] = inverted;
         }
     }
 
     public void SetAnimation(CAnimSet anim, bool rotationOnly)
     {
+        TrackSkeleton(anim);
         Anim = new Animation(this, anim, rotationOnly);
+    }
+
+    private void TrackSkeleton(CAnimSet anim)
+    {
+        // reset
+        foreach (var boneIndices in BonesIndicesByLoweredName.Values)
+        {
+            boneIndices.TrackIndex = -1;
+            boneIndices.ParentTrackIndex = -1;
+        }
+
+        // tracked bones
+        for (int trackIndex = 0; trackIndex < anim.TrackBonesInfo.Length; trackIndex++)
+        {
+            var info = anim.TrackBonesInfo[trackIndex];
+            if (!BonesIndicesByLoweredName.TryGetValue(info.Name.Text.ToLower(), out var boneIndices))
+                continue;
+
+            boneIndices.TrackIndex = trackIndex;
+            var parentTrackIndex = info.ParentIndex;
+            if (parentTrackIndex < 0) continue;
+
+            do
+            {
+                info = anim.TrackBonesInfo[parentTrackIndex];
+                if (BonesIndicesByLoweredName.TryGetValue(info.Name.Text.ToLower(), out var parentBoneIndices) && parentBoneIndices.HasTrack)
+                    boneIndices.ParentTrackIndex = parentBoneIndices.BoneIndex;
+                else parentTrackIndex = info.ParentIndex;
+            } while (!boneIndices.HasParentTrack);
+        }
+
+        // fix parent of untracked bones
+        foreach ((var boneName, var boneIndices) in BonesIndicesByLoweredName)
+        {
+            if (boneIndices.IsRoot || boneIndices.HasTrack && boneIndices.HasParentTrack) // assuming root bone always has a track
+                continue;
+
+#if DEBUG
+            Log.Warning($"Bone Mismatch: {boneName} ({boneIndices.BoneIndex}) was not present in the anim's target skeleton");
+#endif
+
+            var loweredParentBoneName = boneIndices.LoweredParentBoneName;
+            do
+            {
+                var parentBoneIndices = BonesIndicesByLoweredName[loweredParentBoneName];
+                if (parentBoneIndices.HasTrack) boneIndices.ParentTrackIndex = parentBoneIndices.BoneIndex;
+                else loweredParentBoneName = parentBoneIndices.LoweredParentBoneName;
+            } while (!boneIndices.HasParentTrack);
+        }
     }
 
     public void Setup()

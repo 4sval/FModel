@@ -7,6 +7,7 @@ using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.Component.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
@@ -284,23 +285,8 @@ public class Renderer : IDisposable
     private void WorldMesh(UObject actor, Transform transform)
     {
         if (!actor.TryGetValue(out FPackageIndex staticMeshComponent, "StaticMeshComponent", "StaticMesh", "Mesh", "LightMesh") ||
-            staticMeshComponent.Load() is not { } staticMeshComp) return;
-
-        if (!staticMeshComp.TryGetValue(out FPackageIndex staticMesh, "StaticMesh") && actor.Class is UBlueprintGeneratedClass)
-        {
-            foreach (var actorExp in actor.Class.Owner.GetExports())
-                if (actorExp.TryGetValue(out staticMesh, "StaticMesh"))
-                    break;
-            var super = actor.Class.SuperStruct.Load<UBlueprintGeneratedClass>();
-            if (staticMesh == null && super != null) { // look in parent struct if not found
-                foreach (var actorExp in super.Owner.GetExports()) {
-                    if (actorExp.TryGetValue(out staticMesh, "StaticMesh"))
-                        break;
-                }
-            }
-        }
-
-        if (staticMesh?.Load() is not UStaticMesh m || m.Materials.Length < 1)
+            !staticMeshComponent.TryLoad(out UStaticMeshComponent staticMeshComp) ||
+            !staticMeshComp.GetStaticMesh().TryLoad(out UStaticMesh m) || m.Materials.Length < 1)
             return;
 
         var guid = m.LightingGuid;

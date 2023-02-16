@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Assets.Exports.Animation;
@@ -35,107 +36,93 @@ public class Sequence : IDisposable
     public Sequence(Skeleton skeleton, CAnimSet anim, CAnimSequence sequence, bool rotationOnly) : this(sequence)
     {
         BonesTransform = new Transform[skeleton.BoneCount][];
-
-        for (int trackIndex = 0; trackIndex < anim.TrackBonesInfo.Length; trackIndex++)
+        foreach (var boneIndices in skeleton.BonesIndicesByLoweredName.Values)
         {
-            if (!skeleton.BonesIndicesByLoweredName.TryGetValue(anim.TrackBonesInfo[trackIndex].Name.Text.ToLower(), out var boneIndices))
-                continue;
+            var originalTransform = skeleton.BonesTransformByIndex[boneIndices.BoneIndex];
+            BonesTransform[boneIndices.BoneIndex] = new Transform[sequence.NumFrames];
 
-            var originalTransform = skeleton.BonesTransformByIndex[boneIndices.Index];
-
-            BonesTransform[boneIndices.Index] = new Transform[sequence.NumFrames];
-            for (int frame = 0; frame < BonesTransform[boneIndices.Index].Length; frame++)
+            if (!boneIndices.HasTrack)
             {
-                var boneOrientation = originalTransform.Rotation;
-                var bonePosition = originalTransform.Position;
-                var boneScale = originalTransform.Scale;
-
-                sequence.Tracks[trackIndex].GetBonePosition(frame, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
-                if (frame < sequence.Tracks[trackIndex].KeyScale.Length)
-                    boneScale = sequence.Tracks[trackIndex].KeyScale[frame];
-
-                switch (anim.BoneModes[trackIndex])
+                for (int frame = 0; frame < BonesTransform[boneIndices.BoneIndex].Length; frame++)
                 {
-                    case EBoneTranslationRetargetingMode.Skeleton:
+                    BonesTransform[boneIndices.BoneIndex][frame] = new Transform
                     {
-                        var targetTransform = sequence.RetargetBasePose?[trackIndex] ?? anim.BonePositions[trackIndex];
-                        bonePosition = targetTransform.Translation;
-                        break;
-                    }
-                    case EBoneTranslationRetargetingMode.AnimationScaled:
-                    {
-                        var sourceTranslationLength = (originalTransform.Position / Constants.SCALE_DOWN_RATIO).Size();
-                        if (sourceTranslationLength > UnrealMath.KindaSmallNumber)
-                        {
-                            var targetTranslationLength = sequence.RetargetBasePose?[trackIndex].Translation.Size() ?? anim.BonePositions[trackIndex].Translation.Size();
-                            bonePosition.Scale(targetTranslationLength / sourceTranslationLength);
-                        }
-                        break;
-                    }
-                    case EBoneTranslationRetargetingMode.AnimationRelative:
-                    {
-                        // https://github.com/EpicGames/UnrealEngine/blob/cdaec5b33ea5d332e51eee4e4866495c90442122/Engine/Source/Runtime/Engine/Private/Animation/AnimationRuntime.cpp#L2586
-                        var refPoseTransform  = sequence.RetargetBasePose?[trackIndex] ?? anim.BonePositions[trackIndex];
-                        break;
-                    }
-                    case EBoneTranslationRetargetingMode.OrientAndScale:
-                    {
-                        var sourceSkelTrans = originalTransform.Position / Constants.SCALE_DOWN_RATIO;
-                        var targetSkelTrans = sequence.RetargetBasePose?[trackIndex].Translation ?? anim.BonePositions[trackIndex].Translation;
-
-                        if (!sourceSkelTrans.Equals(targetSkelTrans))
-                        {
-                            var sourceSkelTransLength = sourceSkelTrans.Size();
-                            var targetSkelTransLength = targetSkelTrans.Size();
-                            if (!UnrealMath.IsNearlyZero(sourceSkelTransLength * targetSkelTransLength))
-                            {
-                                var sourceSkelTransDir = sourceSkelTrans / sourceSkelTransLength;
-                                var targetSkelTransDir = targetSkelTrans / targetSkelTransLength;
-
-                                var deltaRotation = FQuat.FindBetweenNormals(sourceSkelTransDir, targetSkelTransDir);
-                                var scale = targetSkelTransLength / sourceSkelTransLength;
-                                bonePosition = deltaRotation.RotateVector(bonePosition) * scale;
-                            }
-                        }
-                        break;
-                    }
+                        Relation = originalTransform.LocalMatrix * BonesTransform[boneIndices.ParentTrackIndex][frame].Matrix
+                    };
                 }
-
-                // revert FixRotationKeys
-                if (trackIndex > 0) boneOrientation.Conjugate();
-                bonePosition *= Constants.SCALE_DOWN_RATIO;
-
-                BonesTransform[boneIndices.Index][frame] = new Transform
-                {
-                    Relation = boneIndices.ParentIndex >= 0 ? BonesTransform[boneIndices.ParentIndex][frame].Matrix : originalTransform.Relation,
-                    Rotation = boneOrientation,
-                    Position = rotationOnly ? originalTransform.Position : bonePosition,
-                    Scale = boneScale
-                };
             }
-        }
-
-        // TODO: move this out of each fucking sequence
-        foreach ((var boneName, var boneIndices) in skeleton.BonesIndicesByLoweredName)
-        {
-            var boneIndex = boneIndices.Index;
-            if (BonesTransform[boneIndex] != null) continue;
-#if DEBUG
-            Log.Warning($"Bone Mismatch: {boneName} ({boneIndex}) was not present in {sequence.Name}'s target skeleton");
-#endif
-
-            var originalTransform = skeleton.BonesTransformByIndex[boneIndex];
-
-            BonesTransform[boneIndex] = new Transform[sequence.NumFrames];
-            for (int frame = 0; frame < BonesTransform[boneIndex].Length; frame++)
+            else
             {
-                BonesTransform[boneIndex][frame] = new Transform
+                var trackIndex = boneIndices.TrackIndex;
+                for (int frame = 0; frame < BonesTransform[boneIndices.BoneIndex].Length; frame++)
                 {
-                    Relation = boneIndices.ParentIndex >= 0 ? BonesTransform[boneIndices.ParentIndex][frame].Matrix : originalTransform.Relation,
-                    Rotation = originalTransform.Rotation,
-                    Position = originalTransform.Position,
-                    Scale = originalTransform.Scale
-                };
+                    var boneOrientation = originalTransform.Rotation;
+                    var bonePosition = originalTransform.Position;
+                    var boneScale = originalTransform.Scale;
+
+                    sequence.Tracks[trackIndex].GetBonePosition(frame, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
+                    if (frame < sequence.Tracks[trackIndex].KeyScale.Length)
+                        boneScale = sequence.Tracks[trackIndex].KeyScale[frame];
+
+                    switch (anim.BoneModes[trackIndex])
+                    {
+                        case EBoneTranslationRetargetingMode.Skeleton when !rotationOnly:
+                        {
+                            var targetTransform = sequence.RetargetBasePose?[trackIndex] ?? anim.BonePositions[trackIndex];
+                            bonePosition = targetTransform.Translation;
+                            break;
+                        }
+                        case EBoneTranslationRetargetingMode.AnimationScaled when !rotationOnly:
+                        {
+                            var sourceTranslationLength = (originalTransform.Position / Constants.SCALE_DOWN_RATIO).Size();
+                            if (sourceTranslationLength > UnrealMath.KindaSmallNumber)
+                            {
+                                var targetTranslationLength = sequence.RetargetBasePose?[trackIndex].Translation.Size() ?? anim.BonePositions[trackIndex].Translation.Size();
+                                bonePosition.Scale(targetTranslationLength / sourceTranslationLength);
+                            }
+                            break;
+                        }
+                        case EBoneTranslationRetargetingMode.AnimationRelative when !rotationOnly:
+                        {
+                            // https://github.com/EpicGames/UnrealEngine/blob/cdaec5b33ea5d332e51eee4e4866495c90442122/Engine/Source/Runtime/Engine/Private/Animation/AnimationRuntime.cpp#L2586
+                            var refPoseTransform  = sequence.RetargetBasePose?[trackIndex] ?? anim.BonePositions[trackIndex];
+                            break;
+                        }
+                        case EBoneTranslationRetargetingMode.OrientAndScale when !rotationOnly:
+                        {
+                            var sourceSkelTrans = originalTransform.Position / Constants.SCALE_DOWN_RATIO;
+                            var targetSkelTrans = sequence.RetargetBasePose?[trackIndex].Translation ?? anim.BonePositions[trackIndex].Translation;
+
+                            if (!sourceSkelTrans.Equals(targetSkelTrans))
+                            {
+                                var sourceSkelTransLength = sourceSkelTrans.Size();
+                                var targetSkelTransLength = targetSkelTrans.Size();
+                                if (!UnrealMath.IsNearlyZero(sourceSkelTransLength * targetSkelTransLength))
+                                {
+                                    var sourceSkelTransDir = sourceSkelTrans / sourceSkelTransLength;
+                                    var targetSkelTransDir = targetSkelTrans / targetSkelTransLength;
+
+                                    var deltaRotation = FQuat.FindBetweenNormals(sourceSkelTransDir, targetSkelTransDir);
+                                    var scale = targetSkelTransLength / sourceSkelTransLength;
+                                    bonePosition = deltaRotation.RotateVector(bonePosition) * scale;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    // revert FixRotationKeys
+                    if (trackIndex > 0) boneOrientation.Conjugate();
+                    bonePosition *= Constants.SCALE_DOWN_RATIO;
+
+                    BonesTransform[boneIndices.BoneIndex][frame] = new Transform
+                    {
+                        Relation = boneIndices.HasParentTrack ? BonesTransform[boneIndices.ParentTrackIndex][frame].Matrix : originalTransform.Relation,
+                        Rotation = boneOrientation,
+                        Position = rotationOnly ? originalTransform.Position : bonePosition,
+                        Scale = boneScale
+                    };
+                }
             }
         }
     }

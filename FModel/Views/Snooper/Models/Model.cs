@@ -260,8 +260,8 @@ public class Model : IDisposable
             if (HasSkeleton && Skeleton.BonesIndicesByLoweredName.TryGetValue(socket.BoneName.Text.ToLower(), out var boneIndices))
             {
                 boneMatrix = Skeleton.HasAnim
-                    ? Skeleton.Anim.InterpolateBoneTransform(boneIndices.Index)
-                    : Skeleton.BonesTransformByIndex[boneIndices.Index].Matrix;
+                    ? Skeleton.Anim.InterpolateBoneTransform(boneIndices.BoneIndex)
+                    : Skeleton.BonesTransformByIndex[boneIndices.BoneIndex].Matrix;
             }
 
             var socketRelation = boneMatrix * worldMatrix;
