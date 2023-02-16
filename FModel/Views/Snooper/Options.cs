@@ -4,6 +4,7 @@ using CUE4Parse_Conversion.Textures;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Settings;
+using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Lights;
 using FModel.Views.Snooper.Models;
 using FModel.Views.Snooper.Shading;
@@ -15,10 +16,14 @@ public class Options
     public FGuid SelectedModel { get; private set; }
     public int SelectedSection { get; private set; }
     public int SelectedMorph { get; private set; }
+    public int SelectedAnimation { get; private set; }
 
     public readonly Dictionary<FGuid, Model> Models;
     public readonly Dictionary<FGuid, Texture> Textures;
     public readonly List<Light> Lights;
+
+    public readonly TimeTracker Tracker;
+    public readonly List<Animation> Animations;
 
     public readonly Dictionary<string, Texture> Icons;
 
@@ -29,6 +34,9 @@ public class Options
         Models = new Dictionary<FGuid, Model>();
         Textures = new Dictionary<FGuid, Texture>();
         Lights = new List<Light>();
+
+        Tracker = new TimeTracker();
+        Animations = new List<Animation>();
 
         Icons = new Dictionary<string, Texture>
         {
@@ -78,6 +86,11 @@ public class Options
 
         SelectedSection = 0;
         SelectedMorph = 0;
+    }
+
+    public void SelectAnimation()
+    {
+
     }
 
     public void SelectSection(int index)
@@ -136,7 +149,7 @@ public class Options
         Services.ApplicationService.ApplicationView.CUE4Parse.ModelIsWaitingAnimation = value;
     }
 
-    public void ResetModelsAndLights()
+    public void ResetModelsLightsAnimations()
     {
         foreach (var model in Models.Values)
         {
@@ -144,11 +157,17 @@ public class Options
         }
         Models.Clear();
         Lights.Clear();
+        Tracker.Reset();
+        foreach (var animation in Animations)
+        {
+            animation.Dispose();
+        }
+        Animations.Clear();
     }
 
     public void Dispose()
     {
-        ResetModelsAndLights();
+        ResetModelsLightsAnimations();
         foreach (var texture in Textures.Values)
         {
             texture.Dispose();

@@ -19,6 +19,7 @@ using CUE4Parse.UE4.Objects.UObject;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Settings;
+using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Lights;
 using FModel.Views.Snooper.Models;
@@ -100,19 +101,27 @@ public class Renderer : IDisposable
     private void Animate(UObject anim, Model model)
     {
         if (!model.HasSkeleton) return;
+
+        float maxElapsedTime;
         switch (anim)
         {
             case UAnimSequence animSequence when animSequence.Skeleton.TryLoad(out USkeleton skeleton):
-                model.Skeleton.SetAnimation(skeleton.ConvertAnims(animSequence), AnimateWithRotationOnly);
+            {
+                var animSet = skeleton.ConvertAnims(animSequence);
+                var animation = new Animation(animSet, model.Guid);
+                maxElapsedTime = animation.TotalElapsedTime;
+                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                Options.Animations.Add(animation);
                 break;
+            }
             case UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton):
-                // for (int i = 0; i < skeleton.Sockets.Length; i++)
-                // {
-                //     if (skeleton.Sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
-                //     model.Sockets.Add(new Socket(socket));
-                // }
+            {
+                var animSet = skeleton.ConvertAnims(animMontage);
+                var animation = new Animation(animSet, model.Guid);
+                maxElapsedTime = animation.TotalElapsedTime;
+                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                Options.Animations.Add(animation);
 
-                model.Skeleton.SetAnimation(skeleton.ConvertAnims(animMontage), AnimateWithRotationOnly);
                 foreach (var notifyEvent in animMontage.Notifies)
                 {
                     if (!notifyEvent.NotifyStateClass.TryLoad(out UObject notifyClass) ||
@@ -134,7 +143,7 @@ public class Renderer : IDisposable
                     if (notifyClass.TryGetValue(out FName socketName, "SocketName"))
                     {
                         var t = Transform.Identity;
-                        if (notifyClass.TryGetValue(out FVector location, "Location"))
+                        if (notifyClass.TryGetValue(out FVector location, "LocationOffset", "Location"))
                             t.Position = location * Constants.SCALE_DOWN_RATIO;
                         if (notifyClass.TryGetValue(out FRotator rotation, "RotationOffset", "Rotation"))
                             t.Rotation = rotation.Quaternion();
@@ -143,15 +152,25 @@ public class Renderer : IDisposable
 
                         var s = new Socket("hello", socketName, t);
                         model.Sockets.Add(s);
-                        s.AttachedModels.Add(guid);
                         addedModel.AttachModel(model, s);
                     }
                 }
                 break;
+            }
             case UAnimComposite animComposite when animComposite.Skeleton.TryLoad(out USkeleton skeleton):
-                model.Skeleton.SetAnimation(skeleton.ConvertAnims(animComposite), AnimateWithRotationOnly);
+            {
+                var animSet = skeleton.ConvertAnims(animComposite);
+                var animation = new Animation(animSet, model.Guid);
+                maxElapsedTime = animation.TotalElapsedTime;
+                model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
+                Options.Animations.Add(animation);
                 break;
+            }
+            default:
+                throw new ArgumentException();
         }
+
+        Options.Tracker.SetMaxElapsedTime(maxElapsedTime);
         Options.AnimateMesh(false);
     }
 
@@ -180,10 +199,21 @@ public class Renderer : IDisposable
         for (int i = 0; i < 5; i++)
             _shader.SetUniform($"bVertexColors[{i}]", i == VertexColor);
 
+        // update animations
+        if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);
+        foreach (var animation in Options.Animations)
+        {
+            animation.TimeCalculation(Options.Tracker.ElapsedTime);
+            foreach (var guid in animation.AttachedModels.Where(guid => Options.Models[guid].HasSkeleton))
+            {
+                Options.Models[guid].Skeleton.UpdateAnimationMatrices(animation.CurrentSequence, animation.FrameInSequence);
+            }
+        }
+
         // render model pass
         foreach (var model in Options.Models.Values)
         {
-            model.UpdateMatrices(Options, deltaSeconds, model.Show);
+            model.UpdateMatrices(Options);
             if (!model.Show) continue;
             model.Render(_shader);
         }
@@ -225,7 +255,7 @@ public class Renderer : IDisposable
         if (!original.TryConvert(out var mesh))
             return guid;
 
-        Options.Models[guid] = new Model(original, mesh);
+        Options.Models[guid] = new Model(original, guid, mesh);
         if (select)
         {
             Options.SelectModel(guid);
@@ -239,7 +269,7 @@ public class Renderer : IDisposable
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
         if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return guid;
 
-        Options.Models[guid] = new Model(original, mesh);
+        Options.Models[guid] = new Model(original, guid, mesh);
         if (select)
         {
             Options.SelectModel(guid);
@@ -264,7 +294,7 @@ public class Renderer : IDisposable
         if (!editorCube.TryConvert(out var mesh))
             return;
 
-        Options.Models[guid] = new Cube(mesh, original);
+        Options.Models[guid] = new Cube(mesh, guid, original);
         Options.SelectModel(guid);
         SetupCamera(Options.Models[guid].Box);
     }
@@ -356,7 +386,7 @@ public class Renderer : IDisposable
         }
         else if (m.TryConvert(out var mesh))
         {
-            model = new Model(m, mesh, t);
+            model = new Model(m, guid, mesh, t);
             model.TwoSided = actor.GetOrDefault("bMirrored", staticMeshComp.GetOrDefault("bDisallowMeshPaintPerInstance", model.TwoSided));
 
             if (actor.TryGetValue(out FPackageIndex baseMaterial, "BaseMaterial") &&
@@ -456,7 +486,7 @@ public class Renderer : IDisposable
 
     public void Save()
     {
-        Options.ResetModelsAndLights();
+        Options.ResetModelsLightsAnimations();
         Options.SelectModel(Guid.Empty);
         Options.SwapMaterial(false);
         Options.AnimateMesh(false);

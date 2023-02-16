@@ -1,4 +1,4 @@
-﻿namespace FModel.Views.Snooper.Models.Animations;
+﻿namespace FModel.Views.Snooper.Animations;
 
 public class BoneIndice
 {

@@ -8,8 +8,8 @@ using OpenTK.Windowing.Common;
 using System.Numerics;
 using System.Text;
 using FModel.Settings;
+using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Models;
-using FModel.Views.Snooper.Models.Animations;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
 
@@ -71,7 +71,7 @@ public class SnimGui
         DrawDockSpace(s.Size);
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
-        AnimationWindow("Timeline", s.Renderer, (icons, skeleton) => skeleton.Anim.ImGuiTimeline(Controller.FontSemiBold));
+        AnimationWindow("Timeline", s.Renderer, (icons, tracker, animations) => tracker.ImGuiTimeline(Controller.FontSemiBold, animations));
 
         Window("World", () => DrawWorld(s), false);
 
@@ -407,7 +407,6 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     {
         MeshWindow("Sockets", s.Renderer, (icons, selectedModel) =>
         {
-            var selectedGuid = s.Renderer.Options.SelectedModel;
             foreach (var model in s.Renderer.Options.Models.Values)
             {
                 if (!model.HasSockets || model.IsSelected) continue;
@@ -416,18 +415,16 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     var i = 0;
                     foreach (var socket in model.Sockets)
                     {
-                        var isAttached = socket.AttachedModels.Contains(selectedGuid);
+                        var isAttached = socket.AttachedModels.Contains(selectedModel.Guid);
                         ImGui.PushID(i);
                         ImGui.BeginDisabled(selectedModel.IsAttached && !isAttached);
                         switch (isAttached)
                         {
                             case false when ImGui.Button($"Attach to '{socket.Name}'"):
-                                socket.AttachedModels.Add(selectedGuid);
                                 selectedModel.AttachModel(model, socket);
                                 break;
                             case true when ImGui.Button($"Detach from '{socket.Name}'"):
-                                socket.AttachedModels.Remove(selectedGuid);
-                                selectedModel.DetachModel(model);
+                                selectedModel.DetachModel(model, socket);
                                 break;
                         }
                         ImGui.EndDisabled();
@@ -768,15 +765,10 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         }, styled);
     }
 
-    private void AnimationWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, Skeleton> content, bool styled = true)
+    private void AnimationWindow(string name, Renderer renderer, Action<Dictionary<string, Texture>, TimeTracker, List<Animation>> content, bool styled = true)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        MeshWindow(name, renderer, (icons, model) =>
-        {
-            if (!model.HasSkeleton) CenteredTextColored(_errorColor, "No Skeleton To Animate");
-            else if (!model.Skeleton.HasAnim) CenteredTextColored(_errorColor, "Mesh Not Animated");
-            else content(icons, model.Skeleton);
-        }, styled);
+        Window(name, () => content(renderer.Options.Icons, renderer.Options.Tracker, renderer.Options.Animations), styled);
         ImGui.PopStyleVar();
     }
 

@@ -13,10 +13,11 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Extensions;
 using FModel.Settings;
+using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Buffers;
-using FModel.Views.Snooper.Models.Animations;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
 
@@ -69,6 +70,7 @@ public class Model : IDisposable
     private const int _faceSize = 3;
 
     private readonly UObject _export;
+    public readonly FGuid Guid;
     public readonly string Path;
     public readonly string Name;
     public readonly string Type;
@@ -107,9 +109,10 @@ public class Model : IDisposable
     public int SelectedInstance;
     public float MorphTime;
 
-    protected Model(UObject export)
+    protected Model(UObject export, FGuid guid)
     {
         _export = export;
+        Guid = guid;
         Path = _export.GetPathName();
         Name = Path.SubstringAfterLast('/').SubstringBefore('.');
         Type = export.ExportType;
@@ -120,8 +123,8 @@ public class Model : IDisposable
         Transforms = new List<Transform>();
     }
 
-    public Model(UStaticMesh export, CStaticMesh staticMesh) : this(export, staticMesh, Transform.Identity) {}
-    public Model(UStaticMesh export, CStaticMesh staticMesh, Transform transform) : this(export, export.Materials, staticMesh.LODs, transform)
+    public Model(UStaticMesh export, FGuid guid, CStaticMesh staticMesh) : this(export, guid, staticMesh, Transform.Identity) {}
+    public Model(UStaticMesh export, FGuid guid, CStaticMesh staticMesh, Transform transform) : this(export, guid, export.Materials, staticMesh.LODs, transform)
     {
         Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
 
@@ -132,8 +135,8 @@ public class Model : IDisposable
         }
     }
 
-    public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh) : this(export, skeletalMesh, Transform.Identity) {}
-    private Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, skeletalMesh.LODs, transform)
+    public Model(USkeletalMesh export, FGuid guid, CSkeletalMesh skeletalMesh) : this(export, guid, skeletalMesh, Transform.Identity) {}
+    private Model(USkeletalMesh export, FGuid guid, CSkeletalMesh skeletalMesh, Transform transform) : this(export, guid, export.Materials, skeletalMesh.LODs, transform)
     {
         Box = skeletalMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
         Skeleton = new Skeleton(export.ReferenceSkeleton);
@@ -159,11 +162,11 @@ public class Model : IDisposable
         }
     }
 
-    private Model(UObject export, IReadOnlyList<ResolvedObject> materials, IReadOnlyList<CStaticMeshLod> lods, Transform transform = null)
-        : this(export, materials, lods[_LOD_INDEX], lods[_LOD_INDEX].Verts, lods.Count, transform) {}
-    private Model(UObject export, IReadOnlyList<ResolvedObject> materials, IReadOnlyList<CSkelMeshLod> lods, Transform transform = null)
-        : this(export, materials, lods[_LOD_INDEX], lods[_LOD_INDEX].Verts, lods.Count, transform) {}
-    private Model(UObject export, IReadOnlyList<ResolvedObject> materials, CBaseMeshLod lod, IReadOnlyList<CMeshVertex> vertices, int numLods, Transform transform = null) : this(export)
+    private Model(UObject export, FGuid guid, IReadOnlyList<ResolvedObject> materials, IReadOnlyList<CStaticMeshLod> lods, Transform transform = null)
+        : this(export, guid, materials, lods[_LOD_INDEX], lods[_LOD_INDEX].Verts, lods.Count, transform) {}
+    private Model(UObject export, FGuid guid, IReadOnlyList<ResolvedObject> materials, IReadOnlyList<CSkelMeshLod> lods, Transform transform = null)
+        : this(export, guid, materials, lods[_LOD_INDEX], lods[_LOD_INDEX].Verts, lods.Count, transform) {}
+    private Model(UObject export, FGuid guid, IReadOnlyList<ResolvedObject> materials, CBaseMeshLod lod, IReadOnlyList<CMeshVertex> vertices, int numLods, Transform transform = null) : this(export, guid)
     {
         var hasCustomUvs = lod.ExtraUV.IsValueCreated;
         UvCount = hasCustomUvs ? Math.Max(lod.NumTexCoords, numLods) : lod.NumTexCoords;
@@ -248,19 +251,14 @@ public class Model : IDisposable
         Transforms.Add(transform);
     }
 
-    public void UpdateMatrices(Options options, float deltaSeconds = 0f, bool update = false)
+    public void UpdateMatrices(Options options)
     {
         var worldMatrix = UpdateMatrices();
-        if (update && HasSkeleton) Skeleton.UpdateMatrices(deltaSeconds);
         foreach (var socket in Sockets)
         {
             var boneMatrix = Matrix4x4.Identity;
             if (HasSkeleton && Skeleton.BonesIndicesByLoweredName.TryGetValue(socket.BoneName.Text.ToLower(), out var boneIndices))
-            {
-                boneMatrix = Skeleton.HasAnim
-                    ? Skeleton.Anim.InterpolateBoneTransform(boneIndices.BoneIndex)
-                    : Skeleton.BonesTransformByIndex[boneIndices.BoneIndex].Matrix;
-            }
+                boneMatrix = Skeleton.GetBoneMatrix(boneIndices);
 
             var socketRelation = boneMatrix * worldMatrix;
             foreach (var attached in socket.AttachedModels)
@@ -295,6 +293,8 @@ public class Model : IDisposable
 
     public void AttachModel(Model attachedTo, Socket socket)
     {
+        socket.AttachedModels.Add(Guid);
+
         _attachedTo = $"'{socket.Name}' from '{attachedTo.Name}'{(!socket.BoneName.IsNone ? $" at '{socket.BoneName}'" : "")}";
         attachedTo._attachedFor.Add($"'{Name}'");
         // reset PRS to 0 so it's attached to the actual position (can be transformed relative to the socket later by the user)
@@ -303,8 +303,10 @@ public class Model : IDisposable
         Transforms[SelectedInstance].Scale = FVector.OneVector;
     }
 
-    public void DetachModel(Model attachedTo)
+    public void DetachModel(Model attachedTo, Socket socket)
     {
+        socket.AttachedModels.Remove(Guid);
+
         _attachedTo = string.Empty;
         attachedTo._attachedFor.Remove($"'{Name}'");
         Transforms[SelectedInstance].Relation = _previousMatrix;
