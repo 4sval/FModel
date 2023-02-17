@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.Utils;
+using ImGuiNET;
 
 namespace FModel.Views.Snooper.Animations;
 
 public class Animation : IDisposable
 {
+    public readonly string Name;
     public readonly Sequence[] Sequences;
+    public readonly float StartTime;                // Animation Start Time
     public readonly float EndTime;                  // Animation End Time
     public readonly float TotalElapsedTime;         // Animation Max Time
 
@@ -23,8 +27,9 @@ public class Animation : IDisposable
         AttachedModels = new List<FGuid>();
     }
 
-    public Animation(CAnimSet animSet) : this()
+    public Animation(string name, CAnimSet animSet) : this()
     {
+        Name = name;
         Sequences = new Sequence[animSet.Sequences.Count];
         for (int i = 0; i < Sequences.Length; i++)
         {
@@ -34,11 +39,11 @@ public class Animation : IDisposable
             EndTime = Sequences[i].EndTime;
         }
 
-        // if (Sequences.Length > 0)
-        //     Tracker.ElapsedTime = Sequences[0].StartTime;
+        if (Sequences.Length > 0)
+            StartTime = Sequences[0].StartTime;
     }
 
-    public Animation(CAnimSet animSet, params FGuid[] animatedModels) : this(animSet)
+    public Animation(string name, CAnimSet animSet, params FGuid[] animatedModels) : this(name, animSet)
     {
         AttachedModels.AddRange(animatedModels);
     }
@@ -71,5 +76,17 @@ public class Animation : IDisposable
     public void Dispose()
     {
         AttachedModels.Clear();
+    }
+
+    public void ImGuiAnimation(ImDrawListPtr drawList, Vector2 timelineP0, Vector2 treeP0, Vector2 treeP1, Vector2 timeStep, Vector2 timeRatio, float y, float t)
+    {
+        var p1 = new Vector2(timelineP0.X + StartTime * timeRatio.X + t, y + t);
+        var p2 = new Vector2(timelineP0.X + EndTime * timeRatio.X - t, y + timeStep.Y - t);
+
+        drawList.AddRectFilled(p1, p2, 0xFF175F17, 5.0f, ImDrawFlags.RoundCornersTop);
+
+        drawList.PushClipRect(treeP0, treeP1);
+        drawList.AddText(treeP0 with { Y = y + timeStep.Y / 4.0f }, 0xFFFFFFFF, Name);
+        drawList.PopClipRect();
     }
 }

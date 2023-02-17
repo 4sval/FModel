@@ -108,19 +108,19 @@ public class Renderer : IDisposable
             case UAnimSequence animSequence when animSequence.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animSequence);
-                var animation = new Animation(animSet, model.Guid);
+                var animation = new Animation(animSequence.Name, animSet, model.Guid);
                 maxElapsedTime = animation.TotalElapsedTime;
                 model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
-                Options.Animations.Add(animation);
+                Options.AddAnimation(animation);
                 break;
             }
             case UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animMontage);
-                var animation = new Animation(animSet, model.Guid);
+                var animation = new Animation(animMontage.Name, animSet, model.Guid);
                 maxElapsedTime = animation.TotalElapsedTime;
                 model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
-                Options.Animations.Add(animation);
+                Options.AddAnimation(animation);
 
                 foreach (var notifyEvent in animMontage.Notifies)
                 {
@@ -138,6 +138,7 @@ public class Renderer : IDisposable
                     if (!Options.TryGetModel(guid, out var addedModel))
                         continue;
 
+                    addedModel.IsAnimatedProp = true;
                     if (notifyClass.TryGetValue(out UObject skeletalMeshPropAnimation, "SkeletalMeshPropAnimation"))
                         Animate(skeletalMeshPropAnimation, addedModel);
                     if (notifyClass.TryGetValue(out FName socketName, "SocketName"))
@@ -150,7 +151,7 @@ public class Renderer : IDisposable
                         if (notifyClass.TryGetValue(out FVector scale, "Scale"))
                             t.Scale = scale;
 
-                        var s = new Socket("hello", socketName, t);
+                        var s = new Socket($"TL_{addedModel.Name}", socketName, t);
                         model.Sockets.Add(s);
                         addedModel.AttachModel(model, s);
                     }
@@ -160,17 +161,17 @@ public class Renderer : IDisposable
             case UAnimComposite animComposite when animComposite.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animComposite);
-                var animation = new Animation(animSet, model.Guid);
+                var animation = new Animation(animComposite.Name, animSet, model.Guid);
                 maxElapsedTime = animation.TotalElapsedTime;
                 model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
-                Options.Animations.Add(animation);
+                Options.AddAnimation(animation);
                 break;
             }
             default:
                 throw new ArgumentException();
         }
 
-        Options.Tracker.SetMaxElapsedTime(maxElapsedTime);
+        Options.Tracker.SafeSetMaxElapsedTime(maxElapsedTime);
         Options.AnimateMesh(false);
     }
 

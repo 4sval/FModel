@@ -47,6 +47,12 @@ public class Options
             ["link_on"] = new ("link_on"),
             ["link_off"] = new ("link_off"),
             ["link_has"] = new ("link_has"),
+            ["tl_play"] = new ("tl_play"),
+            ["tl_pause"] = new ("tl_pause"),
+            ["tl_rewind"] = new ("tl_rewind"),
+            ["tl_forward"] = new ("tl_forward"),
+            ["tl_previous"] = new ("tl_previous"),
+            ["tl_next"] = new ("tl_next"),
         };
 
         _platform = UserSettings.Default.OverridedPlatform;
@@ -88,9 +94,50 @@ public class Options
         SelectedMorph = 0;
     }
 
-    public void SelectAnimation()
+    public void RemoveModel(FGuid guid)
     {
+        if (!TryGetModel(guid, out var model)) return;
 
+        DetachAndRemoveModels(model);
+        model.Dispose();
+        Models.Remove(guid);
+    }
+
+    private void DetachAndRemoveModels(Model model)
+    {
+        foreach (var socket in model.Sockets)
+        {
+            foreach (var guid in socket.AttachedModels)
+            {
+                if (!TryGetModel(guid, out var attachedModel)) continue;
+
+                attachedModel.SafeDetachModel(model);
+                RemoveModel(guid);
+            }
+            socket.Dispose();
+        }
+    }
+
+    public void AddAnimation(Animation animation)
+    {
+        Animations.Add(animation);
+    }
+
+    public void RemoveAnimations()
+    {
+        Tracker.Reset();
+        foreach (var animation in Animations)
+        {
+            foreach (var guid in animation.AttachedModels)
+            {
+                if (!TryGetModel(guid, out var animatedModel)) continue;
+
+                animatedModel.Skeleton.ResetAnimatedData(true);
+                DetachAndRemoveModels(animatedModel);
+            }
+            animation.Dispose();
+        }
+        Animations.Clear();
     }
 
     public void SelectSection(int index)

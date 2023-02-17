@@ -177,12 +177,7 @@ public class Skeleton : IDisposable
 
     private void TrackSkeleton(CAnimSet anim)
     {
-        // reset
-        foreach (var boneIndices in BonesIndicesByLoweredName.Values)
-        {
-            boneIndices.TrackIndex = -1;
-            boneIndices.ParentTrackIndex = -1;
-        }
+        ResetAnimatedData();
 
         // tracked bones
         for (int trackIndex = 0; trackIndex < anim.TrackBonesInfo.Length; trackIndex++)
@@ -211,7 +206,7 @@ public class Skeleton : IDisposable
                 continue;
 
 #if DEBUG
-            Log.Warning($"Bone Mismatch: {boneName} ({boneIndices.BoneIndex}) was not present in the anim's target skeleton");
+            Log.Warning($"{Name} Bone Mismatch: {boneName} ({boneIndices.BoneIndex}) was not present in the anim's target skeleton");
 #endif
 
             var loweredParentBoneName = boneIndices.LoweredParentBoneName;
@@ -224,13 +219,25 @@ public class Skeleton : IDisposable
         }
     }
 
+    public void ResetAnimatedData(bool full = false)
+    {
+        foreach (var boneIndices in BonesIndicesByLoweredName.Values)
+        {
+            boneIndices.TrackIndex = -1;
+            boneIndices.ParentTrackIndex = -1;
+        }
+
+        if (!full) return;
+        _animatedBonesTransform = Array.Empty<Transform[][]>();
+        _ssbo.UpdateRange(BoneCount, Matrix4x4.Identity);
+    }
+
     public void Setup()
     {
         _handle = GL.CreateProgram();
 
         _ssbo = new BufferObject<Matrix4x4>(BoneCount, BufferTarget.ShaderStorageBuffer);
-        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
-            _ssbo.Update(boneIndex, Matrix4x4.Identity);
+        _ssbo.UpdateRange(BoneCount, Matrix4x4.Identity);
     }
 
     public void UpdateAnimationMatrices(int currentSequence, int frameInSequence)

@@ -47,6 +47,8 @@ public class SnimGui
     private readonly Save _saver = new ();
     private readonly string _renderer;
     private readonly string _version;
+
+    private Vector2 _outlinerSize;
     private bool _ti_open;
     private bool _viewportFocus;
 
@@ -71,7 +73,8 @@ public class SnimGui
         DrawDockSpace(s.Size);
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
-        AnimationWindow("Timeline", s.Renderer, (icons, tracker, animations) => tracker.ImGuiTimeline(Controller.FontSemiBold, animations));
+        AnimationWindow("Timeline", s.Renderer, (icons, tracker, animations) =>
+            tracker.ImGuiTimeline(icons, animations, _outlinerSize, s.Renderer.Options.SelectedAnimation, Controller.FontSemiBold));
 
         Window("World", () => DrawWorld(s), false);
 
@@ -305,6 +308,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
         Window("Outliner", () =>
         {
+            _outlinerSize = ImGui.GetWindowSize();
             if (ImGui.BeginTable("Items", 4, ImGuiTableFlags.Resizable | ImGuiTableFlags.BordersOuterV | ImGuiTableFlags.NoSavedSettings, ImGui.GetContentRegionAvail()))
             {
                 ImGui.TableSetupColumn("Instance", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
@@ -349,6 +353,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         ImGui.BeginDisabled(!model.HasSkeleton);
                         if (ImGui.Selectable("Animate"))
                         {
+                            s.Renderer.Options.RemoveAnimations();
                             s.Renderer.Options.AnimateMesh(true);
                             s.WindowShouldClose(true, false);
                         }
@@ -359,7 +364,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             s.Renderer.CameraOp.Teleport(instancePos, model.Box);
                         }
 
-                        if (ImGui.Selectable("Delete")) s.Renderer.Options.Models.Remove(guid);
+                        if (ImGui.Selectable("Delete")) s.Renderer.Options.RemoveModel(guid);
                         if (ImGui.Selectable("Deselect")) s.Renderer.Options.SelectModel(Guid.Empty);
                         ImGui.Separator();
                         if (ImGui.Selectable("Copy Name to Clipboard")) ImGui.SetClipboardText(model.Name);

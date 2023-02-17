@@ -230,6 +230,12 @@
     <Resource Include="Resources\link_on.png" />
     <Resource Include="Resources\link_off.png" />
     <Resource Include="Resources\link_has.png" />
+    <Resource Include="Resources\tl_play.png" />
+    <Resource Include="Resources\tl_pause.png" />
+    <Resource Include="Resources\tl_rewind.png" />
+    <Resource Include="Resources\tl_forward.png" />
+    <Resource Include="Resources\tl_previous.png" />
+    <Resource Include="Resources\tl_next.png" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using FModel.Views.Snooper.Shading;
 using ImGuiNET;
 
 namespace FModel.Views.Snooper.Animations;
@@ -16,34 +17,37 @@ public enum ETrackerType
 public class TimeTracker : IDisposable
 {
     public bool IsPaused;
+    public bool IsActive;
     public float ElapsedTime;
-    public float MaxElapsedTime { get; private set; }
-
-    private float _timeHeight = 10.0f;
-    private float _timeBarHeight => _timeHeight * 2.0f;
+    public float MaxElapsedTime;
 
     public TimeTracker()
     {
         Reset();
-        SetMaxElapsedTime(0.01f);
     }
 
     public void Update(float deltaSeconds)
     {
-        if (IsPaused) return;
+        if (IsPaused || IsActive) return;
         ElapsedTime += deltaSeconds;
-        if (ElapsedTime >= MaxElapsedTime) Reset();
+        if (ElapsedTime >= MaxElapsedTime) Reset(false);
     }
 
-    public void SetMaxElapsedTime(float maxElapsedTime)
+    public void SafeSetElapsedTime(float elapsedTime)
+    {
+        ElapsedTime = Math.Clamp(elapsedTime, 0.0f, MaxElapsedTime);
+    }
+
+    public void SafeSetMaxElapsedTime(float maxElapsedTime)
     {
         MaxElapsedTime = MathF.Max(maxElapsedTime, MaxElapsedTime);
     }
 
-    public void Reset()
+    public void Reset(bool doMet = true)
     {
         IsPaused = false;
         ElapsedTime = 0.0f;
+        if (doMet) MaxElapsedTime = 0.01f;
     }
 
     public void Dispose()
@@ -51,52 +55,100 @@ public class TimeTracker : IDisposable
         Reset();
     }
 
-    public void ImGuiTimeline(ImFontPtr fontPtr, List<Animation> animations)
+    private const float _margin = 5.0f;
+    private const float _thickness = 2.0f;
+    private const float _timeHeight = 10.0f;
+    private float _timeBarHeight => _timeHeight * 2.0f;
+    private readonly Vector2 _buttonSize = new (14.0f);
+    private readonly string[] _icons = { "tl_forward", "tl_pause", "tl_rewind" };
+
+    public void ImGuiTimeline(Dictionary<string, Texture> icons, List<Animation> animations, Vector2 outliner, int activeAnimation, ImFontPtr fontPtr)
     {
-        var io = ImGui.GetIO();
-        var canvasP0 = ImGui.GetCursorScreenPos();
+        var treeP0 = ImGui.GetCursorScreenPos();
         var canvasSize = ImGui.GetContentRegionAvail();
-        var canvasP1 = new Vector2(canvasP0.X + canvasSize.X, canvasP0.Y + canvasSize.Y);
-        var timeRatio = canvasSize / MaxElapsedTime;
+        var timelineP1 = new Vector2(treeP0.X + canvasSize.X, treeP0.Y + canvasSize.Y);
+
+        var treeP1 = timelineP1 with { X = treeP0.X + outliner.X };
+
+        var timelineP0 = treeP0 with { X = treeP1.X + _thickness };
+        var timelineSize = timelineP1 - timelineP0;
+        var timeRatio = timelineSize / MaxElapsedTime;
+        var timeStep = timeRatio * MaxElapsedTime / timelineSize * 50.0f;
+        timeStep.Y /= 2.0f;
 
         var drawList = ImGui.GetWindowDrawList();
+        drawList.AddRectFilled(treeP0, treeP1, 0xFF1F1C1C);
+        drawList.AddRectFilled(timelineP0, timelineP1 with { Y = timelineP0.Y + _timeBarHeight }, 0xFF141414);
+        drawList.AddRectFilled(timelineP0 with { Y = timelineP0.Y + _timeBarHeight }, timelineP1, 0xFF242424);
+        drawList.AddLine(new Vector2(treeP1.X, treeP0.Y), treeP1, 0xFF504545, _thickness);
+        drawList.AddLine(treeP0 with { Y = timelineP0.Y + _timeBarHeight }, timelineP1 with { Y = timelineP0.Y + _timeBarHeight }, 0x50504545, _thickness);
 
-        ImGui.InvisibleButton("timeline_canvas", canvasP1 with { Y = _timeBarHeight }, ImGuiButtonFlags.MouseButtonLeft);
-        IsPaused = ImGui.IsItemActive();
-        if (IsPaused && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
+        // adding margin
+        treeP0.X += _margin;
+        treeP1.X -= _margin;
+
+        // control buttons
+        for (int i = 0; i < _icons.Length; i++)
         {
-            var mousePosCanvas = io.MousePos - canvasP0;
-            ElapsedTime = Math.Clamp(mousePosCanvas.X / canvasSize.X * MaxElapsedTime, 0.01f, MaxElapsedTime);
+            var x = _buttonSize.X * 2.0f * i;
+            ImGui.SetCursorScreenPos(treeP0 with { X = treeP1.X - x - _buttonSize.X * 2.0f + _thickness });
+            if (ImGui.ImageButton($"timeline_actions_{_icons[i]}", icons[_icons[i]].GetPointer(), _buttonSize))
+            {
+                switch (i)
+                {
+                    case 0:
+                        SafeSetElapsedTime(ElapsedTime + timeStep.X / timeRatio.X);
+                        break;
+                    case 1:
+                        IsPaused = !IsPaused;
+                        _icons[1] = IsPaused ? "tl_play" : "tl_pause";
+                        break;
+                    case 2:
+                        SafeSetElapsedTime(ElapsedTime - timeStep.X / timeRatio.X);
+                        break;
+                }
+            }
+        }
+
+        ImGui.SetCursorScreenPos(timelineP0);
+        ImGui.InvisibleButton("timeline_timetracker_canvas", timelineSize with { Y = _timeBarHeight }, ImGuiButtonFlags.MouseButtonLeft);
+        IsActive = ImGui.IsItemActive();
+        if (IsActive && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
+        {
+            var mousePosCanvas = ImGui.GetIO().MousePos - timelineP0;
+            SafeSetElapsedTime(mousePosCanvas.X / timelineSize.X * MaxElapsedTime);
             foreach (var animation in animations)
             {
                 animation.TimeCalculation(ElapsedTime);
             }
         }
 
-        drawList.AddRectFilled(canvasP0, canvasP1 with { Y = canvasP0.Y + _timeBarHeight }, 0xFF181818);
-        drawList.PushClipRect(canvasP0, canvasP1 with { Y = canvasP0.Y + _timeBarHeight }, true);
-        {
-            for (float x = 0; x < canvasSize.X; x += timeRatio.X * MaxElapsedTime / canvasSize.X * 50.0f)
+        {   // draw time + time grid
+            for (float x = 0; x < timelineSize.X; x += timeStep.X)
             {
-                drawList.AddLine(new Vector2(canvasP0.X + x, canvasP0.Y + _timeHeight + 2.5f), canvasP1 with { X = canvasP0.X + x }, 0xA0FFFFFF);
-                drawList.AddText(fontPtr, 14, new Vector2(canvasP0.X + x + 4, canvasP0.Y + 7.5f), 0x50FFFFFF, $"{x / timeRatio.X:F1}s");
+                var cursor = timelineP0.X + x;
+                drawList.AddLine(new Vector2(cursor, timelineP0.Y + _timeHeight + 2.5f), new Vector2(cursor, timelineP0.Y + _timeBarHeight), 0xA0FFFFFF);
+                drawList.AddLine(new Vector2(cursor, timelineP0.Y + _timeBarHeight), timelineP1 with { X = cursor }, 0x28C8C8C8);
+                drawList.AddText(fontPtr, 14, new Vector2(cursor + 4, timelineP0.Y + 7.5f), 0x50FFFFFF, $"{x / timeRatio.X:F1}s");
+            }
+
+            for (float y = _timeBarHeight; y < timelineSize.Y; y += timeStep.Y)
+            {
+                drawList.AddLine(timelineP0 with { Y = timelineP0.Y + y }, timelineP1 with { Y = timelineP0.Y + y }, 0x28C8C8C8);
             }
         }
-        drawList.PopClipRect();
 
-        foreach (var animation in animations)
+        for (int i = 0; i < animations.Count; i++)
         {
-            for (int i = 0; i < animation.Sequences.Length; i++)
-            {
-                animation.Sequences[i].DrawSequence(drawList, canvasP0.X, canvasP0.Y + _timeBarHeight, timeRatio, i, i == animation.CurrentSequence ? 0xFF0000FF : 0xFF175F17);
-            }
-            DrawSeparator(drawList, canvasP0, canvasP1, animation.EndTime * timeRatio.X, ETrackerType.End);
+            var y = timelineP0.Y + _timeBarHeight + timeStep.Y * (i % 2);
+            animations[i].ImGuiAnimation(drawList, timelineP0, treeP0, treeP1, timeStep, timeRatio, y, _thickness);
+            DrawSeparator(drawList, timelineP0, y + timeStep.Y, animations[i].EndTime * timeRatio.X, ETrackerType.End);
         }
 
-        DrawSeparator(drawList, canvasP0, canvasP1, ElapsedTime * timeRatio.X, ETrackerType.Frame);
+        DrawSeparator(drawList, timelineP0, timelineP1.Y, ElapsedTime * timeRatio.X, ETrackerType.Frame);
     }
 
-    private void DrawSeparator(ImDrawListPtr drawList, Vector2 origin, Vector2 destination, float time, ETrackerType separatorType)
+    private void DrawSeparator(ImDrawListPtr drawList, Vector2 origin, float y, float time, ETrackerType separatorType)
     {
         const int size = 5;
 
@@ -106,7 +158,7 @@ public class TimeTracker : IDisposable
             ETrackerType.End => origin with { X = origin.X + time },
             _ => throw new ArgumentOutOfRangeException(nameof(separatorType), separatorType, null)
         };
-        var p2 = new Vector2(p1.X, destination.Y);
+        var p2 = p1 with { Y = y };
 
         uint color = separatorType switch
         {

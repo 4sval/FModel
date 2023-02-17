@@ -81,6 +81,7 @@ public class Model : IDisposable
     public Section[] Sections;
     public Material[] Materials;
     public bool TwoSided;
+    public bool IsAnimatedProp;
 
     public bool HasSkeleton => Skeleton != null;
     public readonly Skeleton Skeleton;
@@ -306,7 +307,11 @@ public class Model : IDisposable
     public void DetachModel(Model attachedTo, Socket socket)
     {
         socket.AttachedModels.Remove(Guid);
+        SafeDetachModel(attachedTo);
+    }
 
+    public void SafeDetachModel(Model attachedTo)
+    {
         _attachedTo = string.Empty;
         attachedTo._attachedFor.Remove($"'{Name}'");
         Transforms[SelectedInstance].Relation = _previousMatrix;

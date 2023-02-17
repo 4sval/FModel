@@ -45,6 +45,7 @@ public partial class MainWindow
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        var newOrUpdated = UserSettings.Default.ShowChangelog;
 #if !DEBUG
         ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(UserSettings.Default.UpdateMode);
 #endif
@@ -67,7 +68,7 @@ public partial class MainWindow
         await _applicationView.CUE4Parse.InitInformation();
 #endif
         await _applicationView.CUE4Parse.InitMappings();
-        await _applicationView.InitImGuiSettings();
+        await _applicationView.InitImGuiSettings(newOrUpdated);
         await _applicationView.InitVgmStream();
         await _applicationView.InitOodle();
 

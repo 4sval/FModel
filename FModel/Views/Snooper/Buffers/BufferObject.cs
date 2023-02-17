@@ -26,6 +26,13 @@ public class BufferObject<TDataType> : IDisposable where TDataType : unmanaged
         GL.BufferData(bufferTarget, length * sizeof(TDataType), IntPtr.Zero, BufferUsageHint.DynamicDraw);
     }
 
+    public void UpdateRange(int count, TDataType data)
+    {
+        Bind();
+        for (int i = 0; i < count; i++) Update(i, data);
+        Unbind();
+    }
+
     public unsafe void Update(int offset, TDataType data)
     {
         GL.BufferSubData(_bufferTarget,  (IntPtr) (offset * sizeof(TDataType)), sizeof(TDataType), ref data);
