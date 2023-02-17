@@ -186,10 +186,10 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    public async Task InitImGuiSettings()
+    public async Task InitImGuiSettings(bool forceDownload)
     {
         var imgui = Path.Combine(/*UserSettings.Default.OutputDirectory, ".data", */"imgui.ini");
-        if (File.Exists(imgui)) return;
+        if (!forceDownload || File.Exists(imgui)) return;
 
         await ApplicationService.ApiEndpointView.DownloadFileAsync("https://cdn.fmodel.app/d/configurations/imgui.ini", imgui);
         if (new FileInfo(imgui).Length == 0)

@@ -140,7 +140,7 @@ public class TimeTracker : IDisposable
 
         for (int i = 0; i < animations.Count; i++)
         {
-            var y = timelineP0.Y + _timeBarHeight + timeStep.Y * (i % 2);
+            var y = timelineP0.Y + _timeBarHeight + timeStep.Y * i;
             animations[i].ImGuiAnimation(drawList, timelineP0, treeP0, treeP1, timeStep, timeRatio, y, _thickness);
             DrawSeparator(drawList, timelineP0, y + timeStep.Y, animations[i].EndTime * timeRatio.X, ETrackerType.End);
         }

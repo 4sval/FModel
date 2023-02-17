@@ -99,12 +99,12 @@ public class Options
     {
         if (!TryGetModel(guid, out var model)) return;
 
-        DetachAndRemoveModels(model);
+        DetachAndRemoveModels(model, true);
         model.Dispose();
         Models.Remove(guid);
     }
 
-    private void DetachAndRemoveModels(Model model)
+    private void DetachAndRemoveModels(Model model, bool detach)
     {
         foreach (var socket in model.Sockets.ToList())
         {
@@ -112,8 +112,12 @@ public class Options
             {
                 if (!TryGetModel(info.Guid, out var attachedModel)) continue;
 
-                attachedModel.SafeDetachModel(model);
-                RemoveModel(info.Guid);
+                if (attachedModel.IsAnimatedProp)
+                {
+                    attachedModel.SafeDetachModel(model);
+                    RemoveModel(info.Guid);
+                }
+                else if (detach) attachedModel.SafeDetachModel(model);
             }
 
             if (socket.IsVirtual)
@@ -139,7 +143,7 @@ public class Options
                 if (!TryGetModel(guid, out var animatedModel)) continue;
 
                 animatedModel.Skeleton.ResetAnimatedData(true);
-                DetachAndRemoveModels(animatedModel);
+                DetachAndRemoveModels(animatedModel, false);
             }
             animation.Dispose();
         }
