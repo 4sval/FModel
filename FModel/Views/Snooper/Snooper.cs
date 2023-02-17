@@ -155,7 +155,7 @@ public class Snooper : GameWindow
         Renderer.CameraOp.Modify(KeyboardState, (float) e.Time);
 
         if (KeyboardState.IsKeyPressed(Keys.Delete))
-            Renderer.Options.Models.Remove(Renderer.Options.SelectedModel);
+            Renderer.Options.RemoveModel(Renderer.Options.SelectedModel);
         if (KeyboardState.IsKeyPressed(Keys.H))
             WindowShouldClose(true, false);
         if (KeyboardState.IsKeyPressed(Keys.Escape))

@@ -188,10 +188,10 @@ public class Skeleton : IDisposable
 
             boneIndices.TrackIndex = trackIndex;
             var parentTrackIndex = info.ParentIndex;
-            if (parentTrackIndex < 0) continue;
 
             do
             {
+                if (parentTrackIndex < 0) break;
                 info = anim.TrackBonesInfo[parentTrackIndex];
                 if (BonesIndicesByLoweredName.TryGetValue(info.Name.Text.ToLower(), out var parentBoneIndices) && parentBoneIndices.HasTrack)
                     boneIndices.ParentTrackIndex = parentBoneIndices.BoneIndex;

@@ -128,22 +128,46 @@ public class Renderer : IDisposable
                         !notifyClass.TryGetValue(out FPackageIndex meshProp, "SkeletalMeshProp", "StaticMeshProp", "Mesh") ||
                         !meshProp.TryLoad(out UObject export)) continue;
 
-                    FGuid guid = export switch
+                    var t = Transform.Identity;
+                    if (notifyClass.TryGetValue(out FTransform offset, "Offset"))
                     {
-                        UStaticMesh st => LoadStaticMesh(st, false),
-                        USkeletalMesh sk => LoadSkeletalMesh(sk, false),
-                        _ => throw new ArgumentException()
-                    };
+                        t.Rotation = offset.Rotation;
+                        t.Position = offset.Translation * Constants.SCALE_DOWN_RATIO;
+                        t.Scale = offset.Scale3D;
+                    }
+
+                    FGuid guid;
+                    switch (export)
+                    {
+                        case UStaticMesh st:
+                        {
+                            guid = st.LightingGuid;
+                            if (Options.TryGetModel(guid, out var instancedModel))
+                                instancedModel.AddInstance(t);
+                            else if (st.TryConvert(out var mesh))
+                                Options.Models[guid] = new Model(st, guid, mesh, t);
+                            break;
+                        }
+                        case USkeletalMesh sk:
+                        {
+                            guid = new FGuid((uint) sk.GetFullName().GetHashCode());
+                            if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh))
+                                Options.Models[guid] = new Model(sk, guid, mesh, t);
+                            break;
+                        }
+                        default:
+                            throw new ArgumentException();
+                    }
 
                     if (!Options.TryGetModel(guid, out var addedModel))
                         continue;
 
                     addedModel.IsAnimatedProp = true;
-                    if (notifyClass.TryGetValue(out UObject skeletalMeshPropAnimation, "SkeletalMeshPropAnimation"))
+                    if (notifyClass.TryGetValue(out UObject skeletalMeshPropAnimation, "SkeletalMeshPropAnimation", "Animation"))
                         Animate(skeletalMeshPropAnimation, addedModel);
                     if (notifyClass.TryGetValue(out FName socketName, "SocketName"))
                     {
-                        var t = Transform.Identity;
+                        t = Transform.Identity;
                         if (notifyClass.TryGetValue(out FVector location, "LocationOffset", "Location"))
                             t.Position = location * Constants.SCALE_DOWN_RATIO;
                         if (notifyClass.TryGetValue(out FRotator rotation, "RotationOffset", "Rotation"))
@@ -151,7 +175,7 @@ public class Renderer : IDisposable
                         if (notifyClass.TryGetValue(out FVector scale, "Scale"))
                             t.Scale = scale;
 
-                        var s = new Socket($"TL_{addedModel.Name}", socketName, t);
+                        var s = new Socket($"TL_{addedModel.Name}", socketName, t, true);
                         model.Sockets.Add(s);
                         addedModel.AttachModel(model, s);
                     }
@@ -243,40 +267,32 @@ public class Renderer : IDisposable
         Picking.Render(viewMatrix, projMatrix, Options.Models);
     }
 
-    private FGuid LoadStaticMesh(UStaticMesh original, bool select = true)
+    private void LoadStaticMesh(UStaticMesh original)
     {
         var guid = original.LightingGuid;
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
-            if (select) Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
-            return guid;
+            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            return;
         }
 
         if (!original.TryConvert(out var mesh))
-            return guid;
+            return;
 
         Options.Models[guid] = new Model(original, guid, mesh);
-        if (select)
-        {
-            Options.SelectModel(guid);
-            SetupCamera(Options.Models[guid].Box);
-        }
-        return guid;
+        Options.SelectModel(guid);
+        SetupCamera(Options.Models[guid].Box);
     }
 
-    private FGuid LoadSkeletalMesh(USkeletalMesh original, bool select = true)
+    private void LoadSkeletalMesh(USkeletalMesh original)
     {
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
-        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return guid;
+        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
 
         Options.Models[guid] = new Model(original, guid, mesh);
-        if (select)
-        {
-            Options.SelectModel(guid);
-            SetupCamera(Options.Models[guid].Box);
-        }
-        return guid;
+        Options.SelectModel(guid);
+        SetupCamera(Options.Models[guid].Box);
     }
 
     private void LoadMaterialInstance(UMaterialInstance original)

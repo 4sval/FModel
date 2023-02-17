@@ -137,7 +137,7 @@ public class Model : IDisposable
     }
 
     public Model(USkeletalMesh export, FGuid guid, CSkeletalMesh skeletalMesh) : this(export, guid, skeletalMesh, Transform.Identity) {}
-    private Model(USkeletalMesh export, FGuid guid, CSkeletalMesh skeletalMesh, Transform transform) : this(export, guid, export.Materials, skeletalMesh.LODs, transform)
+    public Model(USkeletalMesh export, FGuid guid, CSkeletalMesh skeletalMesh, Transform transform) : this(export, guid, export.Materials, skeletalMesh.LODs, transform)
     {
         Box = skeletalMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
         Skeleton = new Skeleton(export.ReferenceSkeleton);
@@ -275,17 +275,14 @@ public class Model : IDisposable
     }
     private Matrix4x4 UpdateMatrices()
     {
+        _matrixVbo.Bind();
         for (int instance = 0; instance < TransformsCount; instance++)
         {
             var matrix = Transforms[instance].Matrix;
-            if (matrix == _previousMatrix) return matrix;
-
-            _matrixVbo.Bind();
             _matrixVbo.Update(instance, matrix);
-            _matrixVbo.Unbind();
-
             _previousMatrix = matrix;
         }
+        _matrixVbo.Unbind();
         return _previousMatrix;
     }
 

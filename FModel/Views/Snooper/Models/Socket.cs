@@ -18,6 +18,7 @@ public class Socket : IDisposable
     public readonly string Name;
     public readonly FName BoneName;
     public readonly Transform Transform;
+    public readonly bool IsVirtual;
 
     public readonly List<SocketAttachementInfo> AttachedModels;
 
@@ -27,11 +28,12 @@ public class Socket : IDisposable
         AttachedModels = new List<SocketAttachementInfo>();
     }
 
-    public Socket(string name, FName boneName, Transform transform) : this()
+    public Socket(string name, FName boneName, Transform transform, bool isVirtual) : this()
     {
         Name = name;
         BoneName = boneName;
         Transform = transform;
+        IsVirtual = isVirtual;
     }
 
     public Socket(UStaticMeshSocket socket) : this()

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
@@ -105,7 +106,7 @@ public class Options
 
     private void DetachAndRemoveModels(Model model)
     {
-        foreach (var socket in model.Sockets)
+        foreach (var socket in model.Sockets.ToList())
         {
             foreach (var info in socket.AttachedModels)
             {
@@ -114,7 +115,12 @@ public class Options
                 attachedModel.SafeDetachModel(model);
                 RemoveModel(info.Guid);
             }
-            socket.Dispose();
+
+            if (socket.IsVirtual)
+            {
+                socket.Dispose();
+                model.Sockets.Remove(socket);
+            }
         }
     }
 
