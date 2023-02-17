@@ -248,6 +248,7 @@ public class Model : IDisposable
 
     public void AddInstance(Transform transform)
     {
+        SelectedInstance = TransformsCount;
         TransformsCount++;
         Transforms.Add(transform);
     }
@@ -262,27 +263,30 @@ public class Model : IDisposable
                 boneMatrix = Skeleton.GetBoneMatrix(boneIndices);
 
             var socketRelation = boneMatrix * worldMatrix;
-            foreach (var attached in socket.AttachedModels)
+            foreach (var info in socket.AttachedModels)
             {
-                if (!options.TryGetModel(attached, out var attachedModel))
+                if (!options.TryGetModel(info.Guid, out var attachedModel))
                     continue;
 
-                attachedModel.Transforms[attachedModel.SelectedInstance].Relation = socket.Transform.LocalMatrix * socketRelation;
+                attachedModel.Transforms[info.Instance].Relation = socket.Transform.LocalMatrix * socketRelation;
                 attachedModel.UpdateMatrices(options);
             }
         }
     }
     private Matrix4x4 UpdateMatrices()
     {
-        var matrix = Transforms[SelectedInstance].Matrix;
-        if (matrix == _previousMatrix) return matrix;
+        for (int instance = 0; instance < TransformsCount; instance++)
+        {
+            var matrix = Transforms[instance].Matrix;
+            if (matrix == _previousMatrix) return matrix;
 
-        _matrixVbo.Bind();
-        _matrixVbo.Update(SelectedInstance, matrix);
-        _matrixVbo.Unbind();
+            _matrixVbo.Bind();
+            _matrixVbo.Update(instance, matrix);
+            _matrixVbo.Unbind();
 
-        _previousMatrix = matrix;
-        return matrix;
+            _previousMatrix = matrix;
+        }
+        return _previousMatrix;
     }
 
     public void UpdateMorph(int index)
@@ -294,7 +298,7 @@ public class Model : IDisposable
 
     public void AttachModel(Model attachedTo, Socket socket)
     {
-        socket.AttachedModels.Add(Guid);
+        socket.AttachedModels.Add(new SocketAttachementInfo { Guid = Guid, Instance = SelectedInstance });
 
         _attachedTo = $"'{socket.Name}' from '{attachedTo.Name}'{(!socket.BoneName.IsNone ? $" at '{socket.BoneName}'" : "")}";
         attachedTo._attachedFor.Add($"'{Name}'");
@@ -306,7 +310,7 @@ public class Model : IDisposable
 
     public void DetachModel(Model attachedTo, Socket socket)
     {
-        socket.AttachedModels.Remove(Guid);
+        socket.AttachedModels.Remove(new SocketAttachementInfo { Guid = Guid, Instance = SelectedInstance });
         SafeDetachModel(attachedTo);
     }
 

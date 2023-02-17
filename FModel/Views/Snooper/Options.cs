@@ -107,12 +107,12 @@ public class Options
     {
         foreach (var socket in model.Sockets)
         {
-            foreach (var guid in socket.AttachedModels)
+            foreach (var info in socket.AttachedModels)
             {
-                if (!TryGetModel(guid, out var attachedModel)) continue;
+                if (!TryGetModel(info.Guid, out var attachedModel)) continue;
 
                 attachedModel.SafeDetachModel(model);
-                RemoveModel(guid);
+                RemoveModel(info.Guid);
             }
             socket.Dispose();
         }

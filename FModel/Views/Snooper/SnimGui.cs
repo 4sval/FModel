@@ -420,7 +420,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     var i = 0;
                     foreach (var socket in model.Sockets)
                     {
-                        var isAttached = socket.AttachedModels.Contains(selectedModel.Guid);
+                        var isAttached = socket.AttachedModels.Contains(new SocketAttachementInfo { Guid = selectedModel.Guid, Instance = selectedModel.SelectedInstance });
                         ImGui.PushID(i);
                         ImGui.BeginDisabled(selectedModel.IsAttached && !isAttached);
                         switch (isAttached)

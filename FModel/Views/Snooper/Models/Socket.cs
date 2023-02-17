@@ -7,18 +7,24 @@ using CUE4Parse.UE4.Objects.UObject;
 
 namespace FModel.Views.Snooper.Models;
 
+public struct SocketAttachementInfo
+{
+    public FGuid Guid;
+    public int Instance;
+}
+
 public class Socket : IDisposable
 {
     public readonly string Name;
     public readonly FName BoneName;
     public readonly Transform Transform;
 
-    public readonly List<FGuid> AttachedModels;
+    public readonly List<SocketAttachementInfo> AttachedModels;
 
     private Socket()
     {
         Transform = Transform.Identity;
-        AttachedModels = new List<FGuid>();
+        AttachedModels = new List<SocketAttachementInfo>();
     }
 
     public Socket(string name, FName boneName, Transform transform) : this()

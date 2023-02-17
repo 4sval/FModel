@@ -249,7 +249,7 @@ public class Renderer : IDisposable
         if (Options.TryGetModel(guid, out var model))
         {
             model.AddInstance(Transform.Identity);
-            Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
+            if (select) Application.Current.Dispatcher.Invoke(() => model.SetupInstances());
             return guid;
         }
 
