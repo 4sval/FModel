@@ -358,7 +358,7 @@ public class Material : IDisposable
         var canvasSize = ImGui.GetContentRegionAvail();
         if (canvasSize.X < 50.0f) canvasSize.X = 50.0f;
         if (canvasSize.Y < 50.0f) canvasSize.Y = 50.0f;
-        var canvasP1 = new Vector2(canvasP0.X + canvasSize.X, canvasP0.Y + canvasSize.Y);
+        var canvasP1 = canvasP0 + canvasSize;
         var origin = new Vector2(canvasP0.X + _scrolling.X, canvasP0.Y + _scrolling.Y);
         var absoluteMiddle = canvasSize / 2.0f;
 

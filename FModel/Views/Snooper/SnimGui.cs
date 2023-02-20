@@ -74,7 +74,7 @@ public class SnimGui
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
         AnimationWindow("Timeline", s.Renderer, (icons, tracker, animations) =>
-            tracker.ImGuiTimeline(icons, animations, _outlinerSize, s.Renderer.Options.SelectedAnimation, Controller.FontSemiBold));
+            tracker.ImGuiTimeline(icons, animations, _outlinerSize, ref s.Renderer.Options.SelectedAnimation, Controller.FontSemiBold));
 
         Window("World", () => DrawWorld(s), false);
 
@@ -412,6 +412,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     {
         MeshWindow("Sockets", s.Renderer, (icons, selectedModel) =>
         {
+            var info = new SocketAttachementInfo { Guid = s.Renderer.Options.SelectedModel, Instance = selectedModel.SelectedInstance };
             foreach (var model in s.Renderer.Options.Models.Values)
             {
                 if (!model.HasSockets || model.IsSelected) continue;
@@ -420,16 +421,16 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     var i = 0;
                     foreach (var socket in model.Sockets)
                     {
-                        var isAttached = socket.AttachedModels.Contains(new SocketAttachementInfo { Guid = selectedModel.Guid, Instance = selectedModel.SelectedInstance });
+                        var isAttached = socket.AttachedModels.Contains(info);
                         ImGui.PushID(i);
                         ImGui.BeginDisabled(selectedModel.IsAttached && !isAttached);
                         switch (isAttached)
                         {
                             case false when ImGui.Button($"Attach to '{socket.Name}'"):
-                                selectedModel.AttachModel(model, socket);
+                                selectedModel.AttachModel(model, socket, info);
                                 break;
                             case true when ImGui.Button($"Detach from '{socket.Name}'"):
-                                selectedModel.DetachModel(model, socket);
+                                selectedModel.DetachModel(model, socket, info);
                                 break;
                         }
                         ImGui.EndDisabled();

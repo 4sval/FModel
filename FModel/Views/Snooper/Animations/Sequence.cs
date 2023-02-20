@@ -14,6 +14,7 @@ public class Sequence
     public readonly float EndTime;
     public readonly int EndFrame;
     public readonly int LoopingCount;
+    public readonly bool IsAdditive;
 
     public Sequence(CAnimSequence sequence)
     {
@@ -24,6 +25,7 @@ public class Sequence
         EndTime = StartTime + Duration;
         EndFrame = (Duration / TimePerFrame).FloorToInt() - 1;
         LoopingCount = sequence.LoopingCount;
+        IsAdditive = sequence.bAdditive;
     }
 
     private readonly float _height = 20.0f;

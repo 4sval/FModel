@@ -1,13 +1,12 @@
 ﻿using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets.Exports.Material;
-using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Views.Snooper.Shading;
 
 namespace FModel.Views.Snooper.Models;
 
 public class Cube : Model
 {
-    public Cube(CStaticMesh mesh, FGuid guid, UMaterialInterface unrealMaterial) : base(unrealMaterial, guid)
+    public Cube(CStaticMesh mesh, UMaterialInterface unrealMaterial) : base(unrealMaterial)
     {
         var lod = mesh.LODs[0];
 

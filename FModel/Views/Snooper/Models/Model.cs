@@ -13,7 +13,6 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
-using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Extensions;
 using FModel.Settings;
 using FModel.Views.Snooper.Animations;
@@ -70,7 +69,6 @@ public class Model : IDisposable
     private const int _faceSize = 3;
 
     private readonly UObject _export;
-    public readonly FGuid Guid;
     public readonly string Path;
     public readonly string Name;
     public readonly string Type;
@@ -110,10 +108,9 @@ public class Model : IDisposable
     public int SelectedInstance;
     public float MorphTime;
 
-    protected Model(UObject export, FGuid guid)
+    protected Model(UObject export)
     {
         _export = export;
-        Guid = guid;
         Path = _export.GetPathName();
         Name = Path.SubstringAfterLast('/').SubstringBefore('.');
         Type = export.ExportType;
@@ -124,8 +121,8 @@ public class Model : IDisposable
         Transforms = new List<Transform>();
     }
 
-    public Model(UStaticMesh export, FGuid guid, CStaticMesh staticMesh) : this(export, guid, staticMesh, Transform.Identity) {}
-    public Model(UStaticMesh export, FGuid guid, CStaticMesh staticMesh, Transform transform) : this(export, guid, export.Materials, staticMesh.LODs, transform)
+    public Model(UStaticMesh export, CStaticMesh staticMesh) : this(export, staticMesh, Transform.Identity) {}
+    public Model(UStaticMesh export, CStaticMesh staticMesh, Transform transform) : this(export, export.Materials, staticMesh.LODs, transform)
     {
         Box = staticMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
 
@@ -136,8 +133,8 @@ public class Model : IDisposable
         }
     }
 
-    public Model(USkeletalMesh export, FGuid guid, CSkeletalMesh skeletalMesh) : this(export, guid, skeletalMesh, Transform.Identity) {}
-    public Model(USkeletalMesh export, FGuid guid, CSkeletalMesh skeletalMesh, Transform transform) : this(export, guid, export.Materials, skeletalMesh.LODs, transform)
+    public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh) : this(export, skeletalMesh, Transform.Identity) {}
+    public Model(USkeletalMesh export, CSkeletalMesh skeletalMesh, Transform transform) : this(export, export.Materials, skeletalMesh.LODs, transform)
     {
         Box = skeletalMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
         Skeleton = new Skeleton(export.ReferenceSkeleton);
@@ -163,11 +160,11 @@ public class Model : IDisposable
         }
     }
 
-    private Model(UObject export, FGuid guid, IReadOnlyList<ResolvedObject> materials, IReadOnlyList<CStaticMeshLod> lods, Transform transform = null)
-        : this(export, guid, materials, lods[_LOD_INDEX], lods[_LOD_INDEX].Verts, lods.Count, transform) {}
-    private Model(UObject export, FGuid guid, IReadOnlyList<ResolvedObject> materials, IReadOnlyList<CSkelMeshLod> lods, Transform transform = null)
-        : this(export, guid, materials, lods[_LOD_INDEX], lods[_LOD_INDEX].Verts, lods.Count, transform) {}
-    private Model(UObject export, FGuid guid, IReadOnlyList<ResolvedObject> materials, CBaseMeshLod lod, IReadOnlyList<CMeshVertex> vertices, int numLods, Transform transform = null) : this(export, guid)
+    private Model(UObject export, IReadOnlyList<ResolvedObject> materials, IReadOnlyList<CStaticMeshLod> lods, Transform transform = null)
+        : this(export, materials, lods[_LOD_INDEX], lods[_LOD_INDEX].Verts, lods.Count, transform) {}
+    private Model(UObject export, IReadOnlyList<ResolvedObject> materials, IReadOnlyList<CSkelMeshLod> lods, Transform transform = null)
+        : this(export, materials, lods[_LOD_INDEX], lods[_LOD_INDEX].Verts, lods.Count, transform) {}
+    private Model(UObject export, IReadOnlyList<ResolvedObject> materials, CBaseMeshLod lod, IReadOnlyList<CMeshVertex> vertices, int numLods, Transform transform = null) : this(export)
     {
         var hasCustomUvs = lod.ExtraUV.IsValueCreated;
         UvCount = hasCustomUvs ? Math.Max(lod.NumTexCoords, numLods) : lod.NumTexCoords;
@@ -293,9 +290,9 @@ public class Model : IDisposable
         _morphVbo.Unbind();
     }
 
-    public void AttachModel(Model attachedTo, Socket socket)
+    public void AttachModel(Model attachedTo, Socket socket, SocketAttachementInfo info)
     {
-        socket.AttachedModels.Add(new SocketAttachementInfo { Guid = Guid, Instance = SelectedInstance });
+        socket.AttachedModels.Add(info);
 
         _attachedTo = $"'{socket.Name}' from '{attachedTo.Name}'{(!socket.BoneName.IsNone ? $" at '{socket.BoneName}'" : "")}";
         attachedTo._attachedFor.Add($"'{Name}'");
@@ -305,9 +302,9 @@ public class Model : IDisposable
         Transforms[SelectedInstance].Scale = FVector.OneVector;
     }
 
-    public void DetachModel(Model attachedTo, Socket socket)
+    public void DetachModel(Model attachedTo, Socket socket, SocketAttachementInfo info)
     {
-        socket.AttachedModels.Remove(new SocketAttachementInfo { Guid = Guid, Instance = SelectedInstance });
+        socket.AttachedModels.Remove(info);
         SafeDetachModel(attachedTo);
     }
 

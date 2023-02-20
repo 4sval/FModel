@@ -92,15 +92,11 @@ public class Renderer : IDisposable
         Options.SwapMaterial(false);
     }
 
-    public void Animate(UObject anim)
+    public void Animate(UObject anim) => Animate(anim, Options.SelectedModel);
+    private void Animate(UObject anim, FGuid guid)
     {
-        if (!Options.TryGetModel(out var model))
+        if (!Options.TryGetModel(guid, out var model) || !model.HasSkeleton)
             return;
-        Animate(anim, model);
-    }
-    private void Animate(UObject anim, Model model)
-    {
-        if (!model.HasSkeleton) return;
 
         float maxElapsedTime;
         switch (anim)
@@ -108,7 +104,7 @@ public class Renderer : IDisposable
             case UAnimSequence animSequence when animSequence.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animSequence);
-                var animation = new Animation(animSequence.Name, animSet, model.Guid);
+                var animation = new Animation(animSequence.Name, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
                 model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
                 Options.AddAnimation(animation);
@@ -117,7 +113,7 @@ public class Renderer : IDisposable
             case UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animMontage);
-                var animation = new Animation(animMontage.Name, animSet, model.Guid);
+                var animation = new Animation(animMontage.Name, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
                 model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
                 Options.AddAnimation(animation);
@@ -136,7 +132,6 @@ public class Renderer : IDisposable
                         t.Scale = offset.Scale3D;
                     }
 
-                    FGuid guid;
                     switch (export)
                     {
                         case UStaticMesh st:
@@ -145,14 +140,14 @@ public class Renderer : IDisposable
                             if (Options.TryGetModel(guid, out var instancedModel))
                                 instancedModel.AddInstance(t);
                             else if (st.TryConvert(out var mesh))
-                                Options.Models[guid] = new Model(st, guid, mesh, t);
+                                Options.Models[guid] = new Model(st, mesh, t);
                             break;
                         }
                         case USkeletalMesh sk:
                         {
-                            guid = new FGuid((uint) sk.GetFullName().GetHashCode());
+                            guid = Guid.NewGuid();
                             if (!Options.Models.ContainsKey(guid) && sk.TryConvert(out var mesh))
-                                Options.Models[guid] = new Model(sk, guid, mesh, t);
+                                Options.Models[guid] = new Model(sk, mesh, t);
                             break;
                         }
                         default:
@@ -164,7 +159,7 @@ public class Renderer : IDisposable
 
                     addedModel.IsAnimatedProp = true;
                     if (notifyClass.TryGetValue(out UObject skeletalMeshPropAnimation, "SkeletalMeshPropAnimation", "Animation"))
-                        Animate(skeletalMeshPropAnimation, addedModel);
+                        Animate(skeletalMeshPropAnimation, guid);
                     if (notifyClass.TryGetValue(out FName socketName, "SocketName"))
                     {
                         t = Transform.Identity;
@@ -177,7 +172,7 @@ public class Renderer : IDisposable
 
                         var s = new Socket($"TL_{addedModel.Name}", socketName, t, true);
                         model.Sockets.Add(s);
-                        addedModel.AttachModel(model, s);
+                        addedModel.AttachModel(model, s, new SocketAttachementInfo { Guid = guid, Instance = addedModel.SelectedInstance });
                     }
                 }
                 break;
@@ -185,7 +180,7 @@ public class Renderer : IDisposable
             case UAnimComposite animComposite when animComposite.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animComposite);
-                var animation = new Animation(animComposite.Name, animSet, model.Guid);
+                var animation = new Animation(animComposite.Name, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
                 model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
                 Options.AddAnimation(animation);
@@ -280,7 +275,7 @@ public class Renderer : IDisposable
         if (!original.TryConvert(out var mesh))
             return;
 
-        Options.Models[guid] = new Model(original, guid, mesh);
+        Options.Models[guid] = new Model(original, mesh);
         Options.SelectModel(guid);
         SetupCamera(Options.Models[guid].Box);
     }
@@ -290,7 +285,7 @@ public class Renderer : IDisposable
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
         if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
 
-        Options.Models[guid] = new Model(original, guid, mesh);
+        Options.Models[guid] = new Model(original, mesh);
         Options.SelectModel(guid);
         SetupCamera(Options.Models[guid].Box);
     }
@@ -311,7 +306,7 @@ public class Renderer : IDisposable
         if (!editorCube.TryConvert(out var mesh))
             return;
 
-        Options.Models[guid] = new Cube(mesh, guid, original);
+        Options.Models[guid] = new Cube(mesh, original);
         Options.SelectModel(guid);
         SetupCamera(Options.Models[guid].Box);
     }
@@ -403,7 +398,7 @@ public class Renderer : IDisposable
         }
         else if (m.TryConvert(out var mesh))
         {
-            model = new Model(m, guid, mesh, t);
+            model = new Model(m, mesh, t);
             model.TwoSided = actor.GetOrDefault("bMirrored", staticMeshComp.GetOrDefault("bDisallowMeshPaintPerInstance", model.TwoSided));
 
             if (actor.TryGetValue(out FPackageIndex baseMaterial, "BaseMaterial") &&

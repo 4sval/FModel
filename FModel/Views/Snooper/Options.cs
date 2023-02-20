@@ -17,7 +17,7 @@ public class Options
     public FGuid SelectedModel { get; private set; }
     public int SelectedSection { get; private set; }
     public int SelectedMorph { get; private set; }
-    public int SelectedAnimation { get; private set; }
+    public int SelectedAnimation;
 
     public readonly Dictionary<FGuid, Model> Models;
     public readonly Dictionary<FGuid, Texture> Textures;

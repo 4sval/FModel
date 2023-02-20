@@ -92,15 +92,9 @@ public class Skeleton : IDisposable
                 {
                     for (int frame = 0; frame < _animatedBonesTransform[s][boneIndices.BoneIndex].Length; frame++)
                     {
-                        // TODO: append the delta transform
-                        // ex: if bone 4, with parent 3, has its first found parent transform at 2,
-                        // we need to append the transform from 4 to 3 so that bone 4 won't be placed where bone 3 should be
                         _animatedBonesTransform[s][boneIndices.BoneIndex][frame] = new Transform
                         {
-                            Relation = _animatedBonesTransform[s][boneIndices.ParentTrackIndex][frame].Matrix,
-                            Rotation = originalTransform.Rotation,
-                            Position = originalTransform.Position,
-                            Scale = originalTransform.Scale
+                            Relation = originalTransform.LocalMatrix * _animatedBonesTransform[s][boneIndices.ParentTrackIndex][frame].Matrix
                         };
                     }
                 }
@@ -219,7 +213,7 @@ public class Skeleton : IDisposable
             do
             {
                 var parentBoneIndices = BonesIndicesByLoweredName[loweredParentBoneName];
-                if (parentBoneIndices.HasTrack) boneIndices.ParentTrackIndex = parentBoneIndices.BoneIndex;
+                if (parentBoneIndices.HasTrack || parentBoneIndices.HasParentTrack) boneIndices.ParentTrackIndex = parentBoneIndices.BoneIndex;
                 else loweredParentBoneName = parentBoneIndices.LoweredParentBoneName;
             } while (!boneIndices.HasParentTrack);
         }
@@ -255,7 +249,7 @@ public class Skeleton : IDisposable
         _previousSequenceFrame = frameInSequence;
 
         _ssbo.Bind();
-        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++)
+        for (int boneIndex = 0; boneIndex < BoneCount; boneIndex++) // interpolate here
             _ssbo.Update(boneIndex, _invertedBonesMatrix[boneIndex] * _animatedBonesTransform[_previousAnimationSequence][boneIndex][_previousSequenceFrame].Matrix);
         _ssbo.Unbind();
     }
