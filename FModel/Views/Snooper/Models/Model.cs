@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
-using CUE4Parse_Conversion;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Meshes.PSK;
@@ -14,7 +12,6 @@ using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
 using FModel.Extensions;
-using FModel.Settings;
 using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Shading;
@@ -68,7 +65,7 @@ public class Model : IDisposable
     public bool HasVertexColors => _vertexAttributes[(int) EAttribute.Colors].Enabled;
     private const int _faceSize = 3;
 
-    private readonly UObject _export;
+    public readonly UObject Export;
     public readonly string Path;
     public readonly string Name;
     public readonly string Type;
@@ -110,8 +107,8 @@ public class Model : IDisposable
 
     protected Model(UObject export)
     {
-        _export = export;
-        Path = _export.GetPathName();
+        Export = export;
+        Path = Export.GetPathName();
         Name = Path.SubstringAfterLast('/').SubstringBefore('.');
         Type = export.ExportType;
         UvCount = 1;
@@ -431,22 +428,6 @@ public class Model : IDisposable
         _vao.Unbind();
 
         if (TwoSided) GL.Enable(EnableCap.CullFace);
-    }
-
-    public bool TrySave(out string label, out string savedFilePath)
-    {
-        var exportOptions = new ExporterOptions
-        {
-            LodFormat = UserSettings.Default.LodExportFormat,
-            MeshFormat = UserSettings.Default.MeshExportFormat,
-            MaterialFormat = UserSettings.Default.MaterialExportFormat,
-            TextureFormat = UserSettings.Default.TextureExportFormat,
-            SocketFormat = UserSettings.Default.SocketExportFormat,
-            Platform = UserSettings.Default.OverridedPlatform,
-            ExportMorphTargets = UserSettings.Default.SaveMorphTargets
-        };
-        var toSave = new Exporter(_export, exportOptions);
-        return toSave.TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out label, out savedFilePath);
     }
 
     public void Dispose()

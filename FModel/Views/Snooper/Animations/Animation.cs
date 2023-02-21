@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using CUE4Parse_Conversion.Animations;
+using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.Utils;
 using ImGuiNET;
@@ -10,6 +11,8 @@ namespace FModel.Views.Snooper.Animations;
 
 public class Animation : IDisposable
 {
+    public readonly UObject Export;
+    public readonly string Path;
     public readonly string Name;
     public readonly Sequence[] Sequences;
     public readonly float StartTime;                // Animation Start Time
@@ -25,15 +28,17 @@ public class Animation : IDisposable
 
     public readonly List<FGuid> AttachedModels;
 
-    public Animation()
+    public Animation(UObject export)
     {
+        Export = export;
+        Path = Export.GetPathName();
+        Name = Export.Name;
         Sequences = Array.Empty<Sequence>();
         AttachedModels = new List<FGuid>();
     }
 
-    public Animation(string name, CAnimSet animSet) : this()
+    public Animation(UObject export, CAnimSet animSet) : this(export)
     {
-        Name = name;
         TargetSkeleton = animSet.OriginalAnim.Name;
 
         Sequences = new Sequence[animSet.Sequences.Count];
@@ -49,7 +54,7 @@ public class Animation : IDisposable
             StartTime = Sequences[0].StartTime;
     }
 
-    public Animation(string name, CAnimSet animSet, params FGuid[] animatedModels) : this(name, animSet)
+    public Animation(UObject export, CAnimSet animSet, params FGuid[] animatedModels) : this(export, animSet)
     {
         AttachedModels.AddRange(animatedModels);
     }
@@ -84,7 +89,7 @@ public class Animation : IDisposable
         AttachedModels.Clear();
     }
 
-    public void ImGuiAnimation(ImDrawListPtr drawList, Vector2 timelineP0, Vector2 treeP0, Vector2 treeP1, Vector2 timeStep, Vector2 timeRatio, float y, float t)
+    public void ImGuiAnimation(Snooper s, Save saver, ImDrawListPtr drawList, Vector2 timelineP0, Vector2 treeP0, Vector2 treeP1, Vector2 timeStep, Vector2 timeRatio, float y, float t, int i)
     {
         var p1 = new Vector2(timelineP0.X + StartTime * timeRatio.X + t, y + t);
         var p2 = new Vector2(timelineP0.X + EndTime * timeRatio.X - t, y + timeStep.Y - t);
@@ -92,6 +97,23 @@ public class Animation : IDisposable
         ImGui.SetCursorScreenPos(p1);
         ImGui.InvisibleButton($"timeline_sequencetracker_{Name}", new Vector2(EndTime * timeRatio.X - t, timeStep.Y - t), ImGuiButtonFlags.MouseButtonLeft);
         IsActive = ImGui.IsItemActive();
+        IsSelected = s.Renderer.Options.SelectedAnimation == i;
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+        {
+            s.Renderer.Options.SelectedAnimation = i;
+        }
+        SnimGui.Popup(() =>
+        {
+            s.Renderer.Options.SelectedAnimation = i;
+            if (ImGui.Selectable("Save"))
+            {
+                s.WindowShouldFreeze(true);
+                saver.Value = s.Renderer.Options.TrySave(Export, out saver.Label, out saver.Path);
+                s.WindowShouldFreeze(false);
+            }
+            ImGui.Separator();
+            if (ImGui.Selectable("Copy Path to Clipboard")) ImGui.SetClipboardText(Path);
+        });
 
         drawList.AddRectFilled(p1, p2, IsSelected ? 0xFF48B048 : 0xFF175F17, 5.0f, ImDrawFlags.RoundCornersTop);
         drawList.PushClipRect(p1, p2, true);

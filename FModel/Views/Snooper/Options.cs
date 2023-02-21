@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Settings;
@@ -17,7 +20,7 @@ public class Options
     public FGuid SelectedModel { get; private set; }
     public int SelectedSection { get; private set; }
     public int SelectedMorph { get; private set; }
-    public int SelectedAnimation;
+    public int SelectedAnimation{ get; set; }
 
     public readonly Dictionary<FGuid, Model> Models;
     public readonly Dictionary<FGuid, Texture> Textures;
@@ -136,6 +139,8 @@ public class Options
     public void RemoveAnimations()
     {
         Tracker.Reset();
+        SelectedAnimation = 0;
+
         foreach (var animation in Animations)
         {
             foreach (var guid in animation.AttachedModels)
@@ -146,6 +151,10 @@ public class Options
                 DetachAndRemoveModels(animatedModel, false);
             }
             animation.Dispose();
+        }
+        foreach (var kvp in Models.ToList().Where(kvp => kvp.Value.IsAnimatedProp))
+        {
+            RemoveModel(kvp.Key);
         }
         Animations.Clear();
     }
@@ -204,6 +213,22 @@ public class Options
     public void AnimateMesh(bool value)
     {
         Services.ApplicationService.ApplicationView.CUE4Parse.ModelIsWaitingAnimation = value;
+    }
+
+    public bool TrySave(UObject export, out string label, out string savedFilePath)
+    {
+        var exportOptions = new ExporterOptions
+        {
+            LodFormat = UserSettings.Default.LodExportFormat,
+            MeshFormat = UserSettings.Default.MeshExportFormat,
+            MaterialFormat = UserSettings.Default.MaterialExportFormat,
+            TextureFormat = UserSettings.Default.TextureExportFormat,
+            SocketFormat = UserSettings.Default.SocketExportFormat,
+            Platform = UserSettings.Default.OverridedPlatform,
+            ExportMorphTargets = UserSettings.Default.SaveMorphTargets
+        };
+        var toSave = new Exporter(export, exportOptions);
+        return toSave.TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out label, out savedFilePath);
     }
 
     public void ResetModelsLightsAnimations()

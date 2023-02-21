@@ -74,7 +74,7 @@ public class SnimGui
 
         SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
         AnimationWindow("Timeline", s.Renderer, (icons, tracker, animations) =>
-            tracker.ImGuiTimeline(icons, animations, _outlinerSize, ref s.Renderer.Options.SelectedAnimation, Controller.FontSemiBold));
+            tracker.ImGuiTimeline(s, _saver, icons, animations, _outlinerSize, Controller.FontSemiBold));
 
         Window("World", () => DrawWorld(s), false);
 
@@ -102,7 +102,7 @@ public class SnimGui
             {
                 foreach (var model in s.Renderer.Options.Models.Values)
                 {
-                    b |= model.TrySave(out _, out _);
+                    b |= s.Renderer.Options.TrySave(model.Export, out _, out _);
                 }
             }
 
@@ -347,7 +347,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         if (ImGui.Selectable("Save"))
                         {
                             s.WindowShouldFreeze(true);
-                            _saver.Value = model.TrySave(out _saver.Label, out _saver.Path);
+                            _saver.Value = s.Renderer.Options.TrySave(model.Export, out _saver.Label, out _saver.Path);
                             s.WindowShouldFreeze(false);
                         }
                         ImGui.BeginDisabled(!model.HasSkeleton);
@@ -378,34 +378,34 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     i++;
                 }
 
-                Modal("Saved", _saver.Value, () =>
-                {
-                    ImGui.TextWrapped($"Successfully saved {_saver.Label}");
-                    ImGui.Separator();
-
-                    var size = new Vector2(120, 0);
-                    if (ImGui.Button("OK", size))
-                    {
-                        _saver.Reset();
-                        ImGui.CloseCurrentPopup();
-                    }
-
-                    ImGui.SetItemDefaultFocus();
-                    ImGui.SameLine();
-
-                    if (ImGui.Button("Show In Explorer", size))
-                    {
-                        Process.Start("explorer.exe", $"/select, \"{_saver.Path.Replace('/', '\\')}\"");
-
-                        _saver.Reset();
-                        ImGui.CloseCurrentPopup();
-                    }
-                });
-
                 ImGui.EndTable();
             }
         });
         ImGui.PopStyleVar();
+
+        Modal("Saved", _saver.Value, () =>
+        {
+            ImGui.TextWrapped($"Successfully saved {_saver.Label}");
+            ImGui.Separator();
+
+            var size = new Vector2(120, 0);
+            if (ImGui.Button("OK", size))
+            {
+                _saver.Reset();
+                ImGui.CloseCurrentPopup();
+            }
+
+            ImGui.SetItemDefaultFocus();
+            ImGui.SameLine();
+
+            if (ImGui.Button("Show In Explorer", size))
+            {
+                Process.Start("explorer.exe", $"/select, \"{_saver.Path.Replace('/', '\\')}\"");
+
+                _saver.Reset();
+                ImGui.CloseCurrentPopup();
+            }
+        });
     }
 
     private void DrawSockets(Snooper s)
@@ -716,7 +716,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.PopStyleVar();
     }
 
-    private void Popup(Action content)
+    public static void Popup(Action content)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(4f));
         if (ImGui.BeginPopupContextItem())

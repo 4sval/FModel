@@ -63,7 +63,7 @@ public class TimeTracker : IDisposable
     private readonly Vector2 _buttonSize = new (14.0f);
     private readonly string[] _icons = { "tl_forward", "tl_pause", "tl_rewind" };
 
-    public void ImGuiTimeline(Dictionary<string, Texture> icons, List<Animation> animations, Vector2 outliner, ref int activeAnimation, ImFontPtr fontPtr)
+    public void ImGuiTimeline(Snooper s, Save saver, Dictionary<string, Texture> icons, List<Animation> animations, Vector2 outliner, ImFontPtr fontPtr)
     {
         var treeP0 = ImGui.GetCursorScreenPos();
         var canvasSize = ImGui.GetContentRegionAvail();
@@ -94,7 +94,7 @@ public class TimeTracker : IDisposable
         {
             var x = _buttonSize.X * 2.0f * i;
             ImGui.SetCursorScreenPos(treeP0 with { X = treeP1.X - x - _buttonSize.X * 2.0f + _thickness });
-            if (ImGui.ImageButton($"timeline_actions_{_icons[i]}", icons[_icons[i]].GetPointer(), _buttonSize))
+            if (ImGui.ImageButton($"timeline_actions_{_icons[i]}", icons[i == 1 ? IsPaused ? "tl_play" : "tl_pause" : _icons[i]].GetPointer(), _buttonSize))
             {
                 switch (i)
                 {
@@ -103,7 +103,6 @@ public class TimeTracker : IDisposable
                         break;
                     case 1:
                         IsPaused = !IsPaused;
-                        _icons[1] = IsPaused ? "tl_play" : "tl_pause";
                         break;
                     case 2:
                         SafeSetElapsedTime(ElapsedTime - _timeStep.X / timeRatio.X);
@@ -111,6 +110,8 @@ public class TimeTracker : IDisposable
                 }
             }
         }
+
+        drawList.AddText(treeP0 with { Y = treeP0.Y + _thickness }, 0xA0FFFFFF, $"{ElapsedTime:F1}/{MaxElapsedTime:F1} seconds");
 
         ImGui.SetCursorScreenPos(timelineP0);
         ImGui.InvisibleButton("timeline_timetracker_canvas", timelineSize with { Y = _timeBarHeight }, ImGuiButtonFlags.MouseButtonLeft);
@@ -143,12 +144,7 @@ public class TimeTracker : IDisposable
         for (int i = 0; i < animations.Count; i++)
         {
             var y = timelineP0.Y + _timeBarHeight + _timeStep.Y * i;
-
-            animations[i].ImGuiAnimation(drawList, timelineP0, treeP0, treeP1, _timeStep, timeRatio, y, _thickness);
-            animations[i].IsSelected = activeAnimation == i;
-            if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
-                activeAnimation = i;
-
+            animations[i].ImGuiAnimation(s, saver, drawList, timelineP0, treeP0, treeP1, _timeStep, timeRatio, y, _thickness, i);
             DrawSeparator(drawList, timelineP0, y + _timeStep.Y, animations[i].EndTime * timeRatio.X, ETrackerType.End);
         }
 

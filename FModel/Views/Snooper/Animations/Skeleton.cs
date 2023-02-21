@@ -213,7 +213,7 @@ public class Skeleton : IDisposable
             do
             {
                 var parentBoneIndices = BonesIndicesByLoweredName[loweredParentBoneName];
-                if (parentBoneIndices.HasTrack || parentBoneIndices.HasParentTrack) boneIndices.ParentTrackIndex = parentBoneIndices.BoneIndex;
+                if (parentBoneIndices.HasParentTrack || parentBoneIndices.IsRoot) boneIndices.ParentTrackIndex = parentBoneIndices.BoneIndex;
                 else loweredParentBoneName = parentBoneIndices.LoweredParentBoneName;
             } while (!boneIndices.HasParentTrack);
         }

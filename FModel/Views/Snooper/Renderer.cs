@@ -104,7 +104,7 @@ public class Renderer : IDisposable
             case UAnimSequence animSequence when animSequence.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animSequence);
-                var animation = new Animation(animSequence.Name, animSet, guid);
+                var animation = new Animation(animSequence, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
                 model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
                 Options.AddAnimation(animation);
@@ -113,7 +113,7 @@ public class Renderer : IDisposable
             case UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animMontage);
-                var animation = new Animation(animMontage.Name, animSet, guid);
+                var animation = new Animation(animMontage, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
                 model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
                 Options.AddAnimation(animation);
@@ -180,7 +180,7 @@ public class Renderer : IDisposable
             case UAnimComposite animComposite when animComposite.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animComposite);
-                var animation = new Animation(animComposite.Name, animSet, guid);
+                var animation = new Animation(animComposite, animSet, guid);
                 maxElapsedTime = animation.TotalElapsedTime;
                 model.Skeleton.Animate(animSet, AnimateWithRotationOnly);
                 Options.AddAnimation(animation);
@@ -190,6 +190,7 @@ public class Renderer : IDisposable
                 throw new ArgumentException();
         }
 
+        Options.Tracker.IsPaused = false;
         Options.Tracker.SafeSetMaxElapsedTime(maxElapsedTime);
         Options.AnimateMesh(false);
     }
