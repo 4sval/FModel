@@ -141,12 +141,14 @@ public class TimeTracker : IDisposable
             }
         }
 
+        ImGui.PushStyleVar(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.0f, 0.5f));
         for (int i = 0; i < animations.Count; i++)
         {
             var y = timelineP0.Y + _timeBarHeight + _timeStep.Y * i;
             animations[i].ImGuiAnimation(s, saver, drawList, timelineP0, treeP0, treeP1, _timeStep, timeRatio, y, _thickness, i);
             DrawSeparator(drawList, timelineP0, y + _timeStep.Y, animations[i].EndTime * timeRatio.X, ETrackerType.End);
         }
+        ImGui.PopStyleVar();
 
         for (int i = 0; i < animations.Count; i++)
         {
@@ -165,7 +167,13 @@ public class TimeTracker : IDisposable
 
     private void DrawSeparator(ImDrawListPtr drawList, Vector2 origin, float y, float time, ETrackerType separatorType)
     {
-        const int size = 5;
+        float size = separatorType switch
+        {
+            ETrackerType.Frame => 5,
+            ETrackerType.End => 5,
+            ETrackerType.InBetween => 7.5f,
+            _ => throw new ArgumentOutOfRangeException(nameof(separatorType), separatorType, null)
+        };
 
         Vector2 p1 = separatorType switch
         {
@@ -180,11 +188,10 @@ public class TimeTracker : IDisposable
         {
             ETrackerType.Frame => 0xFF6F6F6F,
             ETrackerType.End => 0xFF2E3E82,
-            ETrackerType.InBetween => 0x50FFFFFF,
+            ETrackerType.InBetween => 0xA0FFFFFF,
             _ => throw new ArgumentOutOfRangeException(nameof(separatorType), separatorType, null)
         };
 
-        drawList.AddLine(p1, p2, color, 1f);
         switch (separatorType)
         {
             case ETrackerType.Frame:
@@ -193,12 +200,18 @@ public class TimeTracker : IDisposable
                 var xr = p1.X + size;
                 var yb = origin.Y + _timeBarHeight - _timeHeight / 2.0f;
 
+                drawList.AddLine(p1, p2, color, 1f);
                 drawList.AddQuadFilled(origin with { X = xl }, origin with { X = xr }, new Vector2(xr, yb), new Vector2(xl, yb), color);
                 drawList.AddTriangleFilled(new Vector2(xl, yb), new Vector2(xr, yb), p1, color);
                 break;
             case ETrackerType.End:
-            case ETrackerType.InBetween:
+                drawList.AddLine(p1, p2, color, 1f);
                 drawList.AddTriangleFilled(p1, p1 with { X = p1.X - size }, p1 with { Y = p1.Y + size }, color);
+                break;
+            case ETrackerType.InBetween:
+                p1.Y += _timeBarHeight;
+                drawList.AddLine(p1, p2, color, 1f);
+                drawList.AddTriangleFilled(p1, new Vector2(p1.X - size / 2.0f, p1.Y - size), new Vector2(p1.X + size / 2.0f, p1.Y - size), color);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(separatorType), separatorType, null);

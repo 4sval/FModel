@@ -20,7 +20,7 @@ public class Options
     public FGuid SelectedModel { get; private set; }
     public int SelectedSection { get; private set; }
     public int SelectedMorph { get; private set; }
-    public int SelectedAnimation{ get; set; }
+    public int SelectedAnimation{ get; private set; }
 
     public readonly Dictionary<FGuid, Model> Models;
     public readonly Dictionary<FGuid, Texture> Textures;
@@ -96,6 +96,11 @@ public class Options
 
         SelectedSection = 0;
         SelectedMorph = 0;
+    }
+
+    public void SelectAnimation(int animation)
+    {
+        SelectedAnimation = animation;
     }
 
     public void RemoveModel(FGuid guid)
