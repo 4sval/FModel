@@ -28,15 +28,13 @@ public class Sequence
         IsAdditive = sequence.bAdditive;
     }
 
-    private readonly float _height = 20.0f;
-    public void DrawSequence(ImDrawListPtr drawList, float x, float y, Vector2 ratio, int index, uint col)
+    public void DrawSequence(ImDrawListPtr drawList, float x, Vector2 p2, Vector2 timeStep, Vector2 timeRatio, float t)
     {
-        var height = _height * (index % 2);
-        var p1 = new Vector2(x + StartTime * ratio.X, y + height);
-        var p2 = new Vector2(x + EndTime * ratio.X, y + height + _height);
-        drawList.PushClipRect(p1, p2, true);
-        drawList.AddRectFilled(p1, p2, col);
-        drawList.AddText(p1 with { X = p1.X + 2.5f }, 0xFF000000, Name);
-        drawList.PopClipRect();
+        var q1 = new Vector2(x + StartTime * timeRatio.X + t, p2.Y - timeStep.Y / 2.0f);
+        var q2 = p2 with { X = x + EndTime * timeRatio.X - t - t };
+
+        drawList.AddLine(new Vector2(q1.X, q2.Y), q1, 0x50FFFFFF, 1.0f);
+        drawList.AddLine(q1, new Vector2(q2.X, q1.Y), 0x50FFFFFF, 1.0f);
+        drawList.AddLine(new Vector2(q2.X, q1.Y), q2, 0x50FFFFFF, 1.0f);
     }
 }

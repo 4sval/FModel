@@ -12,6 +12,7 @@ namespace FModel.Views.Snooper.Animations;
 public class Animation : IDisposable
 {
     public readonly UObject Export;
+    public readonly CAnimSet AnimSet;
     public readonly string Path;
     public readonly string Name;
     public readonly Sequence[] Sequences;
@@ -23,6 +24,8 @@ public class Animation : IDisposable
     public int CurrentSequence;
     public int FrameInSequence;                     // Current Sequence's Frame to Display
 
+    public string Label =>
+        $"Retarget: {TargetSkeleton}\nSequences: {CurrentSequence + 1}/{Sequences.Length}\nFrames: {FrameInSequence}/{Sequences[CurrentSequence].EndFrame}";
     public bool IsActive;
     public bool IsSelected;
 
@@ -39,15 +42,16 @@ public class Animation : IDisposable
 
     public Animation(UObject export, CAnimSet animSet) : this(export)
     {
-        TargetSkeleton = animSet.OriginalAnim.Name;
+        AnimSet = animSet;
+        TargetSkeleton = AnimSet.OriginalAnim.Name;
 
-        Sequences = new Sequence[animSet.Sequences.Count];
+        Sequences = new Sequence[AnimSet.Sequences.Count];
         for (int i = 0; i < Sequences.Length; i++)
         {
-            Sequences[i] = new Sequence(animSet.Sequences[i]);
+            Sequences[i] = new Sequence(AnimSet.Sequences[i]);
 
             EndTime = Sequences[i].EndTime;
-            TotalElapsedTime += animSet.Sequences[i].NumFrames * Sequences[i].TimePerFrame;
+            TotalElapsedTime += AnimSet.Sequences[i].NumFrames * Sequences[i].TimePerFrame;
         }
 
         if (Sequences.Length > 0)
@@ -95,7 +99,7 @@ public class Animation : IDisposable
         var p2 = new Vector2(timelineP0.X + EndTime * timeRatio.X - t, y + timeStep.Y - t);
 
         ImGui.SetCursorScreenPos(p1);
-        ImGui.InvisibleButton($"timeline_sequencetracker_{Name}", new Vector2(EndTime * timeRatio.X - t, timeStep.Y - t), ImGuiButtonFlags.MouseButtonLeft);
+        ImGui.InvisibleButton($"timeline_sequencetracker_{Name}##{i}", new Vector2(EndTime * timeRatio.X - t, timeStep.Y - t), ImGuiButtonFlags.MouseButtonLeft);
         IsActive = ImGui.IsItemActive();
         IsSelected = s.Renderer.Options.SelectedAnimation == i;
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
@@ -105,6 +109,19 @@ public class Animation : IDisposable
         SnimGui.Popup(() =>
         {
             s.Renderer.Options.SelectedAnimation = i;
+            if (ImGui.BeginMenu("Animate"))
+            {
+                foreach ((var guid, var model) in s.Renderer.Options.Models)
+                {
+                    if (ImGui.MenuItem(model.Name, model.HasSkeleton && !AttachedModels.Contains(guid)))
+                    {
+                        AttachedModels.Add(guid);
+                        model.Skeleton.ResetAnimatedData(true);
+                        model.Skeleton.Animate(AnimSet, s.Renderer.AnimateWithRotationOnly);
+                    }
+                }
+                ImGui.EndMenu();
+            }
             if (ImGui.Selectable("Save"))
             {
                 s.WindowShouldFreeze(true);
@@ -116,9 +133,10 @@ public class Animation : IDisposable
         });
 
         drawList.AddRectFilled(p1, p2, IsSelected ? 0xFF48B048 : 0xFF175F17, 5.0f, ImDrawFlags.RoundCornersTop);
-        drawList.PushClipRect(p1, p2, true);
-        drawList.AddText(p1, 0xFF000000, $"{TargetSkeleton} - {CurrentSequence + 1}/{Sequences.Length} - {FrameInSequence}/{Sequences[CurrentSequence].EndFrame}");
-        drawList.PopClipRect();
+        for (int j = 0; j < Sequences.Length; j++)
+        {
+            Sequences[j].DrawSequence(drawList, timelineP0.X, p2, timeStep, timeRatio, t);
+        }
 
         drawList.PushClipRect(treeP0 with { Y = p1.Y }, treeP1 with { Y = p2.Y }, true);
         drawList.AddText(treeP0 with { Y = y + timeStep.Y / 4.0f }, 0xFFFFFFFF, Name);

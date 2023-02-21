@@ -148,6 +148,15 @@ public class TimeTracker : IDisposable
             DrawSeparator(drawList, timelineP0, y + _timeStep.Y, animations[i].EndTime * timeRatio.X, ETrackerType.End);
         }
 
+        for (int i = 0; i < animations.Count; i++)
+        {
+            var y = timelineP0.Y + _timeBarHeight + _timeStep.Y * i;
+            for (int j = 0; j < animations[i].Sequences.Length - 1; j++)
+            {
+                DrawSeparator(drawList, timelineP0, y + _timeStep.Y - _thickness, animations[i].Sequences[j].EndTime * timeRatio.X - 1.0f, ETrackerType.InBetween);
+            }
+        }
+
         DrawSeparator(drawList, timelineP0, timelineP1.Y, ElapsedTime * timeRatio.X, ETrackerType.Frame);
 
         drawList.PopClipRect();
@@ -162,6 +171,7 @@ public class TimeTracker : IDisposable
         {
             ETrackerType.Frame => new Vector2(origin.X + time, origin.Y + _timeBarHeight),
             ETrackerType.End => origin with { X = origin.X + time },
+            ETrackerType.InBetween => origin with { X = origin.X + time },
             _ => throw new ArgumentOutOfRangeException(nameof(separatorType), separatorType, null)
         };
         var p2 = p1 with { Y = y };
@@ -170,6 +180,7 @@ public class TimeTracker : IDisposable
         {
             ETrackerType.Frame => 0xFF6F6F6F,
             ETrackerType.End => 0xFF2E3E82,
+            ETrackerType.InBetween => 0x50FFFFFF,
             _ => throw new ArgumentOutOfRangeException(nameof(separatorType), separatorType, null)
         };
 
@@ -186,6 +197,7 @@ public class TimeTracker : IDisposable
                 drawList.AddTriangleFilled(new Vector2(xl, yb), new Vector2(xr, yb), p1, color);
                 break;
             case ETrackerType.End:
+            case ETrackerType.InBetween:
                 drawList.AddTriangleFilled(p1, p1 with { X = p1.X - size }, p1 with { Y = p1.Y + size }, color);
                 break;
             default:
