@@ -73,6 +73,12 @@ public class ApplicationViewModel : ViewModel
         LoadingModes = new LoadingModesViewModel();
 
         AvoidEmptyGameDirectoryAndSetEGame(false);
+        if (UserSettings.Default.GameDirectory is null)
+        {
+            //If no game is selected, many things will break before a shutdown request is processed in the normal way.
+            //A hard exit is preferable to an unhandled expection in this case
+            Environment.Exit(0);
+        }
         CUE4Parse = new CUE4ParseViewModel(UserSettings.Default.GameDirectory);
         CustomDirectories = new CustomDirectoriesViewModel(CUE4Parse.Game, UserSettings.Default.GameDirectory);
         SettingsView = new SettingsViewModel(CUE4Parse.Game);
