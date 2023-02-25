@@ -17,12 +17,23 @@ namespace FModel.Views.Snooper;
 
 public class Swap
 {
+    public string Title;
+    public string Description;
     public bool Value;
     public bool IsAware;
+    public Action Content;
+
+    public Swap()
+    {
+        Reset();
+    }
 
     public void Reset()
     {
+        Title = string.Empty;
+        Description = string.Empty;
         Value = false;
+        Content = null;
     }
 }
 
@@ -31,6 +42,11 @@ public class Save
     public bool Value;
     public string Label;
     public string Path;
+
+    public Save()
+    {
+        Reset();
+    }
 
     public void Reset()
     {
@@ -84,8 +100,65 @@ public class SnimGui
         Draw3DViewport(s);
         DrawNavbar();
 
+        DrawModals(s);
+
         if (_ti_open) DrawTextureInspector(s);
         Controller.Render();
+    }
+
+    private void DrawModals(Snooper s)
+    {
+        Modal(_swapper.Title, _swapper.Value, () =>
+        {
+            ImGui.TextWrapped(_swapper.Description);
+            ImGui.Separator();
+
+            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, Vector2.Zero);
+            ImGui.Checkbox("Got it! Don't show me again", ref _swapper.IsAware);
+            ImGui.PopStyleVar();
+
+            var size = new Vector2(120, 0);
+            if (ImGui.Button("OK", size))
+            {
+                _swapper.Content();
+                _swapper.Reset();
+                ImGui.CloseCurrentPopup();
+                s.WindowShouldClose(true, false);
+            }
+
+            ImGui.SetItemDefaultFocus();
+            ImGui.SameLine();
+
+            if (ImGui.Button("Cancel", size))
+            {
+                _swapper.Reset();
+                ImGui.CloseCurrentPopup();
+            }
+        });
+
+        Modal("Saved", _saver.Value, () =>
+        {
+            ImGui.TextWrapped($"Successfully saved {_saver.Label}");
+            ImGui.Separator();
+
+            var size = new Vector2(120, 0);
+            if (ImGui.Button("OK", size))
+            {
+                _saver.Reset();
+                ImGui.CloseCurrentPopup();
+            }
+
+            ImGui.SetItemDefaultFocus();
+            ImGui.SameLine();
+
+            if (ImGui.Button("Show In Explorer", size))
+            {
+                Process.Start("explorer.exe", $"/select, \"{_saver.Path.Replace('/', '\\')}\"");
+
+                _saver.Reset();
+                ImGui.CloseCurrentPopup();
+            }
+        });
     }
 
     private void DrawWorld(Snooper s)
@@ -344,30 +417,42 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         if (ImGui.MenuItem("Show", null, model.Show)) model.Show = !model.Show;
                         if (ImGui.MenuItem("Wireframe", null, model.Wireframe)) model.Wireframe = !model.Wireframe;
                         ImGui.Separator();
-                        if (ImGui.Selectable("Save"))
+                        if (ImGui.MenuItem("Save"))
                         {
                             s.WindowShouldFreeze(true);
                             _saver.Value = s.Renderer.Options.TrySave(model.Export, out _saver.Label, out _saver.Path);
                             s.WindowShouldFreeze(false);
                         }
-                        ImGui.BeginDisabled(!model.HasSkeleton);
-                        if (ImGui.Selectable("Animate"))
+                        if (ImGui.MenuItem("Animate", model.HasSkeleton))
                         {
-                            s.Renderer.Options.RemoveAnimations();
-                            s.Renderer.Options.AnimateMesh(true);
-                            s.WindowShouldClose(true, false);
+                            if (_swapper.IsAware)
+                            {
+                                s.Renderer.Options.RemoveAnimations();
+                                s.Renderer.Options.AnimateMesh(true);
+                                s.WindowShouldClose(true, false);
+                            }
+                            else
+                            {
+                                _swapper.Title = "Skeletal Animation";
+                                _swapper.Description = "You're about to animate a model.\nThe window will close for you to extract an animation!\n\n";
+                                _swapper.Content = () =>
+                                {
+                                    s.Renderer.Options.RemoveAnimations();
+                                    s.Renderer.Options.AnimateMesh(true);
+                                };
+                                _swapper.Value = true;
+                            }
                         }
-                        ImGui.EndDisabled();
-                        if (ImGui.Selectable("Teleport To"))
+                        if (ImGui.MenuItem("Teleport To"))
                         {
                             var instancePos = model.Transforms[model.SelectedInstance].Matrix.Translation;
                             s.Renderer.CameraOp.Teleport(instancePos, model.Box);
                         }
 
-                        if (ImGui.Selectable("Delete")) s.Renderer.Options.RemoveModel(guid);
-                        if (ImGui.Selectable("Deselect")) s.Renderer.Options.SelectModel(Guid.Empty);
+                        if (ImGui.MenuItem("Delete")) s.Renderer.Options.RemoveModel(guid);
+                        if (ImGui.MenuItem("Deselect")) s.Renderer.Options.SelectModel(Guid.Empty);
                         ImGui.Separator();
-                        if (ImGui.Selectable("Copy Name to Clipboard")) ImGui.SetClipboardText(model.Name);
+                        if (ImGui.MenuItem("Copy Path to Clipboard")) ImGui.SetClipboardText(model.Path);
                     });
 
                     ImGui.TableNextColumn();
@@ -382,30 +467,6 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             }
         });
         ImGui.PopStyleVar();
-
-        Modal("Saved", _saver.Value, () =>
-        {
-            ImGui.TextWrapped($"Successfully saved {_saver.Label}");
-            ImGui.Separator();
-
-            var size = new Vector2(120, 0);
-            if (ImGui.Button("OK", size))
-            {
-                _saver.Reset();
-                ImGui.CloseCurrentPopup();
-            }
-
-            ImGui.SetItemDefaultFocus();
-            ImGui.SameLine();
-
-            if (ImGui.Button("Show In Explorer", size))
-            {
-                Process.Start("explorer.exe", $"/select, \"{_saver.Path.Replace('/', '\\')}\"");
-
-                _saver.Reset();
-                ImGui.CloseCurrentPopup();
-            }
-        });
     }
 
     private void DrawSockets(Snooper s)
@@ -499,49 +560,27 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         {
                             s.Renderer.Options.SelectSection(i);
                             if (ImGui.MenuItem("Show", null, section.Show)) section.Show = !section.Show;
-                            if (ImGui.Selectable("Swap"))
+                            if (ImGui.MenuItem("Swap"))
                             {
                                 if (_swapper.IsAware)
                                 {
                                     s.Renderer.Options.SwapMaterial(true);
                                     s.WindowShouldClose(true, false);
                                 }
-                                else _swapper.Value = true;
+                                else
+                                {
+                                    _swapper.Title = "Material Swap";
+                                    _swapper.Description = "You're about to swap a material.\nThe window will close for you to extract a material!\n\n";
+                                    _swapper.Content = () => s.Renderer.Options.SwapMaterial(true);
+                                    _swapper.Value = true;
+                                }
                             }
                             ImGui.Separator();
-                            if (ImGui.Selectable("Copy Path to Clipboard")) ImGui.SetClipboardText(material.Path);
+                            if (ImGui.MenuItem("Copy Path to Clipboard")) ImGui.SetClipboardText(material.Path);
                         });
                         ImGui.PopID();
                     }
                     ImGui.EndTable();
-
-                    Modal("Swap?", _swapper.Value, () =>
-                    {
-                        ImGui.TextWrapped("You're about to swap a material.\nThe window will close for you to extract a material!\n\n");
-                        ImGui.Separator();
-
-                        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, Vector2.Zero);
-                        ImGui.Checkbox("Got it! Don't show me again", ref _swapper.IsAware);
-                        ImGui.PopStyleVar();
-
-                        var size = new Vector2(120, 0);
-                        if (ImGui.Button("OK", size))
-                        {
-                            _swapper.Reset();
-                            s.Renderer.Options.SwapMaterial(true);
-                            ImGui.CloseCurrentPopup();
-                            s.WindowShouldClose(true, false);
-                        }
-
-                        ImGui.SetItemDefaultFocus();
-                        ImGui.SameLine();
-
-                        if (ImGui.Button("Cancel", size))
-                        {
-                            _swapper.Reset();
-                            ImGui.CloseCurrentPopup();
-                        }
-                    });
 
                     ImGui.EndTabItem();
                 }

@@ -167,7 +167,7 @@ public class Skeleton : IDisposable
                             Relation = boneIndices.HasParentTrack ? _animatedBonesTransform[s][boneIndices.ParentTrackIndex][frame].Matrix : originalTransform.Relation,
                             Rotation = boneOrientation,
                             Position = rotationOnly ? originalTransform.Position : bonePosition,
-                            Scale = boneScale
+                            Scale = sequence.bAdditive ? FVector.OneVector : boneScale
                         };
                     }
                 }

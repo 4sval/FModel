@@ -145,7 +145,7 @@ public class TimeTracker : IDisposable
         for (int i = 0; i < animations.Count; i++)
         {
             var y = timelineP0.Y + _timeBarHeight + _timeStep.Y * i;
-            animations[i].ImGuiAnimation(s, saver, drawList, timelineP0, treeP0, treeP1, _timeStep, timeRatio, y, _thickness, i);
+            animations[i].ImGuiAnimation(s, saver, drawList, fontPtr, timelineP0, treeP0, _timeStep, timeRatio, y, _thickness, i);
             DrawSeparator(drawList, timelineP0, y + _timeStep.Y, animations[i].EndTime * timeRatio.X, ETrackerType.End);
         }
         ImGui.PopStyleVar();
@@ -155,7 +155,7 @@ public class TimeTracker : IDisposable
             var y = timelineP0.Y + _timeBarHeight + _timeStep.Y * i;
             for (int j = 0; j < animations[i].Sequences.Length - 1; j++)
             {
-                DrawSeparator(drawList, timelineP0, y + _timeStep.Y - _thickness, animations[i].Sequences[j].EndTime * timeRatio.X - 1.0f, ETrackerType.InBetween);
+                DrawSeparator(drawList, timelineP0, y + _timeStep.Y - _thickness, animations[i].Sequences[j].EndTime * timeRatio.X - 0.5f, ETrackerType.InBetween);
             }
         }
 

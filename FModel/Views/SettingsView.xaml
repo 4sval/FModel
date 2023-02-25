@@ -361,8 +361,8 @@
                     <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" />
 
                     <TextBlock Grid.Row="5" Grid.Column="0" Text="Preview Max Texture Size" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Slider Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" TickPlacement="None" Minimum="4" Maximum="4096"
-                            AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Ticks="4,8,16,32,64,128,256,512,1024,2048,4096"
+                    <Slider Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" TickPlacement="None" Minimum="4" Maximum="4096" Ticks="4,8,16,32,64,128,256,512,1024,2048,4096"
+                            AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5"
                             Value="{Binding PreviewMaxTextureSize, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
 
                     <TextBlock Grid.Row="6" Grid.Column="0" Text="Preview Static Meshes" VerticalAlignment="Center" Margin="0 0 0 5" />

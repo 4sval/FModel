@@ -31,14 +31,14 @@ namespace FModel.Services
             new() {Label = "Support us", Url = Constants.DONATE_LINK}
         };
 
-        public void Initialize(FGame game)
+        public void Initialize(string gameName)
         {
             _currentPresence = new RichPresence
             {
                 Assets = _staticAssets,
                 Timestamps = _timestamps,
                 Buttons = _buttons,
-                Details = $"{game.GetDescription()} - Idling"
+                Details = $"{gameName} - Idling"
             };
 
             _client.OnReady += (_, args) => Log.Information("{Username}#{Discriminator} ({UserId}) is now ready", args.User.Username, args.User.Discriminator, args.User.ID);
@@ -48,7 +48,7 @@ namespace FModel.Services
 
         public void UpdatePresence(CUE4ParseViewModel viewModel) =>
             UpdatePresence(
-                $"{viewModel.Game.GetDescription()} - {viewModel.Provider.MountedVfs.Count}/{viewModel.Provider.MountedVfs.Count + viewModel.Provider.UnloadedVfs.Count} Packages",
+                $"{viewModel.Provider.GameName} - {viewModel.Provider.MountedVfs.Count}/{viewModel.Provider.MountedVfs.Count + viewModel.Provider.UnloadedVfs.Count} Packages",
                 $"Mode: {UserSettings.Default.LoadingMode.GetDescription()} - {viewModel.SearchVm.ResultsCount:### ### ###} Loaded Assets".Trim());
 
         public void UpdatePresence(string details, string state)

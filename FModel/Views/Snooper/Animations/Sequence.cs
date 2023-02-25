@@ -28,13 +28,22 @@ public class Sequence
         IsAdditive = sequence.bAdditive;
     }
 
-    public void DrawSequence(ImDrawListPtr drawList, float x, Vector2 p2, Vector2 timeStep, Vector2 timeRatio, float t)
+    public void DrawSequence(ImDrawListPtr drawList, ImFontPtr fontPtr, float x, Vector2 p2, Vector2 timeStep, Vector2 timeRatio, float t, bool animSelected)
     {
-        var q1 = new Vector2(x + StartTime * timeRatio.X + t, p2.Y - timeStep.Y / 2.0f);
-        var q2 = p2 with { X = x + EndTime * timeRatio.X - t - t };
+        var halfThickness = t / 2.0f;
+        var q1 = new Vector2(x + StartTime * timeRatio.X + t + halfThickness, p2.Y - timeStep.Y / 2.0f);
+        var q2 = p2 with { X = x + EndTime * timeRatio.X - t * 2.0f };
 
-        drawList.AddLine(new Vector2(q1.X, q2.Y), q1, 0x50FFFFFF, 1.0f);
-        drawList.AddLine(q1, new Vector2(q2.X, q1.Y), 0x50FFFFFF, 1.0f);
-        drawList.AddLine(new Vector2(q2.X, q1.Y), q2, 0x50FFFFFF, 1.0f);
+        drawList.PushClipRect(q1, q2 with { X = q2.X + t }, true);
+
+        var lineColor = animSelected ? 0xA0FFFFFF : 0x50FFFFFF;
+        drawList.AddLine(new Vector2(q1.X, q2.Y), q1, lineColor, 1.0f);
+        drawList.AddLine(q1, new Vector2(q2.X, q1.Y), lineColor, 1.0f);
+        drawList.AddLine(new Vector2(q2.X, q1.Y), q2, lineColor, 1.0f);
+
+        if (IsAdditive)
+            drawList.AddText(fontPtr, 12, new Vector2(q1.X + t, q1.Y + halfThickness), animSelected ? 0xFFFFFFFF : 0x50FFFFFF, "Is Additive");
+
+        drawList.PopClipRect();
     }
 }

@@ -73,15 +73,18 @@ public partial class MainWindow
         await _applicationView.InitOodle();
 
         if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
-            _discordHandler.Initialize(_applicationView.CUE4Parse.Game);
+            _discordHandler.Initialize(_applicationView.CUE4Parse.Provider.GameName);
 
 #if DEBUG
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "fortnitegame/Content/Characters/Player/Male/Medium/Bodies/M_MED_BlueGlaze/Meshes/M_MED_BlueGlaze.uasset"));
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "fortnitegame/Content/Animation/Game/MainPlayer/Emotes/Troops/Emote_Troops_CMM_M.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "fortnitegame/Content/Characters/Player/Female/Medium/Bodies/F_MED_Prime/Meshes/F_MED_Prime.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "fortnitegame/Content/Animation/Game/MainPlayer/Emotes/Annual/Emote_Annual_CMM_BODY.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "fortnitegame/Content/Animation/Game/MainPlayer/Emotes/Annual/Emote_Annual_CMF_BODY.uasset"));
 #endif
     }
 

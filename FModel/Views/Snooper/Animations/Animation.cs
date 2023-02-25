@@ -94,7 +94,7 @@ public class Animation : IDisposable
         AttachedModels.Clear();
     }
 
-    public void ImGuiAnimation(Snooper s, Save saver, ImDrawListPtr drawList, Vector2 timelineP0, Vector2 treeP0, Vector2 treeP1, Vector2 timeStep, Vector2 timeRatio, float y, float t, int i)
+    public void ImGuiAnimation(Snooper s, Save saver, ImDrawListPtr drawList, ImFontPtr fontPtr, Vector2 timelineP0, Vector2 treeP0, Vector2 timeStep, Vector2 timeRatio, float y, float t, int i)
     {
         var name = $"{Name}##{i}";
         var p1 = new Vector2(timelineP0.X + StartTime * timeRatio.X + t, y + t);
@@ -125,20 +125,24 @@ public class Animation : IDisposable
                 }
                 ImGui.EndMenu();
             }
-            if (ImGui.Selectable("Save"))
+            if (ImGui.MenuItem("Additive", false))
+            {
+
+            }
+            if (ImGui.MenuItem("Save"))
             {
                 s.WindowShouldFreeze(true);
                 saver.Value = s.Renderer.Options.TrySave(_export, out saver.Label, out saver.Path);
                 s.WindowShouldFreeze(false);
             }
             ImGui.Separator();
-            if (ImGui.Selectable("Copy Path to Clipboard")) ImGui.SetClipboardText(Path);
+            if (ImGui.MenuItem("Copy Path to Clipboard")) ImGui.SetClipboardText(Path);
         });
 
         drawList.AddRectFilled(p1, p2, IsSelected ? 0xFF48B048 : 0xFF175F17, 5.0f, ImDrawFlags.RoundCornersTop);
         for (int j = 0; j < Sequences.Length; j++)
         {
-            Sequences[j].DrawSequence(drawList, timelineP0.X, p2, timeStep, timeRatio, t);
+            Sequences[j].DrawSequence(drawList, fontPtr, timelineP0.X, p2, timeStep, timeRatio, t, IsSelected);
         }
 
         ImGui.SetCursorScreenPos(treeP0 with { Y = p1.Y });
