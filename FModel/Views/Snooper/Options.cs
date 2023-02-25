@@ -178,7 +178,7 @@ public class Options
     public bool TryGetTexture(UTexture2D o, bool fix, out Texture texture)
     {
         var guid = o.LightingGuid;
-        if (!Textures.TryGetValue(guid, out texture) && o.GetFirstMip() is { } mip)
+        if (!Textures.TryGetValue(guid, out texture) && o.GetMipByMaxSize(UserSettings.Default.PreviewMaxTextureSize) is { } mip)
         {
             TextureDecoder.DecodeTexture(mip, o.Format, o.isNormalMap, _platform, out var data, out _);
             if (fix) TextureHelper.FixChannels(o, mip, ref data);

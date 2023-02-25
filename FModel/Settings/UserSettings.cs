@@ -661,6 +661,13 @@ namespace FModel.Settings
             set => SetProperty(ref _cameraMode, value);
         }
 
+        private int _previewMaxTextureSize = 1024;
+        public int PreviewMaxTextureSize
+        {
+            get => _previewMaxTextureSize;
+            set => SetProperty(ref _previewMaxTextureSize, value);
+        }
+
         private bool _previewStaticMeshes = true;
         public bool PreviewStaticMeshes
         {
