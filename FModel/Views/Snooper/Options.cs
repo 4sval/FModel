@@ -31,7 +31,7 @@ public class Options
 
     public readonly Dictionary<string, Texture> Icons;
 
-    private ETexturePlatform _platform;
+    private readonly ETexturePlatform _platform;
 
     public Options()
     {

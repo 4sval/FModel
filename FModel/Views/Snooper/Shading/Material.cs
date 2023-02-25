@@ -7,6 +7,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Extensions;
+using FModel.Settings;
 using FModel.Views.Snooper.Models;
 using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
@@ -66,7 +67,7 @@ public class Material : IDisposable
     {
         Name = unrealMaterial.Name;
         Path = unrealMaterial.GetPathName();
-        unrealMaterial.GetParams(Parameters, EMaterialFormat.AllLayers);
+        unrealMaterial.GetParams(Parameters, UserSettings.Default.MaterialExportFormat);
     }
 
     public void Setup(Options options, int uvCount)

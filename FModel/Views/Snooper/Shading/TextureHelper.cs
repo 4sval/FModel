@@ -21,6 +21,7 @@ public static class TextureHelper
             // B: Metallic
             case "hk_project":
             case "cosmicshake":
+            case "phoenix":
             {
                 unsafe
                 {
@@ -42,7 +43,6 @@ public static class TextureHelper
             case "shootergame":
             case "divineknockout":
             case "moonman":
-            case "marsman":
             {
                 unsafe
                 {
