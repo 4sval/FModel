@@ -701,7 +701,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             s.Renderer.Options.TryGetModel(out var model) &&
             s.Renderer.Options.TryGetSection(model, out var section))
         {
-            model.Materials[section.MaterialIndex].ImGuiTextureInspector(s.Renderer.Options.Icons["noimage"]);
+            (model.Materials[section.MaterialIndex].GetSelectedTexture() ?? s.Renderer.Options.Icons["noimage"]).ImGuiTextureInspector();
         }
         ImGui.End(); // if window is collapsed
     }
