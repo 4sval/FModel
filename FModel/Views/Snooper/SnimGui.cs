@@ -751,6 +751,10 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             float framerate = ImGui.GetIO().Framerate;
             ImGui.SetCursorPos(size with { X = 7.5f });
             ImGui.Text($"FPS: {framerate:0} ({1000.0f / framerate:0.##} ms)");
+
+            const string label = "Previewed content may differ from final version saved or used in-game.";
+            ImGui.SetCursorPos(size with { X = size.X - ImGui.CalcTextSize(label).X - 7.5f });
+            ImGui.TextColored(new Vector4(0.50f, 0.50f, 0.50f, 1.00f), label);
         }, false);
         ImGui.PopStyleVar();
     }

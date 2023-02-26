@@ -78,13 +78,10 @@ public partial class MainWindow
 #if DEBUG
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "fortnitegame/Content/Characters/Player/Female/Medium/Bodies/F_MED_Prime/Meshes/F_MED_Prime.uasset"));
+        //         "Phoenix/Content/RiggedObjects/Characters/Creatures/Elves/OneOff/HouseElf_F_T3/SK_HouseElf_F_T3_Master.uasset"));
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "fortnitegame/Content/Animation/Game/MainPlayer/Emotes/Annual/Emote_Annual_CMM_BODY.uasset"));
-        // await _threadWorkerView.Begin(cancellationToken =>
-        //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "fortnitegame/Content/Animation/Game/MainPlayer/Emotes/Annual/Emote_Annual_CMF_BODY.uasset"));
+        //         "Phoenix/Content/Animation/Creatures/Elves/ELF_Rct_Mandrake_Loop_anm.uasset"));
 #endif
     }
 

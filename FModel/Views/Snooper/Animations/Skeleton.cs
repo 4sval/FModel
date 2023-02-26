@@ -94,7 +94,9 @@ public class Skeleton : IDisposable
                     {
                         _animatedBonesTransform[s][boneIndices.BoneIndex][frame] = new Transform
                         {
-                            Relation = originalTransform.LocalMatrix * _animatedBonesTransform[s][boneIndices.ParentTrackIndex][frame].Matrix
+                            Relation = boneIndices.HasParentTrack ?
+                                originalTransform.LocalMatrix * _animatedBonesTransform[s][boneIndices.ParentTrackIndex][frame].Matrix :
+                                originalTransform.Relation
                         };
                     }
                 }
@@ -131,8 +133,14 @@ public class Skeleton : IDisposable
                             }
                             case EBoneTranslationRetargetingMode.AnimationRelative when !rotationOnly:
                             {
-                                // https://github.com/EpicGames/UnrealEngine/blob/cdaec5b33ea5d332e51eee4e4866495c90442122/Engine/Source/Runtime/Engine/Private/Animation/AnimationRuntime.cpp#L2586
+                                // can't tell if it's working or not
+                                var sourceSkelTrans = originalTransform.Position / Constants.SCALE_DOWN_RATIO;
                                 var refPoseTransform  = sequence.RetargetBasePose?[trackIndex] ?? anim.BonePositions[trackIndex];
+
+                                boneOrientation = boneOrientation * FQuat.Conjugate(originalTransform.Rotation) * refPoseTransform.Rotation;
+                                bonePosition += refPoseTransform.Translation - sourceSkelTrans;
+                                boneScale *= refPoseTransform.Scale3D * originalTransform.Scale;
+                                boneOrientation.Normalize();
                                 break;
                             }
                             case EBoneTranslationRetargetingMode.OrientAndScale when !rotationOnly:
