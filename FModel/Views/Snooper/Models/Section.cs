@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using FModel.Views.Snooper.Shading;
 
 namespace FModel.Views.Snooper.Models;
@@ -9,6 +10,7 @@ public class Section
     public readonly int FacesCount;
     public readonly int FirstFaceIndex;
     public readonly IntPtr FirstFaceIndexPtr;
+    public readonly Vector3 Color;
 
     public bool Show;
 
@@ -18,6 +20,7 @@ public class Section
         FacesCount = facesCount;
         FirstFaceIndex = firstFaceIndex;
         FirstFaceIndexPtr = new IntPtr(FirstFaceIndex * sizeof(uint));
+        Color = Constants.COLOR_PALETTE[index % Constants.PALETTE_LENGTH];
         Show = true;
     }
 

@@ -217,8 +217,10 @@ public class SnimGui
                 ImGui.PopID();Layout("Animate With Rotation Only");ImGui.PushID(4);
                 ImGui.Checkbox("", ref s.Renderer.AnimateWithRotationOnly);
                 ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(5);
-                ImGui.Combo("vertex_colors", ref s.Renderer.VertexColor,
-                    "Default\0Diffuse Only\0Colors\0Normals\0Texture Coordinates\0");
+                var c = (int) s.Renderer.Color;
+                ImGui.Combo("vertex_colors", ref c,
+                    "Default\0Sections\0Colors\0Normals\0Texture Coordinates\0");
+                s.Renderer.Color = (VertexColor) c;
                 ImGui.PopID();
 
                 ImGui.EndTable();
@@ -549,6 +551,10 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         {
                             ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(1, 0, 0, .5f)));
                         }
+                        else if (s.Renderer.Color == VertexColor.Sections)
+                        {
+                            ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(section.Color, 0.5f)));
+                        }
 
                         ImGui.Text(section.MaterialIndex.ToString("D"));
                         ImGui.TableNextColumn();
@@ -607,7 +613,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
                         if (ImGui.BeginListBox("", box))
                         {
-                            for (int i = 0; i < model.Morphs.Length; i++)
+                            for (int i = 0; i < model.Morphs.Count; i++)
                             {
                                 ImGui.PushID(i);
                                 if (ImGui.Selectable(model.Morphs[i].Name, s.Renderer.Options.SelectedMorph == i))

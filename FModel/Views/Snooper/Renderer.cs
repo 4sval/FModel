@@ -27,6 +27,15 @@ using FModel.Views.Snooper.Shading;
 
 namespace FModel.Views.Snooper;
 
+public enum VertexColor
+{
+    Default,
+    Sections,
+    Colors,
+    Normals,
+    TextureCoordinates
+}
+
 public class Renderer : IDisposable
 {
     private readonly Skybox _skybox;
@@ -40,7 +49,7 @@ public class Renderer : IDisposable
     public bool ShowGrid;
     public bool ShowLights;
     public bool AnimateWithRotationOnly;
-    public int VertexColor;
+    public VertexColor Color;
 
     public Camera CameraOp { get; }
     public PickingTexture Picking { get; }
@@ -58,7 +67,7 @@ public class Renderer : IDisposable
         ShowSkybox = UserSettings.Default.ShowSkybox;
         ShowGrid = UserSettings.Default.ShowGrid;
         AnimateWithRotationOnly = UserSettings.Default.AnimateWithRotationOnly;
-        VertexColor = 0; // default
+        Color = VertexColor.Default;
     }
 
     public void Load(CancellationToken cancellationToken, UObject export)
@@ -89,7 +98,6 @@ public class Renderer : IDisposable
 
         model.Materials[section.MaterialIndex].SwapMaterial(unrealMaterial);
         Application.Current.Dispatcher.Invoke(() => model.Materials[section.MaterialIndex].Setup(Options, model.UvCount));
-        Options.SwapMaterial(false);
     }
 
     public void Animate(UObject anim) => Animate(anim, Options.SelectedModel);
@@ -192,7 +200,6 @@ public class Renderer : IDisposable
 
         Options.Tracker.IsPaused = false;
         Options.Tracker.SafeSetMaxElapsedTime(maxElapsedTime);
-        Options.AnimateMesh(false);
     }
 
     public void Setup()
@@ -218,7 +225,7 @@ public class Renderer : IDisposable
 
         _shader.Render(viewMatrix, CameraOp.Position, projMatrix);
         for (int i = 0; i < 5; i++)
-            _shader.SetUniform($"bVertexColors[{i}]", i == VertexColor);
+            _shader.SetUniform($"bVertexColors[{i}]", i == (int) Color);
 
         // update animations
         if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);

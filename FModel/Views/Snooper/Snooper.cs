@@ -60,6 +60,8 @@ public class Snooper : GameWindow
 
     public override void Run()
     {
+        Renderer.Options.SwapMaterial(false);
+        Renderer.Options.AnimateMesh(false);
         Application.Current.Dispatcher.Invoke(delegate
         {
             WindowShouldClose(false, false);

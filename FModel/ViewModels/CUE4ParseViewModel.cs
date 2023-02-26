@@ -829,6 +829,8 @@ public class CUE4ParseViewModel : ViewModel
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
             // case UMaterialInstance when HasFlag(bulk, EBulkType.Materials): // read the fucking json
             case UAnimSequence when HasFlag(bulk, EBulkType.Animations):
+            case UAnimMontage when HasFlag(bulk, EBulkType.Animations):
+            case UAnimComposite when HasFlag(bulk, EBulkType.Animations):
             {
                 SaveExport(export, HasFlag(bulk, EBulkType.Auto));
                 return true;
