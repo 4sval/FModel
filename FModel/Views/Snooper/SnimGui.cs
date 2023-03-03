@@ -165,19 +165,23 @@ public class SnimGui
     {
         if (ImGui.BeginTable("world_details", 2, ImGuiTableFlags.SizingStretchProp))
         {
-            var length = s.Renderer.Options.Models.Count;
-            Layout("Renderer");ImGui.Text($" :  {_renderer}");
-            Layout("Version");ImGui.Text($" :  {_version}");
-            Layout("Loaded Models");ImGui.Text($" :  x{length}");ImGui.SameLine();
-
             var b = false;
-            if (ImGui.SmallButton("Save All"))
+            var length = s.Renderer.Options.Models.Count;
+
+            NoFramePaddingOnY(() =>
             {
-                foreach (var model in s.Renderer.Options.Models.Values)
+                Layout("Renderer");ImGui.Text($" :  {_renderer}");
+                Layout("Version");ImGui.Text($" :  {_version}");
+                Layout("Loaded Models");ImGui.Text($" :  x{length}");ImGui.SameLine();
+
+                if (ImGui.SmallButton("Save All"))
                 {
-                    b |= s.Renderer.Options.TrySave(model.Export, out _, out _);
+                    foreach (var model in s.Renderer.Options.Models.Values)
+                    {
+                        b |= s.Renderer.Options.TrySave(model.Export, out _, out _);
+                    }
                 }
-            }
+            });
 
             Modal("Saved", b, () =>
             {

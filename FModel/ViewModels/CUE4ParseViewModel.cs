@@ -782,7 +782,7 @@ public class CUE4ParseViewModel : ViewModel
                 TabControl.SelectedTab.SetDocumentText(solarisDigest.ReadableCode, false);
                 return true;
             }
-            case UTexture2D texture when loadTextures:
+            case UTexture2D { IsVirtual: false } texture when loadTextures:
             {
                 TabControl.SelectedTab.AddImage(texture, HasFlag(bulk, EBulkType.Auto));
                 return false;
