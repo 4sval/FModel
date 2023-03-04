@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using AdonisUI.Controls;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
@@ -40,12 +41,14 @@ using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
+using ImGuiNET;
 using Newtonsoft.Json;
 using Ookii.Dialogs.Wpf;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
 using SkiaSharp;
+using Application = System.Windows.Application;
 
 namespace FModel.ViewModels;
 
@@ -87,13 +90,14 @@ public class CUE4ParseViewModel : ViewModel
         {
             return Application.Current.Dispatcher.Invoke(delegate
             {
+                float dpiScale = ImGuiController.GetDpiScale();
                 return _snooper ??= new Snooper(
                     new GameWindowSettings { RenderFrequency = Snooper.GetMaxRefreshFrequency() },
                     new NativeWindowSettings
                     {
                         Size = new OpenTK.Mathematics.Vector2i(
-                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75),
-                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85)),
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75 * dpiScale),
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85 * dpiScale)),
                         NumberOfSamples = Constants.SAMPLES_COUNT,
                         WindowBorder = WindowBorder.Resizable,
                         Flags = ContextFlags.ForwardCompatible,
