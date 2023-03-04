@@ -156,7 +156,8 @@ public class Snooper : GameWindow
         if (!IsVisible || ImGui.GetIO().WantTextInput)
             return;
 
-        Renderer.CameraOp.Modify(KeyboardState, (float) e.Time);
+        var delta = (float) e.Time;
+        Renderer.CameraOp.Modify(KeyboardState, delta);
 
         if (KeyboardState.IsKeyPressed(Keys.Space))
             Renderer.Options.Tracker.IsPaused = !Renderer.Options.Tracker.IsPaused;
@@ -233,7 +234,7 @@ public class Snooper : GameWindow
     public static int GetMaxRefreshFrequency()
     {
         var rf = 60;
-        DEVMODE vDevMode = new DEVMODE();
+        var vDevMode = new DEVMODE();
         var i = 0;
         while (EnumDisplaySettings(null, i, ref vDevMode))
         {

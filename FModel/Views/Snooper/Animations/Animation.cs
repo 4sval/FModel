@@ -143,10 +143,6 @@ public class Animation : IDisposable
                 }
                 ImGui.EndMenu();
             }
-            if (ImGui.MenuItem("Additive", false))
-            {
-
-            }
             if (ImGui.MenuItem("Save"))
             {
                 s.WindowShouldFreeze(true);

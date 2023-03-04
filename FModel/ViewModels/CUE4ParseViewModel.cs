@@ -88,19 +88,24 @@ public class CUE4ParseViewModel : ViewModel
     {
         get
         {
+            if (_snooper != null) return _snooper;
+
             return Application.Current.Dispatcher.Invoke(delegate
             {
-                return _snooper ??= new Snooper(
-                    new GameWindowSettings { RenderFrequency = Snooper.GetMaxRefreshFrequency() },
+                var scale = ImGuiController.GetDpiScale();
+                var htz = Snooper.GetMaxRefreshFrequency();
+                return _snooper = new Snooper(
+                    new GameWindowSettings { RenderFrequency = htz, UpdateFrequency = htz },
                     new NativeWindowSettings
                     {
                         Size = new OpenTK.Mathematics.Vector2i(
-                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75 * ImGuiController.GetDpiScale()),
-                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85 * ImGuiController.GetDpiScale())),
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75 * scale),
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85 * scale)),
                         NumberOfSamples = Constants.SAMPLES_COUNT,
                         WindowBorder = WindowBorder.Resizable,
                         Flags = ContextFlags.ForwardCompatible,
                         Profile = ContextProfile.Core,
+                        Vsync = VSyncMode.Adaptive,
                         APIVersion = new Version(4, 6),
                         StartVisible = false,
                         StartFocused = false,

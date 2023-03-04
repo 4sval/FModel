@@ -88,36 +88,36 @@ public class Skeleton : IDisposable
                 var originalTransform = BonesTransformByIndex[boneIndices.BoneIndex];
                 _animatedBonesTransform[s][boneIndices.BoneIndex] = new Transform[sequence.NumFrames];
 
-                if (!boneIndices.HasTrack)
+                var trackedBoneIndex = boneIndices.TrackedBoneIndex;
+                if (sequence.OriginalSequence.FindTrackForBoneIndex(trackedBoneIndex) < 0)
                 {
                     for (int frame = 0; frame < _animatedBonesTransform[s][boneIndices.BoneIndex].Length; frame++)
                     {
                         _animatedBonesTransform[s][boneIndices.BoneIndex][frame] = new Transform
                         {
-                            Relation = boneIndices.HasParentTrack ?
-                                originalTransform.LocalMatrix * _animatedBonesTransform[s][boneIndices.ParentTrackIndex][frame].Matrix :
+                            Relation = boneIndices.IsParentTracked ?
+                                originalTransform.LocalMatrix * _animatedBonesTransform[s][boneIndices.TrackedParentBoneIndex][frame].Matrix :
                                 originalTransform.Relation
                         };
                     }
                 }
                 else
                 {
-                    var trackIndex = boneIndices.TrackIndex;
                     for (int frame = 0; frame < _animatedBonesTransform[s][boneIndices.BoneIndex].Length; frame++)
                     {
                         var boneOrientation = originalTransform.Rotation;
                         var bonePosition = originalTransform.Position;
                         var boneScale = originalTransform.Scale;
 
-                        sequence.Tracks[trackIndex].GetBonePosition(frame, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
-                        if (frame < sequence.Tracks[trackIndex].KeyScale.Length)
-                            boneScale = sequence.Tracks[trackIndex].KeyScale[frame];
+                        sequence.Tracks[trackedBoneIndex].GetBonePosition(frame, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
+                        if (frame < sequence.Tracks[trackedBoneIndex].KeyScale.Length)
+                            boneScale = sequence.Tracks[trackedBoneIndex].KeyScale[frame];
 
-                        switch (anim.BoneModes[trackIndex])
+                        switch (anim.BoneModes[trackedBoneIndex])
                         {
                             case EBoneTranslationRetargetingMode.Skeleton when !rotationOnly:
                             {
-                                var targetTransform = sequence.RetargetBasePose?[trackIndex] ?? anim.BonePositions[trackIndex];
+                                var targetTransform = sequence.RetargetBasePose?[trackedBoneIndex] ?? anim.BonePositions[trackedBoneIndex];
                                 bonePosition = targetTransform.Translation;
                                 break;
                             }
@@ -126,7 +126,7 @@ public class Skeleton : IDisposable
                                 var sourceTranslationLength = (originalTransform.Position / Constants.SCALE_DOWN_RATIO).Size();
                                 if (sourceTranslationLength > UnrealMath.KindaSmallNumber)
                                 {
-                                    var targetTranslationLength = sequence.RetargetBasePose?[trackIndex].Translation.Size() ?? anim.BonePositions[trackIndex].Translation.Size();
+                                    var targetTranslationLength = sequence.RetargetBasePose?[trackedBoneIndex].Translation.Size() ?? anim.BonePositions[trackedBoneIndex].Translation.Size();
                                     bonePosition.Scale(targetTranslationLength / sourceTranslationLength);
                                 }
                                 break;
@@ -135,7 +135,7 @@ public class Skeleton : IDisposable
                             {
                                 // can't tell if it's working or not
                                 var sourceSkelTrans = originalTransform.Position / Constants.SCALE_DOWN_RATIO;
-                                var refPoseTransform  = sequence.RetargetBasePose?[trackIndex] ?? anim.BonePositions[trackIndex];
+                                var refPoseTransform  = sequence.RetargetBasePose?[trackedBoneIndex] ?? anim.BonePositions[trackedBoneIndex];
 
                                 boneOrientation = boneOrientation * FQuat.Conjugate(originalTransform.Rotation) * refPoseTransform.Rotation;
                                 bonePosition += refPoseTransform.Translation - sourceSkelTrans;
@@ -146,7 +146,7 @@ public class Skeleton : IDisposable
                             case EBoneTranslationRetargetingMode.OrientAndScale when !rotationOnly:
                             {
                                 var sourceSkelTrans = originalTransform.Position / Constants.SCALE_DOWN_RATIO;
-                                var targetSkelTrans = sequence.RetargetBasePose?[trackIndex].Translation ?? anim.BonePositions[trackIndex].Translation;
+                                var targetSkelTrans = sequence.RetargetBasePose?[trackedBoneIndex].Translation ?? anim.BonePositions[trackedBoneIndex].Translation;
 
                                 if (!sourceSkelTrans.Equals(targetSkelTrans))
                                 {
@@ -167,12 +167,12 @@ public class Skeleton : IDisposable
                         }
 
                         // revert FixRotationKeys
-                        if (trackIndex > 0) boneOrientation.Conjugate();
+                        if (trackedBoneIndex > 0) boneOrientation.Conjugate();
                         bonePosition *= Constants.SCALE_DOWN_RATIO;
 
                         _animatedBonesTransform[s][boneIndices.BoneIndex][frame] = new Transform
                         {
-                            Relation = boneIndices.HasParentTrack ? _animatedBonesTransform[s][boneIndices.ParentTrackIndex][frame].Matrix : originalTransform.Relation,
+                            Relation = boneIndices.IsParentTracked ? _animatedBonesTransform[s][boneIndices.TrackedParentBoneIndex][frame].Matrix : originalTransform.Relation,
                             Rotation = boneOrientation,
                             Position = rotationOnly ? originalTransform.Position : bonePosition,
                             Scale = sequence.bAdditive ? FVector.OneVector : boneScale
@@ -194,7 +194,7 @@ public class Skeleton : IDisposable
             if (!BonesIndicesByLoweredName.TryGetValue(info.Name.Text.ToLower(), out var boneIndices))
                 continue;
 
-            boneIndices.TrackIndex = trackIndex;
+            boneIndices.TrackedBoneIndex = trackIndex;
             var parentTrackIndex = info.ParentIndex;
 
             do
@@ -202,16 +202,16 @@ public class Skeleton : IDisposable
                 if (parentTrackIndex < 0) break;
                 info = anim.TrackBonesInfo[parentTrackIndex];
                 if (boneIndices.LoweredParentBoneName.Equals(info.Name.Text, StringComparison.OrdinalIgnoreCase) && // same parent (name based)
-                    BonesIndicesByLoweredName.TryGetValue(info.Name.Text.ToLower(), out var parentBoneIndices) && parentBoneIndices.HasTrack)
-                    boneIndices.ParentTrackIndex = parentBoneIndices.BoneIndex;
+                    BonesIndicesByLoweredName.TryGetValue(info.Name.Text.ToLower(), out var parentBoneIndices) && parentBoneIndices.IsTracked)
+                    boneIndices.TrackedParentBoneIndex = parentBoneIndices.BoneIndex;
                 else parentTrackIndex = info.ParentIndex;
-            } while (!boneIndices.HasParentTrack);
+            } while (!boneIndices.IsParentTracked);
         }
 
         // fix parent of untracked bones
         foreach ((var boneName, var boneIndices) in BonesIndicesByLoweredName)
         {
-            if (boneIndices.IsRoot || boneIndices.HasTrack && boneIndices.HasParentTrack) // assuming root bone always has a track
+            if (boneIndices.IsRoot || boneIndices.IsTracked && boneIndices.IsParentTracked) // assuming root bone always has a track
                 continue;
 
 #if DEBUG
@@ -222,9 +222,9 @@ public class Skeleton : IDisposable
             do
             {
                 var parentBoneIndices = BonesIndicesByLoweredName[loweredParentBoneName];
-                if (parentBoneIndices.HasParentTrack || parentBoneIndices.IsRoot) boneIndices.ParentTrackIndex = parentBoneIndices.BoneIndex;
+                if (parentBoneIndices.IsParentTracked || parentBoneIndices.IsRoot) boneIndices.TrackedParentBoneIndex = parentBoneIndices.BoneIndex;
                 else loweredParentBoneName = parentBoneIndices.LoweredParentBoneName;
-            } while (!boneIndices.HasParentTrack);
+            } while (!boneIndices.IsParentTracked);
         }
     }
 
@@ -232,8 +232,8 @@ public class Skeleton : IDisposable
     {
         foreach (var boneIndices in BonesIndicesByLoweredName.Values)
         {
-            boneIndices.TrackIndex = -1;
-            boneIndices.ParentTrackIndex = -1;
+            boneIndices.TrackedBoneIndex = -1;
+            boneIndices.TrackedParentBoneIndex = -1;
         }
 
         if (!full) return;
