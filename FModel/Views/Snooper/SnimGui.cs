@@ -63,6 +63,7 @@ public class SnimGui
     private readonly Save _saver = new ();
     private readonly string _renderer;
     private readonly string _version;
+    private readonly float _tableWidth;
 
     private Vector2 _outlinerSize;
     private bool _ti_open;
@@ -73,13 +74,15 @@ public class SnimGui
     private readonly Vector4 _errorColor = new (0.761f, 0.169f, 0.169f, 1.0f);
 
     private const uint _dockspaceId = 1337;
-    private const float _tableWidth = 17;
 
     public SnimGui(int width, int height)
     {
+        Controller = new ImGuiController(width, height);
+
         _renderer = GL.GetString(StringName.Renderer);
         _version = "OpenGL " + GL.GetString(StringName.Version);
-        Controller = new ImGuiController(width, height);
+        _tableWidth = 17 * Controller.DpiScale;
+
         Theme();
     }
 

@@ -42,7 +42,7 @@ public class Sequence
         drawList.AddLine(new Vector2(q2.X, q1.Y), q2, lineColor, 1.0f);
 
         if (IsAdditive)
-            drawList.AddText(fontPtr, 12, new Vector2(q1.X + t, q1.Y + halfThickness), animSelected ? 0xFFFFFFFF : 0x50FFFFFF, "Is Additive");
+            drawList.AddText(fontPtr, 12 * ImGui.GetWindowDpiScale(), new Vector2(q1.X + t, q1.Y + halfThickness), animSelected ? 0xFFFFFFFF : 0x50FFFFFF, "Is Additive");
 
         drawList.PopClipRect();
     }

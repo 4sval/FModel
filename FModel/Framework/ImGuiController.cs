@@ -61,9 +61,9 @@ public class ImGuiController : IDisposable
         // ImGui.LoadIniSettingsFromDisk(_iniPath);
 
         var io = ImGui.GetIO();
-        FontNormal = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 16*DpiScale);
-        FontBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeuib.ttf", 16*DpiScale);
-        FontSemiBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\seguisb.ttf", 16*DpiScale);
+        FontNormal = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 16 * DpiScale);
+        FontBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeuib.ttf", 16 * DpiScale);
+        FontSemiBold = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\seguisb.ttf", 16 * DpiScale);
 
         io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
         io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;

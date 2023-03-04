@@ -108,6 +108,24 @@ public class Animation : IDisposable
         {
             s.Renderer.Options.SelectAnimation(i);
         }
+        Popup(s, saver, i);
+
+        drawList.AddRectFilled(p1, p2, IsSelected ? 0xFF48B048 : 0xFF175F17, 5.0f, ImDrawFlags.RoundCornersTop);
+        for (int j = 0; j < Sequences.Length; j++)
+        {
+            Sequences[j].DrawSequence(drawList, fontPtr, timelineP0.X, p2, timeStep, timeRatio, t, IsSelected);
+        }
+
+        ImGui.SetCursorScreenPos(treeP0 with { Y = p1.Y });
+        if (ImGui.Selectable(name, s.Renderer.Options.SelectedAnimation == i, ImGuiSelectableFlags.SpanAllColumns, new Vector2(p1.X - treeP0.X, timeStep.Y - t - t)))
+        {
+            s.Renderer.Options.SelectAnimation(i);
+        }
+        Popup(s, saver, i);
+    }
+
+    private void Popup(Snooper s, Save saver, int i)
+    {
         SnimGui.Popup(() =>
         {
             s.Renderer.Options.SelectAnimation(i);
@@ -138,17 +156,5 @@ public class Animation : IDisposable
             ImGui.Separator();
             if (ImGui.MenuItem("Copy Path to Clipboard")) ImGui.SetClipboardText(Path);
         });
-
-        drawList.AddRectFilled(p1, p2, IsSelected ? 0xFF48B048 : 0xFF175F17, 5.0f, ImDrawFlags.RoundCornersTop);
-        for (int j = 0; j < Sequences.Length; j++)
-        {
-            Sequences[j].DrawSequence(drawList, fontPtr, timelineP0.X, p2, timeStep, timeRatio, t, IsSelected);
-        }
-
-        ImGui.SetCursorScreenPos(treeP0 with { Y = p1.Y });
-        if (ImGui.Selectable(name, s.Renderer.Options.SelectedAnimation == i, ImGuiSelectableFlags.SpanAllColumns, new Vector2(p1.X - treeP0.X, timeStep.Y - t - t)))
-        {
-            s.Renderer.Options.SelectAnimation(i);
-        }
     }
 }
