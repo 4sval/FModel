@@ -287,7 +287,7 @@ public class SnimGui
 
 1. UI / UX
     - Press Shift while moving a window to dock it
-    - Ctrl Click in a box to input a new value
+    - Double Click in a box to input a new value
     - Mouse Click + Drag in a box to modify the value without having to type
     - Press H to hide the window and append the next mesh you extract
 
@@ -307,7 +307,7 @@ public class SnimGui
         - Teleport to quickly move the camera to the position of the model
         - Delete
         - Deselect
-        - Copy Name to Clipboard
+        - Copy Path to Clipboard
 
 4. World
     - Save All to save all loaded models at once
@@ -317,11 +317,19 @@ public class SnimGui
     5.1. Right Click Section
         - Show / Hide the section
         - Swap to change the material used by this section
-        - Copy Name to Clipboard
+        - Copy Path to Clipboard
     5.2. Transform
         - Move / Rotate / Scale the model in the world
     5.3. Morph Targets
         - Modify the vertices position by a given amount to change the shape of the model
+
+6. Timeline
+    - Press Space to play/pause
+    - Control the time with your mouse
+    6.1 Right Click Section
+        - Animate another loaded model
+        - Save
+        - Copy Path to Clipboard
 ");
             ImGui.Separator();
 

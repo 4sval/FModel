@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Windows;
 using CUE4Parse_Conversion.Animations;
+using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
@@ -109,7 +111,7 @@ public class Renderer : IDisposable
         float maxElapsedTime;
         switch (anim)
         {
-            case UAnimSequence animSequence when animSequence.Skeleton.TryLoad(out USkeleton skeleton):
+            case UAnimSequence animSequence when /*!animSequence.IsValidAdditive() && */animSequence.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animSequence);
                 var animation = new Animation(animSequence, animSet, guid);
@@ -118,6 +120,50 @@ public class Renderer : IDisposable
                 Options.AddAnimation(animation);
                 break;
             }
+            /*case UAnimSequence additiveAnimSequence when additiveAnimSequence.IsValidAdditive() && additiveAnimSequence.Skeleton.TryLoad(out USkeleton additiveSkeleton):
+            {
+                var reference = additiveAnimSequence.RefPoseSeq?.Load<UAnimSequence>();
+                var referenceSkeleton = reference.Skeleton.Load<USkeleton>();
+
+                var additiveAnimSet = additiveSkeleton.ConvertAnims(additiveAnimSequence);
+                var referenceAnimSet = referenceSkeleton.ConvertAnims(reference);
+
+                var additivePoses = FAnimationRuntime.LoadAsPoses(additiveAnimSet, additiveSkeleton);
+                var referencePoses = FAnimationRuntime.LoadAsPoses(referenceAnimSet, referenceSkeleton, additiveAnimSet.Sequences[0].NumFrames, additiveAnimSequence.RefFrameIndex);
+
+                var animSeq = additiveAnimSet.Sequences[0];
+                animSeq.OriginalSequence = referenceAnimSet.Sequences[0].OriginalSequence;
+                animSeq.Tracks = new List<CAnimTrack>(additivePoses[0].Bones.Length);
+                for (int i = 0; i < additivePoses[0].Bones.Length; i++)
+                {
+                    animSeq.Tracks.Add(new CAnimTrack(additivePoses.Length));
+                }
+
+                //loop trough each Pose/Frame and add the output to the empty tracks
+                for (var index = 0; index < additivePoses.Length; index++)
+                {
+                    var addPose = additivePoses[index];
+                    var refPose = referencePoses[index];
+                    switch (additiveAnimSequence.AdditiveAnimType)
+                    {
+                        case EAdditiveAnimationType.AAT_LocalSpaceBase:
+                            FAnimationRuntime.AccumulateLocalSpaceAdditivePoseInternal(refPose, addPose, 1);
+                            break;
+                        case EAdditiveAnimationType.AAT_RotationOffsetMeshSpace:
+                            FAnimationRuntime.AccumulateMeshSpaceRotationAdditiveToLocalPoseInternal(refPose, addPose, 1);
+                            break;
+                    }
+
+                    refPose.Processed = true;
+                    refPose.AddToTracks(animSeq.Tracks);
+                }
+
+                var animation = new Animation(additiveAnimSequence, additiveAnimSet, guid);
+                maxElapsedTime = animation.TotalElapsedTime;
+                model.Skeleton.Animate(additiveAnimSet, AnimateWithRotationOnly);
+                Options.AddAnimation(animation);
+                break;
+            }*/
             case UAnimMontage animMontage when animMontage.Skeleton.TryLoad(out USkeleton skeleton):
             {
                 var animSet = skeleton.ConvertAnims(animMontage);

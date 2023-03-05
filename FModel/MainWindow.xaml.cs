@@ -78,10 +78,10 @@ public partial class MainWindow
 #if DEBUG
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "Phoenix/Content/RiggedObjects/Characters/Creatures/Elves/OneOff/HouseElf_F_T3/SK_HouseElf_F_T3_Master.uasset"));
+        //         "ShooterGame/Content/Characters/Guide/S0/1P/Models/FP_Guide_S0_Skelmesh.uasset"));
         // await _threadWorkerView.Begin(cancellationToken =>
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
-        //         "Phoenix/Content/Animation/Creatures/Elves/ELF_Rct_Mandrake_Loop_anm.uasset"));
+        //         "/Game/Equippables/Guns/SniperRifles/Boltsniper/S0/1P/Anims/FP_Core_Boltsniper_S0_Fire.uasset"));
 #endif
     }
 

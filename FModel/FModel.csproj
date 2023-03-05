@@ -5,9 +5,9 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
-    <Version>4.4.1.1</Version>
-    <AssemblyVersion>4.4.1.1</AssemblyVersion>
-    <FileVersion>4.4.1.1</FileVersion>
+    <Version>4.4.2.0</Version>
+    <AssemblyVersion>4.4.2.0</AssemblyVersion>
+    <FileVersion>4.4.2.0</FileVersion>
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
