@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using CUE4Parse_Conversion.Animations;
+using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.Utils;

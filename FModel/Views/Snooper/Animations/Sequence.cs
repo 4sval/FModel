@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using CUE4Parse_Conversion.Animations;
+using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.Utils;
 using ImGuiNET;
 

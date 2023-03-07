@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using CUE4Parse_Conversion.Animations;
+using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Objects.Core.Math;
 using FModel.Views.Snooper.Buffers;
@@ -68,7 +68,6 @@ public class Skeleton : IDisposable
             boneTransform.Relation = parentTransform.Matrix;
             Matrix4x4.Invert(boneTransform.Matrix, out var inverted);
 
-
             BonesTransformByIndex[boneIndices.BoneIndex] = boneTransform;
             _invertedBonesMatrix[boneIndices.BoneIndex] = inverted;
         }
@@ -109,9 +108,7 @@ public class Skeleton : IDisposable
                         var bonePosition = originalTransform.Position;
                         var boneScale = originalTransform.Scale;
 
-                        sequence.Tracks[trackedBoneIndex].GetBonePosition(frame, sequence.NumFrames, false, ref bonePosition, ref boneOrientation);
-                        if (frame < sequence.Tracks[trackedBoneIndex].KeyScale.Length)
-                            boneScale = sequence.Tracks[trackedBoneIndex].KeyScale[frame];
+                        sequence.Tracks[trackedBoneIndex].GetBoneTransform(frame, sequence.NumFrames, ref boneOrientation, ref bonePosition, ref boneScale);
 
                         switch (anim.BoneModes[trackedBoneIndex])
                         {
@@ -166,15 +163,11 @@ public class Skeleton : IDisposable
                             }
                         }
 
-                        // revert FixRotationKeys
-                        if (trackedBoneIndex > 0) boneOrientation.Conjugate();
-                        bonePosition *= Constants.SCALE_DOWN_RATIO;
-
                         _animatedBonesTransform[s][boneIndices.BoneIndex][frame] = new Transform
                         {
                             Relation = boneIndices.IsParentTracked ? _animatedBonesTransform[s][boneIndices.TrackedParentBoneIndex][frame].Matrix : originalTransform.Relation,
                             Rotation = boneOrientation,
-                            Position = rotationOnly ? originalTransform.Position : bonePosition,
+                            Position = rotationOnly ? originalTransform.Position : bonePosition * Constants.SCALE_DOWN_RATIO,
                             Scale = sequence.bAdditive ? FVector.OneVector : boneScale
                         };
                     }
