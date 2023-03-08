@@ -44,7 +44,7 @@ public class Animation : IDisposable
     public Animation(UObject export, CAnimSet animSet) : this(export)
     {
         _animSet = animSet;
-        TargetSkeleton = _animSet.OriginalAnim.Name;
+        TargetSkeleton = _animSet.Skeleton.Name;
 
         Sequences = new Sequence[_animSet.Sequences.Count];
         for (int i = 0; i < Sequences.Length; i++)

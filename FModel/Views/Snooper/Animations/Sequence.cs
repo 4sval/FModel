@@ -19,13 +19,13 @@ public class Sequence
     public Sequence(CAnimSequence sequence)
     {
         Name = sequence.Name;
-        TimePerFrame = 1.0f / sequence.Rate;
+        TimePerFrame = 1.0f / sequence.FramesPerSecond;
         StartTime = sequence.StartPos;
         Duration = sequence.AnimEndTime;
         EndTime = StartTime + Duration;
         EndFrame = (Duration / TimePerFrame).FloorToInt() - 1;
         LoopingCount = sequence.LoopingCount;
-        IsAdditive = sequence.bAdditive;
+        IsAdditive = sequence.IsAdditive;
     }
 
     public void DrawSequence(ImDrawListPtr drawList, ImFontPtr fontPtr, float x, Vector2 p2, Vector2 timeStep, Vector2 timeRatio, float t, bool animSelected)

@@ -110,11 +110,11 @@ public class Skeleton : IDisposable
 
                         sequence.Tracks[trackedBoneIndex].GetBoneTransform(frame, sequence.NumFrames, ref boneOrientation, ref bonePosition, ref boneScale);
 
-                        switch (anim.BoneModes[trackedBoneIndex])
+                        switch (anim.Skeleton.BoneTree[trackedBoneIndex])
                         {
                             case EBoneTranslationRetargetingMode.Skeleton when !rotationOnly:
                             {
-                                var targetTransform = sequence.RetargetBasePose?[trackedBoneIndex] ?? anim.BonePositions[trackedBoneIndex];
+                                var targetTransform = sequence.RetargetBasePose?[trackedBoneIndex] ?? anim.Skeleton.ReferenceSkeleton.FinalRefBonePose[trackedBoneIndex];
                                 bonePosition = targetTransform.Translation;
                                 break;
                             }
@@ -123,7 +123,7 @@ public class Skeleton : IDisposable
                                 var sourceTranslationLength = (originalTransform.Position / Constants.SCALE_DOWN_RATIO).Size();
                                 if (sourceTranslationLength > UnrealMath.KindaSmallNumber)
                                 {
-                                    var targetTranslationLength = sequence.RetargetBasePose?[trackedBoneIndex].Translation.Size() ?? anim.BonePositions[trackedBoneIndex].Translation.Size();
+                                    var targetTranslationLength = sequence.RetargetBasePose?[trackedBoneIndex].Translation.Size() ?? anim.Skeleton.ReferenceSkeleton.FinalRefBonePose[trackedBoneIndex].Translation.Size();
                                     bonePosition.Scale(targetTranslationLength / sourceTranslationLength);
                                 }
                                 break;
@@ -132,7 +132,7 @@ public class Skeleton : IDisposable
                             {
                                 // can't tell if it's working or not
                                 var sourceSkelTrans = originalTransform.Position / Constants.SCALE_DOWN_RATIO;
-                                var refPoseTransform  = sequence.RetargetBasePose?[trackedBoneIndex] ?? anim.BonePositions[trackedBoneIndex];
+                                var refPoseTransform  = sequence.RetargetBasePose?[trackedBoneIndex] ?? anim.Skeleton.ReferenceSkeleton.FinalRefBonePose[trackedBoneIndex];
 
                                 boneOrientation = boneOrientation * FQuat.Conjugate(originalTransform.Rotation) * refPoseTransform.Rotation;
                                 bonePosition += refPoseTransform.Translation - sourceSkelTrans;
@@ -143,7 +143,7 @@ public class Skeleton : IDisposable
                             case EBoneTranslationRetargetingMode.OrientAndScale when !rotationOnly:
                             {
                                 var sourceSkelTrans = originalTransform.Position / Constants.SCALE_DOWN_RATIO;
-                                var targetSkelTrans = sequence.RetargetBasePose?[trackedBoneIndex].Translation ?? anim.BonePositions[trackedBoneIndex].Translation;
+                                var targetSkelTrans = sequence.RetargetBasePose?[trackedBoneIndex].Translation ?? anim.Skeleton.ReferenceSkeleton.FinalRefBonePose[trackedBoneIndex].Translation;
 
                                 if (!sourceSkelTrans.Equals(targetSkelTrans))
                                 {
@@ -168,7 +168,7 @@ public class Skeleton : IDisposable
                             Relation = boneIndices.IsParentTracked ? _animatedBonesTransform[s][boneIndices.TrackedParentBoneIndex][frame].Matrix : originalTransform.Relation,
                             Rotation = boneOrientation,
                             Position = rotationOnly ? originalTransform.Position : bonePosition * Constants.SCALE_DOWN_RATIO,
-                            Scale = sequence.bAdditive ? FVector.OneVector : boneScale
+                            Scale = boneScale
                         };
                     }
                 }
@@ -181,9 +181,9 @@ public class Skeleton : IDisposable
         ResetAnimatedData();
 
         // tracked bones
-        for (int trackIndex = 0; trackIndex < anim.TrackBonesInfo.Length; trackIndex++)
+        for (int trackIndex = 0; trackIndex < anim.Skeleton.BoneCount; trackIndex++)
         {
-            var info = anim.TrackBonesInfo[trackIndex];
+            var info = anim.Skeleton.ReferenceSkeleton.FinalRefBoneInfo[trackIndex];
             if (!BonesIndicesByLoweredName.TryGetValue(info.Name.Text.ToLower(), out var boneIndices))
                 continue;
 
@@ -193,7 +193,7 @@ public class Skeleton : IDisposable
             do
             {
                 if (parentTrackIndex < 0) break;
-                info = anim.TrackBonesInfo[parentTrackIndex];
+                info = anim.Skeleton.ReferenceSkeleton.FinalRefBoneInfo[parentTrackIndex];
                 if (boneIndices.LoweredParentBoneName.Equals(info.Name.Text, StringComparison.OrdinalIgnoreCase) && // same parent (name based)
                     BonesIndicesByLoweredName.TryGetValue(info.Name.Text.ToLower(), out var parentBoneIndices) && parentBoneIndices.IsTracked)
                     boneIndices.TrackedParentBoneIndex = parentBoneIndices.BoneIndex;
