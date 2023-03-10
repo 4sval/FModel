@@ -76,19 +76,19 @@ public partial class MainWindow
             _discordHandler.Initialize(_applicationView.CUE4Parse.Provider.GameName);
 
 #if DEBUG
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "ShooterGame/Content/Characters/_Core/3P/Models/TP_Core_NewMale_Skelmesh.uasset"));
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "Game/Characters/_Core/3P/Anims/TP_Core_SprintAddN_UB.uasset"));
-
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "ShooterGame/Content/Characters/Guide/S0/1P/Models/FP_Guide_S0_Skelmesh.uasset"));
-        await _threadWorkerView.Begin(cancellationToken =>
-            _applicationView.CUE4Parse.Extract(cancellationToken,
-                "/Game/Equippables/Guns/SniperRifles/Boltsniper/S0/1P/Anims/FP_Core_Boltsniper_S0_Fire.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "ShooterGame/Content/Characters/_Core/3P/Models/TP_Core_NewMale_Skelmesh.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "Game/Characters/_Core/3P/Anims/TP_Core_SprintAddN_UB.uasset"));
+        //
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "ShooterGame/Content/Characters/Guide/S0/1P/Models/FP_Guide_S0_Skelmesh.uasset"));
+        // await _threadWorkerView.Begin(cancellationToken =>
+        //     _applicationView.CUE4Parse.Extract(cancellationToken,
+        //         "/Game/Equippables/Guns/SniperRifles/Boltsniper/S0/1P/Anims/FP_Core_Boltsniper_S0_Fire.uasset"));
 #endif
     }
 
